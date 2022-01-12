@@ -18,7 +18,7 @@ return [
                  * The list of directories and files that will be included in the backup.
                  */
                 'include' => [
-                    base_path(),
+                    //base_path(),
                 ],
 
                 /*
@@ -116,8 +116,10 @@ return [
              * The disk names on which the backups will be stored.
              */
             'disks' => [
-                'local',
+                'dropbox'
             ],
+
+            //'local',
         ],
 
         /*
@@ -151,12 +153,12 @@ return [
     'notifications' => [
 
         'notifications' => [
-            \Spatie\Backup\Notifications\Notifications\BackupHasFailed::class => ['mail'],
-            \Spatie\Backup\Notifications\Notifications\UnhealthyBackupWasFound::class => ['mail'],
-            \Spatie\Backup\Notifications\Notifications\CleanupHasFailed::class => ['mail'],
-            \Spatie\Backup\Notifications\Notifications\BackupWasSuccessful::class => ['mail'],
-            \Spatie\Backup\Notifications\Notifications\HealthyBackupWasFound::class => ['mail'],
-            \Spatie\Backup\Notifications\Notifications\CleanupWasSuccessful::class => ['mail'],
+            \Spatie\Backup\Notifications\Notifications\BackupHasFailed::class => ['slack'],
+            \Spatie\Backup\Notifications\Notifications\UnhealthyBackupWasFound::class => ['slack'],
+            \Spatie\Backup\Notifications\Notifications\CleanupHasFailed::class => ['slack'],
+            \Spatie\Backup\Notifications\Notifications\BackupWasSuccessful::class => ['slack'],
+            \Spatie\Backup\Notifications\Notifications\HealthyBackupWasFound::class => ['slack'],
+            \Spatie\Backup\Notifications\Notifications\CleanupWasSuccessful::class => ['slack'],
         ],
 
         /*
@@ -166,7 +168,7 @@ return [
         'notifiable' => \Spatie\Backup\Notifications\Notifiable::class,
 
         'mail' => [
-            'to' => 'your@example.com',
+            'to' => null,
 
             'from' => [
                 'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
@@ -175,7 +177,7 @@ return [
         ],
 
         'slack' => [
-            'webhook_url' => '',
+            'webhook_url' => env('SLACK_NOTIFICATION_WEBHOOK'),
 
             /*
              * If this is set to null the default channel of the webhook will be used.
