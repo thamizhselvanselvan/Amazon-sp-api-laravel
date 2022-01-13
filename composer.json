@@ -25,6 +25,7 @@
         "sentry/sentry-laravel": "^2.10",
         "spatie/laravel-backup": "^6.16",
         "spatie/laravel-failed-job-monitor": "^3.4",
+        "spatie/laravel-permission": "^5.5",
         "symfony/http-client": "^5.4"
     },
     "require-dev": {
