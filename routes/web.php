@@ -20,3 +20,7 @@ Route::get('/', function () {
 
 Route::get('/view','SaveAsinController@index')->name('show');
 Route::get('/showInput','SaveAsinController@show')->name(('showInput'));
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

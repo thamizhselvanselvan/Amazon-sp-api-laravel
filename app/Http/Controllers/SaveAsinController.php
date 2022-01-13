@@ -57,16 +57,18 @@ class SaveAsinController extends Controller
             // return $sp_api->catalogApitest($marketplace, $data);
         }
         
-        Products::create([
-            'ASIN'=>'B0002ZFTJA',
-            'Title'=>$title[0],
-        ]);
+        // Products::create([
+        //     'ASIN'=>'B0002ZFTJA',
+        //     'Title'=>$title[0],
+        // ]);
 
         // $product= new Products;
         // $product->ASIN ='B0002ZFTJA';
         // $product->Title =$title[0];
         // $product->save();
-        // return $title;
+
+        
+        return $title;
     }
 
   
