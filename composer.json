@@ -18,7 +18,10 @@
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.4",
         "maatwebsite/excel": "^3.1",
-        "spatie/laravel-backup": "^6.16"
+        "mailgun/mailgun-php": "^3.5",
+        "nyholm/psr7": "^1.4",
+        "spatie/laravel-backup": "^6.16",
+        "symfony/http-client": "^5.4"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
