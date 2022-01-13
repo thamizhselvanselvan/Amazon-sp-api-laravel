@@ -21,6 +21,7 @@
         "mailgun/mailgun-php": "^3.5",
         "nyholm/psr7": "^1.4",
         "pragmarx/health": "^1.1",
+        "pusher/pusher-php-server": "^7.0",
         "spatie/laravel-backup": "^6.16",
         "symfony/http-client": "^5.4"
     },
