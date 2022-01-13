@@ -12,7 +12,11 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/spapitest','viewPageController@spapitest')->name('spapi');
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/view','SaveAsinController@index')->name('show');
+Route::get('/showInput','SaveAsinController@show')->name(('showInput'));
