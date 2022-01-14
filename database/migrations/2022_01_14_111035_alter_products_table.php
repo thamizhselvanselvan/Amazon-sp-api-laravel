@@ -20,6 +20,7 @@ class AlterProductsTable extends Migration
             $table->string('product_type_name');
             $table->string('publisher');
             $table->string('manufacturer');
+            
 
         });
     }
