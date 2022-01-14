@@ -6,6 +6,7 @@ use App\Services\SpApi;
 use App\Models\Products;
 use App\Models\SaveAsin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use ClouSale\AmazonSellingPartnerAPI\Models\ProductPricing\Product;
 
 class SaveAsinController extends Controller
@@ -29,48 +30,38 @@ class SaveAsinController extends Controller
 
     public function show(Request $request)
     {
-        // Asin=B0002ZFTJA
-        $marketplace='A1PA6795UKMFR9';
-       
+        $marketplace = 'A1PA6795UKMFR9';
+
         $titles = preg_split("/\r\n| |''|,/", $request->asinText);
         $newData = [];
-       
-        foreach($titles as $title)
-        {   
-            if(!empty(trim($title)))
-                {   
-                    $newData[]=$title;
-                }
+
+        foreach ($titles as $title) {
+            if (!empty(trim($title))) {
+                $newData[] = trim($title);
+            }
         }
 
         // return $newData;
-        $count=0;
+        $count = 0;
         $title = [];
         $sp_api = new SpApi;
-        foreach($newData as $data)
-        {
+        foreach ($newData as $data) {
             $count++;
-            if($count>5){
+            if ($count > 5) {
                 break;
             }
-            $title[]= $sp_api->catalogApitest($marketplace, $data);
+
+            $title = $sp_api->catalogApitest($marketplace, $data);
+
+            DB::table('products')->insert([
+                'ASIN' => $data,
+                'Title' => $title
+
+            ]);
+
             // return $sp_api->catalogApitest($marketplace, $data);
         }
-        
-        // Products::create([
-        //     'ASIN'=>'B0002ZFTJA',
-        //     'Title'=>$title[0],
-        // ]);
 
-        // $product= new Products;
-        // $product->ASIN ='B0002ZFTJA';
-        // $product->Title =$title[0];
-        // $product->save();
-
-        
         return $title;
     }
-
-  
-
 }

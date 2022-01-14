@@ -58,7 +58,11 @@ class SpApi {
 
 		$result = $apiInstance->getCatalogItem($marketplace_id, $asin);
 
-		return $result->getPayload()->getAttributeSets()[0]->getTitle();
+		if(isset($result->getPayload()->getAttributeSets()[0])){
+			return $result->getPayload()->getAttributeSets()[0]->getTitle();
+		} else {
+			return 'robin';
+		}
 		// return $result->getPayload()->getAttributeSets()[0]->getSmallImage();
 		
 	}
