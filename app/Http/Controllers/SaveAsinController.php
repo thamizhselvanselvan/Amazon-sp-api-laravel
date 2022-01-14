@@ -30,7 +30,7 @@ class SaveAsinController extends Controller
 
     public function show(Request $request)
     {
-        $marketplace = 'A1PA6795UKMFR9';
+        $marketplace = 'A21TJRUUN4KGV';
 
         $titles = preg_split("/\r\n| |''|,/", $request->asinText);
         $newData = [];
@@ -41,27 +41,39 @@ class SaveAsinController extends Controller
             }
         }
 
+        echo "<PRE>";
+
         // return $newData;
         $count = 0;
         $title = [];
         $sp_api = new SpApi;
+
+        print_r($newData);
+
         foreach ($newData as $data) {
+
             $count++;
             if ($count > 5) {
                 break;
             }
 
-            $title = $sp_api->catalogApitest($marketplace, $data);
+            $response = $sp_api->catalogApitest($marketplace, $data);
+            $product = $response->getAttributeSets();
+            $product = $product[0];
+            /*
+            print_r($product->getTitle());
+            print_r($product->getListPrice());
+            print_r($product->getPackageDimensions()->getHeight()->getValue());
+            print_r($product->getPackageDimensions()->getHeight()->getunits());
+            */
+            print_r($product);
 
-            DB::table('products')->insert([
-                'ASIN' => $data,
-                'Title' => $title
+            exit;
+            sleep(2);
 
-            ]);
+            //DB::table('products')->insert(['ASIN' => $data, 'Title' => $title]);
 
             // return $sp_api->catalogApitest($marketplace, $data);
         }
-
-        return $title;
     }
 }
