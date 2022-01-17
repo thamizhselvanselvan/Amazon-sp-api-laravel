@@ -8,6 +8,7 @@ use App\Models\SaveAsin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use ClouSale\AmazonSellingPartnerAPI\Models\ProductPricing\Product;
+use \RedBeanPHP\R as R;
 
 class SaveAsinController extends Controller
 {
@@ -31,6 +32,53 @@ class SaveAsinController extends Controller
     public function show(Request $request)
     {
         $marketplace = 'A21TJRUUN4KGV';
+        echo "<PRE>";
+
+        if (file_exists('B073SBZ8YH.txt')) {
+            echo 'reading from file';
+            $response = json_decode(file_get_contents('B073SBZ8YH.txt'));
+
+            print_r($response);
+
+            $book = R::dispense("book");
+            $book->author = "Santa Claus";
+            $book->$$title = "Secrets of Christmas";
+            $book->name = "gopal";
+            $book->age = "22";
+            $book->mobile = "1234";
+            R::store($book);
+
+
+
+            //print_r($response->AttributeSets->Brand);
+        } else {
+            echo 'reading from amazon';
+            $sp_api = new SpApi;
+            $response = $sp_api->catalogApitest($marketplace, 'B073SBZ8YH');
+            file_put_contents('B073SBZ8YH.txt', json_encode($response));
+        }
+
+        //print_r($response);
+        exit;
+
+
+        R::setup('mysql:host=localhost:8001;dbname=sp_api', 'root', 'root');
+        R::debug(TRUE);
+
+        //$book  = R::find( 'book', ' id = 2 ');
+        //$book = R::load('book', 3);
+
+        $book = R::dispense("book");
+        $book->author = "Santa Claus";
+        $book->title = "Secrets of Christmas";
+        $book->name = "gopal";
+        $book->age = "22";
+        $book->mobile = "1234";
+        R::store($book);
+
+        exit;
+
+
 
         $titles = preg_split("/\r\n| |''|,/", $request->asinText);
         $newData = [];

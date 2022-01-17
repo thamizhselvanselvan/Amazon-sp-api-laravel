@@ -11,6 +11,7 @@
         "clousale/amazon-sp-api-php": "^2.1",
         "enlightn/enlightn": "^1.22",
         "fruitcake/laravel-cors": "^2.0",
+        "gabordemooij/redbean": "^5.7",
         "guzzlehttp/guzzle": "^7.0.1",
         "jeroennoten/laravel-adminlte": "^3.7",
         "laravel/framework": "^8.75",
