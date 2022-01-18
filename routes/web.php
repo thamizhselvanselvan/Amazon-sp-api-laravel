@@ -1,6 +1,9 @@
 <?php
 
+
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -17,9 +20,23 @@ Route::get('/spapitest','viewPageController@spapitest')->name('spapi');
 Route::get('/', function () {
     return view('welcome');
 });
+/*
+    CatlogApi 
+*/
+Route::get('/view','CatlogApiController@index')->name('show');
+Route::get('/showInput','CatlogApiController@show')->name(('showInput'));
 
-Route::get('/view','SaveAsinController@index')->name('show');
-Route::get('/showInput','SaveAsinController@show')->name(('showInput'));
+/*
+    productPricing
+    ->CompetitivePricing
+*/
+Route::get('/pricing','productPricing\CompetitivePricingController@show')->name('productPricing.show');
+
+/*
+     productPricing
+    ->Itemoffers
+*/
+Route::get('/itemoffer','productPricing\ItemOfferController@show')->name('productPricing.show');
 
 Auth::routes();
 

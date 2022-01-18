@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Services\SpApi;
 use App\Models\Products;
-use App\Models\SaveAsin;
 use ClouSale\AmazonSellingPartnerAPI\Models\FbaSmallAndLight\MarketplaceId;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +12,7 @@ use Illuminate\Support\Arr;
 use PhpParser\JsonDecoder;
 use \RedBeanPHP\R as R;
 
-class SaveAsinController extends Controller
+class CatlogApiController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -38,26 +37,24 @@ class SaveAsinController extends Controller
 
         R::setup('mysql:host=localhost;dbname=spapi', 'root', 'root');
 
-        $titles = preg_split("/\r\n| |''|,/", $request->asinText);
+        $asins = preg_split("/\r\n| |''|,/", $request->asinText);
 
         
         R::exec('TRUNCATE `product`');
 
-        $newData = [];
-
-        foreach ($titles as $title) {
+        foreach ($asins as $asin) {
 
             $product = R::dispense("product");
 
-            if (!empty(trim($title))) {
+            if (!empty(trim($asin))) {
 
-                $title = trim($title);
+                $asin = trim($asin);
              
-                if (file_exists($title.'.txt')) {
+                if (file_exists($asin.'.txt')) {
 
                     echo 'reading from file <BR>';
                    
-                    $response = json_decode(file_get_contents($title.'.txt'));
+                    $response = json_decode(file_get_contents($asin.'.txt'));
 
                     foreach ($response->AttributeSets[0] as $key => $value) {
 
@@ -98,12 +95,12 @@ class SaveAsinController extends Controller
            
 
             $sp_api = new SpApi;
-            $response = $sp_api->catalogApitest($marketplace, $title);
+            $response = $sp_api->catalogApitest($marketplace, $asin);
 
 
-            file_put_contents($title.'.txt', Json_encode(Json_decode($response)));
+            file_put_contents($asin.'.txt', Json_encode(Json_decode($response)));
 
-            
+
             foreach (Json_decode($response)->AttributeSets[0] as $key => $value) {
 
                 $data = "";

@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
-class SpApi
+use Exception;
+
+class getcompetitivePricing
 {
 
 	public $options = [];
@@ -53,14 +55,21 @@ class SpApi
 
 	}
 
-	public function catalogApitest($marketplace_id, $asin)
+	public function competitivePricing($marketplace_id, $item_type, $asins, $skus=null)
 	{
 
 
-		$apiInstance = new \ClouSale\AmazonSellingPartnerAPI\Api\CatalogApi($this->config);
+		$apiInstance = new \ClouSale\AmazonSellingPartnerAPI\Api\ProductPricingApi($this->config);
 
-		$result = $apiInstance->getCatalogItem($marketplace_id, $asin)->getPayload();
-		return $result;
+		try {
+            $result = $apiInstance->getCompetitivePricing($marketplace_id, $item_type, $asins, $skus);
+            print_r($result);
+
+        } catch (Exception $e) {
+            echo 'Exception when calling ProductPricingApi->getCompetitivePricing: ', $e->getMessage(), PHP_EOL;
+        }
+
+
 
 		// if (isset($result->getPayload()->getAttributeSets()[0])) {
 		// 	return $result->getPayload()->getAttributeSets()[0]->getTitle();
@@ -70,4 +79,5 @@ class SpApi
 		// return $result->getPayload()->getAttributeSets()[0]->getSmallImage();
 
 	}
+    
 }
