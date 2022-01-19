@@ -21,7 +21,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 /*
-    CatlogApi 
+    CatlogApi
 */
 Route::get('/view','CatlogApiController@index')->name('show');
 Route::get('/showInput','CatlogApiController@show')->name(('showInput'));
@@ -42,3 +42,9 @@ Route::get('/getItemOffer','productPricing\ItemOfferController@show')->name('get
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+Route::get('/test/getCatalogItem', [App\Http\Controllers\TestController::class, 'getCatalogItem'])->name('getCatalogItem');
+Route::get('/test/getCompetitivePricing', [App\Http\Controllers\TestController::class, 'getCompetitivePricing'])->name('getCompetitivePricing');
+Route::get('/test/getItemOffers', [App\Http\Controllers\TestController::class, 'getItemOffers'])->name('getItemOffers');
+Route::get('/test/getPricing', [App\Http\Controllers\TestController::class, 'getPricing'])->name('getPricing');
