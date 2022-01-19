@@ -17,7 +17,7 @@ class TestController extends Controller
     public function getCatalogItem()
     {
 
-    // require_once (__DIR__ . '/vendor/autoload.php');
+
 
     $options = [
         'refresh_token' => $this->europeToken, // Aztr|...
@@ -104,6 +104,7 @@ class TestController extends Controller
 
     public function getItemOffers()
     {
+        // require_once(__DIR__ . '../vendor/autoload.php');
 
         $options = [
             'refresh_token' => $this->europeToken, // Aztr|...
@@ -180,8 +181,8 @@ class TestController extends Controller
         $marketplace_id = 'A21TJRUUN4KGV'; //india
         $item_type = 'Asin';
         $skus = ''; 
-        $item_condition='New';
-        $asin = 'B07F3XX5KT'; //.in
+        $item_condition ='New';
+        $asin = ['B0000AV0FU']; //.in
     
         $result = $apiInstance->getPricing($marketplace_id, $item_type, $asin, $skus, $item_condition);
         return $result;
