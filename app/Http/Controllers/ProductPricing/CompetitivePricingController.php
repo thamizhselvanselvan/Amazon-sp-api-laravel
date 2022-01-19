@@ -16,7 +16,7 @@ class CompetitivePricingController extends Controller
      */
     public function index()
     {
-    
+        return view('productPricing.competitivePriceIndex');
     }
 
    
@@ -29,25 +29,31 @@ class CompetitivePricingController extends Controller
     
     public function show(Request $request)
     {
+        $identity_values = preg_split("/\r\n| |'|:|,/", $request->identity_values, -1, PREG_SPLIT_NO_EMPTY);
+      
         $marketplace_id = 'A21TJRUUN4KGV';
-        $item_type = 'Asin';
-        $asins = 'B07WMS7TWB';
-        $skus = '';
+        $item_type = $request->identity_type; //'Asin'or Sku
+        $asins = [];
+        $skus = [];
+
+        if( $item_type=='Asin')
+            {
+                $asins = $identity_values ;
+            
+            }
+        else
+            {
+                $skus = $identity_values ;
+                
+            }
 
         $get_competitive_pricing = new getCompetitivePricing;
-            $response = $get_competitive_pricing->competitivePricing($marketplace_id, $item_type, $asins);
+            $response = $get_competitive_pricing->competitivePricing($marketplace_id, $item_type, $asins, $skus);
             echo "<pre>";
             print_r($response);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\ProductPricing\CompetitivePricing  $competitivePricing
-     * @return \Illuminate\Http\Response
-     */
-    
-    
-
     
 }
+
+    
+

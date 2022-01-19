@@ -16,7 +16,7 @@ class ItemOfferController extends Controller
      */
     public function index()
     {
-        //
+        return view('productPricing.itemofferindex');
     }
 
 
@@ -32,17 +32,27 @@ class ItemOfferController extends Controller
     }
 
     
-    public function show()
-    {
-        $marketplace_id = 'A21TJRUUN4KGV';
-        $item_condition='New';
-        $asins = 'B07WMS7TWB';
-        
+    public function show(Request $request)
+    {   
+        $asins = preg_split("/\r\n| |'|:|,/", $request->asin_values, -1, PREG_SPLIT_NO_EMPTY);
+        $item_condition = $request->item_condition; //New, Used, Collectible, Refurbished, Club
 
-        $get_item_offers = new getItemOffers;
-            $response = $get_item_offers->itemOffers($marketplace_id, $item_condition, $asins);
+        $marketplace_id = 'A21TJRUUN4KGV';
+       
+        foreach($asins as $asin)
+        {
+            $get_item_offers = new getItemOffers;
+            $response = $get_item_offers->itemOffers($marketplace_id, $item_condition, $asin);
             echo "<pre>";
             print_r($response);
+        }
+       
+        
+
+        // $get_item_offers = new getItemOffers;
+        //     $response = $get_item_offers->itemOffers($marketplace_id, $item_condition, $asins);
+        //     echo "<pre>";
+        //     print_r($response);
     }
 
    

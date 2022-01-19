@@ -30,13 +30,14 @@ Route::get('/showInput','CatlogApiController@show')->name(('showInput'));
     productPricing
     ->CompetitivePricing
 */
-Route::get('/pricing','productPricing\CompetitivePricingController@show')->name('productPricing.show');
+Route::get('/pricing','productPricing\CompetitivePricingController@index')->name('productPricing.getCompetitivePricing');
+Route::get('/getPrice','productPricing\CompetitivePricingController@show')->name('getPrice');
 
-/*
-     productPricing
+/* productPricing
     ->Itemoffers
 */
-Route::get('/itemoffer','productPricing\ItemOfferController@show')->name('productPricing.show');
+Route::get('/itemoffer','productPricing\ItemOfferController@index')->name('productPricing.show');
+Route::get('/getItemOffer','productPricing\ItemOfferController@show')->name('getItemOffer');
 
 Auth::routes();
 

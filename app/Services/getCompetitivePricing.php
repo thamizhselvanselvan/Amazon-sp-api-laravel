@@ -55,9 +55,9 @@ class getcompetitivePricing
 
 	}
 
-	public function competitivePricing($marketplace_id, $item_type, $asins, $skus=null)
+	public function competitivePricing($marketplace_id, $item_type, $asins, $skus)
 	{
-
+	
 
 		$apiInstance = new \ClouSale\AmazonSellingPartnerAPI\Api\ProductPricingApi($this->config);
 
