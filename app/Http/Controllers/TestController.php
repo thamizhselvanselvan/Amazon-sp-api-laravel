@@ -53,6 +53,7 @@ class TestController extends Controller
     $asin = 'B08697KLZP'; //.in
 
     $result = $apiInstance->getCatalogItem($marketplace_id, $asin);
+    return $result;
     echo $result->getPayload()->getAttributeSets()[0]->getTitle(); // Never Gonna Give You Up [Vinyl Single]
 
 }
@@ -61,16 +62,129 @@ class TestController extends Controller
     public function getCompetitivePricing()
     {
         
-
+        $options = [
+            'refresh_token' => $this->europeToken, // Aztr|...
+            'client_id' => 'amzn1.application-oa2-client.0167f1a848ae4cf0aabeeb1abbeaf8cf', // App ID from Seller Central, amzn1.sellerapps.app.cfbfac4a-......
+            'client_secret' => '5bf9add9576f83d33293b0e9e2ed5e671000a909f161214a77b93d26e7082765', // The corresponding Client Secret
+            'region' => \ClouSale\AmazonSellingPartnerAPI\SellingPartnerRegion::$EUROPE, // or NORTH_AMERICA / FAR_EAST
+            'access_key' => 'AKIAZTIHMXYBD5SRG5IZ', // Access Key of AWS IAM User, for example AKIAABCDJKEHFJDS
+            'secret_key' => '4DPad08/wrtdHHP2GFInzykOl6JWLzqhkEIeZ9UR', // Secret Key of AWS IAM User
+            'endpoint' => \ClouSale\AmazonSellingPartnerAPI\SellingPartnerEndpoint::$EUROPE, // EUROPE or NORTH_AMERICA / FAR_EAST
+            'role_arn' => 'arn:aws:iam::659829865986:role/Mosh-E-Com-SP-API-Role', // AWS IAM Role ARN for example: arn:aws:iam::123456789:role/Your-Role-Name
+        ];
+        $accessToken = \ClouSale\AmazonSellingPartnerAPI\SellingPartnerOAuth::getAccessTokenFromRefreshToken(
+            $options['refresh_token'],
+            $options['client_id'],
+            $options['client_secret']
+        );
+        $assumedRole = \ClouSale\AmazonSellingPartnerAPI\AssumeRole::assume(
+            $options['region'],
+            $options['access_key'],
+            $options['secret_key'],
+            $options['role_arn'],
+        );
+        $config = \ClouSale\AmazonSellingPartnerAPI\Configuration::getDefaultConfiguration();
+        $config->setHost($options['endpoint']);
+        $config->setAccessToken($accessToken);
+        $config->setAccessKey($assumedRole->getAccessKeyId());
+        $config->setSecretKey($assumedRole->getSecretAccessKey());
+        $config->setRegion($options['region']);
+        $config->setSecurityToken($assumedRole->getSessionToken());
+    
+        $apiInstance = new \ClouSale\AmazonSellingPartnerAPI\Api\ProductPricingApi($config);
+        $marketplace_id = 'A21TJRUUN4KGV'; //india
+        $item_type = 'Asin';
+        $skus=[];
+        $asin = ['B07F3XX5KT','B00008DHOP']; //.in
+    
+        return $apiInstance->getCompetitivePricing($marketplace_id, $item_type, $asin);
+        
+        // Never Gonna Give You Up [Vinyl Single]
     }
 
     public function getItemOffers()
     {
 
+        $options = [
+            'refresh_token' => $this->europeToken, // Aztr|...
+            'client_id' => 'amzn1.application-oa2-client.0167f1a848ae4cf0aabeeb1abbeaf8cf', // App ID from Seller Central, amzn1.sellerapps.app.cfbfac4a-......
+            'client_secret' => '5bf9add9576f83d33293b0e9e2ed5e671000a909f161214a77b93d26e7082765', // The corresponding Client Secret
+            'region' => \ClouSale\AmazonSellingPartnerAPI\SellingPartnerRegion::$EUROPE, // or NORTH_AMERICA / FAR_EAST
+            'access_key' => 'AKIAZTIHMXYBD5SRG5IZ', // Access Key of AWS IAM User, for example AKIAABCDJKEHFJDS
+            'secret_key' => '4DPad08/wrtdHHP2GFInzykOl6JWLzqhkEIeZ9UR', // Secret Key of AWS IAM User
+            'endpoint' => \ClouSale\AmazonSellingPartnerAPI\SellingPartnerEndpoint::$EUROPE, // EUROPE or NORTH_AMERICA / FAR_EAST
+            'role_arn' => 'arn:aws:iam::659829865986:role/Mosh-E-Com-SP-API-Role', // AWS IAM Role ARN for example: arn:aws:iam::123456789:role/Your-Role-Name
+        ];
+        $accessToken = \ClouSale\AmazonSellingPartnerAPI\SellingPartnerOAuth::getAccessTokenFromRefreshToken(
+            $options['refresh_token'],
+            $options['client_id'],
+            $options['client_secret']
+        );
+        $assumedRole = \ClouSale\AmazonSellingPartnerAPI\AssumeRole::assume(
+            $options['region'],
+            $options['access_key'],
+            $options['secret_key'],
+            $options['role_arn'],
+        );
+        $config = \ClouSale\AmazonSellingPartnerAPI\Configuration::getDefaultConfiguration();
+        $config->setHost($options['endpoint']);
+        $config->setAccessToken($accessToken);
+        $config->setAccessKey($assumedRole->getAccessKeyId());
+        $config->setSecretKey($assumedRole->getSecretAccessKey());
+        $config->setRegion($options['region']);
+        $config->setSecurityToken($assumedRole->getSessionToken());
+    
+        $apiInstance = new \ClouSale\AmazonSellingPartnerAPI\Api\ProductPricingApi($config);
+        $marketplace_id = 'A21TJRUUN4KGV'; //india
+        $item_condition='New';
+        $asin = 'B07F3XX5KT'; //.in
+    
+        $result = $apiInstance->getItemOffers($marketplace_id, $item_condition, $asin);
+        return $result;
+
     }
 
     public function getPricing()
     {
+
+        $options = [
+            'refresh_token' => $this->europeToken, // Aztr|...
+            'client_id' => 'amzn1.application-oa2-client.0167f1a848ae4cf0aabeeb1abbeaf8cf', // App ID from Seller Central, amzn1.sellerapps.app.cfbfac4a-......
+            'client_secret' => '5bf9add9576f83d33293b0e9e2ed5e671000a909f161214a77b93d26e7082765', // The corresponding Client Secret
+            'region' => \ClouSale\AmazonSellingPartnerAPI\SellingPartnerRegion::$EUROPE, // or NORTH_AMERICA / FAR_EAST
+            'access_key' => 'AKIAZTIHMXYBD5SRG5IZ', // Access Key of AWS IAM User, for example AKIAABCDJKEHFJDS
+            'secret_key' => '4DPad08/wrtdHHP2GFInzykOl6JWLzqhkEIeZ9UR', // Secret Key of AWS IAM User
+            'endpoint' => \ClouSale\AmazonSellingPartnerAPI\SellingPartnerEndpoint::$EUROPE, // EUROPE or NORTH_AMERICA / FAR_EAST
+            'role_arn' => 'arn:aws:iam::659829865986:role/Mosh-E-Com-SP-API-Role', // AWS IAM Role ARN for example: arn:aws:iam::123456789:role/Your-Role-Name
+        ];
+        $accessToken = \ClouSale\AmazonSellingPartnerAPI\SellingPartnerOAuth::getAccessTokenFromRefreshToken(
+            $options['refresh_token'],
+            $options['client_id'],
+            $options['client_secret']
+        );
+        $assumedRole = \ClouSale\AmazonSellingPartnerAPI\AssumeRole::assume(
+            $options['region'],
+            $options['access_key'],
+            $options['secret_key'],
+            $options['role_arn'],
+        );
+        $config = \ClouSale\AmazonSellingPartnerAPI\Configuration::getDefaultConfiguration();
+        $config->setHost($options['endpoint']);
+        $config->setAccessToken($accessToken);
+        $config->setAccessKey($assumedRole->getAccessKeyId());
+        $config->setSecretKey($assumedRole->getSecretAccessKey());
+        $config->setRegion($options['region']);
+        $config->setSecurityToken($assumedRole->getSessionToken());
+    
+        $apiInstance = new \ClouSale\AmazonSellingPartnerAPI\Api\ProductPricingApi($config);
+        $marketplace_id = 'A21TJRUUN4KGV'; //india
+        $item_type = 'Asin';
+        $skus = ''; 
+        $item_condition='New';
+        $asin = 'B07F3XX5KT'; //.in
+    
+        $result = $apiInstance->getPricing($marketplace_id, $item_type, $asin, $skus, $item_condition);
+        return $result;
 
     }
 
