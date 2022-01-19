@@ -33,13 +33,13 @@ class CatlogApiController extends Controller
 
     public function show(Request $request)
     {
-        $marketplace = 'A21TJRUUN4KGV';
+        $marketplace = 'ATVPDKIKX0DER';
 
-        R::setup('mysql:host=localhost;dbname=spapi', 'root', 'root');
+        R::setup('mysql:host=localhost;port=8001;dbname=sp_api', 'root', 'root');
 
         $asins = preg_split("/\r\n| |''|,/", $request->asinText);
 
-        
+
         R::exec('TRUNCATE `product`');
 
         foreach ($asins as $asin) {
@@ -49,12 +49,12 @@ class CatlogApiController extends Controller
             if (!empty(trim($asin))) {
 
                 $asin = trim($asin);
-             
-                if (file_exists($asin.'.txt')) {
+
+                if (file_exists($asin . '.txt') && false) {
 
                     echo 'reading from file <BR>';
-                   
-                    $response = json_decode(file_get_contents($asin.'.txt'));
+
+                    $response = json_decode(file_get_contents($asin . '.txt'));
 
                     foreach ($response->AttributeSets[0] as $key => $value) {
 
@@ -69,13 +69,11 @@ class CatlogApiController extends Controller
                         if (is_array($value)) {
 
                             $data = json_encode($value);
-                        } 
-                        else if (is_object($value)) {
+                        } else if (is_object($value)) {
 
                             $temp = (array) $value;
                             $data = json_encode($temp);
-                        } 
-                        else {
+                        } else {
 
                             $data =  $value;
                         }
@@ -86,102 +84,52 @@ class CatlogApiController extends Controller
                         echo "<HR>";
                     }
                     R::store($product);
-             
+                } else {
 
-            } 
-            else {
-
-            echo 'reading from amazon';
-           
-
-            $sp_api = new SpApi;
-            $response = $sp_api->catalogApitest($marketplace, $asin);
+                    echo 'reading from amazon';
 
 
-            file_put_contents($asin.'.txt', Json_encode(Json_decode($response)));
+                    $sp_api = new SpApi;
+                    $response = $sp_api->catalogApitest($marketplace, $asin);
 
 
-            foreach (Json_decode($response)->AttributeSets[0] as $key => $value) {
-
-                $data = "";
-
-                $key = lcfirst($key);
+                    file_put_contents($asin . '.txt', Json_encode(Json_decode($response)));
 
 
-                print_r("Key:" . $key);
-                echo "<BR>";
-                echo "Value: ";
+                    foreach (Json_decode($response)->AttributeSets[0] as $key => $value) {
 
-                if (is_array($value)) {
+                        $data = "";
 
-                    $data = json_encode($value);
-                } 
-                else if (is_object($value)) {
+                        $key = lcfirst($key);
 
-                    $temp = (array) $value;
-                    $data = json_encode($temp);
-                } 
-                else {
 
-                    $data =  $value;
+                        print_r("Key:" . $key);
+                        echo "<BR>";
+                        echo "Value: ";
+
+                        if (is_array($value)) {
+
+                            $data = json_encode($value);
+                        } else if (is_object($value)) {
+
+                            $temp = (array) $value;
+                            $data = json_encode($temp);
+                        } else {
+
+                            $data =  $value;
+                        }
+                        echo $data;
+
+                        $product->{$key} = $data;
+
+                        echo "<HR>";
+                    }
+
+                    R::store($product);
+
+                    sleep(2);
                 }
-                echo $data;
-
-                $product->{$key} = $data;
-
-                echo "<HR>";
-            }
-
-                R::store($product);
-
-                sleep(2);
-
             }
         }
-    }
-
-        // $titles = preg_split("/\r\n| |''|,/", $request->asinText);
-        // $newData = [];
-
-        // foreach ($titles as $title) {
-        //     if (!empty(trim($title))) {
-        //         $newData[] = trim($title);
-        //     }
-        // }
-
-        // echo "<PRE>";
-
-        // // return $newData;
-        // $count = 0;
-        // $title = [];
-        // $sp_api = new SpApi;
-
-        // print_r($newData);
-
-        // foreach ($newData as $data) {
-
-        //     $count++;
-        //     if ($count > 5) {
-        //         break;
-        //     }
-
-        //     $response = $sp_api->catalogApitest($marketplace, $data);
-        //     $product = $response->getAttributeSets();
-        //     $product = $product[0];
-        //     /*
-        //     print_r($product->getTitle());
-        //     print_r($product->getListPrice());
-        //     print_r($product->getPackageDimensions()->getHeight()->getValue());
-        //     print_r($product->getPackageDimensions()->getHeight()->getunits());
-        //     */
-        //     print_r($product);
-
-        //     exit;
-        //     sleep(2);
-
-        //     //DB::table('products')->insert(['ASIN' => $data, 'Title' => $title]);
-
-        //     // return $sp_api->catalogApitest($marketplace, $data);
-        // }
     }
 }
