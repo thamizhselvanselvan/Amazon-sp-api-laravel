@@ -24,7 +24,7 @@ Route::get('/', function () {
     CatlogApi
 */
 Route::get('/view','CatlogApiController@index')->name('show');
-Route::get('/showInput','CatlogApiController@show')->name(('showInput'));
+Route::post('/showInput','CatlogApiController@show')->name(('showInput'));
 
 /*
     productPricing
@@ -37,7 +37,7 @@ Route::get('/getPrice','productPricing\CompetitivePricingController@show')->name
     ->Itemoffers
 */
 Route::get('/itemoffer','productPricing\ItemOfferController@index')->name('productPricing.show');
-Route::get('/getItemOffer','productPricing\ItemOfferController@show')->name('getItemOffer');
+Route::post('/getItemOffer','productPricing\ItemOfferController@show')->name('getItemOffer');
 
 Auth::routes();
 

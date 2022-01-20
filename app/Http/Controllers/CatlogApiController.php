@@ -34,7 +34,8 @@ class CatlogApiController extends Controller
 
     public function show(Request $request)
     {
-        $marketplace = 'A21TJRUUN4KGV';
+        // $marketplace = 'A21TJRUUN4KGV';// india
+        $marketplace = 'ATVPDKIKX0DER';// us
         
        $host = config('app.host');
        $port = config('app.port');
@@ -58,11 +59,11 @@ class CatlogApiController extends Controller
 
                 $asin = trim($asin);
 
-                if (file_exists($asin . '.txt')) {
+                if (file_exists('catlogasin/'.$asin . '.txt')) {
 
                     echo 'reading from file <BR>';
 
-                    $response = json_decode(file_get_contents($asin . '.txt'));
+                    $response = json_decode(file_get_contents('catlogasin/'.$asin . '.txt'));
 
                     foreach ($response->AttributeSets[0] as $key => $value) {
 
@@ -106,7 +107,7 @@ class CatlogApiController extends Controller
                     // exit;
                     if($response){
 
-                        file_put_contents($asin . '.txt', Json_encode(Json_decode($response)));
+                        file_put_contents('catlogasin/'.$asin . '.txt', Json_encode(Json_decode($response)));
 
 
                         foreach (Json_decode($response)->AttributeSets[0] as $key => $value) {
@@ -138,7 +139,8 @@ class CatlogApiController extends Controller
                         }
                         R::store($product);
                         
-                        sleep(2);
+                        sleep(1);
+                    
                     }
                     else
                     {

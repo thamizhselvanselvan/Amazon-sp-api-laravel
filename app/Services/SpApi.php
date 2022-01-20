@@ -19,13 +19,13 @@ class SpApi
 	{
 
 		$this->options = [
-			'refresh_token' => $this->europeToken, // Aztr|...
+			'refresh_token' => $this->northToken, // Aztr|...
 			'client_id' => 'amzn1.application-oa2-client.0167f1a848ae4cf0aabeeb1abbeaf8cf', // App ID from Seller Central, amzn1.sellerapps.app.cfbfac4a-......
 			'client_secret' => '5bf9add9576f83d33293b0e9e2ed5e671000a909f161214a77b93d26e7082765', // The corresponding Client Secret
-			'region' => \ClouSale\AmazonSellingPartnerAPI\SellingPartnerRegion::$EUROPE, // or NORTH_AMERICA / FAR_EAST
+			'region' => \ClouSale\AmazonSellingPartnerAPI\SellingPartnerRegion::$NORTH_AMERICA, // or NORTH_AMERICA / FAR_EAST
 			'access_key' => 'AKIAZTIHMXYBD5SRG5IZ', // Access Key of AWS IAM User, for example AKIAABCDJKEHFJDS
 			'secret_key' => '4DPad08/wrtdHHP2GFInzykOl6JWLzqhkEIeZ9UR', // Secret Key of AWS IAM User
-			'endpoint' => \ClouSale\AmazonSellingPartnerAPI\SellingPartnerEndpoint::$EUROPE, // or NORTH_AMERICA / FAR_EAST
+			'endpoint' => \ClouSale\AmazonSellingPartnerAPI\SellingPartnerEndpoint::$NORTH_AMERICA, // or NORTH_AMERICA / FAR_EAST
 			'role_arn' => 'arn:aws:iam::659829865986:role/Mosh-E-Com-SP-API-Role', // AWS IAM Role ARN for example: arn:aws:iam::123456789:role/Your-Role-Name
 		];
 

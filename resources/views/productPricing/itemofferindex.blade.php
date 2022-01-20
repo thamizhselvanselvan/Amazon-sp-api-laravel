@@ -1,4 +1,4 @@
-<form action="{{ route('getItemOffer') }}" method='GET'>
+<form action="{{ route('getItemOffer') }}" method='post'>
     @csrf
     <textarea name='asin_values' rows="10" cols="50"></textarea>
     <br>
