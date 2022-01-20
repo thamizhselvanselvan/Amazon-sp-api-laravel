@@ -63,7 +63,7 @@ class getItemOffers
 
 		try {
             $result = $apiInstance->getItemOffers($marketplace_id, $item_condition, $asins);
-            return $result;
+            return $result->getPayload();
 
         } catch (Exception $e) {
             echo 'Exception when calling ProductPricingApi->getItemOffers: ', $e->getMessage(), PHP_EOL;

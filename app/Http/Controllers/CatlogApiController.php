@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ProductPricing\pricing;
 use App\Services\SpApi;
 use App\Models\Products;
 use ClouSale\AmazonSellingPartnerAPI\Models\FbaSmallAndLight\MarketplaceId;
@@ -33,9 +34,16 @@ class CatlogApiController extends Controller
 
     public function show(Request $request)
     {
-        $marketplace = 'ATVPDKIKX0DER';
+        $marketplace = 'A21TJRUUN4KGV';
+        
+       $host = config('app.host');
+       $port = config('app.port');
+       $dbname = config('app.database');
+       $username = config('app.username');
+       $password = config('app.password');
 
-        R::setup('mysql:host=localhost;port=8001;dbname=sp_api', 'root', 'root');
+       R::setup('mysql:host=' . $host . ';dbname=' . $dbname . ';port=' .$port, $username, $password);
+       
 
         $asins = preg_split("/\r\n| |''|,/", $request->asinText);
 
@@ -50,7 +58,7 @@ class CatlogApiController extends Controller
 
                 $asin = trim($asin);
 
-                if (file_exists($asin . '.txt') && false) {
+                if (file_exists($asin . '.txt')) {
 
                     echo 'reading from file <BR>';
 
@@ -86,48 +94,57 @@ class CatlogApiController extends Controller
                     R::store($product);
                 } else {
 
-                    echo 'reading from amazon';
+                    
 
 
                     $sp_api = new SpApi;
                     $response = $sp_api->catalogApitest($marketplace, $asin);
+                    echo 'reading from amazon';
+
+                
+                    // print_r($response);
+                    // exit;
+                    if($response){
+
+                        file_put_contents($asin . '.txt', Json_encode(Json_decode($response)));
 
 
-                    file_put_contents($asin . '.txt', Json_encode(Json_decode($response)));
+                        foreach (Json_decode($response)->AttributeSets[0] as $key => $value) {
 
+                            $data = "";
 
-                    foreach (Json_decode($response)->AttributeSets[0] as $key => $value) {
+                            $key = lcfirst($key);
 
-                        $data = "";
+                            print_r("Key:" . $key);
+                            echo "<BR>";
+                            echo "Value: ";
 
-                        $key = lcfirst($key);
+                            if (is_array($value)) {
 
+                                $data = json_encode($value);
+                            } else if (is_object($value)) {
 
-                        print_r("Key:" . $key);
-                        echo "<BR>";
-                        echo "Value: ";
+                                $temp = (array) $value;
+                                $data = json_encode($temp);
+                            } else {
 
-                        if (is_array($value)) {
+                                $data =  $value;
+                            }
+                            echo $data;
 
-                            $data = json_encode($value);
-                        } else if (is_object($value)) {
+                            $product->{$key} = $data;
 
-                            $temp = (array) $value;
-                            $data = json_encode($temp);
-                        } else {
-
-                            $data =  $value;
+                            echo "<HR>";
                         }
-                        echo $data;
-
-                        $product->{$key} = $data;
-
-                        echo "<HR>";
+                        R::store($product);
+                        
+                        sleep(2);
                     }
-
-                    R::store($product);
-
-                    sleep(2);
+                    else
+                    {
+                        
+                    }
+                    
                 }
             }
         }

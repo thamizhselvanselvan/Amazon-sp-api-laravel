@@ -53,9 +53,9 @@ class TestController extends Controller
     $asin = 'B08697KLZP'; //.in
 
     $result = $apiInstance->getCatalogItem($marketplace_id, $asin);
+    echo "<pre>";
     return $result;
-    echo $result->getPayload()->getAttributeSets()[0]->getTitle(); // Never Gonna Give You Up [Vinyl Single]
-
+   
 }
 
 	
@@ -140,8 +140,22 @@ class TestController extends Controller
         $item_condition='New';
         $asin = 'B07F3XX5KT'; //.in
     
-        $result = $apiInstance->getItemOffers($marketplace_id, $item_condition, $asin);
+        $result = $apiInstance->getItemOffers($marketplace_id, $item_condition, $asin)->getPayload();
+
+        echo "<pre>";
         return $result;
+
+        foreach(json_decode($result) as $key => $value)
+        {
+            $data = "";
+
+            print_r("key: ". $key);
+           
+            // echo "value: ". gettype($value);
+            echo "<BR>";
+            
+        }
+        // return $result;
 
     }
 
@@ -165,9 +179,9 @@ class TestController extends Controller
         );
         $assumedRole = \ClouSale\AmazonSellingPartnerAPI\AssumeRole::assume(
             $options['region'],
+            $options['role_arn'],
             $options['access_key'],
             $options['secret_key'],
-            $options['role_arn'],
         );
         $config = \ClouSale\AmazonSellingPartnerAPI\Configuration::getDefaultConfiguration();
         $config->setHost($options['endpoint']);
@@ -185,6 +199,8 @@ class TestController extends Controller
         $asin = ['B0000AV0FU']; //.in
     
         $result = $apiInstance->getPricing($marketplace_id, $item_type, $asin, $skus, $item_condition);
+
+        // foreach()/
         return $result;
 
     }
