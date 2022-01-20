@@ -52,3 +52,16 @@ Route::get('/test/getPricing', [App\Http\Controllers\TestController::class, 'get
 Route::get('/info', function () {
     phpinfo();
 });
+
+Route::get('/tests', function () {
+    
+
+});
+
+
+
+Route::get('/test', function () {
+
+    
+   
+});
