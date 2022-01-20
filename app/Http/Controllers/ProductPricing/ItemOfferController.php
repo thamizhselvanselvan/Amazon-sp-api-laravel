@@ -35,6 +35,7 @@ class ItemOfferController extends Controller
     public function show(Request $request)
     {   
         $asins = preg_split("/\r\n| |'|:|,/", $request->asin_values, -1, PREG_SPLIT_NO_EMPTY);
+
         $item_condition = $request->item_condition; //New, Used, Collectible, Refurbished, Club
 
         $marketplace_id = 'A21TJRUUN4KGV';
@@ -43,9 +44,42 @@ class ItemOfferController extends Controller
         {
             $get_item_offers = new getItemOffers;
             $response = $get_item_offers->itemOffers($marketplace_id, $item_condition, $asin);
-            echo "<pre>";
-            print_r($response);
-        }
+           
+            // $response= $response->getOffers();
+            
+            foreach(json_decode($response) as $key => $value)
+            {
+                $data = "";
+
+                $key = strtolower(lcfirst($key));
+
+                print_r("Key:" . $key);
+                echo "<BR>";
+                echo "Value: ";
+
+
+                if (is_array($value)) {
+
+                    $data = json_encode($value);
+                    
+                   
+                } else if (is_object($value)) {
+
+                   
+                    $temp = (array) $value;
+                    $data = json_encode($temp);
+
+                } else {
+
+                    $data =  $value;
+                }
+                echo $data ;
+
+                // $product->{$key} = $data;
+
+                echo "<HR>";
+
+            }
        
         
 
@@ -56,4 +90,6 @@ class ItemOfferController extends Controller
     }
 
    
+}
+
 }
