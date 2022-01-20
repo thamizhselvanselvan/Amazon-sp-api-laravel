@@ -48,3 +48,7 @@ Route::get('/test/getCatalogItem', [App\Http\Controllers\TestController::class, 
 Route::get('/test/getCompetitivePricing', [App\Http\Controllers\TestController::class, 'getCompetitivePricing'])->name('getCompetitivePricing');
 Route::get('/test/getItemOffers', [App\Http\Controllers\TestController::class, 'getItemOffers'])->name('getItemOffers');
 Route::get('/test/getPricing', [App\Http\Controllers\TestController::class, 'getPricing'])->name('getPricing');
+
+Route::get('/info', function () {
+    phpinfo();
+});
