@@ -63,32 +63,36 @@ class getItemOffers
 
 
 		$apiInstance = new \ClouSale\AmazonSellingPartnerAPI\Api\ProductPricingApi($this->config);
-		$result = $apiInstance->getItemOffers($marketplace_id, $item_condition, $asins)->getPayload();
+		// $result = $apiInstance->getItemOffers($marketplace_id, $item_condition, $asins)->getPayload();
 		
-		if(isset($result->getOffers()[0]))
-		{
-			return $result->getOffers()[0];
-		}
+		// if(isset($result->getOffers()[0]))
+		// {
+		// 	return $result;
+		// }
 
-		else
-		{
+		// else
+		// {
+		// 	return false;
+		// }
+		
+		try {
+
+			$result = $apiInstance->getItemOffers($marketplace_id, $item_condition, $asins);
+			
+			if(isset($result->getPayload()->getOffers()[0]))
+				{
+					return $result->getPayload();
+				}
+			else
+				{
+					return false;
+				}
+		
+		} catch (Exception $e) {
 			return false;
 		}
-		// try {
-           
-
-        // } catch (Exception $e) {
-        //     echo 'Exception when calling ProductPricingApi->getItemOffers: ', $e->getMessage(), PHP_EOL;
-        // }
 
 
-
-		// if (isset($result->getPayload()->getAttributeSets()[0])) {
-		// 	return $result->getPayload()->getAttributeSets()[0]->getTitle();
-		// } else {
-		// 	return 'robin';
-		// }
-		// return $result->getPayload()->getAttributeSets()[0]->getSmallImage();
 
 	}
     

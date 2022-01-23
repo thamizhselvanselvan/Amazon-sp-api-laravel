@@ -44,9 +44,9 @@ class ItemOfferController extends Controller
        $username = config('app.username');
        $password = config('app.password');
 
-       R::setup('mysql:host=' . $host . ';dbname=' . $dbname . ';port=' .$port, $username, $password);
+    //    R::setup('mysql:host=' . $host . ';dbname=' . $dbname . ';port=' .$port, $username, $password);
        
-       R::exec('TRUNCATE `itemoffer`');
+    //  ?R::exec('TRUNCATE `dumpitemoffer`');
 
         $asins = preg_split("/\r\n| |'|:|,/", $request->asin_values, -1, PREG_SPLIT_NO_EMPTY);
 
@@ -55,19 +55,19 @@ class ItemOfferController extends Controller
         
        
         foreach($asins as $asin)
-        {        
-            $product = R::dispense("itemoffer");
+        {        echo '<h5> Asin</h5>'.$asin;
+            // $product = R::dispense("dumpitemoffer");
 
-            if(file_exists('offerpriceasin/'.$asin.'.txt'))
+            if(file_exists('temoffer/'.$asin.'.txt'))
             { // read from file
 
-                echo 'reading from file <BR>';
+                echo 'reading from file <HR> <BR>';
 
-                $response = json_decode(file_get_contents('offerpriceasin/'.$asin.'.txt'));
+                $response = json_decode(file_get_contents('temoffer/'.$asin.'.txt'));
 
                 
 
-                foreach (($response) as $key => $value) {
+                foreach (($response)->Offers[0] as $key => $value) {
 
                     $data = "";
 
@@ -90,11 +90,11 @@ class ItemOfferController extends Controller
                     }
                     echo $data;
 
-                    $product->{$key} = $data;
+                    // $product->{$key} = $data;
 
                     echo "<HR>";
                 }
-                R::store($product);
+                // R::store($product);
 
                 //read from file
             }  
@@ -108,9 +108,9 @@ class ItemOfferController extends Controller
             if($response)
             {
                 echo 'reading from amz';
-                file_put_contents('offerpriceasin/'.$asin.'.txt', Json_encode(Json_decode($response)));
+                file_put_contents('temoffer/'.$asin.'.txt', Json_encode(Json_decode($response)));
 
-                foreach(json_decode($response) as $key => $value)
+                foreach(json_decode($response-> getOffers()[0]) as $key => $value)
                 {
                     $data = "";
                     
@@ -142,18 +142,18 @@ class ItemOfferController extends Controller
                     echo $data ;
                    
     
-                    $product->{$key} = $data;
+                    // $product->{$key} = $data;
     
                     echo "<HR>";
     
                 }
                 // R::store($product);
 
-                sleep(1);
+                sleep(2);
             }
             else
             {
-                echo 'no';
+                echo 'not found';
             }
             
            
