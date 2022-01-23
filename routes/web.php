@@ -1,6 +1,6 @@
 <?php
 
-
+use ClouSale\AmazonSellingPartnerAPI\Models\MerchantFulfillment\Length;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/spapitest','viewPageController@spapitest')->name('spapi');
+
+Route::get('/spapitest', 'viewPageController@spapitest')->name('spapi');
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,21 +24,21 @@ Route::get('/', function () {
 /*
     CatlogApi
 */
-Route::get('/view','CatlogApiController@index')->name('show');
-Route::post('/showInput','CatlogApiController@show')->name(('showInput'));
+Route::get('/view', 'CatlogApiController@index')->name('show');
+Route::post('/showInput', 'CatlogApiController@show')->name(('showInput'));
 
 /*
     productPricing
     ->CompetitivePricing
 */
-Route::get('/pricing','productPricing\CompetitivePricingController@index')->name('productPricing.getCompetitivePricing');
-Route::get('/getPrice','productPricing\CompetitivePricingController@show')->name('getPrice');
+Route::get('/pricing', 'productPricing\CompetitivePricingController@index')->name('productPricing.getCompetitivePricing');
+Route::get('/getPrice', 'productPricing\CompetitivePricingController@show')->name('getPrice');
 
 /* productPricing
     ->Itemoffers
 */
-Route::get('/itemoffer','productPricing\ItemOfferController@index')->name('productPricing.show');
-Route::post('/getItemOffer','productPricing\ItemOfferController@show')->name('getItemOffer');
+Route::get('/itemoffer', 'productPricing\ItemOfferController@index')->name('productPricing.show');
+Route::post('/getItemOffer', 'productPricing\ItemOfferController@show')->name('getItemOffer');
 
 Auth::routes();
 
@@ -54,14 +55,102 @@ Route::get('/info', function () {
 });
 
 Route::get('/tests', function () {
-    
-
 });
 
 
 
 Route::get('/test', function () {
 
-    
-   
+    $url = "https://uat-api.b2cship.us/PacificAmazonAPI.svc/TrackingAmazon";
+
+    $xmlRequest = '<?xml version="1.0" encoding="UTF-8"?>
+<AmazonTrackingRequest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
+<Validation>
+<UserID>Amazon</UserID>
+<Password>AcZmraDzLoxA4NxLUcyrWnSiEaXxRQkfJ9B5hCbiK5M=</Password>
+</Validation>
+<APIVersion>1.0</APIVersion>
+<TrackingNumber>US10000045</TrackingNumber>
+</AmazonTrackingRequest>';
+
+    //setting the curl headers
+    $headers = array(
+        "Content-type: text/plain ;charset=\"utf-8\"",
+        "Accept: application/plain",
+    );
+
+    try {
+
+        $ch = curl_init();
+
+        //setting the curl options
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_POSTFIELDS,  $xmlRequest);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_VERBOSE, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $data = curl_exec($ch);
+
+        //convert the XML result into array
+        if ($data === false) {
+            $error = curl_error($ch);
+            echo $error;
+            die('error occured');
+        } else {
+            $data =  $data = json_decode(json_encode(simplexml_load_string($data)), true);
+            echo "<PRE>";
+            print_r($data);
+            echo " Raw data <hr>";
+        // dd($data);
+            //echo "<hr>";
+
+            // echo $data['TrackingNumber']['PackageTrackingInfo'];
+
+            // exit;
+            // foreach($data['TrackingNumber'] as $key => $value)
+            // {   echo count($data);
+            //     if(is_array($data['PackageTrackingInfo']))
+            //     {
+            //         echo"<HR>";
+            //         print_r($key);
+            //         print_r($value);
+            //         echo"<HR>";
+            //     }
+               
+            // }
+            // exit;
+            // foreach($data['PackageTrackingInfo']['PackageDestinationLocation'] as $key1=>$value1)
+            // {
+            //      print_r($key1); 
+            //      print_r($value1); 
+            //      echo "<hr>";
+            // }
+
+            foreach($data['PackageTrackingInfo']['TrackingEventHistory']['TrackingEventDetail'] as $key1=>$value1)
+            {
+                 print_r($key1); 
+                 print_r($value1['EventLocation']); 
+                //  print_r($value1); 
+                 echo "<hr>";
+            }
+
+            exit;
+            $newArray = [];
+
+            // if (array_key_exists('PackageTrackingInfo', $data)) {
+
+            //     print_r($data['PackageTrackingInfo']);
+            // }
+        }
+
+        curl_close($ch);
+    } catch (Exception  $e) {
+        echo 'Message: ' . $e->getMessage();
+        die("Error");
+    }
 });
