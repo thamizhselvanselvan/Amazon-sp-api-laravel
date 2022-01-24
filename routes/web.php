@@ -1,6 +1,7 @@
 <?php
 
 use ClouSale\AmazonSellingPartnerAPI\Models\MerchantFulfillment\Length;
+use Hamcrest\Arrays\IsArray;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -71,7 +72,7 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
 <Password>AcZmraDzLoxA4NxLUcyrWnSiEaXxRQkfJ9B5hCbiK5M=</Password>
 </Validation>
 <APIVersion>1.0</APIVersion>
-<TrackingNumber>US10000045</TrackingNumber>
+<TrackingNumber>US10000054</TrackingNumber>
 </AmazonTrackingRequest>';
 
     //setting the curl headers
@@ -95,7 +96,8 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         $data = curl_exec($ch);
-
+        $ofset= 0;
+        $newArray = [];
         //convert the XML result into array
         if ($data === false) {
             $error = curl_error($ch);
@@ -105,47 +107,29 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
             $data =  $data = json_decode(json_encode(simplexml_load_string($data)), true);
             echo "<PRE>";
             print_r($data);
-            echo " Raw data <hr>";
-        // dd($data);
-            //echo "<hr>";
+            
+            // $trackingNumber= $data['PackageTrackingInfo']['TrackingNumber'];
+            // $city= $data['PackageTrackingInfo']['PackageDestinationLocation']['City'];
+            // $PostalCode= $data['PackageTrackingInfo']['PackageDestinationLocation']['PostalCode'];
+            // $CountryCode= $data['PackageTrackingInfo']['PackageDestinationLocation']['CountryCode'];
 
-            // echo $data['TrackingNumber']['PackageTrackingInfo'];
-
-            // exit;
-            // foreach($data['TrackingNumber'] as $key => $value)
-            // {   echo count($data);
-            //     if(is_array($data['PackageTrackingInfo']))
-            //     {
-            //         echo"<HR>";
-            //         print_r($key);
-            //         print_r($value);
-            //         echo"<HR>";
-            //     }
-               
-            // }
-            // exit;
-            // foreach($data['PackageTrackingInfo']['PackageDestinationLocation'] as $key1=>$value1)
+            // echo $trackingNumber." ".$city." ".$PostalCode." ".$CountryCode;
+            
+            // foreach($data['PackageTrackingInfo']['TrackingEventHistory']['TrackingEventDetail'] as $key1=>$value1)
             // {
-            //      print_r($key1); 
-            //      print_r($value1); 
-            //      echo "<hr>";
+            //     foreach($data['PackageTrackingInfo']['TrackingEventHistory']['TrackingEventDetail'][$key1] as $key2=>$value2)
+            //     {   if(!is_array($value2) && $key2!= 'EventStatus')
+            //         {
+            //         $newArray[$key1][$ofset]= $value2;
+            //         $ofset++;
+            //         }
+            //     }
+            //     $eventCity= $data['PackageTrackingInfo']['TrackingEventHistory']['TrackingEventDetail'][$key1]['EventLocation']['City'];
+            //     $newArray[$key1][$ofset]= $eventCity;
+            //     $ofset= 0;
             // }
 
-            foreach($data['PackageTrackingInfo']['TrackingEventHistory']['TrackingEventDetail'] as $key1=>$value1)
-            {
-                 print_r($key1); 
-                 print_r($value1['EventLocation']); 
-                //  print_r($value1); 
-                 echo "<hr>";
-            }
-
-            exit;
-            $newArray = [];
-
-            // if (array_key_exists('PackageTrackingInfo', $data)) {
-
-            //     print_r($data['PackageTrackingInfo']);
-            // }
+            // print_r($newArray);
         }
 
         curl_close($ch);

@@ -1,10 +1,19 @@
 <?php
+
 $data =$_POST['data'];
 // $data ='US10000053';
-$val=( preg_split("/\r\n| |'|:|,/", $data, -1, PREG_SPLIT_NO_EMPTY));
-foreach($val as $tem)
-    echo $tem; 
-exit;
+$datas= ( preg_split("/\r\n| |'|:|,/", $data, -1, PREG_SPLIT_NO_EMPTY));
+
+foreach($datas as $data)
+{
+    TrackingDetais($data);
+    // echo $data;
+}
+
+
+ function TrackingDetais( $data)
+{
+
 
 $url = "https://uat-api.b2cship.us/PacificAmazonAPI.svc/TrackingAmazon";
 
@@ -40,7 +49,8 @@ try{
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
     $data = curl_exec($ch);
-
+    $ofset= 0;
+    $newArray = [];
     //convert the XML result into array
     if($data === false){
         $error = curl_error($ch);
@@ -48,8 +58,35 @@ try{
         die('error occured');
     }else{
         $data = json_decode(json_encode(simplexml_load_string($data)), true);
-        echo"<PRE>";
-        print_r($data);
+        
+        $trackingNumber= $data['PackageTrackingInfo']['TrackingNumber'];
+        $city= $data['PackageTrackingInfo']['PackageDestinationLocation']['City'];
+        $PostalCode= $data['PackageTrackingInfo']['PackageDestinationLocation']['PostalCode'];
+        $CountryCode= $data['PackageTrackingInfo']['PackageDestinationLocation']['CountryCode'];
+
+        //  echo json_encode($trackingNumber." ".$city." ".$PostalCode." ".$CountryCode);
+        
+        foreach($data['PackageTrackingInfo']['TrackingEventHistory']['TrackingEventDetail'] as $key1=>$value1)
+        {
+            foreach($data['PackageTrackingInfo']['TrackingEventHistory']['TrackingEventDetail'][$key1] as $key2=>$value2)
+            {   if(!is_array($value2) && $key2!= 'EventStatus')
+                {
+                    $newArray[$key1+1][$ofset][$key2] = $value2;
+                    $ofset++;
+                }
+
+            }
+            $eventCity= $data['PackageTrackingInfo']['TrackingEventHistory']['TrackingEventDetail'][$key1]['EventLocation']['City'];
+            $newArray[$key1+1][$ofset]['EventCity'] = $eventCity;
+            $ofset= 0;
+        }
+        
+        $newArray[0][0]['TrackingNumber']=$trackingNumber;
+        $newArray[0][1]['City']=$city;
+        $newArray[0][2]['PostalCode']=$PostalCode;
+        $newArray[0][3]['CountryCode']=$CountryCode;
+       echo json_encode($newArray);
+
     }
 
     curl_close($ch);
@@ -58,5 +95,5 @@ try{
     echo 'Message: '.$e->getMessage();
     die("Error");
 }
-
+}
 ?>
