@@ -1,15 +1,25 @@
 <?php
 
-$data =$_POST['data'];
+$data = $_POST['data'];
 // $data ='US10000053';
-$datas= ( preg_split("/\r\n| |'|:|,/", $data, -1, PREG_SPLIT_NO_EMPTY));
 
-foreach($datas as $data)
+$datas = preg_split("/\r\n| |'|:|,/", $data, -1, PREG_SPLIT_NO_EMPTY);
+
+$awbValues = explode("\n", $datas[0]);
+
+
+$newArray = [];
+$dataArray= [];
+$count = 0;
+
+
+foreach($awbValues as $value)
 {
-    TrackingDetais($data);
-    // echo $data;
+ $dataArray[$count] = TrackingDetais($value);  
+    $count++;
 }
 
+echo json_encode($dataArray);
 
  function TrackingDetais( $data)
 {
@@ -50,7 +60,7 @@ try{
 
     $data = curl_exec($ch);
     $ofset= 0;
-    $newArray = [];
+   
     //convert the XML result into array
     if($data === false){
         $error = curl_error($ch);
@@ -85,7 +95,9 @@ try{
         $newArray[0][1]['City']=$city;
         $newArray[0][2]['PostalCode']=$PostalCode;
         $newArray[0][3]['CountryCode']=$CountryCode;
-       echo json_encode($newArray);
+
+    //    echo json_encode($newArray);
+          return ($newArray);
 
     }
 

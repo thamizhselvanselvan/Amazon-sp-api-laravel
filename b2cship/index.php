@@ -40,67 +40,9 @@
         </div>
 
     </form>
-    <div class= " " style= "margin: 0rem 3rem 0rem 3rem; " id="summry">
-      <div class=" row border border-dark " >
-        <div class= "col-3">Status </div>
-       <div class= "col-3">AWB No </div>
-       <div class= "col-3">Booking Date </div>
-       <div class= "col-3 text-primary" style="cursor:pointer" id="more_details">More Details </div>
-    </div>
-    <div class= "row border border-dark"  id="show_table">
+
+     <div class="fullTable"> </div>
     
-      <div class= "col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3" style= "">
-      <span class="font-weight-normal"> Packet Details</span>
-        <table class="table table-sm table-striped table-bordered " style="font-size: 12px;">
-            <tbody>
-                <tr>
-                    <td> AWB No </td>
-                    <td class="TrackingNumber">   </td>
-                </tr>
-                <tr>
-                    <td> Origin </td>
-                    <td> </td>
-                </tr>
-                <tr>
-                    <td> Destination </td>
-                    <td class="Destination">   </td>
-                </tr>
-                <tr>
-                    <td> Consignor </td>
-                    <td>   </td>
-                </tr>
-                <tr>
-                    <td> Consignee </td>
-                    <td> </td>
-                </tr>
-                <tr>
-                    <td> Address of Consignee </td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>  
-
-
-      </div>
-     
-        <div class= "col-12 col-sm-12 col-md-9 col-lg-9 col-xl-9">
-           <strong> Tracking History </strong> 
-            <table class="table table-sm table-striped "  style= "border: black solid 1px; font-size: 15px;"> 
-                <thead >
-                    <tr>
-                        <th scope= "col" > Date</th>
-                        <th scope= "col" > Location</th>
-                        <th scope= "col" > Activities</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody">
-                    
-                </tbody>
-            </table>
-        </div>
-    </div>
-    </div>
-
 
 </div>
 
@@ -109,17 +51,18 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
     <script>
-        $('#summry').hide();
-        $('#show_table').hide();
-        $('#more_details').on('click',function()
-        {
-            $('#show_table').toggle();
-        })
+        // $('#summry').hide();
+        // $('#show_table').hide();
+        // $('#more_details').on('click',function()
+        // {
+        //     $('#show_table').toggle();
+        // });
          $("#submit").on('click',function(e)
         {
             e.preventDefault();
-            $count=0;
+            $count = 0;
             $data= $('#AWB_No').val()
+            
         //   
 
             let table = $(".table");
@@ -127,41 +70,148 @@
             $.ajax({
                 type: 'POST',
                 url: 'GetData.php',
-                data: {data: $data},
+                data: {data: ($data)},
                 success: function(response){
-                    
-                
-
-                    let data = JSON.parse (response);
-                    let td = "";
-                    console.log(data);
                    
-                     $.each(data, function(key, value){
-                       
-                       if($count != 0 ){
-                        td += "<tr>";
-                            td += "<td>"+ value[1].EventDateTime +"</td>";
-                            td += "<td>"+ value[2].EventCity +"</td>";
-                            td += "<td>"+ value[0].EventReason +"</td>";
-                        td += "</tr>";
-                       }
-                       else
-                       {
-                           table.find(".TrackingNumber").text(value[0].TrackingNumber);
-                           table.find(".Destination").text(value[1].City+', '+value[3].CountryCode);
-                       }
-                       $count++;
-                     });
+                    let data = JSON.parse((response));
+                 
+                    let td = "";
+                    let table = "";
+                    
+                    let TrackingNumber = '';
+                    let City = '';
+                    let Country = '';
+                    
+                    let EventReason = '';
+                    let EventDate = '';
+                    let EventCity = '';
+                    
 
-                     
-                     table.find('#tbody').html(td);
-                     $('#summry').show();
-                }
+                    // console.log(data);
+
+                $.each(data, function (key1, value1 ){
+                      td= '';
+                      
+
+                show_table='<div class= "table" style= "padding: 0rem 3rem 0rem 3rem; " id="summry">';
+                    show_table += ' <div class=" row border border-dark " > ';
+                        show_table += ' <div class= "col-3">Status </div> ';
+                        show_table += ' <div class= "col-3 AWB_No'+key1+'">AWB No:- </div> ';
+                        show_table += ' <div class= "col-3 Booking_date'+key1+'">Booking Date </div> ';
+                        show_table += ' <div class= "col-3 text-primary more_details" style="cursor:pointer">More Details </div> ';
+                    show_table += ' </div>';
                 
-            })
+                show_table += ' <div class= "row border border-dark show_table"  style= "padding: 0rem 2.2rem 0rem 2.2rem; " id="show_table"> ';
+                
+                show_table += ' <div class= "col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3" > ';
+                show_table += ' <span class="font-weight-normal"> Packet Details</span> ';
+                    show_table += ' <table class="table table-sm table-striped table-bordered " style="font-size: 12px;"> ';
+                        show_table += ' <tbody> ';
+                            show_table += ' <tr> ';
+                                show_table += ' <td> AWB No </td> ';
+                                show_table += ' <td class="TrackingNumber'+key1+'">   </td> ';
+                            show_table += ' </tr> ';
+                            show_table += ' <tr> ';
+                                show_table += ' <td> Origin </td> ';
+                                show_table += ' <td> </td> ';
+                            show_table += ' </tr> ';
+                            show_table += ' <tr> ';
+                                show_table += ' <td> Destination </td> ';
+                                show_table += ' <td class="Destination'+key1+'">   </td> ';
+                            show_table += ' </tr> ';
+                            show_table += ' <tr> ';
+                                show_table += ' <td> Consignor </td> ';
+                                show_table += ' <td>   </td> ';
+                            show_table += ' </tr> ';
+                            show_table += ' <tr> ';
+                                show_table += ' <td> Consignee </td> ';
+                                show_table += ' <td> </td> ';
+                            show_table += ' </tr> ';
+                            show_table += ' <tr> ';
+                                show_table += ' <td> Address of Consignee </td> ';
+                                show_table += ' <td></td> ';
+                            show_table += ' </tr> ';
+                        show_table += ' </tbody> ';
+                    show_table += ' </table>   ';
+
+
+                show_table += ' </div> ';
+                
+                    show_table += ' <div class= "col-12 col-sm-12 col-md-9 col-lg-9 col-xl-9"> ';
+                    show_table += ' <strong> Tracking History </strong>  ';
+                        show_table += ' <table class="table table-sm table-striped "  style= "border: black solid 1px; font-size: 15px;">  ';
+                            show_table += ' <thead > ';
+                                show_table += ' <tr> ';
+                                    show_table += ' <th scope= "col" > Date</th> ';
+                                    show_table += ' <th scope= "col" > Location</th> ';
+                                    show_table += ' <th scope= "col" > Activities</th> ';
+                                show_table += ' </tr> ';
+                            show_table += ' </thead> ';
+                            show_table += ' <tbody class="tbody'+key1+'">';
+                                                
+                            show_table += ' </tbody> ';
+                        show_table += ' </table> ';
+                    show_table += ' </div> ';
+            show_table += ' </div> ';
+            show_table += ' </div> ';
+
+            $(".fullTable").append(show_table);
+           
+                     $.each(value1, function(key, value){
+                       if($count===0){
+                       
+                           TrackingNumber = value[0].TrackingNumber;
+                           City = value[1].City;
+                           Country = value[3].CountryCode;
+                           
+                           $('.TrackingNumber'+key1).text(TrackingNumber);
+                           $('.AWB_No'+key1).append(TrackingNumber);
+                           $('.Destination'+key1).text(City+', '+ Country);
+                           
+                        }
+                        else
+                        {
+                            EventReason = value[0].EventReason;
+                            myDate = value[1].EventDateTime;
+                            EventDate = myDate.split('T')[0];
+                            EventCity = value[2].EventCity;
+                            
+                            td += "<tr>";
+                            td += "<td>"+ EventDate+"</td>";
+                            td += "<td>"+ EventCity +"</td>";
+                            td += "<td>"+ EventReason +"</td>";
+                            td += "</tr>";
+                            
+                        }
+                        $count = 1;
+                        
+                        
+                    })
+                    $('.Booking_date'+key1).append(EventDate);
+
+                    $('.tbody'+key1).append(td);
+                    $count = 0;
+                    $('#summry').show();
+                     $('.show_table').hide();
+                    
+                    
+                });
+            }
+            
+        });
+        
+    });
+   
+    </script>
+        <script>  
+        $(document).on('click', '.more_details', function()
+         {
+            let self = $(this);
+            let show_more = self.parent().next();
+            show_more.toggle();
 
         });
-    </script>
+        </script>
 
 </body>
 </html>
