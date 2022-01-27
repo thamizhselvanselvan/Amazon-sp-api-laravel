@@ -68,7 +68,7 @@
                 data: {data: ($data)},
                 success: function(response){
                    
-                    // console.log(response);
+                    console.log(response);
                     let data = JSON.parse((response));
                  
                     let td = "";
@@ -172,7 +172,11 @@
                             }else{
                                 EventReason = value[0].EventReason;
                                 myDate = value[1].EventDateTime;
-                                EventDate = myDate.split('T')[0];
+                                if(myDate)
+                                {
+                                    EventDate = myDate.split('T')[0];
+                                }
+
                                 EventCity = value[2].EventCity;
                                 
                                 td += "<tr>";

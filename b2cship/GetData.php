@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE);
 
 $data = $_POST['data'];
 // $data ='US10000053';
@@ -57,6 +58,7 @@ try{
 
     $data = curl_exec($ch);
     $ofset= 0;
+    
    
     //convert the XML result into array
     if($data === false){
@@ -72,20 +74,30 @@ try{
         $CountryCode= $data['PackageTrackingInfo']['PackageDestinationLocation']['CountryCode'];
 
         //  echo json_encode($trackingNumber." ".$city." ".$PostalCode." ".$CountryCode);
-        
-        foreach($data['PackageTrackingInfo']['TrackingEventHistory']['TrackingEventDetail'] as $key1=>$value1)
-        {
-            foreach($data['PackageTrackingInfo']['TrackingEventHistory']['TrackingEventDetail'][$key1] as $key2=>$value2)
-            {   if(!is_array($value2) && $key2!= 'EventStatus')
-                {
-                    $newArray[$key1+1][$ofset][$key2] = $value2;
-                    $ofset++;
+        $key1= null;
+        foreach($data['PackageTrackingInfo']['TrackingEventHistory']['TrackingEventDetail'] as $key1=>$value1){
+            if(gettype($key1)== 'integer'){ 
+             // foreach($data['PackageTrackingInfo']['TrackingEventHistory']['TrackingEventDetail'][$key1] as $key2=>$value2)
+                foreach($value1 as $key2 => $value2){ 
+                    if(!is_array($value2) && $key2!= 'EventStatus')
+                    {
+                        $newArray[$key1+1][$ofset][$key2] = $value2;
+                        $ofset++;
+                    }
+                        $eventCity= $data['PackageTrackingInfo']['TrackingEventHistory']['TrackingEventDetail'][$key1]['EventLocation']['City'];
                 }
-
+                    $newArray[$key1+1][$ofset]['EventCity'] = $eventCity; 
+                    $ofset= 0;
+            }else{
+                    
+                    $eventCity= $data['PackageTrackingInfo']['TrackingEventHistory']['TrackingEventDetail']['EventLocation']['City'];
+                    $eventReason= $data['PackageTrackingInfo']['TrackingEventHistory']['TrackingEventDetail']['EventReason'];
+                    $eventDateTime= $data['PackageTrackingInfo']['TrackingEventHistory']['TrackingEventDetail']['EventDateTime'];
+                    $newArray[1][0]['EventReason'] = $eventReason;
+                    $newArray[1][1]['EventDateTime'] = $eventDateTime;
+                    $newArray[1][2]['EventCity'] = $eventCity;
+        
             }
-            $eventCity= $data['PackageTrackingInfo']['TrackingEventHistory']['TrackingEventDetail'][$key1]['EventLocation']['City'];
-            $newArray[$key1+1][$ofset]['EventCity'] = $eventCity;
-            $ofset= 0;
         }
         
         $newArray[0][0]['TrackingNumber']=$trackingNumber;

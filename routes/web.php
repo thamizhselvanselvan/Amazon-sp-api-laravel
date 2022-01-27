@@ -72,7 +72,7 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
 <Password>AcZmraDzLoxA4NxLUcyrWnSiEaXxRQkfJ9B5hCbiK5M=</Password>
 </Validation>
 <APIVersion>1.0</APIVersion>
-<TrackingNumber>US10000054</TrackingNumber>
+<TrackingNumber>US10000134</TrackingNumber>
 </AmazonTrackingRequest>';
 
     //setting the curl headers
@@ -104,7 +104,8 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
             echo $error;
             die('error occured');
         } else {
-            $data =  $data = json_decode(json_encode(simplexml_load_string($data)), true);
+           // $data =  
+            $data = json_decode(json_encode(simplexml_load_string($data)), true);
             echo "<PRE>";
             print_r($data);
             
