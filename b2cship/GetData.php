@@ -3,17 +3,14 @@
 $data = $_POST['data'];
 // $data ='US10000053';
 
-$datas = preg_split("/\r\n| |'|:|,/", $data, -1, PREG_SPLIT_NO_EMPTY);
-
-$awbValues = explode("\n", $datas[0]);
-
+$datas = preg_split('/[\r\n| |:|,]/', $data, -1, PREG_SPLIT_NO_EMPTY);
 
 $newArray = [];
 $dataArray= [];
 $count = 0;
 
 
-foreach($awbValues as $value)
+foreach($datas as $value)
 {
  $dataArray[$count] = TrackingDetais($value);  
     $count++;

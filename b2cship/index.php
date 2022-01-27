@@ -51,12 +51,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
     <script>
-        // $('#summry').hide();
-        // $('#show_table').hide();
-        // $('#more_details').on('click',function()
-        // {
-        //     $('#show_table').toggle();
-        // });
+    
          $("#submit").on('click',function(e)
         {
             e.preventDefault();
@@ -73,6 +68,7 @@
                 data: {data: ($data)},
                 success: function(response){
                    
+                    // console.log(response);
                     let data = JSON.parse((response));
                  
                     let td = "";
@@ -85,13 +81,13 @@
                     let EventReason = '';
                     let EventDate = '';
                     let EventCity = '';
-                    
+                    let show_table = ' ';
+                    // $(".fullTable").append(show_table);
 
                     // console.log(data);
 
                 $.each(data, function (key1, value1 ){
                       td= '';
-                      
 
                 show_table='<div class= "table" style= "padding: 0rem 3rem 0rem 3rem; " id="summry">';
                     show_table += ' <div class=" row border border-dark " > ';
