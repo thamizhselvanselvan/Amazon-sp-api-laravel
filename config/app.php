@@ -134,17 +134,6 @@ return [
     |
     */
 
-
-    /*
-    / Database configuration 
-    */
-    'connection' => env('DB_CONNECTION'),
-    'host' => env('DB_HOST'),
-    'port' => env('DB_PORT'),
-    'database' => env('DB_DATABASE'),
-    'username' => env('DB_USERNAME'),
-    'password' => env('DB_PASSWORD'),
-
     'providers' => [
 
         /*
@@ -176,9 +165,6 @@ return [
         /*
          * Package Service Providers...
          */
-        Arcanedev\LogViewer\LogViewerServiceProvider::class,
-        Maatwebsite\Excel\ExcelServiceProvider::class,
-
 
         /*
          * Application Service Providers...
@@ -243,7 +229,6 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
 
     ],
 
