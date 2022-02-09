@@ -1,10 +1,10 @@
 @extends('adminlte::page')
 
-@section('title', 'All Users with roles')
+@section('title', 'All Roles & Permissions')
+
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Admin Lists</h1>
-
+    <h1 class="m-0 text-dark">All Roles & Permissions</h1>
 @stop
 
 @section('content')
@@ -12,22 +12,12 @@
 <div class="row">
     <div class="col">
         
-    <div class="alert_display">
-            @if ($message = Session::get('success'))
-                <div class="alert alert-success alert-block">
-                    <button type="button" class="close" data-dismiss="alert">×</button>
-                    <strong>{{ $message }}</strong>
-                </div>
-            @endif
-        </div>
-        
         <table class="table table-bordered yajra-datatable table-striped">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Action</th>
+                    <th>No</th>
+                    <th>Role Name</th>
+                    <th>Permission</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,12 +35,11 @@
             let yajra_table = $('.yajra-datatable').DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: "{{ url('admin/users_lists') }}",
+                    ajax: "{{ url('admin/rolespermissions') }}",
                     columns: [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
                         {data: 'name', name: 'name'},
-                        {data: 'email', name: 'email'},
-                        {data: 'action', orderable: false, searchable: false},
+                        {data: 'permissions', name: 'permissions'}
                     ]
             });
             

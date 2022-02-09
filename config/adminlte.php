@@ -278,7 +278,7 @@ return [
 
         [
             'text' => 'Roles and Permissions',
-            'url' => 'rolespermissions',
+            'url' => 'admin/rolespermissions',
             'icon' => 'fas fa-user',            
         ],
         ],
