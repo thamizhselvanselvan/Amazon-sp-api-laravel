@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Models\Mws_region;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,10 +16,26 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+Route::get('/', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('/');
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::group(['middleware' => ['role:Admin', 'auth'], 'prefix' => 'admin'],function(){
+
+    Route::get('dashboard', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('admin.dashboard');
+    
+});
+
+Route::get('login', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('login');
+Route::get('home', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('home');
+
+
+Route::get('/test',function(){
+
+    $user = User::get();
+    dd($user);
+
+    $region = Mws_region::latest()->get();
+    dd($region);
+});

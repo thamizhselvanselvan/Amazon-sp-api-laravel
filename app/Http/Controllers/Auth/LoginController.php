@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
@@ -36,5 +37,40 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    public function showLoginForm(){
+        
+        if(!Auth::check()){
+            return view('auth.login');
+        }
+
+        $authRole = Auth::user()->roles->first()->name ?? "";
+
+        if($authRole == 'Admin') {
+            return redirect(Route('admin.dashboard'));
+        }
+
+        if($authRole == 'Seller') {
+            return redirect(Route('dashboard'));
+        }
+        
+        Auth::logout();
+        return redirect(Route('login'));
+    }
+
+    public function redirectTo() {
+
+        $authRole = Auth::user()->roles->first()->name;
+
+        if($authRole == 'Admin') {
+            return Route('admin.dashboard');
+        }
+
+        if($authRole == 'Seller') {
+            return Route('dashboard');
+        }
+
+        return Route('home');
     }
 }
