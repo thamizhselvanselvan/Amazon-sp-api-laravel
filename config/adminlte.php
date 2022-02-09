@@ -263,7 +263,7 @@ return [
         
         [
             'text' => 'Currency Master',
-            'url'  => 'admin/currency',
+            'url'  => 'admin/currencys',
             'icon' => 'far fa-fw fa-file',
         ],
         
@@ -274,11 +274,11 @@ return [
             'icon' => 'far fa-fw fa-file',            
         ],
 
-        ['header' => 'Roles'],
+        ['header' => 'ROLES AND PERMISSIONS'],
 
         [
             'text' => 'Roles and Permissions',
-            'url' => 'roles',
+            'url' => 'rolespermissions',
             'icon' => 'fas fa-user',            
         ],
         ],
@@ -319,21 +319,21 @@ return [
 
     'plugins' => [
         'Datatables' => [
-            'active' => false,
+            'active' => true,
             'files' => [
                 [
                     'type' => 'js',
-                    'asset' => false,
+                    'asset' => true,
                     'location' => '//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js',
                 ],
                 [
                     'type' => 'js',
-                    'asset' => false,
+                    'asset' => true,
                     'location' => '//cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js',
                 ],
                 [
                     'type' => 'css',
-                    'asset' => false,
+                    'asset' => true,
                     'location' => '//cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css',
                 ],
             ],

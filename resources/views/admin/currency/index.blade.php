@@ -2,10 +2,6 @@
 
 @section('title', 'Currencies')
 
-@section('css')
-    <link rel="stylesheet" href="/css/styles.css">
-@stop
-
 @section('content_header')
     <h1 class="m-0 text-dark">Currencies</h1>
 @stop
