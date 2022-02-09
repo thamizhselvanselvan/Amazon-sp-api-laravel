@@ -21,11 +21,15 @@ Route::get('/', [App\Http\Controllers\Auth\LoginController::class, 'showLoginFor
 
 Auth::routes();
 
-Route::group(['middleware' => ['role:Admin', 'auth'], 'prefix' => 'admin'],function(){
+// Route::group(['middleware' => ['role:Admin', 'auth'], 'prefix' => 'admin'],function(){
 
-    Route::get('dashboard', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('admin.dashboard');
+//     Route::get('dashboard', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('admin.dashboard');
     
-});
+// });
+Route::get('admin/region', 'Admin\RegionController@index');
+Route::get('admin/credentials', 'Admin\RegionController@index');
+Route::get('admin/currency', 'Admin\RegionController@index');
+
 
 Route::get('login', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('login');
 Route::get('home', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('home');
