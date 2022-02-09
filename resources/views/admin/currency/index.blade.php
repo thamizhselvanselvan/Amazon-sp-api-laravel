@@ -16,10 +16,12 @@
         <div class="col">
 
             <h2 class="mb-4">
-                <a href="{{ route('currencys.create') }}">
+          
+                <a >
                     <x-adminlte-button label="Add Currency" theme="primary" icon="fas fa-plus" />
                 </a>
-                <a href="{{ route('currencys.trashview') }}">
+               
+                <a >
                     <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" />
                 </a>
             </h2>

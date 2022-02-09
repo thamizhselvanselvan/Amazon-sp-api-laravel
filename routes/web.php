@@ -27,8 +27,8 @@ Auth::routes();
     
 // });
 Route::get('admin/region', 'Admin\RegionController@index');
-Route::get('admin/credentials', 'Admin\RegionController@index');
-Route::get('admin/currency', 'Admin\RegionController@index');
+Route::get('admin/credentials', 'Admin\Controller@index');
+Route::get('admin/currency', 'Admin\CurrencyController@index');
 
 
 Route::get('login', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('login');
