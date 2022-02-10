@@ -20,12 +20,12 @@ class CurrencyController extends Controller
                 ->editColumn('status', function ($row) {
                     return ($row->status) ? 'Active' : 'Inactive';
                 })
-                ->addColumn('action', function ($row) {
-                    $actionBtn = '<a href="/admin/currencys/' . $row->id . '/edit" class="edit btn btn-success"><i class="fas fa-edit"></i> Edit</a>';
-                    $actionBtn .= '<button data-id="' . $row->id . '" class="delete btn btn-danger ml-2"><i class="far fa-trash-alt"></i> Remove</button>';
+                // ->addColumn('action', function ($row) {
+                //     $actionBtn = '<a href="/admin/currencys/' . $row->id . '/edit" class="edit btn btn-success"><i class="fas fa-edit"></i> Edit</a>';
+                //     $actionBtn .= '<button data-id="' . $row->id . '" class="delete btn btn-danger ml-2"><i class="far fa-trash-alt"></i> Remove</button>';
 
-                    return $actionBtn;
-                })
+                //     return $actionBtn;
+                // })
                 ->make(true);
         }
 

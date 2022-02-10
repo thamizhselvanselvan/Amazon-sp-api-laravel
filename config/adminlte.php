@@ -251,7 +251,7 @@ return [
         ['header' => 'MASTER'],
         [
             'text'        => 'Region Master ',
-            'url'         => 'admin/region',
+            'url'         => 'admin/mws_regions',
             'icon'        => 'far fa-fw fa-file',
         ],
         
