@@ -48,4 +48,15 @@ class RegionController extends Controller
         }
         return view('admin.region.index');
     }
+
+    public function create(Request $request){
+
+        return 'create';
+    }
+    public function show(Request $request){
+        return 'show1';
+    }
+    public function trash(Request $request){
+        return 'trash';
+    }
 }

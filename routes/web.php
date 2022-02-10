@@ -23,7 +23,7 @@ Auth::routes();
 
 // Route::group(['middleware' => ['role:Admin', 'auth'], 'prefix' => 'admin'],function(){
 
-//     Route::get('dashboard', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('admin.dashboard');
+// Route::get('dashboard', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('admin.dashboard');
     
 // });
 Route::resource('admin/mws_regions', 'Admin\RegionController');
@@ -31,6 +31,7 @@ Route::get('admin/credentials', 'Admin\CredentialsController@index');
 Route::get('admin/currencys', 'Admin\CurrencyController@index');
 Route::get('admin/rolespermissions', 'Admin\RolesPermissionsController@index');
 
+Route::resource('/tests', 'TestController');
 
 
 Route::get('login', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('login');
