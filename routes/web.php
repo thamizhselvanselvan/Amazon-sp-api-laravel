@@ -31,6 +31,8 @@ Route::get('admin/credentials', 'Admin\CredentialsController@index');
 Route::get('admin/currencys', 'Admin\CurrencyController@index');
 Route::get('admin/rolespermissions', 'Admin\RolesPermissionsController@index');
 
+Route::get('import-csv','importCsvController@importCSV');
+
 Route::resource('/tests', 'TestController');
 
 

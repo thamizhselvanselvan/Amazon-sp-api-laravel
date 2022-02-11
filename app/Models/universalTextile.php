@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class universalTextile extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'id',
+        'url',
+        'category'
+    ];
 }
