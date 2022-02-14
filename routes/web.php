@@ -31,6 +31,8 @@ Route::get('admin/credentials', 'Admin\CredentialsController@index');
 Route::get('admin/currencys', 'Admin\CurrencyController@index');
 Route::get('admin/rolespermissions', 'Admin\RolesPermissionsController@index');
 
+Route::resource('textiles','textilesController');
+
 Route::resource('/tests', 'TestController');
 
 
