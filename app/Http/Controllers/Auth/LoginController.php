@@ -45,7 +45,8 @@ class LoginController extends Controller
             return view('auth.login');
         }
 
-        $authRole = Auth::user()->roles->first()->name ?? "";
+        // $authRole = Auth::user()->roles->first()->name ?? "";
+        $authRole = Auth::user()->roles ?? "";
 
         if($authRole == 'Admin') {
             return redirect(Route('admin.dashboard'));
@@ -61,7 +62,8 @@ class LoginController extends Controller
 
     public function redirectTo() {
 
-        $authRole = Auth::user()->roles->first()->name;
+        // $authRole = Auth::user()->roles->first()->name;
+        $authRole = Auth::user()->roles;
 
         if($authRole == 'Admin') {
             return Route('admin.dashboard');

@@ -9,8 +9,10 @@ use Yajra\DataTables\DataTables;
 
 class CredentialsController extends Controller
 {
+    
     public function index(Request $request)
     { 
+        
         if($request->ajax()){
             
             $getData = ['id', 'store_name', 'merchant_id','verified','status'];
@@ -38,6 +40,6 @@ class CredentialsController extends Controller
             ->make(true);
         }
 
-        return view('admin.credential.index');
+        return view('Admin.credential.index');
     }
 }

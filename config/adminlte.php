@@ -266,6 +266,12 @@ return [
             'url'  => 'admin/currencys',
             'icon' => 'far fa-fw fa-file',
         ],
+        ['header' => 'Import and Export'],
+        [
+            'text' => 'Textiles',
+            'url'  => 'textiles',
+            'icon' => 'far fa-fw fa-import'
+        ],
         
         ['header' => 'SETTING'],
         [

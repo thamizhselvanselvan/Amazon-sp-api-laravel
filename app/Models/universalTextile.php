@@ -9,9 +9,19 @@ class universalTextile extends Model
 {
     use HasFactory;
 
+    protected $connection = 'mysql2';
+
     protected $fillable = [
-        'id',
-        'url',
-        'category'
+
+        'textiles',
+        'ean',
+        'brand',
+        'title',
+        'size',
+        'color',
+        'transfer_price',
+        'shipping_weight',
+        'product_type',
+        'quantity'
     ];
 }
