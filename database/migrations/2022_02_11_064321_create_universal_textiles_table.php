@@ -15,9 +15,16 @@ class CreateUniversalTextilesTable extends Migration
     {
         Schema::create('universal_textiles', function (Blueprint $table) {
             $table->id();
-            $table->text('url');
-            $table->string('category');
-
+            $table->string('textile_id')->nullable();
+            $table->string('ean')->nullable();
+            $table->string('brand')->nullable();
+            $table->string('title')->nullable();
+            $table->string('size')->nullable();
+            $table->string('color')->nullable();
+            $table->string('transfer_price')->nullable();
+            $table->string('shipping_weight')->nullable();
+            $table->string('product_type')->nullable();
+            $table->string('quantity')->nullable();
             $table->timestamps();
         });
     }

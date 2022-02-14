@@ -8,28 +8,30 @@ use \RedBeanPHP\R as R;
 use League\Csv\Statement;
 use Illuminate\Http\Request;
 use League\Csv\XMLConverter;
+use App\Models\universalTextile;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Jobs\universalTextileDataImport;
-use App\Models\universalTextile;
 use Illuminate\Cache\RateLimiting\Limit;
 
 class textilesController extends Controller
-{
+{   
     
     public function index(Request $request)
-    {
+    {  
+        
         if($request->ajax()){
 
-            $data = universalTextile::limit(10000)->get();
-            $getData = ['textile', 'ean', 'brand','title','size','color','transfer_price','shipping_weight','product_type','quantity'];
+            $getData = ['id','textile', 'ean', 'brand','title','size','color','transfer_price','shipping_weight','product_type','quantity'];
+            $data = universalTextile::query();
             
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('textiles', function($row){
+                ->addColumn('textiles_id', function($row){
                     return ($row->textile);
                 })
-                ->rawColumns(['textiles'])
+                ->rawColumns(['textiles_id'])
                 ->make(true);
         }
         return view('textiles.index');
@@ -37,7 +39,12 @@ class textilesController extends Controller
 
     public function importTextiles()
     {
-        $csv = Reader::createFromPath('D:/moshecom/urls.csv', 'r');
+        $url ='https://files.channable.com/f8k02iylfY7c5YTsxH-SxQ==.csv';
+        // $source = file_get_contents($url);
+        $path = 'public/universalTextilesImport/textiles.csv';
+        // Storage::put($path, $source);
+
+        $csv = Reader::createFromPath('../storage/app/'.$path, 'r');
         $csv->setDelimiter("\t");
         $csv->setHeaderOffset(0);
 
@@ -45,8 +52,8 @@ class textilesController extends Controller
             ->where(function (array $record) {
                 return $record;
                 })
-            ->offset(143361)
-            // ->limit(100000)
+            ->offset(101)
+            ->limit(1000)
         ;
 
         $converter = (new XMLConverter())
@@ -57,12 +64,17 @@ class textilesController extends Controller
         $records = $stmt->process($csv);
         $dataArray = [];
 
-        R::setup('mysql: host=localhost; dbname=sp-api', 'root', 'root'); 
+    
+        
+
+        // R::setup('mysql: host=  ; dbname=', 'root', 'root'); 
+        // R::setup('mysql:host=' . $host . ';dbname=' . $name, $user, $password);
         // R::debug(TRUE);  
         // R::exec('TRUNCATE `textile`');     
         
         foreach($records as $key => $record){
-            $textiles = R::dispense("universalTextiles");
+            // $textiles = R::dispense("universal_textiles");
+            $textiles = [];
             $count=0;
             foreach($record as $key1 => $rec)
             {
@@ -70,18 +82,20 @@ class textilesController extends Controller
                 
                 if($count==0){
 
-                    $textiles->textile = ($rec);
+                    $textiles['textile_id'] = ($rec);
                 }
                 else{
-                    $textiles->{$key1} = $rec;
+                    $textiles[$key1] = $rec;
                     
                 }
                 $count++;
             }
-            R::store( $textiles );
-            echo 'done \t';
+            // R::store( $textiles );
+            // echo 'done \t';
         }
-        
+        universalTextile::create($textiles);
+
+        return view('textiles.index');
     }
 
     
