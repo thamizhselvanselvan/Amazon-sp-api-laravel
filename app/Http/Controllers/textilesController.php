@@ -40,9 +40,9 @@ class textilesController extends Controller
     public function importTextiles()
     {
         $url ='https://files.channable.com/f8k02iylfY7c5YTsxH-SxQ==.csv';
-        // $source = file_get_contents($url);
+        $source = file_get_contents($url);
         $path = 'public/universalTextilesImport/textiles.csv';
-        // Storage::put($path, $source);
+        Storage::put($path, $source);
 
         $csv = Reader::createFromPath('../storage/app/'.$path, 'r');
         $csv->setDelimiter("\t");
@@ -51,10 +51,9 @@ class textilesController extends Controller
         $stmt = (new Statement())
             ->where(function (array $record) {
                 return $record;
-                })
-            ->offset(101)
-            ->limit(1000)
-        ;
+            })
+            ->offset(0)
+            ->limit(1000);
 
         $converter = (new XMLConverter())
             ->rootElement('csv')
@@ -62,18 +61,8 @@ class textilesController extends Controller
             ->fieldElement('field', 'name')
         ;
         $records = $stmt->process($csv);
-        $dataArray = [];
 
-    
-        
-
-        // R::setup('mysql: host=  ; dbname=', 'root', 'root'); 
-        // R::setup('mysql:host=' . $host . ';dbname=' . $name, $user, $password);
-        // R::debug(TRUE);  
-        // R::exec('TRUNCATE `textile`');     
-        
         foreach($records as $key => $record){
-            // $textiles = R::dispense("universal_textiles");
             $textiles = [];
             $count=0;
             foreach($record as $key1 => $rec)
@@ -90,10 +79,8 @@ class textilesController extends Controller
                 }
                 $count++;
             }
-            // R::store( $textiles );
-            // echo 'done \t';
+            universalTextile::create($textiles);
         }
-        universalTextile::create($textiles);
 
         return view('textiles.index');
     }
