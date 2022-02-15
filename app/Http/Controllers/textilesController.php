@@ -40,9 +40,9 @@ class textilesController extends Controller
     public function importTextiles()
     {
         $url ='https://files.channable.com/f8k02iylfY7c5YTsxH-SxQ==.csv';
-        $source = file_get_contents($url);
+        // $source = file_get_contents($url);
         $path = 'public/universalTextilesImport/textiles.csv';
-        Storage::put($path, $source);
+        // Storage::put($path, $source);
 
         $csv = Reader::createFromPath('../storage/app/'.$path, 'r');
         $csv->setDelimiter("\t");
@@ -52,36 +52,45 @@ class textilesController extends Controller
             ->where(function (array $record) {
                 return $record;
             })
-            ->offset(0)
-            ->limit(1000);
+            ->offset(0);
+            // ->limit(100000);
 
         $converter = (new XMLConverter())
             ->rootElement('csv')
             ->recordElement('record', 'offset')
-            ->fieldElement('field', 'name')
-        ;
+            ->fieldElement('field', 'name');
+        
         $records = $stmt->process($csv);
 
-        foreach($records as $key => $record){
-            $textiles = [];
-            $count=0;
-            foreach($record as $key1 => $rec)
+        $textiles = [];
+      
+            $count = 0;
+            $tagger = 0;
+            foreach($records as $key => $record)
             {
-                $key1 = lcfirst($key1);
-                
-                if($count==0){
+                if(isset($record['id'])) {
 
-                    $textiles['textile_id'] = ($rec);
+                    $record['textile_id'] = $record['id'];
+                    unset($record['id']);
+
+                }   
+
+                if($count == 3000) {
+
+                    ++$tagger;
+                    $count = 0;
+                   
                 }
-                else{
-                    $textiles[$key1] = $rec;
-                    
-                }
-                $count++;
+
+                $textiles[$tagger][] = $record;
+               ++$count;
             }
-            universalTextile::create($textiles);
-        }
-
+            
+            foreach($textiles as $textile)
+            {
+                 universalTextile::insert($textile);   
+            }
+            
         return view('textiles.index');
     }
 
