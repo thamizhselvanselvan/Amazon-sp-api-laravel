@@ -30,12 +30,12 @@ class UserSeeder extends Seeder
 
         $robin = User::create([
             'name' => 'Robin Singh',
-            'email' => 'robin.flyhigh@gmail.com',
+            'email' => 'contact@palmatesolutions.com',
             'password' => Hash::make(123456),
-            
+
         ]);
 
-        $amitkumar = User::create([
+        $amit = User::create([
             'name' => 'Amit Kumar',
             'email' => 'nu.palmate@gmail.com',
             'password' => Hash::make(123456),
@@ -47,16 +47,24 @@ class UserSeeder extends Seeder
             'password' => Hash::make(123456),
         ]);
 
-        $gopal = User::create([
-            'name' => 'Gopal',
-            'email' => 'phi.palmate@gmail.com',
+        $sanjay = User::create([
+            'name' => 'Sanjay K',
+            'email' => 'epsilon.palmate@gmail.com',
             'password' => Hash::make(123456),
+        ]);
+
+        $am = User::create([
+            'name' => 'Amit Mishra',
+            'email' => 'am@moshecom.com',
+            'password' => Hash::make(123456),
+
         ]);
 
 
         $robin->assignRole('Admin');
-        $amitkumar->assignRole('Admin');
-        $satish->assignRole('User');
-        $gopal->assignRole('User');
+        $amit->assignRole('Admin');
+        $satish->assignRole('Admin');
+        $sanjay->assignRole('Admin');
+        $am->assignRole('Admin');
     }
 }

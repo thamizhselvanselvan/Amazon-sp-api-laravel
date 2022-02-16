@@ -26,7 +26,7 @@ Auth::routes();
 // Route::group(['middleware' => ['role:Admin', 'auth'], 'prefix' => 'admin'],function(){
 
 // Route::get('dashboard', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('admin.dashboard');
-    
+
 // });
 Route::resource('admin/mws_regions', 'Admin\RegionController');
 Route::get('admin/credentials', 'Admin\CredentialsController@index');
@@ -46,10 +46,12 @@ Route::get('home', [App\Http\Controllers\Admin\HomeController::class, 'dashboard
 Route::get('/test',function(){
 
 //     $url ='https://files.channable.com/f8k02iylfY7c5YTsxH-SxQ==.csv';
-  
+
 //     $source = file_get_contents($url);
 //    // file_put_contents('universalTextilesImport/textiles.csv', $source);
 //     Storage::put('public/universalTextilesImport/textiles.csv',$source);
 
      return('downloaded done');
 });
+
+include_route_files(__DIR__ . '/pms/');
