@@ -248,7 +248,6 @@ return [
             'url'  => 'admin/blog',
             'can'  => 'manage-blog',
         ],
-        ['header' => 'MASTER'],
         [
             'text'        => 'Region Master ',
             'url'         => 'admin/mws_regions',
@@ -266,16 +265,12 @@ return [
             'url'  => 'admin/currencys',
             'icon' => 'far fa-fw fa-file',
         ],
-        ['header' => 'Import and Export'],
+        
         [
             'text' => 'Textiles',
             'url'  => 'textiles',
             'icon' => 'far fa-fw fa-import'
         ],
-        
-        
-        ['header' => 'ROLES AND PERMISSIONS'],
-
         [
             'text' => 'Roles and Permissions',
             'url' => 'admin/rolespermissions',
