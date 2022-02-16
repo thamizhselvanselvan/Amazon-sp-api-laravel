@@ -23,6 +23,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        DB::statement('SET SESSION sql_require_primary_key=0');
     }
 }
