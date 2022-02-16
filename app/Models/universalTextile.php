@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class universalTextile extends Model
 {
     use HasFactory;
-
+    
     protected $fillable = [
 
         'textile_id',

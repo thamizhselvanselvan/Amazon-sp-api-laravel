@@ -269,10 +269,10 @@ return [
         [
             'text' => 'Textiles',
             'url'  => 'textiles',
-            'icon' => 'far fa-fw fa-import'
+            'icon' => 'far fa-fw fa-file'
         ],
         [
-            'text' => 'Roles and Permissions',
+            'text' => 'Roles',
             'url' => 'admin/rolespermissions',
             'icon' => 'fas fa-user',            
         ],

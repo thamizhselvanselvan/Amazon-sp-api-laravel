@@ -8,9 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class aws_credentials extends Model
 {
     use HasFactory;
+    protected $table = 'aws_credentials'; 
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->getConnection()->setTablePrefix('bb_');
+    } 
 
-    protected $connection = 'mysql1';
-    
     protected $fillable = [
         'seller_id',
         'mws_region_id',

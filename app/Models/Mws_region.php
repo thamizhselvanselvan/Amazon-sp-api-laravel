@@ -10,7 +10,13 @@ class Mws_region extends Model
 {
      use SoftDeletes;
 
-    protected $connection = 'mysql1';
+    protected $table= 'mws_regions';
+     public function __construct(array $attributes = [])
+     {
+         parent::__construct($attributes);
+         $this->getConnection()->setTablePrefix('bb_');
+     } 
+ 
 
     protected $fillable = [
         'region',

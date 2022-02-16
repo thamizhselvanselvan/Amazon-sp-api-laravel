@@ -9,8 +9,7 @@ class Sp_credential extends Model
 {
     use HasFactory;
 
-    protected $connection = 'mysql1';
-    
+   
     protected $fillable = [
         'seller_id',
         'mws_region_id',
