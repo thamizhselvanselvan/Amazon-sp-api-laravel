@@ -23,7 +23,7 @@ class textilesController extends Controller
         
         if($request->ajax()){
 
-            $getData = ['id','textile', 'ean', 'brand','title','size','color','transfer_price','shipping_weight','product_type','quantity'];
+             // $getData = ['id','textile', 'ean', 'brand','title','size','color','transfer_price','shipping_weight','product_type','quantity'];
             $data = universalTextile::query();
             
             return DataTables::of($data)
@@ -57,11 +57,6 @@ class textilesController extends Controller
             })
             ->offset(0);
             // ->limit(100);
-
-        $converter = (new XMLConverter())
-            ->rootElement('csv')
-            ->recordElement('record', 'offset')
-            ->fieldElement('field', 'name');
         
         $records = $stmt->process($csv);
 
@@ -78,21 +73,22 @@ class textilesController extends Controller
 
                 }   
 
-                if($count == 3000) {
+                $textiles[] = $record;
+                if($count == 1000) {
 
-                    ++$tagger;
+                    // $tagger++;
                     $count = 0;
-                   
+                    universalTextile::insert($textiles); 
+                   $textiles = [];
                 }
 
-                $textiles[$tagger][] = $record;
-               ++$count;
+               $count++;
             }
             
-            foreach($textiles as $textile)
-            {
-                 universalTextile::insert($textile);   
-            }
+            // foreach($textiles as $textile)
+            // {
+            //     //  universalTextile::insert($textile);   
+            // }
             
         return view('textiles.index');
     }

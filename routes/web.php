@@ -45,7 +45,7 @@ Route::get('home', [App\Http\Controllers\Admin\HomeController::class, 'dashboard
 
 Route::get('/test',function(){
 
-     $path = 'app/public/universalTextilesImport/textiles.csv';
+     $path = 'universalTextilesImport/textiles.csv';
 
      return Storage::path($path);
 
