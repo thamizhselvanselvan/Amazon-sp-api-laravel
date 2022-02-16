@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\DB;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        DB::statement('SET SESSION sql_require_primary_key=0');
+        if (app()->environment() === 'production') {
+            DB::statement('SET SESSION sql_require_primary_key=0');
+        }
     }
 }
