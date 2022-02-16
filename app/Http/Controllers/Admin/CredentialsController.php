@@ -40,6 +40,6 @@ class CredentialsController extends Controller
             ->make(true);
         }
 
-        return view('Admin.credential.index');
+        return view('admin.credential.index');
     }
 }

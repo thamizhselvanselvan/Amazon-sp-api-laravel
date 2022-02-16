@@ -45,6 +45,11 @@ Route::get('home', [App\Http\Controllers\Admin\HomeController::class, 'dashboard
 
 Route::get('/test',function(){
 
+     $path = 'app/public/universalTextilesImport/textiles.csv';
+
+     return Storage::exists($path);
+     return Storage::url($path);
+
 //     $url ='https://files.channable.com/f8k02iylfY7c5YTsxH-SxQ==.csv';
 
 //     $source = file_get_contents($url);

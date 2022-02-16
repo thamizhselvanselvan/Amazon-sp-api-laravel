@@ -40,12 +40,12 @@ class textilesController extends Controller
     public function importTextiles()
     {
         $url ='https://files.channable.com/f8k02iylfY7c5YTsxH-SxQ==.csv';
-        
+
         $source = file_get_contents($url);
         $path = 'public/universalTextilesImport/textiles.csv';
         Storage::put($path, $source);
 
-        $csv = Reader::createFromPath(Storage::url($path), 'r');
+        $csv = Reader::createFromPath(Storage::url('app/'.$path), 'r');
 
         $csv->setDelimiter("\t");
         $csv->setHeaderOffset(0);
