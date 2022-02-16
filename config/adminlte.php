@@ -273,13 +273,7 @@ return [
             'icon' => 'far fa-fw fa-import'
         ],
         
-        ['header' => 'SETTING'],
-        [
-            'text' => 'System Setting',
-            'url' => '#',
-            'icon' => 'far fa-fw fa-file',            
-        ],
-
+        
         ['header' => 'ROLES AND PERMISSIONS'],
 
         [

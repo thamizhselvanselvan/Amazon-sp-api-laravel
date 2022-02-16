@@ -18,7 +18,11 @@
                         </div>
                     @endif
                 </div>
-
+                <h2 class="mb-4">
+                <a href="{{route('import.csv')}}">
+                    <x-adminlte-button label="Import Textiles" theme="primary" icon="fas fa-file-import" />
+                </a>
+            </h2>
                 <table class="table table-bordered yajra-datatable table-striped">
                     <thead>
                         <tr>
@@ -52,7 +56,7 @@
             ajax: "{{ url('textiles') }}",
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-                {data: 'textiles', name: 'textiles'},
+                {data: 'textile_id', name: 'textile_id'},
                 {data: 'ean', name: 'ean'},
                 {data: 'brand', name: 'brand'},
                 {data: 'title', name: 'title'},

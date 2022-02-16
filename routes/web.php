@@ -1,9 +1,11 @@
 <?php
 
+use App\Models\User;
+use App\Models\Mws_region;
+use Maatwebsite\Excel\Row;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Models\Mws_region;
-use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +34,7 @@ Route::get('admin/currencys', 'Admin\CurrencyController@index');
 Route::get('admin/rolespermissions', 'Admin\RolesPermissionsController@index');
 
 Route::resource('textiles','textilesController');
+Route::get('import-csv','textilesController@importTextiles')->name('import.csv');
 
 Route::resource('/tests', 'TestController');
 
@@ -42,9 +45,11 @@ Route::get('home', [App\Http\Controllers\Admin\HomeController::class, 'dashboard
 
 Route::get('/test',function(){
 
-    $user = User::get();
-    dd($user);
+//     $url ='https://files.channable.com/f8k02iylfY7c5YTsxH-SxQ==.csv';
+  
+//     $source = file_get_contents($url);
+//    // file_put_contents('universalTextilesImport/textiles.csv', $source);
+//     Storage::put('public/universalTextilesImport/textiles.csv',$source);
 
-    $region = Mws_region::latest()->get();
-    dd($region);
+     return('downloaded done');
 });
