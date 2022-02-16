@@ -47,7 +47,8 @@ Route::get('/test',function(){
 
      $path = 'app/public/universalTextilesImport/textiles.csv';
 
-     return Storage::exists($path);
+     return Storage::path($path);
+
      return Storage::url($path);
 
 //     $url ='https://files.channable.com/f8k02iylfY7c5YTsxH-SxQ==.csv';

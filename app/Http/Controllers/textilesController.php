@@ -42,10 +42,11 @@ class textilesController extends Controller
         $url ='https://files.channable.com/f8k02iylfY7c5YTsxH-SxQ==.csv';
 
         $source = file_get_contents($url);
-        $path = 'public/universalTextilesImport/textiles.csv';
+        $path = 'universalTextilesImport/textiles.csv';
+
         Storage::put($path, $source);
 
-        $csv = Reader::createFromPath(Storage::url('app/'.$path), 'r');
+        $csv = Reader::createFromPath(Storage::path($path), 'r');
 
         $csv->setDelimiter("\t");
         $csv->setHeaderOffset(0);
@@ -55,7 +56,7 @@ class textilesController extends Controller
                 return $record;
             })
             ->offset(0);
-            // ->limit(100000);
+            // ->limit(100);
 
         $converter = (new XMLConverter())
             ->rootElement('csv')
