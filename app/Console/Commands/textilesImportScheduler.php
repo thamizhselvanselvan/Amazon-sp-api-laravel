@@ -59,7 +59,7 @@ class textilesImportScheduler extends Command
                 return $record;
             })
             ->offset(0)
-            ->limit(521);
+            ->limit(100000);
         
         $records = $stmt->process($csv);
 
