@@ -43,9 +43,11 @@ class textilesController extends Controller
     public function importTextiles()
     {
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-            exec('nohup php artisan pms:textiles-import  > /dev/null &');
             
-            Log::warning("Script executed production !");
+            // exec('nohup php artisan pms:textiles-import  > /dev/null &');
+            exec('php artisan pms:textiles-import  > /dev/null &');
+            
+            Log::warning("Script executed production  !!!");
         } else {
 
             Log::warning("Script executed local !");

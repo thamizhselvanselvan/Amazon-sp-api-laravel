@@ -43,8 +43,8 @@ class textilesImportScheduler extends Command
      */
     public function handle()
     {   
-        Log::warning("Script executed production !");  
-            
+        Log::warning("Script executed production onclick !");  
+
         $url ='https://files.channable.com/f8k02iylfY7c5YTsxH-SxQ==.csv';
 
         $source = file_get_contents($url);
@@ -61,7 +61,8 @@ class textilesImportScheduler extends Command
             ->where(function (array $record) {
                 return $record;
             })
-            ->offset(0);
+            ->offset(200000)
+            ->limit(1000);
            
         
         $records = $stmt->process($csv);
@@ -81,8 +82,7 @@ class textilesImportScheduler extends Command
 
                 $textiles[] = $record;
                 if($count == 1000) {
-                    
-                    // // $tagger++;
+                
                     universalTextile::upsert($textiles, ['textile_id'], ['ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type']);
 
                     $count = 0;
