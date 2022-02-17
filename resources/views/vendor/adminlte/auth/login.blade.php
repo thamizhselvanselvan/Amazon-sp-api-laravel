@@ -90,7 +90,7 @@
     @if($password_reset_url)
         <p class="my-0">
             <a href="{{ $password_reset_url }}">
-                {{ __('adminlte::adminlte.i_forgot_my_password') }}
+                <!-- {{('adminlte::adminlte.i_forgot_my_password') }} -->
             </a>
         </p>
     @endif
@@ -99,7 +99,7 @@
     @if($register_url)
         <p class="my-0">
             <a href="{{ $register_url }}">
-                New User? Register Your Self.
+                <!-- New User? Register Your Self. -->
             </a>
         </p>
     @endif
