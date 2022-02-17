@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Jobs\universalTextileDataImport;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\Log;
 
 class textilesController extends Controller
 {   
@@ -43,8 +44,12 @@ class textilesController extends Controller
     {
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
             exec('nohup php artisan pms:textiles-import  > /dev/null &');
+            
+            Log::warning("Script executed production !");
         } else {
-            Artisan::call('pms:textiles-import ');
+
+            Log::warning("Script executed local !");
+            Artisan::call('pms:textiles-import');
         }
 
         return view('textiles.index');
