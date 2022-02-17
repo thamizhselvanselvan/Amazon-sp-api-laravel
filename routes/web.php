@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Models\Mws_region;
+use App\Models\universalTextile;
 use Maatwebsite\Excel\Row;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -58,6 +59,11 @@ Route::get('/test',function(){
 //     Storage::put('public/universalTextilesImport/textiles.csv',$source);
 
      return('downloaded done');
+});
+
+Route::get('/remove', function(){
+
+     universalTextile::truncate();
 });
 
 include_route_files(__DIR__ . '/pms/');
