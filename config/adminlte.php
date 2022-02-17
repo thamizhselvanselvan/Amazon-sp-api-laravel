@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'title' => 'Catlog Manager',
+    'title' => 'Catalog Manager',
     'title_prefix' => '',
     'title_postfix' => '',
 
@@ -45,7 +45,7 @@ return [
     |
     */
 
-    'logo' => '<b>Catlog Manager</b>',
+    'logo' => '<b>Catalog Manager</b>',
     'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
@@ -267,7 +267,7 @@ return [
         ],
         
         [
-            'text' => 'Textiles',
+            'text' => 'Universal Textiles',
             'url'  => 'textiles',
             'icon' => 'far fa-fw fa-file'
         ],

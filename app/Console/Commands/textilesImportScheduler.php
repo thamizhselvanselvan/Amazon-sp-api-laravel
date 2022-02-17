@@ -61,10 +61,9 @@ class textilesImportScheduler extends Command
             ->where(function (array $record) {
                 return $record;
             })
-            ->offset(200000)
-            ->limit(2000);
+            ->offset(0);
+            // ->limit(2000);
            
-        
         $records = $stmt->process($csv);
 
         $textiles = [];
