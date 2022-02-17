@@ -45,7 +45,9 @@ class textilesController extends Controller
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
             
             // exec('nohup php artisan pms:textiles-import  > /dev/null &');
-            exec('php artisan pms:textiles-import  > /dev/null &');
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan pms:textiles-import > /dev/null &";
+            exec($command);
             
             Log::warning("Script executed production  !!!");
         } else {
