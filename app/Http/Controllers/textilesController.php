@@ -11,6 +11,8 @@ use League\Csv\XMLConverter;
 use App\Models\universalTextile;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Jobs\universalTextileDataImport;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -39,59 +41,13 @@ class textilesController extends Controller
 
     public function importTextiles()
     {
-        $url ='https://files.channable.com/f8k02iylfY7c5YTsxH-SxQ==.csv';
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+            exec('nohup php artisan pms:textiles-import  > /dev/null &');
+        } else {
+            Artisan::call('pms:textiles-import ');
+        }
 
-        $source = file_get_contents($url);
-        $path = 'universalTextilesImport/textiles.csv';
-
-        Storage::put($path, $source);
-
-        $csv = Reader::createFromPath(Storage::path($path), 'r');
-
-        $csv->setDelimiter("\t");
-        $csv->setHeaderOffset(0);
-
-        $stmt = (new Statement())
-            ->where(function (array $record) {
-                return $record;
-            })
-            ->offset(0);
-            // ->limit(100);
-        
-        $records = $stmt->process($csv);
-
-        $textiles = [];
-      
-            $count = 0;
-            $tagger = 0;
-            foreach($records as $key => $record)
-            {
-                if(isset($record['id'])) {
-
-                    $record['textile_id'] = $record['id'];
-                    unset($record['id']);
-
-                }   
-
-                $textiles[] = $record;
-                if($count == 1000) {
-
-                    // $tagger++;
-                    $count = 0;
-                    universalTextile::insert($textiles); 
-                   $textiles = [];
-                }
-
-               $count++;
-            }
-            
-            // foreach($textiles as $textile)
-            // {
-            //     //  universalTextile::insert($textile);   
-            // }
-            
         return view('textiles.index');
     }
 
-    
 }
