@@ -7,6 +7,7 @@ use League\Csv\Statement;
 use Illuminate\Console\Command;
 use App\Models\universalTextile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class textilesImportScheduler extends Command
@@ -41,7 +42,9 @@ class textilesImportScheduler extends Command
      * @return int
      */
     public function handle()
-    {         
+    {   
+        Log::warning("Script executed production !");  
+            
         $url ='https://files.channable.com/f8k02iylfY7c5YTsxH-SxQ==.csv';
 
         $source = file_get_contents($url);
