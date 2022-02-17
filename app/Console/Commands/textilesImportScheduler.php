@@ -58,8 +58,8 @@ class textilesImportScheduler extends Command
             ->where(function (array $record) {
                 return $record;
             })
-            ->offset(0)
-            ->limit(100000);
+            ->offset(0);
+           
         
         $records = $stmt->process($csv);
 
@@ -77,12 +77,11 @@ class textilesImportScheduler extends Command
                 }   
 
                 $textiles[] = $record;
-                if($count == 200) {
+                if($count == 1000) {
                     
                     // // $tagger++;
                     universalTextile::upsert($textiles, ['textile_id'], ['ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type']);
 
-                   
                     $count = 0;
                     $textiles = [];
                 }

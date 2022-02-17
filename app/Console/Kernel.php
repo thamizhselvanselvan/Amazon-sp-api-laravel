@@ -15,8 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('pms:textiles-import')->everyFourHours();
-        $schedule->command('pms:textiles-import')->everyFiveMinutes();
+        $schedule->command('pms:textiles-import')->everyFourHours();
+    
     }
 
     /**
