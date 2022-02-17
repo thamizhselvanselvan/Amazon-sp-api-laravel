@@ -29,7 +29,7 @@ Auth::routes();
 // Route::get('dashboard', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('admin.dashboard');
 
 // });
-Route::get('logs-viewer', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
+
 Route::resource('admin/mws_regions', 'Admin\RegionController');
 Route::get('admin/credentials', 'Admin\CredentialsController@index');
 Route::get('admin/currencys', 'Admin\CurrencyController@index');
