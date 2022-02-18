@@ -13,13 +13,13 @@ class ChangeUniversalTextilePrimaryKey extends Migration
      */
     public function up()
     {
-        
+
         Schema::table('universal_textiles', function (Blueprint $table) {
 
-            $table->unique('textile_id');
+            $table->unique('textile_id', 'textile_id_unique_index');
         });
     }
-    
+
     /**
      * Reverse the migrations.
      *
@@ -29,8 +29,8 @@ class ChangeUniversalTextilePrimaryKey extends Migration
     {
         Schema::table('universal_textiles', function (Blueprint $table) {
 
-           
-            $table->dropUnique('textile_id');
+
+            $table->dropUnique('textile_id_unique_index');
         });
     }
 }

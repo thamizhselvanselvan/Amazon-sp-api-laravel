@@ -83,7 +83,7 @@ return [
     |
     */
 
-    'layout_topnav' => null,
+    'layout_topnav' => true,
     'layout_boxed' => null,
     'layout_fixed_sidebar' => null,
     'layout_fixed_navbar' => null,
@@ -131,7 +131,7 @@ return [
     'classes_sidebar_nav' => '',
     'classes_topnav' => 'navbar-white navbar-light',
     'classes_topnav_nav' => 'navbar-expand',
-    'classes_topnav_container' => 'container',
+    'classes_topnav_container' => 'container-fluid',
 
     /*
     |--------------------------------------------------------------------------
@@ -241,7 +241,7 @@ return [
             'text' => 'Dashboard',
             'route' => 'login',
             'title' => 'Dashboard',
-           
+
         ],
         [
             'text' => 'blog',
@@ -253,19 +253,19 @@ return [
             'url'         => 'admin/mws_regions',
             'icon'        => 'far fa-fw fa-file',
         ],
-        
+
         [
             'text' => 'Credentials Master',
             'url'  => 'admin/credentials',
             'icon' => 'far fa-fw fa-file',
         ],
-        
+
         [
             'text' => 'Currency Master',
             'url'  => 'admin/currencys',
             'icon' => 'far fa-fw fa-file',
         ],
-        
+
         [
             'text' => 'Universal Textiles',
             'url'  => 'textiles',
@@ -274,7 +274,7 @@ return [
         [
             'text' => 'Roles',
             'url' => 'admin/rolespermissions',
-            'icon' => 'fas fa-user',            
+            'icon' => 'fas fa-user',
         ],
         ],
 
