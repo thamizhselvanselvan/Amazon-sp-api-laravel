@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Models\Mws_region;
+use App\Models\universalTextile;
 use Maatwebsite\Excel\Row;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,7 @@ Auth::routes();
 // Route::get('dashboard', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('admin.dashboard');
 
 // });
+
 Route::resource('admin/mws_regions', 'Admin\RegionController');
 Route::get('admin/credentials', 'Admin\CredentialsController@index');
 Route::get('admin/currencys', 'Admin\CurrencyController@index');
@@ -58,6 +60,11 @@ Route::get('/test',function(){
 //     Storage::put('public/universalTextilesImport/textiles.csv',$source);
 
      return('downloaded done');
+});
+
+Route::get('/remove', function(){
+
+     universalTextile::truncate();
 });
 
 include_route_files(__DIR__ . '/pms/');

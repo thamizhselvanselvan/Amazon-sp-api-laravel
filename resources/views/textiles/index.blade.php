@@ -20,7 +20,7 @@
                 </div>
                 <h2 class="mb-4">
                 <a href="{{route('import.csv')}}">
-                    <x-adminlte-button label="Import Textiles" theme="primary" icon="fas fa-file-import" />
+                    <x-adminlte-button label="Import Universal Textiles" theme="primary" icon="fas fa-file-import" />
                 </a>
             </h2>
                 <table class="table table-bordered yajra-datatable table-striped">

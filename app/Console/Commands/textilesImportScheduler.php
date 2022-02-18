@@ -6,6 +6,8 @@ use League\Csv\Reader;
 use League\Csv\Statement;
 use Illuminate\Console\Command;
 use App\Models\universalTextile;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class textilesImportScheduler extends Command
@@ -40,26 +42,28 @@ class textilesImportScheduler extends Command
      * @return int
      */
     public function handle()
-    {
+    {   
+        Log::warning("Script executed production onclick !");  
+
         $url ='https://files.channable.com/f8k02iylfY7c5YTsxH-SxQ==.csv';
 
         $source = file_get_contents($url);
         $path = 'universalTextilesImport/textiles.csv';
 
         Storage::put($path, $source);
-
         $csv = Reader::createFromPath(Storage::path($path), 'r');
 
         $csv->setDelimiter("\t");
         $csv->setHeaderOffset(0);
 
+       
         $stmt = (new Statement())
             ->where(function (array $record) {
                 return $record;
             })
             ->offset(0);
-            // ->limit(100);
-        
+            // ->limit(2000);
+           
         $records = $stmt->process($csv);
 
         $textiles = [];
@@ -77,20 +81,17 @@ class textilesImportScheduler extends Command
 
                 $textiles[] = $record;
                 if($count == 1000) {
+                
+                    universalTextile::upsert($textiles, ['textile_id'], ['ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type']);
 
-                    // $tagger++;
                     $count = 0;
-                    universalTextile::insert($textiles); 
-                   $textiles = [];
+                    $textiles = [];
                 }
-
-               $count++;
-            }
+                $count++;
+                
+            }	
             
-        // foreach($textiles as $textile)
-            // {
-            //     //  universalTextile::insert($textile);   
-            // }
+            universalTextile::upsert($textiles, ['textile_id'], ['ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type']); 
 
     }
 }
