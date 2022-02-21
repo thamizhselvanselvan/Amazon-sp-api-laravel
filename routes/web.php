@@ -36,7 +36,8 @@ Route::get('admin/currencys', 'Admin\CurrencyController@index');
 Route::get('admin/rolespermissions', 'Admin\RolesPermissionsController@index');
 
 Route::resource('textiles','textilesController');
-Route::get('import-csv','textilesController@importTextiles')->name('import.csv');
+Route::post('import-csv','textilesController@importTextiles')->name('import.csv');
+Route::get('export_to_csv', 'textilesController@exportTextilesToCSV')->name('export.csv');
 
 Route::resource('/tests', 'TestController');
 
