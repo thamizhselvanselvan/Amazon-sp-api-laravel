@@ -6,8 +6,10 @@
 @stop
 
 @section('content')
+@csrf
 
     <div class="row">
+        
         <div class="col">
 
             <div class="alert_display">
@@ -19,8 +21,11 @@
                     @endif
                 </div>
                 <h2 class="mb-4">
-                <a href="{{route('import.csv')}}">
-                    <x-adminlte-button label="Import Universal Textiles" theme="primary" icon="fas fa-file-import" />
+                <a >
+                    <x-adminlte-button label="Import Universal Textiles" theme="primary" icon="fas fa-file-import" id="importUniversalTextiles"/>
+                </a>
+                <a href="{{ route('export.csv') }}">
+                    <x-adminlte-button label="Export Universal Textiles" theme="primary" icon="fas fa-file-export" id="exportUniversalTextiles"/>
                 </a>
             </h2>
                 <table class="table table-bordered yajra-datatable table-striped">
@@ -69,8 +74,25 @@
                
             ]
         });
-     });
+     
 
+     $(document).on('click', '#importUniversalTextiles', function(){
+
+        $.ajax({
+            method: 'post',
+            url: '/import-csv',
+            data:{
+                "_token": "{{ csrf_token() }}",
+                "_method": 'POST',
+            },
+            success: function() {
+                alert('success');
+                yajra_table.ajax.reload();
+                
+            }
+         })      
+    });
+});
 
 </script>   
 @stop
