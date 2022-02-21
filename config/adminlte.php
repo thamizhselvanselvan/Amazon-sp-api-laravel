@@ -41,11 +41,11 @@ return [
     | Here you can change the logo of your admin panel.
     |
     | For detailed instructions you can look the logo section here:
-    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Basic-Configuration
     |
+    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Basic-Configuration
     */
 
-    'logo' => '<b>Catalog Manager</b>',
+    'logo' => '<b>Mosh Catalog Manager</b>',
     'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
@@ -248,29 +248,55 @@ return [
             'url'  => 'admin/blog',
             'can'  => 'manage-blog',
         ],
+        
         [
-            'text'        => 'Region Master ',
-            'url'         => 'admin/mws_regions',
-            'icon'        => 'far fa-fw fa-file',
-        ],
+            'text'    => 'Master',
+            'submenu' => [
+                
+                    
+                        [
+                            'text'        => 'Region Master ',
+                            'url'         => 'admin/mws_regions',
+                            'icon'        => 'far fa-fw fa-file',
+                        ],
+                        [
+                            'text' => 'Credentials Master',
+                            'url'  => 'admin/credentials',
+                            'icon' => 'far fa-fw fa-file',
+                        ],
+                        [
+                            'text' => 'Currency Master',
+                            'url'  => 'admin/currencys',
+                            'icon' => 'far fa-fw fa-file',
+                        ],
+                    ],
+                ],
+            
+    
+        
+        
+        
+       
 
         [
-            'text' => 'Credentials Master',
-            'url'  => 'admin/credentials',
-            'icon' => 'far fa-fw fa-file',
+            'text'    => 'Textile list',
+            'submenu' => [
+                [
+                    'text' => 'Universal Textiles',
+                    'url'  => 'textiles',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+            ],
         ],
+                
 
-        [
-            'text' => 'Currency Master',
-            'url'  => 'admin/currencys',
-            'icon' => 'far fa-fw fa-file',
-        ],
 
-        [
-            'text' => 'Universal Textiles',
-            'url'  => 'textiles',
-            'icon' => 'far fa-fw fa-file'
-        ],
+
+
+
+
+
+    
         [
             'text' => 'Roles',
             'url' => 'admin/rolespermissions',
