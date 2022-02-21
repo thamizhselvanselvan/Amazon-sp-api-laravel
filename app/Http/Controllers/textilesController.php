@@ -68,8 +68,9 @@ class textilesController extends Controller
 
     public function exportTextilesToCSV()
     {
-        
-        $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sa_universal_textiles ');
+      
+        $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sp_universal_textiles ');
+
         $records = array_map(function ($datas) {
 
             $datas->size = "'".$datas->size."'";
