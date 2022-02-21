@@ -69,32 +69,33 @@ class textilesController extends Controller
     public function exportTextilesToCSV()
     {
         
-        $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sa_universal_textiles limit 100');
+        $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sa_universal_textiles ');
         $records = array_map(function ($datas) {
-           foreach($datas as $key=>$data)
-           {
-             if($key == 'size'){
-                 $datas->$key = ($data);
-             }
-           }
+
+            $datas->size = "'".$datas->size."'";
+
             return (array) $datas;
         }, $records);
         
         // dd($records);
         $header = ['textile_id', 'ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type', 'quantity'];
         
-        
         $writer = Writer::createFromFileObject(new SplTempFileObject()); //the CSV file will be created using a temporary File
-        // $writer->setDelimiter("\t"); //the delimiter will be the tab character
-        // $writer->setNewline("\r\n"); //use windows line endings for compatibility with some csv libraries
-        // $writer->setOutputBOM(Writer::BOM_UTF8); //adding the BOM sequence on output
+        
+        $writer->setNewline("\r\n"); //use windows line endings for compatibility with some csv libraries
         $writer->insertOne($header);
         $writer->insertAll($records);
-        $writer->output('testdata.csv');
-        
-        
-    
 
+        // $writer->output('testdata.csv');
+        
+
+       $output = response((string) $writer, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Transfer-Encoding' => 'binary',
+            'Content-Disposition' => 'attachment; filename="universalTextilesExport.csv"',
+        ]);
+    
+        return $output;        
 
     }
 
