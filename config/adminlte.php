@@ -248,29 +248,55 @@ return [
             'url'  => 'admin/blog',
             'can'  => 'manage-blog',
         ],
+        
         [
-            'text'        => 'Region Master ',
-            'url'         => 'admin/mws_regions',
-            'icon'        => 'far fa-fw fa-file',
-        ],
+            'text'    => 'Master',
+            'submenu' => [
+                
+                    
+                        [
+                            'text'        => 'Region Master ',
+                            'url'         => 'admin/mws_regions',
+                            'icon'        => 'far fa-fw fa-file',
+                        ],
+                        [
+                            'text' => 'Credentials Master',
+                            'url'  => 'admin/credentials',
+                            'icon' => 'far fa-fw fa-file',
+                        ],
+                        [
+                            'text' => 'Currency Master',
+                            'url'  => 'admin/currencys',
+                            'icon' => 'far fa-fw fa-file',
+                        ],
+                    ],
+                ],
+            
+    
+        
+        
+        
+       
 
         [
-            'text' => 'Credentials Master',
-            'url'  => 'admin/credentials',
-            'icon' => 'far fa-fw fa-file',
+            'text'    => 'Textile list',
+            'submenu' => [
+                [
+                    'text' => 'Universal Textiles',
+                    'url'  => 'textiles',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+            ],
         ],
+                
 
-        [
-            'text' => 'Currency Master',
-            'url'  => 'admin/currencys',
-            'icon' => 'far fa-fw fa-file',
-        ],
 
-        [
-            'text' => 'Universal Textiles',
-            'url'  => 'textiles',
-            'icon' => 'far fa-fw fa-file'
-        ],
+
+
+
+
+
+    
         [
             'text' => 'Roles',
             'url' => 'admin/rolespermissions',
