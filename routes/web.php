@@ -44,7 +44,12 @@ Route::get('universalTextiles_download', function(){
 
      $file_path = "excel/downloads/universalTextilesExport.csv";
      //$path = Storage::path($file_path);
-     return Storage::download($file_path);
+
+     if(Storage::exists($file_path)) {
+          return Storage::download($file_path);
+     }
+
+     return '';
      //return response()->download($path);
      
      
@@ -63,6 +68,8 @@ Route::get('path', function(){
      echo 'saving path :- ';
      $file_path = "excel\\downloads\\universalTextilesExport.csv";
      echo Storage::path($file_path);
+
+     //echo Str;
 });
 
 Route::get('login', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('login');
