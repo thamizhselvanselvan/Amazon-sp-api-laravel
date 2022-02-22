@@ -252,32 +252,24 @@ return [
         [
             'text'    => 'Master',
             'submenu' => [
-                
-                    
-                        [
-                            'text'        => 'Region Master ',
-                            'url'         => 'admin/mws_regions',
-                            'icon'        => 'far fa-fw fa-file',
-                        ],
-                        [
-                            'text' => 'Credentials Master',
-                            'url'  => 'admin/credentials',
-                            'icon' => 'far fa-fw fa-file',
-                        ],
-                        [
-                            'text' => 'Currency Master',
-                            'url'  => 'admin/currencys',
-                            'icon' => 'far fa-fw fa-file',
-                        ],
-                    ],
+                [
+                    'text' => 'Region Master ',
+                    'url'  => 'admin/mws_regions',
+                    'icon' => 'far fa-fw fa-file',
                 ],
+                [
+                    'text' => 'Credentials Master',
+                    'url'  => 'admin/credentials',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Currency Master',
+                    'url'  => 'admin/currencys',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+            ],
+        ],
             
-    
-        
-        
-        
-       
-
         [
             'text'    => 'Textile list',
             'submenu' => [
@@ -288,21 +280,20 @@ return [
                 ],
             ],
         ],
-                
 
-
-
-
-
-
-
+        [
+            'text' => 'File Downloads',
+            'url'  => 'file_downloads',
+            'icon' => 'far fa-fw fa-file',
+            
+        ],
     
         [
             'text' => 'Roles',
             'url' => 'admin/rolespermissions',
             'icon' => 'fas fa-user',
         ],
-        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------

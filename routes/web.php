@@ -39,26 +39,29 @@ Route::resource('textiles','textilesController');
 Route::post('import-csv','textilesController@importTextiles')->name('import.csv');
 Route::get('export_to_csv', 'textilesController@exportTextilesToCSV')->name('export.csv');
 
-Route::resource('/tests', 'TestController');
+Route::get('file_downloads', 'filedownloads\FileDownloadsController@filedownloads')->name('file.downloads');
+Route::get('universalTextiles_download', function(){
+
+     $file_path = "excel\\downloads\\universalTextilesExport.csv";
+     $path = Storage::path($file_path);
+     // return Storage::download(ltrim($path, '/'));
+     return response()->download($path);
+    
+
+
+})->name('download.universalTextiles');
 
 
 Route::get('login', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('login');
 Route::get('home', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('home');
 
 
+Route::resource('/tests', 'TestController');
 Route::get('/test',function(){
 
      $path = 'universalTextilesImport/textiles.csv';
 
-     return Storage::path($path);
-
      return Storage::url($path);
-
-//     $url ='https://files.channable.com/f8k02iylfY7c5YTsxH-SxQ==.csv';
-
-//     $source = file_get_contents($url);
-//    // file_put_contents('universalTextilesImport/textiles.csv', $source);
-//     Storage::put('public/universalTextilesImport/textiles.csv',$source);
 
      return('downloaded done');
 });

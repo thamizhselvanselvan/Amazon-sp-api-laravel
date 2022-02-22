@@ -45,33 +45,36 @@ class textilesExport extends Command
     {   
          if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
                 
-             $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sp_universal_textiles 200');
+             $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sp_universal_textiles');
         
         } else {
 
-            $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sa_universal_textiles limit 200 ');
+            $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sa_universal_textiles');
             
         }
 
-            $records = array_map(function ($datas) {
-            foreach($datas as $key=>$data)
-            {
-                if($key == 'size'){
-                    $datas->$key = ($data);
-                }
-            }
+        $records = array_map(function ($datas) {
+
+                $datas->size = "'".$datas->size."'";
                 return (array) $datas;
-            }, $records);
-
-            // dd($records);
-            $header = ['textile_id', 'ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type', 'quantity'];
-
-
-            $writer = Writer::createFromFileObject(new SplTempFileObject()); //the CSV file will be created using a temporary File
+        }, $records);
+            
+        $header = ['textile_id', 'ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type', 'quantity'];
+    
+        $file_path = "excel\\downloads\\universalTextilesExport.csv";
+    
+            if(!Storage::exists($file_path)) {
+                Storage::put($file_path, '');
+            }
+    
+            if(!Storage::exists($file_path)) {
+                return false;
+            }
+            
+            $writer = Writer::createFromPath(Storage::path($file_path), "w"); //the CSV file will be created using a temporary File
+    
             $writer->insertOne($header);
             $writer->insertAll($records);
-            $writer->output('universalTextilsExport.csv');
-            die;
-            // echo $writer;
+
     }
 }
