@@ -76,11 +76,11 @@ class textilesController extends Controller
             $command = "cd $base_path && php artisan 'pms:textiles-export > /dev/null &";
             exec($command);
             
+            Artisan::call('pms:textiles-export');
             Log::warning("Export command executed production  !!!");
         } else {
 
             Log::warning("Export coma executed local !");
-            Artisan::call('pms:textiles-export');
         }
 
     }
