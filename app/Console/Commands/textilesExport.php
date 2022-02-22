@@ -49,7 +49,7 @@ class textilesExport extends Command
         $header = ['S/N','Textile Id', 'Ean', 'Brand', 'Title', 'Size', 'Color', 'Transfer Price', 'Shipping Weight', 'Product Type', 'Quantity','Created At','Updated At'];
         $writer->insertOne($header);
 
-            DB::table('universal_textiles')->orderBy('id')->chunk(5000, function ($records) use($file_path, $writer) {
+            DB::table('universal_textiles')->orderBy('id')->chunk(10000, function ($records) use($file_path, $writer) {
 
                 if(!Storage::exists($file_path)) {
                     Storage::put($file_path, '');
