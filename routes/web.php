@@ -49,7 +49,7 @@ Route::get('universalTextiles_download', function(){
           return Storage::download($file_path);
      }
 
-     return '';
+     return 'file not exist';
      //return response()->download($path);
      
      
