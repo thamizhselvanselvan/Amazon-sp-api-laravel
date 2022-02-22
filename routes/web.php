@@ -43,14 +43,27 @@ Route::get('file_downloads', 'filedownloads\FileDownloadsController@filedownload
 Route::get('universalTextiles_download', function(){
 
      $file_path = "excel/downloads/universalTextilesExport.csv";
-     $path = Storage::path($file_path);
-     // return Storage::download(ltrim($path, '/'));
-     return response()->download($path);
-    
-
-
+     //$path = Storage::path($file_path);
+     return Storage::download($file_path);
+     //return response()->download($path);
+     
+     
+     
 })->name('download.universalTextiles');
 
+Route::get('path', function(){
+     
+     $file_path = "excel/downloads/universalTextilesExport.csv";
+     echo Storage::path($file_path);
+     echo "<hr>";
+     echo "Base Path:- ";
+     echo base_path();
+
+     echo "<hr>";
+     echo 'saving path :- ';
+     $file_path = "excel\\downloads\\universalTextilesExport.csv";
+     echo Storage::path($file_path);
+});
 
 Route::get('login', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('login');
 Route::get('home', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('home');
