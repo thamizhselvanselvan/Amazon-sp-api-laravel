@@ -44,51 +44,29 @@ class textilesExport extends Command
      */
     public function handle()
     {   
-        
-        Log::warning('production DB query executed 1 ');
-        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-            
-            Log::warning('production DB query executed 2 ');
+        $file_path = "excel/downloads/universalTextilesExport.csv";
+        $writer = Writer::createFromPath(Storage::path($file_path), "w"); 
+        $header = ['S/N','Textile Id', 'Ean', 'Brand', 'Title', 'Size', 'Color', 'Transfer Price', 'Shipping Weight', 'Product Type', 'Quantity','Created At','Updated At'];
+        $writer->insertOne($header);
 
-             $records = DB::select('SELECT textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity FROM sp_universal_textiles limit 10000');
+            DB::table('universal_textiles')->orderBy('id')->chunk(5000, function ($records) use($file_path, $writer) {
 
-                Log::warning('production DB query executed');
-                
-                Log::alert($records);
-            } else {
-                
-                Log::warning('production DB query else executed');
+                if(!Storage::exists($file_path)) {
+                    Storage::put($file_path, '');
+                }
 
-            $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sa_universal_textiles');
-            
-        }
-
-        $records = array_map(function ($datas) {
-
+                if(!Storage::exists($file_path)) {
+                    return false;
+                }
+            $records = $records->toArray();
+            $records = array_map(function ($datas) {
                 $datas->size = "'".$datas->size."'";
                 return (array) $datas;
-        }, $records);
-            
-        $header = ['textile_id', 'ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type', 'quantity'];
+                }, $records);
 
-        Log::warning('array mapping completed');
-    
-        $file_path = "excel/downloads/universalTextilesExport.csv";
-            if(!Storage::exists($file_path)) {
-                Storage::put($file_path, '');
-            }
-            Log::notice('Working 2');
-            if(!Storage::exists($file_path)) {
-                return false;
-            }
-            
-            Log::warning('csv writing stated');
-            $writer = Writer::createFromPath(Storage::path($file_path), "w"); //the CSV file will be created using a temporary File
-    
-            $writer->insertOne($header);
-            $writer->insertAll($records);
-            
-            // Log::notice('csv writing commpleted');
-
+            $writer->insertall($records);
+                    
+        });
+          
     }
 }
