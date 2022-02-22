@@ -78,9 +78,9 @@ class textilesExport extends Command
         $writer->insertOne($header);
         $writer->insertAll($records);
 
+        
         $url = Storage::url('app\\'.$file_path);
-
-        return Storage::download($url);
-
+    
+        echo $url;
     }
 }
