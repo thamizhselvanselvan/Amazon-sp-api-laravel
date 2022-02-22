@@ -45,7 +45,7 @@ class textilesExport extends Command
     {   
          if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
                 
-             $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sp_universal_textiles ');
+             $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sp_universal_textiles 200');
         
         } else {
 
