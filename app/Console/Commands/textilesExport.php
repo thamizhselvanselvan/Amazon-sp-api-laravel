@@ -44,6 +44,8 @@ class textilesExport extends Command
      */
     public function handle()
     {   
+        Log::notice('Working first');
+        $records = [];
          if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
                 
              $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sp_universal_textiles');
@@ -63,11 +65,11 @@ class textilesExport extends Command
         $header = ['textile_id', 'ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type', 'quantity'];
     
         $file_path = "excel\\downloads\\universalTextilesExport.csv";
-    
+        Log::notice('Working 1');
             if(!Storage::exists($file_path)) {
                 Storage::put($file_path, '');
             }
-    
+            Log::notice('Working 2');
             if(!Storage::exists($file_path)) {
                 return false;
             }
@@ -78,6 +80,6 @@ class textilesExport extends Command
             $writer->insertAll($records);
 
 
-            Log::notice('Working');
+            Log::notice('Working 3');
     }
 }
