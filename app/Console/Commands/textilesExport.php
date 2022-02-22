@@ -80,7 +80,7 @@ class textilesExport extends Command
 
         $url = Storage::url('app\\'.$file_path);
 
-        echo asset($url);     
+        return Storage::download($url);
 
     }
 }
