@@ -42,7 +42,7 @@ Route::get('export_to_csv', 'textilesController@exportTextilesToCSV')->name('exp
 Route::get('file_downloads', 'filedownloads\FileDownloadsController@filedownloads')->name('file.downloads');
 Route::get('universalTextiles_download', function(){
 
-     $file_path = "excel\\downloads\\universalTextilesExport.csv";
+     $file_path = "excel/downloads/universalTextilesExport.csv";
      $path = Storage::path($file_path);
      // return Storage::download(ltrim($path, '/'));
      return response()->download($path);
