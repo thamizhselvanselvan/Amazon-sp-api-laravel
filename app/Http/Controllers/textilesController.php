@@ -69,34 +69,19 @@ class textilesController extends Controller
     public function exportTextilesToCSV()
     {
       
-        $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sp_universal_textiles ');
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+            
+            // exec('nohup php artisan pms:textiles-import  > /dev/null &');
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan 'pms:textiles-export > /dev/null &";
+            exec($command);
+            
+            Log::warning("Export command executed production  !!!");
+        } else {
 
-        $records = array_map(function ($datas) {
-
-            $datas->size = "'".$datas->size."'";
-
-            return (array) $datas;
-        }, $records);
-        
-        // dd($records);
-        $header = ['textile_id', 'ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type', 'quantity'];
-        
-        $writer = Writer::createFromFileObject(new SplTempFileObject()); //the CSV file will be created using a temporary File
-        
-        $writer->setNewline("\r\n"); //use windows line endings for compatibility with some csv libraries
-        $writer->insertOne($header);
-        $writer->insertAll($records);
-
-        // $writer->output('testdata.csv');
-        
-
-       $output = response((string) $writer, 200, [
-            'Content-Type' => 'text/csv',
-            'Content-Transfer-Encoding' => 'binary',
-            'Content-Disposition' => 'attachment; filename="universalTextilesExport.csv"',
-        ]);
-    
-        return $output;        
+            Log::warning("Export coma executed local !");
+            Artisan::call('pms:textiles-export');
+        }
 
     }
 
