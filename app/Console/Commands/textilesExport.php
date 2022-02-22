@@ -7,6 +7,7 @@ use SplTempFileObject;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -76,5 +77,7 @@ class textilesExport extends Command
             $writer->insertOne($header);
             $writer->insertAll($records);
 
+
+            Log::notice('Working');
     }
 }
