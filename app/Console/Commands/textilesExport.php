@@ -44,12 +44,11 @@ class textilesExport extends Command
      */
     public function handle()
     {   
-        Log::notice('Working first');
-        $records = [];
+        
          if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
                 
              $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sp_universal_textiles');
-        Log::notice('production DB query executed');
+        Log::warning('production DB query executed');
         } else {
 
             $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sa_universal_textiles');
@@ -64,7 +63,7 @@ class textilesExport extends Command
             
         $header = ['textile_id', 'ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type', 'quantity'];
 
-        Log::notice('array mapping completed');
+        Log::warning('array mapping completed');
     
         $file_path = "excel/downloads/universalTextilesExport.csv";
             if(!Storage::exists($file_path)) {
@@ -75,13 +74,13 @@ class textilesExport extends Command
                 return false;
             }
             
-            Log::notice('csv writing stated');
+            Log::warning('csv writing stated');
             $writer = Writer::createFromPath(Storage::path($file_path), "w"); //the CSV file will be created using a temporary File
     
             $writer->insertOne($header);
             $writer->insertAll($records);
             
-            Log::notice('csv writing commpleted');
+            // Log::notice('csv writing commpleted');
 
     }
 }
