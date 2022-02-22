@@ -45,12 +45,20 @@ class textilesExport extends Command
     public function handle()
     {   
         
-         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-                
-             $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sp_universal_textiles');
-        Log::warning('production DB query executed');
-        } else {
+        Log::warning('production DB query executed 1 ');
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+            
+            Log::warning('production DB query executed 2 ');
 
+             $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sp_universal_textiles');
+
+                Log::warning('production DB query executed');
+                
+                Log::alert($records);
+            } else {
+                
+                Log::warning('production DB query else executed');
+                
             $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sa_universal_textiles');
             
         }
