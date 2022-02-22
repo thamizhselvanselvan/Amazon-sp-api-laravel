@@ -53,34 +53,25 @@ class textilesExport extends Command
             
         }
 
-        $records = array_map(function ($datas) {
+            $records = array_map(function ($datas) {
+            foreach($datas as $key=>$data)
+            {
+                if($key == 'size'){
+                    $datas->$key = ($data);
+                }
+            }
+                return (array) $datas;
+            }, $records);
 
-            $datas->size = "'".$datas->size."'";
+            // dd($records);
+            $header = ['textile_id', 'ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type', 'quantity'];
 
-            return (array) $datas;
-        }, $records);
-        
-        // dd($records);
-        $header = ['textile_id', 'ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type', 'quantity'];
 
-        $file_path = "excel\\downloads\\universalTextilesExport.csv";
-
-        if(!Storage::exists($file_path)) {
-            Storage::put($file_path, '');
-        }
-
-        if(!Storage::exists($file_path)) {
-            return false;
-        }
-        
-        $writer = Writer::createFromPath(Storage::path($file_path), "w"); //the CSV file will be created using a temporary File
-
-        $writer->insertOne($header);
-        $writer->insertAll($records);
-
-        
-        $url = Storage::url('app\\'.$file_path);
-    
-        echo $url;
+            $writer = Writer::createFromFileObject(new SplTempFileObject()); //the CSV file will be created using a temporary File
+            $writer->insertOne($header);
+            $writer->insertAll($records);
+            $writer->output('universalTextilsExport.csv');
+            die;
+            // echo $writer;
     }
 }
