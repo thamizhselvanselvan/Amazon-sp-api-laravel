@@ -50,7 +50,7 @@ class textilesExport extends Command
             
             Log::warning('production DB query executed 2 ');
 
-             $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sp_universal_textiles');
+             $records = DB::select('SELECT textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity FROM sp_universal_textiles limit 10000');
 
                 Log::warning('production DB query executed');
                 
@@ -58,7 +58,7 @@ class textilesExport extends Command
             } else {
                 
                 Log::warning('production DB query else executed');
-                
+
             $records = DB::select('select textile_id, ean, brand, title, size, color, transfer_price, shipping_weight, product_type, quantity from sa_universal_textiles');
             
         }
