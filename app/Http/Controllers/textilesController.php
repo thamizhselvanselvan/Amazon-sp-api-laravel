@@ -73,7 +73,7 @@ class textilesController extends Controller
             
             // exec('nohup php artisan pms:textiles-import  > /dev/null &');
             $base_path = base_path();
-            $command = "cd $base_path && php artisan 'pms:textiles-export > /dev/null &";
+            $command = "cd $base_path && php artisan pms:textiles-export > /dev/null &";
             exec($command);
             
             Log::warning("Export command executed production  !!!");
@@ -82,6 +82,8 @@ class textilesController extends Controller
             Log::warning("Export coma executed local !");
             Artisan::call('pms:textiles-export');
         }
+
+        return redirect()->intended('/textiles');
 
     }
 
