@@ -44,17 +44,14 @@ Route::get('universalTextiles_download', function(){
 
      $file_path = "excel/downloads/universalTextilesExport.csv";
      //$path = Storage::path($file_path);
-
      if(Storage::exists($file_path)) {
           return Storage::download($file_path);
      }
-
      return 'file not exist';
-     //return response()->download($path);
-     
-     
-     
 })->name('download.universalTextiles');
+
+Route::get('product/amazon_com', 'product\productController@index')->name('product.amazon_com');
+Route::get('product/fetch_from_amazon', 'product\productController@fetchFromAmazon')->name('product.fetch.amazon');
 
 Route::get('path', function(){
      

@@ -280,7 +280,17 @@ return [
                 ],
             ],
         ],
-
+        
+        [
+            'text' => 'Amazon',
+            'submenu' => [
+                [
+                    'text' => 'Amazon.com',
+                    'url'  => 'product/amazon_com',
+                ]
+            ]
+            
+        ],
         [
             'text' => 'File Downloads',
             'url'  => 'file_downloads',
