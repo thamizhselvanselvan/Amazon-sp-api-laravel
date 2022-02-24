@@ -56,7 +56,7 @@ class asinBulkImport extends Command
                 return $record;
             })
             ->offset(0)
-            ->limit(2000);
+            ;
            
         $records = $stmt->process($csv);
 
@@ -75,7 +75,7 @@ class asinBulkImport extends Command
                     'destination_4' => $record['Destination 4'],
                     'destination_5' => $record['Destination 5']
                 ];
-                if($count == 100) {
+                if($count == 1000) {
                 
                     asinMaster::upsert($asin, ['asin'], ['source','destination_1','destination_2','destination_3','destination_4','destination_5']);
 
