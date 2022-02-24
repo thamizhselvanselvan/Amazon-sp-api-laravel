@@ -2,8 +2,9 @@
 
 use App\Models\User;
 use App\Models\Mws_region;
-use App\Models\universalTextile;
 use Maatwebsite\Excel\Row;
+use App\Models\universalTextile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -88,4 +89,11 @@ Route::get('/remove', function(){
      universalTextile::truncate();
 });
 
+Route::get('product/catalog-count', function(){
+
+     $result = DB::select('select count(*) from productcatalogs');
+
+     return $result;
+
+});
 include_route_files(__DIR__ . '/pms/');

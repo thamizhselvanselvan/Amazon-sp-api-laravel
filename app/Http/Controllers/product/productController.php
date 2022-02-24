@@ -51,7 +51,7 @@ $config = new Configuration([
         ->where(function (array $record) {
             return $record;
             })
-        ->offset(51)
+        ->offset(0)
         ->limit(1000);
     
     $records = $stmt->process($csv);
@@ -75,7 +75,7 @@ $config = new Configuration([
             $result = (array)($result->payload->AttributeSets[0]);
             
                 $productcatalogs = R::dispense('productcatalogs');
-        
+                $productcatalogs->asin = $record['asin'];
             $value = [];
         
             foreach ($result as $key => $data){

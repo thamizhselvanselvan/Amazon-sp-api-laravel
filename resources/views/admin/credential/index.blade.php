@@ -26,9 +26,10 @@
                             <th>No</th>
                             <th>Store Name</th>
                             <th>Merchant ID </th>
-                            <!-- <th>Regions</th> -->
-                            <!-- <th>Marketplace ID</th>
-                            <th>Currencies Name</th> -->
+                            <th>Marketplace ID</th>
+                            <th>Region</th>
+                            <th>Currencies</th>
+                            <th>API Type</th>
                             <th>Verified</th>
                             <th>Status</th>
                         </tr>
@@ -52,9 +53,10 @@
                 {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
                 {data: 'store_name', name: 'store_name'},
                 {data: 'merchant_id', name: 'merchant_id'},
-                // {data: 'region', name: 'region'},
-                // {data: 'marketplace_id', name: 'marketplace_id'},
-                // {data: 'name', name: 'name'},
+                {data: 'marketplace_id', name: 'marketplace_id'},
+                {data: 'region', name: 'region'},
+                {data: 'currency_name', name: 'currency_name'},
+                {data: 'api_type', name: 'api_type'},
                 {data: 'verified', name: 'verified'}, 
                 {data: 'status', name: 'status'},
                

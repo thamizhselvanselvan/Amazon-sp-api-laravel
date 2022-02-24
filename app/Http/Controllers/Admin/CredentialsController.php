@@ -13,22 +13,26 @@ class CredentialsController extends Controller
     public function index(Request $request)
     { 
         
+        // dd($data[0]->mws_region->currency->name);
+
         if($request->ajax()){
-            
-            $getData = ['id', 'store_name', 'merchant_id','verified','status'];
-            $data = aws_credentials::with(['currency', 'mws_region'])->orderby('status', 'DESC')->get($getData);
+
+            $data = aws_credentials::with(['mws_region'])->orderby('status', 'DESC')->get();
         
             return DataTables::of($data)
                 ->addIndexcolumn()
-                // ->editColumn('region', function ($row){
-                //     return ($row->mws_region->region) ;
-                // })
-                // ->addColumn('marketplace_id', function ($row){
-                //     return ($row->marketplace_id) ;
-                // })
-                // ->addColumn('name', function ($row){
-                //     return ($row->name) ;
-                // })
+                ->editColumn('region', function ($row){
+                    return ($row->mws_region->region)." [".($row->mws_region->region_code)."]" ;
+                })
+                ->addColumn('marketplace_id', function ($row){
+                    return ($row->mws_region->marketplace_id) ;
+                })
+                ->addColumn('currency_name', function ($row){
+                    return (($row->mws_region->currency->name)." [".($row->mws_region->currency->code).']') ;
+                })
+                ->editColumn('api_type', function ($row){
+                    return ($row->api_type) ? 'SP API' : 'MWS';
+                })
                 ->editColumn('verified', function ($row){
                     return ($row->verified) ? 'Verified' : 'Unverified';
                 })
