@@ -51,6 +51,7 @@ class textilesImportScheduler extends Command
         $path = 'universalTextilesImport/textiles.csv';
 
         Storage::put($path, $source);
+        
         $csv = Reader::createFromPath(Storage::path($path), 'r');
 
         $csv->setDelimiter("\t");

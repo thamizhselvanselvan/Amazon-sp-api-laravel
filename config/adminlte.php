@@ -267,6 +267,11 @@ return [
                     'url'  => 'admin/currencys',
                     'icon' => 'far fa-fw fa-file',
                 ],
+                [
+                    'text' => 'Asin Master',
+                    'url'  => 'asin-master',
+                    'icon' => 'far fa-fw fa-file',
+                ],
             ],
         ],
             

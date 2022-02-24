@@ -25,6 +25,9 @@ Route::get('/', [App\Http\Controllers\Auth\LoginController::class, 'showLoginFor
 
 Auth::routes();
 
+Route::get('login', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('login');
+Route::get('home', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('home');
+
 // Route::group(['middleware' => ['role:Admin', 'auth'], 'prefix' => 'admin'],function(){
 
 // Route::get('dashboard', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('admin.dashboard');
@@ -35,6 +38,11 @@ Route::resource('admin/mws_regions', 'Admin\RegionController');
 Route::get('admin/credentials', 'Admin\CredentialsController@index');
 Route::get('admin/currencys', 'Admin\CurrencyController@index');
 Route::get('admin/rolespermissions', 'Admin\RolesPermissionsController@index');
+
+Route::get('asin-master', 'AsinMasterController@index');
+Route::get('add-asin', 'AsinMasterController@addAsin');
+Route::get('import-bulk-asin', 'AsinMasterController@importBulkAsin');
+Route::post('add-bulk-asin', 'AsinMasterController@addBulkAsin');
 
 Route::resource('textiles','textilesController');
 Route::post('import-csv','textilesController@importTextiles')->name('import.csv');
@@ -69,9 +77,6 @@ Route::get('path', function(){
 
      //echo Str;
 });
-
-Route::get('login', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('login');
-Route::get('home', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('home');
 
 
 Route::resource('/tests', 'TestController');
