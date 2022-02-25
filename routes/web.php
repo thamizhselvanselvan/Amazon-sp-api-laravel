@@ -44,16 +44,16 @@ Route::get('add-asin', 'AsinMasterController@addAsin');
 Route::get('import-bulk-asin', 'AsinMasterController@importBulkAsin');
 Route::post('add-bulk-asin', 'AsinMasterController@addBulkAsin');
 
-Route::resource('textiles','textilesController');
-Route::post('import-csv','textilesController@importTextiles')->name('import.csv');
+Route::resource('textiles', 'textilesController');
+Route::post('import-csv', 'textilesController@importTextiles')->name('import.csv');
 Route::get('export_to_csv', 'textilesController@exportTextilesToCSV')->name('export.csv');
 
 Route::get('file_downloads', 'filedownloads\FileDownloadsController@filedownloads')->name('file.downloads');
-Route::get('universalTextiles_download', function(){
+Route::get('universalTextiles_download', function () {
 
      $file_path = "excel/downloads/universalTextilesExport.csv";
      //$path = Storage::path($file_path);
-     if(Storage::exists($file_path)) {
+     if (Storage::exists($file_path)) {
           return Storage::download($file_path);
      }
      return 'file not exist';
@@ -62,8 +62,8 @@ Route::get('universalTextiles_download', function(){
 Route::get('product/amazon_com', 'product\productController@index')->name('product.amazon_com');
 Route::get('product/fetch_from_amazon', 'product\productController@fetchFromAmazon')->name('product.fetch.amazon');
 
-Route::get('path', function(){
-     
+Route::get('path', function () {
+
      $file_path = "excel/downloads/universalTextilesExport.csv";
      echo Storage::path($file_path);
      echo "<hr>";
@@ -80,25 +80,49 @@ Route::get('path', function(){
 
 
 Route::resource('/tests', 'TestController');
-Route::get('/test',function(){
+Route::get('/test', function () {
 
      $path = 'universalTextilesImport/textiles.csv';
 
      return Storage::url($path);
 
-     return('downloaded done');
+     return ('downloaded done');
 });
 
-Route::get('/remove', function(){
+Route::get('/remove', function () {
 
      universalTextile::truncate();
 });
 
-Route::get('product/catalog-count', function(){
+Route::get('product/catalog-count', function () {
 
      $result = DB::select('select count(*) from productcatalogs');
 
      return $result;
-
 });
+
+Route::get('/pdo', function () {
+
+     $host = config('app.host');
+     $dbname = config('app.database');
+     $port = config('app.port');
+     $username = config('app.username');
+     $password = config('app.password');
+
+
+     try {
+          po($host);
+          po($dbname);
+          po($port);
+          po($username);
+          po($password);
+          $db = new PDO('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
+     } catch (PDOException $e) {
+          echo $e->getmessage();
+     } finally {
+          echo 'working';
+     }
+});
+
+
 include_route_files(__DIR__ . '/pms/');
