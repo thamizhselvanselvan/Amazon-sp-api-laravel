@@ -8,6 +8,7 @@ use PDOException;
 use RedBeanPHP\R;
 use App\Models\asinMaster;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\Config\ConfigTrait;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
@@ -65,9 +66,11 @@ class ProductCatalogImport extends Command
             echo 'working';
         }
 
-       
+        $db_exists = DB::table('amazon')->exists();
 
-        R::exec('TRUNCATE `amazon`');
+        if(!$db_exists) {
+            R::exec('TRUNCATE `amazon`');
+        }
 
         Log::warning("productcatalogs table created");
 
