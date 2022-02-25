@@ -54,7 +54,7 @@ class ProductCatalogImport extends Command
         $username = config('app.username');
         $password = config('app.password');
 
-        Log::warning('host->' . $host . ',dbname->' . $dbname . ',username->' . $username . 'password->' . $password);
+        Log::warning('host->' . $host . ',port->'. $port .',dbname->' . $dbname . ',username->' . $username . 'password->' . $password);
 
 
         try {
