@@ -65,7 +65,7 @@ class ProductCatalogImport extends Command
             echo 'working';
         }
 
-        exit;
+       
 
         R::exec('TRUNCATE `amazon`');
 
