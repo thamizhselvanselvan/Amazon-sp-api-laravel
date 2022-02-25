@@ -50,7 +50,7 @@ class ProductCatalogImport extends Command
         $username = config('app.username');
         $password = config('app.password');
 
-        Log::warning("db configuration done");
+        Log::warning('host->'.$host.',dbname->'.$dbname.',username->'.$username.'password->'.$password);
 
         R::setup('mysql: host='.$host.'; dbname='.$dbname, $username, $password); 
         R::exec('TRUNCATE `productcatalogs`'); 
