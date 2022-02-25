@@ -2,13 +2,15 @@
 
 namespace App\Console\Commands;
 
+use PDO;
 use Exception;
+use PDOException;
 use RedBeanPHP\R;
 use App\Models\asinMaster;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use App\Services\Config\ConfigTrait;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
-use Illuminate\Support\Facades\Log;
 
 class ProductCatalogImport extends Command
 {    use ConfigTrait;
@@ -53,7 +55,24 @@ class ProductCatalogImport extends Command
 
         Log::warning('host->'.$host.',dbname->'.$dbname.',username->'.$username.'password->'.$password);
 
-        R::setup('mysql: host='.$host.'; dbname='.$dbname.';port='.$port, $username, $password); 
+        //R::setup('mysql: host='.$host.'; dbname='.$dbname.';port='.$port, $username, $password); 
+        
+        try{
+            po($host); 
+            po($dbname); 
+            po($port); 
+            po($username); 
+            po($password); 
+            $db = new PDO('mysql: host='.$host.'; dbname='.$dbname.';port='.$port, $username, $password);
+
+        } catch(PDOException $e){
+            echo $e->getmessage();
+        } finally {
+            echo 'working';
+        }
+
+        exit;
+     
         R::exec('TRUNCATE `productcatalogs`'); 
         
         Log::warning("productcatalogs table created");
