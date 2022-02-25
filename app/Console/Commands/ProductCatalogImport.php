@@ -61,16 +61,18 @@ class ProductCatalogImport extends Command
         try {
             R::setup('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
         } catch (PDOException $e) {
-            echo $e->getmessage();
+            //echo $e->getmessage();
+            Log::alert( $e->getmessage());
         } finally {
-            echo 'working';
+            //echo 'working';
+            Log::alert("working");
         }
 
-        $db_exists = DB::table('amazon')->exists();
+        // $db_exists = DB::table('amazon')->exists();
 
-        if(!$db_exists) {
-            R::exec('TRUNCATE `amazon`');
-        }
+        // if(!$db_exists) {
+        //     R::exec('TRUNCATE `amazon`');
+        // }
 
         Log::warning("productcatalogs table created");
 
