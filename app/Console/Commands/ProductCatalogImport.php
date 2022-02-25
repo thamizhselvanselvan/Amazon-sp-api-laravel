@@ -47,17 +47,18 @@ class ProductCatalogImport extends Command
         $connection = config('app.connection');
         $host = config('app.host');
         $dbname = config('app.database');
+        $port = config('app.port');
         $username = config('app.username');
         $password = config('app.password');
 
         Log::warning('host->'.$host.',dbname->'.$dbname.',username->'.$username.'password->'.$password);
 
-        R::setup('mysql: host='.$host.'; dbname='.$dbname, $username, $password); 
+        R::setup('mysql: host='.$host.'; dbname='.$dbname.';port='.$port, $username, $password); 
         R::exec('TRUNCATE `productcatalogs`'); 
         
         Log::warning("productcatalogs table created");
 
-        $datas = asinMaster::with(['aws'])->limit(10)->get();
+        $datas = asinMaster::with(['aws'])->limit(15)->get();
 
         Log::warning('relation stablish b/w dependent table');
 
