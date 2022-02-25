@@ -97,7 +97,7 @@ Route::get('/remove', function () {
 
 Route::get('product/catalog-count', function () {
 
-     $result = DB::select('select count(*) from productcatalogs');
+     $result = DB::select('select count(*) from amazon');
 
      return $result;
 });

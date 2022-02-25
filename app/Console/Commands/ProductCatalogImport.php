@@ -13,7 +13,8 @@ use App\Services\Config\ConfigTrait;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 
 class ProductCatalogImport extends Command
-{    use ConfigTrait;
+{
+    use ConfigTrait;
     /**
      * The name and signature of the console command.
      *
@@ -53,76 +54,68 @@ class ProductCatalogImport extends Command
         $username = config('app.username');
         $password = config('app.password');
 
-        Log::warning('host->'.$host.',dbname->'.$dbname.',username->'.$username.'password->'.$password);
+        Log::warning('host->' . $host . ',dbname->' . $dbname . ',username->' . $username . 'password->' . $password);
 
-        
-        try{
-           
-            R::setup('mysql: host='.$host.'; dbname='.$dbname.';port='.$port, $username, $password); 
-            // $db = new PDO('mysql: host='.$host.'; dbname='.$dbname.';port='.$port, $username, $password);
 
-        } catch(PDOException $e){
+        try {
+            R::setup('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
+        } catch (PDOException $e) {
             echo $e->getmessage();
         } finally {
             echo 'working';
         }
-     
-        R::exec('TRUNCATE `amazon`'); 
-        
+
+        exit;
+
+        R::exec('TRUNCATE `amazon`');
+
         Log::warning("productcatalogs table created");
 
         $datas = asinMaster::with(['aws'])->limit(15)->get();
 
         Log::warning('relation stablish b/w dependent table');
 
-        foreach($datas as $data){
+        foreach ($datas as $data) {
 
             $asin = $data['asin'];
             $country_code = $data['destination_1'];
             $auth_code = $data['aws']['auth_code'];
             $aws_key = $data['aws']['id'];
             $marketplace_id = $this->marketplace_id($country_code);
-    
+
             $config = $this->config($aws_key, $country_code, $auth_code);
-    
+
             $apiInstance = new CatalogItemsV0Api($config);
             $marketplace_id = $this->marketplace_id($country_code);
             Log::warning("try to get catalog data");
             try {
                 $result = $apiInstance->getCatalogItem($marketplace_id, $asin);
-                
+
                 $result = json_decode(json_encode($result));
-                
+
                 $result = (array)($result->payload->AttributeSets[0]);
-                
+
                 $productcatalogs = R::dispense('amazon');
-            
+
                 $value = [];
                 $productcatalogs->asin = $asin;
                 $productcatalogs->destination = $country_code;
-                
-                foreach ($result as $key => $data){
+
+                foreach ($result as $key => $data) {
                     $key = lcfirst($key);
-                    if(is_object($data)){
-            
+                    if (is_object($data)) {
+
                         $productcatalogs->{$key} = json_encode($data);
-                    }
-                    else
-                    {
+                    } else {
                         $productcatalogs->{$key} = json_encode($data);
                         // $value [][$key] = ($data);
                     }
-    
                 }
-                
+
                 R::store($productcatalogs);
-                
-                
             } catch (Exception $e) {
                 echo 'Exception when calling CatalogItemsV0Api->getCatalogItem: ', $e->getMessage(), PHP_EOL;
             }
-            
-            
         }
     }
 }
