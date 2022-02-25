@@ -116,7 +116,8 @@ Route::get('/pdo', function () {
           po($port);
           po($username);
           po($password);
-          $db = new PDO('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
+          //$db = new PDO('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
+          R::setup('mysql: host='.$host.'; dbname='.$dbname.';port='.$port, $username, $password); 
      } catch (PDOException $e) {
           echo $e->getmessage();
      } finally {
