@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Aws_credentials extends Model
+class aws_credentials extends Model
 {
     use HasFactory;
     protected $table = 'aws_credentials'; 

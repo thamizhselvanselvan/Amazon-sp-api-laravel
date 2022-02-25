@@ -34,7 +34,7 @@ class asinMaster extends Model
 
     
         return $this->hasOneThrough(
-            Aws_credentials::class,
+            aws_credentials::class,
             Mws_region::class,
             'region_code', // Foreign key on orders table...
             'mws_region_id', // Foreign key on products table...
