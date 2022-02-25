@@ -47,5 +47,6 @@ public function fetchFromAmazon(){
         
     }
        
+    return redirect()->intended('/product/amazon_com');
     }
 }

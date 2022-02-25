@@ -8,6 +8,7 @@ use App\Models\asinMaster;
 use Illuminate\Console\Command;
 use App\Services\Config\ConfigTrait;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
+use Illuminate\Support\Facades\Log;
 
 class ProductCatalogImport extends Command
 {    use ConfigTrait;
@@ -42,17 +43,26 @@ class ProductCatalogImport extends Command
      */
     public function handle()
     {
-        $datas = asinMaster::with(['aws'])->offset(101)->limit(10)->get();
+        Log::warning("warning from handle function");
         $connection = config('app.connection');
         $host = config('app.host');
         $dbname = config('app.database');
         $username = config('app.username');
         $password = config('app.password');
-    
+
+        Log::warning("db configuration done");
+
         R::setup('mysql: host='.$host.'; dbname='.$dbname, $username, $password); 
         R::exec('TRUNCATE `productcatalogs`'); 
-    
+        
+        Log::warning("productcatalogs table created");
+
+        $datas = asinMaster::with(['aws'])->limit(10)->get();
+
+        Log::warning('relation stablish b/w dependent table');
+
         foreach($datas as $data){
+
             $asin = $data['asin'];
             $country_code = $data['destination_1'];
             $auth_code = $data['aws']['auth_code'];
@@ -63,7 +73,7 @@ class ProductCatalogImport extends Command
     
             $apiInstance = new CatalogItemsV0Api($config);
             $marketplace_id = $this->marketplace_id($country_code);
-        
+            Log::warning("try to get catalog data");
             try {
                 $result = $apiInstance->getCatalogItem($marketplace_id, $asin);
                 
@@ -89,6 +99,7 @@ class ProductCatalogImport extends Command
                     }
     
                 }
+                
                 R::store($productcatalogs);
                 
                 
