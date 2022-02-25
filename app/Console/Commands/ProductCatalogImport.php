@@ -18,7 +18,7 @@ class ProductCatalogImport extends Command
      *
      * @var string
      */
-    protected $description = 'Product catalog import';
+    protected $description = 'SP API catalog import through ASIN';
 
     /**
      * Create a new command instance.

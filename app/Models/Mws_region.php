@@ -31,5 +31,8 @@ class Mws_region extends Model
     public function currency() {
         return $this->belongsTo(Currency::class, 'currency_id', 'id');
     }
+    public function aws_credential() {
+        return $this->belongsTo(Aws_credentials::class, 'mws_region_id', 'id');
+    }
 
 }

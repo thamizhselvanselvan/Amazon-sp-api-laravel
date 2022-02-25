@@ -20,4 +20,27 @@ class asinMaster extends Model
         'destination_5',
         
     ];
+
+    public function mws_region() {
+        return $this->hasOne(Mws_region::class, 'region_code', 'destination_1');
+
+    }
+
+    public function aws_credential() {
+        return $this->belongsTo(aws_credentials::class,);
+    }
+
+    public function aws(){
+
+    
+        return $this->hasOneThrough(
+            Aws_credentials::class,
+            Mws_region::class,
+            'region_code', // Foreign key on orders table...
+            'mws_region_id', // Foreign key on products table...
+            'destination_1', // Local key on suppliers table...
+           // 'id' // Local key on products table...
+        );
+    }
+
 }

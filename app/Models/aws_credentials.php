@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class aws_credentials extends Model
+class Aws_credentials extends Model
 {
     use HasFactory;
     protected $table = 'aws_credentials'; 
@@ -39,4 +39,6 @@ class aws_credentials extends Model
     public function product_count() {
         return $this->belongsTo(Product::class, 'seller_id', 'seller_id');
     }
+
+    
 }
