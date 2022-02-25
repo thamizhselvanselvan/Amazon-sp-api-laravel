@@ -55,15 +55,11 @@ class ProductCatalogImport extends Command
 
         Log::warning('host->'.$host.',dbname->'.$dbname.',username->'.$username.'password->'.$password);
 
-        //R::setup('mysql: host='.$host.'; dbname='.$dbname.';port='.$port, $username, $password); 
         
         try{
-            po($host); 
-            po($dbname); 
-            po($port); 
-            po($username); 
-            po($password); 
-            $db = new PDO('mysql: host='.$host.'; dbname='.$dbname.';port='.$port, $username, $password);
+           
+            R::setup('mysql: host='.$host.'; dbname='.$dbname.';port='.$port, $username, $password); 
+            // $db = new PDO('mysql: host='.$host.'; dbname='.$dbname.';port='.$port, $username, $password);
 
         } catch(PDOException $e){
             echo $e->getmessage();
@@ -73,7 +69,7 @@ class ProductCatalogImport extends Command
 
         exit;
      
-        R::exec('TRUNCATE `productcatalogs`'); 
+        R::exec('TRUNCATE `amazon`'); 
         
         Log::warning("productcatalogs table created");
 
@@ -101,10 +97,11 @@ class ProductCatalogImport extends Command
                 
                 $result = (array)($result->payload->AttributeSets[0]);
                 
-                $productcatalogs = R::dispense('productcatalogs');
+                $productcatalogs = R::dispense('amazon');
             
                 $value = [];
                 $productcatalogs->asin = $asin;
+                $productcatalogs->destination = $country_code;
                 
                 foreach ($result as $key => $data){
                     $key = lcfirst($key);
