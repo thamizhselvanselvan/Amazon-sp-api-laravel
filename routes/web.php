@@ -95,12 +95,8 @@ Route::get('/remove', function () {
      universalTextile::truncate();
 });
 
-Route::get('product/catalog-count', function () {
 
-     $result = DB::select('select count(*) from amazon');
-
-     return $result;
-});
+Route::get('/amazon_count', 'TestController@index');
 
 Route::get('/pdo', function () {
 

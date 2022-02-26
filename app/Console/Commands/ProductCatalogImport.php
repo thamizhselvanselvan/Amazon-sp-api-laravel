@@ -76,7 +76,7 @@ class ProductCatalogImport extends Command
 
         Log::warning("productcatalogs table created");
 
-        $datas = asinMaster::with(['aws'])->limit(15)->get();
+        $datas = asinMaster::with(['aws'])->limit(10)->get();
 
         Log::warning('relation stablish b/w dependent table');
 

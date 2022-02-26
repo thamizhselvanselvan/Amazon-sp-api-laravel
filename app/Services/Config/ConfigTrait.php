@@ -17,7 +17,8 @@ trait ConfigTrait
         $token = '';
         $region = $this->region_code($country_code);
         //$region = 'NAzzz';
-        $token = $this->token($aws_key);
+        // $token = $this->token($aws_key);
+        $refeshtoken ='Atzr|IwEBIO2ZVAsEZ1E-gDCJb5IUPCZJ5D4VlBLuHj_84aR7zWgflDotXdNyNoX-34zERwG7si1VlwP4Y-wBFVxG8lZT5gkG1y8fgDDTmrNJh0LLcagPJeOMPmckwk5RWCcUCUU-0ifPyutYk-X9RLAsDEZc4lZ6JeKcKphQ_T7Vy0sXRtR_fBhGdbkS2TSqpTqELrWa8DSDuRMAQEzVPgaVrFgXRYMEkeGysre0R_iVz7r5lb7w0Yhcx9VDW7tMGpAJe1P-5bcsbE6wmRIzsa8eCh_HTVnc_4LTsEvAEmJRsIarURRayppQul2azLbwep-4eVv_9r0';
         $endpoints = ['EU' => Endpoint::EU, 'NA' => Endpoint::NA, 'FE' => Endpoint::FE];
         $clientId = 'amzn1.application-oa2-client.0167f1a848ae4cf0aabeeb1abbeaf8cf';
         $clientSecret = '5bf9add9576f83d33293b0e9e2ed5e671000a909f161214a77b93d26e7082765';
@@ -31,7 +32,7 @@ trait ConfigTrait
             "awsAccessKeyId" => $awsAccessKeyId,
             "awsSecretAccessKey" => $awsSecretAccessKey,
             "roleArn" => $roleArn,
-            "lwaRefreshToken" => $token,
+            "lwaRefreshToken" => $refeshtoken,
             "endpoint" => $endpoints[$region],
         ]);
     }
