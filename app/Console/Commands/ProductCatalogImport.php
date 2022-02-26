@@ -57,14 +57,12 @@ class ProductCatalogImport extends Command
 
         Log::warning('host->' . $host . ',port->'. $port .',dbname->' . $dbname . ',username->' . $username . 'password->' . $password);
 
-
-        R::setup('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
-        
-            Log::alert("working");
-
         $datas = asinMaster::with(['aws'])->limit(10)->get();
-
+        
         foreach ($datas as $data) {
+            
+            R::setup('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
+            Log::alert("working");
 
             $asin = $data['asin'];
             $country_code = $data['destination_1'];
