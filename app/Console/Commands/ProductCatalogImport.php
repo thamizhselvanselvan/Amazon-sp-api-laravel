@@ -59,26 +59,10 @@ class ProductCatalogImport extends Command
 
 
         R::setup('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
-        // try {
-        // } catch (PDOException $e) {
-        //     //echo $e->getmessage();
-        //     Log::alert( $e->getmessage());
-        // } finally {
-        //     //echo 'working';
-        // }
+        
             Log::alert("working");
 
-        // $db_exists = DB::table('amazon')->exists();
-
-        // if(!$db_exists) {
-        //     R::exec('TRUNCATE `amazon`');
-        // }
-
-        Log::warning("productcatalogs table created");
-
         $datas = asinMaster::with(['aws'])->limit(10)->get();
-
-        Log::warning('relation stablish b/w dependent table');
 
         foreach ($datas as $data) {
 
@@ -119,8 +103,9 @@ class ProductCatalogImport extends Command
 
                 R::store($productcatalogs);
                 Log::alert('product catalog saved');
+                
             } catch (Exception $e) {
-                Log::alert($e->getMessage());
+                Log::notice($e->getMessage());
             }
            
         }
