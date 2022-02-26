@@ -58,15 +58,15 @@ class ProductCatalogImport extends Command
         Log::warning('host->' . $host . ',port->'. $port .',dbname->' . $dbname . ',username->' . $username . 'password->' . $password);
 
 
-        try {
-            R::setup('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
-        } catch (PDOException $e) {
-            //echo $e->getmessage();
-            Log::alert( $e->getmessage());
-        } finally {
-            //echo 'working';
+        R::setup('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
+        // try {
+        // } catch (PDOException $e) {
+        //     //echo $e->getmessage();
+        //     Log::alert( $e->getmessage());
+        // } finally {
+        //     //echo 'working';
+        // }
             Log::alert("working");
-        }
 
         // $db_exists = DB::table('amazon')->exists();
 
