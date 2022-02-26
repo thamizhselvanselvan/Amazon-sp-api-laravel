@@ -120,8 +120,9 @@ class ProductCatalogImport extends Command
                 R::store($productcatalogs);
                 Log::alert('product catalog saved');
             } catch (Exception $e) {
-                echo 'Exception when calling CatalogItemsV0Api->getCatalogItem: ', $e->getMessage(), PHP_EOL;
+                Log::alert($e->getMessage());
             }
+            // echo 'Exception when calling CatalogItemsV0Api->getCatalogItem: ', $e->getMessage(), PHP_EOL;
         }
     }
 }
