@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use PDO;
 use Exception;
 use PDOException;
-use RedBeanPHP\R;
+use RedBeanPHP\R as R;
 use App\Models\asinMaster;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -56,13 +56,13 @@ class ProductCatalogImport extends Command
         $password = config('app.password');
 
         Log::warning('host->' . $host . ',port->'. $port .',dbname->' . $dbname . ',username->' . $username . 'password->' . $password);
+        R::setup('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
+        Log::alert("working");
 
         $datas = asinMaster::with(['aws'])->limit(10)->get();
         
         foreach ($datas as $data) {
             
-            R::setup('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
-            Log::alert("working");
 
             $asin = $data['asin'];
             $country_code = $data['destination_1'];
