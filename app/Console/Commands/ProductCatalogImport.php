@@ -11,7 +11,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\Config\ConfigTrait;
-use SellingPartnerApi\Api\CatalogItemsV0Api;
+use SellingPartnerApi\Api\CatalogItemsV0Api as CatalogItemsV0ApiPackage;
 
 class ProductCatalogImport extends Command
 {
@@ -90,7 +90,7 @@ class ProductCatalogImport extends Command
 
             $config = $this->config($aws_key, $country_code, $auth_code);
 
-            $apiInstance = new CatalogItemsV0Api($config);
+            $apiInstance = new CatalogItemsV0ApiPackage($config);
             $marketplace_id = $this->marketplace_id($country_code);
             Log::warning("try to get catalog data");
             try {
@@ -122,7 +122,7 @@ class ProductCatalogImport extends Command
             } catch (Exception $e) {
                 Log::alert($e->getMessage());
             }
-            // echo 'Exception when calling CatalogItemsV0Api->getCatalogItem: ', $e->getMessage(), PHP_EOL;
+           
         }
     }
 }
