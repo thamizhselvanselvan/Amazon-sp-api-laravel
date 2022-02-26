@@ -101,7 +101,7 @@ class ProductCatalogImport extends Command
                 $result = (array)($result->payload->AttributeSets[0]);
 
                 $productcatalogs = R::dispense('amazon');
-
+                Log::alert("amazon table created");
                 $value = [];
                 $productcatalogs->asin = $asin;
                 $productcatalogs->destination = $country_code;
@@ -118,6 +118,7 @@ class ProductCatalogImport extends Command
                 }
 
                 R::store($productcatalogs);
+                Log::alert('product catalog saved');
             } catch (Exception $e) {
                 echo 'Exception when calling CatalogItemsV0Api->getCatalogItem: ', $e->getMessage(), PHP_EOL;
             }
