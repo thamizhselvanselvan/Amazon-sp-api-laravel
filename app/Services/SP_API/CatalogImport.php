@@ -2,6 +2,7 @@
 
 namespace App\Services\SP_API;
 
+use helpers;
 use Exception;
 use RedBeanPHP\R as R;
 use App\Models\asinMaster;
@@ -19,6 +20,7 @@ class CatalogImport
 
     public function amazonCatalogImport()
     {
+        $startTime = startTime();
 
         Log::warning("warning from handle function");
         $connection = config('app.connection');
@@ -28,6 +30,7 @@ class CatalogImport
         $username = config('app.username');
         $password = config('app.password');
 
+    
         $datas = asinMaster::with(['aws'])->limit(1000)->get();
 
         try {
@@ -72,11 +75,14 @@ class CatalogImport
                     }
 
                     R::store($productcatalogs);
-                    // Log::alert('product catalog saved');
+                
                 } catch (Exception $e) {
                     Log::notice($e->getMessage());
                 }
             }
+
+         $endTime = endTime($startTime);
+            Log::alert($endTime);
         } catch (Exception $e) {
             Log::alert($e->getMessage());
         } finally {

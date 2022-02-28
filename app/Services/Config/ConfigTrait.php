@@ -13,7 +13,7 @@ trait ConfigTrait
 
     public function config($aws_key, $country_code, $auth_code)
     {
-        Log::alert("alert from config trait");
+       
         $token = '';
         $region = $this->region_code($country_code);
         //$region = 'NAzzz';
