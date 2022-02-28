@@ -27,7 +27,8 @@ class CatalogImport
         $password = config('app.password');
 
         Log::warning('host->' . $host . ',port->'. $port .',dbname->' . $dbname . ',username->' . $username . 'password->' . $password);
-        R::setup('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
+        $setup = R::setup('mysql: host='.$host.';dbname='.$dbname.';port='.$port,$username,$password);
+            dd($setup);
         Log::alert("working");
 
         $datas = asinMaster::with(['aws'])->limit(10)->get();
