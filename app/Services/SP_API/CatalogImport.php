@@ -28,9 +28,8 @@ class CatalogImport
         $username = config('app.username');
         $password = config('app.password');
 
-        $datas = asinMaster::with(['aws'])->limit(10)->get();
+        $datas = asinMaster::with(['aws'])->limit(1000)->get();
 
-        Log::warning('host->' . $host . ',port->' . $port . ',dbname->' . $dbname . ',username->' . $username . 'password->' . $password);
         try {
             R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
 
@@ -47,7 +46,7 @@ class CatalogImport
 
                 $apiInstance = new CatalogItemsV0ApiProduct($config);
                 $marketplace_id = $this->marketplace_id($country_code);
-                Log::warning("try to get catalog data");
+                
                 try {
                     $result = $apiInstance->getCatalogItem($marketplace_id, $asin);
 
@@ -56,7 +55,7 @@ class CatalogImport
                     $result = (array)($result->payload->AttributeSets[0]);
 
                     $productcatalogs = R::dispense('amazon');
-                    Log::alert("amazon table created");
+                  
                     $value = [];
                     $productcatalogs->asin = $asin;
                     $productcatalogs->destination = $country_code;
@@ -73,7 +72,7 @@ class CatalogImport
                     }
 
                     R::store($productcatalogs);
-                    Log::alert('product catalog saved');
+                    // Log::alert('product catalog saved');
                 } catch (Exception $e) {
                     Log::notice($e->getMessage());
                 }

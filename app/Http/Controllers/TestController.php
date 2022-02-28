@@ -15,7 +15,16 @@ class TestController extends Controller
     public function index()
     {
         //
-        return DB::select('select * from amazon ');
+        $amazonCoutn= DB::select('select count(*) from amazon ');
+        print_r($amazonCoutn) ;
+        echo "<hr>";
+        $amazonData= DB::select('select * from amazon');
+        foreach($amazonData as $data){
+
+            print_r(json_decode(json_encode($data))) ;
+            echo "<hr>";
+
+        }
     }
 
     /**
