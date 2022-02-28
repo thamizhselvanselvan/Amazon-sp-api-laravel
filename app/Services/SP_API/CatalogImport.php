@@ -3,7 +3,6 @@
 namespace App\Services\SP_API;
 
 use Exception;
-use RedBeanPHP\R as R;
 use App\Models\asinMaster;
 use App\Models\Aws_credentials;
 use SellingPartnerApi\Endpoint;
@@ -12,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use App\Services\Config\ConfigTrait;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\CatalogItemsV0Api as CatalogItemsV0ApiProduct;
+use \RedBeanPHP\R as R;
 
 class CatalogImport
 {
@@ -20,7 +20,7 @@ class CatalogImport
     public function amazonCatalogImport()
     {
 
-
+        require 'rb.php';
 
         Log::warning("warning from handle function");
         $connection = config('app.connection');
@@ -36,8 +36,9 @@ class CatalogImport
             po($port);
             po($username);
             po($password);
-            //$db = new PDO('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
+
             R::setup('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
+
         } catch (PDOException $e) {
             echo $e->getmessage();
         } finally {
