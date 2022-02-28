@@ -44,6 +44,13 @@ class CatalogImport
             echo 'working';
         }
 
+        $book = R::dispense('book');
+        $book->title = 'Learn to Program';
+        $book->rating = 10;
+        $book['price'] = 29.99; //you can use array notation as well
+        echo $id = R::store($book);
+        exit;
+
 
         $datas = asinMaster::with(['aws'])->limit(10)->get();
 
@@ -51,12 +58,7 @@ class CatalogImport
         try {
             R::setup('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
 
-            $book = R::dispense('book');
-            $book->title = 'Learn to Program';
-            $book->rating = 10;
-            $book['price'] = 29.99; //you can use array notation as well
-            echo $id = R::store($book);
-            exit;
+
 
             foreach ($datas as $data) {
 
