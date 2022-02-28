@@ -20,6 +20,8 @@ class CatalogImport
     public function amazonCatalogImport()
     {
 
+
+
         Log::warning("warning from handle function");
         $connection = config('app.connection');
         $host = config('app.host');
@@ -27,6 +29,21 @@ class CatalogImport
         $port = config('app.port');
         $username = config('app.username');
         $password = config('app.password');
+
+        try {
+            po($host);
+            po($dbname);
+            po($port);
+            po($username);
+            po($password);
+            //$db = new PDO('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
+            R::setup('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
+        } catch (PDOException $e) {
+            echo $e->getmessage();
+        } finally {
+            echo 'working';
+        }
+
 
         $datas = asinMaster::with(['aws'])->limit(10)->get();
 
