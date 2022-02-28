@@ -37,7 +37,7 @@ class CatalogImport
 
                 $asin = $data['asin'];
 
-                $country_code = $data['destination_1'];
+                $country_code = $data['source'];
                 $auth_code = $data['aws']['auth_code'];
                 $aws_key = $data['aws']['id'];
                 $marketplace_id = $this->marketplace_id($country_code);
@@ -46,7 +46,7 @@ class CatalogImport
 
                 $apiInstance = new CatalogItemsV0ApiProduct($config);
                 $marketplace_id = $this->marketplace_id($country_code);
-                
+
                 try {
                     $result = $apiInstance->getCatalogItem($marketplace_id, $asin);
 
@@ -55,7 +55,7 @@ class CatalogImport
                     $result = (array)($result->payload->AttributeSets[0]);
 
                     $productcatalogs = R::dispense('amazon');
-                  
+
                     $value = [];
                     $productcatalogs->asin = $asin;
                     $productcatalogs->destination = $country_code;
