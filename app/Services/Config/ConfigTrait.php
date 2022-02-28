@@ -18,7 +18,7 @@ trait ConfigTrait
         $region = $this->region_code($country_code);
         //$region = 'NAzzz';
         // $token = $this->token($aws_key);
-        $refeshtoken ='Atzr|IwEBIO2ZVAsEZ1E-gDCJb5IUPCZJ5D4VlBLuHj_84aR7zWgflDotXdNyNoX-34zERwG7si1VlwP4Y-wBFVxG8lZT5gkG1y8fgDDTmrNJh0LLcagPJeOMPmckwk5RWCcUCUU-0ifPyutYk-X9RLAsDEZc4lZ6JeKcKphQ_T7Vy0sXRtR_fBhGdbkS2TSqpTqELrWa8DSDuRMAQEzVPgaVrFgXRYMEkeGysre0R_iVz7r5lb7w0Yhcx9VDW7tMGpAJe1P-5bcsbE6wmRIzsa8eCh_HTVnc_4LTsEvAEmJRsIarURRayppQul2azLbwep-4eVv_9r0';
+        $refeshtoken = 'Atzr|IwEBIO2ZVAsEZ1E-gDCJb5IUPCZJ5D4VlBLuHj_84aR7zWgflDotXdNyNoX-34zERwG7si1VlwP4Y-wBFVxG8lZT5gkG1y8fgDDTmrNJh0LLcagPJeOMPmckwk5RWCcUCUU-0ifPyutYk-X9RLAsDEZc4lZ6JeKcKphQ_T7Vy0sXRtR_fBhGdbkS2TSqpTqELrWa8DSDuRMAQEzVPgaVrFgXRYMEkeGysre0R_iVz7r5lb7w0Yhcx9VDW7tMGpAJe1P-5bcsbE6wmRIzsa8eCh_HTVnc_4LTsEvAEmJRsIarURRayppQul2azLbwep-4eVv_9r0';
         $endpoints = ['EU' => Endpoint::EU, 'NA' => Endpoint::NA, 'FE' => Endpoint::FE];
         $clientId = 'amzn1.application-oa2-client.0167f1a848ae4cf0aabeeb1abbeaf8cf';
         $clientSecret = '5bf9add9576f83d33293b0e9e2ed5e671000a909f161214a77b93d26e7082765';
@@ -37,17 +37,19 @@ trait ConfigTrait
         ]);
     }
 
-    public function token($aws_key) {
+    public function token($aws_key)
+    {
         $aws = Aws_credentials::where('id', $aws_key)->first();
 
-        if(!$aws) {
+        if (!$aws) {
             return '';
         }
 
         return $aws->auth_code;
     }
 
-    public function region_code($country_code) {
+    public function region_code($country_code)
+    {
 
         $region_code = [
             "BR" => "NA",
@@ -74,14 +76,15 @@ trait ConfigTrait
             "JP" => "FE",
         ];
 
-        if(isset($region_code[$country_code])) {
+        if (isset($region_code[$country_code])) {
             return $region_code[$country_code];
         }
 
-        throw new Exception($country_code ." country code is Invalid. ");
+        throw new Exception($country_code . " country code is Invalid. ");
     }
 
-    public function marketplace_id($country_code) {
+    public function marketplace_id($country_code)
+    {
 
         $marketplace_id = [
             'BR' => 'A2Q3Y263D00KWC',
@@ -102,18 +105,16 @@ trait ConfigTrait
             'SA' => 'A17E79C6D8DWNP',
             'SE' => 'A2NODRKZP88ZB9',
             'TR' => 'A33AVAJ2PDY3EV',
-            
+
             'SG' => 'A19VAU5U5O7RUS',
             'AU' => 'A39IBJ37TRP1C6',
             'JP' => 'A1VC38T7YXB528',
         ];
 
-        if(isset($marketplace_id[$country_code])) {
+        if (isset($marketplace_id[$country_code])) {
             return $marketplace_id[$country_code];
         }
 
-        throw new Exception($country_code ." Countrycode is Inavlid for marketplace id.");
+        throw new Exception($country_code . " Countrycode is Inavlid for marketplace id.");
     }
-
-    
 }
