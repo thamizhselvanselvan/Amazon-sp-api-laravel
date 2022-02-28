@@ -3,6 +3,7 @@
 namespace App\Services\SP_API;
 
 use Exception;
+use RedBeanPHP\R as R;
 use App\Models\asinMaster;
 use App\Models\Aws_credentials;
 use SellingPartnerApi\Endpoint;
@@ -11,7 +12,6 @@ use Illuminate\Support\Facades\Log;
 use App\Services\Config\ConfigTrait;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\CatalogItemsV0Api as CatalogItemsV0ApiProduct;
-use \RedBeanPHP\R as R;
 
 class CatalogImport
 {
@@ -19,8 +19,6 @@ class CatalogImport
 
     public function amazonCatalogImport()
     {
-
-        require 'rb.php';
 
         Log::warning("warning from handle function");
         $connection = config('app.connection');
@@ -30,36 +28,11 @@ class CatalogImport
         $username = config('app.username');
         $password = config('app.password');
 
-        try {
-            po($host);
-            po($dbname);
-            po($port);
-            po($username);
-            po($password);
-
-            R::setup('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
-
-        } catch (PDOException $e) {
-            echo $e->getmessage();
-        } finally {
-            echo 'working';
-        }
-
-        $book = R::dispense('book');
-        $book->title = 'Learn to Program';
-        $book->rating = 10;
-        $book['price'] = 29.99; //you can use array notation as well
-        echo $id = R::store($book);
-        exit;
-
-
         $datas = asinMaster::with(['aws'])->limit(10)->get();
 
         Log::warning('host->' . $host . ',port->' . $port . ',dbname->' . $dbname . ',username->' . $username . 'password->' . $password);
         try {
-            R::setup('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
-
-
+            R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
 
             foreach ($datas as $data) {
 
