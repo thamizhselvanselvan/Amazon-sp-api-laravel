@@ -24,11 +24,21 @@
                 <a href="{{ route('product.fetch.amazon') }}">
                     <x-adminlte-button label="Fetch Catalog From Amazon" theme="primary" icon="fas fa-file-export" id="exportUniversalTextiles"/>
                 </a>
+                <!-- <a href="{{ route('amazon.getPricing') }}">
+                    <x-adminlte-button label="Get Pricing From Amazon" theme="primary" icon="fas fa-file-export" id="exportUniversalTextiles"/>
+                </a> -->
             </h2>
             <table class="table table-bordered yajra-datatable table-striped">
                     <thead>
                         <tr>
-                            <th></th>
+                            <th>S/N</th>
+                            <th>Asin</th>
+                            <th>Source</th>
+                            <th>Name</th>
+                            <th>Dimention</th>
+                            <th>Weight</th>
+                            <th>Price</th>
+                        
                         </tr>
                     </thead>
                     <tbody>
@@ -41,6 +51,23 @@
 
 @section('js')
 <script type="text/javascript">
+
+let yajra_table = $('.yajra-datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ url('product/amazon_com') }}",
+            columns: [
+                {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+                {data: 'asin', name: 'asin'},
+                {data: 'source', name: 'source'},
+                {data: 'label', name: 'label'},
+                {data: 'item_dimensions', name: 'item_dimensions'},
+                {data: 'weight', name: 'weight'},
+                {data: 'amount', name: 'amount'}, 
+           
+                
+            ]
+        });
     
 </script>   
 @stop

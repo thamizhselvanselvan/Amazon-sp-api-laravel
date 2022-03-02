@@ -17,7 +17,7 @@ trait ConfigTrait
         $token = '';
         $region = $this->region_code($country_code);
         //$region = 'NAzzz';
-        // $token = $this->token($aws_key);
+        $token = $this->token($aws_key);
 
         // $refeshtoken = 'Atzr|IwEBIO2ZVAsEZ1E-gDCJb5IUPCZJ5D4VlBLuHj_84aR7zWgflDotXdNyNoX-34zERwG7si1VlwP4Y-wBFVxG8lZT5gkG1y8fgDDTmrNJh0LLcagPJeOMPmckwk5RWCcUCUU-0ifPyutYk-X9RLAsDEZc4lZ6JeKcKphQ_T7Vy0sXRtR_fBhGdbkS2TSqpTqELrWa8DSDuRMAQEzVPgaVrFgXRYMEkeGysre0R_iVz7r5lb7w0Yhcx9VDW7tMGpAJe1P-5bcsbE6wmRIzsa8eCh_HTVnc_4LTsEvAEmJRsIarURRayppQul2azLbwep-4eVv_9r0';
         $endpoints = ['EU' => Endpoint::EU, 'NA' => Endpoint::NA, 'FE' => Endpoint::FE];
@@ -26,9 +26,9 @@ trait ConfigTrait
         $awsAccessKeyId = 'AKIAZTIHMXYBD5SRG5IZ';
         $awsSecretAccessKey = '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';
         $roleArn = 'arn:aws:iam::659829865986:role/Mosh-E-Com-SP-API-Role';
-
-        $refeshtoken = 'Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg';
-
+        
+        //us;
+       $refeshtoken = 'Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg';
         return  new Configuration([
             "lwaClientId" => $clientId,
             "lwaClientSecret" => $clientSecret,

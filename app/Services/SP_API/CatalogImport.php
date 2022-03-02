@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use App\Services\Config\ConfigTrait;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\CatalogItemsV0Api as CatalogItemsV0ApiProduct;
+use SellingPartnerApi\Api\ProductPricingApi as ProductPricingApiProduct;
 
 class CatalogImport
 {
@@ -29,56 +30,75 @@ class CatalogImport
         $port = config('app.port');
         $username = config('app.username');
         $password = config('app.password');
-
-    
-        $datas = asinMaster::with(['aws'])->limit(1000)->get();
-
+        
+        
+        $datas = asinMaster::with(['aws'])->limit(10)->get();
+        
         try {
             R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-
+            // R::setup('mysql:host='.$host.';dbname='.$dbname.';port='.$port, $username, $password);
+            Log::warning("success");
+            
             foreach ($datas as $data) {
-
+                
                 $asin = $data['asin'];
 
                 $country_code = $data['source'];
                 $auth_code = $data['aws']['auth_code'];
                 $aws_key = $data['aws']['id'];
+                $item_condition = 'New';
                 $marketplace_id = $this->marketplace_id($country_code);
+
 
                 $config = $this->config($aws_key, $country_code, $auth_code);
-
+                
                 $apiInstance = new CatalogItemsV0ApiProduct($config);
-                $marketplace_id = $this->marketplace_id($country_code);
 
+                $apiInstancePricing = new ProductPricingApiProduct($config);
+                $item_type = 'Asin';
+                $asins = array($asin);
                 try {
+                    Log::warning("success1");
                     $result = $apiInstance->getCatalogItem($marketplace_id, $asin);
-
+                    
                     $result = json_decode(json_encode($result));
-
+                    
                     $result = (array)($result->payload->AttributeSets[0]);
-
+                   
+                
                     $productcatalogs = R::dispense('amazon');
-
+                    
                     $value = [];
                     $productcatalogs->asin = $asin;
-                    $productcatalogs->destination = $country_code;
-
+                    $productcatalogs->source = $country_code;
+                    
                     foreach ($result as $key => $data) {
                         $key = lcfirst($key);
                         if (is_object($data)) {
-
+                            
                             $productcatalogs->{$key} = json_encode($data);
                         } else {
                             $productcatalogs->{$key} = json_encode($data);
                             // $value [][$key] = ($data);
                         }
                     }
+                    $result = $apiInstancePricing->getCompetitivePricing($marketplace_id, $item_type, $asins)->getPayload();
+                    $result = json_decode(json_encode($result));
+                    
+                    $pricing = $result[0]->Product->CompetitivePricing->CompetitivePrices[0]->Price->LandedPrice;
+                    $currencyCode =  $pricing->CurrencyCode;  
+                    $Amount = $pricing->Amount; 
 
-                    R::store($productcatalogs);
+                    $productcatalogs->currencyCode = $currencyCode;
+                    $productcatalogs->amount = $Amount;
+        
+                 R::store($productcatalogs);
+                    // R::store($productcatalogs);
                 
                 } catch (Exception $e) {
-                    Log::notice($e->getMessage());
+                    Log::alert($e);
                 }
+                
             }
 
          $endTime = endTime($startTime);
