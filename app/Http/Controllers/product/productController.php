@@ -30,9 +30,9 @@ class productController extends Controller
     use ConfigTrait;
     public function index(Request $request){
 
-        $data = DB::select('select asin,source,label,item_dimensions,currency_code,amount from amazon');
+        // $data = DB::select('select asin,source,label,item_dimensions,currency_code,amount from amazon');
         
-        $data = (json_decode($data[0]->item_dimensions));
+        // $data = (json_decode($data[0]->item_dimensions));
         
         // dd($data);
         //dd($data->Weight->value);
