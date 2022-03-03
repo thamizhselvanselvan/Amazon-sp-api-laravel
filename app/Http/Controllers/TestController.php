@@ -107,10 +107,10 @@ class TestController extends Controller
             echo 'Exception when calling ProductPricingApi->getCompetitivePricing: ', $e->getMessage(), PHP_EOL;
         }
         
-    //     echo"<hr>";
-    //   echo 'Product Pricing Api / getItemOffers';
-    //   echo"<hr>";
-    //   echo "<pre>";
+        echo"<hr>";
+      echo 'Product Pricing Api / getItemOffers';
+      echo"<hr>";
+      echo "<pre>";
     //   try {
     //     $result = $apiInstance->getItemOffers($marketplace, $item_condition, $asin);
     //     //   $result = json_decode(json_encode($result));
@@ -119,7 +119,7 @@ class TestController extends Controller
     //   } catch (Exception $e) {
     //       echo 'Exception when calling ProductPricingApi->getItemOffers: ', $e->getMessage(), PHP_EOL;
     //   } 
-    //   echo 'Product Pricing Api / getListingOffers';
+      echo 'Product Pricing Api / getListingOffers';
     //   try {
     //     $result = $apiInstance->getListingOffers($marketplace, $item_condition, $seller_sku);
     //       $result = json_decode(json_encode($result));
@@ -132,7 +132,8 @@ class TestController extends Controller
       echo"<hr>";
       $asins = ['B00005C2M2', 'B00006IDK9'];
       try {
-        // $result = $apiInstance->getPricing($marketplace, $item_type, $asins);
+        $result = $apiInstance->getPricing($marketplace, $item_type, $asins);
+        po($result);
         //   $result = json_decode(json_encode($result));
         //  po($result);
       } catch (Exception $e) {
@@ -140,11 +141,11 @@ class TestController extends Controller
       } 
 
 
-    // echo '<hr>';
+    echo '<hr>';
     
-    // $apiInstance = new CatalogApi($config);
-    // echo 'Catalog Items API v2020-12-01/ getCatalogItem';
-    // echo"<hr>";
+    $apiInstance = new CatalogApi($config);
+    echo 'Catalog Items API v2020-12-01/ getCatalogItem';
+    echo"<hr>";
 
 
     // try {
@@ -156,10 +157,10 @@ class TestController extends Controller
     
     
     
-    // echo '<hr>';
-    // $apiInstance = new CatalogItemsV0Api($config);
-    // echo 'Catalog Items API v0 / getCatalogItem';
-    // echo"<hr>";
+    echo '<hr>';
+    $apiInstance = new CatalogItemsV0Api($config);
+    echo 'Catalog Items API v0 / getCatalogItem';
+    echo"<hr>";
     
     // try {
     //     $result = $apiInstance->getCatalogItem($marketplace, $asin);
@@ -168,18 +169,18 @@ class TestController extends Controller
     //     echo 'Exception when calling CatalogApi V0->getCatalogItem: ', $e->getMessage(), PHP_EOL;
     // }
 
-//     echo"<hr>";
-//     echo 'Catalog Items API v0 / listCatalogCategories';
-//     echo"<hr>";
-//     try {
-//         $result = $apiInstance->listCatalogCategories($marketplace, $asin);
-//         po($result);
-//     } catch (Exception $e) {
-//         echo 'Exception when calling CatalogItemsV0Api->listCatalogCategories: ', $e->getMessage(), PHP_EOL;
-//     }
-//     echo"<hr>";
-//     echo 'Catalog Items API v0 / listCatalogItems';
-//     echo"<hr>";
+    echo"<hr>";
+    echo 'Catalog Items API v0 / listCatalogCategories';
+    echo"<hr>";
+    // try {
+    //     $result = $apiInstance->listCatalogCategories($marketplace, $asin);
+    //     po($result);
+    // } catch (Exception $e) {
+    //     echo 'Exception when calling CatalogItemsV0Api->listCatalogCategories: ', $e->getMessage(), PHP_EOL;
+    // }
+    echo"<hr>";
+    echo 'Catalog Items API v0 / listCatalogItems';
+    echo"<hr>";
 //     try {
 //     $result = $apiInstance->listCatalogItems($marketplace);
 //     print_r($result);
