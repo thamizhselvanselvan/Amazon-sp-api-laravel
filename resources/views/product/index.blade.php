@@ -35,7 +35,7 @@
                             <th>Asin</th>
                             <th>Source</th>
                             <th>Name</th>
-                            <th>Dimention</th>
+                            <th>Dimension</th>
                             <th>Weight</th>
                             <th>Price</th>
                         

@@ -46,6 +46,7 @@ Route::get('admin/rolespermissions', 'Admin\RolesPermissionsController@index');
 Route::get('asin-master', 'AsinMasterController@index');
 Route::get('add-asin', 'AsinMasterController@addAsin');
 Route::get('import-bulk-asin', 'AsinMasterController@importBulkAsin');
+Route::get('export-asin', 'AsinMasterController@exportAsinToCSV');
 Route::post('add-bulk-asin', 'AsinMasterController@addBulkAsin');
 
 Route::resource('textiles', 'textilesController');
@@ -53,15 +54,8 @@ Route::post('import-csv', 'textilesController@importTextiles')->name('import.csv
 Route::get('export_to_csv', 'textilesController@exportTextilesToCSV')->name('export.csv');
 
 Route::get('file_downloads', 'filedownloads\FileDownloadsController@filedownloads')->name('file.downloads');
-Route::get('universalTextiles_download', function () {
-
-     $file_path = "excel/downloads/universalTextilesExport.csv";
-     //$path = Storage::path($file_path);
-     if (Storage::exists($file_path)) {
-          return Storage::download($file_path);
-     }
-     return 'file not exist';
-})->name('download.universalTextiles');
+Route::get('universalTextiles_download', 'filedownloads\FileDownloadsController@download_universalTextiles')->name('download.universalTextiles');
+Route::get('asinMaster_download', 'filedownloads\FileDownloadsController@download_asin_master')->name('download.asinMaster');
 
 Route::get('product/amazon_com', 'product\productController@index')->name('product.amazon_com');
 Route::get('product/fetch_from_amazon', 'product\productController@fetchFromAmazon')->name('product.fetch.amazon');

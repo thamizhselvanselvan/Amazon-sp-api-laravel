@@ -27,6 +27,9 @@
                     <a href="import-bulk-asin">
                         <x-adminlte-button label="Asin Bulk Import" theme="primary" icon="fas fa-file-import"/>
                     </a>
+                    <a href="export-asin">
+                        <x-adminlte-button label="Asin Export" theme="primary" icon="fas fa-file-export"/>
+                    </a>
 
                 </h2>
                

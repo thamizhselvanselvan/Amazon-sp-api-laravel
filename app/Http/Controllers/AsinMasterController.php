@@ -78,4 +78,25 @@ class AsinMasterController extends Controller
         return redirect('/import-bulk-asin')->with('success', 'All Asins uploaded successfully');
 
     }
+
+    public function exportAsinToCSV()
+    {
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+            
+            // exec('nohup php artisan pms:textiles-import  > /dev/null &');
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan pms:asin-export > /dev/null &";
+            exec($command);
+            
+            Log::warning("Export asin command executed production  !!!");
+        } else {
+
+            Log::warning("Export asin command executed local !");
+            Artisan::call('pms:asin-export');
+        }
+
+        return redirect()->intended('/asin-master');
+
+
+    }
 }

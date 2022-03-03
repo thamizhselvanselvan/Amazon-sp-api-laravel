@@ -25,6 +25,11 @@
                                 Download Universal Textils
                             </a>
                         </ul>
+                        <ul>
+                            <a href="{{route('download.asinMaster')}}">
+                                Download Asin Master
+                            </a>
+                        </ul>
                     </li>
                 </form>
         </div>

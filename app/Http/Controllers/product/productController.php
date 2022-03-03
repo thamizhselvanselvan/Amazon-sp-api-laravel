@@ -30,12 +30,6 @@ class productController extends Controller
     use ConfigTrait;
     public function index(Request $request){
 
-        $data = DB::select('select asin,source,label,item_dimensions,currency_code,amount from amazon');
-        
-        $data = (json_decode($data[0]->item_dimensions));
-        
-        // dd($data);
-        // dd($data->Weight->value);
         if($request->ajax()){
             $data = DB::select('select asin,source,label,item_dimensions,currency_code,amount from amazon');
             return DataTables::of($data)
@@ -43,8 +37,7 @@ class productController extends Controller
                 ->editColumn('item_dimensions',function ($row){
                     $dimension = 'NA';
                     $data = json_decode($row->item_dimensions);
-                   
-                        
+                    
                         if(isset($data->Height)){
                             $dimension = '<p class="m-0 p-0">Height: '. $data->Height->value .' '. $data->Height->Units . '</p>';
                         }
@@ -54,7 +47,6 @@ class productController extends Controller
                         if(isset($data->Width)){
                             $dimension .= '<p class="m-0 p-0">Width: '. $data->Width->value .' '. $data->Width->Units . '</p>';
                         }
-                    
 
                     return $dimension;
                 })
@@ -64,7 +56,6 @@ class productController extends Controller
                 ->addColumn('weight', function($row){
 
                     $data = json_decode($row->item_dimensions);
-                    
                         if(isset($data->Weight)){
                             $dimension = '<p class="m-0 p-0">Weight: '. $data->Weight->value .' '. $data->Weight->Units . '</p>';
                         }

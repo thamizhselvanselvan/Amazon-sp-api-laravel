@@ -45,19 +45,15 @@ class textilesExport extends Command
     public function handle()
     {   
         $file_path = "excel/downloads/universalTextilesExport.csv";
+        if(!Storage::exists($file_path)) {
+            Storage::put($file_path, '');
+        }
         $writer = Writer::createFromPath(Storage::path($file_path), "w"); 
         $header = ['S/N','Textile Id', 'Ean', 'Brand', 'Title', 'Size', 'Color', 'Transfer Price', 'Shipping Weight', 'Product Type', 'Quantity','Created At','Updated At'];
         $writer->insertOne($header);
 
-            DB::table('universal_textiles')->orderBy('id')->chunk(10000, function ($records) use($file_path, $writer) {
+            DB::table('universal_textiles')->orderBy('id')->chunk(10000, function ($records) use($writer) {
 
-                if(!Storage::exists($file_path)) {
-                    Storage::put($file_path, '');
-                }
-
-                if(!Storage::exists($file_path)) {
-                    return false;
-                }
             $records = $records->toArray();
             $records = array_map(function ($datas) {
                 $datas->size = "'".$datas->size."'";
