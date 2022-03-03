@@ -276,28 +276,30 @@ return [
         ],
             
         [
-            'text'    => 'Textile list',
+            'text'    => 'Catalog',
             'submenu' => [
                 [
                     'text' => 'Universal Textiles',
                     'url'  => 'textiles',
                     'icon' => 'far fa-fw fa-file',
                 ],
+                [
+                    
+                    'text' => 'Amazon.com',
+                    'url'  => 'product/amazon_com',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    
+                    'text' => 'fragrancenet.com',
+                    'url'  => '../../fragrancenet.com',
+                    'icon' => 'far fa-fw fa-file',
+                ]
             ],
         ],
         
         [
-            'text' => 'Amazon',
-            'submenu' => [
-                [
-                    'text' => 'Amazon.com',
-                    'url'  => 'product/amazon_com',
-                ]
-            ]
-            
-        ],
-        [
-            'text' => 'File Downloads',
+            'text' => 'Download Files',
             'url'  => 'file_downloads',
             'icon' => 'far fa-fw fa-file',
             
