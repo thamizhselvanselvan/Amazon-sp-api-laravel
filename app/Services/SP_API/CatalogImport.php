@@ -112,7 +112,7 @@ class CatalogImport
                 }
                 
             }
-            R::storeAll($catalogArray);
+            // R::storeAll($catalogArray);
          $endTime = endTime($startTime);
             Log::alert($endTime);
         } catch (Exception $e) {
