@@ -31,9 +31,6 @@ class CatalogImport
         $username = config('app.username');
         $password = config('app.password');
 
-        $catalogArray = [];
-        $count = 1;
-
         $datas = asinMaster::with(['aws'])->limit(100)->get();
 
         try {
@@ -41,10 +38,10 @@ class CatalogImport
             // R::setup('mysql:host='.$host.';dbname='.$dbname.';port='.$port, $username, $password);
             Log::warning("success");
 
-            $productcatalogs = R::dispense('amazon');
-
+            
             foreach ($datas as $data) {
-
+                
+                $productcatalogs = R::dispense('amazon');
                 $asin = $data['asin'];
 
                 $country_code = $data['source'];
@@ -69,9 +66,6 @@ class CatalogImport
 
                 $result = (array)($result->payload->AttributeSets[0]);
 
-                
-
-                $value = [];
                 $productcatalogs->asin = $asin;
                 $productcatalogs->source = $country_code;
 
@@ -82,7 +76,6 @@ class CatalogImport
                         $productcatalogs->{$key} = json_encode($data);
                     } else {
                         $productcatalogs->{$key} = json_encode($data);
-                        // $value [][$key] = ($data);
                     }
                 }
                 $result = $apiInstancePricing->getCompetitivePricing($marketplace_id, $item_type, $asins)->getPayload();
