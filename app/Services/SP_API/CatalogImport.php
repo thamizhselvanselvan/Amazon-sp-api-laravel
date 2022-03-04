@@ -31,7 +31,7 @@ class CatalogImport
         $username = config('app.username');
         $password = config('app.password');
 
-        $datas = asinMaster::with(['aws'])->limit(1)->get();
+        $datas = asinMaster::with(['aws'])->limit(10)->get();
 
         try {
             Log::emergency($connection.' '.$host." ". $dbname.' '.$port .' '. $username.' '. $password);
@@ -90,6 +90,7 @@ class CatalogImport
                 $pricing = $result[0]->Product->CompetitivePricing->CompetitivePrices[0]->Price->LandedPrice;
                 $currencyCode =  $pricing->CurrencyCode;
                 $Amount = $pricing->Amount;
+                Log::notice($Amount,$currencyCode);
 
                 $productcatalogs->currencyCode = $currencyCode;
                 $productcatalogs->amount = $Amount;
