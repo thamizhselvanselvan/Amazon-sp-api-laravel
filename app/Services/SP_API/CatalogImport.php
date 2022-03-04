@@ -39,6 +39,8 @@ class CatalogImport
             Log::warning("success");
             
             foreach ($datas as $data) {
+                Log::info('AWS - '. $data['aws']);
+                Log::info('AWS Auth Code - '. $data['aws']['auth_code']);
                 
                 $asin = $data['asin'];
 
