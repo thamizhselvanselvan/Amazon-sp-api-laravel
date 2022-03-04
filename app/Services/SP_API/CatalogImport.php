@@ -31,8 +31,10 @@ class CatalogImport
         $username = config('app.username');
         $password = config('app.password');
         
+        $catalogArray =[];
+        $count =1;
         
-        $datas = asinMaster::with(['aws'])->limit(1000)->get();
+        $datas = asinMaster::with(['aws'])->limit(100)->get();
         
         try {
             R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
@@ -64,7 +66,8 @@ class CatalogImport
                     $result = json_decode(json_encode($result));
                     
                     $result = (array)($result->payload->AttributeSets[0]);
-                   
+
+                   $productcatalogs = [];
                 
                     $productcatalogs = R::dispense('amazon');
                     
@@ -92,7 +95,16 @@ class CatalogImport
                     $productcatalogs->currencyCode = $currencyCode;
                     $productcatalogs->amount = $Amount;
         
-                 R::store($productcatalogs);
+                    $catalogArray []= $productcatalogs;
+
+                    if($count == 10){
+                        
+                        R::storeAll($catalogArray);
+                        $catalogArray =[];
+                        $count = 1;
+                    }
+                    $count++;
+
                     // R::store($productcatalogs);
                 
                 } catch (Exception $e) {
@@ -100,7 +112,7 @@ class CatalogImport
                 }
                 
             }
-
+            R::storeAll($catalogArray);
          $endTime = endTime($startTime);
             Log::alert($endTime);
         } catch (Exception $e) {

@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Jobs\AmazonCatalogImport;
 use App\Services\Config\ConfigTrait;
 use Illuminate\Support\Arr;
 use SellingPartnerApi\Configuration;
@@ -77,15 +78,18 @@ public function fetchFromAmazon(){
 
         Log::warning("asin production executed");
 
-        $base_path = base_path();
-        $command = "cd $base_path && php artisan pms:catalog-import > /dev/null &";
-        exec($command);
-        Log::warning("asin production command executed");
+        // $base_path = base_path();
+        // $command = "cd $base_path && php artisan pms:catalog-import > /dev/null &";
+        // exec($command);
+        // Log::warning("asin production command executed");
+        AmazonCatalogImport::dispatch();
         
     } else {
 
-        Log::warning("Export command executed local !");
-        Artisan::call('pms:catalog-import');
+        // Log::warning("Export command executed local !");
+        // Artisan::call('pms:catalog-import');
+        Log::alert("Alert from controller");
+        AmazonCatalogImport::dispatch();
         
     }
        
