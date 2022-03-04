@@ -31,9 +31,9 @@ class CatalogImport
         $username = config('app.username');
         $password = config('app.password');
         
-        $datas = asinMaster::with(['aws'])->limit(100)->get();
+        $datas = asinMaster::with(['aws'])->limit(10)->get();
         
-        try {
+        
             R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
             // R::setup('mysql:host='.$host.';dbname='.$dbname.';port='.$port, $username, $password);
             Log::warning("success");
@@ -66,7 +66,6 @@ class CatalogImport
                 
                     $productcatalogs = R::dispense('amazon');
                     
-                    $value = [];
                     $productcatalogs->asin = $asin;
                     $productcatalogs->source = $country_code;
                     
@@ -89,8 +88,6 @@ class CatalogImport
 
                     $productcatalogs->currencyCode = $currencyCode;
                     $productcatalogs->amount = $Amount;
-        
-                    $catalogArray []= $productcatalogs;
 
                     R::store($productcatalogs);
                 
@@ -102,11 +99,5 @@ class CatalogImport
         
          $endTime = endTime($startTime);
             Log::alert($endTime);
-        } catch (Exception $e) {
-            Log::alert($e->getMessage());
-        } finally {
-
-            Log::alert("working");
-        }
     }
 }
