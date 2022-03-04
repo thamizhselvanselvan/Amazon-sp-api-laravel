@@ -66,8 +66,6 @@ class CatalogImport
                     $result = json_decode(json_encode($result));
                     
                     $result = (array)($result->payload->AttributeSets[0]);
-
-                   $productcatalogs = [];
                 
                     $productcatalogs = R::dispense('amazon');
                     
@@ -94,18 +92,8 @@ class CatalogImport
 
                     $productcatalogs->currencyCode = $currencyCode;
                     $productcatalogs->amount = $Amount;
-        
-                    $catalogArray []= $productcatalogs;
 
-                    if($count == 10){
-                        
-                        R::storeAll($catalogArray);
-                        $catalogArray =[];
-                        $count = 1;
-                    }
-                    $count++;
-
-                    // R::store($productcatalogs);
+                    R::store($productcatalogs);
                 
                 } catch (Exception $e) {
                     Log::alert($e);
