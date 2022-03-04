@@ -63,6 +63,5 @@ class textilesExport extends Command
             $writer->insertall($records);
                     
         });
-          
     }
 }

@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
-use App\Jobs\universalTextileDataImport;
 use Illuminate\Cache\RateLimiting\Limit;
 use Psy\CodeCleaner\FunctionReturnInWriteContextPass;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
