@@ -31,7 +31,7 @@ class CatalogImport
         $username = config('app.username');
         $password = config('app.password');
         
-        $datas = asinMaster::with(['aws'])->limit(10)->get();
+        $datas = asinMaster::with(['aws'])->limit(2000)->get();
         
         
             R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
