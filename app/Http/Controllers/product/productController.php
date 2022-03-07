@@ -74,22 +74,54 @@ class productController extends Controller
 
     public function fetchFromAmazon()
     {
+        // $datas = asinMaster::with(['aws'])->limit(1)->get();
 
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
             Log::warning("asin production executed");
 
-            // $base_path = base_path();
-            // $command = "cd $base_path && php artisan pms:catalog-import > /dev/null &";
-            // exec($command);
-            // Log::warning("asin production command executed");
-            AmazonCatalogImport::dispatch();
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan pms:catalog-import > /dev/null &";
+            exec($command);
+            Log::warning("asin production command executed");
+
+            // foreach($datas as $data){
+            //     $asin = $data['asin'];
+            //     $country_code = $data['source'];
+            //     $auth_code = $data['aws']['auth_code'];
+            //     $aws_key = $data['aws']['id'];
+            //     AmazonCatalogImport::dispatch(
+            //         [
+            //             'asin' => $asin,
+            //             'country_code' => $country_code,
+            //             'auth_code' => $auth_code,
+            //             'aws_key' => $aws_key,
+            //         ]
+            //     );
+            // }
         } else {
 
-            // Log::warning("Export command executed local !");
-            // Artisan::call('pms:catalog-import');
-            Log::alert("Alert from controller");
-            AmazonCatalogImport::dispatch();
+            Log::warning("Export command executed local !");
+            Artisan::call('pms:catalog-import');
+            Log::alert("Alert from controller Local");
+
+            // foreach($datas as $data){   
+                // $asin = 'B0000632EN';
+                // $country_code = 'US';
+                // $auth_code = '';
+                // $aws_key = '13';
+            //     $asin = $data['asin'];
+            //     $country_code = $data['source'];
+            //     $auth_code = $data['aws']['auth_code'];
+            //     $aws_key = $data['aws']['id'];
+                
+            //     AmazonCatalogImport::dispatch([
+            //             'asin' => $asin,
+            //             'country_code' => $country_code,
+            //             'auth_code' => $auth_code,
+            //             'aws_key' => $aws_key,
+            //         ]);
+            // }
         }
 
         return redirect()->intended('/product/amazon_com');

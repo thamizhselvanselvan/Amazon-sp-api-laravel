@@ -15,6 +15,12 @@ class aws_credentials extends Model
         $this->getConnection()->setTablePrefix('bb_');
     } 
 
+    public function __destruct()
+    {
+        $this->getConnection()->setTablePrefix('sa_');
+    }
+    
+
     protected $fillable = [
         'seller_id',
         'mws_region_id',
@@ -40,5 +46,6 @@ class aws_credentials extends Model
         return $this->belongsTo(Product::class, 'seller_id', 'seller_id');
     }
 
+    
     
 }

@@ -17,7 +17,10 @@ class Mws_region extends Model
          $this->getConnection()->setTablePrefix('bb_');
      } 
  
-
+     public function __destruct()
+     {
+         $this->getConnection()->setTablePrefix('sa_');
+     }
     protected $fillable = [
         'region',
         'region_code',
@@ -35,4 +38,5 @@ class Mws_region extends Model
         return $this->belongsTo(Aws_credentials::class, 'mws_region_id', 'id');
     }
 
+    
 }

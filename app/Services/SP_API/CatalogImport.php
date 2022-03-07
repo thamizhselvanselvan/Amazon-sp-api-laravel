@@ -19,7 +19,7 @@ class CatalogImport
 {
     use ConfigTrait;
 
-    public function amazonCatalogImport()
+    public function amazonCatalogImport($asin, $country_code, $auth_code, $aws_key)
     {
         $startTime = startTime();
 
@@ -31,23 +31,24 @@ class CatalogImport
         $username = config('app.username');
         $password = config('app.password');
         
-        $datas = asinMaster::with(['aws'])->limit(2000)->get();
+        // $datas = asinMaster::with(['aws'])->limit(2000)->get();
         
         
             R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
             // R::setup('mysql:host='.$host.';dbname='.$dbname.';port='.$port, $username, $password);
             Log::warning("success");
             
-            foreach ($datas as $data) {
-                Log::info('AWS - '. $data['aws']);
-                Log::info('AWS Auth Code - '. $data['aws']['auth_code']);
+            // // foreach ($datas as $data) {
+            //     Log::info('AWS - '. $data['aws']);
+            //     Log::info('AWS Auth Code - '. $data['aws']['auth_code']);
                 
-                $asin = $data['asin'];
+                // $asin = $data['asin'];
 
-                $country_code = $data['source'];
-                $auth_code = $data['aws']['auth_code'];
-                $aws_key = $data['aws']['id'];
-                $item_condition = 'New';
+                // $country_code = $data['source'];
+                // $auth_code = $data['aws']['auth_code'];
+                // $aws_key = $data['aws']['id'];
+                // $item_condition = 'New';
+
                 $marketplace_id = $this->marketplace_id($country_code);
 
 
@@ -97,7 +98,7 @@ class CatalogImport
                     Log::alert($e);
                 }
                 
-            }
+            // }
         
          $endTime = endTime($startTime);
             Log::alert($endTime);

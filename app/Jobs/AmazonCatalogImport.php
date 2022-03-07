@@ -14,15 +14,16 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 class AmazonCatalogImport implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
+    private $payload;
+  
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($payload)
     {
-        //
+        $this->payload = $payload;
     }
 
     /**
@@ -33,8 +34,16 @@ class AmazonCatalogImport implements ShouldQueue
     public function handle()
     {
         Log::alert("Alert from Jobs");
-     
+       
+
+        // $asin = $this->payload['asin'];
+        // $country_code = $this->payload['country_code'];
+        // $auth_code =  $this->payload['auth_code'];
+        // $aws_key = $this->payload['aws_key'];
+
+        // Log::alert($asin,$country_code,$auth_code,$aws_key);
+
         $amazonCatalogsImport = new CatalogImport();
-        $amazonCatalogsImport->amazonCatalogImport();
+        $amazonCatalogsImport->amazonCatalogImport( $this->payload['asin'], $this->payload['country_code'], $this->payload['auth_code'], $this->payload['aws_key']);
     }
 }

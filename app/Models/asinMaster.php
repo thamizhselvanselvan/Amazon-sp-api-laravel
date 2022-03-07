@@ -43,4 +43,10 @@ class asinMaster extends Model
         );
     }
 
+    public function __distruct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->getConnection()->setTablePrefix('sa_');
+    } 
+
 }
