@@ -33,7 +33,7 @@ class FileDownloadsController extends Controller
     }
 
     public function download_other_product($id){
-
+        //Other Amazon file download
         $file_path = "excel/downloads/otheramazon/otherProductDetails".$id.'.csv';
         //$path = Storage::path($file_path);
         if (Storage::exists($file_path)) {

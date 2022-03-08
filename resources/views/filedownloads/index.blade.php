@@ -34,6 +34,10 @@
                             <a href="other-product/download/0">
                                 Download Amazon other Product 
                             </a>
+                            <!-- <select id='download_amazon_product' >
+                                <option>--Select--</option>
+                                <option value="0"> Download Amazon other Product 0</option>
+                            </select> -->
                         </ul>
                     </li>
                 </form>
@@ -43,5 +47,26 @@
 @stop
 
 @section('js')
+<script type="text/javascript">
+$(function(){
+//     $(document).on('change', '#download_amazon_product', function(){
+//         // alert($('#download_amazon_product').val());
+//         $.ajax({
+//             method: 'get',
+//             url: 'other-product/download/0',
+//             data:{
+//                 "_token": "{{ csrf_token() }}",
+//                 "_method": 'get',
+//             },
+//             success: function() {
+                
+//                 // yajra_table.ajax.reload();
+                
+//             }
+//         })      
+// // alert('change');
+// });
+});
+</script>
    
 @stop
