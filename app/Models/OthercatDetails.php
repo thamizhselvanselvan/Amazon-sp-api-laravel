@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class OthercatDetails extends Model
 {
     use HasFactory;
-    protected $connection = 'mysql1';
+    protected $connection = 'aws';
 }
