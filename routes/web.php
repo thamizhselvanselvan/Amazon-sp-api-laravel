@@ -48,6 +48,7 @@ Route::get('add-asin', 'AsinMasterController@addAsin');
 Route::get('import-bulk-asin', 'AsinMasterController@importBulkAsin');
 Route::get('export-asin', 'AsinMasterController@exportAsinToCSV');
 Route::post('add-bulk-asin', 'AsinMasterController@addBulkAsin');
+Route::get('asinMaster_download', 'filedownloads\FileDownloadsController@download_asin_master')->name('download.asinMaster');
 
 Route::resource('textiles', 'textilesController');
 Route::post('import-csv', 'textilesController@importTextiles')->name('import.csv');
@@ -55,13 +56,13 @@ Route::get('export_to_csv', 'textilesController@exportTextilesToCSV')->name('exp
 
 Route::get('file_downloads', 'filedownloads\FileDownloadsController@filedownloads')->name('file.downloads');
 Route::get('universalTextiles_download', 'filedownloads\FileDownloadsController@download_universalTextiles')->name('download.universalTextiles');
-Route::get('asinMaster_download', 'filedownloads\FileDownloadsController@download_asin_master')->name('download.asinMaster');
 
 Route::get('product/amazon_com', 'product\productController@index')->name('product.amazon_com');
 Route::get('product/fetch_from_amazon', 'product\productController@fetchFromAmazon')->name('product.fetch.amazon');
 Route::get('product/getPricing', 'product\productController@amazonGetPricing')->name('amazon.getPricing');
 
 Route::get('other-product/amazon_com', 'otherProduct\anotherAmazonProduct@index')->name('product.amazon_com');
+Route::get('other-product/export', 'otherProduct\anotherAmazonProduct@exportOtherProduct')->name('export.other-product');
 
 Route::get('path', function () {
 
