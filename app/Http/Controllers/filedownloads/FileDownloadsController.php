@@ -31,4 +31,14 @@ class FileDownloadsController extends Controller
         }
         return 'file not exist';
     }
+
+    public function download_other_product($id){
+
+        $file_path = "excel/downloads/otheramazon/otherProductDetails".$id.'.csv';
+        //$path = Storage::path($file_path);
+        if (Storage::exists($file_path)) {
+             return Storage::download($file_path);
+        }
+        return 'file not exist';
+    }
 }

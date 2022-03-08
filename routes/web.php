@@ -63,6 +63,7 @@ Route::get('product/getPricing', 'product\productController@amazonGetPricing')->
 
 Route::get('other-product/amazon_com', 'otherProduct\anotherAmazonProduct@index')->name('product.amazon_com');
 Route::get('other-product/export', 'otherProduct\anotherAmazonProduct@exportOtherProduct')->name('export.other-product');
+Route::get('other-product/download/{id}', 'filedownloads\FileDownloadsController@download_other_product')->name('download.other-product');
 
 Route::get('path', function () {
 

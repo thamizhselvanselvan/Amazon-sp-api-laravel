@@ -30,6 +30,11 @@
                                 Download Asin Master
                             </a>
                         </ul>
+                        <ul>
+                            <a href="other-product/download/0">
+                                Download Amazon other Product 
+                            </a>
+                        </ul>
                     </li>
                 </form>
         </div>
