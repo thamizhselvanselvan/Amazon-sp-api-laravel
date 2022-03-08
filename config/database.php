@@ -89,7 +89,14 @@ return [
 
         'mssql' => [
             'driver' => 'sqlsrv',
-            'host' => env('MSSQL_DB_HOST', '127.0.0.1'),
+            'read' => [
+                'host' => [
+                    env('MSSQL_DB_HOST', '127.0.0.1')
+                ],
+            ],
+            'write' => [
+                'host' => [],
+            ],
             'port' => env('MSSQL_DB_PORT', '3306'),
             'database' => env('MSSQL_DB_DATABASE', ''),
             'username' => env('MSSQL_DB_USERNAME', ''),
