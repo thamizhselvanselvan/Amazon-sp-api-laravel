@@ -75,7 +75,7 @@ return [
             'driver' => 'mysql',
             'read' => [
                 'host' => [
-                    env('MSSQL_DB_HOST', '127.0.0.1')
+                    env('AWS_DB_HOST', '127.0.0.1')
                 ],
             ],
             'write' => [

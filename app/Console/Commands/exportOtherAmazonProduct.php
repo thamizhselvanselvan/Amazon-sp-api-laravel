@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class exportOtherAmazonProduct extends Command
-{
+{private $offset = 0;
     /**
      * The name and signature of the console command.
      *
