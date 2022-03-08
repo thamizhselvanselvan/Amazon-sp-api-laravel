@@ -61,6 +61,8 @@ Route::get('product/amazon_com', 'product\productController@index')->name('produ
 Route::get('product/fetch_from_amazon', 'product\productController@fetchFromAmazon')->name('product.fetch.amazon');
 Route::get('product/getPricing', 'product\productController@amazonGetPricing')->name('amazon.getPricing');
 
+Route::get('other-product/amazon_com', 'otherProduct\anotherAmazonProduct@index')->name('product.amazon_com');
+
 Route::get('path', function () {
 
      $file_path = "excel/downloads/universalTextilesExport.csv";

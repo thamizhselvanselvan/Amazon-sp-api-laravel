@@ -291,6 +291,12 @@ return [
                 ],
                 [
                     
+                    'text' => 'Other Amazon.com',
+                    'url'  => 'other-product/amazon_com',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    
                     'text' => 'fragrancenet.com',
                     'url'  => '../../fragrancenet.com',
                     'icon' => 'far fa-fw fa-file',
