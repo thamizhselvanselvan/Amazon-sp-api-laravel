@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class exportOtherAmazonProduct extends Command
-{private $offset = 0;
+{
+    private $offset = 0;
+
     /**
      * The name and signature of the console command.
      *
@@ -41,28 +43,28 @@ class exportOtherAmazonProduct extends Command
      */
     public function handle()
     {
-        Log::warning("warning form exprot ");   
+        Log::warning("warning form exprot ");
         $file_path = "excel/downloads/otheramazon/otherProductDetails";
-        $chunk = 950000;
+        $chunk = 500000;
 
-     $header = ['hit', 'asin', 'sku', 'hs_code', 'gst', 'update_time', 'availability', 'price','list_price','price1','price_inr','list_price_inr','price_aed','list_price_aed', 'shipping_weight', 'image_t', 'id', 'title','image_p', 'image_d', 'category', 'all_category', 'description', 'height' ,'length' ,'width' ,'weight' ,'flipkart', 'amazon', 'upc', 'manufacturer	' ,'latency' ,'uae_latency' ,'b2c_latency' ,'ean' ,'color' ,'model' ,'mpn' ,'detail_page_url' ,'creation_time', 'page'];
-     
-    OthercatDetails::chunk($chunk, function ($records) use($file_path, $header) {
+        $header = ['hit', 'asin', 'sku', 'hs_code', 'gst', 'update_time', 'availability', 'price', 'list_price', 'price1', 'price_inr', 'list_price_inr', 'price_aed', 'list_price_aed', 'shipping_weight', 'image_t', 'id', 'title', 'image_p', 'image_d', 'category', 'all_category', 'description', 'height', 'length', 'width', 'weight', 'flipkart', 'amazon', 'upc', 'manufacturer	', 'latency', 'uae_latency', 'b2c_latency', 'ean', 'color', 'model', 'mpn', 'detail_page_url', 'creation_time', 'page'];
 
-        if(!Storage::exists($file_path.$this->offset.'.csv')) {
-            Storage::put($file_path.$this->offset.'.csv', '');}
+        OthercatDetails::chunk($chunk, function ($records) use ($file_path, $header) {
 
-        $writer = Writer::createFromPath(Storage::path($file_path.$this->offset.'.csv'), "w");
+            if (!Storage::exists($file_path . $this->offset . '.csv')) {
+                Storage::put($file_path . $this->offset . '.csv', '');
+            }
 
-        $writer->insertOne($header);
-        $records = $records->toArray();
-        $records = array_map(function ($datas) {
-            return (array) $datas;
-        }, $records);
-        
-        $writer->insertall($records);  
-        $this->offset++;
+            $writer = Writer::createFromPath(Storage::path($file_path . $this->offset . '.csv'), "w");
 
-    });
+            $writer->insertOne($header);
+            $records = $records->toArray();
+            $records = array_map(function ($datas) {
+                return (array) $datas;
+            }, $records);
+
+            $writer->insertall($records);
+            $this->offset++;
+        });
     }
 }
