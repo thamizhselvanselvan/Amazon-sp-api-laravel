@@ -11,7 +11,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-class anotherAmazonProduct extends Controller
+class anotherAmazonProductController extends Controller
 {
     private $offset = 0;
     public function index(Request $request)

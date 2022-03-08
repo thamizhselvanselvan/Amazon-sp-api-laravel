@@ -61,8 +61,8 @@ Route::get('product/amazon_com', 'product\productController@index')->name('produ
 Route::get('product/fetch_from_amazon', 'product\productController@fetchFromAmazon')->name('product.fetch.amazon');
 Route::get('product/getPricing', 'product\productController@amazonGetPricing')->name('amazon.getPricing');
 
-Route::get('other-product/amazon_com', 'otherProduct\anotherAmazonProduct@index')->name('product.amazon_com');
-Route::get('other-product/export', 'otherProduct\anotherAmazonProduct@exportOtherProduct')->name('export.other-product');
+Route::get('other-product/amazon_com', 'otherProduct\anotherAmazonProductController@index')->name('product.amazon_com');
+Route::get('other-product/export', 'otherProduct\anotherAmazonProductController@exportOtherProduct')->name('export.other-product');
 Route::get('other-product/download/{id}', 'filedownloads\FileDownloadsController@download_other_product')->name('download.other-product');
 
 Route::get('path', function () {
