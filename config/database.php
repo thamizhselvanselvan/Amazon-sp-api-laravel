@@ -88,19 +88,13 @@ return [
         ],
 
         'mssql' => [
-            'driver' => 'mssql',
+            'driver' => 'sqlsrv',
             'host' => env('MSSQL_DB_HOST', '127.0.0.1'),
             'port' => env('MSSQL_DB_PORT', '3306'),
             'database' => env('MSSQL_DB_DATABASE', ''),
             'username' => env('MSSQL_DB_USERNAME', ''),
             'password' => env('MSSQL_DB_PASSWORD', ''),
-            'unix_socket' => env('MSSQL_DB_SOCKET', ''),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => env('MSSQL_DB_PREFIX', ''),
-            'prefix_indexes' => false,
-            'strict' => false,
-            'engine' => 'InnoDB ROW_FORMAT=DYNAMIC',
+            'charset' => 'utf8',
         ],
 
     ],
