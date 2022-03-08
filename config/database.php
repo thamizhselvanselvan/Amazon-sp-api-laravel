@@ -73,7 +73,14 @@ return [
 
         'aws' => [
             'driver' => 'mysql',
-            'host' => env('AWS_DB_HOST', '127.0.0.1'),
+            'read' => [
+                'host' => [
+                    env('MSSQL_DB_HOST', '127.0.0.1')
+                ],
+            ],
+            'write' => [
+                'host' => [],
+            ],
             'port' => env('AWS_DB_PORT', '3306'),
             'database' => env('AWS_DB_DATABASE', ''),
             'username' => env('AWS_DB_USERNAME', ''),
