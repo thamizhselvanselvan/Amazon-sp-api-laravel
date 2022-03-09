@@ -128,7 +128,18 @@ Route::get('/pdo', function () {
 
 Route::get("mssql", function () {
      $ans = DB::connection('mssql')->select("SELECT TOP 5 * FROM Apilog");
-     po($ans);
+
+     $B2CShipEventMapping = DB::connection('mssql')->select("SELECT TOP 50 * FROM B2CShipEventMapping");
+     $TrackingErrorMapping = DB::connection('mssql')->select("SELECT TOP 50 * FROM TrackingErrorMapping");
+     $TrackingErrorMaster = DB::connection('mssql')->select("SELECT TOP 50 * FROM TrackingErrorMaster");
+     $TrackingEventMapping = DB::connection('mssql')->select("SELECT TOP 50 * FROM TrackingEventMapping");
+     $TrackingEventMaster = DB::connection('mssql')->select("SELECT TOP 50 * FROM TrackingEventMaster");
+
+     po($B2CShipEventMapping);
+     po($TrackingErrorMapping);
+     po($TrackingErrorMaster);
+     po($TrackingEventMapping);
+     po($TrackingEventMaster);
 });
 
 Route::get('info', function(){
