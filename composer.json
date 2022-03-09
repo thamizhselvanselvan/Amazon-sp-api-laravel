@@ -13,6 +13,7 @@
         "enlightn/enlightn": "^1.22",
         "fruitcake/laravel-cors": "^2.0",
         "gabordemooij/redbean": "^5.7",
+        "graham-campbell/digitalocean": "^8.4",
         "guzzlehttp/guzzle": "^7.4",
         "jeroennoten/laravel-adminlte": "^3.7",
         "jlevers/selling-partner-api": "^4.3",
