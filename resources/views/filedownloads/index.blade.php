@@ -19,27 +19,37 @@
                     @endif
             </div>
                 <form class="container">
-                    <li>
-                        <ul>    
-                            <a href="{{route('download.universalTextiles')}}">
-                                Download Universal Textils
-                            </a>
+                    
+                        <ul> 
+                            <li>
+                                <a href="{{route('download.universalTextiles')}}">
+                                    Download Universal Textils
+                                </a>
+                            </li>   
                         </ul>
                         <ul>
+                            <li>
                             <a href="{{route('download.asinMaster')}}">
                                 Download Asin Master
                             </a>
+                            </li>
                         </ul>
-                        <ul>
-                            <a href="other-product/download/0">
-                                Download Amazon other Product 
-                            </a>
-                            <!-- <select id='download_amazon_product' >
-                                <option>--Select--</option>
-                                <option value="0"> Download Amazon other Product 0</option>
-                            </select> -->
-                        </ul>
-                    </li>
+                        
+                            Download Amazon Other Products
+                            <ul>
+                        @foreach($filesArray as  $datas)
+                       
+                            @foreach ($datas as $key => $data )
+                           
+                               <li class='p-0 m-0'> <a href="other-product/download/{{$key}}" class='p-0 m-0'>
+                                    {{ $key }} 
+                                </a>{{$data}}</li>
+                                                 
+                            @endforeach
+                            
+                        @endforeach
+                        </ul>  
+                            
                 </form>
         </div>
     </div>
