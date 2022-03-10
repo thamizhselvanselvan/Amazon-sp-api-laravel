@@ -285,7 +285,7 @@ return [
                 ],
                 [
                     
-                    'text' => 'Amazon.com',
+                    'text' => 'PMS Amazon',
                     'url'  => 'product/amazon_com',
                     'icon' => 'far fa-fw fa-file',
                 ],

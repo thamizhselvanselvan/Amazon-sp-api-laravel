@@ -20,11 +20,39 @@ class anotherAmazonProductController extends Controller
     {
         if($request->ajax()){
             $data = OthercatDetails::query();
+
             return DataTables::of($data)
             ->addIndexColumn()
             ->editColumn('availability', function ($row) {
                 return $row ? 'Available' : 'NA';
             })
+            ->editColumn('hs_code_gst', function ($row) {
+                return $row->hs_code ." / ". $row->gst ;
+            })
+            ->editColumn('price1_price_inr', function ($row) {
+                return $row->price1 ." / ". $row->price_inr ;
+            })
+
+            ->editColumn('flipkart_amazon', function ($row) {
+                return $row->flipkart ." / ". $row->amazon;
+            })
+
+            ->editColumn('uae_latency_b2c_latency', function ($row) {
+                return $row->uae_latency ." / ". $row->b2c_latency;
+            })
+
+            ->editColumn('image_p_image_d', function ($row) {
+                return $row->image_p ." / ". $row->image_d;
+            })
+            
+            ->editColumn('height_length_width', function ($row) {
+                return $row->height ." / ". $row->length ." / ". $row->width;
+            })
+            ->editColumn('model_mpn', function ($row) {
+                return $row->model ." / ". $row->mpn;
+            })
+
+            ->rawcolumns(['image_p_image_d','hs_code_gst','price1_price_inr','uae_latency_b2c_latency','flipkart_amazon','height_length_width','model_mpn'])          
             ->make(true);
 
         }
