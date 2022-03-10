@@ -21,15 +21,12 @@ class UserSeeder extends Seeder
     {
         $roleAdmin = Role::create(['name' => 'Admin']);
         $roleUser = Role::create(['name' => 'User']);
-        $roleCatalogManager = Role::create(['name' => 'Catalog Manager']);
-
+       
         $permissionAdmin = Permission::create(['name' => 'Admin']);
         $permissionUser = Permission::create(['name' => 'User']);
-        $permissionCatalogManager = Permission::create(['name' => 'Catalog Manager']);
-
+       
         $roleAdmin->givePermissionTo($permissionAdmin);
         $roleUser->givePermissionTo($permissionUser);
-        $roleCatalogManager->givePermissionTo($permissionCatalogManager);
 
         $robin = User::create([
             'name' => 'Robin Singh',
@@ -63,18 +60,11 @@ class UserSeeder extends Seeder
 
         ]);
 
-        $muddasir = User::create([
-            'name' => 'Muddasir',
-            'email' => 'mudassir@moshecom.com',
-            'password' => Hash::make(123456),
-        ]);
-
-
         $robin->assignRole('Admin');
         $amit->assignRole('Admin');
         $satish->assignRole('Admin');
         $sanjay->assignRole('Admin');
         $am->assignRole('Admin');
-        $muddasir->assignRole('Catalog Manager');
+        
     }
 }
