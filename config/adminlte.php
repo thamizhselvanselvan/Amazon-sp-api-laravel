@@ -241,6 +241,7 @@ return [
             'text' => 'Dashboard',
             'route' => 'login',
             'title' => 'Dashboard',
+            'can' =>  ['Admin']
 
         ],
         [
@@ -256,21 +257,25 @@ return [
                     'text' => 'Region Master ',
                     'url'  => 'admin/mws_regions',
                     'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin']
                 ],
                 [
                     'text' => 'Credentials Master',
                     'url'  => 'admin/credentials',
                     'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin']
                 ],
                 [
                     'text' => 'Currency Master',
                     'url'  => 'admin/currencys',
                     'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin']
                 ],
                 [
                     'text' => 'Asin Master',
                     'url'  => 'asin-master',
                     'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin']
                 ],
             ],
         ],
@@ -282,24 +287,28 @@ return [
                     'text' => 'Universal Textiles',
                     'url'  => 'textiles',
                     'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin']
                 ],
                 [
                     
                     'text' => 'PMS Amazon',
                     'url'  => 'product/amazon_com',
                     'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin'],
                 ],
                 [
                     
                     'text' => 'Other Amazon.com',
                     'url'  => 'other-product/amazon_com',
                     'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin', 'Catalog Manager'],
                 ],
                 [
                     
                     'text' => 'fragrancenet.com',
                     'url'  => '../../fragrancenet.com',
                     'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin']
                 ]
             ],
         ],
