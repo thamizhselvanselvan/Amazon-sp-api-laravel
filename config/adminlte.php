@@ -249,9 +249,10 @@ return [
             'url'  => 'admin/blog',
             'can'  => 'manage-blog',
         ],
-        
+
         [
             'text'    => 'Master',
+            'can' =>  ['Admin'],
             'submenu' => [
                 [
                     'text' => 'Region Master ',
@@ -279,7 +280,7 @@ return [
                 ],
             ],
         ],
-            
+
         [
             'text'    => 'Catalog',
             'submenu' => [
@@ -290,21 +291,21 @@ return [
                     'can' =>  ['Admin']
                 ],
                 [
-                    
+
                     'text' => 'PMS Amazon',
                     'url'  => 'product/amazon_com',
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin'],
                 ],
                 [
-                    
+
                     'text' => 'Other Amazon.com',
                     'url'  => 'other-product/amazon_com',
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin', 'Catalog Manager'],
                 ],
                 [
-                    
+
                     'text' => 'fragrancenet.com',
                     'url'  => '../../fragrancenet.com',
                     'icon' => 'far fa-fw fa-file',
@@ -312,18 +313,19 @@ return [
                 ]
             ],
         ],
-        
+
         [
             'text' => 'Download Files',
             'url'  => 'file_downloads',
             'icon' => 'far fa-fw fa-file',
-            
+
         ],
-    
+
         [
             'text' => 'Roles',
             'url' => 'admin/rolespermissions',
             'icon' => 'fas fa-user',
+            'can' =>  ['Admin']
         ],
     ],
 
