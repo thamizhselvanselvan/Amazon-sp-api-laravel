@@ -31,20 +31,24 @@ class anotherAmazonProductController extends Controller
         return view('amazonOtherProduct.index');
     }
 
-    public function exportOtherProduct()
+    public function exportOtherProduct(Request $request)
     {
+        $selected_header = $request->input('selected');
+        
+            $selected_header=  $selected_header;
+        
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
             
             // exec('nohup php artisan pms:textiles-import  > /dev/null &');
             $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:export-other-amazon > /dev/null &";
+            $command = "cd $base_path && php artisan pms:export-other-amazon $selected_header > /dev/null &";
             exec($command);
             
             Log::warning("Export asin command executed production  !!!");
         } else {
 
             Log::warning("Export asin command executed local !");
-            Artisan::call('pms:export-other-amazon');
+            Artisan::call('pms:export-other-amazon '.$selected_header);
         }
         
     }

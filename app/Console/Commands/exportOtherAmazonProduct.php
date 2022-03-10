@@ -17,7 +17,7 @@ class exportOtherAmazonProduct extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:export-other-amazon';
+    protected $signature = 'pms:export-other-amazon {selected}';
 
     /**
      * The console command description.
@@ -42,16 +42,31 @@ class exportOtherAmazonProduct extends Command
      * @return int
      */
     public function handle()
-    {
+    {   
+        $sel = '';
+        $selected = $this->argument('selected');
+
+        if($selected == 'all') {
+            $sel = 'all';
+        } else {
+            $sel = explode('-', $selected);
+        }
+        if($sel == 'all'){
+
+            $header = ['hit', 'asin', 'sku', 'hs_code', 'gst', 'update_time', 'availability', 'price', 'list_price', 'price1', 'price_inr', 'list_price_inr', 'price_aed', 'list_price_aed', 'shipping_weight', 'image_t', 'id', 'title', 'image_p', 'image_d', 'category', 'all_category', 'description', 'height', 'length', 'width', 'weight', 'flipkart', 'amazon', 'upc', 'manufacturer', 'latency', 'uae_latency', 'b2c_latency', 'ean', 'color', 'model', 'mpn', 'detail_page_url', 'creation_time', 'page'];
+        }
+        else{
+            $header = $sel;
+        }
         Log::warning("warning form exprot ");
         $file_path = "excel/downloads/otheramazon/otherProductDetails";
-        $record_per_csv = 1000000 ;
-        $chunk = 100000;
+        $record_per_csv = 10000 ;
+        $chunk = 1000;
         $this->check = $record_per_csv/$chunk;
         Log::warning($this->check);
-        $header = ['hit', 'asin', 'sku', 'hs_code', 'gst', 'update_time', 'availability', 'price', 'list_price', 'price1', 'price_inr', 'list_price_inr', 'price_aed', 'list_price_aed', 'shipping_weight', 'image_t', 'id', 'title', 'image_p', 'image_d', 'category', 'all_category', 'description', 'height', 'length', 'width', 'weight', 'flipkart', 'amazon', 'upc', 'manufacturer	', 'latency', 'uae_latency', 'b2c_latency', 'ean', 'color', 'model', 'mpn', 'detail_page_url', 'creation_time', 'page'];
 
-        OthercatDetails::chunk($chunk, function ($records) use ($file_path, $header) {
+
+        OthercatDetails::select($header)->chunk($chunk, function ($records) use ($file_path, $header) {
            
             if($this->count == 1){
                 
