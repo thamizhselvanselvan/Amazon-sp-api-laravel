@@ -292,7 +292,7 @@ let yajra_table = $('.yajra-datatable').DataTable({
                     'selected': select_header,
                 },
                 success: function(response) {
-                   /
+                   
                     // yajra_table.ajax.reload();
                     
                 }
