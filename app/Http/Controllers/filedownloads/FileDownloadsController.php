@@ -22,7 +22,25 @@ class FileDownloadsController extends Controller
                 $filesArray [][$file] =  date ("F d Y H:i:s.", filemtime($path.'/'.$file));
             }
         }
+
+        
         return view('filedownloads.index', compact('filesArray'));
+    }
+
+    public function other_file_download() {
+        $path = "app/excel/downloads/otheramazon/";
+        $path = (storage_path($path));
+        $files = (scandir($path));
+        
+        $filesArray= [];
+        foreach($files as $key => $file){
+            if($key > 1){
+
+                $filesArray [][$file] =  date ("F d Y H:i:s.", filemtime($path.'/'.$file));
+            }
+        }
+
+        return response()->json(['success' => true, "files_lists" => $filesArray]);
     }
 
     public function download_universalTextiles(){
