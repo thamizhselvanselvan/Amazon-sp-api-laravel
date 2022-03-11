@@ -20,13 +20,19 @@
                         </div>
                     @endif
                 </div>
-                <h2 class="mb-4">
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#productExport">
-                       Product Export
-                    </button>
-                    <button type="button" class="btn btn-success file_download_modal_btn">
-                      Download
-                    </button>
+                <h2 class="row mb-4 ">
+                    <div class="col">
+                        <button type="button" class="btn btn-primary product_export_modal_open">
+                           Product Export
+                        </button>
+                        <button type="button" class="btn btn-success file_download_modal_btn">
+                          Download
+                        </button>
+                    </div>
+                    <div class="col"></div>
+                    <div class="col-3 align-self-end progress_bar">
+                        <x-adminlte-progress class='border border-success' id="progresBar" theme="pink" value="0" animated with-label/>
+                    </div>
                 </h2>
         <!-- Header Modal -->
                     <div class="modal fade" id="productExport" tabindex="-1" role="dialog" aria-labelledby="productExportModalLabel" aria-hidden="true">
@@ -226,7 +232,7 @@
                             </div>
                         </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-secondary" id='file_download_modal_close' >Close</button>
                             </div>
                         </div>
                     </div>
@@ -280,7 +286,35 @@
 @stop
 
 @section('js')
+
 <script type="text/javascript">
+// pusher
+$(document).ready(function() {
+    $('.progress_bar').hide();
+    let current_url = "{{ Route::current()->getName(); }}";
+    let p_channel = window.Echo.private("test-broadcast");
+
+    let pBar = new _AdminLTE_Progress('progresBar'); 
+    let v = pBar.setValue(0);
+    p_channel.listen(".test-broadcast1", function (data) {
+        
+        if(data.message == 100) {
+            setTimeout(function() {
+                
+                 $('.progress_bar').hide();
+                $('#file_download_modal').modal('show');
+                return false;
+            }, 2000);
+        } 
+        let v = pBar.setValue(data.message);
+        // console.log(data);
+        $('.progress_bar').show();
+    });
+    
+    $('.progress_bar').hide();
+
+ });
+//end of pusher
 $.extend( $.fn.dataTable.defaults, {
                 pageLength: 100,
 });
@@ -329,7 +363,7 @@ $(".file_download_modal_btn").on('click', function(e) {
     
 });
 
-let yajra_table = $('.yajra-datatable').DataTable({
+    let yajra_table = $('.yajra-datatable').DataTable({
     
             processing: true,
             serverSide: true,
@@ -374,6 +408,7 @@ let yajra_table = $('.yajra-datatable').DataTable({
 
         });
 
+    
     $('.all').change(function()
     {   
         if($('.all').is(':checked')){
@@ -385,7 +420,17 @@ let yajra_table = $('.yajra-datatable').DataTable({
         }
     });
 
+    $(".product_export_modal_open").on('click', function() {
+        $('#productExport').modal('show');
+    });
+    $("#file_download_modal_close").on('click', function() {
+        $('#file_download_modal').modal('hide');
+    });
+    
+
     $('#exportToCsv').on('click', function(){
+        $('#productExport').modal('hide');
+        $('.progress_bar').show();
 
         let select_header =[] ; let count =0;
         $("input[name='options[]']:checked").each( function () {
@@ -407,12 +452,12 @@ let yajra_table = $('.yajra-datatable').DataTable({
                     'selected': select_header,
                 },
                 success: function(response) {
-                   
+                    // $('.progress_bar').hide();
                     // yajra_table.ajax.reload();
                     
                 }
             })   
-            $('#productExport').modal('hide')  ;
+           
     }).get();
      
 </script>   

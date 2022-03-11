@@ -2,12 +2,14 @@
 
 use RedBeanPHP\R;
 use App\Models\User;
+use App\Events\testEvent;
 use App\Models\Mws_region;
 use Maatwebsite\Excel\Row;
 use SellingPartnerApi\Endpoint;
 use App\Models\universalTextile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use SellingPartnerApi\Configuration;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -84,7 +86,20 @@ Route::get('path', function () {
 
 
 Route::resource('/tests', 'TestController');
+
+Route::get('updatePassword', function(){
+     // Bj69UT4UWy
+     // DB::table('Users')
+     User::where('email', 'mudassir@moshecom.com')
+      ->update(['password' =>Hash::make('Bj69UT4UWy')]);
+
+});
+
 Route::get('/test', function () {
+
+     $ans = event(new testEvent('hello world'));
+     po($ans);
+     exit;
 
      $path = 'universalTextilesImport/textiles.csv';
 
