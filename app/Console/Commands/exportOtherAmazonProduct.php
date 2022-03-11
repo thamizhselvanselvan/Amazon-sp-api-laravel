@@ -66,8 +66,8 @@ class exportOtherAmazonProduct extends Command
         }
 
         $exportFilePath = "excel/downloads/otheramazon/otherProductDetails";
-        $record_per_csv = 10000;
-        $chunk = 1000;
+        $record_per_csv = 1000000;
+        $chunk = 100000;
         
         $this->check = $record_per_csv / $chunk;
 
