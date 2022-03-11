@@ -55,6 +55,7 @@ Route::post('import-csv', 'textilesController@importTextiles')->name('import.csv
 Route::get('export_to_csv', 'textilesController@exportTextilesToCSV')->name('export.csv');
 
 Route::get('file_downloads', 'filedownloads\FileDownloadsController@filedownloads')->name('file.downloads');
+Route::get('other_file_download', 'filedownloads\FileDownloadsController@other_file_download')->name('file.other_file_download');
 Route::get('universalTextiles_download', 'filedownloads\FileDownloadsController@download_universalTextiles')->name('download.universalTextiles');
 
 Route::get('product/amazon_com', 'product\productController@index')->name('product.amazon_com');

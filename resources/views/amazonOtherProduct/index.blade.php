@@ -15,19 +15,20 @@
                     @if ($message = Session::get('success'))
                         <div class="alert alert-success alert-block">
                             <button type="button" class="close" data-dismiss="alert">×</button>
+                            
                             <strong>{{ $message }}</strong>
                         </div>
                     @endif
                 </div>
                 <h2 class="mb-4">
-
-                    <!-- <a href="">
-                        <x-adminlte-button label="Product Export" theme="primary" icon="fas fa-file-export" data-target="#exampleModal"/>
-                    </a> -->
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#productExport">
                        Product Export
                     </button>
-             <!-- Modal -->
+                    <button type="button" class="btn btn-success file_download_modal_btn">
+                      Download
+                    </button>
+                </h2>
+        <!-- Header Modal -->
                     <div class="modal fade" id="productExport" tabindex="-1" role="dialog" aria-labelledby="productExportModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -209,9 +210,28 @@
                             </div>
                         </div>
                     </div>
-           
-                </h2>
-               
+        <!-- End of Header Modal -->
+        <!-- Download Modal -->
+                <div class="modal fade" id="file_download_modal" tabindex="-1" role="dialog" aria-labelledby="FileDownloadModal" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">Download Amazon Other Products</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        <div class="modal-body">
+                            <div class="file_download_display">
+                            </div>
+                        </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        <!--end of Download model-->
                 <table class="table table-bordered yajra-datatable table-striped">
                     <thead>
                         <tr>
@@ -264,7 +284,51 @@
 $.extend( $.fn.dataTable.defaults, {
                 pageLength: 100,
 });
-          
+
+$(".file_download_modal_btn").on('click', function(e) {
+
+    let self = $(this);
+    let file_display = $('.file_download_display');
+    let file_modal = $("#file_download_modal");
+    
+    $.ajax({
+        url: "/other_file_download",
+        method: 'GET',
+        dataType: 'json',
+        success: function(response) {
+
+            if(response.error) {
+                alert('Error');
+            }
+
+            if(response.success) {
+                file_modal.modal('show');
+
+               let html = '<ul>';
+
+                $.each(response.files_lists, function(index, value) {
+
+                    let file_name = Object.keys(value)[0];
+                    let file_time = value[file_name];
+
+                    html += "<li class='p-0 m-0'>";
+                    html += "<a href='/other-product/download/"+file_name+"' class='p-0 m-0'> Part "+ parseInt(index+1) +"</a> ";
+                    html += file_time;
+                    html += "</li>";
+
+                });
+
+                html += '</ul>';
+
+                file_display.html(html);
+            }
+
+        }
+    });
+
+    
+});
+
 let yajra_table = $('.yajra-datatable').DataTable({
     
             processing: true,

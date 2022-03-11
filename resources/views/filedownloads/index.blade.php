@@ -35,21 +35,7 @@
                             </li>
                         </ul>
                         
-                            Download Amazon Other Products
-                            <ul>
                            
-                        @foreach($filesArray as  $keys1 =>$datas)
-                       
-                            @foreach ($datas as $key => $data )
-                           
-                               <li class='p-0 m-0'> <a href="other-product/download/{{$key}}" class='p-0 m-0'>
-                                   Part {{$keys1+1}}
-                                </a>{{$data}}</li>
-                                                 
-                            @endforeach
-                            
-                        @endforeach
-                        </ul>  
                             
                 </form>
         </div>
