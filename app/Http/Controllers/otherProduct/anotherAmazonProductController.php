@@ -65,19 +65,20 @@ class anotherAmazonProductController extends Controller
         $selected_header = $request->input('selected');
         
             $selected_header=  $selected_header;
-        
+            $user = Auth::user()->email;
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
             
             // exec('nohup php artisan pms:textiles-import  > /dev/null &');
+           
             $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:export-other-amazon $selected_header > /dev/null &";
+            $command = "cd $base_path && php artisan pms:export-other-amazon $selected_header $user > /dev/null &";
             exec($command);
             
             Log::warning("Export asin command executed production  !!!");
         } else {
 
             Log::warning("Export asin command executed local !");
-            Artisan::call('pms:export-other-amazon '.$selected_header);
+            Artisan::call('pms:export-other-amazon '.$selected_header.' '.$user);
         }
         
     }

@@ -26,7 +26,7 @@ class exportOtherAmazonProduct extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:export-other-amazon {selected}';
+    protected $signature = 'pms:export-other-amazon {selected} {user}';
 
     /**
      * The console command description.
@@ -55,6 +55,7 @@ class exportOtherAmazonProduct extends Command
         $headerSelection = '';
         
         $selected = $this->argument('selected');
+        $user = $this->argument('user');
 
         if ($selected == 'all') {
             $headerSelection = 'all';
@@ -67,7 +68,8 @@ class exportOtherAmazonProduct extends Command
         } else {
             $headers = $headerSelection;
         }
-        $user = Auth::user()->email;
+        // $user = Auth::user()->email;
+
         $exportFilePath = "excel/downloads/otheramazon/".$user."/otherProductDetails";
         $deleteFilePath = "app/excel/downloads/otheramazon/".$user;
 

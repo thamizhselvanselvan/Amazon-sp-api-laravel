@@ -90,8 +90,11 @@ Route::resource('/tests', 'TestController');
 Route::get('updatePassword', function(){
      // Bj69UT4UWy
      // DB::table('Users')
-     User::where('email', 'mudassir@moshecom.com')
-      ->update(['password' =>Hash::make('Bj69UT4UWy')]);
+     // User::where('email', 'mudassir@moshecom.com')
+     //  ->update(['password' =>Hash::make('Bj69UT4UWy')]);
+
+     po(User::get());
+
 
 });
 
