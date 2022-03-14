@@ -4,6 +4,7 @@ namespace App\Http\Controllers\filedownloads;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class FileDownloadsController extends Controller
@@ -28,8 +29,9 @@ class FileDownloadsController extends Controller
     }
 
     public function other_file_download()
-    {
-        $path = "app/excel/downloads/otheramazon/";
+    {   
+        $user = Auth::user()->email;
+        $path = "app/excel/downloads/otheramazon/".$user;
         $path = storage_path($path);
         $files = (scandir($path));
 
@@ -69,7 +71,8 @@ class FileDownloadsController extends Controller
     {
         //Other Amazon file download
         // $file_path = "excel/downloads/otheramazon/otherProductDetails".$id.'.csv';
-        $file_path = "excel/downloads/otheramazon/" . $id;
+        $user = Auth::user()->email;
+        $file_path = "excel/downloads/otheramazon/".$user.'/' . $id;
         //$path = Storage::path($file_path);
         if (Storage::exists($file_path)) {
             return Storage::download($file_path);

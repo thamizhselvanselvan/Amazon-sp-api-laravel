@@ -6,8 +6,11 @@ use League\Csv\Writer;
 use App\Events\testEvent;
 use App\Models\OthercatDetails;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+
+use function PHPUnit\Framework\at;
 
 class exportOtherAmazonProduct extends Command
 {
@@ -64,8 +67,21 @@ class exportOtherAmazonProduct extends Command
         } else {
             $headers = $headerSelection;
         }
+        $user = Auth::user()->email;
+        $exportFilePath = "excel/downloads/otheramazon/".$user."/otherProductDetails";
+        $deleteFilePath = "app/excel/downloads/otheramazon/".$user;
 
-        $exportFilePath = "excel/downloads/otheramazon/otherProductDetails";
+         if(file_exists(storage_path($deleteFilePath))){
+             $path = storage_path($deleteFilePath);
+             $files = (scandir($path));
+            foreach ($files as $key => $file) {
+                if ($key > 1) {
+                    unlink($path.'/'.$file);
+                    Log::alert('file deleted');
+                }
+            }
+        }
+
         $record_per_csv = 1000000;
         $chunk = 100000;
         

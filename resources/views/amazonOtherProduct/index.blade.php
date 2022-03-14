@@ -22,12 +22,8 @@
                 </div>
                 <h2 class="row mb-4 ">
                     <div class="col">
-                        <button type="button" class="btn btn-primary product_export_modal_open">
-                           Product Export
-                        </button>
-                        <button type="button" class="btn btn-success file_download_modal_btn">
-                          Download
-                        </button>
+                        <x-adminlte-button label='Product Export' class="product_export_modal_open" theme="primary" icon="fas fa-file-export"/>
+                        <x-adminlte-button label='Download' class="file_download_modal_btn" theme="success" icon="fas fa-download"/>
                     </div>
                     <div class="col"></div>
                     <div class="col-3 align-self-end progress_bar">
