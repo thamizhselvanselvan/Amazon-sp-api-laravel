@@ -6,6 +6,16 @@
 <h1 class="m-0 text-dark">Amazon Other Products</h1>
 @stop
 
+@section('css')
+
+<style>
+a{
+margin:6px;
+}
+</style>
+@endsection
+
+
 @section('content')
 
     <div class="row">
@@ -28,6 +38,48 @@
                       Download
                     </button>
                 </h2>
+                
+
+             <div>
+             
+                 Hide\Show Column  --<a class="toggle-vis" data-column="0">S\N</a>  
+                                    -<a class="toggle-vis" data-column="1">hit</a>
+                                    -<a class="toggle-vis" data-column="2">asin</a> 
+                                    -<a class="toggle-vis" data-column="3">sku</a> 
+                                    -<a class="toggle-vis" data-column="4">hs_code_gst</a>
+                                    -<a class="toggle-vis" data-column="5">update_time</a>
+                                    -<a class="toggle-vis" data-column="6">Availability</a>
+                                    -<a class="toggle-vis" data-column="7">price</a>
+                                    -<a class="toggle-vis" data-column="8">list_price</a>
+                                    -<a class="toggle-vis" data-column="9">price1_price_inr</a>
+                                    -<a class="toggle-vis" data-column="10">list_price_inr</a>
+                                    -<a class="toggle-vis" data-column="11">price_aed</a>
+                                    -<a class="toggle-vis" data-column="12">list_price_aed</a>
+                                    -<a class="toggle-vis" data-column="13">shipping_weight</a>
+                                    -<a class="toggle-vis" data-column="14">image_t</a>
+                                    -<a class="toggle-vis" data-column="15">id</a>
+                                    -<a class="toggle-vis" data-column="16">title</a>
+                                    -<a class="toggle-vis" data-column="17">image_p_image_d</a>
+                                    -<a class="toggle-vis" data-column="18">category</a>
+                                    -<a class="toggle-vis" data-column="19">all_category</a>
+                                    -<a class="toggle-vis" data-column="20">description</a>
+                                    -<a class="toggle-vis" data-column="21">height_length_width</a>
+                                    -<a class="toggle-vis" data-column="22">weight</a>
+                                    -<a class="toggle-vis" data-column="23">flipkart_amazon</a>
+                                    -<a class="toggle-vis" data-column="24">upc</a>
+                                    -<a class="toggle-vis" data-column="25">manufacturer</a>
+                                    -<a class="toggle-vis" data-column="26">latency</a>
+                                    -<a class="toggle-vis" data-column="27">uae_latency_b2c_latency</a>
+                                    -<a class="toggle-vis" data-column="28">ean</a>
+                                    -<a class="toggle-vis" data-column="29">color</a>
+                                    -<a class="toggle-vis" data-column="30">model_mpn</a>
+                                    -<a class="toggle-vis" data-column="31">detail_page_url</a>
+                                    -<a class="toggle-vis" data-column="32">creation_time</a>
+                                    -<a class="toggle-vis" data-column="33">page</a>
+             </div>
+             </div>
+             </div>
+             
         <!-- Header Modal -->
                     <div class="modal fade" id="productExport" tabindex="-1" role="dialog" aria-labelledby="productExportModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
@@ -232,6 +284,7 @@
                     </div>
                 </div>
         <!--end of Download model-->
+               
                 <table class="table table-bordered yajra-datatable table-striped">
                     <thead>
                         <tr>
@@ -285,6 +338,7 @@ $.extend( $.fn.dataTable.defaults, {
                 pageLength: 100,
 });
 
+
 $(".file_download_modal_btn").on('click', function(e) {
 
     let self = $(this);
@@ -325,9 +379,9 @@ $(".file_download_modal_btn").on('click', function(e) {
 
         }
     });
-
-    
 });
+
+
 
 let yajra_table = $('.yajra-datatable').DataTable({
     
@@ -373,7 +427,7 @@ let yajra_table = $('.yajra-datatable').DataTable({
             ]
 
         });
-
+    
     $('.all').change(function()
     {   
         if($('.all').is(':checked')){
@@ -414,6 +468,14 @@ let yajra_table = $('.yajra-datatable').DataTable({
             })   
             $('#productExport').modal('hide')  ;
     }).get();
+
+
+
+    $('a.toggle-vis').on( 'click', function (e) {
+        e.preventDefault();
+        var column = yajra_table.column( $(this).attr('data-column') );
+        column.visible( ! column.visible() );
+    } );
      
 </script>   
 @stop
