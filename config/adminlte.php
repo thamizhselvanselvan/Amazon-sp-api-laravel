@@ -249,6 +249,26 @@ return [
             'url'  => 'admin/blog',
             'can'  => 'manage-blog',
         ],
+        [
+            'text' => 'User Management',
+            'url'  => '',
+            'can'  => ['Admin'],
+            'submenu' => [
+                [
+                    'text' => 'Admin Management',
+                    'url'  => '',
+                    'icon' => 'far fa-fw fa-user',
+                    'can' =>  ['Admin'],
+                ],
+                [
+                    'text' => 'Catalog Management',
+                    'url'  => '',
+                    'icon' => 'far fa-fw fa-user',
+                    'can' =>  ['Admin']
+                ]
+            ]
+        ],
+
 
         [
             'text'    => 'Master',
