@@ -6,6 +6,13 @@
 <h1 class="m-0 text-dark">Amazon Other Products</h1>
 @stop
 
+@section('css')
+<style>
+a{
+margin:6px;
+}
+</style>
+@endsection
 @section('content')
 
 <div class="row">
@@ -289,20 +296,14 @@
         <!-- show and hide columns-->
 
         <div>
-            Hide\Show Column --<a class="toggle-vis" data-column="0">S\N</a>
-            -<a class="toggle-vis" data-column="1">hit</a>
-            -<a class="toggle-vis" data-column="2">asin</a>
-            -<a class="toggle-vis" data-column="3">sku</a>
+            Hide\Show Column -<a class="toggle-vis" data-column="1">hit</a>
             -<a class="toggle-vis" data-column="4">hs_code_gst</a>
             -<a class="toggle-vis" data-column="5">update_time</a>
-            -<a class="toggle-vis" data-column="6">Availability</a>
-            -<a class="toggle-vis" data-column="7">price</a>
             -<a class="toggle-vis" data-column="8">list_price</a>
             -<a class="toggle-vis" data-column="9">price1_price_inr</a>
             -<a class="toggle-vis" data-column="10">list_price_inr</a>
             -<a class="toggle-vis" data-column="11">price_aed</a>
             -<a class="toggle-vis" data-column="12">list_price_aed</a>
-            -<a class="toggle-vis" data-column="13">shipping_weight</a>
             -<a class="toggle-vis" data-column="14">image_t</a>
             -<a class="toggle-vis" data-column="15">id</a>
             -<a class="toggle-vis" data-column="16">title</a>
@@ -671,6 +672,6 @@
         var column = yajra_table.column( $(this).attr('data-column') );
         column.visible( ! column.visible() );
     } );
-
+   yajra_table.columns( [1,4,5,8,9,10,11,12,14,15,16,17,18,19,20,21,22,23,24,25,26,28,27,29,30,31,32,33] ).visible( false );
 </script>
 @stop
