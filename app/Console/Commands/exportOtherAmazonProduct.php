@@ -77,7 +77,6 @@ class exportOtherAmazonProduct extends Command
             foreach ($files as $key => $file) {
                 if ($key > 1) {
                     unlink($path.'/'.$file);
-                    Log::alert('file deleted');
                 }
             }
         }
