@@ -387,7 +387,7 @@
 
                 if (response.error) {
                     alert('Error');
-                }
+                } 
 
                 if (response.success) {
                     file_modal.modal('show');
