@@ -39,23 +39,21 @@ margin:6px;
                     </button>
                 </h2>
                 
-
              <div>
              
-                 Hide\Show Column  --<a class="toggle-vis" data-column="0">S\N</a>  
-                                    -<a class="toggle-vis" data-column="1">hit</a>
-                                    -<a class="toggle-vis" data-column="2">asin</a> 
-                                    -<a class="toggle-vis" data-column="3">sku</a> 
-                                    -<a class="toggle-vis" data-column="4">hs_code_gst</a>
-                                    -<a class="toggle-vis" data-column="5">update_time</a>
-                                    -<a class="toggle-vis" data-column="6">Availability</a>
+                 Hide\Show Column   
+                                    -<a class="toggle-vis" data-column="6">hit</a>
+                                   
+                                    -<a class="toggle-vis" data-column="7">hs_code_gst</a>
+                                    -<a class="toggle-vis" data-column="8">update_time</a>
+                                   
                                     -<a class="toggle-vis" data-column="7">price</a>
-                                    -<a class="toggle-vis" data-column="8">list_price</a>
+                                 
                                     -<a class="toggle-vis" data-column="9">price1_price_inr</a>
                                     -<a class="toggle-vis" data-column="10">list_price_inr</a>
                                     -<a class="toggle-vis" data-column="11">price_aed</a>
                                     -<a class="toggle-vis" data-column="12">list_price_aed</a>
-                                    -<a class="toggle-vis" data-column="13">shipping_weight</a>
+                                    
                                     -<a class="toggle-vis" data-column="14">image_t</a>
                                     -<a class="toggle-vis" data-column="15">id</a>
                                     -<a class="toggle-vis" data-column="16">title</a>
@@ -77,6 +75,7 @@ margin:6px;
                                     -<a class="toggle-vis" data-column="32">creation_time</a>
                                     -<a class="toggle-vis" data-column="33">page</a>
              </div>
+
              </div>
              </div>
              
@@ -289,19 +288,25 @@ margin:6px;
                     <thead>
                         <tr>
                             <th>S/N</th>
-                            <th>hit</th>
                             <th>ASIN</th>
                             <th>SKU</th>
+                            <th>Availability</th> 
+                            <th>List Price</th>
+                            <th>shipping_weight</th>
+                          
+                             <th>hit</th>
+                          
+                          
                             <th>hs_code / gst</th>
                             <th>update_time</th>
-                            <th>Availability</th> 
+                           
                             <th>price</th>
-                            <th>List Price</th>
+                         
                             <th>price1 /  Price INR</th>
                             <th>List Price INR</th>
                             <th>price_aed </th>
                             <th>list_price_aed</th>
-                            <th>shipping_weight</th>
+                           
                             <th>image_t</th>
                             <th>ID</th>
                             <th>Title</th>
@@ -391,19 +396,25 @@ let yajra_table = $('.yajra-datatable').DataTable({
             ajax: "{{ url('other-product/amazon_com') }}",
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-                {data: 'hit', name: 'hit'},
                 {data: 'asin', name: 'asin'},
                 {data: 'sku', name: 'sku'},
+                {data: 'availability', name: 'availability'},
+                {data: 'list_price', name: 'list_price'},
+                {data: 'shipping_weight', name: 'shipping_weight'},
+
+                {data: 'hit', name: 'hit'},
+               
+               
                 {data: 'hs_code_gst', name:'hs_code_gst', orderable :false, searchable: false},
                 {data: 'update_time', name: 'update_time'},
-                {data: 'availability', name: 'availability'},
+               
                 {data: 'price', name: 'price'},
-                {data: 'list_price', name: 'list_price'},
+               
                 {data: 'price1_price_inr', name: 'price1_price_inr', orderable: false, searchable: false},
                 {data: 'list_price_inr', name: 'list_price_inr'}, 
                 {data: 'price_aed', name: 'price_aed'},
                 {data: 'list_price_aed', name: 'list_price_aed'},
-                {data: 'shipping_weight', name: 'shipping_weight'},
+                
                 {data: 'image_t', name: 'image_t'},
                 {data: 'id', name: 'id'},
                 {data: 'title', name: 'title'},
