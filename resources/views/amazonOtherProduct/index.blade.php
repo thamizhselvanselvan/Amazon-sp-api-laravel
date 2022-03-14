@@ -286,52 +286,46 @@
         </div>
         <!--end of Download model-->
 
-    <!-- show and hide columns-->
+        <!-- show and hide columns-->
 
-<div>
-                 Hide\Show Column
-                                    -<a class="toggle-vis" data-column="6">hit</a>
-                                    -<a class="toggle-vis" data-column="7">hs_code_gst</a>
-                                    -<a class="toggle-vis" data-column="8">update_time</a>
-                                    -<a class="toggle-vis" data-column="7">price</a>
-                                    -<a class="toggle-vis" data-column="9">price1_price_inr</a>
-                                    -<a class="toggle-vis" data-column="10">list_price_inr</a>
-                                    -<a class="toggle-vis" data-column="11">price_aed</a>
-                                    -<a class="toggle-vis" data-column="12">list_price_aed</a>
-                                    -<a class="toggle-vis" data-column="14">image_t</a>
-                                    -<a class="toggle-vis" data-column="15">id</a>
-                                    -<a class="toggle-vis" data-column="16">title</a>
-                                    -<a class="toggle-vis" data-column="17">image_p_image_d</a>
-                                    -<a class="toggle-vis" data-column="18">category</a>
-                                    -<a class="toggle-vis" data-column="19">all_category</a>
-                                    -<a class="toggle-vis" data-column="20">description</a>
-                                    -<a class="toggle-vis" data-column="21">height_length_width</a>
-                                    -<a class="toggle-vis" data-column="22">weight</a>
-                                    -<a class="toggle-vis" data-column="23">flipkart_amazon</a>
-                                    -<a class="toggle-vis" data-column="24">upc</a>
-                                    -<a class="toggle-vis" data-column="25">manufacturer</a>
-                                    -<a class="toggle-vis" data-column="26">latency</a>
-                                    -<a class="toggle-vis" data-column="27">uae_latency_b2c_latency</a>
-                                    -<a class="toggle-vis" data-column="28">ean</a>
-                                    -<a class="toggle-vis" data-column="29">color</a>
-                                    -<a class="toggle-vis" data-column="30">model_mpn</a>
-                                    -<a class="toggle-vis" data-column="31">detail_page_url</a>
-                                    -<a class="toggle-vis" data-column="32">creation_time</a>
-                                    -<a class="toggle-vis" data-column="33">page</a>
-             </div>
-white_check_mark
-eyes
-raised_hands
+        <div>
+            Hide\Show Column --<a class="toggle-vis" data-column="0">S\N</a>
+            -<a class="toggle-vis" data-column="1">hit</a>
+            -<a class="toggle-vis" data-column="2">asin</a>
+            -<a class="toggle-vis" data-column="3">sku</a>
+            -<a class="toggle-vis" data-column="4">hs_code_gst</a>
+            -<a class="toggle-vis" data-column="5">update_time</a>
+            -<a class="toggle-vis" data-column="6">Availability</a>
+            -<a class="toggle-vis" data-column="7">price</a>
+            -<a class="toggle-vis" data-column="8">list_price</a>
+            -<a class="toggle-vis" data-column="9">price1_price_inr</a>
+            -<a class="toggle-vis" data-column="10">list_price_inr</a>
+            -<a class="toggle-vis" data-column="11">price_aed</a>
+            -<a class="toggle-vis" data-column="12">list_price_aed</a>
+            -<a class="toggle-vis" data-column="13">shipping_weight</a>
+            -<a class="toggle-vis" data-column="14">image_t</a>
+            -<a class="toggle-vis" data-column="15">id</a>
+            -<a class="toggle-vis" data-column="16">title</a>
+            -<a class="toggle-vis" data-column="17">image_p_image_d</a>
+            -<a class="toggle-vis" data-column="18">category</a>
+            -<a class="toggle-vis" data-column="19">all_category</a>
+            -<a class="toggle-vis" data-column="20">description</a>
+            -<a class="toggle-vis" data-column="21">height_length_width</a>
+            -<a class="toggle-vis" data-column="22">weight</a>
+            -<a class="toggle-vis" data-column="23">flipkart_amazon</a>
+            -<a class="toggle-vis" data-column="24">upc</a>
+            -<a class="toggle-vis" data-column="25">manufacturer</a>
+            -<a class="toggle-vis" data-column="26">latency</a>
+            -<a class="toggle-vis" data-column="27">uae_latency_b2c_latency</a>
+            -<a class="toggle-vis" data-column="28">ean</a>
+            -<a class="toggle-vis" data-column="29">color</a>
+            -<a class="toggle-vis" data-column="30">model_mpn</a>
+            -<a class="toggle-vis" data-column="31">detail_page_url</a>
+            -<a class="toggle-vis" data-column="32">creation_time</a>
+            -<a class="toggle-vis" data-column="33">page</a>
+        </div>
 
-
-
-
-
-
-
-
-
-    <!-- end of show and hide columns-->
+        <!-- end of show and hide columns-->
         <table class="table table-bordered yajra-datatable table-striped">
             <thead>
                 <tr>
@@ -672,17 +666,11 @@ raised_hands
 
     }).get();
 
-   
-   var table = $('.yajra-datatable').DataTable( {
-        "scrollY": "200px",
-        "paging": false
-    } );
     $('a.toggle-vis').on( 'click', function (e) {
         e.preventDefault();
-        // Get the column API object
-        var column = table.column( $(this).attr('data-column') );
-        // Toggle the visibility
+        var column = yajra_table.column( $(this).attr('data-column') );
         column.visible( ! column.visible() );
     } );
+
 </script>
 @stop
