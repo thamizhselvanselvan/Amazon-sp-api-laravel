@@ -34,6 +34,7 @@ class CatalogManagementController extends Controller
         return view('admin.catalogManagement.index');
     }
 
+
     function password_reset_view(Request $request){
         $user_id = $request->id;
         return view('admin.catalogManagement.password_reset', compact('user_id'));
@@ -64,4 +65,28 @@ class CatalogManagementController extends Controller
      $user_email = $request->email;
     }
 
+    public function create()
+    {
+        
+        return view('admin.catalogManagement.add');
+    }
+
+        public function user_save(Request $request)
+     {
+        $request->validate([
+        'password' => 'required|confirmed|min:3|max:18'
+        ]);
+
+        $am = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+
+        ]);
+
+        $am->assignRole('Catalog Manager');
+        
+        return redirect()->intended('/admin/catalog_user')->with('success', 'Catalog user '.$request->name.' has been created successfully');
+
+     }
 }
