@@ -45,6 +45,11 @@ Route::get('admin/credentials', 'Admin\CredentialsController@index');
 Route::get('admin/currencys', 'Admin\CurrencyController@index');
 Route::get('admin/rolespermissions', 'Admin\RolesPermissionsController@index');
 
+Route::get('admin/user_list', 'Admin\AdminManagementController@index');
+
+Route::get('admin/catalog_user', 'Admin\CatalogManagementController@index');
+Route::get('admin/catalogpassword/{id}', 'Admin\CatalogManagementController@showResetPassword');
+
 Route::get('asin-master', 'AsinMasterController@index');
 Route::get('add-asin', 'AsinMasterController@addAsin');
 Route::get('import-bulk-asin', 'AsinMasterController@importBulkAsin');

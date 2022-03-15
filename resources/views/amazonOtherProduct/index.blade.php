@@ -671,6 +671,6 @@
         var column = yajra_table.column( $(this).attr('data-column') );
         column.visible( ! column.visible() );
     } );
-
+    
 </script>
 @stop

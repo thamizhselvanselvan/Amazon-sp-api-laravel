@@ -256,13 +256,13 @@ return [
             'submenu' => [
                 [
                     'text' => 'Admin Management',
-                    'url'  => '',
+                    'url'  => 'admin/user_list',
                     'icon' => 'far fa-fw fa-user',
                     'can' =>  ['Admin'],
                 ],
                 [
                     'text' => 'Catalog Management',
-                    'url'  => '',
+                    'url'  => 'admin/catalog_user',
                     'icon' => 'far fa-fw fa-user',
                     'can' =>  ['Admin']
                 ]

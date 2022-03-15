@@ -1,0 +1,8 @@
+.eye-icon {
+    float: right;
+    margin-inline-end: 5px;
+    margin-top: -42px;
+    position: relative;
+    z-index: 5;
+    cursor:pointer;
+  }
