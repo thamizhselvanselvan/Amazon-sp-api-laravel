@@ -249,25 +249,7 @@ return [
             'url'  => 'admin/blog',
             'can'  => 'manage-blog',
         ],
-        [
-            'text' => 'User Management',
-            'url'  => '',
-            'can'  => ['Admin'],
-            'submenu' => [
-                [
-                    'text' => 'Admin Management',
-                    'url'  => 'admin/user_list',
-                    'icon' => 'far fa-fw fa-user',
-                    'can' =>  ['Admin'],
-                ],
-                [
-                    'text' => 'Catalog Management',
-                    'url'  => 'admin/catalog_user',
-                    'icon' => 'far fa-fw fa-user',
-                    'can' =>  ['Admin']
-                ]
-            ]
-        ],
+        
 
 
         [
@@ -299,56 +281,88 @@ return [
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin']
                 ],
-            ],
-        ],
-
-        [
-            'text'    => 'Catalog',
-            'submenu' => [
                 [
-                    'text' => 'Universal Textiles',
-                    'url'  => 'textiles',
-                    'icon' => 'far fa-fw fa-file',
+                    'text' => 'Roles',
+                    'url' => 'admin/rolespermissions',
+                    'icon' => 'fas fa-user',
                     'can' =>  ['Admin']
                 ],
                 [
-
-                    'text' => 'PMS Amazon',
-                    'url'  => 'product/amazon_com',
-                    'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin'],
-                ],
-                [
-
-                    'text' => 'Other Amazon.com',
-                    'url'  => 'other-product/amazon_com',
-                    'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin', 'Catalog Manager'],
-                ],
-                [
-
-                    'text' => 'fragrancenet.com',
-                    'url'  => '../../fragrancenet.com',
-                    'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin']
+                    'text' => 'User Management',
+                    'icon' => 'far fa-fw fa-user',
+                    'can'  => ['Admin'],
+                    'submenu' => [
+                        [
+                            'text' => 'Admin Management',
+                            'url'  => 'admin/user_list',
+                            'icon' => 'far fa-fw fa-user',
+                            'can' =>  ['Admin'],
+                        ],
+                        [
+                            'text' => 'Catalog Management',
+                            'url'  => 'admin/catalog_user',
+                            'icon' => 'far fa-fw fa-user',
+                            'can' =>  ['Admin']
+                        ]
                     ]
                 ],
+                
             ],
-            
-            [
-                'text' => 'Download Files',
-                'url'  => 'file_downloads',
-                'icon' => 'far fa-fw fa-file',
-                'can' =>  ['Admin']
-
         ],
 
         [
-            'text' => 'Roles',
-            'url' => 'admin/rolespermissions',
-            'icon' => 'fas fa-user',
+        'text'    => 'Catalog',
+        'submenu' => [
+            [
+                'text' => 'Universal Textiles',
+                'url'  => 'textiles',
+                'icon' => 'far fa-fw fa-file',
+                'can' =>  ['Admin']
+            ],
+            [
+
+                'text' => 'PMS Amazon',
+                'url'  => 'product/amazon_com',
+                'icon' => 'far fa-fw fa-file',
+                'can' =>  ['Admin'],
+            ],
+            [
+
+                'text' => 'Other Amazon.com',
+                'url'  => 'other-product/amazon_com',
+                'icon' => 'far fa-fw fa-file',
+                'can' =>  ['Admin', 'Catalog Manager'],
+            ],
+            [
+
+                'text' => 'fragrancenet.com',
+                'url'  => '../../fragrancenet.com',
+                'icon' => 'far fa-fw fa-file',
+                'can' =>  ['Admin']
+                ]
+            ],
+        ],
+            
+        [
+            'text' => 'B2C Ship',
+            'can' =>  ['Admin'],
+            'submenu' => [
+                [
+                    'text' => 'KYC',
+                    'url' => 'b2cship/kyc',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin']
+                ]
+            ],
+        ],
+        [
+            'text' => 'Download Files',
+            'url'  => 'file_downloads',
+            'icon' => 'far fa-fw fa-file',
             'can' =>  ['Admin']
         ],
+
+       
     ],
 
     /*
