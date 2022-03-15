@@ -274,6 +274,7 @@ return [
             'text'    => 'Master',
             'can' =>  ['Admin'],
             'submenu' => [
+               
                 [
                     'text' => 'Region Master ',
                     'url'  => 'admin/mws_regions',

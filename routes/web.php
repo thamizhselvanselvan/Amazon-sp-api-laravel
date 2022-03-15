@@ -47,8 +47,9 @@ Route::get('admin/rolespermissions', 'Admin\RolesPermissionsController@index');
 
 Route::get('admin/user_list', 'Admin\AdminManagementController@index');
 
-Route::get('admin/catalog_user', 'Admin\CatalogManagementController@index');
-Route::get('admin/catalogpassword/{id}', 'Admin\CatalogManagementController@showResetPassword');
+Route::get('admin/catalog_user', 'Admin\CatalogManagementController@index')->name('admin.catalog_user');
+Route::get('admin/catalog/{id}/password_reset', 'Admin\CatalogManagementController@password_reset_view');
+Route::post('admin/catalog/{id}/password_reset_save', 'Admin\CatalogManagementController@password_reset_save')->name('catalog.password_reset_save');
 
 Route::get('asin-master', 'AsinMasterController@index');
 Route::get('add-asin', 'AsinMasterController@addAsin');

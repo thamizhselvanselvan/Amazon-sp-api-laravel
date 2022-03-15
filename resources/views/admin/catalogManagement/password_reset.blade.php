@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Seller Password Reset')
+@section('title', 'Catalog Password Reset')
 
 @section('css')
 
@@ -12,7 +12,7 @@
 
     <div class="row">
         <div class="col">
-            <a href="" class="btn btn-primary">
+            <a href="{{route('admin.catalog_user')}}" class="btn btn-primary">
                 <i class="fas fa-long-arrow-alt-left"></i> Back
             </a>
         </div>
@@ -44,8 +44,8 @@
                 {{ session()->get('success') }}
             </div>
         @endif
-     
-        <form action="" method="POST" id="catalog_password_reset">
+  
+        <form action="{{ Route ('catalog.password_reset_save', $user_id) }}" method="POST" id="catalog_password_reset">
             @csrf
 
             <div class="row">
