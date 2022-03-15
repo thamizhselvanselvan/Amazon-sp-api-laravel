@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
 
 class AdminManagementController extends Controller
@@ -21,12 +22,31 @@ class AdminManagementController extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function ($user) {
                    
-                    return "<a href='/admin/adminpassword/".$user->id."' class='btn btn-primary btn-sm'><i class='fas fa-edit'></i>Change password</a>";
+                    return "<a href='password_reset_view/".$user->id."' class='btn btn-primary btn-sm'><i class='fas fa-edit'></i>Change password</a>";
                 })
                 ->rawColumns(['action'])
                 ->make(true);
 
         }
         return view('admin.adminManagement.index');
+   }
+   
+    function password_Change_view(Request $request){
+        $user_id = $request->id;
+        return view('admin.adminManagement.password_reset', compact('user_id'));
     }
+    
+    public function password_reset_save(Request $request, $id)
+    {
+        $request->validate([
+            'password' => 'required|confirmed|min:3|max:18'
+        ]);
+
+        User::where('id', $id)->update([
+            'password' => Hash::make($request->password)
+        ]);
+        
+        return redirect()->intended('/admin/catalog_user')->with('success', 'Catalog password has been changed successfully');
+    }
+   
 }
