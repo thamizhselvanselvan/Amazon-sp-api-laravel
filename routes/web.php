@@ -54,7 +54,8 @@ Route::get('admin/catalog/{id}/password_reset', 'Admin\CatalogManagementControll
 Route::post('admin/catalog/{id}/password_reset_save', 'Admin\CatalogManagementController@password_reset_save')->name('catalog.password_reset_save');
 Route::get('admin/catalog/{id}/edit', 'Admin\CatalogManagementController@edit_view');
 Route::post('admin/catalog/{id}/update', 'Admin\CatalogManagementController@update')->name('catalog_user.update');
-
+Route::get('admin/catalog/create','Admin\CatalogManagementController@create')->name('catalog_user.create');
+Route::post('admin/catalog/user_save', 'Admin\CatalogManagementController@user_save')->name('catalog_user_save');
 
 Route::get('asin-master', 'AsinMasterController@index');
 Route::get('add-asin', 'AsinMasterController@addAsin');

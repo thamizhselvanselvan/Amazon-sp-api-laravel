@@ -9,12 +9,11 @@
 @stop
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Admin Lists</h1>
-
+<h1 class="m-0 text-dark"> Admin List </h1>
 @stop
-
 @section('content')
 
+     
 
 <div class="row">
     <div class="col">
@@ -26,9 +25,16 @@
                     <strong>{{ $message }}</strong>
                 </div>
             @endif
-        </div>
-        
-        <table class="table table-bordered yajra-datatable table-striped">
+     </div>
+    
+    <h2 class="mb-4">
+        <a href="{{route('catalog_user.create')}}">
+            <x-adminlte-button label="Add Catalog User" theme="primary"  icon="fas fa-plus"/>
+        </a>
+    </h2>
+
+       <table class="table table-bordered yajra-datatable table-striped">
+       
             <thead>
                 <tr>
                     <th>ID</th>
