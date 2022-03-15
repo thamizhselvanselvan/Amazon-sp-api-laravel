@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Catalog Password Reset')
+@section('title', 'Catalog User Password Reset')
 
 @section('css')
 
@@ -20,7 +20,7 @@
 
     <div class="row mt-3">
         <div class="col">
-            <h1 class="m-0 text-dark text-center">Catalog Reset Password</h1>
+            <h1 class="m-0 text-dark text-center">Catalog User Reset Password</h1>
         </div>
     </div>
 
