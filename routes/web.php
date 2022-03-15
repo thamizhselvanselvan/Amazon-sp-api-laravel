@@ -79,9 +79,9 @@ Route::get('other-product/amazon_com', 'otherProduct\anotherAmazonProductControl
 Route::post('other-product/export', 'otherProduct\anotherAmazonProductController@exportOtherProduct')->name('export.other-product');
 Route::get('other-product/download/{id}', 'filedownloads\FileDownloadsController@download_other_product')->name('download.other-product');
 
-
-
 Route::get('b2cship/kyc', 'b2cship\b2cshipKycController@index');
+
+
 
 Route::get('path', function () {
 
