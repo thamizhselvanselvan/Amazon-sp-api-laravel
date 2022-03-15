@@ -46,7 +46,7 @@ class AdminManagementController extends Controller
             'password' => Hash::make($request->password)
         ]);
         
-        return redirect()->intended('/admin/catalog_user')->with('success', 'Catalog password has been changed successfully');
+        return redirect()->intended('/admin/user_list')->with('success', 'Admin password has been changed successfully');
     }
    
 }
