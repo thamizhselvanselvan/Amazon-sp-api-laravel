@@ -51,4 +51,17 @@ class CatalogManagementController extends Controller
         
         return redirect()->intended('/admin/catalog_user')->with('success', 'Catalog password has been changed successfully');
     }
+
+    public function edit_view($id)
+    {
+        $user = User::where('id', $id)->first();
+        return view('admin.catalogManagement.edit', compact('user'));
+    }
+
+    public function update(Request $request)
+    {
+     $user_name = $request->name;
+     $user_email = $request->email;
+    }
+
 }

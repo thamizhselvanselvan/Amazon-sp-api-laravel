@@ -50,6 +50,9 @@ Route::get('admin/user_list', 'Admin\AdminManagementController@index');
 Route::get('admin/catalog_user', 'Admin\CatalogManagementController@index')->name('admin.catalog_user');
 Route::get('admin/catalog/{id}/password_reset', 'Admin\CatalogManagementController@password_reset_view');
 Route::post('admin/catalog/{id}/password_reset_save', 'Admin\CatalogManagementController@password_reset_save')->name('catalog.password_reset_save');
+Route::get('admin/catalog/{id}/edit', 'Admin\CatalogManagementController@edit_view');
+Route::post('admin/catalog/{id}/update', 'Admin\CatalogManagementController@update')->name('catalog_user.update');
+
 
 Route::get('asin-master', 'AsinMasterController@index');
 Route::get('add-asin', 'AsinMasterController@addAsin');
@@ -117,43 +120,14 @@ Route::get('/test', function () {
      return ('downloaded done');
 });
 
-Route::get('/remove', function () {
-
-     universalTextile::truncate();
-});
-
-
 Route::get('/amazon_count', 'TestController@index');
 
 Route::get('/asin/{asin}/{code}', 'TestController@getASIN');
 
-Route::get('/pdo', function () {
-
-     $host = config('app.host');
-     $dbname = config('app.database');
-     $port = config('app.port');
-     $username = config('app.username');
-     $password = config('app.password');
-
-
-     try {
-          po($host);
-          po($dbname);
-          po($port);
-          po($username);
-          po($password);
-          //$db = new PDO('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
-          R::setup('mysql: host=' . $host . '; dbname=' . $dbname . ';port=' . $port, $username, $password);
-     } catch (PDOException $e) {
-          echo $e->getmessage();
-     } finally {
-          echo 'working';
-     }
-});
-
 Route::get("mssql", function () {
      $ans = DB::connection('mssql')->select("SELECT TOP 5 * FROM Apilog");
-
+     po($ans);
+     exit;
      $B2CShipEventMapping = DB::connection('mssql')->select("SELECT TOP 50 * FROM B2CShipEventMapping");
      $TrackingErrorMapping = DB::connection('mssql')->select("SELECT TOP 50 * FROM TrackingErrorMapping");
      $TrackingErrorMaster = DB::connection('mssql')->select("SELECT TOP 50 * FROM TrackingErrorMaster");
