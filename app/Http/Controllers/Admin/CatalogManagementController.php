@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 
@@ -24,7 +25,7 @@ class CatalogManagementController extends Controller
                    
                     $actionBtn = '<a href="/admin/catalog/'.$row->id.'/edit" class="edit btn btn-success btn-sm"> <i class="fas fa-edit"></i> Edit</a>';
                     $actionBtn .= '<a href="/admin/catalog/'.$row->id.'/password_reset" class="password_reset btn btn-primary ml-2 btn-sm"> <i class="fas fa-key"></i> Reset Password</a>';
-               
+                    $actionBtn .= '<a href="/admin/catalog/'.$row->id.'/user_delete" data-id='.$row->id.' class="trash btn btn-warning ml-2 btn-sm"><i class="far fa-trash-alt "></i> Remove</a>';
                     return $actionBtn;
                 })
                 ->rawColumns(['action'])
@@ -63,7 +64,12 @@ class CatalogManagementController extends Controller
     {
      $user_name = $request->name;
      $user_email = $request->email;
+
+     User::where('id', $request->id) ->update(['name' => $user_name, 'email' => $user_email]);
+     return redirect()->intended('/admin/catalog_user')->with('success', 'Catalog user '.$request->name.' has been updated successfully');
     }
+
+    
 
     public function create()
     {
@@ -89,4 +95,11 @@ class CatalogManagementController extends Controller
         return redirect()->intended('/admin/catalog_user')->with('success', 'Catalog user '.$request->name.' has been created successfully');
 
      }
-}
+
+     public function trash($id)
+       {   
+           Log::alert($id);
+           User::where('id', $id)->delete();
+          return response()->json(['success' => 'User has been pushed to bin']);
+       }
+    }
