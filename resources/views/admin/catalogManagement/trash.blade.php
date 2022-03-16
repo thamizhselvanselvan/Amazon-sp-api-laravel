@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'All Users with roles')
+@section('title', 'Bin Users')
 
 @section('css')
 
@@ -9,36 +9,48 @@
 @stop
 
 @section('content_header')
-<h1 class="m-0 text-dark"> Admin List </h1>
+
+    <div class="row">
+        <div class="col">
+            <a href=" " class="btn btn-primary">
+                <i class="fas fa-long-arrow-alt-left"></i> Back
+            </a>
+        </div>
+        <div class="col">
+            <h1 class="m-0 text-dark text-center">Bin Users</h1>
+        </div>
+        <div class="col"></div>
+    </div>
 @stop
+
 @section('content')
+
+<div class="loader d-none">
+    <div class="sub-loader position-relative ">
+        <div class="lds-hourglass"></div>
+        <p>Loading...</p>
+    </div>
+</div>
 
 <div class="row">
     <div class="col">
-        
-    <div class="alert_display">
+        <h2 class="mb-4"></h2>
+
+        <div class="alert_display">
             @if ($message = Session::get('success'))
                 <div class="alert alert-success alert-block">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <strong>{{ $message }}</strong>
                 </div>
             @endif
-     </div>
-    
-    <h2 class="mb-4">
-        <a href="{{route('catalog_user.create')}}">
-            <x-adminlte-button label="Add Catalog User" theme="primary"  icon="fas fa-plus"/>
-        </a>
-    </h2>
+        </div>
 
-       <table class="table table-bordered yajra-datatable table-striped">
-       
+        <table class="table table-bordered yajra-datatable table-striped">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Name</th>
+                    <th title="User ID">ID</th>
+                    <th>User Name</th>
                     <th>Email</th>
-                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -46,59 +58,59 @@
         </table>
     </div>
 </div>
+
 @stop
 
 
 @section('js')
     <script type="text/javascript">
         $(function () {
-             });  
-                    let yajra_table = $('.yajra-datatable').DataTable({
+
+            let yajra_table = $('.yajra-datatable').DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: "{{ url('admin/catalog_user') }}",
+                    ajax: "{{ url('admin/users/trash') }}",
                     columns: [
-                        {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+                        {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                         {data: 'name', name: 'name'},
+                        {data: 'user_name', name: 'user_name'},
                         {data: 'email', name: 'email'},
-                        {data: 'action', orderable: false, searchable: false},
                     ]
-
-               });  
+            });
             
-            
-            $(document).on('click', ".trash", function(e) {
-                     e.preventDefault();
-                    let bool = confirm("Are you sure you wanna put it in trash?");
+            $(document).on('click', ".restore", function(e) {
+                e.preventDefault();
 
-                   if(!bool) {
+                let bool = confirm('Are you sure you wanna restore it?');
+
+                if(!bool) {
                     return false;
                 }
-        
+
                 let self = $(this);
                 let id = self.attr('data-id');
                 self.prop('disable', true);
                 let loader = $('.loader');
-
+                
                 let alert_dislay_div = $('.alert_display');
                 let alert_template = `<div class="alert alert-block d-none alert_main">
                                             <button type="button" class="close" data-dismiss="alert">×</button>
                                             <strong class="alert_message"></strong>
-                                      </div>`;
+                                        </div>`;
                 alert_dislay_div.html(alert_template);
 
                 let alert_message = $('.alert_message');
                 let alert_main = $('.alert_main');
-                
+
                 loader.removeClass('d-none');
 
                 $.ajax({
                     method: 'post',
-                    url: '/admin/catalog/'+id+'/user_delete',
+                    url: '/admin/sellers/'+id+"/restore",
                     data: {
                         "_token": "{{ csrf_token() }}",
-                        "_method": 'DELETE'
-                          },
+                        "_method": 'PUT'
+                    },
                     response: 'json',
                     success: function (response) {
                         self.prop('disable', false);
@@ -121,12 +133,10 @@
                         alert_message.html('Oops something went wrong. Contct Admin');
              
                     }
+                });
+
             });
-            
-        });
-
-     
-
         
+        });
     </script>
 @stop
