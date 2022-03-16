@@ -349,7 +349,7 @@ return [
             'submenu' => [
                 [
                     'text' => 'KYC',
-                    'url' => 'b2cship/kyc',
+                    'url' => 'B2cship/kyc',
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin']
                 ]

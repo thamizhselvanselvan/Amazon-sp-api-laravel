@@ -22,7 +22,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col">Today</div>
+        <div class="col">Today Total KYC Received {{$todayTotalBooking['totalBooking']}} </div>
         <div class="col">Yesterday</div>
         <div class="col">Last 7 Days</div>
         <div class="col">Last 30 Days</div>
@@ -31,7 +31,7 @@
         <div class="col">
             <div class="info-box bg-success">
                 <div class="info-box-content">
-                <h4>10</h4>
+                <h4>{{$todayTotalBooking['kycApproved']}}</h4>
                     <span class="info-box-text">KYC Approved</span>
                 </div>
             </div>
@@ -40,7 +40,7 @@
         <div class="col">
         <div class="info-box bg-success">
                 <div class="info-box-content">
-                <h4>10</h4>
+                <h4>0</h4>
                     <span class="info-box-text">KYC Approved</span>
                 </div>
             </div>
@@ -49,7 +49,7 @@
         <div class="col">
         <div class="info-box bg-success">
                 <div class="info-box-content">
-                <h4>10</h4>
+                <h4>0</h4>
                     <span class="info-box-text">KYC Approved</span>
                 </div>
             </div>
@@ -58,7 +58,7 @@
           
             <div class="info-box bg-success">
                 <div class="info-box-content">
-                <h4>10</h4>
+                <h4>0</h4>
                     <span class="info-box-text">KYC Approved</span>
                 </div>
             </div>
@@ -69,7 +69,7 @@
     <div class="col">
             <div class="info-box bg-warning">
                 <div class="info-box-content">
-                <h4>10</h4>
+                <h4>{{$todayTotalBooking['kycPending']}}</h4>
                     <span class="info-box-text">KYC Pending</span>
                 </div>
             </div>
@@ -77,7 +77,7 @@
         <div class="col">
             <div class="info-box bg-warning">
                 <div class="info-box-content">
-                <h4>10</h4>
+                <h4>0</h4>
                     <span class="info-box-text">KYC Pending</span>
                 </div>
             </div>
@@ -85,7 +85,7 @@
         <div class="col">
             <div class="info-box bg-warning">
                 <div class="info-box-content">
-                <h4>10</h4>
+                <h4>0</h4>
                     <span class="info-box-text">KYC Pending</span>
                 </div>
             </div>
@@ -93,7 +93,7 @@
         <div class="col">
             <div class="info-box bg-warning">
                 <div class="info-box-content">
-                <h4>10</h4>
+                <h4>0</h4>
                     <span class="info-box-text">KYC Pending</span>
                 </div>
             </div>
@@ -104,7 +104,7 @@
     <div class="col">
             <div class="info-box bg-danger">
                 <div class="info-box-content">
-                <h4>10</h4>
+                <h4>{{$todayTotalBooking['kycRejected']}}</h4>
                     <span class="info-box-text">KYC Rejected</span>
                 </div>
             </div>
