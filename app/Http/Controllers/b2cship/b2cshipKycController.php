@@ -41,6 +41,7 @@ class B2cshipKycController extends Controller
                     $totalBookingArray[] = "'$totalBookingAWB'";
                 }
             }
+            
 
             $awb = implode(',', $totalBookingArray);
             $awb = ltrim($awb);
