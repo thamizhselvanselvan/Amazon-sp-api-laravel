@@ -11,16 +11,28 @@ class B2cshipKycController extends Controller
 {
     public function index()
     {
-        $date = 0;
 
         $startTime = Carbon::today();
         $endTime = Carbon::now();
-        $date = $startTime->toDateString();
+        
+        $todayTotalBooking =  $this->kycDetails($startTime, $endTime); 
 
-        $todayTotalBooking =  $this->kycDetails($startTime, $endTime);
-        // po($todayTotalBooking);
-        // exit;
-        return view('b2cship.kyc.index', compact('todayTotalBooking'));
+       
+        $startTime = Carbon::yesterday();
+        $endTime = Carbon::now();
+        $yesterdayTotalBooking =  $this->kycDetails($startTime, $endTime);
+        
+
+        $startTime = Carbon::today()->subDays(7);
+        $endTime = Carbon::now();
+        $Last7DaysTotalBooking =  $this->kycDetails($startTime, $endTime);
+
+        
+        $startTime = Carbon::today()->subDays(30);
+        $endTime = Carbon::now();
+        $Last30DaysTotalBooking =  $this->kycDetails($startTime, $endTime);
+
+        return view('b2cship.kyc.index', compact(['todayTotalBooking','yesterdayTotalBooking','Last7DaysTotalBooking','Last30DaysTotalBooking']));
     }
 
     public function kycDetails($start, $end)

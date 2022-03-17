@@ -92,19 +92,13 @@ Route::get('B2cship/tracking_status/table3', 'B2cship\B2cshipKycController@table
 Route::get('B2cship/tracking_status/table4', 'B2cship\B2cshipKycController@table4');
 Route::get('B2cship/tracking_status/table5', 'B2cship\B2cshipKycController@table5');
 
-
 Route::resource('/tests', 'TestController');
 
-Route::get('updatePassword', function(){
+
      // Bj69UT4UWy
      // DB::table('Users')
      // User::where('email', 'mudassir@moshecom.com')
      //  ->update(['password' =>Hash::make('Bj69UT4UWy')]);
-
-     po(User::get());
-
-
-});
 
 Route::get('/asin/{asin}/{code}', 'TestController@getASIN');
 
