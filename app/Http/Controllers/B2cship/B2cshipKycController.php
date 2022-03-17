@@ -15,7 +15,6 @@ class B2cshipKycController extends Controller
 
         $startTime = Carbon::today();
         $endTime = Carbon::now();
-
         $date = $startTime->toDateString();
 
         $todayTotalBooking =  $this->kycDetails($startTime, $endTime);
@@ -69,5 +68,40 @@ class B2cshipKycController extends Controller
             $finalArray['kycPending'] = $totalkycPendingCount;
             return ($finalArray);
         }
+    }
+
+    public function table1()
+    {   echo 'B2CShip Event Mapping';
+        $test1 = DB::connection('mssql')->select("SELECT TOP 10 * FROM B2CShipEventMapping ORDER BY CreatedDate DESC");
+        po($test1);
+    }
+    public function table2()
+    {   echo 'Tracking Error Mapping';
+        $test1 = DB::connection('mssql')->select("SELECT TOP 10 * FROM TrackingErrorMapping ORDER BY CreatedDate DESC");
+        po($test1);
+        echo 'Tracking Error Master';
+        $test1 = DB::connection('mssql')->select("SELECT TOP 10 * FROM TrackingErrorMaster ORDER BY CreatedDate DESC");
+        po($test1);
+    }
+    public function table3()
+    {   echo 'TrackingEventMapping';
+        $test1 = DB::connection('mssql')->select("SELECT TOP 10 * FROM TrackingEventMapping ORDER BY CreatedDate DESC");
+        po($test1);
+
+      echo 'TrackingEventMapping 20102021';
+        $test1 = DB::connection('mssql')->select("SELECT TOP 10 * FROM TrackingEventMapping20102021 ORDER BY CreatedDate DESC");
+        po($test1);
+    }
+    public function table4()
+    {   
+        echo 'Tracking Event Master';
+        $test1 = DB::connection('mssql')->select("SELECT TOP 10 * FROM TrackingEventMaster ORDER BY CreatedDate DESC");
+        po($test1);
+    }
+    public function table5()
+    {
+        echo 'Tracking Event Master 25102021';
+        $test1 = DB::connection('mssql')->select("SELECT TOP 10 * FROM TrackingEventmaster25102021 ORDER BY CreatedDate DESC");
+        po($test1);
     }
 }

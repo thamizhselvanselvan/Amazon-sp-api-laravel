@@ -249,14 +249,14 @@ return [
             'url'  => 'admin/blog',
             'can'  => 'manage-blog',
         ],
-        
+
 
 
         [
             'text'    => 'Master',
             'can' =>  ['Admin'],
             'submenu' => [
-               
+
                 [
                     'text' => 'Region Master ',
                     'url'  => 'admin/mws_regions',
@@ -304,45 +304,45 @@ return [
                             'icon' => 'far fa-fw fa-user',
                             'can' =>  ['Admin']
                         ]
-                    ]
+                    ],
                 ],
-                
+
             ],
         ],
 
         [
-        'text'    => 'Catalog',
-        'submenu' => [
-            [
-                'text' => 'Universal Textiles',
-                'url'  => 'textiles',
-                'icon' => 'far fa-fw fa-file',
-                'can' =>  ['Admin']
-            ],
-            [
+            'text'    => 'Catalog',
+            'submenu' => [
+                [
+                    'text' => 'Universal Textiles',
+                    'url'  => 'textiles',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin']
+                ],
+                [
 
-                'text' => 'PMS Amazon',
-                'url'  => 'product/amazon_com',
-                'icon' => 'far fa-fw fa-file',
-                'can' =>  ['Admin'],
-            ],
-            [
+                    'text' => 'PMS Amazon',
+                    'url'  => 'product/amazon_com',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin'],
+                ],
+                [
 
-                'text' => 'Other Amazon.com',
-                'url'  => 'other-product/amazon_com',
-                'icon' => 'far fa-fw fa-file',
-                'can' =>  ['Admin', 'Catalog Manager'],
-            ],
-            [
+                    'text' => 'Other Amazon.com',
+                    'url'  => 'other-product/amazon_com',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin', 'Catalog Manager'],
+                ],
+                [
 
-                'text' => 'fragrancenet.com',
-                'url'  => '../../fragrancenet.com',
-                'icon' => 'far fa-fw fa-file',
-                'can' =>  ['Admin']
-                ]
+                    'text' => 'fragrancenet.com',
+                    'url'  => '../../fragrancenet.com',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin']
+                ],
             ],
         ],
-            
+
         [
             'text' => 'B2C Ship',
             'can' =>  ['Admin'],
@@ -350,11 +350,47 @@ return [
                 [
                     'text' => 'KYC',
                     'url' => 'B2cship/kyc',
+                    'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin']
-                ]
+
+                ],
+
+                [
+                    'text' => 'Tracking Status',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' => ['Admin'],
+                    'submenu' => [
+                        [
+                            'text' => 'Table 1',
+                            'icon' => 'far fa-fw fa-file',
+                            'url' => 'B2cship/tracking_status/table1'
+                        ],
+                        [
+                            'text' => 'Table 2',
+                            'icon' => 'far fa-fw fa-file',
+                            'url' => 'B2cship/tracking_status/table2'
+                        ],
+                        [
+                            'text' => 'Table 3',
+                            'icon' => 'far fa-fw fa-file',
+                            'url' => 'B2cship/tracking_status/table3'
+                        ],
+                        [
+                            'text' => 'Table 4',
+                            'icon' => 'far fa-fw fa-file',
+                            'url' => 'B2cship/tracking_status/table4'
+                        ],
+                        [
+                            'text' => 'Table 5',
+                            'icon' => 'far fa-fw fa-file',
+                            'url' => 'B2cship/tracking_status/table5'
+                        ],
+                    ],
+
+                ],
             ],
         ],
+
         [
             'text' => 'Download Files',
             'url'  => 'file_downloads',
@@ -362,7 +398,7 @@ return [
             'can' =>  ['Admin']
         ],
 
-       
+
     ],
 
     /*

@@ -86,6 +86,11 @@ Route::post('other-product/export', 'otherProduct\anotherAmazonProductController
 Route::get('other-product/download/{id}', 'filedownloads\FileDownloadsController@download_other_product')->name('download.other-product');
 
 Route::get('B2cship/kyc', 'B2cship\B2cshipKycController@index');
+Route::get('B2cship/tracking_status/table1', 'B2cship\B2cshipKycController@table1');
+Route::get('B2cship/tracking_status/table2', 'B2cship\B2cshipKycController@table2');
+Route::get('B2cship/tracking_status/table3', 'B2cship\B2cshipKycController@table3');
+Route::get('B2cship/tracking_status/table4', 'B2cship\B2cshipKycController@table4');
+Route::get('B2cship/tracking_status/table5', 'B2cship\B2cshipKycController@table5');
 
 
 Route::resource('/tests', 'TestController');
