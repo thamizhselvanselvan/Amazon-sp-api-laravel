@@ -7,6 +7,8 @@
 
 @section('content')
 
+
+
 <div class="row">
     <div class="col">
         <div class="alert_display">
@@ -23,71 +25,71 @@
 <div class="container-fluid">
     <div class="row">
            <div class="col-3 ">
-             <div class="info-box bg-info">
+             <div class="info-box bg-info text-center">
                <div class="info-box-content">
-                 <h5>{{$todayTotalBooking['totalBooking']}}</h5>
-                 <span>Today KYC Received </span>
+                 <h2>{{$todayTotalBooking['totalBooking']}}</h2>
+                 <h5> Today Total Booking</h5>
                </div>
              </div>
             </div>
           <div class="col-3 ">
-             <div class="info-box bg-info">
+             <div class="info-box bg-info text-center">
                 <div class="info-box-content">
-                 <h5>{{$yesterdayTotalBooking['totalBooking']}}</h5>
-                 <h5>Yesterday</h5>
+                 <h2>{{$yesterdayTotalBooking['totalBooking']}}</h2>
+                 <h5>Yesterday Total Booking</h5>
                 </div>
              </div>
           </div>
           <div class="col-3 ">
-             <div class="info-box bg-info">
+             <div class="info-box bg-info text-center">
                 <div class="info-box-content">
-                <h5>{{$Last7DaysTotalBooking['totalBooking']}}</h5>
-                <h5>Last 7 Days</h5>
+                <h2>{{$Last7DaysTotalBooking['totalBooking']}}</h2>
+                <h5>Last 7 Days Total Booking</h5>
                 </div>
              </div>
            </div>
            <div class="col-3 ">
-             <div class="info-box bg-info">
+             <div class="info-box bg-info  text-center">
                 <div class="info-box-content">
-                <h5>{{$Last30DaysTotalBooking['totalBooking']}}</h5>
-                <h5>Last 30 Days</h5>
+                <h2>{{$Last30DaysTotalBooking['totalBooking']}}</h2>
+                <h5>Last 30 Days Total Booking</h5>
                 </div>
              </div>
            </div>
     </div>
     <div class="row">
         <div class="col">
-            <div class="info-box bg-success">
+            <div class="info-box bg-success text-center">
                 <div class="info-box-content">
-                <h4>{{$todayTotalBooking['kycApproved']}}</h4>
-                    <span class="info-box-text">KYC Approved</span>
+                <h2>{{$todayTotalBooking['kycApproved']}}</h2>
+                    <h5>KYC Approved</h5>
                 </div>
             </div>
         </div>
 
         <div class="col">
-        <div class="info-box bg-success">
+        <div class="info-box bg-success text-center">
                 <div class="info-box-content">
-                 <h4>{{$yesterdayTotalBooking['kycApproved']}}</h4>
-                    <span class="info-box-text">KYC Approved</span>
+                 <h2>{{$yesterdayTotalBooking['kycApproved']}}</h2>
+                    <h5>KYC Approved</h5>
                 </div>
             </div>
         </div>
 
         <div class="col">
-        <div class="info-box bg-success">
+        <div class="info-box bg-success text-center">
                 <div class="info-box-content">
-                  <h4>{{$Last7DaysTotalBooking['kycApproved']}}</h4>
-                    <span class="info-box-text">KYC Approved</span>
+                  <h2>{{$Last7DaysTotalBooking['kycApproved']}}</h2>
+                    <h5>KYC Approved</h5>
                 </div>
             </div>
         </div>
         <div class="col">
           
-            <div class="info-box bg-success">
+            <div class="info-box bg-success text-center">
                 <div class="info-box-content">
-             <h4>{{$Last30DaysTotalBooking['kycApproved']}}</h4>
-                    <span class="info-box-text">KYC Approved</span>
+             <h2>{{$Last30DaysTotalBooking['kycApproved']}}</h2>
+                   <h5>KYC Approved</h5>
                 </div>
             </div>
         </div>
@@ -95,34 +97,34 @@
   
     <div class="row">
     <div class="col">
-            <div class="info-box bg-warning">
+            <div class="info-box bg-warning text-center">
                 <div class="info-box-content">
-                <h4>{{$todayTotalBooking['kycPending']}}</h4>
-                    <span class="info-box-text">KYC Pending</span>
+                <h2>{{$todayTotalBooking['kycPending']}}</h2>
+                    <h5>KYC Pending</h5>
                 </div>
             </div>
         </div>
         <div class="col">
-            <div class="info-box bg-warning">
+            <div class="info-box bg-warning text-center">
                 <div class="info-box-content">
-                 <h4>{{$yesterdayTotalBooking['kycPending']}}</h4>
-                    <span class="info-box-text">KYC Pending</span>
+                 <h2>{{$yesterdayTotalBooking['kycPending']}}</h2>
+                    <h5>KYC Pending</<h5>
                 </div>
             </div>
         </div>
         <div class="col">
-            <div class="info-box bg-warning">
+            <div class="info-box bg-warning text-center">
                 <div class="info-box-content">
-                 <h4>{{$Last7DaysTotalBooking['kycPending']}}</h4>
-                    <span class="info-box-text">KYC Pending</span>
+                 <h2>{{$Last7DaysTotalBooking['kycPending']}}</h2>
+                   <h5>KYC Pending</<h5>
                 </div>
             </div>
         </div>
         <div class="col">
-            <div class="info-box bg-warning">
+            <div class="info-box bg-warning text-center">
                 <div class="info-box-content">
-                  <h4>{{$Last30DaysTotalBooking['kycPending']}}</h4>
-                    <span class="info-box-text">KYC Pending</span>
+                  <h2>{{$Last30DaysTotalBooking['kycPending']}}</h2>
+                   <h5>KYC Pending</<h5>
                 </div>
             </div>
         </div>
@@ -130,34 +132,34 @@
     
     <div class="row">
     <div class="col">
-            <div class="info-box bg-danger">
+            <div class="info-box bg-danger text-center">
                 <div class="info-box-content">
-                <h4>{{$todayTotalBooking['kycRejected']}}</h4>
-                    <span class="info-box-text">KYC Rejected</span>
+                <h2>{{$todayTotalBooking['kycRejected']}}</h2>
+                    <h5>KYC Rejected</h5>
                 </div>
             </div>
         </div>
         <div class="col">
-            <div class="info-box bg-danger">
+            <div class="info-box bg-danger text-center">
                 <div class="info-box-content">
-                <h4>{{$yesterdayTotalBooking['kycRejected']}}</h4>
-                    <span class="info-box-text">KYC Rejected</span>
+                <h2>{{$yesterdayTotalBooking['kycRejected']}}</h2>
+                    <h5>KYC Rejected</5>
                 </div>
             </div>
         </div>
         <div class="col">
-            <div class="info-box bg-danger">
+            <div class="info-box bg-danger text-center">
                 <div class="info-box-content">
-                <h4>{{$Last7DaysTotalBooking['kycRejected']}}</h4>
-                    <span class="info-box-text">KYC Rejected</span>
+                <h2>{{$Last7DaysTotalBooking['kycRejected']}}</h2>
+                    <h5>KYC Rejected</h5>
                 </div>
             </div>
         </div>
         <div class="col">
-            <div class="info-box bg-danger">
+            <div class="info-box bg-danger text-center">
                 <div class="info-box-content">
-                      <h4>{{$Last30DaysTotalBooking['kycRejected']}}</h4>
-                    <span class="info-box-text">KYC Rejected</span>
+                      <h2>{{$Last30DaysTotalBooking['kycRejected']}}</h2>
+                    <h5>KYC Rejected</5>
                 </div>
             </div>
         </div>
