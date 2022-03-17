@@ -361,29 +361,9 @@ return [
                     'can' => ['Admin'],
                     'submenu' => [
                         [
-                            'text' => 'Table 1',
+                            'text' => 'Status Details',
                             'icon' => 'far fa-fw fa-file',
-                            'url' => 'B2cship/tracking_status/table1'
-                        ],
-                        [
-                            'text' => 'Table 2',
-                            'icon' => 'far fa-fw fa-file',
-                            'url' => 'B2cship/tracking_status/table2'
-                        ],
-                        [
-                            'text' => 'Table 3',
-                            'icon' => 'far fa-fw fa-file',
-                            'url' => 'B2cship/tracking_status/table3'
-                        ],
-                        [
-                            'text' => 'Table 4',
-                            'icon' => 'far fa-fw fa-file',
-                            'url' => 'B2cship/tracking_status/table4'
-                        ],
-                        [
-                            'text' => 'Table 5',
-                            'icon' => 'far fa-fw fa-file',
-                            'url' => 'B2cship/tracking_status/table5'
+                            'url' => 'B2cship/tracking_status/details'
                         ],
                     ],
 
