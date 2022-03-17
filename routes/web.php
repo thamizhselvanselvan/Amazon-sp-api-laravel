@@ -87,19 +87,13 @@ Route::get('other-product/download/{id}', 'filedownloads\FileDownloadsController
 
 Route::get('B2cship/kyc', 'B2cship\B2cshipKycController@index');
 
-
 Route::resource('/tests', 'TestController');
 
-Route::get('updatePassword', function(){
+
      // Bj69UT4UWy
      // DB::table('Users')
      // User::where('email', 'mudassir@moshecom.com')
      //  ->update(['password' =>Hash::make('Bj69UT4UWy')]);
-
-     po(User::get());
-
-
-});
 
 Route::get('/asin/{asin}/{code}', 'TestController@getASIN');
 
