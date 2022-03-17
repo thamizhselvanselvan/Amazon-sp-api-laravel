@@ -19,17 +19,14 @@ class B2cshipKycController extends Controller
 
        
         $startTime = Carbon::yesterday();
-        $endTime = Carbon::now();
         $yesterdayTotalBooking =  $this->kycDetails($startTime, $endTime);
         
 
         $startTime = Carbon::today()->subDays(7);
-        $endTime = Carbon::now();
         $Last7DaysTotalBooking =  $this->kycDetails($startTime, $endTime);
 
         
         $startTime = Carbon::today()->subDays(30);
-        $endTime = Carbon::now();
         $Last30DaysTotalBooking =  $this->kycDetails($startTime, $endTime);
 
         return view('b2cship.kyc.index', compact(['todayTotalBooking','yesterdayTotalBooking','Last7DaysTotalBooking','Last30DaysTotalBooking']));
