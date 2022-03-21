@@ -87,6 +87,7 @@ Route::get('other-product/download/{id}', 'filedownloads\FileDownloadsController
 
 Route::get('B2cship/kyc', 'B2cship\B2cshipKycController@index');
 Route::get('B2cship/tracking_status/details', 'B2cship\B2cshipKycController@trackingStatusDetails');
+Route::get('B2cship/booking', 'B2cship\B2cshipKycController@Bookingstatus');
 
 Route::resource('/tests', 'TestController');
 

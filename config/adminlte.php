@@ -368,6 +368,12 @@ return [
                     ],
 
                 ],
+                [
+                    'text' => 'Booking Status',
+                    'url' => 'B2cship/booking',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',   
+                ]
             ],
         ],
 

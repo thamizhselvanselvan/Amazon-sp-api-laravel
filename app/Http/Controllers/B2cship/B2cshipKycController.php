@@ -128,9 +128,16 @@ class B2cshipKycController extends Controller
     // // echo $eventArray;
     return false;
       
+    }
 
 
-
+    public function Bookingstatus()
+    {
+        $startTime = Carbon::today();
+        $endTime = Carbon::now();
+        
+        $todaysTotalBooking =  $this->kycDetails($startTime, $endTime);
+        return view('b2cship.booking.index',compact(['todaysTotalBooking']));
     }
 
 }
