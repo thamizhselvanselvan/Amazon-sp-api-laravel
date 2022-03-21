@@ -288,7 +288,7 @@ return [
                     'can' =>  ['Admin']
                 ],
                 [
-                    'text' => 'User Management',
+                    'text' => 'User Master',
                     'icon' => 'far fa-fw fa-user',
                     'can'  => ['Admin'],
                     'submenu' => [

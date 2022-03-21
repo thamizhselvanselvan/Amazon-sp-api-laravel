@@ -28,7 +28,7 @@
              <div class="info-box bg-info text-center">
                <div class="info-box-content">
                  <h2>{{$todayTotalBooking['totalBooking']}}</h2>
-                 <h5> Today Total Booking</h5>
+                 <h5> Today's Total Booking</h5>
                </div>
              </div>
             </div>
@@ -36,7 +36,7 @@
              <div class="info-box bg-info text-center">
                 <div class="info-box-content">
                  <h2>{{$yesterdayTotalBooking['totalBooking']}}</h2>
-                 <h5>Yesterday Total Booking</h5>
+                 <h5>Yesterday's Total Booking</h5>
                 </div>
              </div>
           </div>
