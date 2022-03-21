@@ -5,15 +5,30 @@ namespace App\Http\Controllers\B2cship;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Yajra\DataTables\Facades\DataTables;
 
 class TrackingStatusController extends Controller
 {
-    public function trackingStatusDetails()
+    public function index()
+    {
+    }
+
+    public function trackingStatusDetails(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $data = $this->trackingStatusDetailsData();
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->make(true);
+        }
+        return view('b2cship.trackingStatus.index');
+    }
+
+    public function trackingStatusDetailsData()
     {
         $PODeventsArray = [];
         $offset = 0;
-
-        // $PODtransEvents = DB::connection('mssql')->select("SELECT DISTINCT ISNULL(FPCode,'B2CShip')+ ' : ' + StatusDetails AS TrackingMsg FROM PODTrans");
         
         $PODtransEvents = DB::connection('mssql')->select("SELECT DISTINCT StatusDetails, FPCode FROM PODTrans");
         // Making By default null for every code and description
@@ -70,6 +85,7 @@ class TrackingStatusController extends Controller
             }
             $offset++;
         }
-        po($PODeventsArray);
+
+        return $PODeventsArray;
     }
 }
