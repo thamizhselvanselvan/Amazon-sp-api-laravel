@@ -14,24 +14,24 @@ class B2cshipKycController extends Controller
 
         $startTime = Carbon::today();
         $endTime = Carbon::now();
-        
-        $todayTotalBooking =  $this->kycDetails($startTime, $endTime); 
 
-       
+        $todayTotalBooking =  $this->kycDetails($startTime, $endTime);
+
+
         $startTime = Carbon::yesterday();
         $endTimeYesterday = $startTime->toDateString();
-        $endTimeYesterday = $endTimeYesterday.' 23:59:59';
+        $endTimeYesterday = $endTimeYesterday . ' 23:59:59';
         $yesterdayTotalBooking =  $this->kycDetails($startTime, $endTimeYesterday);
-        
+
 
         $startTime = Carbon::today()->subDays(7);
         $Last7DaysTotalBooking =  $this->kycDetails($startTime, $endTime);
 
-        
+
         $startTime = Carbon::today()->subDays(30);
         $Last30DaysTotalBooking =  $this->kycDetails($startTime, $endTime);
-    
-        return view('b2cship.kyc.index', compact(['todayTotalBooking','yesterdayTotalBooking','Last7DaysTotalBooking','Last30DaysTotalBooking']));
+
+        return view('b2cship.kyc.index', compact(['todayTotalBooking', 'yesterdayTotalBooking', 'Last7DaysTotalBooking', 'Last30DaysTotalBooking']));
     }
 
     public function kycDetails($start, $end)
@@ -51,7 +51,7 @@ class B2cshipKycController extends Controller
                     $totalBookingArray[] = "'$totalBookingAWB'";
                 }
             }
-            
+
 
             $awb = implode(',', $totalBookingArray);
             $awb = ltrim($awb);
@@ -70,9 +70,8 @@ class B2cshipKycController extends Controller
             $finalArray['kycRejected'] = $totalkycRejectedCount;
             $finalArray['kycPending'] = $totalkycPendingCount;
             return ($finalArray);
-            
         } else {
-            
+
             $finalArray['totalBooking'] = $totalBookingCount;
             $finalArray['kycApproved'] = $totalkycApprovedCount;
             $finalArray['kycRejected'] = $totalkycRejectedCount;
@@ -81,56 +80,5 @@ class B2cshipKycController extends Controller
         }
     }
 
-    public function trackingStatusDetails()
-    {  // echo 'B2CShip Event Mapping';
-        $PODtransEvents = DB::connection('mssql')->select("SELECT DISTINCT StatusDetails, FPCode FROM PODTrans");
-        foreach($PODtransEvents as $PODtransEvent){
-           
-          $fpCode = $PODtransEvent->FPCode;
-          if($fpCode == ''){
-              $fpCode = 'B2CShip';
-          }
-          $statusDetails = $PODtransEvent->StatusDetails;
-          
-          $event = $fpCode.' : '.$statusDetails;
-          $eventsArray[] = $event;
-       }
-       $offset =0;
-       foreach($eventsArray as $eventArray)
-       {
-        $modifyedEvents = str_replace("'", "''", $eventArray);
-        $trackingEventsMapping = DB::connection('mssql')->select("SELECT TrackingMasterCode, OurEventCode, EventDescription FROM TrackingEventMapping WHERE TrackingMsg = '$modifyedEvents' ");
-        
-        if(array_key_exists('0', $trackingEventsMapping)){
-
-            $trackingEventsMappingArray[$offset]['TrackingMasterCode'] = $trackingEventsMapping[0]->TrackingMasterCode;
-            $trackingEventsMappingArray[$offset]['OurEventCode'] = $trackingEventsMapping[0]->OurEventCode;
-            $trackingEventsMappingArray[$offset]['EventDescription'] = $trackingEventsMapping[0]->EventDescription;
-            $trackingEventsMappingArray[$offset]['PODtransEvents'] = $eventArray;
-        }
-        else{
-            $trackingEventsMappingArray[$offset]['TrackingMasterCode'] = NULL;
-            $trackingEventsMappingArray[$offset]['OurEventCode'] = NULL;
-            $trackingEventsMappingArray[$offset]['EventDescription'] = NULL;
-            $trackingEventsMappingArray[$offset]['PODtransEvents'] = $eventArray;
-        }
-        $offset ++;
-        
-    }
-    foreach($trackingEventsMappingArray as $trackingEventMappingArray){
-
-        po($trackingEventMappingArray);
-        echo"<hr>";
-
-    }
-    // return ($trackingEventsMappingArray);
-    // // po($trackingEventsMapping);
-    // // echo $eventArray;
-    return false;
-      
-
-
-
-    }
-
+    
 }
