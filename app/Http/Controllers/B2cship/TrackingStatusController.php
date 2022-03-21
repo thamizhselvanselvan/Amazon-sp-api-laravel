@@ -9,15 +9,24 @@ use App\Http\Controllers\Controller;
 class TrackingStatusController extends Controller
 {
     public function trackingStatusDetails()
-    {   $PODeventsArray =[];
+    {
+        $PODeventsArray = [];
         $offset = 0;
 
-        $PODtransEvents = DB::connection('mssql')->select("SELECT DISTINCT ISNULL(FPCode,'B2CShip')+ ' : ' + StatusDetails AS TrackingMsg FROM PODTrans");
+        // $PODtransEvents = DB::connection('mssql')->select("SELECT DISTINCT ISNULL(FPCode,'B2CShip')+ ' : ' + StatusDetails AS TrackingMsg FROM PODTrans");
         
+        $PODtransEvents = DB::connection('mssql')->select("SELECT DISTINCT StatusDetails, FPCode FROM PODTrans");
         // Making By default null for every code and description
         foreach ($PODtransEvents as $PODtransEvent) {
+            $fpCode = $PODtransEvent->FPCode;
+            if ($fpCode == '') {
+                $fpCode = 'B2CShip';
+            }
+            $statusDetails = $PODtransEvent->StatusDetails;
 
-            $PODeventsArray[$offset]['TrackingMsg'] = $PODtransEvent->TrackingMsg;
+            $trackingMsg = $fpCode . ' : ' . $statusDetails;
+
+            $PODeventsArray[$offset]['TrackingMsg'] = $trackingMsg;
             $PODeventsArray[$offset]['TrackingMasterCode'] = NULL;
             $PODeventsArray[$offset]['TrackingMasterEventDescription'] = NULL;
             $PODeventsArray[$offset]['OurEventCode'] = NULL;
@@ -25,7 +34,7 @@ class TrackingStatusController extends Controller
             $offset++;
         }
 
-       //our master event table and Tracking Msg
+        //our master event table and Tracking Msg
         $trackingEventsMapping = DB::connection('mssql')->select("SELECT TrackingMsg, TrackingMasterCode, OurEventCode, EventDescription FROM TrackingEventMapping");
 
         //Amazon master event table
@@ -43,15 +52,15 @@ class TrackingStatusController extends Controller
         $offset = 0;
 
         foreach ($PODeventsArray as $PODeventskey => $PODeventArray) {
-            
+
             foreach ($trackingEventsMapping as $trackingEventMapping) {
-               
+
                 if ($PODeventArray['TrackingMsg'] == $trackingEventMapping->TrackingMsg) {
 
                     $PODeventsArray[$offset]['TrackingMasterCode'] = $trackingEventMapping->TrackingMasterCode;
-                   
+
                     $PODeventsArray[$offset]['TrackingMasterEventDescription'] = $trackingEventsMasterArray[$trackingEventMapping->TrackingMasterCode];
-                   
+
                     $PODeventsArray[$offset]['OurEventCode'] = $trackingEventMapping->OurEventCode;
 
                     $PODeventsArray[$offset]['EventDescription'] = $trackingEventMapping->EventDescription;
