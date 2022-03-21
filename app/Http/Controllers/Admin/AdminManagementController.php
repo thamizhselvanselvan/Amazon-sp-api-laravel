@@ -23,10 +23,10 @@ class AdminManagementController extends Controller
             return DataTables::of($users)
                 ->addIndexColumn()
                 ->addColumn('action', function ($user)  use($login_id) {
-                    if($login_id == $user->id)
+                    if($login_id == $user->id || $login_id == 1 )
                     {
                         return "<a href='password_reset_view/".$user->id."' class='btn btn-primary btn-sm'><i class='fas fa-edit'></i>Change password</a>";
-                    }
+                    }                   
                 })
                 ->rawColumns(['action'])
                 ->make(true);

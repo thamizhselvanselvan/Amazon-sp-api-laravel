@@ -288,7 +288,7 @@ return [
                     'can' =>  ['Admin']
                 ],
                 [
-                    'text' => 'User Management',
+                    'text' => 'User Master',
                     'icon' => 'far fa-fw fa-user',
                     'can'  => ['Admin'],
                     'submenu' => [
@@ -368,6 +368,12 @@ return [
                     ],
 
                 ],
+                [
+                    'text' => 'Booking Status',
+                    'url' => 'B2cship/booking',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',   
+                ]
             ],
         ],
 
