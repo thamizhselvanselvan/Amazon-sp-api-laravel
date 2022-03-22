@@ -29,8 +29,9 @@ class TrackingStatusController extends Controller
     {
         $PODeventsArray = [];
         $offset = 0;
-        
-        $PODtransEvents = DB::connection('mssql')->select("SELECT DISTINCT StatusDetails, FPCode FROM PODTrans");
+        $notlike = '[BOMBINO]';
+        $PODtransEvents = DB::connection('mssql')->select("SELECT DISTINCT StatusDetails, FPCode FROM PODTrans WHERE StatusDetails NOT LIKE '%\[BOMBINO]%' ESCAPE '\' ");
+
         // Making By default null for every code and description
         foreach ($PODtransEvents as $PODtransEvent) {
             $fpCode = $PODtransEvent->FPCode;
@@ -38,7 +39,7 @@ class TrackingStatusController extends Controller
                 $fpCode = 'B2CShip';
             }
             $statusDetails = $PODtransEvent->StatusDetails;
-
+            $statusDetails = strtoupper($statusDetails);
             $trackingMsg = $fpCode . ' : ' . $statusDetails;
 
             $PODeventsArray[$offset]['TrackingMsg'] = $trackingMsg;
@@ -46,6 +47,8 @@ class TrackingStatusController extends Controller
             $PODeventsArray[$offset]['TrackingMasterEventDescription'] = NULL;
             $PODeventsArray[$offset]['OurEventCode'] = NULL;
             $PODeventsArray[$offset]['EventDescription'] = NULL;
+            $PODeventsArray[$offset]['TrackingAPIEvent'] = 'No';
+
             $offset++;
         }
 
@@ -64,6 +67,20 @@ class TrackingStatusController extends Controller
             $trackingEventsMasterArray[$trackingEventMaster->TrackingEventCode] = $trackingEventMaster->EventCodeDescription;
         }
 
+        $B2CShipEventsMapping = DB::connection('mssql')->select("SELECT B2CShipMsg, B2CShipSource, IsActive from B2CShipEventMapping");
+        $trackingAPIMsg = [];
+        foreach ($B2CShipEventsMapping as $B2CShipEventMapping) {
+
+            $B2CShipSource = $B2CShipEventMapping->B2CShipSource;
+            if ($B2CShipSource == '') {
+                $B2CShipSource = 'B2CShip';
+            }
+            $B2CShipMsg = ($B2CShipEventMapping->B2CShipMsg);
+            $B2CShipMsg = strtoupper($B2CShipMsg);
+
+            $trackingAPIMsg[$B2CShipSource . ' : ' . $B2CShipMsg] = 'Yes';
+        }
+
         $offset = 0;
 
         foreach ($PODeventsArray as $PODeventskey => $PODeventArray) {
@@ -80,12 +97,15 @@ class TrackingStatusController extends Controller
 
                     $PODeventsArray[$offset]['EventDescription'] = $trackingEventMapping->EventDescription;
 
+                    if (isset($trackingAPIMsg[$trackingEventMapping->TrackingMsg])) {
+
+                        $PODeventsArray[$offset]['TrackingAPIEvent'] = $trackingAPIMsg[$trackingEventMapping->TrackingMsg];
+                    }
                     break;
                 }
             }
             $offset++;
         }
-
         return $PODeventsArray;
     }
 }
