@@ -356,7 +356,7 @@ return [
                 ],
 
                 [
-                    'text' => 'Tracking Status',
+                    'text' => 'Track Status',
                     'icon' => 'far fa-fw fa-file',
                     'can' => ['Admin'],
                     'submenu' => [
