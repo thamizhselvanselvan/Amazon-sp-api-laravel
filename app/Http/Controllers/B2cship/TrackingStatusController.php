@@ -82,7 +82,7 @@ class TrackingStatusController extends Controller
         }
 
         $offset = 0;
-        
+
         foreach ($PODeventsArray as $PODeventskey => $PODeventArray) {
 
             foreach ($trackingEventsMapping as $trackingEventMapping) {
@@ -96,16 +96,14 @@ class TrackingStatusController extends Controller
                     $PODeventsArray[$offset]['OurEventCode'] = $trackingEventMapping->OurEventCode;
 
                     $PODeventsArray[$offset]['EventDescription'] = $trackingEventMapping->EventDescription;
-
+                    // exit;
                 }
-                    $trackingmsg = $PODeventArray['TrackingMsg'];
-                if(isset($trackingAPIMsg[$trackingmsg]))
-                {
-                    $PODeventsArray[$offset]['TrackingAPIEvent'] = $trackingAPIMsg[$trackingmsg];
-                }
-                // exit;
             }
-            
+
+            $trackingmsg = $PODeventArray['TrackingMsg'];
+            if (isset($trackingAPIMsg[$trackingmsg])) {
+                $PODeventsArray[$offset]['TrackingAPIEvent'] = $trackingAPIMsg[$trackingmsg];
+            }
             $offset++;
         }
         return $PODeventsArray;
