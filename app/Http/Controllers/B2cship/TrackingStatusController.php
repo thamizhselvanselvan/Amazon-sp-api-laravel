@@ -39,7 +39,7 @@ class TrackingStatusController extends Controller
                 $fpCode = 'B2CShip';
             }
             $statusDetails = $PODtransEvent->StatusDetails;
-            $statusDetails = strtoupper($statusDetails);
+            // $statusDetails = strtoupper($statusDetails);
             $trackingMsg = $fpCode . ' : ' . $statusDetails;
 
             $PODeventsArray[$offset]['TrackingMsg'] = $trackingMsg;
@@ -76,7 +76,7 @@ class TrackingStatusController extends Controller
                 $B2CShipSource = 'B2CShip';
             }
             $B2CShipMsg = ($B2CShipEventMapping->B2CShipMsg);
-            $B2CShipMsg = strtoupper($B2CShipMsg);
+            // $B2CShipMsg = strtoupper($B2CShipMsg);
 
             $trackingAPIMsg[$B2CShipSource . ' : ' . $B2CShipMsg] = 'Yes';
         }
@@ -87,7 +87,7 @@ class TrackingStatusController extends Controller
 
             foreach ($trackingEventsMapping as $trackingEventMapping) {
 
-                if ($PODeventArray['TrackingMsg'] == $trackingEventMapping->TrackingMsg) {
+                if (strtoupper($PODeventArray['TrackingMsg']) == strtoupper($trackingEventMapping->TrackingMsg)) {
 
                     $PODeventsArray[$offset]['TrackingMasterCode'] = $trackingEventMapping->TrackingMasterCode;
 
