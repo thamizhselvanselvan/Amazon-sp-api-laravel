@@ -17,7 +17,7 @@ class AdminManagementController extends Controller
             $login_id = Auth::user()->id;
             $users = User::whereHas(
                 'roles', function($q){
-                    $q->where('name', 'Admin');
+                    $q->where('name','Admin')->orWhere('name', 'User');
             })->latest()->orderBy('created_at');
 
             return DataTables::of($users)

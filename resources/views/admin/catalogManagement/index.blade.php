@@ -9,7 +9,7 @@
 @stop
 
 @section('content_header')
-<h1 class="m-0 text-dark"> Admin List </h1>
+<h1 class="m-0 text-dark">Catalog User List </h1>
 @stop
 @section('content')
 
