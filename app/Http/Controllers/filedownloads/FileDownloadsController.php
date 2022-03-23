@@ -46,27 +46,9 @@ class FileDownloadsController extends Controller
         return response()->json(['success' => true, "files_lists" => $filesArray]);
     }
 
-    public function download_universalTextiles()
-    {
+    
 
-        $file_path = "excel/downloads/universalTextilesExport.csv";
-        //$path = Storage::path($file_path);
-        if (Storage::exists($file_path)) {
-            return Storage::download($file_path);
-        }
-        return 'file not exist';
-    }
-
-    public function download_asin_master()
-    {
-        $file_path = "excel/downloads/asins/asinExport.csv";
-        //$path = Storage::path($file_path);
-        if (Storage::exists($file_path)) {
-            return Storage::download($file_path);
-        }
-        return 'file not exist';
-    }
-
+   
     public function download_other_product($id)
     {
         //Other Amazon file download

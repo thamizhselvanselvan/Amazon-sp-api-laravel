@@ -85,5 +85,16 @@ class textilesController extends Controller
         return redirect()->intended('/textiles');
 
     }
+    
+    public function download_universalTextiles()
+    {
+
+        $file_path = "excel/downloads/universalTextilesExport.csv";
+        //$path = Storage::path($file_path);
+        if (Storage::exists($file_path)) {
+            return Storage::download($file_path);
+        }
+        return 'file not exist';
+    }
 
 }
