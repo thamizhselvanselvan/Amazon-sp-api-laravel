@@ -25,11 +25,11 @@
             @endif
      </div>
     
-    <h2 class="mb-4">
+    {{-- <h2 class="mb-4">
         <a href="{{route('catalog_user.create')}}">
             <x-adminlte-button label="Add Catalog User" theme="primary"  icon="fas fa-plus"/>
         </a>
-    </h2>
+    </h2> --}}
 
        <table class="table table-bordered yajra-datatable table-striped">
        

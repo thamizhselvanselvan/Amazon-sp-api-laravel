@@ -100,6 +100,6 @@ class CatalogManagementController extends Controller
        {   
            Log::alert($id);
            User::where('id', $id)->delete();
-          return response()->json(['success' => 'User has been pushed to bin']);
+          return response()->json(['success' => 'User has been Deleted successfully']);
        }
     }
