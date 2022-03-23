@@ -9,10 +9,6 @@ use Yajra\DataTables\Facades\DataTables;
 
 class TrackingStatusController extends Controller
 {
-    public function index()
-    {
-    }
-
     public function trackingStatusDetails(Request $request)
     {
         if ($request->ajax()) {
@@ -29,29 +25,36 @@ class TrackingStatusController extends Controller
     {
         $PODeventsArray = [];
         $offset = 0;
-        $notlike = '[BOMBINO]';
-        $PODtransEvents = DB::connection('mssql')->select("SELECT DISTINCT StatusDetails, FPCode FROM PODTrans WHERE StatusDetails NOT LIKE '%\[BOMBINO]%' ESCAPE '\' ");
+        
+        $PODtransEvents = DB::connection('mssql')->select("SELECT DISTINCT StatusDetails, FPCode FROM PODTrans ");
+        // WHERE StatusDetails NOT LIKE '%\[BOMBINO]%' ESCAPE '\' 
 
         // Making By default null for every code and description
         foreach ($PODtransEvents as $PODtransEvent) {
+
             $fpCode = $PODtransEvent->FPCode;
-            if ($fpCode == '') {
-                $fpCode = 'B2CShip';
-            }
             $statusDetails = $PODtransEvent->StatusDetails;
-            // $statusDetails = strtoupper($statusDetails);
-            $trackingMsg = $fpCode . ' : ' . $statusDetails;
+            
+            $ignoreWords = '[BOMBINO]';
+            if (!str_contains($statusDetails, $ignoreWords)) {
 
-            $PODeventsArray[$offset]['TrackingMsg'] = $trackingMsg;
-            $PODeventsArray[$offset]['TrackingMasterCode'] = NULL;
-            $PODeventsArray[$offset]['TrackingMasterEventDescription'] = NULL;
-            $PODeventsArray[$offset]['OurEventCode'] = NULL;
-            $PODeventsArray[$offset]['EventDescription'] = NULL;
-            $PODeventsArray[$offset]['TrackingAPIEvent'] = 'No';
+                if ($fpCode == '') {
+                    $fpCode = 'B2CShip';
+                }
 
-            $offset++;
+                // $statusDetails = strtoupper($statusDetails);
+                $trackingMsg = $fpCode . ' : ' . $statusDetails;
+
+                $PODeventsArray[$offset]['TrackingMsg'] = $trackingMsg;
+                $PODeventsArray[$offset]['TrackingMasterCode'] = NULL;
+                $PODeventsArray[$offset]['TrackingMasterEventDescription'] = NULL;
+                $PODeventsArray[$offset]['OurEventCode'] = NULL;
+                $PODeventsArray[$offset]['EventDescription'] = NULL;
+                $PODeventsArray[$offset]['TrackingAPIEvent'] = 'No';
+
+                $offset++;
+            }
         }
-
         //our master event table and Tracking Msg
         $trackingEventsMapping = DB::connection('mssql')->select("SELECT TrackingMsg, TrackingMasterCode, OurEventCode, EventDescription FROM TrackingEventMapping");
 
@@ -106,6 +109,8 @@ class TrackingStatusController extends Controller
             }
             $offset++;
         }
+        // po($PODeventsArray);
+        // exit;
         return $PODeventsArray;
     }
 }
