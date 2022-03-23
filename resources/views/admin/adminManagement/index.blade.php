@@ -39,6 +39,7 @@
                     <th>ID</th>
                     <th>Name</th>
                     <th>Email</th>
+                    <th>Permission</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -62,6 +63,7 @@
                         {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
                         {data: 'name', name: 'name'},
                         {data: 'email', name: 'email'},
+                        {data: 'permission', name: 'permission'},
                         {data: 'action', orderable: false, searchable: false},
                     ]
             });

@@ -74,9 +74,9 @@
             </div>
 
                  <x-adminlte-select name="Role" id="status" label="Role">
-                  <option value="User">User</option>
-                  <option value="Admin">Admin</option>
-                  <option value="Catalog Manager">Catalog Manager</option>
+                @foreach ($roles as $role )
+                    <option value="{{ $role->name }}"> {{ $role->name }}</option>
+                @endforeach                  
                  </x-adminlte-select>
 
             
