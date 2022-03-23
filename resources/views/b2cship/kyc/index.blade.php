@@ -26,7 +26,7 @@
  
     <div class="row">
            <div class="col-3 ">
-           <h4  style="font-weight: bold; text-align: center;">Today's Details </h4>
+           <h4  style="font-weight: bold; text-align: center;">Today's </h4>
              <div class="info-box bg-info text-center">
                <div class="info-box-content">
                  <h2>{{$todayTotalBooking['totalBooking']}}</h2>
