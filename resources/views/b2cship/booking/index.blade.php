@@ -128,7 +128,7 @@
         <div class="col-2">
         <div class="info-box bg-danger text-center">
                 <div class="info-box-content">
-                  <h3>{{$yesterdayTotalBooking['delivered']}}</h3>
+                  <h3>{{$yesterdayTotalBooking['UnDelivered']}}</h3>
                     <h5>Un Deliverd</h5>
                 </div>
             </div>
@@ -184,7 +184,7 @@
         <div class="col-2">
         <div class="info-box bg-danger text-center">
                 <div class="info-box-content">
-                  <h3>{{$Last7DaysTotalBooking['delivered']}}</h3>
+                  <h3>{{$Last7DaysTotalBooking['UnDelivered']}}</h3>
                     <h5>Un Delivered</h5>
                 </div>
             </div>
@@ -239,7 +239,7 @@
         <div class="col-2">
         <div class="info-box bg-danger text-center">
                 <div class="info-box-content">
-                  <h3>{{$last30DaysTotalBooking['delivered']}}</h3>
+                  <h3>{{$last30DaysTotalBooking['UnDelivered']}}</h3>
                     <h5>Un Deliverd</h5>
                 </div>
             </div>

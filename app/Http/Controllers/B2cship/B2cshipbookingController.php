@@ -51,15 +51,15 @@ class B2cshipbookingController extends Controller
                {
                 $booked ++;
                }
-               elseif($totalBooking->PacketStatus == 'Undelivered')
+               elseif($totalBooking->PacketStatus == 'UN-DELIVERED')
                {
                 $undeliverd ++;
                }
-               elseif($totalBooking->PacketStatus == 'Ofd')
+               elseif($totalBooking->PacketStatus == 'OFD')
                {
                    $Ofd ++;
                }
-               elseif($totalBooking->PacketStatus == 'Delivered')
+               elseif($totalBooking->PacketStatus == 'DELIVERED')
                 {
                     $delivered ++;
                 }
