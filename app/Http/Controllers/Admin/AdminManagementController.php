@@ -52,5 +52,28 @@ class AdminManagementController extends Controller
         
         return redirect()->intended('/admin/user_list')->with('success', 'Admin password has been changed successfully');
     }
-   
+    public function create()
+    {
+        
+        return view('admin.adminManagement.add');
+    }
+
+    public function save_user(Request $request)
+    {
+       $request->validate([
+       'password' => 'required|confirmed|min:3|max:18'
+       ]);
+
+       $am = User::create([
+           'name' => $request->name,
+           'email' => $request->email,
+           'password' => Hash::make($request->password),
+
+       ]);
+       $role = $request->Role;
+       $am->assignRole($role);
+       
+       return redirect()->intended('/admin/user_list')->with('success', 'User '.$request->name.' has been created successfully');
+
+    }
 }

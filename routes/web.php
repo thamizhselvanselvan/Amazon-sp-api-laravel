@@ -51,6 +51,8 @@ Route::get('admin/rolespermissions', 'Admin\RolesPermissionsController@index');
 Route::get('admin/user_list', 'Admin\AdminManagementController@index')->name('admin.user_list');
 Route::get('admin/password_reset_view/{id}', 'Admin\AdminManagementController@password_Change_view');
 Route::post('admin/password_reset_save/{id}', 'Admin\AdminManagementController@password_reset_save')->name('admin.password_reset_save');
+Route::get('admin/user/create','Admin\AdminManagementController@create')->name('add_user.create');
+Route::post('admin/admin/save_user', 'Admin\AdminManagementController@save_user')->name('admin_save_user');
 
 Route::get('admin/catalog_user', 'Admin\CatalogManagementController@index')->name('admin.catalog_user');
 Route::get('admin/catalog/{id}/password_reset', 'Admin\CatalogManagementController@password_reset_view');
