@@ -2,7 +2,7 @@
 @section('title', 'Import')
 
 @section('content_header')
-<h1 class="m-0 text-dark"> B2C Ship KYC Details and Status</h1>
+
 @stop
 
 @section('content')
@@ -23,36 +23,41 @@
 </div>
 
 <div class="container-fluid">
+ 
     <div class="row">
            <div class="col-3 ">
+           <h4  style="font-weight: bold; text-align: center;">Today's Details </h4>
              <div class="info-box bg-info text-center">
                <div class="info-box-content">
                  <h2>{{$todayTotalBooking['totalBooking']}}</h2>
-                 <h5> Today's Total Booking</h5>
+                 <h5>Total Booking</h5>
                </div>
              </div>
             </div>
           <div class="col-3 ">
+          <h4  style="font-weight: bold; text-align: center;">Yesterday's </h4>
              <div class="info-box bg-info text-center">
                 <div class="info-box-content">
                  <h2>{{$yesterdayTotalBooking['totalBooking']}}</h2>
-                 <h5>Yesterday's Total Booking</h5>
+                 <h5> Total Booking</h5>
                 </div>
              </div>
           </div>
           <div class="col-3 ">
+          <h4  style="font-weight: bold; text-align: center;">Last 7 Day's </h4>
              <div class="info-box bg-info text-center">
                 <div class="info-box-content">
                 <h2>{{$Last7DaysTotalBooking['totalBooking']}}</h2>
-                <h5>Last 7 Days Total Booking</h5>
+                <h5>Total Booking</h5>
                 </div>
              </div>
            </div>
            <div class="col-3 ">
+           <h4  style="font-weight: bold; text-align: center;">Last 30 Day's </h4>
              <div class="info-box bg-info  text-center">
                 <div class="info-box-content">
                 <h2>{{$Last30DaysTotalBooking['totalBooking']}}</h2>
-                <h5>Last 30 Days Total Booking</h5>
+                <h5>Booking</h5>
                 </div>
              </div>
            </div>

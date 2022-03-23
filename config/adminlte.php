@@ -355,19 +355,16 @@ return [
 
                 ],
 
-                [
-                    'text' => 'Track Status',
-                    'icon' => 'far fa-fw fa-file',
-                    'can' => ['Admin'],
-                    'submenu' => [
-                        [
+                
+                  [
                             'text' => 'Status Details',
                             'icon' => 'far fa-fw fa-file',
+                            'can' => ['Admin'],
                             'url' => 'B2cship/tracking_status/details'
-                        ],
-                    ],
+                  ],
+                    
 
-                ],
+                
                 [
                     'text' => 'Booking Status',
                     'url' => 'B2cship/booking',
