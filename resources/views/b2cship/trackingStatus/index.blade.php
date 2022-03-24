@@ -44,6 +44,8 @@
             processing: true,
             serverSide: true,
             ajax: "/B2cship/tracking_status/details",
+            pageLength: 200,
+            lengthMenu: [50, 100, 200, 500],
             columns: [
                 { data: 'TrackingMsg' },
                 { data: 'TrackingMasterCode' },
@@ -53,10 +55,6 @@
                 { data: 'TrackingAPIEvent' }
             ],
         });
-    });
-
-    $.extend($.fn.dataTable.defaults, {
-        pageLength: 250,
     });
 </script>
 
