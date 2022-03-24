@@ -31,9 +31,11 @@
                     <x-adminlte-button label="Asin Export" theme="primary" icon="fas fa-file-export" />
                 </a>
 
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"
-                    theme="primary"> Download Asin</button>
-                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                    <x-adminlte-button label="Download Asin" theme="primary" icon="fas fa-file-download"
+                    data-toggle="modal" data-target="#exampleModal"></x-adminlte-button>
+
+
+                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">

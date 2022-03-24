@@ -30,11 +30,8 @@
                         id="exportUniversalTextiles" />
                 </a>
 
-
-                <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#exampleModal"
-                    theme="primary" >  Download Universal Textils</button>
-
-
+                <x-adminlte-button label="Download Universal Textiles" theme="primary" icon="fas fa-file-download"
+                    data-toggle="modal" data-target="#exampleModal"></x-adminlte-button>
 
                 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                     aria-hidden="true">
@@ -50,7 +47,7 @@
                                 <ul>
                                     <li>
                                         <a href="{{ route('download.universalTextiles') }}">
-                                          <h4>  Download Universal Textils</h4>
+                                            <h4> Download Universal Textils</h4>
                                         </a>
                                     </li>
                                 </ul>
