@@ -8,6 +8,7 @@ use RedBeanPHP\R as R;
 use App\Models\asinMaster;
 use App\Models\Aws_credentials;
 use SellingPartnerApi\Endpoint;
+use Illuminate\Support\Facades\DB;
 use Carbon\Laravel\ServiceProvider;
 use Illuminate\Support\Facades\Log;
 use App\Services\Config\ConfigTrait;
@@ -19,7 +20,7 @@ class CatalogImport
 {
     use ConfigTrait;
 
-    public function amazonCatalogImport($asin, $country_code, $auth_code, $aws_key)
+    public function amazonCatalogImport()
     {
         $startTime = startTime();
 
@@ -31,23 +32,29 @@ class CatalogImport
         $username = config('app.username');
         $password = config('app.password');
         
-        // $datas = asinMaster::with(['aws'])->limit(2000)->get();
+        $datas = DB::connection('aws')->select("SELECT asin FROM othercat_details WHERE  availability = '0' limit 100");
+        // Log::warning($datas[0]->asin);
+        // exit;
+        // $datas = asinMaster::with(['aws'])->limit(2)->get();
         
         
             R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
             // R::setup('mysql:host='.$host.';dbname='.$dbname.';port='.$port, $username, $password);
             Log::warning("success");
             
-            // // foreach ($datas as $data) {
-            //     Log::info('AWS - '. $data['aws']);
-            //     Log::info('AWS Auth Code - '. $data['aws']['auth_code']);
+            foreach ($datas as $data) {
+                // Log::info('AWS Auth Code - '. $data['aws']['auth_code']);
                 
-                // $asin = $data['asin'];
+                $asin = $data->asin;
+                // Log::info($asin);
 
                 // $country_code = $data['source'];
+                $aws_key ='';
+                $auth_code = '';
+                $country_code = 'US';
                 // $auth_code = $data['aws']['auth_code'];
                 // $aws_key = $data['aws']['id'];
-                // $item_condition = 'New';
+                $item_condition = 'New';
 
                 $marketplace_id = $this->marketplace_id($country_code);
 
@@ -60,7 +67,7 @@ class CatalogImport
                 $item_type = 'Asin';
                 $asins = array($asin);
                 try {
-                    Log::warning("success1");
+                    // Log::warning("success1");
                     $result = $apiInstance->getCatalogItem($marketplace_id, $asin);
                     
                     $result = json_decode(json_encode($result));
@@ -85,12 +92,15 @@ class CatalogImport
                     $result = $apiInstancePricing->getCompetitivePricing($marketplace_id, $item_type, $asins)->getPayload();
                     $result = json_decode(json_encode($result));
                     
-                    $pricing = $result[0]->Product->CompetitivePricing->CompetitivePrices[0]->Price->LandedPrice;
-                    $currencyCode =  $pricing->CurrencyCode;  
-                    $Amount = $pricing->Amount; 
+                    if(isset($result[0]->Product->CompetitivePricing->CompetitivePrices[0]->Price->LandedPrice)){
 
-                    $productcatalogs->currencyCode = $currencyCode;
-                    $productcatalogs->amount = $Amount;
+                        $pricing = $result[0]->Product->CompetitivePricing->CompetitivePrices[0]->Price->LandedPrice;
+                        $currencyCode =  $pricing->CurrencyCode;  
+                        $Amount = $pricing->Amount; 
+    
+                        $productcatalogs->currencyCode = $currencyCode;
+                        $productcatalogs->amount = $Amount;
+                    }
 
                     R::store($productcatalogs);
                 
@@ -98,7 +108,7 @@ class CatalogImport
                     Log::alert($e);
                 }
                 
-            // }
+            }
         
          $endTime = endTime($startTime);
             Log::alert($endTime);

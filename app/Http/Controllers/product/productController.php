@@ -37,6 +37,10 @@ class productController extends Controller
             $data = DB::select('select asin,source,label,item_dimensions,currency_code,amount from amazon');
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->editColumn('asin', function ($row){
+                    
+                    return '<a href="https://www.amazon.com/dp/'.$row->asin.'" target="_blank">'.$row->asin.'</a>';
+                })
                 ->editColumn('item_dimensions', function ($row) {
                     $dimension = 'NA';
                     $data = json_decode($row->item_dimensions);
@@ -66,7 +70,7 @@ class productController extends Controller
                     }
                     return $dimension;
                 })
-                ->rawColumns(['amount', 'item_dimensions', 'weight'])
+                ->rawColumns(['amount', 'item_dimensions', 'weight','asin'])
                 ->make(true);
         }
         return view('product.index');

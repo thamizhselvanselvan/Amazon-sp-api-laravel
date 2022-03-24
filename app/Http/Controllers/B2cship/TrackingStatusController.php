@@ -34,17 +34,19 @@ class TrackingStatusController extends Controller
 
             $fpCode = $PODtransEvent->FPCode;
             $statusDetails = $PODtransEvent->StatusDetails;
+            if ($fpCode == '') {
+                $fpCode = 'B2CShip';
+            }
+            $ignorebombion = '[BOMBINO]';
+            $ignoreDelivered = 'BOMBINO : DELIVERED';
+            $ignoreOFD = 'BOMBINO : Out for Delivery';
+            $ignoreRunNO = 'BOMBINO : Run No. : 76764951 Status: FLIGHT DELAY Description: flight delay';
+            $ignoreUnDelivered = 'BOMBINO : UN-DELIVERED';
             
-            $ignoreWords = '[BOMBINO]';
-            if (!str_contains($statusDetails, $ignoreWords)) {
-
-                if ($fpCode == '') {
-                    $fpCode = 'B2CShip';
-                }
-
-                // $statusDetails = strtoupper($statusDetails);
-                $trackingMsg = $fpCode . ' : ' . $statusDetails;
-
+            // $statusDetails = strtoupper($statusDetails);
+            $trackingMsg = $fpCode . ' : ' . $statusDetails;
+            if ((!str_contains($trackingMsg, $ignorebombion))&&(!str_contains($trackingMsg, $ignoreDelivered)) && (!str_contains($trackingMsg, $ignoreOFD)) && (!str_contains($trackingMsg, $ignoreRunNO)) && (!str_contains($trackingMsg, $ignoreUnDelivered))) {
+                
                 $PODeventsArray[$offset]['TrackingMsg'] = $trackingMsg;
                 $PODeventsArray[$offset]['TrackingMasterCode'] = NULL;
                 $PODeventsArray[$offset]['TrackingMasterEventDescription'] = NULL;
