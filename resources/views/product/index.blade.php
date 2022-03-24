@@ -52,22 +52,25 @@
 @section('js')
 <script type="text/javascript">
 
+$.extend($.fn.dataTable.defaults, {
+    pageLength: 250,
+});
+
 let yajra_table = $('.yajra-datatable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: "{{ url('product/amazon_com') }}",
-            columns: [
-                {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-                {data: 'asin', name: 'asin'},
-                {data: 'source', name: 'source'},
-                {data: 'label', name: 'label'},
-                {data: 'item_dimensions', name: 'item_dimensions'},
-                {data: 'weight', name: 'weight'},
-                {data: 'amount', name: 'amount'}, 
-           
-                
-            ]
-        });
-    
+    processing: true,
+    serverSide: true,
+    ajax: "{{ url('product/amazon_com') }}",
+    columns: [
+        {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+        {data: 'asin', name: 'asin'},
+        {data: 'source', name: 'source'},
+        {data: 'label', name: 'label'},
+        {data: 'item_dimensions', name: 'item_dimensions'},
+        {data: 'weight', name: 'weight'},
+        {data: 'amount', name: 'amount'}, 
+    ]
+});
+       
+
 </script>   
 @stop

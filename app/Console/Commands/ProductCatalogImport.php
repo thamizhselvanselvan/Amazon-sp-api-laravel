@@ -49,24 +49,24 @@ class ProductCatalogImport extends Command
      */
     public function handle()
     {
-        $datas = asinMaster::with(['aws'])->limit(100)->get();
+        // $datas = asinMaster::with(['aws'])->limit(100)->get();
 
-        foreach($datas as $data){
-            $asin = $data['asin'];
-            $country_code = $data['source'];
-            $auth_code = $data['aws']['auth_code'];
-            $aws_key = $data['aws']['id'];
+        // foreach($datas as $data){
+        //     // $asin = $data['asin'];
+        //     // $country_code = $data['source'];
+        //     // $auth_code = $data['aws']['auth_code'];
+        //     // $aws_key = $data['aws']['id'];
 
-            AmazonCatalogImport::dispatch(
-                [
-                    'asin' => $asin,
-                    'country_code' => $country_code,
-                    'auth_code' => $auth_code,
-                    'aws_key' => $aws_key,
-                ]
-            );
-        }
-        // $amazonCatalogsImport = new CatalogImport();
-        // $amazonCatalogsImport->amazonCatalogImport();
+        //     // AmazonCatalogImport::dispatch(
+        //     //     [
+        //     //         'asin' => $asin,
+        //     //         'country_code' => $country_code,
+        //     //         'auth_code' => $auth_code,
+        //     //         'aws_key' => $aws_key,
+        //     //     ]
+        //     // );
+        // }
+        $amazonCatalogsImport = new CatalogImport();
+        $amazonCatalogsImport->amazonCatalogImport();
     }
 }
