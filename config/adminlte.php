@@ -374,12 +374,12 @@ return [
             ],
         ],
 
-        [
-            'text' => 'Download Files',
-            'url'  => 'file_downloads',
-            'icon' => 'far fa-fw fa-file',
-            'can' =>  ['Admin']
-        ],
+        // [
+        //     'text' => 'Download Files',
+        //     'url'  => 'file_downloads',
+        //     'icon' => 'far fa-fw fa-file',
+        //     'can' =>  ['Admin']
+        // ],
 
 
     ],
