@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\aws_credentials;
+use App\Models\Aws_credential;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 
@@ -17,7 +17,7 @@ class CredentialsController extends Controller
 
         if($request->ajax()){
 
-            $data = aws_credentials::with(['mws_region'])->orderby('status', 'DESC')->get();
+            $data = Aws_credential::with(['mws_region'])->orderby('status', 'DESC')->get();
         
             return DataTables::of($data)
                 ->addIndexcolumn()

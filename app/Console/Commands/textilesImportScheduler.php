@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use Illuminate\Console\Command;
-use App\Models\universalTextile;
+use App\Models\Universal_textile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -83,7 +83,7 @@ class textilesImportScheduler extends Command
                 $textiles[] = $record;
                 if($count == 1000) {
                 
-                    universalTextile::upsert($textiles, ['textile_id'], ['ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type']);
+                    Universal_textile::upsert($textiles, ['textile_id'], ['ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type']);
 
                     $count = 0;
                     $textiles = [];
@@ -92,7 +92,7 @@ class textilesImportScheduler extends Command
                 
             }	
             
-            universalTextile::upsert($textiles, ['textile_id'], ['ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type']); 
+            Universal_textile::upsert($textiles, ['textile_id'], ['ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type']); 
 
     }
 }

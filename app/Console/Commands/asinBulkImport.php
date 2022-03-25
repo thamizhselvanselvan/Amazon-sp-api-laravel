@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use League\Csv\Reader;
 use League\Csv\Statement;
-use App\Models\asinMaster;
+use App\Models\Asin_master;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -77,7 +77,7 @@ class asinBulkImport extends Command
                 ];
                 if($count == 1000) {
                 
-                    asinMaster::upsert($asin, ['asin'], ['source','destination_1','destination_2','destination_3','destination_4','destination_5']);
+                    Asin_master::upsert($asin, ['asin'], ['source','destination_1','destination_2','destination_3','destination_4','destination_5']);
 
                     $count = 0;
                     $asin = [];
@@ -86,7 +86,7 @@ class asinBulkImport extends Command
                 
             }	
             
-            asinMaster::upsert($asin, ['asin'], ['source','destination_1','destination_2','destination_3','destination_4','destination_5']); 
+            Asin_master::upsert($asin, ['asin'], ['source','destination_1','destination_2','destination_3','destination_4','destination_5']); 
             Log::warning(" asin import successfully");
     }
 }

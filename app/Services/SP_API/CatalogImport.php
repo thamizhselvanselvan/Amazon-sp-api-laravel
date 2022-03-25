@@ -5,7 +5,7 @@ namespace App\Services\SP_API;
 use helpers;
 use Exception;
 use RedBeanPHP\R as R;
-use App\Models\asinMaster;
+use App\Models\Asin_master;
 use App\Models\Aws_credentials;
 use SellingPartnerApi\Endpoint;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +25,7 @@ class CatalogImport
         $startTime = startTime();
 
         Log::warning("warning from handle function");
+
         $connection = config('app.connection');
         $host = config('app.host');
         $dbname = config('app.database');
@@ -35,7 +36,7 @@ class CatalogImport
         $datas = DB::connection('aws')->select("SELECT asin FROM othercat_details WHERE  availability = '0' limit 100");
         // Log::warning($datas[0]->asin);
         // exit;
-        // $datas = asinMaster::with(['aws'])->limit(2)->get();
+        // $datas = Asin_master::with(['aws'])->limit(2)->get();
         
         
             R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);

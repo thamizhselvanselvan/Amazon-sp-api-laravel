@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Sp_credential extends Model
 {
     use HasFactory;
-
    
     protected $fillable = [
         'seller_id',

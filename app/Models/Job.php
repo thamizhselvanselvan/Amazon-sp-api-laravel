@@ -10,11 +10,13 @@ class Job extends Model
     use HasFactory;
     
     protected $table= 'jobs';
-     public function __construct(array $attributes = [])
-     {
-         parent::__construct($attributes);
-         $this->getConnection()->setTablePrefix('sa_');
-     } 
+    
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->getConnection()->setTablePrefix('sa_');
+    } 
+
     protected $fillable = [
         	'queue',
             'payload',

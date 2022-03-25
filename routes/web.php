@@ -8,7 +8,7 @@ use App\Models\Mws_region;
 use Maatwebsite\Excel\Row;
 use Dflydev\DotAccessData\Data;
 use SellingPartnerApi\Endpoint;
-use App\Models\universalTextile;
+use App\Models\Universal_textile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
