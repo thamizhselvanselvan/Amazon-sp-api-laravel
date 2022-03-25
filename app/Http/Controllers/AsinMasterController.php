@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\asinMaster;
+use App\Models\Asin_master;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\App;
@@ -17,7 +17,7 @@ class AsinMasterController extends Controller
 
         if($request->ajax()){
 
-            $data = asinMaster::query();
+            $data = Asin_master::query();
             
             return DataTables::of($data)
                 ->addIndexColumn()

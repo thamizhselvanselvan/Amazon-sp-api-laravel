@@ -6,10 +6,10 @@ use Exception;
 use League\Csv\Reader;
 use RedBeanPHP\R as R;
 use League\Csv\Statement;
-use App\Models\asinMaster;
+use App\Models\Asin_master;
 use Illuminate\Http\Request;
 use League\Csv\XMLConverter;
-use App\Models\aws_credentials;
+use App\Models\Aws_credential;
 use SellingPartnerApi\Endpoint;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
@@ -25,16 +25,17 @@ use Maatwebsite\Excel\Concerns\ToArray;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use SellingPartnerApi\Api\ProductPricingApi;
 
-
 class productController extends Controller
 {
     use ConfigTrait;
+
     public function index(Request $request)
     {
 
         if ($request->ajax()) {
             
-            $data = DB::select('select asin,source,label,item_dimensions,currency_code,amount from amazon');
+            $data = DB::select('select asin,source,title,item_dimensions,currency_code,amount from amazon');
+            
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->editColumn('asin', function ($row){
@@ -78,7 +79,7 @@ class productController extends Controller
 
     public function fetchFromAmazon()
     {
-        // $datas = asinMaster::with(['aws'])->limit(1)->get();
+        // $datas = Asin_master::with(['aws'])->limit(1)->get();
 
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
@@ -143,7 +144,7 @@ class productController extends Controller
         $password = config('app.password');
 
 
-        $datas = asinMaster::with(['aws'])->limit(1)->get();
+        $datas = Asin_master::with(['aws'])->limit(1)->get();
 
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);

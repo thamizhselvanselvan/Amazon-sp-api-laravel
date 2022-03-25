@@ -10,7 +10,7 @@ use League\Csv\Writer;
 use SplTempFileObject;
 use League\Csv\Statement;
 use Illuminate\Http\Request;
-use App\Models\universalTextile;
+use App\Models\Universal_textile;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
@@ -32,7 +32,7 @@ class textilesController extends Controller
         if($request->ajax()){
 
              // $getData = ['id','textile', 'ean', 'brand','title','size','color','transfer_price','shipping_weight','product_type','quantity'];
-            $data = universalTextile::query();
+            $data = Universal_textile::query();
             
             return DataTables::of($data)
                 ->addIndexColumn()

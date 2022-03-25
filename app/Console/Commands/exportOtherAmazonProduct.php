@@ -57,19 +57,9 @@ class exportOtherAmazonProduct extends Command
         $selected = $this->argument('selected');
         $user = $this->argument('user');
 
-        if ($selected == 'all') {
-            $headerSelection = 'all';
-        } else {
-            $headerSelection = explode('-', $selected);
-        }
-
-        if ($headerSelection == 'all') {
-            $headers = ['hit', 'asin', 'sku', 'hs_code', 'gst', 'update_time', 'availability', 'price', 'list_price', 'price1', 'price_inr', 'list_price_inr', 'price_aed', 'list_price_aed', 'shipping_weight', 'image_t', 'id', 'title', 'image_p', 'image_d', 'category', 'all_category', 'description', 'height', 'length', 'width', 'weight', 'flipkart', 'amazon', 'upc', 'manufacturer', 'latency', 'uae_latency', 'b2c_latency', 'ean', 'color', 'model', 'mpn', 'detail_page_url', 'creation_time', 'page'];
-        } else {
-            $headers = $headerSelection;
-        }
-        // $user = Auth::user()->email;
-
+        $headerSelection = explode('-', $selected);
+        $headers = $headerSelection;
+        
         $exportFilePath = "excel/downloads/otheramazon/".$user."/otherProductDetails";
         $deleteFilePath = "app/excel/downloads/otheramazon/".$user;
 

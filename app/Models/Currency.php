@@ -9,18 +9,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Currency extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $table= 'currencies';
+    
+    protected $table = 'currencies';
+
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
         $this->getConnection()->setTablePrefix('bb_');
-    } 
-
+    }
 
     protected $fillable = [
         'name', 'code', 'status'
     ];
 
     public $timestamps = false;
-
 }

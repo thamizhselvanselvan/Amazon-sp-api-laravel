@@ -6,7 +6,7 @@ use PDO;
 use Exception;
 use PDOException;
 use RedBeanPHP\R as R;
-use App\Models\asinMaster;
+use App\Models\Asin_master;
 use Illuminate\Console\Command;
 use App\Jobs\AmazonCatalogImport;
 use Illuminate\Support\Facades\DB;
@@ -49,7 +49,7 @@ class ProductCatalogImport extends Command
      */
     public function handle()
     {
-        // $datas = asinMaster::with(['aws'])->limit(100)->get();
+        // $datas = Asin_master::with(['aws'])->limit(100)->get();
 
         // foreach($datas as $data){
         //     // $asin = $data['asin'];
