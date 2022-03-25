@@ -34,8 +34,8 @@ class productController extends Controller
 
         if ($request->ajax()) {
             
-            $data = DB::select('select asin,source,label,item_dimensions,currency_code,amount from amazon');
-
+            $data = DB::select('select asin,source,title,item_dimensions,currency_code,amount from amazon');
+            
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->editColumn('asin', function ($row){

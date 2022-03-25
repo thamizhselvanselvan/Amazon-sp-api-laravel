@@ -11,6 +11,7 @@
 a{
 margin:6px;
 }
+
 </style>
 @endsection
 @section('content')
@@ -39,18 +40,18 @@ margin:6px;
         </h2>
         <!-- Header Modal -->
         <div class="modal fade" id="productExport" tabindex="-1" role="dialog" aria-labelledby="productExportModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="productExportModalLabel">Select Headers</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close modal_close"  data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body ">
+                    <div class="modal-body " id="checkboxlist">
                         <div class="form-check d-flex">
                             <div class="ml-1 mr-3">
-                                <input class="form-check-input all" type="checkbox" value="all" name='options[]' id="all">
+                                <input class="form-check-input all" type="checkbox" value="all" id="all">
                                 <h6>Select All</h6>
                             </div>
 
@@ -264,7 +265,7 @@ margin:6px;
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary modal_close" data-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" id='exportToCsv'>Export to CSV</button>
                     </div>
                 </div>
@@ -404,11 +405,6 @@ margin:6px;
 
     });
     //end of pusher
-    $.extend($.fn.dataTable.defaults, {
-        pageLength: 100,
-    });
-
-
 
     $(".file_download_modal_btn").on('click', function(e) {
 
@@ -461,6 +457,8 @@ margin:6px;
         serverSide: true,
 
         ajax: "{{ url('other-product/amazon_com') }}",
+        pageLength: 100,
+        lengthMenu: [50, 100, 200, 500],
         columns: [{
                 data: 'DT_RowIndex',
                 name: 'DT_RowIndex',
@@ -617,14 +615,33 @@ margin:6px;
 
     });
 
-
+    $('.modal_close').on('click', function(){
+        $('#productExport').modal('hide');
+    });
     $('.all').change(function() {
         if ($('.all').is(':checked')) {
-            $(".header_options").prop("checked", false);
-            $(".header_options").attr("disabled", true);
+            $(".header_options").prop("checked", true);
+            // $(".header_options").attr("disabled", true);
         } else {
-            $(".header_options").removeAttr("disabled");
+            $(".header_options").prop("checked", false);
+            // $(".header_options").removeAttr("disabled");
         }
+    });
+    
+    
+    $('.header_options').change(function(){
+        let select_header = [];
+        let count = 0;
+        $("input[name='options[]']:checked").each(function() {
+            count++;
+        });
+        // alert(count);
+        if(count === 41){
+            $(".all").prop("checked", true);
+        }else{
+            $(".all").prop("checked", false);
+        }
+        
     });
 
     $(".product_export_modal_open").on('click', function() {
@@ -641,15 +658,17 @@ margin:6px;
 
         let select_header = [];
         let count = 0;
-        $("input[name='options[]']:checked").each(function() {
-            if (count == 0) {
+            $("input[name='options[]']:checked").each(function() {
+                if (count == 0) {
+    
+                    select_header += $(this).val();
+                } else {
+                    select_header += '-' + $(this).val();
+                }
+                count++;
+            });
 
-                select_header += $(this).val();
-            } else {
-                select_header += '-' + $(this).val();
-            }
-            count++;
-        });
+        // alert(select_header);
         $.ajax({
             method: 'post',
             url: '/other-product/export',
@@ -661,7 +680,6 @@ margin:6px;
             success: function(response) {
                 // $('.progress_bar').hide();
                 // yajra_table.ajax.reload();
-
             }
         })
 
