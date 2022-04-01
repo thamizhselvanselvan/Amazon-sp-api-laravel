@@ -11,6 +11,7 @@ use App\Services\Config\ConfigTrait;
 use Carbon\Carbon;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\OrdersApi;
+use RedBeanPHP\R as R;
 
 class OrdersListController extends Controller
 {
@@ -21,11 +22,19 @@ class OrdersListController extends Controller
 
     public function GetOrdersList()
     {
+        $host = config('app.host');
+        $dbname = config('app.database');
+        $port = config('app.port');
+        $username = config('app.username');
+        $password = config('app.password');
+
+        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+
         echo 'Orders API/ getOrders ';
-        //Us marketplace and token
-        $token = "Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg";
-        $marketplace_ids = ['ATVPDKIKX0DER']; // 
-        $endpoint = Endpoint::NA;
+        //IN marketplace and token
+        $token = "Atzr|IwEBIG3zt3kKghE3Bl56OEGAxxeodmEzfaMAnMl0PivBlfumR8224Adu9lb33DKLEvHD6OBwdIBkaVlIZ5L2axypPm-LLuKPabvUCmRZ6F6C8KZKBJYS2u1sJVqzMxxoFSs6DTFLMxx8WBVXY395aKUzK3plz3-ttDN-YUGjiKR9-kFhLek1ZdjxwTQkvUdWdfpuDtcnW0veAPS0JUHVwTN39hpwJtPXm98XwD-wEe16n9qoWoak-UvtuML8irbdUdATSA4FLSX08H2V7SFAjdktXEW13v6gBs3xfCYn_w9Y4H29K5i5_vkQyiqj0j1FMK0nmtU";
+        $marketplace_ids = ['A21TJRUUN4KGV']; // string | A marketplace identifier. Specifies the marketplace for which prices are returned. 
+        $endpoint = Endpoint::EU;
         $config = new Configuration([
             "lwaClientId" => "amzn1.application-oa2-client.0167f1a848ae4cf0aabeeb1abbeaf8cf",
             "lwaClientSecret" => "5bf9add9576f83d33293b0e9e2ed5e671000a909f161214a77b93d26e7082765",
@@ -36,12 +45,20 @@ class OrdersListController extends Controller
             "roleArn" => 'arn:aws:iam::659829865986:role/Mosh-E-Com-SP-API-Role' // or another endpoint from lib/Endpoints.php
         ]);
         $apiInstance = new OrdersApi($config);
-        $createdAfter =  Carbon::now();
-        $createdBefore = '2022-04-01 12:00:00.000';
+        $createdAfter = now()->subDays(1)->toISOString();
+        $lastUpdatedBefore = now()->toISOString();
 
+        echo "<pre>";
         try {
-            $result = $apiInstance->getOrders($marketplace_ids, $createdAfter);
-            po($result);
+            $results = $apiInstance->getOrders($marketplace_ids, $createdAfter)->getPayload()->getOrders();
+
+            $results = json_decode(json_encode($results));
+            // print_r($results);
+
+            foreach($results as $key => $result){
+                $orders = R::dispense('orders');
+                // $orders
+            }
         } catch (Exception $e) {
             echo 'Exception when calling OrdersApi->getOrders: ', $e->getMessage(), PHP_EOL;
         }
