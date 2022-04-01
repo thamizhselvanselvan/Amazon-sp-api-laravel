@@ -102,7 +102,7 @@ Route::get('Inventory/SSystem/Index', 'Inventory\InventorySystemController@Syste
 
 
 Route::get('orders/list', 'orders\OrdersListController@index');
-Route::get('', 'orders\OrdersListController@GetOrdersList')->name('getOrder.list');
+Route::get('orders/getlist', 'orders\OrdersListController@GetOrdersList')->name('getOrder.list');
 
 Route::resource('/tests', 'TestController');
 
