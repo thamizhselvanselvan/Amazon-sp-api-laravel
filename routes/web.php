@@ -95,6 +95,10 @@ Route::get('B2cship/booking', 'B2cship\B2cshipbookingController@Bookingstatus');
 
 Route::get('Inventory/index', 'Inventory\InventoryController@index');
 
+
+Route::get('orders/list', 'orders\OrdersListController@index');
+Route::get('', 'orders\OrdersListController@GetOrdersList')->name('getOrder.list');
+
 Route::resource('/tests', 'TestController');
 
 
