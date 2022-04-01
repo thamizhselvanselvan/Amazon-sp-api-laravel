@@ -342,6 +342,21 @@ return [
                 ],
             ],
         ],
+            
+        [
+            'text' => 'Inventory',
+            'can' =>  ['Admin'],
+            'submenu' => [
+                [
+                    'text' => 'Roles',
+                    'url' => 'Inventory/index ',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+            ],
+        ],
+
 
         [
             'text' => 'B2C Ship',
