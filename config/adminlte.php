@@ -349,6 +349,7 @@ return [
             'can' =>   ['Admin'],
             'submenu' => [
                 [
+
                     'text' => 'Master',
                     'icon' => 'fas fa-user',
                     'can' =>  ['Admin'],
@@ -358,7 +359,33 @@ return [
                             'text' => 'Roles',
                             'url'  => 'Inventory/master/index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin'],
+
+                            'text' => 'Roles',
+                            'url' => 'Inventory/index',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ],
+                    ],
+                ],
+                [
+                    'text' => 'Orders',
+                    'can' =>  ['Admin'],
+                    'submenu' => [
+                        [
+                            'text' => 'Order',
+                            'url' => 'orders/list',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ],
+                        [
+                            'text' => 'Orders Details',
+                            'url' => 'orders/process ',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa-fw fa-file',
+
 
                         ],
                         [
