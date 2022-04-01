@@ -312,6 +312,7 @@ return [
 
         [
             'text'    => 'Catalog',
+            'can' =>   ['Admin', 'Catalog Manager'],
             'submenu' => [
                 [
                     'text' => 'Universal Textiles',
@@ -369,17 +370,12 @@ return [
                     'icon' => 'far fa-fw fa-file',
 
                 ],
-
-                
-                  [
-                            'text' => 'Status Details',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' => ['Admin'],
-                            'url' => 'B2cship/tracking_status/details'
-                  ],
-                    
-
-                
+                [
+                        'text' => 'Status Details',
+                        'icon' => 'far fa-fw fa-file',
+                        'can' => ['Admin'],
+                        'url' => 'B2cship/tracking_status/details'
+                ],
                 [
                     'text' => 'Booking Status',
                     'url' => 'B2cship/booking',

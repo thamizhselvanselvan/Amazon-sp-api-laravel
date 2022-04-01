@@ -54,14 +54,33 @@ class B2cshipKycController extends Controller
             $awb = implode(',', $totalBookingArray);
             $awb = ltrim($awb);
 
-            $kycApproved = DB::connection('mssql')->select("SELECT DISTINCT AwbNo FROM KYCStatus WHERE AwbNo IN ($awb) AND IsRejected = '0' ");
+            // $kycApproved = DB::connection('mssql')->select("SELECT DISTINCT AwbNo, IsRejected FROM KYCStatus WHERE AwbNo IN ($awb) AND IsRejected = '0' ");
+            $kycStatus = DB::connection('mssql')->select("SELECT DISTINCT AwbNo, IsRejected FROM KYCStatus WHERE AwbNo IN ($awb) ");
 
-            $kycRejected = DB::connection('mssql')->select("SELECT DISTINCT AwbNo FROM KYCStatus WHERE AwbNo IN ($awb) AND IsRejected = '1' ");
+            $kycApproved = [];
+            $kycApprovedOffset = 0;
+            $kycRejected = [];
+            $kycRejectedOffset = 0;
+            foreach ($kycStatus as $kyc) {
+                if ($kyc->IsRejected == '0') {
+                    $kycApproved[$kycApprovedOffset] = $kyc;
+                    $kycApprovedOffset++;
+                } else {
+
+                    $kycRejected[$kycRejectedOffset] = $kyc;
+                    $kycRejectedOffset++;
+                }
+            }
+            // po($kycRejected);
+            // echo count($kycApproved);
+            // exit;
+            // $kycRejected = DB::connection('mssql')->select("SELECT DISTINCT AwbNo FROM KYCStatus WHERE AwbNo IN ($awb) AND IsRejected = '1' ");
 
             $totalBookingCount = count($totalBookingArray);
             $totalkycApprovedCount = count($kycApproved);
             $totalkycRejectedCount = count($kycRejected);
             $totalkycPendingCount = $totalBookingCount - ($totalkycApprovedCount + $totalkycRejectedCount);
+            $totalkycPendingCount = $totalkycPendingCount < 0 ? 0 : $totalkycPendingCount;
 
             $finalArray['totalBooking'] = $totalBookingCount;
             $finalArray['kycApproved'] = $totalkycApprovedCount;
