@@ -250,70 +250,68 @@ return [
             'can'  => 'manage-blog',
         ],
 
-
-
-        [
-            'text'    => 'Master',
-            'can' =>  ['Admin'],
-            'submenu' => [
-
-                [
-                    'text' => 'Region Master ',
-                    'url'  => 'admin/mws_regions',
-                    'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin']
-                ],
-                [
-                    'text' => 'Credentials Master',
-                    'url'  => 'admin/credentials',
-                    'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin']
-                ],
-                [
-                    'text' => 'Currency Master',
-                    'url'  => 'admin/currencys',
-                    'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin']
-                ],
-                [
-                    'text' => 'Asin Master',
-                    'url'  => 'asin-master',
-                    'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin']
-                ],
-                [
-                    'text' => 'Roles',
-                    'url' => 'admin/rolespermissions',
-                    'icon' => 'fas fa-user',
-                    'can' =>  ['Admin']
-                ],
-                [
-                    'text' => 'User Master',
-                    'icon' => 'far fa-fw fa-user',
-                    'can'  => ['Admin'],
-                    'submenu' => [
-                        [
-                            'text' => 'Admin Management',
-                            'url'  => 'admin/user_list',
-                            'icon' => 'far fa-fw fa-user',
-                            'can' =>  ['Admin'],
-                        ],
-                        [
-                            'text' => 'Catalog Management',
-                            'url'  => 'admin/catalog_user',
-                            'icon' => 'far fa-fw fa-user',
-                            'can' =>  ['Admin']
-                        ]
-                    ],
-                ],
-
-            ],
-        ],
-
         [
             'text'    => 'Catalog',
             'can' =>   ['Admin', 'Catalog Manager'],
             'submenu' => [
+                [
+                    'text'    => 'Master',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin'],
+                    'submenu' => [
+        
+                        [
+                            'text' => 'Region Master ',
+                            'url'  => 'admin/mws_regions',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin']
+                        ],
+                        [
+                            'text' => 'Credentials Master',
+                            'url'  => 'admin/credentials',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin']
+                        ],
+                        [
+                            'text' => 'Currency Master',
+                            'url'  => 'admin/currencys',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin']
+                        ],
+                        [
+                            'text' => 'Asin Master',
+                            'url'  => 'asin-master',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin']
+                        ],
+                        [
+                            'text' => 'Roles',
+                            'url' => 'admin/rolespermissions',
+                            'icon' => 'fas fa-user',
+                            'can' =>  ['Admin']
+                        ],
+                        [
+                            'text' => 'User Master',
+                            'icon' => 'far fa-fw fa-user',
+                            'can'  => ['Admin'],
+                            'submenu' => [
+                                [
+                                    'text' => 'Admin Management',
+                                    'url'  => 'admin/user_list',
+                                    'icon' => 'far fa-fw fa-user',
+                                    'can' =>  ['Admin'],
+                                ],
+                                [
+                                    'text' => 'Catalog Management',
+                                    'url'  => 'admin/catalog_user',
+                                    'icon' => 'far fa-fw fa-user',
+                                    'can' =>  ['Admin']
+                                ]
+                            ],
+                        ],
+        
+                    ],
+                ],
                 [
                     'text' => 'Universal Textiles',
                     'url'  => 'textiles',
@@ -361,13 +359,7 @@ return [
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin'],
 
-                            'text' => 'Roles',
-                            'url' => 'Inventory/index',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa-fw fa-file',
-
                         ],
-
 
                         [
                             'text' => 'Users',
@@ -413,25 +405,25 @@ return [
                     'submenu' => [
                         [
                             'text' => 'Inwarding',
-                            'url'  => 'Inventory/index',
+                            'url'  => 'Inventory/Stock/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
                         ],
                         [
                             'text' => 'Outwarding',
-                            'url'  => 'Inventory/index',
+                            'url'  => 'Inventory/Stock/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
                         ],
                         [
                             'text' => 'Disposing',
-                            'url'  => 'Inventory/index',
+                            'url'  => 'Inventory/Stock/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
                         ],
                         [
                             'text' => 'Adjustment',
-                            'url'  => 'Inventory/index',
+                            'url'  => 'Inventory/Stock/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
                         ],
@@ -444,25 +436,25 @@ return [
                     'submenu' => [
                         [
                             'text' => 'Daily/Weekly/Monthly',
-                            'url'  => 'Inventory/index',
+                            'url'  => 'Inventory/Reporting/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
                         ],
                         [
                             'text' => 'Inwarding V/S Outwarding',
-                            'url'  => 'Inventory/index',
+                            'url'  => 'Inventory/Reporting/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
                         ],
                         [
                             'text' => 'Dispose',
-                            'url'  => 'Inventory/index',
+                            'url'  => 'Inventory/Reporting/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
                         ],
                         [
                             'text' => 'Aging Report',
-                            'url'  => 'Inventory/index',
+                            'url'  => 'Inventory/Reporting/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
                         ],
@@ -494,13 +486,13 @@ return [
                     'submenu' => [
                         [
                             'text' => 'Global',
-                            'url'  => 'Inventory/index',
+                            'url'  => 'Inventory/SSystem/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
                         ],
                         [
                             'text' => 'System',
-                            'url'  => 'Inventory/index',
+                            'url'  => 'Inventory/SSystem/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
                         ],

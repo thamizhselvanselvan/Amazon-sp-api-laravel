@@ -95,6 +95,10 @@ Route::get('B2cship/booking', 'B2cship\B2cshipbookingController@Bookingstatus');
 
 Route::get('Inventory/master/index', 'Inventory\InventoryMasterController@IndexView');
 Route::get('Inventory/Features/Index', 'Inventory\InventoryFeaturesController@Featuresindex');
+Route::get('Inventory/Reporting/Index', 'Inventory\InventoryReportingController@Reportingindex');
+Route::get('Inventory/Stock/Index', 'Inventory\InventoryStockController@Stockindex');
+Route::get('Inventory/SSystem/Index', 'Inventory\InventorySystemController@Systemindex');
+
 
 
 Route::get('orders/list', 'orders\OrdersListController@index');
