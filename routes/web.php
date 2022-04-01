@@ -93,7 +93,8 @@ Route::get('B2cship/tracking_status/details', 'B2cship\TrackingStatusController@
 Route::get('B2cship/booking', 'B2cship\B2cshipbookingController@Bookingstatus');
 
 
-Route::get('Inventory/index', 'Inventory\InventoryController@index');
+Route::get('Inventory/master/index', 'Inventory\InventoryMasterController@IndexView');
+Route::get('Inventory/Features/Index', 'Inventory\InventoryFeaturesController@Featuresindex');
 
 Route::resource('/tests', 'TestController');
 
