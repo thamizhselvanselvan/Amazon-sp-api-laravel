@@ -7,10 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
-class InventoryController extends Controller
+class InventoryFeaturesController extends Controller
 {
-    public function index()
+    public function Featuresindex()
     {
-        return view('inventory.index');
+        return view('Inventory.Features.Index');
     }
 }
