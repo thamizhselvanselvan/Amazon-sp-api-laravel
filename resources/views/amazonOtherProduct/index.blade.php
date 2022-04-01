@@ -677,6 +677,6 @@
         column.visible(!column.visible());
     });
 
-    yajra_table.columns([1, 4, 5, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 28, 27, 29, 30, 31, 32, 33]).visible(false);
+    // yajra_table.columns([1, 4, 5, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 28, 27, 29, 30, 31, 32, 33]).visible(false);
 </script>
 @stop
