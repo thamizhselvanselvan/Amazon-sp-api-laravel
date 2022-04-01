@@ -367,27 +367,8 @@ return [
                             'icon' => 'far fa-fw fa-file',
 
                         ],
-                    ],
-                ],
-                [
-                    'text' => 'Orders',
-                    'can' =>  ['Admin'],
-                    'submenu' => [
-                        [
-                            'text' => 'Order',
-                            'url' => 'orders/list',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa-fw fa-file',
-
-                        ],
-                        [
-                            'text' => 'Orders Details',
-                            'url' => 'orders/process ',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa-fw fa-file',
 
 
-                        ],
                         [
                             'text' => 'Users',
                             'url'  => 'Inventory/master/index',
@@ -528,6 +509,27 @@ return [
             ],
         ],
 
+        [
+            'text' => 'Orders',
+            'can' =>  ['Admin'],
+            'submenu' => [
+                [
+                    'text' => 'Order',
+                    'url' => 'orders/list',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+                [
+                    'text' => 'Orders Details',
+                    'url' => 'orders/process ',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+
+
+                ],
+            ],
+        ],
 
 
         [
