@@ -153,6 +153,19 @@ class TestController extends Controller
 
 
       echo "<hr>";
+
+      echo"<hr>";
+      echo 'Product Pricing Api / getListingOffers';
+      echo"<hr>";
+      
+      try {
+        $result = $apiInstance->getListingOffers($marketplace, $item_type, $asins)->getPayload();
+        // po($result);
+          $result = json_decode(json_encode($result));
+        print_r($result);
+      } catch (Exception $e) {
+          echo 'Exception when calling ProductPricingApi->getPricing: ', $e->getMessage(), PHP_EOL;
+      } 
       
 }
 
