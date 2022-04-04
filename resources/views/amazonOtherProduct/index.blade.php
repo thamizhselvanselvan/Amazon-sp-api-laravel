@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Amazon other product')
+@section('title', 'Amazon.com product')
 
 @section('content_header')
-<h1 class="m-0 text-dark">Amazon Other Products</h1>
+<h1 class="m-0 text-dark">Amazon.com Products</h1>
 @stop
 
 @section('css')
