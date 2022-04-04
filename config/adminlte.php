@@ -334,6 +334,13 @@ return [
                 ],
                 [
 
+                    'text' => 'Other Amazon.IN',
+                    'url'  => 'other-product/amazon_in',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin', 'Catalog Manager'],
+                ],
+                [
+
                     'text' => 'fragrancenet.com',
                     'url'  => '../../fragrancenet.com',
                     'icon' => 'far fa-fw fa-file',

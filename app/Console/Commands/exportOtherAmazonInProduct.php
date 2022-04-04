@@ -4,15 +4,12 @@ namespace App\Console\Commands;
 
 use League\Csv\Writer;
 use App\Events\testEvent;
-use App\Models\OthercatDetails;
+use App\Models\OthercatDetailsIndia;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-use function PHPUnit\Framework\at;
-
-class exportOtherAmazonProduct extends Command
+class exportOtherAmazonInProduct extends Command
 {
     private $fileNameOffset = 0;
     private $check;
@@ -20,20 +17,19 @@ class exportOtherAmazonProduct extends Command
     private $writer;
     private $totalProductCount;
     private $currentCount;
-
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'pms:export-other-amazon {selected} {user}';
+    protected $signature = 'pms:export-other-amazon-in {selected} {user}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Export AWS other_amazon product table into csv with realtime progress';
+    protected $description = 'Export AWS other_amazon.in product table into csv with realtime progress';
 
     /**
      * Create a new command instance.
@@ -60,8 +56,8 @@ class exportOtherAmazonProduct extends Command
         $headerSelection = explode('-', $selected);
         $headers = $headerSelection;
         
-        $exportFilePath = "excel/downloads/otheramazon/".$user."/otherProductDetails";
-        $deleteFilePath = "app/excel/downloads/otheramazon/".$user;
+        $exportFilePath = "excel/downloads/otheramazonIN/".$user."/otherProductDetails";
+        $deleteFilePath = "app/excel/downloads/otheramazonIN/".$user;
 
          if(file_exists(storage_path($deleteFilePath))){
              $path = storage_path($deleteFilePath);
@@ -78,10 +74,9 @@ class exportOtherAmazonProduct extends Command
         
         $this->check = $record_per_csv / $chunk;
 
-        $this->totalProductCount = OthercatDetails::count();
-        // Log::alert($this->totalProductCount);
+        $this->totalProductCount = OthercatDetailsIndia::count();
 
-        OthercatDetails::select($headers)->chunk($chunk, function ($records) use ($exportFilePath, $headers, $chunk) {
+        OthercatDetailsIndia::select($headers)->chunk($chunk, function ($records) use ($exportFilePath, $headers, $chunk) {
 
             if ($this->count == 1) {
                 if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv')) {

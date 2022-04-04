@@ -2,25 +2,23 @@
 
 namespace App\Http\Controllers\otherProduct;
 
-use League\Csv\Writer;
 use Illuminate\Http\Request;
-use App\Models\OthercatDetails;
 use Yajra\DataTables\DataTables;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\OthercatDetailsIndia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 
-class anotherAmazonProductController extends Controller
+class OtherAmazonInProductController extends Controller
 {
-    private $offset = 0;
     public function index(Request $request)
     {
+
         if($request->ajax()){
-            $data = OthercatDetails::query()->limit(1);
+            $data = OthercatDetailsIndia::query()->limit(1);
 
             return DataTables::of($data)
             ->addIndexColumn()
@@ -57,32 +55,61 @@ class anotherAmazonProductController extends Controller
             ->make(true);
 
         }
-        return view('amazonOtherProduct.index');
+        return view('amazonOtherProduct.amazonOtherProductIndia.index');
     }
 
-    public function exportOtherProduct(Request $request)
+    public  function exportOtherProductIn(Request $request)
     {
         $selected_header = $request->input('selected');
         
             $selected_header=  $selected_header;
-            // Log::alert($selected_header);
             $user = Auth::user()->email;
+
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
             
             // exec('nohup php artisan pms:textiles-import  > /dev/null &');
            
             $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:export-other-amazon $selected_header $user > /dev/null &";
+            $command = "cd $base_path && php artisan pms:export-other-amazon-in $selected_header $user > /dev/null &";
             exec($command);
             
             // Log::warning("Export asin command executed production  !!!");
         } else {
 
             // Log::warning("Export asin command executed local !");
-            Artisan::call('pms:export-other-amazon '.$selected_header.' '.$user);
+            Artisan::call('pms:export-other-amazon-in '.$selected_header.' '.$user);
         }
-        
     }
 
+    public function other_file_download_in()
+    {
+        $user = Auth::user()->email;
+        $path = "app/excel/downloads/otheramazonIN/".$user;
+        $path = storage_path($path);
+        $files = (scandir($path));
+
+        $filesArray = [];
+        foreach ($files as $key => $file) {
+            if ($key > 1) {
+
+                $filesArray[][$file] =  date("F d Y H:i:s.", filemtime($path . '/' . $file));
+            }
+        }
+
+        return response()->json(['success' => true, "files_lists" => $filesArray]);
+    }
+
+    public function download_other_product($id)
+    {
+        //Other Amazon file download
+        // $file_path = "excel/downloads/otheramazon/otherProductDetails".$id.'.csv';
+        $user = Auth::user()->email;
+        $file_path = "excel/downloads/otheramazonIN/".$user.'/' . $id;
+        //$path = Storage::path($file_path);
+        if (Storage::exists($file_path)) {
+            return Storage::download($file_path);
+        }
+        return 'file not exist';
+    }
     
 }
