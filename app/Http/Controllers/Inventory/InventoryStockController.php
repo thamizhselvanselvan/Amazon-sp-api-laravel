@@ -9,8 +9,8 @@ use App\Http\Controllers\Controller;
 
 class InventoryStockController extends Controller
 {
-    public function Stockindex()
+    public function StockIndex()
     {
-        return view('inventory.Stock.Index');
+        return view('Inventory.Stock.Index');
     }
 }

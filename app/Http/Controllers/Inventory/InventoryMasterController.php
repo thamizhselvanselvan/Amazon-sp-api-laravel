@@ -11,6 +11,6 @@ class InventoryMasterController extends Controller
 {
     public function IndexView()
     {
-        return view('Inventory.Master.index');
+        return view('Inventory.Master.Index');
     }
 }
