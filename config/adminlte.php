@@ -362,7 +362,7 @@ return [
 
                         [
                             'text' => 'Roles',
-                            'url'  => 'Inventory/master/index',
+                            'url'  => 'Inventory/master/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin'],
 
@@ -370,35 +370,35 @@ return [
 
                         [
                             'text' => 'Users',
-                            'url'  => 'Inventory/master/index',
+                            'url'  => 'Inventory/master/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
 
                         ],
                         [
                             'text' => 'Racks',
-                            'url'  => 'Inventory/master/index',
+                            'url'  => 'Inventory/master/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
 
                         ],
                         [
                             'text' => 'Company',
-                            'url'  => 'Inventory/master/index',
+                            'url'  => 'Inventory/master/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
 
                         ],
                         [
                             'text' => 'Source',
-                            'url'  => 'Inventory/master/index',
+                            'url'  => 'Inventory/master/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
 
                         ],
                         [
                             'text' => 'Destination',
-                            'url'  => 'Inventory/master/index',
+                            'url'  => 'Inventory/master/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
 
@@ -493,13 +493,13 @@ return [
                     'submenu' => [
                         [
                             'text' => 'Global',
-                            'url'  => 'Inventory/SSystem/Index',
+                            'url'  => 'Inventory/System/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
                         ],
                         [
                             'text' => 'System',
-                            'url'  => 'Inventory/SSystem/Index',
+                            'url'  => 'Inventory/System/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
                         ],
