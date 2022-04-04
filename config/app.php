@@ -125,12 +125,6 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
-    'connection' => env('DB_CONNECTION'),
-    'host' => env('WEB_DB_HOST'),
-    'port' => env('WEB_DB_PORT'),
-    'database' => env('WEB_DB_DATABASE'),
-    'username' => env('WEB_DB_USERNAME'),
-    'password' => env('WEB_DB_PASSWORD'),
 
 
     /*

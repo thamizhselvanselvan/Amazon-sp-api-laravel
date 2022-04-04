@@ -20,10 +20,25 @@
         </div>
 
         <h2 class="mb-4">
-        <a href="{{route('getOrder.list')}}">
+            <a href="{{route('getOrder.list')}}">
                 <x-adminlte-button label="Orders List" theme="primary" icon="fas fa-file-import" />
             </a>
         </h2>
+        <table class="table table-bordered yajra-datatable table-striped">
+            <thead>
+                <tr>
+                    <th>S/N</th>
+                    <th>Amazon Order Id</th>
+                    <th>Purchase Date</th>
+                    <th>Last Update Date</th>
+                    <th>Order Status</th>
+                    <th>Price</th>
+                    <th>Number Of Items</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -31,24 +46,44 @@
 
 @section('js')
 <script type="text/javascript">
-    $(function() {
-        //     $(document).on('change', '#download_amazon_product', function(){
-        //         // alert($('#download_amazon_product').val());
-        //         $.ajax({
-        //             method: 'get',
-        //             url: 'other-product/download/0',
-        //             data:{
-        //                 "_token": "{{ csrf_token() }}",
-        //                 "_method": 'get',
-        //             },
-        //             success: function() {
+    let yajra_table = $('.yajra-datatable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "{{ url('orders/list') }}",
+        columns: [{
+                data: 'DT_RowIndex',
+                name: 'DT_RowIndex',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'amazon_order_identifier'
+            },
+            {
+                data: 'purchase_date',
+                name: 'purchase_date'
+            },
+            {
+                data: 'last_update_date',
+                name: 'last_update_date'
+            },
+            {
+                data: 'order_status',
+                name: 'order_status'
+            },
+            {
+                data: 'order_total',
+                name: 'order_total',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'number_of_items_shipped',
+                name: 'number_of_items_shipped'
+            },
 
-        //                 // yajra_table.ajax.reload();
 
-        //             }
-        //         })      
-        // // alert('change');
-        // });
+        ]
     });
 </script>
 
