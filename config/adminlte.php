@@ -521,7 +521,7 @@ return [
                 ],
                 [
                     'text' => 'Orders Details',
-                    'url' => 'orders/process ',
+                    'url' => 'orders/details ',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
 

@@ -62,4 +62,11 @@ class OrdersListController extends Controller
         //API will hit here and records will be save into DB
         return redirect()->back();
     }
+
+    public function OrderDetails()
+    {
+
+        // return 'success';
+        return view('orders.ordersDetails.index');
+    }
 }
