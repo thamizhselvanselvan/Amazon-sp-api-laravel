@@ -107,7 +107,7 @@ Route::get('Inventory/System/Index', 'Inventory\InventorySystemController@System
 
 
 Route::get('orders/list', 'orders\OrdersListController@index');
-Route::get('orders/getlist', 'orders\OrdersListController@GetOrdersList')->name('getOrder.list');
+Route::get('orders/getlist/{seller_id}', 'orders\OrdersListController@GetOrdersList')->name('getOrder.list');
 
 Route::resource('/tests', 'TestController');
 

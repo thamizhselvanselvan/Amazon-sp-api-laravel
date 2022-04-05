@@ -58,6 +58,12 @@ return [
 
     'slack_notification_webhook' => env('SLACK_NOTIFICATION_WEBHOOK'),
 
+    'aws_sp_api_client_id' => env('AWS_SP_API_CLIENT_ID'),
+    'aws_sp_api_client_secret' => env('AWS_SP_API_CLIENT_SECRET'),
+    'aws_sp_api_access_key_id' => env('AWS_SP_API_ACCESS_KEY_ID'),
+    'aws_sp_api_access_secret_id' => env('AWS_SP_API_ACCESS_SECRET_KEY'),
+    'aws_sp_api_role_arn' => env('AWS_SP_API_ROLE_ARN'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
