@@ -14,15 +14,21 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
+use App\Jobs\GetOrderDetails;
 use App\Services\Config\ConfigTrait;
+use App\Services\SP_API\Config\ConfigTrait as ConfigConfigTrait;
+use AWS\CRT\Auth\AwsCredentials;
 use Illuminate\Support\Facades\Auth;
 use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
 use Illuminate\Support\Facades\Artisan;
 use Yajra\DataTables\Contracts\DataTable;
 
+use function PHPUnit\Framework\returnSelf;
+
 class OrdersListController extends Controller
 {
+    use ConfigTrait;
     public function index(Request $request)
     {
         if ($request->ajax()) {
@@ -63,10 +69,94 @@ class OrdersListController extends Controller
         return redirect()->back();
     }
 
+    public function selectStore(Request $request)
+    {
+        if ($request->ajax()) {
+            $aws_credential = Aws_Credential::with('mws_region')->where('api_type', 1)->get();
+            return DataTables::of($aws_credential)
+                ->addIndexColumn()
+                ->editColumn('region', function ($mws_region) {
+
+                    return $mws_region['mws_region']['region'] . ' [' . $mws_region['mws_region']['region_code'] . ']';
+                })
+                ->addColumn('action', function ($id) {
+                    $action = '<div class="pl-2"><input class="" type="checkbox" value=' . $id['id'] . ' name="options[]" ></div>';
+                    return $action;
+                })
+                ->rawColumns(['region', 'action'])
+                ->make(true);;
+        }
+
+        return view('orders.listorders.selectstore');
+    }
+
     public function OrderDetails()
     {
 
         // return 'success';
         return view('orders.ordersDetails.index');
+    }
+    public function GetOrderDetails()
+    {
+        $sellerOrders = DB::select('select seller_identifier,amazon_order_identifier from orders limit 10');
+        foreach ($sellerOrders as $sellerOrder) {
+            $seller_id =  $sellerOrder->seller_identifier;
+            $order_id =  $sellerOrder->amazon_order_identifier;
+            GetOrderDetails::dispatch(
+                [
+                    'order_id' => $order_id,
+                    'seller_id' => $seller_id,
+                ]
+            );
+            // echo $seller_id;
+        }
+
+        // $token = 'Atzr|IwEBIG3zt3kKghE3Bl56OEGAxxeodmEzfaMAnMl0PivBlfumR8224Adu9lb33DKLEvHD6OBwdIBkaVlIZ5L2axypPm-LLuKPabvUCmRZ6F6C8KZKBJYS2u1sJVqzMxxoFSs6DTFLMxx8WBVXY395aKUzK3plz3-ttDN-YUGjiKR9-kFhLek1ZdjxwTQkvUdWdfpuDtcnW0veAPS0JUHVwTN39hpwJtPXm98XwD-wEe16n9qoWoak-UvtuML8irbdUdATSA4FLSX08H2V7SFAjdktXEW13v6gBs3xfCYn_w9Y4H29K5i5_vkQyiqj0j1FMK0nmtU';
+        // $config = new Configuration([
+        //     "lwaClientId" => config('app.aws_sp_api_client_id'),
+        //     "lwaClientSecret" => config('app.aws_sp_api_client_secret'),
+        //     "awsAccessKeyId" => config('app.aws_sp_api_access_key_id'),
+        //     "awsSecretAccessKey" => config('app.aws_sp_api_access_secret_id'),
+        //     "lwaRefreshToken" => $token,
+        //     "roleArn" => config('app.aws_sp_api_role_arn'),
+        //     "endpoint" => Endpoint::EU,
+        // ]);
+
+        // $apiInstance = new OrdersApi($config);
+        // $order_id = '405-8984836-8837901'; // string | An Amazon-defined order identifier, in 3-7-7 format.
+        // $data_elements = ['buyerInfo', 'shippingAddress']; // string[] | An array of restricted order data elements to retrieve (valid array elements are \"buyerInfo\" and \"shippingAddress\")
+
+        // try {
+        //     $result = $apiInstance->getOrder($order_id, $data_elements)->getPayload();
+
+        //     po($result);
+        // } catch (Exception $e) {
+        //     echo 'Exception when calling OrdersApi->getOrder: ', $e->getMessage(), PHP_EOL;
+        // }
+    }
+
+    public function GetOrderitems()
+    {
+        $token = 'Atzr|IwEBIG3zt3kKghE3Bl56OEGAxxeodmEzfaMAnMl0PivBlfumR8224Adu9lb33DKLEvHD6OBwdIBkaVlIZ5L2axypPm-LLuKPabvUCmRZ6F6C8KZKBJYS2u1sJVqzMxxoFSs6DTFLMxx8WBVXY395aKUzK3plz3-ttDN-YUGjiKR9-kFhLek1ZdjxwTQkvUdWdfpuDtcnW0veAPS0JUHVwTN39hpwJtPXm98XwD-wEe16n9qoWoak-UvtuML8irbdUdATSA4FLSX08H2V7SFAjdktXEW13v6gBs3xfCYn_w9Y4H29K5i5_vkQyiqj0j1FMK0nmtU';
+        $config = new Configuration([
+            "lwaClientId" => config('app.aws_sp_api_client_id'),
+            "lwaClientSecret" => config('app.aws_sp_api_client_secret'),
+            "awsAccessKeyId" => config('app.aws_sp_api_access_key_id'),
+            "awsSecretAccessKey" => config('app.aws_sp_api_access_secret_id'),
+            "lwaRefreshToken" => $token,
+            "roleArn" => config('app.aws_sp_api_role_arn'),
+            "endpoint" => Endpoint::EU,
+        ]);
+
+        $apiInstance = new OrdersApi($config);
+        $order_id = '407-6605984-0453141'; // string | An Amazon-defined order identifier, in 3-7-7 format.
+
+        try {
+            $result = $apiInstance->getOrderItems($order_id)->getPayload();
+
+            po($result);
+        } catch (Exception $e) {
+            echo 'Exception when calling OrdersApi->getOrder: ', $e->getMessage(), PHP_EOL;
+        }
     }
 }

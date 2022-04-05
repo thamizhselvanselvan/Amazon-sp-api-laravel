@@ -20,7 +20,7 @@
         </div>
 
         <h2 class="mb-4">
-            <a href="">
+            <a href="{{route('getOrder.details')}}">
                 <x-adminlte-button label="Order Details" theme="primary" icon="fas fa-file-import" />
             </a>
         </h2>

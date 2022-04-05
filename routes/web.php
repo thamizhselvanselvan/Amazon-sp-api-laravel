@@ -108,8 +108,10 @@ Route::get('Inventory/System/Index', 'Inventory\InventorySystemController@System
 
 Route::get('orders/list', 'orders\OrdersListController@index');
 Route::get('orders/getlist/{seller_id}', 'orders\OrdersListController@GetOrdersList')->name('getOrder.list');
+Route::get('orders/select-store', 'orders\OrdersListController@selectStore')->name('select.store');
 Route::get('orders/details','orders\OrdersListController@OrderDetails');
-
+Route::get('orders/getdetails/','orders\OrdersListController@GetOrderDetails')->name('getOrder.details');
+Route::get('orders/getitemsdetails', 'orders\OrdersListController@GetOrderitems');
 
 
 Route::resource('/tests', 'TestController');

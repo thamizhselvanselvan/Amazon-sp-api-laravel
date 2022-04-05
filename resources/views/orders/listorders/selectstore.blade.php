@@ -2,9 +2,16 @@
 @section('title', 'Orders List')
 
 @section('content_header')
-<h1 class="m-0 text-dark">Order List</h1>
+<h1 class="m-0 text-dark">Select store to fetch order</h1>
 @stop
 
+@section('css')
+<style>
+.table td{
+    padding: 0.2rem;
+}
+</style>
+@stop
 @section('content')
 
 <div class="row">
@@ -20,24 +27,20 @@
         </div>
 
         <h2 class="mb-4">
-            <a href="{{route('getOrder.list',6)}}">
+            <!-- <a href="">
                 <x-adminlte-button label="Orders List" theme="primary" icon="fas fa-file-import" />
             </a>
             <a href="{{route('select.store')}}">
-            <!-- <i class="fa-solid fa-circle-check"></i> -->
                 <x-adminlte-button label="Select Store" theme="primary" icon="fas fa-check-circle" />
-            </a>
+            </a> -->
         </h2>
         <table class="table table-bordered yajra-datatable table-striped">
             <thead>
                 <tr>
                     <th>S/N</th>
-                    <th>Amazon Order Id</th>
-                    <th>Purchase Date</th>
-                    <th>Last Update Date</th>
-                    <th>Order Status</th>
-                    <th>Price</th>
-                    <th>Number Of Items</th>
+                    <th>Store Name</th>
+                    <th>Region</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -53,7 +56,9 @@
     let yajra_table = $('.yajra-datatable').DataTable({
         processing: true,
         serverSide: true,
-        ajax: "{{ url('orders/list') }}",
+        ajax: "{{ url('orders/select-store') }}",
+        pageLength: 50,
+        lengthMenu: [10, 50, 100, 500],
         columns: [{
                 data: 'DT_RowIndex',
                 name: 'DT_RowIndex',
@@ -61,30 +66,19 @@
                 searchable: false
             },
             {
-                data: 'amazon_order_identifier'
+                data: 'store_name',
+                name: 'store_name'
             },
             {
-                data: 'purchase_date',
-                name: 'purchase_date'
+                data: 'region',
+                name: 'region'
             },
             {
-                data: 'last_update_date',
-                name: 'last_update_date'
-            },
-            {
-                data: 'order_status',
-                name: 'order_status'
-            },
-            {
-                data: 'order_total',
-                name: 'order_total',
+                data: 'action',
+                name: 'action',
                 orderable: false,
                 searchable: false
-            },
-            {
-                data: 'number_of_items_shipped',
-                name: 'number_of_items_shipped'
-            },
+            }
 
 
         ]

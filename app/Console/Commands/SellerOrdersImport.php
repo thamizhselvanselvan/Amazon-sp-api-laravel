@@ -76,7 +76,6 @@ class SellerOrdersImport extends Command
             $results = $apiInstance->getOrders($marketplace_ids, $createdAfter)->getPayload()->getOrders();
 
             $results = json_decode(json_encode($results));
-            // print_r($results);
             $orders = '';
             foreach ($results as $resultkey => $result) {
 
