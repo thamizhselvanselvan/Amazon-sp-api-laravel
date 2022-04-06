@@ -67,7 +67,7 @@ class SellerOrdersImport extends Command
         $config = $this->config($awsId, $awsCountryCode, $awsAuth_code);
         $marketplace_ids = $this->marketplace_id($awsCountryCode);
         $marketplace_ids= [$marketplace_ids];
-        Log::critical($config);
+       
         $apiInstance = new OrdersApi($config);
         $createdAfter = now()->subDays(1)->toISOString();
         $lastUpdatedBefore = now()->toISOString();
