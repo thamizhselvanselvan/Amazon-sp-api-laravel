@@ -21,7 +21,7 @@
 
         <h2 class="mb-4">
             <a href="{{route('getOrder.details')}}">
-                <x-adminlte-button label="Order Details" theme="primary" icon="fas fa-file-import" />
+                <x-adminlte-button label="Sync Order Details" theme="primary" icon="fas fa-file-import" />
             </a>
         </h2>
         <table class="table table-bordered yajra-datatable table-striped">

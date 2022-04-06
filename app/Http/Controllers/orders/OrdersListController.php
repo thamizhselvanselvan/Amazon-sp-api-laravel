@@ -175,6 +175,8 @@ class OrdersListController extends Controller
             // } catch (Exception $e) {
             //     echo 'Exception when calling OrdersApi->getOrder: ', $e->getMessage(), PHP_EOL;
             // }
+            
+            return redirect()->back();
         }
     }
 
