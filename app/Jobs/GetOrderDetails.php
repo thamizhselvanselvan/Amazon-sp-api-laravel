@@ -6,6 +6,7 @@ use Exception;
 use RedBeanPHP\R as R;
 use Illuminate\Bus\Queueable;
 use SellingPartnerApi\Endpoint;
+use Illuminate\Support\Facades\Log;
 use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
 use Illuminate\Queue\SerializesModels;
@@ -62,7 +63,7 @@ class GetOrderDetails implements ShouldQueue
 
         $this->getOrderapi($config, $order_id, $seller_id);
 
-        // $this->getOrderItemsApi($config, $order_id, $seller_id);
+        $this->getOrderItemsApi($config, $order_id, $seller_id);
     }
 
     public function getOrderapi($config, $order_id, $seller_id)
@@ -87,7 +88,7 @@ class GetOrderDetails implements ShouldQueue
                 $replaceVal = 'Identifier';
                 $resultkey = lcfirst($resultkey);
                 $order_details->seller_identifier = $seller_id;
-                
+
                 if (substr($resultkey, -2) == 'Id') {
 
                     $resultkey = str_replace($search, $replaceVal, $resultkey);
@@ -103,7 +104,7 @@ class GetOrderDetails implements ShouldQueue
             }
             R::store($order_details);
         } catch (Exception $e) {
-            echo 'Exception when calling OrdersApi->getOrder: ', $e->getMessage(), PHP_EOL;
+            log::alert($e->getMessage());
         }
     }
 
@@ -115,52 +116,52 @@ class GetOrderDetails implements ShouldQueue
         $username = $this->username;
         $password = $this->password;
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-
+        
+        Log::debug("Works");
         $apiInstance = new OrdersApi($config);
         try {
             $results = $apiInstance->getOrderItems($order_id)->getPayload();
             $results = json_decode(json_encode($results));
-            $orders = '';
-            foreach ($results as $resultkey => $result) {
 
-                // print_r((array)$result);
-                $orders = R::dispense('orderitems');
-                $orders->name = 'Amit';
-                $orders->title = 'Book';
-                $orders->seller_identifier = $seller_id;
-                $orders->order_identifier = $order_id;
-                R::store($orders);
-                //  break;
-                // foreach ((array)$result as $detailsKey => $details) {
-                //     // dd($details);
-                //     $detailsKey = lcfirst($detailsKey);
+            foreach ($results as $result_key => $result_details) {
+                if (is_array($result_details)) {
+                    foreach ($result_details as $data_key => $data_details) {
 
+                        $order_items = R::dispense('orderitems');
+                        $order_items->seller_identifier = $seller_id;
+                        $order_items->order_identifier = $order_id;
 
-                //     // $orders->$detailsKey = $details;
-                //     if (is_Object($details)) {
+                        if (is_array($data_details) || is_object($data_details)) {
+                            foreach ((array)$data_details as $item_key => $item_details) {
+                                $search = 'Id';
+                                $replaceVal = 'Identifier';
+                                if($item_key == "ASIN"){
+                                    $item_key = 'asin';
+                                }
+                                $item_key = lcfirst($item_key);
 
-                //         $orders->{$detailsKey} = json_encode($details);
-                //         // print_r($details);
-                //     } else if (is_array($details)) {
+                                if (substr($item_key, -2) == 'Id') {
 
-                //         $orders->{$detailsKey} = json_encode($details);
-                //         // print_r($details);
-                //     } else {
-                //         if ($detailsKey == 'amazonOrderId') {
-                //             $orders->amazon_order_identifier = $details;
-                //         } else if ($detailsKey == 'marketplaceId') {
+                                    $item_key = str_replace($search, $replaceVal, $item_key);
+                                }
+                                
+                                if (is_array($item_details) || is_object($item_details)) {
 
-                //             $orders->marketplace = $details;
-                //         } else {
-                //             $orders->{$detailsKey} = (string)$details;
-                //         }
-                //         // print_r($details);
-                //     }
-                // }
-                // R::store($orders);
+                                    $order_items->$item_key = json_encode($item_details);
+                                  
+                                } else {
+
+                                    $order_items->$item_key = $item_details;
+                                }
+                            }
+                        }
+                        R::store($order_items);
+                    }
+                }
             }
         } catch (Exception $e) {
-            echo 'Exception when calling OrdersApi->getOrder: ', $e->getMessage(), PHP_EOL;
+            
+            log::alert($e->getMessage());
         }
     }
 }

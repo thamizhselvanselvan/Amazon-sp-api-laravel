@@ -27,6 +27,7 @@ use Yajra\DataTables\Contracts\DataTable;
 use function PHPUnit\Framework\returnSelf;
 use App\Services\SP_API\Config\ConfigTrait as ConfigConfigTrait;
 use Hamcrest\Arrays\IsArray;
+use Illuminate\Support\Arr;
 
 class OrdersListController extends Controller
 {
@@ -110,13 +111,13 @@ class OrdersListController extends Controller
             "roleArn" => config('app.aws_sp_api_role_arn'),
             "endpoint" => Endpoint::EU,
         ]);
-        // $host = config('database.connections.web.host');
-        // $dbname = config('database.connections.web.database');
-        // $port = config('database.connections.web.port');
-        // $username = config('database.connections.web.username');
-        // $password = config('database.connections.web.password');
+        $host = config('database.connections.web.host');
+        $dbname = config('database.connections.web.database');
+        $port = config('database.connections.web.port');
+        $username = config('database.connections.web.username');
+        $password = config('database.connections.web.password');
 
-        // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
 
         $sellerOrders = DB::select('select seller_identifier,amazon_order_identifier from orders limit 10');
         foreach ($sellerOrders as $sellerOrder) {
@@ -133,30 +134,44 @@ class OrdersListController extends Controller
             // // $order_id = '405-8984836-8837901'; // string | An Amazon-defined order identifier, in 3-7-7 format.
             // $data_elements = ['buyerInfo', 'shippingAddress']; // string[] | An array of restricted order data elements to retrieve (valid array elements are \"buyerInfo\" and \"shippingAddress\")
             // try {
-            //     $results = $apiInstance->getOrder($order_id, $data_elements)->getPayload();
-            //     // $results = $apiInstance->getOrderItems($order_id)->getPayload();
+            //     // $results = $apiInstance->getOrderItems($order_id, $data_elements)->getPayload();
+            //     $results = $apiInstance->getOrderItems($order_id)->getPayload();
             //     $results = json_decode(json_encode($results));
-            //     $order_details = R::dispense('orderdetails');
-            //     foreach ($results as $resultkey => $result) {
 
-            //         $search = 'Id';
-            //         $replaceVal = 'Identifier';
-            //         $resultkey = lcfirst($resultkey);
+            //     foreach ($results as $result_key => $result_details) {
+            //         if (is_array($result_details)) {
+            //             foreach ($result_details as $data_key => $data_details) {
 
-            //         if (substr($resultkey, -2) == 'Id') {
+            //                 $order_items = R::dispense('orderitems');
+            //                 $order_items->seller_identifier = $seller_id;
+            //                 $order_items->order_identifier = $order_id;
 
-            //             $resultkey = str_replace($search, $replaceVal, $resultkey);
-            //         }
+            //                 if (is_array($data_details) || is_object($data_details)) {
+            //                     foreach ((array)$data_details as $item_key => $item_details) {
+            //                         $search = 'Id';
+            //                         $replaceVal = 'Identifier';
+            //                         $item_key = lcfirst($item_key);
 
-            //         if (is_Array($result) || is_object($result)) {
+            //                         if (substr($item_key, -2) == 'Id') {
 
-            //             $order_details->$resultkey = (json_encode($result));
-            //         } else {
+            //                             $item_key = str_replace($search, $replaceVal, $item_key);
+            //                         }
 
-            //             $order_details->$resultkey = $result;
+            //                         if (is_array($item_details) || is_object($item_details)) {
+
+            //                             $order_items->$item_key = json_encode($item_details);
+            //                             po($item_key);
+            //                         } else {
+
+            //                             $order_items->$item_key = $item_details;
+    
+            //                         }
+            //                     }
+            //                 }
+            //                 R::store($order_items);
+            //             }
             //         }
             //     }
-            //     R::store($order_details);
             // } catch (Exception $e) {
             //     echo 'Exception when calling OrdersApi->getOrder: ', $e->getMessage(), PHP_EOL;
             // }
