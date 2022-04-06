@@ -60,7 +60,13 @@ class GetOrderDetails implements ShouldQueue
 
         $order_id = $this->payload['order_id'];
         $seller_id = $this->payload['seller_id'];
-
+        $host = $this->host;
+        $dbname = $this->dbname;
+        $port = $this->port;
+        $username = $this->username;
+        $password = $this->password;
+        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+        
         $this->getOrderapi($config, $order_id, $seller_id);
 
         $this->getOrderItemsApi($config, $order_id, $seller_id);
@@ -68,12 +74,7 @@ class GetOrderDetails implements ShouldQueue
 
     public function getOrderapi($config, $order_id, $seller_id)
     {
-        $host = $this->host;
-        $dbname = $this->dbname;
-        $port = $this->port;
-        $username = $this->username;
-        $password = $this->password;
-        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+        
 
         $apiInstance = new OrdersApi($config);
         $data_elements = ['buyerInfo', 'shippingAddress']; // string[] | An array of restricted order data elements to retrieve (valid array elements are \"buyerInfo\" and \"shippingAddress\")
@@ -110,12 +111,12 @@ class GetOrderDetails implements ShouldQueue
 
     public function getOrderItemsApi($config, $order_id, $seller_id)
     {
-        $host = $this->host;
-        $dbname = $this->dbname;
-        $port = $this->port;
-        $username = $this->username;
-        $password = $this->password;
-        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+        // $host = $this->host;
+        // $dbname = $this->dbname;
+        // $port = $this->port;
+        // $username = $this->username;
+        // $password = $this->password;
+        // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
         
         Log::debug("Works");
         $apiInstance = new OrdersApi($config);
