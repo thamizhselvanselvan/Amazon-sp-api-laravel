@@ -7,7 +7,9 @@ use Carbon\Carbon;
 use RedBeanPHP\R as R;
 use AWS\CRT\HTTP\Response;
 use Hamcrest\Type\IsObject;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Hamcrest\Arrays\IsArray;
 use Illuminate\Http\Request;
 use App\Jobs\GetOrderDetails;
 use App\Models\Aws_credential;
@@ -16,18 +18,17 @@ use AWS\CRT\Auth\AwsCredentials;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Services\Config\ConfigTrait;
 use Illuminate\Support\Facades\Auth;
 use SellingPartnerApi\Api\OrdersApi;
+
 use SellingPartnerApi\Configuration;
 use Illuminate\Support\Facades\Artisan;
 use Yajra\DataTables\Contracts\DataTable;
-
 use function PHPUnit\Framework\returnSelf;
 use App\Services\SP_API\Config\ConfigTrait as ConfigConfigTrait;
-use Hamcrest\Arrays\IsArray;
-use Illuminate\Support\Arr;
 
 class OrdersListController extends Controller
 {
@@ -60,12 +61,12 @@ class OrdersListController extends Controller
 
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
+            Log::warning("Export asin command executed local !");
             $base_path = base_path();
             $command = "cd $base_path && pms:sellers-orders-import $sellerId > /dev/null &";
             exec($command);
         } else {
 
-            // Log::warning("Export asin command executed local !");
             Artisan::call('pms:sellers-orders-import ' . $sellerId);
         }
         //API will hit here and records will be save into DB

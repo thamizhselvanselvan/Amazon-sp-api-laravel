@@ -47,7 +47,7 @@ class SellerOrdersImport extends Command
      */
     public function handle()
     {
-
+        Log::alert('working');
         $seller_id = $this->argument('seller-id');
 
         $aws_data = Aws_credential::with('mws_region')->where('seller_id', $seller_id)->where('verified', 1)->get();
