@@ -63,7 +63,7 @@ class OrdersListController extends Controller
 
             Log::warning("Export asin command executed local !");
             $base_path = base_path();
-            $command = "cd $base_path && pms:sellers-orders-import $sellerId > /dev/null &";
+            $command = "cd $base_path && php artisan pms:sellers-orders-import $sellerId > /dev/null &";
             exec($command);
         } else {
 
