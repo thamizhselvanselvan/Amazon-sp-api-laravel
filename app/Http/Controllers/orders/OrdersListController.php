@@ -7,17 +7,17 @@ use Carbon\Carbon;
 use RedBeanPHP\R as R;
 use AWS\CRT\HTTP\Response;
 use Hamcrest\Type\IsObject;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Jobs\GetOrderDetails;
 use App\Models\Aws_credential;
 use SellingPartnerApi\Endpoint;
+use AWS\CRT\Auth\AwsCredentials;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
-use App\Jobs\GetOrderDetails;
 use App\Services\Config\ConfigTrait;
-use App\Services\SP_API\Config\ConfigTrait as ConfigConfigTrait;
-use AWS\CRT\Auth\AwsCredentials;
 use Illuminate\Support\Facades\Auth;
 use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
@@ -25,6 +25,8 @@ use Illuminate\Support\Facades\Artisan;
 use Yajra\DataTables\Contracts\DataTable;
 
 use function PHPUnit\Framework\returnSelf;
+use App\Services\SP_API\Config\ConfigTrait as ConfigConfigTrait;
+use Hamcrest\Arrays\IsArray;
 
 class OrdersListController extends Controller
 {
@@ -98,6 +100,24 @@ class OrdersListController extends Controller
     }
     public function GetOrderDetails()
     {
+        $token = 'Atzr|IwEBIG3zt3kKghE3Bl56OEGAxxeodmEzfaMAnMl0PivBlfumR8224Adu9lb33DKLEvHD6OBwdIBkaVlIZ5L2axypPm-LLuKPabvUCmRZ6F6C8KZKBJYS2u1sJVqzMxxoFSs6DTFLMxx8WBVXY395aKUzK3plz3-ttDN-YUGjiKR9-kFhLek1ZdjxwTQkvUdWdfpuDtcnW0veAPS0JUHVwTN39hpwJtPXm98XwD-wEe16n9qoWoak-UvtuML8irbdUdATSA4FLSX08H2V7SFAjdktXEW13v6gBs3xfCYn_w9Y4H29K5i5_vkQyiqj0j1FMK0nmtU';
+        $config = new Configuration([
+            "lwaClientId" => config('app.aws_sp_api_client_id'),
+            "lwaClientSecret" => config('app.aws_sp_api_client_secret'),
+            "awsAccessKeyId" => config('app.aws_sp_api_access_key_id'),
+            "awsSecretAccessKey" => config('app.aws_sp_api_access_secret_id'),
+            "lwaRefreshToken" => $token,
+            "roleArn" => config('app.aws_sp_api_role_arn'),
+            "endpoint" => Endpoint::EU,
+        ]);
+        // $host = config('database.connections.web.host');
+        // $dbname = config('database.connections.web.database');
+        // $port = config('database.connections.web.port');
+        // $username = config('database.connections.web.username');
+        // $password = config('database.connections.web.password');
+
+        // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+
         $sellerOrders = DB::select('select seller_identifier,amazon_order_identifier from orders limit 10');
         foreach ($sellerOrders as $sellerOrder) {
             $seller_id =  $sellerOrder->seller_identifier;
@@ -108,31 +128,39 @@ class OrdersListController extends Controller
                     'seller_id' => $seller_id,
                 ]
             );
-            // echo $seller_id;
+
+            // $apiInstance = new OrdersApi($config);
+            // // $order_id = '405-8984836-8837901'; // string | An Amazon-defined order identifier, in 3-7-7 format.
+            // $data_elements = ['buyerInfo', 'shippingAddress']; // string[] | An array of restricted order data elements to retrieve (valid array elements are \"buyerInfo\" and \"shippingAddress\")
+            // try {
+            //     $results = $apiInstance->getOrder($order_id, $data_elements)->getPayload();
+            //     // $results = $apiInstance->getOrderItems($order_id)->getPayload();
+            //     $results = json_decode(json_encode($results));
+            //     $order_details = R::dispense('orderdetails');
+            //     foreach ($results as $resultkey => $result) {
+
+            //         $search = 'Id';
+            //         $replaceVal = 'Identifier';
+            //         $resultkey = lcfirst($resultkey);
+
+            //         if (substr($resultkey, -2) == 'Id') {
+
+            //             $resultkey = str_replace($search, $replaceVal, $resultkey);
+            //         }
+
+            //         if (is_Array($result) || is_object($result)) {
+
+            //             $order_details->$resultkey = (json_encode($result));
+            //         } else {
+
+            //             $order_details->$resultkey = $result;
+            //         }
+            //     }
+            //     R::store($order_details);
+            // } catch (Exception $e) {
+            //     echo 'Exception when calling OrdersApi->getOrder: ', $e->getMessage(), PHP_EOL;
+            // }
         }
-
-        // $token = 'Atzr|IwEBIG3zt3kKghE3Bl56OEGAxxeodmEzfaMAnMl0PivBlfumR8224Adu9lb33DKLEvHD6OBwdIBkaVlIZ5L2axypPm-LLuKPabvUCmRZ6F6C8KZKBJYS2u1sJVqzMxxoFSs6DTFLMxx8WBVXY395aKUzK3plz3-ttDN-YUGjiKR9-kFhLek1ZdjxwTQkvUdWdfpuDtcnW0veAPS0JUHVwTN39hpwJtPXm98XwD-wEe16n9qoWoak-UvtuML8irbdUdATSA4FLSX08H2V7SFAjdktXEW13v6gBs3xfCYn_w9Y4H29K5i5_vkQyiqj0j1FMK0nmtU';
-        // $config = new Configuration([
-        //     "lwaClientId" => config('app.aws_sp_api_client_id'),
-        //     "lwaClientSecret" => config('app.aws_sp_api_client_secret'),
-        //     "awsAccessKeyId" => config('app.aws_sp_api_access_key_id'),
-        //     "awsSecretAccessKey" => config('app.aws_sp_api_access_secret_id'),
-        //     "lwaRefreshToken" => $token,
-        //     "roleArn" => config('app.aws_sp_api_role_arn'),
-        //     "endpoint" => Endpoint::EU,
-        // ]);
-
-        // $apiInstance = new OrdersApi($config);
-        // $order_id = '405-8984836-8837901'; // string | An Amazon-defined order identifier, in 3-7-7 format.
-        // $data_elements = ['buyerInfo', 'shippingAddress']; // string[] | An array of restricted order data elements to retrieve (valid array elements are \"buyerInfo\" and \"shippingAddress\")
-
-        // try {
-        //     $result = $apiInstance->getOrder($order_id, $data_elements)->getPayload();
-
-        //     po($result);
-        // } catch (Exception $e) {
-        //     echo 'Exception when calling OrdersApi->getOrder: ', $e->getMessage(), PHP_EOL;
-        // }
     }
 
     public function GetOrderitems()

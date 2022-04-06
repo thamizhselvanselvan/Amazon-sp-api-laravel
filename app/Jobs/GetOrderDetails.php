@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use Exception;
-use RedBeanPHP\R;
+use RedBeanPHP\R as R;
 use Illuminate\Bus\Queueable;
 use SellingPartnerApi\Endpoint;
 use SellingPartnerApi\Api\OrdersApi;
@@ -62,7 +62,7 @@ class GetOrderDetails implements ShouldQueue
 
         $this->getOrderapi($config, $order_id, $seller_id);
 
-        $this->getOrderItemsApi($config, $order_id, $seller_id);
+        // $this->getOrderItemsApi($config, $order_id, $seller_id);
     }
 
     public function getOrderapi($config, $order_id, $seller_id)
@@ -80,40 +80,28 @@ class GetOrderDetails implements ShouldQueue
             $results = $apiInstance->getOrder($order_id, $data_elements)->getPayload();
 
             $results = json_decode(json_encode($results));
-            $orders = '';
+            $order_details = R::dispense('orderdetails');
             foreach ($results as $resultkey => $result) {
 
-                // print_r((array)$result);
-                $orders = R::dispense('orderdetails');
-                $orders->seller_identifier = $seller_id;
-                foreach ((array)$result as $detailsKey => $details) {
-                    // dd($details);
-                    $detailsKey = lcfirst($detailsKey);
+                $search = 'Id';
+                $replaceVal = 'Identifier';
+                $resultkey = lcfirst($resultkey);
+                $order_details->seller_identifier = $seller_id;
+                
+                if (substr($resultkey, -2) == 'Id') {
 
-
-                    // $orders->$detailsKey = $details;
-                    if (is_Object($details)) {
-
-                        $orders->{$detailsKey} = json_encode($details);
-                        // print_r($details);
-                    } else if (is_array($details)) {
-
-                        $orders->{$detailsKey} = json_encode($details);
-                        // print_r($details);
-                    } else {
-                        if ($detailsKey == 'amazonOrderId') {
-                            $orders->amazon_order_identifier = $details;
-                        } else if ($detailsKey == 'marketplaceId') {
-
-                            $orders->marketplace = $details;
-                        } else {
-                            $orders->{$detailsKey} = (string)$details;
-                        }
-                        // print_r($details);
-                    }
+                    $resultkey = str_replace($search, $replaceVal, $resultkey);
                 }
-                R::store($orders);
+
+                if (is_Array($result) || is_object($result)) {
+
+                    $order_details->$resultkey = (json_encode($result));
+                } else {
+
+                    $order_details->$resultkey = $result;
+                }
             }
+            R::store($order_details);
         } catch (Exception $e) {
             echo 'Exception when calling OrdersApi->getOrder: ', $e->getMessage(), PHP_EOL;
         }
@@ -137,34 +125,39 @@ class GetOrderDetails implements ShouldQueue
 
                 // print_r((array)$result);
                 $orders = R::dispense('orderitems');
+                $orders->name = 'Amit';
+                $orders->title = 'Book';
                 $orders->seller_identifier = $seller_id;
-                foreach ((array)$result as $detailsKey => $details) {
-                    // dd($details);
-                    $detailsKey = lcfirst($detailsKey);
-
-
-                    // $orders->$detailsKey = $details;
-                    if (is_Object($details)) {
-
-                        $orders->{$detailsKey} = json_encode($details);
-                        // print_r($details);
-                    } else if (is_array($details)) {
-
-                        $orders->{$detailsKey} = json_encode($details);
-                        // print_r($details);
-                    } else {
-                        if ($detailsKey == 'amazonOrderId') {
-                            $orders->amazon_order_identifier = $details;
-                        } else if ($detailsKey == 'marketplaceId') {
-
-                            $orders->marketplace = $details;
-                        } else {
-                            $orders->{$detailsKey} = (string)$details;
-                        }
-                        // print_r($details);
-                    }
-                }
+                $orders->order_identifier = $order_id;
                 R::store($orders);
+                //  break;
+                // foreach ((array)$result as $detailsKey => $details) {
+                //     // dd($details);
+                //     $detailsKey = lcfirst($detailsKey);
+
+
+                //     // $orders->$detailsKey = $details;
+                //     if (is_Object($details)) {
+
+                //         $orders->{$detailsKey} = json_encode($details);
+                //         // print_r($details);
+                //     } else if (is_array($details)) {
+
+                //         $orders->{$detailsKey} = json_encode($details);
+                //         // print_r($details);
+                //     } else {
+                //         if ($detailsKey == 'amazonOrderId') {
+                //             $orders->amazon_order_identifier = $details;
+                //         } else if ($detailsKey == 'marketplaceId') {
+
+                //             $orders->marketplace = $details;
+                //         } else {
+                //             $orders->{$detailsKey} = (string)$details;
+                //         }
+                //         // print_r($details);
+                //     }
+                // }
+                // R::store($orders);
             }
         } catch (Exception $e) {
             echo 'Exception when calling OrdersApi->getOrder: ', $e->getMessage(), PHP_EOL;
