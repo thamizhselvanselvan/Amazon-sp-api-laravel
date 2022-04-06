@@ -51,7 +51,7 @@ class SellerOrdersImport extends Command
         $seller_id = $this->argument('seller-id');
 
         $aws_data = Aws_credential::with('mws_region')->where('seller_id', $seller_id)->where('verified', 1)->get();
-
+        Log::debug("Seller id".$seller_id);
         $awsId  = $aws_data[0]['id'];
         $awsAuth_code = $aws_data[0]['auth_code'];
         $awsCountryCode = $aws_data[0]['mws_region']['region_code'];
@@ -62,12 +62,13 @@ class SellerOrdersImport extends Command
         $username = config('database.connections.web.username');
         $password = config('database.connections.web.password');
 
+        Log::debug($host, $dbname, $port, $username, $password);
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
         
         $config = $this->config($awsId, $awsCountryCode, $awsAuth_code);
         $marketplace_ids = $this->marketplace_id($awsCountryCode);
         $marketplace_ids= [$marketplace_ids];
-
+        Log::critical($config);
         $apiInstance = new OrdersApi($config);
         $createdAfter = now()->subDays(1)->toISOString();
         $lastUpdatedBefore = now()->toISOString();
@@ -78,7 +79,7 @@ class SellerOrdersImport extends Command
             $results = json_decode(json_encode($results));
             $orders = '';
             foreach ($results as $resultkey => $result) {
-
+                Log::warning('foreach working');
                 // print_r((array)$result);
                 $orders = R::dispense('orders');
                 $orders->seller_identifier = $seller_id;
