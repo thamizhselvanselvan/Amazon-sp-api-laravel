@@ -2,7 +2,7 @@
 @section('title', 'Orders Details')
 
 @section('content_header')
-<h1 class="m-0 text-dark">Order Details</h1>
+<h1 class="m-0 text-dark">Order Item Details</h1>
 @stop
 
 @section('content')
@@ -20,23 +20,21 @@
         </div>
 
         <h2 class="mb-4">
-            <a href="{{route('getOrder.details')}}">
-                <x-adminlte-button label="Sync Order Detail & Order Items Detail" theme="primary" icon="fas fa-file-import" />
-            </a>
+            <!-- <a href="">
+                <x-adminlte-button label="Sync Order Details" theme="primary" icon="fas fa-file-import" />
+            </a> -->
         </h2>
         <table class="table table-bordered yajra-datatable table-striped">
             <thead>
                 <tr>
                     <th>S/N</th>
                     <th>Amazon Order Id</th>
-                    <th>Purchase Date</th>
-                    <th>Last Update Date</th>
-                    <th>Order Status</th>
-                    <th>Fulifillment Channel</th>
+                    <th>Asin</th>
+                    <th>Item Id</th>
+                    <th>Title</th>
                     <th>Price</th>
-                    <th>Number Of Items Shipped</th>
-                    <th>Number Of Items UnShipped</th>
-                    <th>Shipping Address</th>
+                    <th>Quantity Ordered</th>
+                    <th>Quantity Shipped</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,8 +50,7 @@
     let yajra_table = $('.yajra-datatable').DataTable({
         processing: true,
         serverSide: true,
-        // ajax: "",
-        ajax: "{{ url('orders/details') }}",
+        ajax: "{{ url('orders/item-details') }}",
         columns: [{
                 data: 'DT_RowIndex',
                 name: 'DT_RowIndex',
@@ -61,41 +58,34 @@
                 searchable: false
             },
             {
-                data: 'amazon_order_identifier'
+                data: 'order_identifier',
+                name: 'order_identifier'
             },
             {
-                data: 'purchase_date',
-                name: 'purchase_date'
+                data: 'asin',
+                name: 'asin'
             },
             {
-                data: 'last_update_date',
-                name: 'last_update_date'
+                data: 'order_item_identifier',
+                name: 'order_item_identifier'
             },
             {
-                data: 'order_status',
-                name: 'order_status'
+                data: 'title',
+                name: 'title'
             },
             {
-                data: 'fulfillment_channel',
-                name: 'fulfillment_channel',
-            },
-            {
-                data: 'order_total',
-                name: 'order_total',
+                data: 'item_price',
+                name: 'item_price',
                 orderable: false,
                 searchable: false
             },
             {
-                data: 'number_of_items_shipped',
-                name: 'number_of_items_shipped'
+                data: 'quantity_ordered',
+                name: 'quantity_ordered'
             },
             {
-                data: 'number_of_items_unshipped',
-                name: 'number_of_items_unshipped'
-            },
-            {
-                data: 'shipping_address',
-                name: 'shipping_address'
+                data: 'quantity_shipped',
+                name: 'quantity_shipped'
             },
 
 

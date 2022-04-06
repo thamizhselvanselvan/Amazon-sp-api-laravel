@@ -527,6 +527,14 @@ return [
 
 
                 ],
+                [
+                    'text' => 'Orders Item Details',
+                    'url' => 'orders/item-details ',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+
+
+                ],
             ],
         ],
 

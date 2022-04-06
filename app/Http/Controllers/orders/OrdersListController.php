@@ -93,31 +93,47 @@ class OrdersListController extends Controller
         return view('orders.listorders.selectstore');
     }
 
-    public function OrderDetails()
-    {
+    public function OrderDetails(Request $request)
+    {   
+        if ($request->ajax()) {
+            $data = DB::select('select amazon_order_identifier,purchase_date,last_update_date,order_status,fulfillment_channel,order_total,number_of_items_shipped,number_of_items_unshipped,shipping_address from orderdetails');
+            // dd($data);
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->editColumn('order_total', function ($order_total) {
+                    $price = '';
+                    $price = json_decode($order_total->order_total);
+                    if (isset($price->Amount) && isset($price->CurrencyCode)) {
 
-        // return 'success';
+                        $price = $price->Amount . ' [' . $price->CurrencyCode . ']';
+                    }
+                    return $price;
+                })
+                ->rawColumns(['order_total'])
+                ->make(true);
+        }
+
         return view('orders.ordersDetails.index');
     }
     public function GetOrderDetails()
     {
-        $token = 'Atzr|IwEBIG3zt3kKghE3Bl56OEGAxxeodmEzfaMAnMl0PivBlfumR8224Adu9lb33DKLEvHD6OBwdIBkaVlIZ5L2axypPm-LLuKPabvUCmRZ6F6C8KZKBJYS2u1sJVqzMxxoFSs6DTFLMxx8WBVXY395aKUzK3plz3-ttDN-YUGjiKR9-kFhLek1ZdjxwTQkvUdWdfpuDtcnW0veAPS0JUHVwTN39hpwJtPXm98XwD-wEe16n9qoWoak-UvtuML8irbdUdATSA4FLSX08H2V7SFAjdktXEW13v6gBs3xfCYn_w9Y4H29K5i5_vkQyiqj0j1FMK0nmtU';
-        $config = new Configuration([
-            "lwaClientId" => config('app.aws_sp_api_client_id'),
-            "lwaClientSecret" => config('app.aws_sp_api_client_secret'),
-            "awsAccessKeyId" => config('app.aws_sp_api_access_key_id'),
-            "awsSecretAccessKey" => config('app.aws_sp_api_access_secret_id'),
-            "lwaRefreshToken" => $token,
-            "roleArn" => config('app.aws_sp_api_role_arn'),
-            "endpoint" => Endpoint::EU,
-        ]);
-        $host = config('database.connections.web.host');
-        $dbname = config('database.connections.web.database');
-        $port = config('database.connections.web.port');
-        $username = config('database.connections.web.username');
-        $password = config('database.connections.web.password');
+        // $token = 'Atzr|IwEBIG3zt3kKghE3Bl56OEGAxxeodmEzfaMAnMl0PivBlfumR8224Adu9lb33DKLEvHD6OBwdIBkaVlIZ5L2axypPm-LLuKPabvUCmRZ6F6C8KZKBJYS2u1sJVqzMxxoFSs6DTFLMxx8WBVXY395aKUzK3plz3-ttDN-YUGjiKR9-kFhLek1ZdjxwTQkvUdWdfpuDtcnW0veAPS0JUHVwTN39hpwJtPXm98XwD-wEe16n9qoWoak-UvtuML8irbdUdATSA4FLSX08H2V7SFAjdktXEW13v6gBs3xfCYn_w9Y4H29K5i5_vkQyiqj0j1FMK0nmtU';
+        // $config = new Configuration([
+        //     "lwaClientId" => config('app.aws_sp_api_client_id'),
+        //     "lwaClientSecret" => config('app.aws_sp_api_client_secret'),
+        //     "awsAccessKeyId" => config('app.aws_sp_api_access_key_id'),
+        //     "awsSecretAccessKey" => config('app.aws_sp_api_access_secret_id'),
+        //     "lwaRefreshToken" => $token,
+        //     "roleArn" => config('app.aws_sp_api_role_arn'),
+        //     "endpoint" => Endpoint::EU,
+        // ]);
+        // $host = config('database.connections.web.host');
+        // $dbname = config('database.connections.web.database');
+        // $port = config('database.connections.web.port');
+        // $username = config('database.connections.web.username');
+        // $password = config('database.connections.web.password');
 
-        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+        // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
 
         $sellerOrders = DB::select('select seller_identifier,amazon_order_identifier from orders limit 10');
         foreach ($sellerOrders as $sellerOrder) {
@@ -129,56 +145,34 @@ class OrdersListController extends Controller
                     'seller_id' => $seller_id,
                 ]
             );
-
-            // $apiInstance = new OrdersApi($config);
-            // // $order_id = '405-8984836-8837901'; // string | An Amazon-defined order identifier, in 3-7-7 format.
-            // $data_elements = ['buyerInfo', 'shippingAddress']; // string[] | An array of restricted order data elements to retrieve (valid array elements are \"buyerInfo\" and \"shippingAddress\")
-            // try {
-            //     // $results = $apiInstance->getOrderItems($order_id, $data_elements)->getPayload();
-            //     $results = $apiInstance->getOrderItems($order_id)->getPayload();
-            //     $results = json_decode(json_encode($results));
-
-            //     foreach ($results as $result_key => $result_details) {
-            //         if (is_array($result_details)) {
-            //             foreach ($result_details as $data_key => $data_details) {
-
-            //                 $order_items = R::dispense('orderitems');
-            //                 $order_items->seller_identifier = $seller_id;
-            //                 $order_items->order_identifier = $order_id;
-
-            //                 if (is_array($data_details) || is_object($data_details)) {
-            //                     foreach ((array)$data_details as $item_key => $item_details) {
-            //                         $search = 'Id';
-            //                         $replaceVal = 'Identifier';
-            //                         $item_key = lcfirst($item_key);
-
-            //                         if (substr($item_key, -2) == 'Id') {
-
-            //                             $item_key = str_replace($search, $replaceVal, $item_key);
-            //                         }
-
-            //                         if (is_array($item_details) || is_object($item_details)) {
-
-            //                             $order_items->$item_key = json_encode($item_details);
-            //                             po($item_key);
-            //                         } else {
-
-            //                             $order_items->$item_key = $item_details;
-    
-            //                         }
-            //                     }
-            //                 }
-            //                 R::store($order_items);
-            //             }
-            //         }
-            //     }
-            // } catch (Exception $e) {
-            //     echo 'Exception when calling OrdersApi->getOrder: ', $e->getMessage(), PHP_EOL;
-            // }
-            
             return redirect()->back();
         }
     }
+
+    public function OrderItemDetails(Request $request)
+    {   
+        if($request->ajax())
+        {
+            $data = DB::select('select order_identifier,asin,order_item_identifier,title,quantity_ordered,quantity_shipped,item_price from orderitems');
+            // dd($data);
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->editColumn('item_price', function ($order_total) {
+                    $price = '';
+                    $price = json_decode($order_total->item_price);
+                    if (isset($price->Amount) && isset($price->CurrencyCode)) {
+
+                        $price = $price->Amount . ' [' . $price->CurrencyCode . ']';
+                    }
+                    return $price;
+                })
+                ->rawColumns(['order_total'])
+                ->make(true);
+        }
+        return view('orders.itemDetails.index');
+    }
+
+
 
     public function GetOrderitems()
     {
