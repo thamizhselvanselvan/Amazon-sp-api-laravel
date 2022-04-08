@@ -9,6 +9,13 @@
         <h1 class="m-0 text-dark text-center ">Bulk PDF Upload</h1>
     </div>
 </div>
+<div class="row">
+    <div class="col-6">
+        <a href="/BOE/index" class="btn btn-primary">
+            <i class="fas fa-long-arrow-alt-left"></i> Back
+        </a>
+    </div>
+</div>
 
 @stop
 

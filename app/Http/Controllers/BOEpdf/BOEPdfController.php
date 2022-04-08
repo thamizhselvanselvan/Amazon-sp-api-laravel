@@ -5,14 +5,25 @@ namespace App\Http\Controllers\BOEpdf;
 use RedBeanPHP\R;
 use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
+use App\Models\Cargoclearance;
 use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 
 class BOEPdfController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->ajax()) {
+
+            $data = Cargoclearance::query();
+
+            return DataTables::of($data)
+            ->addIndexColumn()
+            ->make(true);
+        }
         return view('BOEpdf.index');
     }
 
