@@ -599,15 +599,15 @@ return [
             'can' =>  ['Admin'],
             'submenu' => [
                 [
-                    'text' => 'Bulk PDF Upload',
-                    'url' => 'pdfview/index',
+                    'text' => 'BOE',
+                    'url' => 'BOE/index',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
 
                 ],
                 [
                     'text' => 'View Uploded PDF',
-                    'url' => 'pdfview/view',
+                    'url' => 'BOE/uplod',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
 

@@ -119,11 +119,10 @@ Route::get('orders/item-details','orders\OrdersListController@OrderItemDetails')
 Route::get('orders/getdetails/','orders\OrdersListController@GetOrderDetails')->name('getOrder.details');
 Route::get('orders/getitemsdetails', 'orders\OrdersListController@GetOrderitems');
 
-Route::get('pdfview/index','Pdf\PdfController@uploadview');
-Route::get('pdfview/view','Pdf\PdfController@viewupload');
-Route::post('pdfview/upload', 'Pdf\PdfController@testupl');
-
-Route::get('pdf/boe', 'BOE\BOEController@BOEPDFReader');
+Route::get('BOE/index','BOEPdf\BOEPdfController@index');
+Route::get('BOE/uplod','BOEPdf\BOEPdfController@BOEPdfUploadView');
+Route::post('BOE/bulk-upload', 'BOEPdf\BOEPdfController@BulkPdfUpload');
+Route::get('BOE/pdf-reader', 'BOEPdf\BOEPdfController@BOEPDFReader');
 
 Route::resource('/tests', 'TestController');
 
