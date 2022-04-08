@@ -77,8 +77,6 @@ class BOEPdfController extends Controller
         $payment_details = [];
         $igm_details = [];
 
-
-
         foreach ($BOEPDFMaster as $key => $BOEPDFData) {
             if ($BOEPDFData == 'Current Status of the CBE :') {
 
@@ -636,15 +634,15 @@ class BOEPdfController extends Controller
             $key = lcfirst($key);
             $boe_details->$key = $courier_basic_detail;
         }
-        foreach($igm_details as $boe_key => $boe)
-        {   $boe_key = lcfirst($boe_key);
+        foreach ($igm_details as $boe_key => $boe) {
+            $boe_key = lcfirst($boe_key);
             $boe_details->$boe_key = $boe;
         }
         $boe_details->notificationDetails = json_encode($notification_details);
         $boe_details->chargeDetails = json_encode($charge_details);
         $boe_details->dutyDetails = json_encode($duty_details);
         $boe_details->paymentDetails = json_encode($payment_details);
-        
+
         R::store($boe_details);
 
         po($current_Status_of_CBE);
