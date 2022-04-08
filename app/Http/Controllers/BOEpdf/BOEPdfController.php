@@ -28,27 +28,6 @@ class BOEPdfController extends Controller
             'files' => 'required',
             'files.*' => 'mimes:pdf'
         ]);
-
-        if ($request->TotalFiles > 0) {
-
-            for ($file_count = 0; $file_count < $request->TotalFiles; $file_count++) {
-
-                if ($request->hasFile('files' . $file_count)) {
-                    $file = $request->file('files' . $file_count);
-                    $source = file_get_contents($file);
-                    $path = 'PdfMaster/BOE' . $file_count . '.pdf';
-                    Storage::put($path, $source);
-                }
-            }
-            return response()->json(['success' => 'File has been uploaded']);
-        } else {
-            return response()->json(["message" => "Please try again."]);
-        }
-    }
-    public function BOEPDFReader()
-    {
-        // $config = new Config();
-        // $config->setPdfWhitespacesRegex('[\0\t\n\f\r ]');
         $host = config('database.connections.web.host');
         $dbname = config('database.connections.web.database');
         $port = config('database.connections.web.port');
@@ -57,10 +36,43 @@ class BOEPdfController extends Controller
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
 
+        if ($request->TotalFiles > 0) {
+
+            for ($file_count = 0; $file_count < $request->TotalFiles; $file_count++) {
+                // saving uploaded into storage
+                if ($request->hasFile('files' . $file_count)) {
+                    $file = $request->file('files' . $file_count);
+                    $source = file_get_contents($file);
+                    $path = 'PdfMaster/BOE' . $file_count . '.pdf';
+                    Storage::put($path, $source);
+                }
+            }
+            //reading saved file from storage
+            $path = "app/PdfMaster";
+            $path = (storage_path($path));
+            $files = (scandir($path));
+            foreach ($files as $key => $file) {
+                if ($key > 1) {
+
+                    $pdfParser = new Parser();
+                    $pdf = $pdfParser->parseFile($path . '/' . $file);
+                    $content = $pdf->getText();
+                    $this->BOEPDFReader($content);
+                }
+            }
+            // return response()->json(['success' => 'File has been uploaded']);
+        } else {
+            return response()->json(["message" => "Please try again."]);
+        }
+    }
+    public function BOEPDFReader($content)
+    {
+        // $config = new Config();
+        // $config->setPdfWhitespacesRegex('[\0\t\n\f\r ]');
         $BOEPDFMaster = [];
-        $pdfParser = new Parser();
-        $pdf = $pdfParser->parseFile('D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000494.pdf');
-        $content = $pdf->getText();
+        // $pdfParser = new Parser();
+        // $pdf = $pdfParser->parseFile('D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000494.pdf');
+        // $content = $pdf->getText();
         $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
 
         $unsetKey = array_search('Page 1 of 2', $content);
@@ -644,14 +656,5 @@ class BOEPdfController extends Controller
         $boe_details->paymentDetails = json_encode($payment_details);
 
         R::store($boe_details);
-
-        po($current_Status_of_CBE);
-        po($courier_basic_details);
-        po($notification_details);
-        po($charge_details);
-        po($duty_details);
-        po($payment_details);
-        po($igm_details);
-        dd($BOEPDFMaster);
     }
 }
