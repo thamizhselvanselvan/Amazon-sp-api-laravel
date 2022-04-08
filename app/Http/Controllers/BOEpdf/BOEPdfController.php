@@ -5,12 +5,15 @@ namespace App\Http\Controllers\BOEpdf;
 use RedBeanPHP\R;
 use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 class BOEPdfController extends Controller
 {
+    public $check_table = 0;
     public function index()
     {
         return view('BOEpdf.index');
@@ -60,18 +63,25 @@ class BOEPdfController extends Controller
                     $this->BOEPDFReader($content);
                 }
             }
-            // return response()->json(['success' => 'File has been uploaded']);
+            return redirect('/BOE/index')->with('success', 'All PDF Imported successfully');
+            // return response()->json(['success' => 'File has been uploaded ']);
         } else {
             return response()->json(["message" => "Please try again."]);
         }
     }
     public function BOEPDFReader($content)
+    // public function BOEPDFReader()
     {
-        // $config = new Config();
-        // $config->setPdfWhitespacesRegex('[\0\t\n\f\r ]');
-        $BOEPDFMaster = [];
+        // $host = config('database.connections.web.host');
+        // $dbname = config('database.connections.web.database');
+        // $port = config('database.connections.web.port');
+        // $username = config('database.connections.web.username');
+        // $password = config('database.connections.web.password');
+
+        // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
         // $pdfParser = new Parser();
-        // $pdf = $pdfParser->parseFile('D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000494.pdf');
+        // $BOEPDFMaster = [];
+        // $pdf = $pdfParser->parseFile('D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000433.pdf');
         // $content = $pdf->getText();
         $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
 
@@ -635,9 +645,32 @@ class BOEPdfController extends Controller
                 $igm_details['TimeOfArrival'] = $Boecheck[$key + $offset + 5];
             }
         }
+
         $boe_details = R::dispense('cargoclearance');
-        if (Schema::hasTable('cargoclearance')) {
-            R::freeze(true);
+        $tables = DB::select('SHOW TABLES');
+        $tableCheck = 0;
+        // $testcount =0;
+        if ($this->check_table == 0) {
+            foreach ($tables as $table) {
+                $table = (array)($table);
+                if ($table['Tables_in_sp-api'] == 'cargoclearance') {
+                    $tableCheck = 1;
+                    // $testcount++;
+                }
+            }
+            $this->check_table = 1;
+        }else{
+            $tableCheck = 1;
+        }
+        $dataCheck = 0;
+        if ($tableCheck == 1) {
+
+            $awb_no = $courier_basic_details['HawbNumber'];
+            $selectAwb = DB::select("select hawb_number from cargoclearance where hawb_number = '$awb_no'");
+            if (array_key_exists(0, $selectAwb)) {
+                $dataCheck = 1;
+            }
+            // R::freeze(true);
         }
 
         $boe_details->currentStatusOfTheCbe = $current_Status_of_CBE['CurrentStatusOfTheCbe'];
@@ -655,6 +688,11 @@ class BOEPdfController extends Controller
         $boe_details->dutyDetails = json_encode($duty_details);
         $boe_details->paymentDetails = json_encode($payment_details);
 
-        R::store($boe_details);
+        if ($dataCheck != 1) {
+
+            R::store($boe_details);
+        }
+       
+        // Log::alert($testcount);
     }
 }
