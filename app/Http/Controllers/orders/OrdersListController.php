@@ -146,8 +146,8 @@ class OrdersListController extends Controller
                     'seller_id' => $seller_id,
                 ]
             );
-            return redirect()->back();
         }
+        // return redirect()->back();
     }
 
     public function OrderItemDetails(Request $request)

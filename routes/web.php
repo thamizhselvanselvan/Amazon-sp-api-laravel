@@ -114,6 +114,7 @@ Route::get('orders/item-details','orders\OrdersListController@OrderItemDetails')
 Route::get('orders/getdetails/','orders\OrdersListController@GetOrderDetails')->name('getOrder.details');
 Route::get('orders/getitemsdetails', 'orders\OrdersListController@GetOrderitems');
 
+Route::get('pdf/boe', 'BOE\BOEController@BOEPDFReader');
 
 Route::resource('/tests', 'TestController');
 
