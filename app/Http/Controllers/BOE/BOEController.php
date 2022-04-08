@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\BOE;
 
+use RedBeanPHP\R;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use Illuminate\Http\Request;
 use Smalot\PdfParser\Config;
 use Smalot\PdfParser\Parser;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 class BOEController extends Controller
@@ -17,6 +19,14 @@ class BOEController extends Controller
     {
         // $config = new Config();
         // $config->setPdfWhitespacesRegex('[\0\t\n\f\r ]');
+        $host = config('database.connections.web.host');
+        $dbname = config('database.connections.web.database');
+        $port = config('database.connections.web.port');
+        $username = config('database.connections.web.username');
+        $password = config('database.connections.web.password');
+
+        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+
         $BOEPDFMaster = [];
         $pdfParser = new Parser();
         $pdf = $pdfParser->parseFile('D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000494.pdf');
@@ -46,7 +56,7 @@ class BOEController extends Controller
             } else if ($BOEPDFData == 'Courier Registration Num-') {
 
                 $courier_basic_details['CourierRegistrationNumber'] = $BOEPDFMaster[$key + 2];
-                $courier_basic_details['CBE-XIIINumber'] = $BOEPDFMaster[$key + 4] . $BOEPDFMaster[$key + 5];
+                $courier_basic_details['CbeNumber'] = $BOEPDFMaster[$key + 4] . $BOEPDFMaster[$key + 5];
             } else if ($BOEPDFData == 'Name of the Authorized') {
 
                 $name_details = '';
@@ -216,7 +226,7 @@ class BOEController extends Controller
                     $name_details .= $Boecheck[$check_key];
                     $check_key++;
                 }
-                $courier_basic_details['Invoice Value'] = $name_details;
+                $courier_basic_details['InvoiceValue'] = $name_details;
             } else if ($BOEPDFData == 'Case of CRN:') {
 
                 $name_details = '';
@@ -516,7 +526,7 @@ class BOEController extends Controller
                 while ($Boecheck[$check_key] != 'DUTY DETAILS') {
                     $charge_details[$offset]['SrNo'] = $Boecheck[$check_key++];
                     $charge_details[$offset]['ChargeType'] = $Boecheck[$check_key++];
-                    $charge_details[$offset]['Charge Amount_rs'] = $Boecheck[$check_key++];
+                    $charge_details[$offset]['ChargeAmountRs'] = $Boecheck[$check_key++];
                     // $check_key += 3;
                     $offset++;
                 }
@@ -528,7 +538,7 @@ class BOEController extends Controller
                 while ($Boecheck[$check_key] != 'DUTY DETAILS') {
                     $charge_details[$offset]['SrNo'] = $Boecheck[$check_key++];
                     $charge_details[$offset]['ChargeType'] = $Boecheck[$check_key++];
-                    $charge_details[$offset]['Charge Amount_rs'] = $Boecheck[$check_key++];
+                    $charge_details[$offset]['ChargeAmountRs'] = $Boecheck[$check_key++];
                     // $check_key += 3;
                     $offset++;
                 }
@@ -539,11 +549,11 @@ class BOEController extends Controller
                 $offset = 0;
                 while ($Boecheck[$check_key] != 'PAYMENT DETAILS') {
                     $duty_details[$offset]['SrNo'] = $Boecheck[$check_key++];
-                    $duty_details[$offset]['Duty Head'] = $Boecheck[$check_key++];
-                    $duty_details[$offset]['Ad Valorem'] = $Boecheck[$check_key++];
-                    $duty_details[$offset]['Specific Rate'] = $Boecheck[$check_key++];
-                    $duty_details[$offset]['Duty Forgon'] = $Boecheck[$check_key++];
-                    $duty_details[$offset]['Duty Amount'] = $Boecheck[$check_key++];
+                    $duty_details[$offset]['DutyHead'] = $Boecheck[$check_key++];
+                    $duty_details[$offset]['AdValorem'] = $Boecheck[$check_key++];
+                    $duty_details[$offset]['SpecificRate'] = $Boecheck[$check_key++];
+                    $duty_details[$offset]['DutyForgon'] = $Boecheck[$check_key++];
+                    $duty_details[$offset]['DutyAmount'] = $Boecheck[$check_key++];
                     // $check_key += 3;
                     $offset++;
                 }
@@ -585,8 +595,29 @@ class BOEController extends Controller
                 $igm_details['TimeOfArrival'] = $Boecheck[$key + $offset + 5];
             }
         }
+        $boe_details = R::dispense('cargoclearance');
+        if (Schema::hasTable('cargoclearance')) {
+            R::freeze(true);
+        }
+
+        $boe_details->currentStatusOfTheCbe = $current_Status_of_CBE['CurrentStatusOfTheCbe'];
+
+        foreach ($courier_basic_details as $key => $courier_basic_detail) {
+            $key = lcfirst($key);
+            $boe_details->$key = $courier_basic_detail;
+        }
+
+        $boe_details->notificationDetails = json_encode($notification_details);
+        $boe_details->chargeDetails = json_encode($charge_details);
+        $boe_details->dutyDetails = json_encode($duty_details);
+        $boe_details->paymentDetails = json_encode($payment_details);
+        $boe_details->igmDetails = json_encode($igm_details);
+        
+        R::store($boe_details);
+
         po($current_Status_of_CBE);
         po($courier_basic_details);
+
         po($notification_details);
         po($charge_details);
         po($duty_details);
