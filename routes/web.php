@@ -104,13 +104,20 @@ Route::get('Inventory/Reporting/Index', 'Inventory\InventoryReportingController@
 Route::get('Inventory/Stock/Index', 'Inventory\InventoryStockController@StockIndex');
 Route::get('Inventory/System/Index', 'Inventory\InventorySystemController@SystemIndex');
 
+Route::get('Inventory/Roles/Index','Inventory\InventoryMasterController@RolesView');
 
+Route::get('Inventory/Master/Users/Index','Inventory\Master\InventoryUserController@UsersView')->name('index.show');
+Route::get('Inventory/Master/Users/Add','Inventory\Master\InventoryUserController@create')->name('create_user.create');
+Route::post('admin/admin/save_user', 'Admin\AdminManagementController@save_user')->name('inventory_save_user');
+// Route::get('Inventory/Master/Racks/Index','Inventory\Master\InventoryRackController@RacksView');
 
 Route::get('orders/list', 'orders\OrdersListController@index');
 Route::get('orders/getlist/{seller_id}', 'orders\OrdersListController@GetOrdersList')->name('getOrder.list');
 Route::get('orders/details','orders\OrdersListController@OrderDetails');
 
-
+Route::get('pdfview/index','Pdf\PdfController@uploadview');
+Route::get('pdfview/view','Pdf\PdfController@viewupload');
+Route::post('pdfview/upload', 'Pdf\PdfController@testupl');
 
 Route::resource('/tests', 'TestController');
 

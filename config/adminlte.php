@@ -259,7 +259,7 @@ return [
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin'],
                     'submenu' => [
-        
+
                         [
                             'text' => 'Region Master ',
                             'url'  => 'admin/mws_regions',
@@ -309,7 +309,7 @@ return [
                                 ]
                             ],
                         ],
-        
+
                     ],
                 ],
                 [
@@ -362,22 +362,22 @@ return [
 
                         [
                             'text' => 'Roles',
-                            'url'  => 'Inventory/master/Index',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin'],
-
+                            'url'  => 'Inventory/Roles/Index',
+                            'icon' => 'fas fa-user',
+                            'can' =>  ['Admin']
+                         
                         ],
 
                         [
                             'text' => 'Users',
-                            'url'  => 'Inventory/master/Index',
+                            'url'  => 'Inventory/Master/Users/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
 
                         ],
                         [
                             'text' => 'Racks',
-                            'url'  => 'Inventory/master/Index',
+                            'url'  => 'Inventory/Master/Racks/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
 
@@ -393,14 +393,45 @@ return [
                             'text' => 'Source',
                             'url'  => 'Inventory/master/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin'],
+                            'submenu' => [
+                                [
+                                      'text' => 'Amazon',
+                                      'url'  => 'Inventory/master/Index',
+                                      'icon' => 'far fa-fw fa-file',
+                                      'can' =>  ['Admin']
+                                  ],
+                                  [
+                                      'text' => 'Maxcon',
+                                      'url'  => 'Inventory/master/Index',
+                                      'icon' => 'far fa-fw fa-file',
+                                      'can' =>  ['Admin']
+                                  ],
+                                  [
+                                      'text' => 'CStuart',
+                                      'url'  => 'Inventory/master/Index',
+                                      'icon' => 'far fa-fw fa-file',
+                                      'can' =>  ['Admin']
+                                  ],
+  
+                          ],
 
                         ],
                         [
                             'text' => 'Destination',
                             'url'  => 'Inventory/master/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin'],
+                            'submenu'=> [
+                                [
+                                    'text' => 'Amazon Order',
+                                    'url'  => 'Inventory/master/Index',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' =>  ['Admin']
+                                ],
+                                
+                                
+                            ],
 
                         ],
                     ],
@@ -507,7 +538,6 @@ return [
                 ],
             ],
         ],
-
         [
             'text' => 'Orders',
             'can' =>  ['Admin'],
@@ -556,7 +586,26 @@ return [
                 ]
             ],
         ],
+        [
+            'text' => 'PDF Upload',
+            'can' =>  ['Admin'],
+            'submenu' => [
+                [
+                    'text' => 'Bulk PDF Upload',
+                    'url' => 'pdfview/index',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
 
+                ],
+                [
+                    'text' => 'View Uploded PDF',
+                    'url' => 'pdfview/view',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+            ],
+        ],
         // [
         //     'text' => 'Download Files',
         //     'url'  => 'file_downloads',

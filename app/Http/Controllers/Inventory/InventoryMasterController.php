@@ -13,4 +13,8 @@ class InventoryMasterController extends Controller
     {
         return view('Inventory.Master.Index');
     }
+    public function RolesView()
+    {
+        return view('Inventory.Roles.Index');
+    }
 }
