@@ -91,7 +91,7 @@
                 dataType: 'json',
                 success: (data) => {
                     this.reset();
-                    alert('Files has been uploaded using jQuery ajax');
+                    alert('Files has been uploaded');
                 },
                 error: function(data) {
                     alert(data.responseJSON.errors.files[0]);
