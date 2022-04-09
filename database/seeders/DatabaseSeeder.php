@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             Catalog_Manager::class,
+            Boe_Account::class,
         ]);
     }
 }

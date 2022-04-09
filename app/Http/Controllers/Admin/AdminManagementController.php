@@ -20,7 +20,7 @@ class AdminManagementController extends Controller
             $users = User::whereHas(
                 'roles',
                 function ($q) {
-                    $q->where('name', 'Admin')->orWhere('name', 'User');
+                    $q->where('name', 'Admin')->orWhere('name', 'User')->orWhere('name', 'Account');
                 }
             )->latest()->orderBy('created_at');
 

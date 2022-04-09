@@ -49,7 +49,7 @@
                 </x-adminlte-alert>
             @endif
 
-            <form action="{{ Route('admin_save_user') }}" method="POST" id="admin_user">
+            <form action="{{ route('admin_save_user') }}" method="POST" id="admin_user">
 
 
                 @csrf

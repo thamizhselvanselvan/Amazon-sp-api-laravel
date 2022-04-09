@@ -595,13 +595,13 @@ return [
             ],
         ],
         [
-            'text' => 'PDF Upload',
-            'can' =>  ['Admin'],
+            'text' => 'BOE',
+            'can' =>  ['Admin','Account'],
             'submenu' => [
                 [
                     'text' => 'BOE',
                     'url' => 'BOE/index',
-                    'can' => ['Admin'],
+                    'can' => ['Admin','Account'],
                     'icon' => 'far fa-fw fa-file',
 
                 ],
