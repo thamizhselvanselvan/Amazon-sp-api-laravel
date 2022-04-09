@@ -132,6 +132,20 @@ Route::resource('/tests', 'TestController');
      // User::where('email', 'mudassir@moshecom.com')
      //  ->update(['password' =>Hash::make('Bj69UT4UWy')]);
 
+     // $tables = DB::select('SHOW TABLES');
+     //    $tableCheck = 0;
+     //    // $testcount =0;
+     // //   dd($tables);4k
+     //        foreach ($tables as $table) {
+     //            $table = (array)($table);
+     //         $key = array_keys($table);
+     //            if ($table[$key[0]] == 'cargoclearance') {
+     //                $tableCheck = 1;
+     //                echo $key[0];
+     //                // $testcount++;
+     //            }
+     //        }
+     //      exit;
 Route::get('/asin/{asin}/{code}', 'TestController@getASIN');
 
 

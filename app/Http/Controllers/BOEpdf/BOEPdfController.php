@@ -665,9 +665,10 @@ class BOEPdfController extends Controller
         if ($this->check_table == 0) {
             foreach ($tables as $table) {
                 $table = (array)($table);
-                if ($table['Tables_in_sp-api'] == 'cargoclearance') {
+                $key = array_keys($table);
+                if ($table[$key[0]] == 'cargoclearance') {
                     $tableCheck = 1;
-                    // $testcount++;
+                
                 }
             }
             $this->check_table = 1;
