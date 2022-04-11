@@ -29,6 +29,9 @@
         <a href="Export">
             <x-adminlte-button label="Export to CSV" theme="primary" icon="fas fa-file-export" />
         </a>
+        <a href="Download">
+            <x-adminlte-button label="Download CSV file" theme="primary" icon="fas fa-file-export" />
+        </a>
     </h2>
     <table class="table table-bordered yajra-datatable table-striped">
         <thead>

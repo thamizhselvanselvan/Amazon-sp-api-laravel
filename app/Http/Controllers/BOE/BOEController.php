@@ -18,6 +18,22 @@ use Yajra\DataTables\Facades\DataTables;
 class BOEController extends Controller
 {
     public $check_table = 0;
+    public $count = 0;
+    public $dataArray = [
+        'hawb_number' => '',
+        'rateof_exchange' => '',
+        'date_of_arrival' => '',
+        'Duty' => '',
+        'SWsrchrg' => '',
+        'insurance' => '',
+        'IGST' => '',
+        'duty_rs' => '',
+        'interest' => '',
+        'cbe_number' => '',
+        'ctsh' => '',
+        'quantity' => '',
+        'descriptionof_goods' => '',
+    ];
 
     public function index(Request $request)
     {
@@ -116,14 +132,14 @@ class BOEController extends Controller
 
         foreach ($BOEPDFMaster as $key => $BOEPDFData) {
             if ($BOEPDFData == 'Current Status of the CBE :') {
-        
+
                 $current_Status_of_CBE['CurrentStatusOfTheCbe'] = $BOEPDFMaster[$key + 1];
             } else if ($BOEPDFData == 'Courier Registration Num-') {
-        
+
                 $courier_basic_details['CourierRegistrationNumber'] = $BOEPDFMaster[$key + 2];
                 $courier_basic_details['CbeNumber'] = $BOEPDFMaster[$key + 4] . $BOEPDFMaster[$key + 5];
             } else if ($BOEPDFData == 'Name of the Authorized') {
-        
+
                 $name_details = '';
                 $check_key = $key + 2;
                 while ($Boecheck[$check_key] != 'Address of Authorized') {
@@ -132,7 +148,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['NameOfTheAuthorizedCourier'] = $name_details;
             } else if ($BOEPDFData == 'Address of Authorized') {
-        
+
                 $name_details = '';
                 $check_key = $key + 2;
                 while ($Boecheck[$check_key] != 'IGM DETAILS') {
@@ -141,7 +157,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['AddressOfAuthorizedCourier'] = $name_details;
             } else if ($BOEPDFData == 'Airport of Shipment :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Country of Exportation :') {
@@ -150,7 +166,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['AirportOfShipment'] = $name_details;
             } else if ($BOEPDFData == 'Country of Exportation :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'HAWB Number :') {
@@ -159,7 +175,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['CountryOfExportation'] = $name_details;
             } else if ($BOEPDFData == 'HAWB Number :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Unique Consignment Num-') {
@@ -168,7 +184,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['HawbNumber'] = $name_details;
             } else if ($BOEPDFData == 'Unique Consignment Num-') {
-        
+
                 $name_details = '';
                 $check_key = $key + 2;
                 while ($Boecheck[$check_key] != 'Name of Consignor:') {
@@ -177,7 +193,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['UniqueConsignmentNumber'] = $name_details;
             } else if ($BOEPDFData == 'Name of Consignor:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Address of Consignor:') {
@@ -186,7 +202,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['NameOfConsignor'] = $name_details;
             } else if ($BOEPDFData == 'Address of Consignor:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Name of Consignee:') {
@@ -195,7 +211,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['AddressOfConsignor'] = $name_details;
             } else if ($BOEPDFData == 'Name of Consignee:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Address of Consignee:') {
@@ -204,7 +220,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['NameOfConsignee'] = $name_details;
             } else if ($BOEPDFData == 'Address of Consignee:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Import Export Code:') {
@@ -213,7 +229,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['AddressOfConsignee'] = $name_details;
             } else if ($BOEPDFData == 'Import Export Code:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'IEC Branch Code :') {
@@ -222,7 +238,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['ImportExportCode'] = $name_details;
             } else if ($BOEPDFData == 'IEC Branch Code :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Special Request:') {
@@ -231,7 +247,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['IecBranchCode'] = $name_details;
             } else if ($BOEPDFData == 'Special Request:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'No of Packages:') {
@@ -240,7 +256,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['SpecialRequest'] = $name_details;
             } else if ($BOEPDFData == 'No of Packages:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Gross Weight:') {
@@ -249,7 +265,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['NoOfPackages'] = $name_details;
             } else if ($BOEPDFData == 'Gross Weight:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Net Weight:') {
@@ -258,7 +274,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['GrossWeight'] = $name_details;
             } else if ($BOEPDFData == 'Net Weight:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Assessable Value:') {
@@ -267,7 +283,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['NetWeight'] = $name_details;
             } else if ($BOEPDFData == 'Assessable Value:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Duty(Rs.):') {
@@ -276,15 +292,15 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['AssessableValue'] = $name_details;
             } else if ($BOEPDFData == 'Duty(Rs.):') {
-        
+
                 $check_key = $key + 1;
                 $courier_basic_details['DutyRs'] = '';
                 if ($Boecheck[$check_key] != 'Invoice Value:') {
-        
+
                     $courier_basic_details['DutyRs'] = $Boecheck[$check_key];
                 }
             } else if ($BOEPDFData == 'Invoice Value:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Case of CRN:') {
@@ -293,7 +309,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['InvoiceValue'] = $name_details;
             } else if ($BOEPDFData == 'Case of CRN:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'KYC Document:') {
@@ -302,7 +318,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['CaseOfCrn'] = $name_details;
             } else if ($BOEPDFData == 'KYC Document:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'KYC ID:') {
@@ -311,7 +327,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['KycDocument'] = $name_details;
             } else if ($BOEPDFData == 'KYC ID:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'State Code:') {
@@ -320,7 +336,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['KycNo'] = $name_details;
             } else if ($BOEPDFData == 'State Code:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Interest Amount:') {
@@ -329,7 +345,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['StateCode'] = $name_details;
             } else if ($BOEPDFData == 'Interest Amount:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Government / Non-') {
@@ -338,7 +354,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['Interest'] = $name_details;
             } else if ($BOEPDFData == 'Government / Non-') {
-        
+
                 $name_details = '';
                 $check_key = $key + 2;
                 while ($Boecheck[$check_key] != 'AD Code:') {
@@ -347,7 +363,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['GovernmentOrNonGov'] = $name_details;
             } else if ($BOEPDFData == 'AD Code:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'DETAILS OF CRN (if present)') {
@@ -356,7 +372,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['AdCode'] = $name_details;
             } else if ($BOEPDFData == 'License Type :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'License Number :') {
@@ -365,7 +381,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['LicenseType'] = $name_details;
             } else if ($BOEPDFData == 'License Number :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'CTSH :') {
@@ -374,7 +390,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['LicenseNumber'] = $name_details;
             } else if ($BOEPDFData == 'CTSH :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'CETSH :') {
@@ -383,7 +399,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['Ctsh'] = $name_details;
             } else if ($BOEPDFData == 'CETSH :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Country of Origin :') {
@@ -392,7 +408,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['Cetsh'] = $name_details;
             } else if ($BOEPDFData == 'Country of Origin :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Description of Goods :') {
@@ -401,7 +417,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['CountryofOrigin'] = $name_details;
             } else if ($BOEPDFData == 'Description of Goods :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Name of Manufacturer:') {
@@ -410,7 +426,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['DescriptionofGoods'] = $name_details;
             } else if ($BOEPDFData == 'Name of Manufacturer:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Address of Manufacturer:') {
@@ -419,7 +435,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['NameofManufacturer'] = $name_details;
             } else if ($BOEPDFData == 'Address of Manufacturer:') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Number of Packages :') {
@@ -428,7 +444,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['AddressOfManufacturer'] = $name_details;
             } else if ($BOEPDFData == 'Number of Packages :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Marks on Packages') {
@@ -437,7 +453,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['NumberofPackages'] = $name_details;
             } else if ($BOEPDFData == 'Marks on Packages') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Unit of Measure :') {
@@ -446,7 +462,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['MarksonPackages'] = $name_details;
             } else if ($BOEPDFData == 'Unit of Measure :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Quantity :') {
@@ -455,7 +471,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['UnitofMeasure'] = $name_details;
             } else if ($BOEPDFData == 'Quantity :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Invoice Number :') {
@@ -464,7 +480,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['Quantity'] = $name_details;
             } else if ($BOEPDFData == 'Invoice Number :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Invoice Value :') {
@@ -473,7 +489,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['InvoiceNumber'] = $name_details;
             } else if ($BOEPDFData == 'Invoice Value :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Unit Price :') {
@@ -482,7 +498,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['InvoiceValue'] = $name_details;
             } else if ($BOEPDFData == 'Unit Price :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Currency of Unit Price :') {
@@ -491,7 +507,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['UnitPrice'] = $name_details;
             } else if ($BOEPDFData == 'Currency of Unit Price :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Currency of Invoice :') {
@@ -500,7 +516,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['CurrencyofUnitPrice'] = $name_details;
             } else if ($BOEPDFData == 'Currency of Invoice :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Rate of Exchange :') {
@@ -509,7 +525,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['CurrencyofInvoice'] = $name_details;
             } else if ($BOEPDFData == 'Rate of Exchange :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Invoice Term :') {
@@ -518,7 +534,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['RateofExchange'] = $name_details;
             } else if ($BOEPDFData == 'Invoice Term :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Landing Charges :') {
@@ -527,7 +543,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['InvoiceTerm'] = $name_details;
             } else if ($BOEPDFData == 'Landing Charges :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Insurance :') {
@@ -536,7 +552,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['LandingCharges'] = $name_details;
             } else if ($BOEPDFData == 'Insurance :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Freight :') {
@@ -545,7 +561,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['Insurance'] = $name_details;
             } else if ($BOEPDFData == 'Freight :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Discount Amount :') {
@@ -554,7 +570,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['Freight'] = $name_details;
             } else if ($BOEPDFData == 'Discount Amount :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Currency of Discount :') {
@@ -563,7 +579,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['DiscountAmount'] = $name_details;
             } else if ($BOEPDFData == 'Currency of Discount :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Assessable Value :') {
@@ -572,7 +588,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['CurrencyofDiscount'] = $name_details;
             } else if ($BOEPDFData == 'Currency of Discount :') {
-        
+
                 $name_details = '';
                 $check_key = $key + 1;
                 while ($Boecheck[$check_key] != 'Assessable Value :') {
@@ -581,7 +597,7 @@ class BOEController extends Controller
                 }
                 $courier_basic_details['CurrencyofDiscount'] = $name_details;
             } else if ($BOEPDFData == 'NOTIFICATION USED FOR THE ITEM') {
-        
+
                 $name_details = '';
                 $check_key = $key + 4;
                 $offset = 0;
@@ -593,7 +609,7 @@ class BOEController extends Controller
                     $offset++;
                 }
             } else if ($BOEPDFData == 'CHARGES USED FOR THE ITEM') {
-        
+
                 $name_details = '';
                 $check_key = $key + 4;
                 $offset = 0;
@@ -605,7 +621,7 @@ class BOEController extends Controller
                     $offset++;
                 }
             } else if ($BOEPDFData == 'CHARGES USED FOR THE ITEM') {
-        
+
                 $name_details = '';
                 $check_key = $key + 4;
                 $offset = 0;
@@ -617,7 +633,7 @@ class BOEController extends Controller
                     $offset++;
                 }
             } else if ($BOEPDFData == 'DUTY DETAILS') {
-        
+
                 $name_details = '';
                 $check_key = $key + 7;
                 $offset = 0;
@@ -632,7 +648,7 @@ class BOEController extends Controller
                     $offset++;
                 }
             } else if ($BOEPDFData == 'PAYMENT DETAILS') {
-        
+
                 $name_details = '';
                 $check_key = $key + 5;
                 $offset = 0;
@@ -645,7 +661,7 @@ class BOEController extends Controller
                     $offset++;
                 }
             } else if ($BOEPDFData == 'Time Of Arrival') {
-        
+
                 $name_details = '';
                 $check_key = $key;
                 $count = 0;
@@ -724,9 +740,11 @@ class BOEController extends Controller
     {
         $dbheaders = [
             'hawb_number',
+            'rateof_exchange',
             'date_of_arrival',
             'duty_details',
             'insurance',
+            'duty_rs',
             'interest',
             'cbe_number',
             'ctsh',
@@ -738,10 +756,8 @@ class BOEController extends Controller
             'AWB no.',
             '(BOE) Booking Rate',
             'BOE Date Of Arrival',
-            'Basic Duty %',
             'Duty',
             'SW Srchrg',
-            'CVD Cess',
             'Insurance',
             'IGST',
             'Total (Duty+Cess+IGST)',
@@ -760,25 +776,41 @@ class BOEController extends Controller
                 Storage::put($exportFilePath, '');
             }
             $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
-            $writer->insertOne($dbheaders);
+            $writer->insertOne($csvheaders);
 
             $records = $records->toArray();
-            $records = array_map(function ($datas) {
-                if ($datas['duty_details']) {
 
+            $recordsfinal = array_map(function ($datas) {
+
+                if ($datas['duty_details']) {
                     $duty_details = (json_decode($datas['duty_details']));
-                    $duty_datas = [];
                     $datas['Duty'] = $duty_details[0]->DutyAmount;
                     $datas['SWsrchrg'] = $duty_details[2]->DutyAmount;
                     $datas['IGST'] = $duty_details[3]->DutyAmount;
-                    //    return (array) $duty_datas;
                 }
-                // po($datas);
-                return (array) $datas;
+                foreach ($datas as $key => $value) {
+
+                    if ($key != 'duty_details') {
+
+                        $this->dataArray[$key] = $value;
+                    }
+                }
+
+                return $this->dataArray;
             }, $records);
-            po($records);
-            exit;
-            $writer->insertall($records);
+            $writer->insertall($recordsfinal);
         });
+        return redirect()->intended('/BOE/index')->with('success','BOE CSV Imported successfully ..');
+    }
+
+    public function Download_BOE()
+    {
+       
+        $file_path = "excel/downloads/BOE/BOE_Details.csv";
+        if (Storage::exists($file_path)) {
+            return Storage::download($file_path);
+        }
+        return 'file not exist';
+
     }
 }
