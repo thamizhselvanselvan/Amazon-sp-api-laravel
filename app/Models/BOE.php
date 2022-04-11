@@ -9,7 +9,7 @@ class BOE extends Model
 {
     use HasFactory;
 
-    protected $table = 'BOE';
+    protected $table = 'boe';
 
     public function __construct(array $attributes = [])
     {
