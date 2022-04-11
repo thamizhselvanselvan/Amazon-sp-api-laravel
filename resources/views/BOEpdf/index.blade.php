@@ -26,6 +26,9 @@
         <a href="uplod">
             <x-adminlte-button label=" Pdf Upload" theme="primary" icon="fas fa-file-export" />
         </a>
+        <a href="Export">
+            <x-adminlte-button label="Export to CSV" theme="primary" icon="fas fa-file-export" />
+        </a>
     </h2>
     <table class="table table-bordered yajra-datatable table-striped">
         <thead>
