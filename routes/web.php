@@ -6,10 +6,12 @@ use App\Models\User;
 use App\Events\testEvent;
 use App\Models\Mws_region;
 use Maatwebsite\Excel\Row;
+use Illuminate\Support\Str;
 use Smalot\PdfParser\Parser;
 use Dflydev\DotAccessData\Data;
 use SellingPartnerApi\Endpoint;
 use App\Models\Universal_textile;
+use AWS\CRT\HTTP\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -72,7 +74,7 @@ Route::get('export-asin', 'AsinMasterController@exportAsinToCSV');
 Route::post('add-bulk-asin', 'AsinMasterController@addBulkAsin');
 Route::get('asinMaster_download', 'AsinMasterController@download_asin_master')->name('download.asinMaster');
 Route::get('edit-asin/{id}', 'AsinMasterController@editasin');
-Route::put('edit-save/{id}','AsinMasterController@update')->name('asin.update');
+Route::put('edit-save/{id}', 'AsinMasterController@update')->name('asin.update');
 Route::post('asin/soft-delete/{id}', 'AsinMasterController@trash');
 Route::get('asin/trash-view', 'AsinMasterController@trashView')->name('trash.view');
 Route::post('asin/restore/{id}', 'AsinMasterController@restore')->name('restore.view');
@@ -213,5 +215,20 @@ Route::get("b2cship", function () {
      exit;
 });
 
+
+
+Route::get('upload', function () {
+     $file = 'D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000135.pdf';
+     // return file_get_contents($file);
+     //     $fileName = (string) Str::uuid();
+     $folder = config('filesystems.disks.do.folder');
+     Storage::disk('do')->put(
+          "/{$folder}/boe.pdf",
+          file_get_contents($file)
+     );
+
+     // Storage::disk('do')->put('/boe.pdf', file_get_contents($file));
+     echo 'success';
+});
 
 include_route_files(__DIR__ . '/pms/');
