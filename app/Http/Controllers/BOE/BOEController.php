@@ -85,8 +85,8 @@ class BOEController extends Controller
                 }
             }
             //reading saved file from storage
-            $path = "app/BOE/".$year.'/'.$month;
-            $path = (storage_path($path));
+            $file_path = "BOE/".$year.'/'.$month;
+            $path = (storage_path('app/'.$file_path));
             $files = (scandir($path));
             foreach ($files as $key => $file) {
                 if ($key > 1) {
@@ -94,7 +94,7 @@ class BOEController extends Controller
                     $pdfParser = new Parser();
                     $pdf = $pdfParser->parseFile($storage_path);
                     $content = $pdf->getText();
-                    $this->BOEPDFReader($content, $storage_path);
+                    $this->BOEPDFReader($content, $file_path.'/'.$file);
                 }
             }
             return redirect('/BOE/index')->with('success', 'All PDF Imported successfully');

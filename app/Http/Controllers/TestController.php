@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use App\Models\BOE;
 use Illuminate\Http\Request;
 use SellingPartnerApi\Endpoint;
 use Illuminate\Support\Facades\DB;
 use App\Services\Config\ConfigTrait;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\CatalogApi;
+use Illuminate\Support\Facades\Storage;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use SellingPartnerApi\Api\ProductPricingApi;
 
@@ -22,6 +24,14 @@ class TestController extends Controller
     public function index()
     {
         //
+        // $file_path = 'BOE/2022/Apr/8bKzsU97q074QD5XBkZVVufqu3OgWqSiywWvuI2D.pdf';
+        $file_path = BOE::first();
+        $file_path = ($file_path['file_path']);
+        if (Storage::exists($file_path)) {
+            return Storage::download($file_path);
+        }
+        
+        exit;
         $amazonCoutn = DB::select('select count(*) from amazon ');
         print_r($amazonCoutn);
         echo "<hr>";
