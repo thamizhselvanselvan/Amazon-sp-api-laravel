@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\PMSPHPUnitTestController;
+use Illuminate\Support\Facades\Route;
 
-Route::get('pms/phpunit/api-get', [PMSPHPUnitTestController::class, 'phpunit_api_get']);
-Route::get('pms/phpunit/mailgun-api-get', [PMSPHPUnitTestController::class, 'phpunit_mail_gun_api_get']);
-
-Route::post('pms/phpunit/api-post', [PMSPHPUnitTestController::class, 'phpunit_api_post']);
-Route::post('pms/phpunit/mailgun-api-post', [PMSPHPUnitTestController::class, 'phpunit_mail_gun_api_post']);
-
+Route::get('orders/list', 'orders\OrdersListController@index');
+Route::get('orders/getlist/{seller_id}', 'orders\OrdersListController@GetOrdersList')->name('getOrder.list');
+Route::get('orders/select-store', 'orders\OrdersListController@selectStore')->name('select.store');
+Route::get('orders/details', 'orders\OrdersListController@OrderDetails');
+Route::get('orders/item-details', 'orders\OrdersListController@OrderItemDetails');
+Route::get('orders/getdetails/', 'orders\OrdersListController@GetOrderDetails')->name('getOrder.details');
+Route::get('orders/getitemsdetails', 'orders\OrdersListController@GetOrderitems');
