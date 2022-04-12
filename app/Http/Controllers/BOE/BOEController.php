@@ -69,12 +69,13 @@ class BOEController extends Controller
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
 
         if ($request->TotalFiles > 0) {
-
+            $year = date('Y');
+            $month = date('M');
             for ($file_count = 0; $file_count < $request->TotalFiles; $file_count++) {
                 // saving uploaded into storage
                 if ($request->hasFile('files' . $file_count)) {
                     $file = $request->file('files' . $file_count);
-                    $path = $file->store('BOE/');
+                    $path = $file->store('BOE/'.$year.'/'.$month);
                     // $name = $file->getClientOriginalName();
                     // $source = file_get_contents($file);
                     // //To get original file name
@@ -84,16 +85,16 @@ class BOEController extends Controller
                 }
             }
             //reading saved file from storage
-            $path = "app/BOE";
+            $path = "app/BOE/".$year.'/'.$month;
             $path = (storage_path($path));
             $files = (scandir($path));
             foreach ($files as $key => $file) {
                 if ($key > 1) {
-
+                    $storage_path = $path . '/' . $file;
                     $pdfParser = new Parser();
-                    $pdf = $pdfParser->parseFile($path . '/' . $file);
+                    $pdf = $pdfParser->parseFile($storage_path);
                     $content = $pdf->getText();
-                    $this->BOEPDFReader($content);
+                    $this->BOEPDFReader($content, $storage_path);
                 }
             }
             return redirect('/BOE/index')->with('success', 'All PDF Imported successfully');
@@ -102,7 +103,7 @@ class BOEController extends Controller
             return response()->json(["message" => "Please try again."]);
         }
     }
-    public function BOEPDFReader($content)
+    public function BOEPDFReader($content, $storage_path)
     // public function BOEPDFReader()
     {
         // $host = config('database.connections.web.host');
@@ -731,7 +732,11 @@ class BOEController extends Controller
         $boe_details->paymentDetails = json_encode($payment_details);
 
         if ($dataCheck != 1) {
-            
+
+            $boe_details->file_location = 0;
+
+            $boe_details->file_path = $storage_path;
+
             R::store($boe_details);
         }
 
@@ -802,17 +807,16 @@ class BOEController extends Controller
             }, $records);
             $writer->insertall($recordsfinal);
         });
-        return redirect()->intended('/BOE/index')->with('success','BOE CSV Exported successfully');
+        return redirect()->intended('/BOE/index')->with('success', 'BOE CSV Exported successfully');
     }
 
     public function Download_BOE()
     {
-       
+
         $file_path = "excel/downloads/BOE/BOE_Details.csv";
         if (Storage::exists($file_path)) {
             return Storage::download($file_path);
         }
         return 'file not exist';
-
     }
 }

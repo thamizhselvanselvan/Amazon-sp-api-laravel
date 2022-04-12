@@ -128,6 +128,7 @@ Route::get('BOE/Export', 'BOE\BOEController@BOEExportToCSV');
 Route::get('BOE/Download', 'BOE\BOEController@Download_BOE');
 
 Route::resource('/tests', 'TestController');
+
 // $pdfParser = new Parser();
 // $pdf = $pdfParser->parseFile('D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000433.pdf');
 // $content = $pdf->getText();
