@@ -223,10 +223,8 @@ Route::get('upload', function () {
      $file = 'D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000135.pdf';
      // return file_get_contents($file);
      //     $fileName = (string) Str::uuid();
-     $folder = config('filesystems.disks.do.folder');
-     Storage::disk('do')->put(
-          "/{$folder}/boe.pdf",
-          file_get_contents($file)
+     // $folder = config('filesystems.disks.do.folder');
+     Storage::disk('do')->put("boe.pdf", file_get_contents($file)
      );
 
      // Storage::disk('do')->put('/boe.pdf', file_get_contents($file));
