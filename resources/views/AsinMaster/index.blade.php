@@ -19,11 +19,12 @@
                     </div>
                 @endif
             </div>
+
             <h2 class="mb-4">
 
                 <!-- <a href="add-asin">
-                                    <x-adminlte-button label="Add Asin" theme="primary" icon="fas fa-plus-circle"/>
-                                </a> -->
+                                        <x-adminlte-button label="Add Asin" theme="primary" icon="fas fa-plus-circle"/>
+                                    </a> -->
                 <a href="import-bulk-asin">
                     <x-adminlte-button label="Asin Bulk Import" theme="primary" icon="fas fa-file-import" />
                 </a>
@@ -31,11 +32,12 @@
                     <x-adminlte-button label="Asin Export" theme="primary" icon="fas fa-file-export" />
                 </a>
 
-                    <x-adminlte-button label="Download Asin" theme="primary" icon="fas fa-file-download"
-                    data-toggle="modal" data-target="#exampleModal"></x-adminlte-button>
+
+                <x-adminlte-button label="Download Asin" theme="primary" icon="fas fa-file-download" data-toggle="modal"
+                    data-target="#exampleModal"></x-adminlte-button>
 
 
-                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -50,7 +52,7 @@
                                     <li>
                                         <a href="{{ route('download.asinMaster') }}">
                                             <h4>Download Asin Master</h4>
-                                        </a>
+
                                     </li>
                                 </ul>
 
@@ -61,12 +63,15 @@
                         </div>
                     </div>
                 </div>
-
+                </a>
+                <a href="{{ route('trash.view') }}">
+                    <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" />
+                </a>
             </h2>
 
             <table class="table table-bordered yajra-datatable table-striped">
                 <thead>
-                    <tr>
+                    <tr class="length">
                         <th>S/N</th>
                         <th>ASIN</th>
                         <th>Source</th>
@@ -77,6 +82,7 @@
                         <th>Destination 5</th>
                         <th>Action</th>
                     </tr>
+
                 </thead>
                 <tbody>
                 </tbody>
@@ -134,5 +140,68 @@
 
             ]
         });
+        // $(document).on('click', ".delete", function(e) {
+        //     alert('On click on Delete');
+        // });
+        $(document).on('click', ".delete", function(e) {
+                e.preventDefault();
+                let bool = confirm('Are you sure you wanna delete this asin?');
+
+                if(!bool) {
+                    return false;
+                }
+                let self = $(this);
+                let id = self.attr('data-id');
+               
+                self.prop('disable', true);
+                // let loader = $('.loader');
+
+                // let alert_dislay_div = $('.alert_display');
+                // let alert_template = `<div class="alert alert-block d-none alert_main">
+                //                         <button type="button" class="close" data-dismiss="alert">×</button>
+                //                         <strong class="alert_message"></strong>
+                //                     </div>`;
+                // alert_dislay_div.html(alert_template);
+
+                // let alert_message = $('.alert_message');
+                // let alert_main = $('.alert_main');
+
+                // loader.removeClass('d-none');
+
+                $.ajax({
+                    method: 'post',
+                    url: '/asin/soft-delete/'+id,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "_method": 'POST'
+                    },
+                    response: 'json',
+                    success: function (response) {
+                        alert('Delete success');
+                        // self.prop('disable', false);
+                        // // loader.addClass('d-none');
+
+                        // yajra_table.ajax.reload();
+
+                        // if(response.success) {
+                        //     alert_main.removeClass('d-none alert-danger').addClass('alert-success');
+                        //     alert_message.html(response.success);
+                        // }
+
+                    }, 
+                    error: function (response) {
+
+                        // self.prop('disable', false);
+                        // // loader.addClass('d-none;');
+
+                        // alert_main.removeClass('d-none alert-success').addClass('alert-danger');
+                        // alert_message.html('Oops something went wrong. Contct Admin');
+
+                    }
+                });
+
+            });
+
+        // });
     </script>
 @stop
