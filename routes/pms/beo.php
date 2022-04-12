@@ -1,10 +1,14 @@
 <?php
 
 use App\Http\Controllers\PMSPHPUnitTestController;
+use Illuminate\Support\Facades\Route;
 
-Route::get('pms/phpunit/api-get', [PMSPHPUnitTestController::class, 'phpunit_api_get']);
-Route::get('pms/phpunit/mailgun-api-get', [PMSPHPUnitTestController::class, 'phpunit_mail_gun_api_get']);
 
-Route::post('pms/phpunit/api-post', [PMSPHPUnitTestController::class, 'phpunit_api_post']);
-Route::post('pms/phpunit/mailgun-api-post', [PMSPHPUnitTestController::class, 'phpunit_mail_gun_api_post']);
+
+Route::get('BOE/index', 'BOE\BOEController@index');
+Route::get('BOE/uplod', 'BOE\BOEController@BOEPdfUploadView');
+Route::post('BOE/bulk-upload', 'BOE\BOEController@BulkPdfUpload');
+Route::get('BOE/pdf-reader', 'BOE\BOEController@BOEPDFReader');
+Route::get('BOE/Export', 'BOE\BOEController@BOEExportToCSV');
+Route::get('BOE/Download', 'BOE\BOEController@Download_BOE');
 

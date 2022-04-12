@@ -105,31 +105,38 @@
                 },
                 {
                     data: 'asin',
-                    name: 'asin'
+                    name: 'asin',
+                    orderable: false
                 },
                 {
                     data: 'source',
-                    name: 'source'
+                    name: 'source',
+                    orderable: false
                 },
                 {
                     data: 'destination_1',
-                    name: 'destination_1'
+                    name: 'destination_1',
+                    orderable: false
                 },
                 {
                     data: 'destination_2',
-                    name: 'destination_2'
+                    name: 'destination_2',
+                    orderable: false
                 },
                 {
                     data: 'destination_3',
-                    name: 'destination_3'
+                    name: 'destination_3',
+                    orderable: false
                 },
                 {
                     data: 'destination_4',
-                    name: 'destination_4'
+                    name: 'destination_4',
+                    orderable: false
                 },
                 {
                     data: 'destination_5',
-                    name: 'destination_5'
+                    name: 'destination_5',
+                    orderable: false
                 },
                 {
                     data: 'action',

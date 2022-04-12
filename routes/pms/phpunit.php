@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PMSPHPUnitTestController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('pms/phpunit/api-get', [PMSPHPUnitTestController::class, 'phpunit_api_get']);
 Route::get('pms/phpunit/mailgun-api-get', [PMSPHPUnitTestController::class, 'phpunit_mail_gun_api_get']);

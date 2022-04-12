@@ -40,6 +40,8 @@ Auth::routes();
 Route::get('login', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('login');
 Route::get('home', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('home');
 
+
+
 // Route::group(['middleware' => ['role:Admin', 'auth'], 'prefix' => 'admin'],function(){
 
 // Route::get('dashboard', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('admin.dashboard');
