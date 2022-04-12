@@ -74,11 +74,13 @@ class BOEController extends Controller
                 // saving uploaded into storage
                 if ($request->hasFile('files' . $file_count)) {
                     $file = $request->file('files' . $file_count);
-                    $source = file_get_contents($file);
-                    //To get original file name
-                    $fileName = $file->getClientOriginalName();
-                    $path = 'BOE/' . $fileName;
-                    Storage::put($path, $source);
+                    $path = $file->store('BOE/');
+                    // $name = $file->getClientOriginalName();
+                    // $source = file_get_contents($file);
+                    // //To get original file name
+                    // $fileName = $file->getClientOriginalName();
+                    // $path = 'BOE/' . $fileName;
+                    // Storage::put($path, $source);
                 }
             }
             //reading saved file from storage
@@ -729,7 +731,7 @@ class BOEController extends Controller
         $boe_details->paymentDetails = json_encode($payment_details);
 
         if ($dataCheck != 1) {
-
+            
             R::store($boe_details);
         }
 
@@ -800,7 +802,7 @@ class BOEController extends Controller
             }, $records);
             $writer->insertall($recordsfinal);
         });
-        return redirect()->intended('/BOE/index')->with('success','BOE CSV Imported successfully ..');
+        return redirect()->intended('/BOE/index')->with('success','BOE CSV Exported successfully');
     }
 
     public function Download_BOE()
