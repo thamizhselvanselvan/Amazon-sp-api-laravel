@@ -3,17 +3,20 @@
 namespace App\Http\Controllers\BOE;
 
 use RedBeanPHP\R;
+use App\Models\BOE;
 use League\Csv\Writer;
 use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Models\BOE;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
+use AmazonPHP\SellingPartner\Model\MerchantFulfillment\Length;
 
 class BOEController extends Controller
 {
@@ -70,12 +73,12 @@ class BOEController extends Controller
 
         if ($request->TotalFiles > 0) {
             $year = date('Y');
-            $month = date('M');
+            $month = date('F');
             for ($file_count = 0; $file_count < $request->TotalFiles; $file_count++) {
                 // saving uploaded into storage
                 if ($request->hasFile('files' . $file_count)) {
                     $file = $request->file('files' . $file_count);
-                    $path = $file->store('BOE/'.$year.'/'.$month);
+                    $path = $file->store('BOE/' . $year . '/' . $month);
                     // $name = $file->getClientOriginalName();
                     // $source = file_get_contents($file);
                     // //To get original file name
@@ -85,8 +88,8 @@ class BOEController extends Controller
                 }
             }
             //reading saved file from storage
-            $file_path = "BOE/".$year.'/'.$month;
-            $path = (storage_path('app/'.$file_path));
+            $file_path = "BOE/" . $year . '/' . $month;
+            $path = (storage_path('app/' . $file_path));
             $files = (scandir($path));
             foreach ($files as $key => $file) {
                 if ($key > 1) {
@@ -94,7 +97,7 @@ class BOEController extends Controller
                     $pdfParser = new Parser();
                     $pdf = $pdfParser->parseFile($storage_path);
                     $content = $pdf->getText();
-                    $this->BOEPDFReader($content, $file_path.'/'.$file);
+                    $this->BOEPDFReader($content, $file_path . '/' . $file);
                 }
             }
             return redirect('/BOE/index')->with('success', 'All PDF Imported successfully');
@@ -733,9 +736,9 @@ class BOEController extends Controller
 
         if ($dataCheck != 1) {
 
-            $boe_details->file_location = 0;
+            $boe_details->do = 0;
 
-            $boe_details->file_path = $storage_path;
+            $boe_details->download_file_path = $storage_path;
 
             R::store($boe_details);
         }
@@ -818,5 +821,23 @@ class BOEController extends Controller
             return Storage::download($file_path);
         }
         return 'file not exist';
+    }
+
+    public function Upload()
+    {
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+                       
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan pms:boe-upload-Do > /dev/null &";
+            exec($command);
+            
+            Log::warning("Export asin command executed production  !!!");
+        } else {
+
+            // Log::warning("Export asin command executed local !");
+            Artisan::call('pms:boe-upload-Do');
+        }
+
+        echo 'success';
     }
 }

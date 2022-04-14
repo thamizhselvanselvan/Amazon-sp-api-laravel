@@ -10,6 +10,7 @@ class BOE extends Model
     use HasFactory;
 
     protected $table = 'boe';
+    public $timestamps = false;
 
     public function __construct(array $attributes = [])
     {
