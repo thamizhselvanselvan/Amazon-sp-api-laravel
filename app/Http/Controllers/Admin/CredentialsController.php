@@ -17,7 +17,7 @@ class CredentialsController extends Controller
 
         if($request->ajax()){
 
-            $data = Aws_credential::with(['mws_region'])->orderby('status', 'DESC')->get();
+            $data = Aws_credential::with(['mws_region'])->orderby('sync_status', 'DESC')->get();
         
             return DataTables::of($data)
                 ->addIndexcolumn()
