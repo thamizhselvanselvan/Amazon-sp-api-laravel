@@ -837,7 +837,7 @@ class BOEController extends Controller
             // Log::warning("Export asin command executed local !");
             Artisan::call('pms:boe-upload-Do');
         }
-
         echo 'success';
+        // return redirect()->back();
     }
 }
