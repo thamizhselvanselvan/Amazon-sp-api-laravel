@@ -55,11 +55,8 @@
                 @csrf
 
                 <div class="row">
-                    <div class="col-6">
-                        <x-adminlte-input label="ID" name="ID" id="ID" type="text" placeholder="ID"
-                            value="{{ old('ID') }}" />
-                    </div>
-                    <div class="col-6">
+                    
+                    <div class="col-9">
                         <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name"
                             value="{{ old('name') }}" />
                     </div>

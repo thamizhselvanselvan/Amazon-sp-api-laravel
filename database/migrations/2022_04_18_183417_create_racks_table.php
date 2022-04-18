@@ -4,17 +4,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateInRacksTable extends Migration
+class CreateRacksTable extends Migration
 {
     /**
      * Run the migrations.
      *
      * @return void
      */
-   
     public function up()
     {
-        Schema::create('racks', function (Blueprint $table) {
+        Schema::connection('in')->create('racks', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->timestamps();
@@ -28,6 +27,6 @@ class CreateInRacksTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('racks');
+        Schema::connection('in')->dropIfExists('racks');
     }
 }

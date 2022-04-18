@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Add Rack')
+@section('title', 'Add Source')
 
 @section('css')
     <link rel="stylesheet" href="/css/styles.css">
@@ -10,7 +10,7 @@
 
     <div class="row">
         <div class="col">
-             <a href="{{ route('inventory.rack_index') }}" class="btn btn-primary">  
+             <a href="{{ route('inventory.source_index') }}" class="btn btn-primary">  
                 <i class="fas fa-long-arrow-alt-left"></i> Back
             </a>
         </div>
@@ -18,7 +18,7 @@
 
     <div class="row mt-3">
         <div class="col">
-            <h1 class="m-0 text-dark text-center">Add Rack</h1>
+            <h1 class="m-0 text-dark text-center">Add Source</h1>
         </div>
     </div>
 
@@ -49,16 +49,13 @@
                 </x-adminlte-alert>
             @endif
 
-             <form action="{{ Route('inventory.rack_save') }}" method="POST" id="admin_user">
+             <form action=" " method="POST" id="admin_user">
 
 
                 @csrf
 
                 <div class="row">
-                    {{-- <div class="col-9">
-                        <x-adminlte-input label="ID" name="ID" id="ID" type="text" placeholder="ID"
-                            value="{{ old('ID') }}" />
-                    </div> --}}
+                    
                     <div class="col-9">
                         <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name"
                             value="{{ old('name') }}" />
@@ -67,7 +64,7 @@
 
 
                 <div class="text-center">
-                    <x-adminlte-button label="Add Racks" theme="primary" icon="fas fa-plus" type="submit" />
+                    <x-adminlte-button label="Add Source" theme="primary" icon="fas fa-plus" type="submit" />
                 </div>
             </form>
         </div>

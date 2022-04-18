@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Inventory\Master;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Inventory\Rack;
+use App\Http\Controllers\Controller;
 
 class InventoryRackController extends Controller
 {
@@ -15,15 +16,14 @@ class InventoryRackController extends Controller
     {
         return view('Inventory.Master.Racks.Add');
     }
-    // public function save_racks(Request $request)
-    // {
+    public function save_racks(Request $request)
+    {
 
-    //     $ra = Rack::create([
-    //         'id' => $request->id,
-    //         'name' => $request->name,
+        $sa = Rack::create([
+            'name' => $request->name,
 
-    //     ]);
+        ]);
 
-    //     return redirect()->intended('/inventory/master/index')->with('success', 'Racks ' . $request->name . ' has been created successfully');
-    // }
+        return redirect()->intended('/Inventory/Master/Racks/Index')->with('success', 'Racks ' . $request->name . ' has been created successfully');
+    }
 }

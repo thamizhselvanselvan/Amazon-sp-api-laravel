@@ -391,47 +391,16 @@ return [
                         ],
                         [
                             'text' => 'Source',
-                            'url'  => 'Inventory/master/Index',
+                            'url'  => 'Inventory/Master/Source/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin'],
-                            'submenu' => [
-                                [
-                                      'text' => 'Amazon',
-                                      'url'  => 'Inventory/master/Index',
-                                      'icon' => 'far fa-fw fa-file',
-                                      'can' =>  ['Admin']
-                                  ],
-                                  [
-                                      'text' => 'Maxcon',
-                                      'url'  => 'Inventory/master/Index',
-                                      'icon' => 'far fa-fw fa-file',
-                                      'can' =>  ['Admin']
-                                  ],
-                                  [
-                                      'text' => 'CStuart',
-                                      'url'  => 'Inventory/master/Index',
-                                      'icon' => 'far fa-fw fa-file',
-                                      'can' =>  ['Admin']
-                                  ],
-  
-                          ],
 
                         ],
                         [
                             'text' => 'Destination',
-                            'url'  => 'Inventory/master/Index',
+                            'url'  => 'Inventory/Master/Destination/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin'],
-                            'submenu'=> [
-                                [
-                                    'text' => 'Amazon Order',
-                                    'url'  => 'Inventory/master/Index',
-                                    'icon' => 'far fa-fw fa-file',
-                                    'can' =>  ['Admin']
-                                ],
-                                
-                                
-                            ],
+                            'can' =>  ['Admin'],  
 
                         ],
                     ],
