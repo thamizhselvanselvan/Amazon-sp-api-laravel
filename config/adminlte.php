@@ -605,13 +605,19 @@ return [
                     'icon' => 'far fa-fw fa-file',
 
                 ],
-                // 
-                //     'text' => 'View Uploded PDF',
-                //     'url' => 'BOE/uplod',
-                //     'can' => ['Admin'],
-                //     'icon' => 'far fa-fw fa-file',
+            ],
+        ],
+        [
+            'text' => 'Company',
+            'can' =>  ['Admin','Account'],
+            'submenu' => [
+                [
+                    'text' => 'Company Master',
+                    'url' => 'company',
+                    'can' => ['Admin','Account'],
+                    'icon' => 'far fa-fw fa-file',
 
-                // ],
+                ],
             ],
         ],
         // [
