@@ -69,6 +69,7 @@
 @stop
 
 @section('js')
+<script src="{{ asset('js/app.js') }}"></script>
 <script type="text/javascript">
     $(function() {
 
@@ -99,6 +100,11 @@
                 }
             });
         });
+
+        // $('#multi-file-upload').fileupload(function (){
+
+
+        // });
     });
 </script>
 

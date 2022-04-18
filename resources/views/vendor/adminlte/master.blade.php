@@ -84,6 +84,7 @@
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('vendor/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+    <script src="node_modules/blueimp-file-upload/js/jquery.fileupload.js"></script>
 
     {{-- Configured Scripts --}}
     @include('adminlte::plugins', ['type' => 'js'])
