@@ -152,7 +152,7 @@
         // });
         $(document).on('click', ".delete", function(e) {
                 e.preventDefault();
-                let bool = confirm('Are you sure you wanna delete this asin?');
+                let bool = confirm('Are you sure you want to push this asin to Bin?');
 
                 if(!bool) {
                     return false;
