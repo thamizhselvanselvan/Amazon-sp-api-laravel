@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\BOE;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Cache\Store;
 use Illuminate\Support\Facades\Storage;
 
 class BoeUploadServerToDo extends Command
@@ -39,7 +40,6 @@ class BoeUploadServerToDo extends Command
      */
     public function handle()
     {
-       
         $year = date('Y');
         $month = date('F');
         BOE::where('do', 0)->chunk(5, function ($files_path) use($year, $month){
