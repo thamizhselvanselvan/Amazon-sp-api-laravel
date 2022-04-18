@@ -55,6 +55,26 @@ return [
             ]) : [],
         ],
 
+        'in' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('WEB_DB_HOST', '127.0.0.1'),
+            'port' => env('WEB_DB_PORT', '3306'),
+            'database' => env('WEB_DB_DATABASE', 'forge'),
+            'username' => env('WEB_DB_USERNAME', 'forge'),
+            'password' => env('WEB_DB_PASSWORD', ''),
+            'unix_socket' => env('WEB_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => 'in_',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
         'mysql' => [
             'driver' => 'mysql',
             'host' => env('TEST_DB_HOST', '127.0.0.1'),
@@ -109,23 +129,6 @@ return [
             'username' => env('MSSQL_DB_USERNAME', ''),
             'password' => env('MSSQL_DB_PASSWORD', ''),
             'charset' => 'utf8',
-        ],
-
-        'IN' => [
-            'driver' => 'mysql',
-            'url' => env('DATABASE_URL'),
-            'host' => env('IN_DB_HOST', '127.0.0.1'),
-            'port' => env('IN_DB_PORT', '3306'),
-            'database' => env('IN_DB_DATABASE', 'forge'),
-            'username' => env('IN_DB_USERNAME', 'forge'),
-            'password' => env('IN_DB_PASSWORD', ''),
-            'unix_socket' => env('IN_DB_SOCKET', ''),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => env('IN_DB_PREFIX') . '_',
-            'prefix_indexes' => true,
-            'strict' => true,
-            'engine' => null,
         ],
     ],
 
