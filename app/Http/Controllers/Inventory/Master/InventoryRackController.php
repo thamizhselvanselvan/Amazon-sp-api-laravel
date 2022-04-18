@@ -12,4 +12,9 @@ class InventoryRackController extends Controller
         return view('Inventory.Master.Racks.Index');
                       
     }
+    public function Racksadd()
+    {
+        return view('Inventory.Master.Racks.Add');
+                      
+    }
 }

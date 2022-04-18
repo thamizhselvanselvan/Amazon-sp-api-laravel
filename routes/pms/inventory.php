@@ -16,6 +16,11 @@ Route::get('Inventory/Roles/Index', 'Inventory\InventoryMasterController@RolesVi
 Route::get('Inventory/Master/Users/Index', 'Inventory\Master\InventoryUserController@UsersView')->name('index.show');
 Route::get('Inventory/Master/Users/Add', 'Inventory\Master\InventoryUserController@create')->name('create_user.create');
 Route::post('admin/admin/save_user', 'Admin\AdminManagementController@save_user')->name('inventory_save_user');
-// Route::get('Inventory/Master/Racks/Index','Inventory\Master\InventoryRackController@RacksView');
+
+
+ Route::get('Inventory/Master/Racks/Index','Inventory\Master\InventoryRackController@RacksView')->name('inventory.rack_index');;
+ Route::get('Inventory/Master/Racks/Add','Inventory\Master\InventoryRackController@Racksadd')->name('inventory.rack_add');
+
+ 
 
 

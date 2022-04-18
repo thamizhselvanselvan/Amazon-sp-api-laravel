@@ -101,10 +101,10 @@
             });
         });
 
-        // $('#multi-file-upload').fileupload(function (){
+        $('#multi-file-upload').fileupload(function (){
 
 
-        // });
+        });
     });
 </script>
 
