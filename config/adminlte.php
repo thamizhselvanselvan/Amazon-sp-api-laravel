@@ -384,7 +384,7 @@ return [
                         ],
                         [
                             'text' => 'Company',
-                            'url'  => 'Inventory/master/Index',
+                            'url'  => 'Inventory/Master/Company/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
 

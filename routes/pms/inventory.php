@@ -20,6 +20,11 @@ Route::post('admin/admin/save_user', 'Admin\AdminManagementController@save_user'
 
  Route::get('Inventory/Master/Racks/Index','Inventory\Master\InventoryRackController@RacksView')->name('inventory.rack_index');;
  Route::get('Inventory/Master/Racks/Add','Inventory\Master\InventoryRackController@Racksadd')->name('inventory.rack_add');
+ Route::post('Inventory/Master/Racks/save_rack','Inventory\Master\InventoryRackController@ save_racks')->name('inventory.rack_save');
+
+
+ Route::get('Inventory/Master/Company/Index','Inventory\Master\InventoryCompanyController@companyview')->name('inventory.company_index');;
+ Route::get('Inventory/Master/Company/Add','Inventory\Master\InventoryCompanyController@companyadd')->name('inventory.company_add');
 
  
 
