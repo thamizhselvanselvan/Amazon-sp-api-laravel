@@ -218,7 +218,16 @@ Route::get("b2cship", function () {
      exit;
 });
 
+Route::get('delete', function(){
 
+     $year = date('Y');
+        $month = date('F');
+        $storage = storage_path("app/BOE/$year/$month");
+     //    unlink(($storage));
+        
+        Storage::deleteDirectory($storage);
+        echo "success";
+});
 
 {
 
