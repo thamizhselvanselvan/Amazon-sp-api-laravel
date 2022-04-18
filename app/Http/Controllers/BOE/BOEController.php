@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use AmazonPHP\SellingPartner\Model\MerchantFulfillment\Length;
+use Illuminate\Support\Facades\Auth;
 
 class BOEController extends Controller
 {
@@ -72,23 +73,20 @@ class BOEController extends Controller
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
 
         if ($request->TotalFiles > 0) {
+            
             $year = date('Y');
             $month = date('F');
+            $user = Auth::user();
+            $company_id = $user->company_id;
             for ($file_count = 0; $file_count < $request->TotalFiles; $file_count++) {
                 // saving uploaded into storage
                 if ($request->hasFile('files' . $file_count)) {
                     $file = $request->file('files' . $file_count);
-                    $path = $file->store('BOE/' . $year . '/' . $month);
-                    // $name = $file->getClientOriginalName();
-                    // $source = file_get_contents($file);
-                    // //To get original file name
-                    // $fileName = $file->getClientOriginalName();
-                    // $path = 'BOE/' . $fileName;
-                    // Storage::put($path, $source);
+                    $path = $file->store('BOE/' .$company_id.'/'. $year . '/' . $month);
                 }
             }
             //reading saved file from storage
-            $file_path = "BOE/" . $year . '/' . $month;
+            $file_path ='BOE/' .$company_id.'/'. $year . '/' . $month;
             $path = (storage_path('app/' . $file_path));
             $files = (scandir($path));
             foreach ($files as $key => $file) {

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use SellingPartnerApi\Endpoint;
 use Illuminate\Support\Facades\DB;
 use App\Services\Config\ConfigTrait;
+use Illuminate\Support\Facades\Auth;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\CatalogApi;
 use Illuminate\Support\Facades\Storage;
@@ -25,6 +26,9 @@ class TestController extends Controller
     {
         //
         // $file_path = 'BOE/2022/Apr/8bKzsU97q074QD5XBkZVVufqu3OgWqSiywWvuI2D.pdf';
+        // $company = Auth::user();
+
+        // dd($company->company_id);
         $file_path = BOE::first();
         $file_path = ($file_path['file_path']);
         if (Storage::exists($file_path)) {
