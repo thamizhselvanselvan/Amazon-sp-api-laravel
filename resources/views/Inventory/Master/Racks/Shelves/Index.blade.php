@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Racks')
+@section('title', 'Shelves')
 
 @section('css')
 
@@ -9,7 +9,7 @@
 @stop
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Inventory Racks</h1>
+    <h1 class="m-0 text-dark">Inventory Racks Shelves</h1>
 
 @stop
 
@@ -28,7 +28,7 @@
             </div>
 
             <h2 class="mb-4">
-                <a href="{{ route('inventory.rack_add') }}">
+                <a href=" ">
                     <x-adminlte-button label="Add Rack" theme="primary" icon="fas fa-plus" />
                 </a>
             </h2>

@@ -21,19 +21,18 @@ Route::post('admin/admin/save_user', 'Admin\AdminManagementController@save_user'
  Route::get('Inventory/Master/Racks/Index','Inventory\Master\InventoryRackController@RacksView')->name('inventory.rack_index');;
  Route::get('Inventory/Master/Racks/Add','Inventory\Master\InventoryRackController@Racksadd')->name('inventory.rack_add');
  Route::post('Inventory/Master/Racks/save_rack','Inventory\Master\InventoryRackController@save_racks')->name('inventory.rack_save');
-
+ Route::get('Inventory/Master/Racks/rack_list', 'Inventory\Master\InventoryRackController@index')->name('inv.rack_list');
 
  Route::get('Inventory/Master/Company/Index','Inventory\Master\InventoryCompanyController@companyview')->name('inventory.company_index');;
  Route::get('Inventory/Master/Company/Add','Inventory\Master\InventoryCompanyController@companyadd')->name('inventory.company_add');
 
- 
-
  Route::get('Inventory/Master/Source/Index','Inventory\Master\InventorySourceController@sourceview')->name('inventory.source_index');;
  Route::get('Inventory/Master/Source/Add','Inventory\Master\InventorySourceController@sourceadd')->name('inventory.source_add');
-
- 
 
  Route::get('Inventory/Master/Destination/Index','Inventory\Master\InventoryDestinationController@destinationview')->name('inventory.destination_index');;
  Route::get('Inventory/Master/Destination/Add','Inventory\Master\InventoryDestinationController@destinationadd')->name('inventory.destination_add');
 
 
+
+ Route::get('Inventory/Master/Racks/Shelves/Index','Inventory\Master\InventoryRackController@Shelvesview')->name('inventory.Shelves_index');;
+ Route::get('Inventory/Master/Shelves/Add','Inventory\Master\InventoryRackController@Shelvesadd')->name('inventory.Shelves_add');

@@ -376,10 +376,32 @@ return [
 
                         ],
                         [
-                            'text' => 'Racks',
-                            'url'  => 'Inventory/Master/Racks/Index',
+                            'text' => 'Rack',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin'],
+                            'submenu' => [
+                                [
+
+                                    'text' => 'Racks',
+                                    'url'  => 'Inventory/Master/Racks/Index',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' =>  ['Admin'],
+                                ],
+                                [
+                                    'text' => 'Shelves',
+                                    'url'  => 'Inventory/Master/Racks/Shelves/Index',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' =>  ['Admin']
+                                 
+                                ],
+                                [
+                                    'text' => 'Bins',
+                                    'url'  => 'Inventory/Master/Racks/Shelves/add',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' =>  ['Admin']
+                                 
+                                ],
+                            ],
 
                         ],
                         [
