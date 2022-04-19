@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Roles;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Company\CompanyMaster;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
@@ -63,7 +64,8 @@ class AdminManagementController extends Controller
     public function create()
     {
         $roles = Roles::get('name');
-        return view('admin.adminManagement.add', compact('roles'));
+        $companys = CompanyMaster::get();
+        return view('admin.adminManagement.add', compact(['roles','companys']));
     }
 
     public function save_user(Request $request)
@@ -72,10 +74,13 @@ class AdminManagementController extends Controller
             'password' => 'required|confirmed|min:3|max:18'
         ]);
 
+        // return $request->company;
+        // exit;
         $am = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'company_id' =>$request->company,
 
         ]);
         $role = $request->Role;
