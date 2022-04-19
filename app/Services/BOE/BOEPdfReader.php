@@ -202,6 +202,7 @@ class BOEPDFReader
                     $name_details .= $Boecheck[$check_key];
                     $check_key++;
                 }
+            
                 $courier_basic_details['NetWeight'] = $name_details;
             } else if ($BOEPDFData == 'Assessable Value:') {
 
