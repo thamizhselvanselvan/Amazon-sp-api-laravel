@@ -59,7 +59,7 @@
             </div>
          
             <div class="text-center">
-                <x-adminlte-button label="Edit Seller" theme="primary" class="edit_seller" icon="fas fa-save" type="submit" />
+                <x-adminlte-button label="Edit User" theme="primary" class="edit_seller" icon="fas fa-save" type="submit" />
             </div>
         </form>
     </div>

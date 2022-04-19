@@ -253,6 +253,12 @@ return [
             'text'    => 'Master',
             'can' =>  ['Admin'],
             'submenu' => [
+                [
+                    'text' => 'Company Master',
+                    'url' => 'company',
+                    'can' => ['Admin', 'Account'],
+                    'icon' => 'far fa-fw fa-file',
+                ],
 
                 [
                     'text' => 'Region Master ',
@@ -311,7 +317,7 @@ return [
             'text'    => 'Catalog',
             'can' =>   ['Admin', 'Catalog Manager'],
             'submenu' => [
-               
+
                 [
                     'text' => 'Universal Textiles',
                     'url'  => 'textiles',
@@ -365,7 +371,7 @@ return [
                             'url'  => 'Inventory/Roles/Index',
                             'icon' => 'fas fa-user',
                             'can' =>  ['Admin']
-                         
+
                         ],
 
                         [
@@ -396,25 +402,25 @@ return [
                             'can' =>  ['Admin'],
                             'submenu' => [
                                 [
-                                      'text' => 'Amazon',
-                                      'url'  => 'Inventory/master/Index',
-                                      'icon' => 'far fa-fw fa-file',
-                                      'can' =>  ['Admin']
-                                  ],
-                                  [
-                                      'text' => 'Maxcon',
-                                      'url'  => 'Inventory/master/Index',
-                                      'icon' => 'far fa-fw fa-file',
-                                      'can' =>  ['Admin']
-                                  ],
-                                  [
-                                      'text' => 'CStuart',
-                                      'url'  => 'Inventory/master/Index',
-                                      'icon' => 'far fa-fw fa-file',
-                                      'can' =>  ['Admin']
-                                  ],
-  
-                          ],
+                                    'text' => 'Amazon',
+                                    'url'  => 'Inventory/master/Index',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' =>  ['Admin']
+                                ],
+                                [
+                                    'text' => 'Maxcon',
+                                    'url'  => 'Inventory/master/Index',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' =>  ['Admin']
+                                ],
+                                [
+                                    'text' => 'CStuart',
+                                    'url'  => 'Inventory/master/Index',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' =>  ['Admin']
+                                ],
+
+                            ],
 
                         ],
                         [
@@ -422,15 +428,15 @@ return [
                             'url'  => 'Inventory/master/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin'],
-                            'submenu'=> [
+                            'submenu' => [
                                 [
                                     'text' => 'Amazon Order',
                                     'url'  => 'Inventory/master/Index',
                                     'icon' => 'far fa-fw fa-file',
                                     'can' =>  ['Admin']
                                 ],
-                                
-                                
+
+
                             ],
 
                         ],
@@ -596,30 +602,18 @@ return [
         ],
         [
             'text' => 'BOE',
-            'can' =>  ['Admin','Account'],
+            'can' =>  ['Admin', 'Account'],
             'submenu' => [
                 [
                     'text' => 'BOE',
                     'url' => 'BOE/index',
-                    'can' => ['Admin','Account'],
+                    'can' => ['Admin', 'Account'],
                     'icon' => 'far fa-fw fa-file',
 
                 ],
             ],
         ],
-        [
-            'text' => 'Company',
-            'can' =>  ['Admin','Account'],
-            'submenu' => [
-                [
-                    'text' => 'Company Master',
-                    'url' => 'company',
-                    'can' => ['Admin','Account'],
-                    'icon' => 'far fa-fw fa-file',
 
-                ],
-            ],
-        ],
         // [
         //     'text' => 'Download Files',
         //     'url'  => 'file_downloads',
