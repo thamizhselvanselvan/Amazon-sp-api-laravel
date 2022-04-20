@@ -25,6 +25,16 @@ Route::post('admin/admin/save_user', 'Admin\AdminManagementController@save_user'
  Route::get('Inventory/Master/Racks/Edit_rack/{id}', 'Inventory\Master\InventoryRackController@editRack');
  Route::put('Inventory/Master/Racks/Save_rack/{id}','Inventory\Master\InventoryRackController@update')->name('inv.rack_update');
 
+ Route::post('Inventory/Master/Racks/Shelves/save_shelves','Inventory\Master\InventoryRackController@save_shelves')->name('inventory.shelves_save');
+ Route::get('Inventory/Master/Racks/shelves_list', 'Inventory\Master\InventoryRackController@shlindex')->name('inv.shelves_list');
+ Route::get('Inventory/Master/Racks/Shelves/Edit_shl/{id}', 'Inventory\Master\InventoryRackController@editshl');
+ Route::put('Inventory/Master/Racks/edit_shl/{id}','Inventory\Master\InventoryRackController@shlupdate')->name('inv.shlves_update');
+
+
+
+
+
+
  Route::get('Inventory/Master/Company/Index','Inventory\Master\InventoryCompanyController@companyview')->name('inventory.company_index');;
  Route::get('Inventory/Master/Company/Add','Inventory\Master\InventoryCompanyController@companyadd')->name('inventory.company_add');
 

@@ -36,8 +36,9 @@
             <table class="table table-bordered yajra-datatable table-striped">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Name</th>
+                        <th>Rack ID</th>
+                        <th>Rack Name</th>
+                        <th>Number of Shelves</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -66,6 +67,10 @@
                     {
                         data: 'name',
                         name: 'name'
+                    },
+                    {
+                        data: '',
+                        name: ''
                     },
                     {
                         data: 'action',

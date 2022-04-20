@@ -49,19 +49,23 @@
                 </x-adminlte-alert>
             @endif
 
-             <form action=" " method="POST" id="admin_user">
+             <form action=" {{ Route('inventory.shelves_save') }}" method="POST" id="admin_user">
 
 
                 @csrf
 
                 <div class="row">
-                    
+                    {{-- <div class="col-6">
+                        <x-adminlte-input label="  Select Rack" name="Select Rack" id="Select Rack" type="text" placeholder="Select Rack"
+                            value="{{ old('name') }}" />
+                    </div>
+                     --}}
                     <div class="col-6">
-                        <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name"
+                        <x-adminlte-input label="Shelves Name" name="name" id="name" type="text" placeholder="Name"
                             value="{{ old('name') }}" />
                     </div>
                     <div class="col-6">
-                        <x-adminlte-input label="No of Bins" name="Number of Bins" id="Number of Bins" type="text" placeholder="Number of Bins"
+                        <x-adminlte-input label="No of Bins" name="bins" id="Bins" type="text" placeholder="Number of Bins"
                             value="{{ old('ID') }}" />
                     </div>
                 </div>

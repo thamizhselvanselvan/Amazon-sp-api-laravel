@@ -37,9 +37,10 @@
                 <thead>
                     <tr>
                         <th>Rack ID</th>
-                        {{-- <th>Shelves ID</th> --}}
+                        <th>Shelves ID</th>
                         <th>Shelves Name</th>
                         <th>Number of Bins</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,7 +50,6 @@
     </div>
 @stop
 
-{{-- 
 @section('js')
     <script type="text/javascript">
         $(function() {
@@ -57,24 +57,37 @@
             let yajra_table = $('.yajra-datatable').DataTable({
                 processing: true,
                 serverSide: true,
-                 ajax: "{{ url('Inventory/Master/Racks/rack_list') }}",
+                ajax: "{{ url('Inventory/Master/Racks/shelves_list') }}",
                 columns: [{
+                        data: '',
+                        name: '',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         orderable: false,
                         searchable: false
                     },
+                    
                     {
-                        data: 'name',
-                        name: 'name'
+                        data: 'Shelves_name',
+                        name: 'Shelves_name'
                     },
                     {
-                        data: '',
-                        name: ''
+                        data: 'No_of_Bins',
+                        name: 'No_of_Bins'
+                    },
+                    {
+                        data: 'action',
+                        orderable: false,
+                        searchable: false
                     },
                 ]
             });
 
         });
     </script>
-@stop --}}
+@stop
+

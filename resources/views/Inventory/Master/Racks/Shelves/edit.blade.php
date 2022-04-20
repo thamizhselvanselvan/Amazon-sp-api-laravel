@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Edit Rack')
+@section('title', 'Edit Shelves')
 
 @section('css')
 
@@ -12,7 +12,7 @@
 
     <div class="row">
         <div class="col">
-            <a href="{{ Route('inventory.rack_index') }}" class="btn btn-primary">
+            <a href="{{ Route('inv.shelves_list') }}" class="btn btn-primary">
 
                 <i class="fas fa-long-arrow-alt-left"></i> Back
             </a>
@@ -21,7 +21,7 @@
 
     <div class="row mt-3">
         <div class="col">
-            <h1 class="m-0 text-dark text-center ">Edit Rack</h1>
+            <h1 class="m-0 text-dark text-center ">Edit Shelves</h1>
         </div>
     </div>
 
@@ -62,14 +62,17 @@
     </div>
 @endif
 
-            <form  action="{{Route('inv.rack_update', $name->id) }}" method="POST" id="">
+            <form  action="{{Route('inv.shlves_update', $name->id) }}" method="POST" id="">
                 @csrf
                 @method('PUT')
 
                 <div class="row">
             
                     <div class=" col-6">
-                        <x-adminlte-input label="name" name="name" id=""  value="{{ $name->name }}" type="text" placeholder="name" />
+                        <x-adminlte-input label="name" name="name" id=""  value="{{$name->name}}" type="text" placeholder="name" />
+                    </div>
+                    <div class=" col-6">
+                        <x-adminlte-input label="No of Bins" name="Bins" id=""  value="{{$name->bins}}" type="text" placeholder="No of Bins" />
                     </div>
 
                 </div>
@@ -77,7 +80,7 @@
         <div class="col-3"></div>
 
         <div class="col-12 text-center">
-            <x-adminlte-button label="Edit Rack" theme="primary" class="rack.update" icon="fas fa-save" type="submit" />
+            <x-adminlte-button label="Edit Shelves" theme="primary" class="Shelves.update" icon="fas fa-save" type="submit" />
         </div>
         </form>
     </div>

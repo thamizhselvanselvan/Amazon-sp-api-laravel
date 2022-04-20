@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Inventory\Master;
 use Illuminate\Http\Request;
 use App\Models\Inventory\Rack;
 use Yajra\DataTables\DataTables;
+use App\Models\Inventory\Shelves;
 use App\Http\Controllers\Controller;
 
 class InventoryRackController extends Controller
@@ -22,7 +23,7 @@ class InventoryRackController extends Controller
 
         $sa = Rack::create([
             'name' => $request->name,
-            'number of Shelves' => $request->shelves,
+           
         ]);
 
         return redirect()->intended('/Inventory/Master/Racks/Index')->with('success', 'Racks ' . $request->name . ' has been created successfully');
@@ -68,14 +69,82 @@ class InventoryRackController extends Controller
         return redirect()->intended('/Inventory/Master/Racks/Index')->with('success', 'Rack has been updated successfully');
     }
 
+
+
+
+
     public function Shelvesview()
     {
         return view('Inventory.Master.Racks.Shelves.Index');
     }
+
     public function Shelvesadd()
     {
         return view('Inventory.Master.Racks.Shelves.add');
     }
+
+    public function save_shelves(Request $request)
+    {
+
+
+        $sa = Shelves::create([
+            'Shelves_name' => $request->name,
+            'No_of_Bins' => $request->bins,
+        ]);
+
+        return redirect()->intended('/Inventory/Master/Racks/Shelves/Index')->with('success', 'Shelves ' . $request->name . ' has been created successfully');
+    }
+    public function editshl($id)
+    {
+
+        $name = Rack::where('id', $id)->first();
+        return view('Inventory.Master.Racks.Shelves.edit', compact('name'));
+    }
+
+    public function shlindex(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $data = Shelves::query();
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+
+                    $actionBtn = '<div class="d-flex"><a href="Edit_shl/' . $row->id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
+                    $actionBtn .= '<a href="' . $row->id . '/user_delete" data-id=' . $row->id . ' class="trash btn btn-warning ml-2 btn-sm"><i class="far fa-trash-alt "></i> Remove</a>';
+                    return $actionBtn;
+                })
+                ->make(true);
+        }
+
+        return view('Inventory/Master/Racks/Shelves/Index');
+    }
+
+
+    public function shlupdate(Request $request, $id)
+    {
+
+        $validated = $request->validate([
+
+             'name' => 'required|min:2|max:50',
+             'No_of_Bins' => 'nullable|min:2|max:50'
+
+        ]);
+        Rack::where('id', $id)->update($validated);
+        return redirect()->intended('/Inventory/Master/Racks/Shelves/Index')->with('success', 'Rack has been updated successfully');
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     public function binview()
     {
