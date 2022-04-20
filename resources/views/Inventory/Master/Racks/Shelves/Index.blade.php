@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Racks')
+@section('title', 'Shelves')
 
 @section('css')
 
@@ -9,7 +9,7 @@
 @stop
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Inventory Racks</h1>
+    <h1 class="m-0 text-dark">Inventory Racks Shelves</h1>
 
 @stop
 
@@ -28,17 +28,18 @@
             </div>
 
             <h2 class="mb-4">
-                <a href="{{ route('inventory.rack_add') }}">
-                    <x-adminlte-button label="Add Rack" theme="primary" icon="fas fa-plus" />
+                <a href="{{ Route('inventory.Shelves_add') }}">
+                    <x-adminlte-button label="Add Shelves" theme="primary" icon="fas fa-plus" />
                 </a>
             </h2>
 
             <table class="table table-bordered yajra-datatable table-striped">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Action</th>
+                        <th>Rack ID</th>
+                        {{-- <th>Shelves ID</th> --}}
+                        <th>Shelves Name</th>
+                        <th>Number of Bins</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -48,7 +49,7 @@
     </div>
 @stop
 
-
+{{-- 
 @section('js')
     <script type="text/javascript">
         $(function() {
@@ -56,7 +57,7 @@
             let yajra_table = $('.yajra-datatable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ url('Inventory/Master/Racks/rack_list') }}",
+                 ajax: "{{ url('Inventory/Master/Racks/rack_list') }}",
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -68,13 +69,12 @@
                         name: 'name'
                     },
                     {
-                        data: 'action',
-                        orderable: false,
-                        searchable: false
+                        data: '',
+                        name: ''
                     },
                 ]
             });
 
         });
     </script>
-@stop
+@stop --}}

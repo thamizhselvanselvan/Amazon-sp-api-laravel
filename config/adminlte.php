@@ -382,22 +382,44 @@ return [
 
                         ],
                         [
-                            'text' => 'Racks',
-                            'url'  => 'Inventory/Master/Racks/Index',
+                            'text' => 'Rack',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin'],
+                            'submenu' => [
+                                [
+
+                                    'text' => 'Racks',
+                                    'url'  => 'Inventory/Master/Racks/Index',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' =>  ['Admin']
+                                ],
+                                [
+                                    'text' => 'Shelves',
+                                    'url'  => 'Inventory/Master/Racks/Shelves/Index',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' =>  ['Admin']
+                                 
+                                ],
+                                [
+                                    'text' => 'Bins',
+                                    'url'  => 'Inventory/Master/Racks/Bin/Index',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' =>  ['Admin']
+                                 
+                                ],
+                            ],
 
                         ],
                         [
                             'text' => 'Company',
-                            'url'  => 'Inventory/master/Index',
+                            'url'  => 'Inventory/Master/Company/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin']
 
                         ],
                         [
                             'text' => 'Source',
-                            'url'  => 'Inventory/master/Index',
+                            'url'  => 'Inventory/Master/Source/Index',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin'],
                             'submenu' => [
@@ -422,11 +444,14 @@ return [
 
                             ],
 
+
                         ],
                         [
                             'text' => 'Destination',
-                            'url'  => 'Inventory/master/Index',
+                            'url'  => 'Inventory/Master/Destination/Index',
                             'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin'],  
+
                             'can' =>  ['Admin'],
                             'submenu' => [
                                 [
