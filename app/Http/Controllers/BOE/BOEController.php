@@ -73,7 +73,7 @@ class BOEController extends Controller
         $password = config('database.connections.web.password');
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-        
+
         $year = date('Y');
         $month = date('F');
         $user = Auth::user();
@@ -110,41 +110,41 @@ class BOEController extends Controller
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
 
-        if ($request->TotalFiles > 0) {
+        $pdfReader = new BOEPDFReader();
+        $year = date('Y');
+        $month = date('F');
+        $user = Auth::user();
+        $company_id = $user->company_id;
+        $user_id = $user->id;
 
-            $pdfReader = new BOEPDFReader();
-            $year = date('Y');
-            $month = date('F');
-            $user = Auth::user();
-            $company_id = $user->company_id;
-            $user_id = $user->id;
-            for ($file_count = 0; $file_count < $request->TotalFiles; $file_count++) {
-                // saving uploaded into storage
-                if ($request->hasFile('files' . $file_count)) {
-                    $file = $request->file('files' . $file_count);
-                    $path = $file->store('BOE/' . $company_id . '/' . $year . '/' . $month);
-                }
-            }
-            //reading saved file from storage
-            $file_path = 'BOE/' . $company_id . '/' . $year . '/' . $month;
-            $path = (storage_path('app/' . $file_path));
-            $files = (scandir($path));
-            foreach ($files as $key => $file) {
-                if ($key > 1) {
-                    $storage_path = $path . '/' . $file;
-                    $pdfParser = new Parser();
-                    $pdf = $pdfParser->parseFile($storage_path);
-                    $content = $pdf->getText();
+        foreach ($request->files as $key => $files) {
 
-                    $pdfReader->BOEPDFReader($content, $file_path . '/' . $file, $company_id, $user_id);
-                }
+            foreach ($files as $file) {
+
+                // $fileName = $file->getClientOriginalName();
+                // Storage::put('BOE/' . $company_id . '/' . $year . '/' . $month . '/' . $fileName, file_get_contents($file));
+                $path = $file->store('BOE/' . $company_id . '/' . $year . '/' . $month);
+
             }
-            return redirect('/BOE/index')->with('success', 'All PDF Imported successfully');
-            // return response()->json(['success' => 'File has been uploaded ']);
-        } else {
-            return response()->json(["message" => "Please try again."]);
         }
+        // reading saved file from storage
+        $file_path = 'BOE/' . $company_id . '/' . $year . '/' . $month;
+        $path = (storage_path('app/' . $file_path));
+        $files = (scandir($path));
+        foreach ($files as $key => $file) {
+            if ($key > 1) {
+                $storage_path = $path . '/' . $file;
+                $pdfParser = new Parser();
+                $pdf = $pdfParser->parseFile($storage_path);
+                $content = $pdf->getText();
+
+                $pdfReader->BOEPDFReader($content, $file_path . '/' . $file, $company_id, $user_id);
+            }
+        }
+        return response()->json(["message" => "all file uploaded successfully"]);
+        // return redirect('/BOE/index')->with('success', 'All PDF Imported successfully');
     }
+    
     public function BOEExportToCSV()
     {
         $dbheaders = [

@@ -202,7 +202,7 @@ class BOEPDFReader
                     $name_details .= $Boecheck[$check_key];
                     $check_key++;
                 }
-            
+
                 $courier_basic_details['NetWeight'] = $name_details;
             } else if ($BOEPDFData == 'Assessable Value:') {
 
@@ -576,7 +576,7 @@ class BOEPDFReader
                 $offset = 0;
                 while ($Boecheck[$check_key] != 'DECLARATION') {
                     $payment_details[$offset]['SrNo'] = $Boecheck[$check_key++];
-                    $payment_details[$offset]['TR-6ChallanNumber'] = $Boecheck[$check_key++];
+                    $payment_details[$offset]['ChallanNumber'] = $Boecheck[$check_key++];
                     $payment_details[$offset]['TotalAmount'] = $Boecheck[$check_key++];
                     $payment_details[$offset]['ChallanDate'] = $Boecheck[$check_key++];
                     // $check_key += 3;
@@ -649,8 +649,13 @@ class BOEPDFReader
         $boe_details->notificationDetails = json_encode($notification_details);
         $boe_details->chargeDetails = json_encode($charge_details);
         $boe_details->dutyDetails = json_encode($duty_details);
-        $boe_details->paymentDetails = json_encode($payment_details);
 
+        $boe_details->challanNumber = $payment_details[0]['ChallanNumber'];
+        $boe_details->totalAmount = $payment_details[0]['TotalAmount'];
+        $boe_details->challanDate = $payment_details[0]['ChallanDate'];
+
+        $boe_details->paymentDetails = json_encode($payment_details);
+        $boe_details->created_at = date('y-m-d:h:i:s');
         if ($dataCheck != 1) {
 
             $boe_details->do = 0;
