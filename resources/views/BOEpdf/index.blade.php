@@ -23,7 +23,7 @@
         </div>
     </div>
     <h2 class="mb-4">
-        <a href="uplod">
+        <a href="upload">
             <x-adminlte-button label=" Pdf Upload" theme="primary" icon="fas fa-file-export" />
         </a>
         <a href="Export">

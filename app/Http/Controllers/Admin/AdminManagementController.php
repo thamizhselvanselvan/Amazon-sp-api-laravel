@@ -28,10 +28,14 @@ class AdminManagementController extends Controller
             return DataTables::of($users)
                 ->addIndexColumn()
                 ->addColumn('action', function ($user)  use ($login_id) {
-
+                    $edit = '';
                     if ($login_id == $user->id || $login_id == 1) {
-                        return "<a href='password_reset_view/" . $user->id . "' class='btn btn-primary btn-sm'><i class='fas fa-edit'></i>Change password</a>";
+                        $edit = "<a href='password_reset_view/" . $user->id . "' class='btn btn-primary btn-sm mr-2'><i class='fas fa-edit'></i>Change password</a>";
                     }
+                    if ($login_id == 1) {
+                        $edit .= '<a href="/admin/' . $user->id . '/edit" class="edit btn btn-success btn-sm"> <i class="fas fa-edit"></i> Edit</a>';
+                    }
+                    return $edit;
                 })
                 ->addColumn('permission', function ($permission) {
                     return $permission->roles->first()->name;
@@ -65,7 +69,7 @@ class AdminManagementController extends Controller
     {
         $roles = Roles::get('name');
         $companys = CompanyMaster::get();
-        return view('admin.adminManagement.add', compact(['roles','companys']));
+        return view('admin.adminManagement.add', compact(['roles', 'companys']));
     }
 
     public function save_user(Request $request)
@@ -80,12 +84,49 @@ class AdminManagementController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'company_id' =>$request->company,
+            'company_id' => $request->company,
 
         ]);
         $role = $request->Role;
         $am->assignRole($role);
 
         return redirect()->intended('/admin/user_list')->with('success', 'User ' . $request->name . ' has been created successfully');
+    }
+
+    public function edit(Request $request)
+    {
+        $user = User::where('id', $request->id)->first();
+        $user_id = $request->id;
+        // dd($user->email);
+        // dd($user);
+        $user_email = $user->email;
+        $user_name = $user->name;
+        $selected_roles = $user->roles->first()->name;
+        $selected_company = $user->company_id;
+
+        $roles = Roles::get('name');
+        $companys = CompanyMaster::get();
+        return view('admin.adminManagement.edit', compact(['roles', 'companys', 'user_name', 'user_email', 'selected_roles', 'selected_company','user_id']));
+    }
+    
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required'
+        ]);
+        $am = User:: where('id', $id)->first();
+        
+        $am->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'company_id' => $request->company,
+            
+        ]);
+
+        $role = $request->Role;
+        $am->assignRole($role);
+        return redirect()->intended('/admin/user_list')->with('success', 'User ' . $request->name . ' has been updated successfully');
+        // return $request;
     }
 }

@@ -24,10 +24,15 @@ class BOEController extends Controller
 {
     public $check_table = 0;
     public $count = 0;
+    public $company_id;
     public $dataArray = [
         'hawb_number' => '',
-        'rateof_exchange' => '',
         'date_of_arrival' => '',
+        'courier_registration_number' => '',
+        'name_of_the_authorized_courier' => '',
+        'name_of_consignor' => '',
+        'name_of_consignee' => '',
+        'rateof_exchange' => '',
         'Duty' => '',
         'SWsrchrg' => '',
         'insurance' => '',
@@ -43,8 +48,9 @@ class BOEController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-
-            $data = BOE::query();
+            $user = Auth::user();
+            $company_id = $user->company_id;
+            $data = BOE::where('company_id', $company_id);
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -58,6 +64,37 @@ class BOEController extends Controller
         return view('BOEpdf.bulkuploadpdf');
     }
 
+    public function ReadFromFile()
+    {
+        $host = config('database.connections.web.host');
+        $dbname = config('database.connections.web.database');
+        $port = config('database.connections.web.port');
+        $username = config('database.connections.web.username');
+        $password = config('database.connections.web.password');
+
+        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+        
+        $year = date('Y');
+        $month = date('F');
+        $user = Auth::user();
+        $company_id = $user->company_id;
+        $user_id = $user->id;
+        $file_path = 'BOE/' . $company_id . '/' . $year . '/' . $month;
+        $path = (storage_path('app/' . $file_path));
+        $files = (scandir($path));
+        $pdfReader = new BOEPDFReader();
+
+        foreach ($files as $key => $file) {
+            if ($key > 1) {
+                $storage_path = $path . '/' . $file;
+                $pdfParser = new Parser();
+                $pdf = $pdfParser->parseFile($storage_path);
+                $content = $pdf->getText();
+
+                $pdfReader->BOEPDFReader($content, $file_path . '/' . $file, $company_id, $user_id);
+            }
+        }
+    }
 
     public function BulkPdfUpload(Request $request)
     {
@@ -74,7 +111,7 @@ class BOEController extends Controller
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
 
         if ($request->TotalFiles > 0) {
-            
+
             $pdfReader = new BOEPDFReader();
             $year = date('Y');
             $month = date('F');
@@ -85,11 +122,11 @@ class BOEController extends Controller
                 // saving uploaded into storage
                 if ($request->hasFile('files' . $file_count)) {
                     $file = $request->file('files' . $file_count);
-                    $path = $file->store('BOE/' .$company_id.'/'. $year . '/' . $month);
+                    $path = $file->store('BOE/' . $company_id . '/' . $year . '/' . $month);
                 }
             }
             //reading saved file from storage
-            $file_path ='BOE/' .$company_id.'/'. $year . '/' . $month;
+            $file_path = 'BOE/' . $company_id . '/' . $year . '/' . $month;
             $path = (storage_path('app/' . $file_path));
             $files = (scandir($path));
             foreach ($files as $key => $file) {
@@ -112,6 +149,10 @@ class BOEController extends Controller
     {
         $dbheaders = [
             'hawb_number',
+            'courier_registration_number',
+            'name_of_the_authorized_courier',
+            'name_of_consignor',
+            'name_of_consignee',
             'rateof_exchange',
             'date_of_arrival',
             'duty_details',
@@ -126,8 +167,12 @@ class BOEController extends Controller
 
         $csvheaders = [
             'AWB no.',
-            '(BOE) Booking Rate',
             'BOE Date Of Arrival',
+            'Courier Registration Number',
+            'Name of the Authorized Courier',
+            'Name of Consignor',
+            'Name of Consignee',
+            '(BOE) Booking Rate',
             'Duty',
             'SW Srchrg',
             'Insurance',
@@ -140,9 +185,11 @@ class BOEController extends Controller
             'Description'
         ];
 
-        $exportFilePath = "excel/downloads/BOE/BOE_Details.csv";
+        $user = Auth::user();
+        $company_id = $user->company_id;
+        $exportFilePath = "excel/downloads/BOE/$company_id/BOE_Details.csv";
         $chunk = 1000;
-        BOE::select($dbheaders)->chunk($chunk, function ($records) use ($exportFilePath, $dbheaders, $csvheaders) {
+        BOE::select($dbheaders)->where('company_id', $company_id)->chunk($chunk, function ($records) use ($exportFilePath, $dbheaders, $csvheaders) {
 
             if (!Storage::exists($exportFilePath)) {
                 Storage::put($exportFilePath, '');
@@ -177,8 +224,9 @@ class BOEController extends Controller
 
     public function Download_BOE()
     {
-
-        $file_path = "excel/downloads/BOE/BOE_Details.csv";
+        $user = Auth::user();
+        $company_id = $user->company_id;
+        $file_path = "excel/downloads/BOE/$company_id/BOE_Details.csv";
         if (Storage::exists($file_path)) {
             return Storage::download($file_path);
         }
@@ -188,11 +236,11 @@ class BOEController extends Controller
     public function Upload()
     {
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-                       
+
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:boe-upload-Do > /dev/null &";
             exec($command);
-            
+
             Log::warning("Export asin command executed production  !!!");
         } else {
 
