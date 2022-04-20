@@ -385,7 +385,7 @@ return [
                                     'text' => 'Racks',
                                     'url'  => 'Inventory/Master/Racks/Index',
                                     'icon' => 'far fa-fw fa-file',
-                                    'can' =>  ['Admin'],
+                                    'can' =>  ['Admin']
                                 ],
                                 [
                                     'text' => 'Shelves',
@@ -396,7 +396,7 @@ return [
                                 ],
                                 [
                                     'text' => 'Bins',
-                                    'url'  => 'Inventory/Master/Racks/Shelves/add',
+                                    'url'  => 'Inventory/Master/Racks/Bin/Index',
                                     'icon' => 'far fa-fw fa-file',
                                     'can' =>  ['Admin']
                                  

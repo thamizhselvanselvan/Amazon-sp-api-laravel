@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Shelves')
+@section('title', 'Bins')
 
 @section('css')
 
@@ -9,7 +9,7 @@
 @stop
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Inventory Racks Shelves</h1>
+    <h1 class="m-0 text-dark">Inventory Bin</h1>
 
 @stop
 
@@ -28,18 +28,17 @@
             </div>
 
             <h2 class="mb-4">
-                <a href="{{ Route('inventory.Shelves_add') }}">
-                    <x-adminlte-button label="Add Shelves" theme="primary" icon="fas fa-plus" />
+                <a href="{{ route('inventory.bin_add') }}">
+                    <x-adminlte-button label="Add Bin" theme="primary" icon="fas fa-plus" />
                 </a>
             </h2>
 
             <table class="table table-bordered yajra-datatable table-striped">
                 <thead>
                     <tr>
-                        <th>Rack ID</th>
-                        {{-- <th>Shelves ID</th> --}}
-                        <th>Shelves Name</th>
-                        <th>Number of Bins</th>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,8 +48,8 @@
     </div>
 @stop
 
-{{-- 
-@section('js')
+
+{{-- @section('js')
     <script type="text/javascript">
         $(function() {
 

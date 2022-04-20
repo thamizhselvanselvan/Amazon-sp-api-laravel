@@ -38,7 +38,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Name</th>
-                        <th>Number of Shelves</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -56,7 +56,7 @@
             let yajra_table = $('.yajra-datatable').DataTable({
                 processing: true,
                 serverSide: true,
-                 ajax: "{{ url('Inventory/Master/Racks/rack_list') }}",
+                ajax: "{{ url('Inventory/Master/Racks/rack_list') }}",
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -68,8 +68,9 @@
                         name: 'name'
                     },
                     {
-                        data: '',
-                        name: ''
+                        data: 'action',
+                        orderable: false,
+                        searchable: false
                     },
                 ]
             });

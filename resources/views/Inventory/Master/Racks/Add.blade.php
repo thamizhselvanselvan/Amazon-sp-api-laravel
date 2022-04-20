@@ -56,14 +56,14 @@
 
                 <div class="row">
                     
-                    <div class="col-6">
+                    <div class="col-12">
                         <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name"
                             value="{{ old('name') }}" />
                     </div>
-                    <div class="col-6">
+                    {{-- <div class="col-6">
                         <x-adminlte-input label="No of shelves" name="Number of Shelves" id="Number of Shelves" type="text" placeholder="Number of Shelves"
                             value="{{ old('ID') }}" />
-                    </div>
+                    </div> --}}
                 </div>
 
 

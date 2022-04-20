@@ -16,8 +16,8 @@ class Rack extends Model
 
     public function __destruct()
     {
-        $this->getConnection()->setTablePrefix('sa_');
+        $this->getConnection()->setTablePrefix('sp_');
     }
-    // use HasFactory;
+    use HasFactory;
     protected $fillable = ['name'];   
 }
