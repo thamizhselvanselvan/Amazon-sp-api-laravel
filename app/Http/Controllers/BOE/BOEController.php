@@ -119,12 +119,11 @@ class BOEController extends Controller
 
         foreach ($request->files as $key => $files) {
 
-            foreach ($files as $file) {
+            foreach ($files as $keys => $file) {
 
-                // $fileName = $file->getClientOriginalName();
-                // Storage::put('BOE/' . $company_id . '/' . $year . '/' . $month . '/' . $fileName, file_get_contents($file));
-                $path = $file->store('BOE/' . $company_id . '/' . $year . '/' . $month);
-
+                $fileName = $file->getClientOriginalName();
+                $fileName = uniqid().($fileName);
+                Storage::put('BOE/' . $company_id . '/' . $year . '/' . $month . '/' . $fileName, file_get_contents($file));
             }
         }
         // reading saved file from storage

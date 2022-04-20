@@ -650,9 +650,9 @@ class BOEPDFReader
         $boe_details->chargeDetails = json_encode($charge_details);
         $boe_details->dutyDetails = json_encode($duty_details);
 
-        $boe_details->challanNumber = $payment_details[0]['ChallanNumber'];
-        $boe_details->totalAmount = $payment_details[0]['TotalAmount'];
-        $boe_details->challanDate = $payment_details[0]['ChallanDate'];
+        // $boe_details->challanNumber = $payment_details[0]['ChallanNumber'];
+        // $boe_details->totalAmount = $payment_details[0]['TotalAmount'];
+        // $boe_details->challanDate = $payment_details[0]['ChallanDate'];
 
         $boe_details->paymentDetails = json_encode($payment_details);
         $boe_details->created_at = date('y-m-d:h:i:s');
