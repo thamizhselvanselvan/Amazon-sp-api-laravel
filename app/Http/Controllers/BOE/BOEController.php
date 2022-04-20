@@ -17,8 +17,10 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use AmazonPHP\SellingPartner\Model\MerchantFulfillment\Length;
+use App\Models\Company\CompanyMaster;
 use App\Services\BOE\BOEPDFReader;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Concerns\ToArray;
 
 class BOEController extends Controller
 {
@@ -122,7 +124,7 @@ class BOEController extends Controller
             foreach ($files as $keys => $file) {
 
                 $fileName = $file->getClientOriginalName();
-                $fileName = uniqid().($fileName);
+                $fileName = uniqid() . ($fileName);
                 Storage::put('BOE/' . $company_id . '/' . $year . '/' . $month . '/' . $fileName, file_get_contents($file));
             }
         }
@@ -143,7 +145,7 @@ class BOEController extends Controller
         return response()->json(["message" => "all file uploaded successfully"]);
         // return redirect('/BOE/index')->with('success', 'All PDF Imported successfully');
     }
-    
+
     public function BOEExportToCSV()
     {
         $dbheaders = [
@@ -221,8 +223,119 @@ class BOEController extends Controller
         return redirect()->intended('/BOE/index')->with('success', 'BOE CSV Exported successfully');
     }
 
+    public function BOEExportView(Request $request)
+    {
+        $user = Auth::user();
+        $company_id = $user->company_id;
+        $role = $user->roles->first()->name;
+        if ($role == 'Admin') {
+
+            $companys = CompanyMaster::get();
+        } else {
+
+            $companys = CompanyMaster::where('id', $company_id)->get();
+        }
+
+        return view('BOEpdf.export', compact(['companys', 'role']));
+    }
+    public function BOEFilterExport(Request $request)
+    {
+        $user = Auth::user();
+        $company_id = $request->company;
+
+        $date_of_arrival = $request->date_of_arrival;
+        $date_of_arrival_array = explode('-', $date_of_arrival);
+        $date_of_arrival_start = trim($date_of_arrival_array[0]);
+        $date_of_arrival_end = trim($date_of_arrival_array[1]);
+
+        // $challan_date = $request->challan_date;
+        // $challan_date_array = explode('-',$challan_date);
+        // $challan_date_start= trim($challan_date_array[0]);
+        // $challan_date_end = trim($challan_date_array[1]);
+
+        $dbheaders = [
+            'hawb_number',
+            'courier_registration_number',
+            'name_of_the_authorized_courier',
+            'name_of_consignor',
+            'name_of_consignee',
+            'rateof_exchange',
+            'date_of_arrival',
+            'duty_details',
+            'insurance',
+            'duty_rs',
+            'interest',
+            'cbe_number',
+            'ctsh',
+            'quantity',
+            'descriptionof_goods'
+        ];
+        if ($company_id == 0) {
+            $boe = BOE::select($dbheaders)->whereBetween('date_of_arrival', [$date_of_arrival_start, $date_of_arrival_end]);
+        } else {
+            $boe = BOE::select($dbheaders)->where('company_id', $company_id)->whereBetween('date_of_arrival', [$date_of_arrival_start, $date_of_arrival_end]);
+        }
+        // dd($boe);
+        $csvheaders = [
+            'AWB no.',
+            'BOE Date Of Arrival',
+            'Courier Registration Number',
+            'Name of the Authorized Courier',
+            'Name of Consignor',
+            'Name of Consignee',
+            '(BOE) Booking Rate',
+            'Duty',
+            'SW Srchrg',
+            'Insurance',
+            'IGST',
+            'Total (Duty+Cess+IGST)',
+            'Interest',
+            'CBX II NO',
+            'HSN Code',
+            'Qty',
+            'Description'
+        ];
+
+
+        $company_id = $user->company_id;
+        $exportFilePath = "excel/downloads/BOE/$company_id/BOE_Details.csv";
+        $chunk = 1000;
+        $boe->chunk($chunk, function ($records) use ($exportFilePath, $dbheaders, $csvheaders) {
+
+            if (!Storage::exists($exportFilePath)) {
+                Storage::put($exportFilePath, '');
+            }
+            $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
+            $writer->insertOne($csvheaders);
+
+            $records = $records->toArray();
+
+            $recordsfinal = array_map(function ($datas) {
+
+                if ($datas['duty_details']) {
+                    $duty_details = (json_decode($datas['duty_details']));
+                    $datas['Duty'] = $duty_details[0]->DutyAmount;
+                    $datas['SWsrchrg'] = $duty_details[2]->DutyAmount;
+                    $datas['IGST'] = $duty_details[3]->DutyAmount;
+                }
+                foreach ($datas as $key => $value) {
+
+                    if ($key != 'duty_details') {
+
+                        $this->dataArray[$key] = $value;
+                    }
+                }
+
+                return $this->dataArray;
+            }, $records);
+            $writer->insertall($recordsfinal);
+        });
+        return $this->Download_BOE();
+        return redirect()->intended('/BOE/Export/view')->with('success', 'BOE CSV Exported successfully');
+    }
     public function Download_BOE()
     {
+        Log::alert('working');
         $user = Auth::user();
         $company_id = $user->company_id;
         $file_path = "excel/downloads/BOE/$company_id/BOE_Details.csv";

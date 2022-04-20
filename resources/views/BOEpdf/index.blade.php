@@ -26,7 +26,7 @@
         <a href="upload">
             <x-adminlte-button label=" Pdf Upload" theme="primary" icon="fas fa-file-export" />
         </a>
-        <a href="Export">
+        <a href="Export/view">
             <x-adminlte-button label="Export to CSV" theme="primary" icon="fas fa-file-export" />
         </a>
         <a href="Download">
