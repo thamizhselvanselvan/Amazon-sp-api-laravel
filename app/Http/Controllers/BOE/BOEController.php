@@ -119,13 +119,17 @@ class BOEController extends Controller
         $company_id = $user->company_id;
         $user_id = $user->id;
 
+        $pdfList = [];
+
         foreach ($request->files as $key => $files) {
 
             foreach ($files as $keys => $file) {
 
                 $fileName = $file->getClientOriginalName();
                 $fileName = uniqid() . ($fileName);
-                Storage::put('BOE/' . $company_id . '/' . $year . '/' . $month . '/' . $fileName, file_get_contents($file));
+                $desinationPath = 'BOE/' . $company_id . '/' . $year . '/' . $month . '/' . $fileName;
+                Storage::put($desinationPath,  file_get_contents($file));
+                $pdfList[] = $desinationPath;
             }
         }
         // reading saved file from storage
@@ -236,15 +240,98 @@ class BOEController extends Controller
             $companys = CompanyMaster::where('id', $company_id)->get();
         }
 
+        if ($request->ajax()) {
+
+            $company = $request->company;
+            $date_of_arrival = $request->date_of_arrival;
+            // if (($date_of_arrival) != '') {
+            //     $date_of_arrival_array = explode(' - ', $date_of_arrival);
+            //     $date_of_arrival_start = trim($date_of_arrival_array[0]);
+            //     $date_of_arrival_end = trim($date_of_arrival_array[1]);
+            // }
+
+             $challan_date = $request->challan_date;
+            // if (($challan_date) != '') {
+            //     $challan_date_array = explode(' - ', $challan_date);
+            //     $challan_date_start = trim($challan_date_array[0]);
+            //     $challan_date_end = trim($challan_date_array[1]);
+            // }
+
+             $upload_date = $request->upload_date;
+            // if ($upload_date != '') {
+            //     $upload_date_array = explode(' - ', $upload_date);
+            //     $upload_date_start = trim($upload_date_array[0]);
+            //     $upload_date_end = trim($upload_date_array[1]);
+            // }
+
+            $boe = BOE::select("*")
+                    ->when(!empty(trim($request->challan_date)), function ($query) use ($challan_date) {
+                        $challan_date_array = explode(' - ', $challan_date);
+                        $challan_date_start = trim($challan_date_array[0]);
+                        $challan_date_end = trim($challan_date_array[1]);
+
+                        $query->whereBetween('challan_date', [$challan_date_start, $challan_date_end]);
+                    })
+                     ->when(!empty(trim($request->date_of_arrival)), function ($query) use ($date_of_arrival) {
+                        $date_of_arrival_array = explode(' - ', $date_of_arrival);
+                        $date_of_arrival_start = trim($date_of_arrival_array[0]);
+                        $date_of_arrival_end = trim($date_of_arrival_array[1]);
+
+                        $query->whereBetween('date_of_arrival', [$date_of_arrival_start, $date_of_arrival_end]);
+                    })
+                     ->when(!empty(trim($request->upload_date)), function ($query) use ($upload_date) {
+                        $upload_date_array = explode(' - ', $upload_date);
+                        $upload_date_array_start = trim($upload_date_array[0]);
+                        $upload_date_array_end = trim($upload_date_array[1]);
+
+                        $query->whereBetween('created_at', [$upload_date_array_start, $upload_date_array_end]);
+                    })
+                     ->when($company, function ($query) use ($company) {
+
+                        $query->where('company_id', $company);
+                    });
+
+            return DataTables::of($boe)
+                ->addIndexColumn()
+                ->addColumn('duty', function ($duty) {
+                    if (isset($duty['duty_details'])) {
+
+                        $duty = (json_decode($duty['duty_details']));
+                        return $duty[0]->DutyAmount;
+                    }
+                })
+                ->addColumn('swsrchrg', function ($swchar) {
+                    if (isset($swchar['duty_details'])) {
+                        $swchar = (json_decode($swchar['duty_details']));
+                        return $swchar[2]->DutyAmount;
+                    }
+                })
+                ->addColumn('igst', function ($igst) {
+                    if (isset($igst['duty_details'])) {
+                        $igst = (json_decode($igst['duty_details']));
+                        return $igst[3]->DutyAmount;
+                    }
+                })
+                ->rawColumns(['duty', 'swsrchrg', 'igst'])
+                ->make(true);
+        }
+
         return view('BOEpdf.export', compact(['companys', 'role']));
     }
+
+    public function split_date($date_time) {
+        $split = explode(' - ', $date_time);
+
+        return [trim($split[0]), trim($split[1])];
+    }
+
     public function BOEFilterExport(Request $request)
     {
         $user = Auth::user();
         $company_id = $request->company;
 
         $date_of_arrival = $request->date_of_arrival;
-        $date_of_arrival_array = explode('-', $date_of_arrival);
+        $date_of_arrival_array = explode(' - ', $date_of_arrival);
         $date_of_arrival_start = trim($date_of_arrival_array[0]);
         $date_of_arrival_end = trim($date_of_arrival_array[1]);
 
@@ -328,11 +415,13 @@ class BOEController extends Controller
 
                 return $this->dataArray;
             }, $records);
+
             $writer->insertall($recordsfinal);
         });
         return $this->Download_BOE();
         return redirect()->intended('/BOE/Export/view')->with('success', 'BOE CSV Exported successfully');
     }
+
     public function Download_BOE()
     {
         Log::alert('working');
