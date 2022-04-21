@@ -30,7 +30,8 @@ class TestController extends Controller
     $year = date('Y');
     $month = date('F');
 
-    echo date('y-m-d:h:i:s');
+    echo date('d/m/Y');
+    exit;
 $pdfParser = new Parser();
         $BOEPDFMaster = [];
         $pdf = $pdfParser->parseFile('D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000433.pdf');
