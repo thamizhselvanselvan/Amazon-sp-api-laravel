@@ -10,7 +10,7 @@
 
     <div class="row">
         <div class="col">
-             <a href="{{ route('inventory.bin_index') }}" class="btn btn-primary">  
+             <a href="{{ route('bins.index') }}" class="btn btn-primary">  
                 <i class="fas fa-long-arrow-alt-left"></i> Back
             </a>
         </div>
@@ -49,21 +49,46 @@
                 </x-adminlte-alert>
             @endif
 
-             {{-- <form action="{{ Route('inventory.rack_save') }}" method="POST" id="admin_user"> --}}
-
+             <form action="{{ route('bins.store') }}" method="POST" id="admin_user">
 
                 @csrf
 
-                <div class="row">
-                    
-                    <div class="col-9">
-                        <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name"
-                            value="{{ old('name') }}" />
+                
+                <div class="col-12">
+
+                    <x-adminlte-select name="shelve_id" label="Select shelve">
+
+                        @foreach ($shelve_lists as $shelve_list)
+           
+                            <option value="{{ $shelve_list->id }}">{{ $shelve_list->name  }}</option>
+
+                        @endforeach
+
+                    </x-adminlte-select>
+                
+            </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-6">
+                        <x-adminlte-input label="Name" name="name" id="" type="text" placeholder="Name "
+                            value="{{ old('ID') }}" />    
                     </div>
-                    {{-- <div class="col-6">
-                        <x-adminlte-input label="No of shelves" name="Number of Shelves" id="Number of Shelves" type="text" placeholder="Number of Shelves"
-                            value="{{ old('ID') }}" />
-                    </div> --}}
+                    <div class="col-6">
+                        <x-adminlte-input label="Depth" name="depth" id="" type="text" placeholder="Depth "
+                            value="{{ old('ID') }}" />    
+                    </div>
+                    <div class="col-6">
+                        <x-adminlte-input label="Width" name="width" id="" type="text" placeholder="Width"
+                            value="{{ old('ID') }}" />    
+                    </div>
+                    <div class="col-6">
+                        <x-adminlte-input label="Hight" name="height" id="" type="text" placeholder="Height"
+                            value="{{ old('ID') }}" />    
+                    </div>
+                    <div class="col-6">
+                        <x-adminlte-input label="Zone" name="zone" id="" type="text" placeholder="Zone "
+                            value="{{ old('ID') }}" />    
+                    </div>
                 </div>
 
 

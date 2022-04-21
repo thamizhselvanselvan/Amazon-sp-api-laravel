@@ -185,6 +185,7 @@
                     response: 'json',
                     success: function (response) {
                         alert('Delete success');
+                        location.reload()
                         // self.prop('disable', false);
                         // // loader.addClass('d-none');
 

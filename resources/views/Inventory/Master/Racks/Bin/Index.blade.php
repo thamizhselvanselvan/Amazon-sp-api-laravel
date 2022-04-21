@@ -28,7 +28,7 @@
             </div>
 
             <h2 class="mb-4">
-                <a href="{{ route('inventory.bin_add') }}">
+                <a href="{{ route('bins.create') }}">
                     <x-adminlte-button label="Add Bin" theme="primary" icon="fas fa-plus" />
                 </a>
             </h2>
@@ -36,9 +36,14 @@
             <table class="table table-bordered yajra-datatable table-striped">
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>Shelve ID</th>
+                        <th>Bin ID</th>
                         <th>Name</th>
-                        <th></th>
+                        <th>Depth</th>
+                        <th>Width</th>
+                        <th>Height</th>
+                        <th>Zone</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -48,16 +53,18 @@
     </div>
 @stop
 
-
-{{-- @section('js')
+ @section('js')
     <script type="text/javascript">
         $(function() {
 
             let yajra_table = $('.yajra-datatable').DataTable({
                 processing: true,
                 serverSide: true,
-                 ajax: "{{ url('Inventory/Master/Racks/rack_list') }}",
-                columns: [{
+                 ajax: "{{route('bins.index') }}",
+                columns: [
+             
+                    
+                    {
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         orderable: false,
@@ -68,12 +75,59 @@
                         name: 'name'
                     },
                     {
-                        data: '',
-                        name: ''
+                        data: 'Depth',
+                        name: 'Depth'
+                    },
+                    {
+                        data: 'Width',
+                        name: 'Width'
+                    },
+                    {
+                        data: 'Hight',
+                        name: 'Hight'
+                    },
+                    {
+                        data: 'Zone',
+                        name: 'Zone'
+                    },
+                    {
+                        data: 'action',
+                        orderable: false,
+                        searchable: false
                     },
                 ]
             });
+            $(document).on('click', ".delete", function(e) {
+                e.preventDefault();
+             let bool = confirm('Are you sure you want to delete?');
+              
+                if(!bool) {
+                    return false;
+                }
+                let self = $(this);
+                let id = self.attr('data-id');
+               
+                self.prop('disable', true);
 
+
+                $.ajax({
+                    method: 'post',
+                    url: '/Bin/delete/'+id,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "_method": 'POST'
+                   },
+                   response: 'json',
+                    success: function (response) {
+                        alert('Delete success');
+                        location.reload()
+                    }, 
+                    error: function (response) {
+
+                        
+                    }
+                });
+            });
         });
     </script>
-@stop --}}
+@stop  

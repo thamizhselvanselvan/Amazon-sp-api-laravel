@@ -4,8 +4,9 @@ namespace App\Models\Inventory;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Psy\Shell;
 
-class Shelves extends Model
+class Bin extends Model
 {
     use HasFactory;
     public function __construct(array $attributes = [])
@@ -18,7 +19,17 @@ class Shelves extends Model
     {
         $this->getConnection()->setTablePrefix('sp_');
     }
-   
-    protected $fillable = ['Shelves_name','No_of_Bins'];
+    protected $fillable = [
+        'shelve_id',
+        'name',
+        'depth',
+        'width',
+        'height',
+        'zone',
+    ];
+
+    public function shelves() {
+        return $this->hasOne(Shelve::class,' id','shelve_id');
+    } 
    
 }

@@ -389,20 +389,20 @@ return [
                                 [
 
                                     'text' => 'Racks',
-                                    'url'  => 'Inventory/Master/Racks/Index',
+                                    'url'  => 'inventory/racks',
                                     'icon' => 'far fa-fw fa-file',
                                     'can' =>  ['Admin']
                                 ],
                                 [
                                     'text' => 'Shelves',
-                                    'url'  => 'Inventory/Master/Racks/Shelves/Index',
+                                    'url'  => 'inventory/shelves',
                                     'icon' => 'far fa-fw fa-file',
                                     'can' =>  ['Admin']
                                  
                                 ],
                                 [
                                     'text' => 'Bins',
-                                    'url'  => 'Inventory/Master/Racks/Bin/Index',
+                                    'url'  => 'inventory/bins',
                                     'icon' => 'far fa-fw fa-file',
                                     'can' =>  ['Admin']
                                  

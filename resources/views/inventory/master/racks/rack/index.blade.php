@@ -28,7 +28,7 @@
             </div>
 
             <h2 class="mb-4">
-                <a href="{{ route('inventory.rack_add') }}">
+                <a href="{{ route('racks.create') }}">
                     <x-adminlte-button label="Add Rack" theme="primary" icon="fas fa-plus" />
                 </a>
             </h2>
@@ -57,7 +57,7 @@
             let yajra_table = $('.yajra-datatable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ url('Inventory/Master/Racks/rack_list') }}",
+                ajax: "{{ route('racks.index') }}",
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -69,8 +69,8 @@
                         name: 'name'
                     },
                     {
-                        data: '',
-                        name: ''
+                        data: 'shelves_count',
+                        name: 'shelves_count'
                     },
                     {
                         data: 'action',
@@ -79,7 +79,36 @@
                     },
                 ]
             });
+            $(document).on('click', ".delete", function(e) {
+                e.preventDefault();
+                let bool = confirm('Are you sure you want to delete?');
 
+                if (!bool) {
+                    return false;
+                }
+                let self = $(this);
+                let id = self.attr('data-id');
+
+                self.prop('disable', true);
+                                
+                $.ajax({
+                    method: 'post',
+                    url: "/inventory/racks/"+id,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "_method": 'DELETE'
+                    },
+                    response: 'json',
+                    success: function(response) {
+                        alert('Delete success');
+                        location.reload()
+                    },
+                    error: function(response) {
+
+
+                    }
+                });
+            });
         });
     </script>
 @stop

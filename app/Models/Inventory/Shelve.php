@@ -5,7 +5,7 @@ namespace App\Models\Inventory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Rack extends Model
+class Shelve extends Model
 {
     use HasFactory;
 
@@ -20,11 +20,15 @@ class Rack extends Model
         $this->getConnection()->setTablePrefix('sp_');
     }
 
-    protected $fillable = ['name'];
+    protected $fillable = ['rack_id', 'name'];
 
-
-    public function shelves()
+    public function bins()
     {
-        return $this->hasMany(Shelve::class);
+        return $this->hasMany(Bin::class);
+    }
+
+    public function racks()
+    {
+        return $this->hasOne(Rack::class, 'id', 'rack_id');
     }
 }

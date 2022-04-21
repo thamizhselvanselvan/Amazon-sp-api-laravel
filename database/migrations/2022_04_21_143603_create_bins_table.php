@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateShelvesTable extends Migration
+class CreateBinsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,17 @@ class CreateShelvesTable extends Migration
      */
     public function up()
     {
-        Schema::connection('in')->create('shelves', function (Blueprint $table) {
+        Schema::connection('in')->create('bins', function (Blueprint $table) {
             $table->id();
-            $table->string('Shelves_name');
-            $table->string('No_of_Bins');
+            $table->foreignId('shelve_id');
+            $table->string('name');
+            $table->string('depth');
+            $table->string('width');
+            $table->string('height');
+            $table->string('zone');
             $table->timestamps();
         });
     }
-  
 
     /**
      * Reverse the migrations.
@@ -29,6 +32,6 @@ class CreateShelvesTable extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->dropIfExists('shelves');
+        Schema::connection('in')->dropIfExists('bins');
     }
 }
