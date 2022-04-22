@@ -300,25 +300,18 @@ class BOEController extends Controller
             $query->select($dbheaders);
         })
             ->when(!empty(trim($request->challan_date)), function ($query) use ($challan_date) {
-                $challan_date_array = explode(' - ', $challan_date);
-                $challan_date_start = trim($challan_date_array[0]);
-                $challan_date_end = trim($challan_date_array[1]);
-
-                $query->whereBetween('challan_date', [$challan_date_start, $challan_date_end]);
+                $date = $this->split_date($challan_date);
+                $query->whereBetween('challan_date', [$date[0], $date[1]]);
             })
             ->when(!empty(trim($request->date_of_arrival)), function ($query) use ($date_of_arrival) {
-                $date_of_arrival_array = explode(' - ', $date_of_arrival);
-                $date_of_arrival_start = trim($date_of_arrival_array[0]);
-                $date_of_arrival_end = trim($date_of_arrival_array[1]);
-
-                $query->whereBetween('date_of_arrival', [$date_of_arrival_start, $date_of_arrival_end]);
+               
+                $date = $this->split_date($date_of_arrival);
+                $query->whereBetween('date_of_arrival', [$date[0], $date[1]]);
             })
             ->when(!empty(trim($request->upload_date)), function ($query) use ($upload_date) {
-                $upload_date_array = explode(' - ', $upload_date);
-                $upload_date_array_start = trim($upload_date_array[0]);
-                $upload_date_array_end = trim($upload_date_array[1]);
-
-                $query->whereBetween('created_at', [$upload_date_array_start, $upload_date_array_end]);
+                
+                $date = $this->split_date($upload_date);
+                $query->whereBetween('created_at', [$date[0], $date[1]]);
             })
             ->when($company, function ($query) use ($company) {
 
@@ -330,9 +323,8 @@ class BOEController extends Controller
 
     public function split_date($date_time)
     {
-        $split = explode(' - ', $date_time);
-
-        return [trim($split[0]), trim($split[1])];
+        $date = explode(' - ', $date_time);
+        return [trim($date[0]), trim($date[1])];
     }
 
     public function BOEFilterExport(Request $request)
@@ -402,7 +394,6 @@ class BOEController extends Controller
 
     public function Download_BOE()
     {
-        Log::alert('working');
         $user = Auth::user();
         $company_id = $user->company_id;
         $file_path = "excel/downloads/BOE/$company_id/BOE_Details.csv";
