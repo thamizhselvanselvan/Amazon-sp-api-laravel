@@ -12,7 +12,7 @@
 
     <div class="row">
         <div class="col">
-            <a href="{{ Route('inventory.bin_index') }}" class="btn btn-primary">
+            <a href="{{ Route('bins.index') }}" class="btn btn-primary">
 
                 <i class="fas fa-long-arrow-alt-left"></i> Back
             </a>
@@ -62,26 +62,29 @@
     </div>
 @endif
 
-            <form  action="{{Route('inv.bin_update', $name->id) }}" method="POST" id="">
+            <form  action="{{ route('bins.update', $name->id) }}" method="POST" id="">
                 @csrf
                 @method('PUT')
 
                 <div class="row">
+                    <div class="col-6">
+                        <x-adminlte-input label="Name" name="name" id="" value="{{ $name->name }}" type="text" placeholder="Name " />    
+                    </div>
             
                     <div class=" col-6">
-                        <x-adminlte-input label="Depth" name="Depth" id=""  value="{{ $name->Depth }}" type="text" placeholder="Depth" />
+                        <x-adminlte-input label="Depth" name="depth" id=""  value="{{ $name->depth }}" type="text" placeholder="Depth" />
                     </div>
                     
                     <div class=" col-6">
-                        <x-adminlte-input label="Width" name="Width" id=""  value="{{ $name->Width }}" type="text" placeholder="Width" />
+                        <x-adminlte-input label="Width" name="width" id=""  value="{{ $name->width }}" type="text" placeholder="Width" />
                     </div>
                     
                     <div class=" col-6">
-                        <x-adminlte-input label="Hight" name="Hight" id=""  value="{{ $name->Hight }}" type="text" placeholder="Height" />
+                        <x-adminlte-input label="Hight" name="height" id=""  value="{{ $name->height }}" type="text" placeholder="Height" />
                     </div>
                     
                     <div class=" col-6">
-                        <x-adminlte-input label="Zone" name="Zone" id=""  value="{{ $name->Zone }}" type="text" placeholder="Zone" />
+                        <x-adminlte-input label="Zone" name="zone" id=""  value="{{ $name->zone }}" type="text" placeholder="Zone" />
                     </div>
                     
 

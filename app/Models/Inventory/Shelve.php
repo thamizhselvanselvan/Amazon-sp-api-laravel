@@ -9,16 +9,18 @@ class Shelve extends Model
 {
     use HasFactory;
 
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-        $this->getConnection()->setTablePrefix('in_');
-    }
+    protected $connection = 'in';
 
-    public function __destruct()
-    {
-        $this->getConnection()->setTablePrefix('sp_');
-    }
+    // public function __construct(array $attributes = [])
+    // {
+    //     parent::__construct($attributes);
+    //     $this->getConnection()->setTablePrefix('in_');
+    // }
+
+    // public function __destruct()
+    // {
+    //     $this->getConnection()->setTablePrefix('sp_');
+    // }
 
     protected $fillable = ['rack_id', 'name'];
 

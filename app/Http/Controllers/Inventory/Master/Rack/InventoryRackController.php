@@ -86,11 +86,6 @@ class InventoryRackController extends Controller
 
         return redirect()->route('racks.index')->with('success', 'Rack has been Deleted successfully');
     }
+    
 }
 
-// public function destroy($id)
-//     {
-//         Shelve::where('id', $id)->delete();
-
-//         return redirect()->route('shelves.index')->with('success', 'Shelve has been Deleted successfully');
-//     }

@@ -56,12 +56,15 @@ Route::resource('inventory/bins', 'Inventory\Master\Rack\InventoryBinController'
 
 
 
- Route::get('Inventory/Master/Company/Index','Inventory\Master\InventoryCompanyController@companyview')->name('inventory.company_index');;
- Route::get('Inventory/Master/Company/Add','Inventory\Master\InventoryCompanyController@companyadd')->name('inventory.company_add');
+//  Route::get('Inventory/Master/Company/Index','Inventory\Master\InventoryCompanyController@companyview')->name('inventory.company_index');;
+//  Route::get('Inventory/Master/Company/Add','Inventory\Master\InventoryCompanyController@companyadd')->name('inventory.company_add');
 
- Route::get('Inventory/Master/Source/Index','Inventory\Master\InventorySourceController@sourceview')->name('inventory.source_index');;
- Route::get('Inventory/Master/Source/Add','Inventory\Master\InventorySourceController@sourceadd')->name('inventory.source_add');
+//  Route::get('Inventory/Master/Source/Index','Inventory\Master\InventorySourceController@sourceview')->name('inventory.source_index');;
+//  Route::get('Inventory/Master/Source/Add','Inventory\Master\InventorySourceController@sourceadd')->name('inventory.source_add');
 
- Route::get('Inventory/Master/Destination/Index','Inventory\Master\InventoryDestinationController@destinationview')->name('inventory.destination_index');;
- Route::get('Inventory/Master/Destination/Add','Inventory\Master\InventoryDestinationController@destinationadd')->name('inventory.destination_add');
+//  Route::get('Inventory/Master/Destination/Index','Inventory\Master\InventoryDestinationController@destinationview')->name('inventory.destination_index');;
+//  Route::get('Inventory/Master/Destination/Add','Inventory\Master\InventoryDestinationController@destinationadd')->name('inventory.destination_add');
 
+
+
+Route::get('inventory/Index','Inventory\Master\InventorySourceController@view');

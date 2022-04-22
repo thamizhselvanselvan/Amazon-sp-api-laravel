@@ -62,7 +62,10 @@
                 serverSide: true,
                  ajax: "{{route('bins.index') }}",
                 columns: [
-             
+                    {
+                        data: 'shelve_id',
+                        name: 'shelve_id'
+                    },
                     
                     {
                         data: 'DT_RowIndex',
@@ -75,20 +78,20 @@
                         name: 'name'
                     },
                     {
-                        data: 'Depth',
-                        name: 'Depth'
+                        data: 'depth',
+                        name: 'depth'
                     },
                     {
-                        data: 'Width',
-                        name: 'Width'
+                        data: 'width',
+                        name: 'width'
                     },
                     {
-                        data: 'Hight',
-                        name: 'Hight'
+                        data: 'height',
+                        name: 'height'
                     },
                     {
-                        data: 'Zone',
-                        name: 'Zone'
+                        data: 'zone',
+                        name: 'zone'
                     },
                     {
                         data: 'action',
@@ -112,10 +115,10 @@
 
                 $.ajax({
                     method: 'post',
-                    url: '/Bin/delete/'+id,
+                    url: '/inventory/bins/'+id,
                     data: {
                         "_token": "{{ csrf_token() }}",
-                        "_method": 'POST'
+                        "_method": 'DELETE'
                    },
                    response: 'json',
                     success: function (response) {
