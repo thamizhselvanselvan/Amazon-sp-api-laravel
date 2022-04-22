@@ -6,6 +6,7 @@ use Exception;
 use App\Models\BOE;
 use Illuminate\Http\Request;
 use SellingPartnerApi\Endpoint;
+use Smalot\PdfParser\Parser;
 use Illuminate\Support\Facades\DB;
 use App\Services\Config\ConfigTrait;
 use Illuminate\Support\Facades\Auth;
@@ -28,6 +29,16 @@ class TestController extends Controller
     
     $year = date('Y');
     $month = date('F');
+
+    echo date('d/m/Y');
+    exit;
+$pdfParser = new Parser();
+        $BOEPDFMaster = [];
+        $pdf = $pdfParser->parseFile('D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000433.pdf');
+        $content = $pdf->getText();
+        $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
+        dd($content);
+    exit;
   //   $file_path = BOE::first();
   //   $file_path_array = explode('/', $file_path->download_file_path);
   //   // dd($file_path_array);

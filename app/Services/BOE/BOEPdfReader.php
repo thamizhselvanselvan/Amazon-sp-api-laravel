@@ -6,17 +6,19 @@ use helpers;
 use Exception;
 use RedBeanPHP\R as R;
 use App\Models\Asin_master;
+use Illuminate\Support\Carbon;
 use App\Models\Aws_credentials;
 use SellingPartnerApi\Endpoint;
 use Illuminate\Support\Facades\DB;
 use Carbon\Laravel\ServiceProvider;
 use Illuminate\Support\Facades\Log;
 use App\Services\Config\ConfigTrait;
+use DateTime;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\CatalogItemsV0Api as CatalogItemsV0ApiProduct;
 use SellingPartnerApi\Api\ProductPricingApi as ProductPricingApiProduct;
 
-class BOEPDFReader
+class BOEPdfReader
 {
     public $check_table = 0;
     public $count = 0;
@@ -202,7 +204,7 @@ class BOEPDFReader
                     $name_details .= $Boecheck[$check_key];
                     $check_key++;
                 }
-            
+
                 $courier_basic_details['NetWeight'] = $name_details;
             } else if ($BOEPDFData == 'Assessable Value:') {
 
@@ -576,7 +578,7 @@ class BOEPDFReader
                 $offset = 0;
                 while ($Boecheck[$check_key] != 'DECLARATION') {
                     $payment_details[$offset]['SrNo'] = $Boecheck[$check_key++];
-                    $payment_details[$offset]['TR-6ChallanNumber'] = $Boecheck[$check_key++];
+                    $payment_details[$offset]['ChallanNumber'] = $Boecheck[$check_key++];
                     $payment_details[$offset]['TotalAmount'] = $Boecheck[$check_key++];
                     $payment_details[$offset]['ChallanDate'] = $Boecheck[$check_key++];
                     // $check_key += 3;
@@ -639,18 +641,51 @@ class BOEPDFReader
         $boe_details->currentStatusOfTheCbe = $current_Status_of_CBE['CurrentStatusOfTheCbe'];
 
         foreach ($courier_basic_details as $key => $courier_basic_detail) {
+
             $key = lcfirst($key);
             $boe_details->$key = $courier_basic_detail;
         }
+
+
         foreach ($igm_details as $boe_key => $boe) {
+
             $boe_key = lcfirst($boe_key);
-            $boe_details->$boe_key = $boe;
+            if ($boe_key == 'dateOfArrival') {
+
+                $date = new DateTime(str_replace('/', '-', $boe));
+                $dateformate = $date->format('Y-m-d');
+                $boe_details->$boe_key = $dateformate;
+            } else {
+                // echo $boe;
+                $boe_details->$boe_key = $boe;
+            }
         }
+        // exit;
         $boe_details->notificationDetails = json_encode($notification_details);
         $boe_details->chargeDetails = json_encode($charge_details);
         $boe_details->dutyDetails = json_encode($duty_details);
-        $boe_details->paymentDetails = json_encode($payment_details);
 
+        if (isset($payment_details[0]['ChallanNumber'])) {
+            $boe_details->challanNumber = $payment_details[0]['ChallanNumber'];
+        }
+        if (isset($payment_details[0]['TotalAmount'])) {
+
+            $boe_details->totalAmount = $payment_details[0]['TotalAmount'];
+        }
+        if (isset($payment_details[0]['ChallanDate'])) {
+            $challanDate = $payment_details[0]['ChallanDate'];
+
+            $date = new DateTime(str_replace('/', '-', $challanDate));
+            $challan_date_formate = $date->format('Y-m-d');
+            $boe_details->challanDate = $challan_date_formate;
+
+            // $boe_details->challanDate = $payment_details[0]['ChallanDate'];
+        }
+
+        $boe_details->paymentDetails = json_encode($payment_details);
+        $date = new DateTime(date('Y-m-d'));
+        $created_at = $date->format('Y-m-d');
+        $boe_details->created_at = $created_at;
         if ($dataCheck != 1) {
 
             $boe_details->do = 0;

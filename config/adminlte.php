@@ -357,54 +357,54 @@ return [
 
         [
             'text'    => 'Inventory',
-            'can' =>   ['Admin'],
+            'can' =>   ['Admin','Inventory'],
             'submenu' => [
                 [
 
                     'text' => 'Master',
                     'icon' => 'fas fa-user',
-                    'can' =>  ['Admin'],
+                    'can' =>  ['Admin','Inventory'],
                     'submenu' => [
 
                         [
                             'text' => 'Roles',
-                            'url'  => 'Inventory/Roles/Index',
+                            'url'  => 'inventory/Index',
                             'icon' => 'fas fa-user',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin','Inventory']
 
                         ],
 
                         [
                             'text' => 'Users',
-                            'url'  => 'Inventory/Master/Users/Index',
+                            'url'  => 'inventory/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin','Inventory']
 
                         ],
                         [
                             'text' => 'Rack',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin'],
+                            'can' =>  ['Admin','Inventory'],
                             'submenu' => [
                                 [
 
                                     'text' => 'Racks',
-                                    'url'  => 'Inventory/Master/Racks/Index',
+                                    'url'  => 'inventory/racks',
                                     'icon' => 'far fa-fw fa-file',
-                                    'can' =>  ['Admin'],
+                                    'can' =>  ['Admin','Inventory']
                                 ],
                                 [
                                     'text' => 'Shelves',
-                                    'url'  => 'Inventory/Master/Racks/Shelves/Index',
+                                    'url'  => 'inventory/shelves',
                                     'icon' => 'far fa-fw fa-file',
-                                    'can' =>  ['Admin']
+                                    'can' =>  ['Admin','Inventory']
                                  
                                 ],
                                 [
                                     'text' => 'Bins',
-                                    'url'  => 'Inventory/Master/Racks/Shelves/add',
+                                    'url'  => 'inventory/bins',
                                     'icon' => 'far fa-fw fa-file',
-                                    'can' =>  ['Admin']
+                                    'can' =>  ['Admin','Inventory']
                                  
                                 ],
                             ],
@@ -412,54 +412,56 @@ return [
                         ],
                         [
                             'text' => 'Company',
-                            'url'  => 'Inventory/Master/Company/Index',
+                            'url'  => 'inventory/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin','Inventory']
 
                         ],
                         [
                             'text' => 'Source',
-                            'url'  => 'Inventory/Master/Source/Index',
+                            'url'  => 'inventory/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin'],
-                            'submenu' => [
-                                [
-                                    'text' => 'Amazon',
-                                    'url'  => 'Inventory/master/Index',
-                                    'icon' => 'far fa-fw fa-file',
-                                    'can' =>  ['Admin']
-                                ],
-                                [
-                                    'text' => 'Maxcon',
-                                    'url'  => 'Inventory/master/Index',
-                                    'icon' => 'far fa-fw fa-file',
-                                    'can' =>  ['Admin']
-                                ],
-                                [
-                                    'text' => 'CStuart',
-                                    'url'  => 'Inventory/master/Index',
-                                    'icon' => 'far fa-fw fa-file',
-                                    'can' =>  ['Admin']
-                                ],
+                            'can' =>  ['Admin','Inventory'],
+                            // 'submenu' => [
+                            //     [
+                            //         'text' => 'Amazon',
+                            //         'url'  => 'Inventory/master/Index',
+                            //         'icon' => 'far fa-fw fa-file',
+                            //         'can' =>  ['Admin','Inventory']
+                            //     ],
+                            //     [
+                            //         'text' => 'Maxcon',
+                            //         'url'  => 'Inventory/master/Index',
+                            //         'icon' => 'far fa-fw fa-file',
+                            //         'can' =>  ['Admin','Inventory']
+                            //     ],
+                            //     [
+                            //         'text' => 'CStuart',
+                            //         'url'  => 'Inventory/master/Index',
+                            //         'icon' => 'far fa-fw fa-file',
+                            //         'can' =>  ['Admin','Inventory']
+                            //     ],
 
-                            ],
+                            // ],
+
 
                         ],
                         [
                             'text' => 'Destination',
-                            'url'  => 'Inventory/Master/Destination/Index',
+                            'url'  => 'inventory/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin'],
-                            'submenu' => [
-                                [
-                                    'text' => 'Amazon Order',
-                                    'url'  => 'Inventory/master/Index',
-                                    'icon' => 'far fa-fw fa-file',
-                                    'can' =>  ['Admin']
-                                ],
+                            'can' =>  ['Admin','Inventory'],  
+
+                            // 'submenu' => [
+                            //     [
+                            //         'text' => 'Amazon Order',
+                            //         'url'  => 'Inventory/master/Index',
+                            //         'icon' => 'far fa-fw fa-file',
+                            //         'can' =>  ['Admin','Inventory']
+                            //     ],
 
 
-                            ],
+                            // ],
 
                         ],
                     ],
@@ -467,100 +469,100 @@ return [
                 [
                     'text' => 'Stock Master',
                     'icon' => 'fas fa-user',
-                    'can' =>  ['Admin'],
+                    'can' =>  ['Admin','Inventory'],
                     'submenu' => [
                         [
                             'text' => 'Inwarding',
-                            'url'  => 'Inventory/Stock/Index',
+                            'url'  => 'inventory/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin'],'Inventory'
                         ],
                         [
                             'text' => 'Outwarding',
-                            'url'  => 'Inventory/Stock/Index',
+                            'url'  => 'inventory/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin','Inventory']
                         ],
                         [
                             'text' => 'Disposing',
-                            'url'  => 'Inventory/Stock/Index',
+                            'url'  => 'inventory/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin','Inventory']
                         ],
                         [
                             'text' => 'Adjustment',
-                            'url'  => 'Inventory/Stock/Index',
+                            'url'  => 'inventory/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin','Inventory']
                         ],
                     ],
                 ],
                 [
                     'text' => 'Reporting',
                     'icon' => 'fas fa-user',
-                    'can' =>  ['Admin'],
+                    'can' =>  ['Admin','Inventory'],
                     'submenu' => [
                         [
                             'text' => 'Daily/Weekly/Monthly',
-                            'url'  => 'Inventory/Reporting/Index',
+                            'url'  => 'inventory/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin','Inventory']
                         ],
                         [
                             'text' => 'Inwarding V/S Outwarding',
-                            'url'  => 'Inventory/Reporting/Index',
+                            'url'  => 'inventory/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin','Inventory']
                         ],
                         [
                             'text' => 'Dispose',
-                            'url'  => 'Inventory/Reporting/Index',
+                            'url'  => 'inventory/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin','Inventory']
                         ],
                         [
                             'text' => 'Aging Report',
-                            'url'  => 'Inventory/Reporting/Index',
+                            'url'  => 'inventory/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin','Inventory']
                         ],
                     ],
                 ],
                 [
                     'text' => 'Features',
                     'icon' => 'fas fa-user',
-                    'can' =>  ['Admin'],
+                    'can' =>  ['Admin','Inventory'],
                     'submenu' => [
                         [
                             'text' => 'Excel Import/Export',
-                            'url'  => 'Inventory/Features/Index',
+                            'url'  => 'inventory/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin','Inventory']
                         ],
                         [
                             'text' => 'Email',
-                            'url'  => 'Inventory/Features/Index',
+                            'url'  => 'inventory/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin','Inventory']
                         ],
                     ],
                 ],
                 [
                     'text' => 'System',
                     'icon' => 'fas fa-user',
-                    'can' =>  ['Admin'],
+                    'can' =>  ['Admin','Inventory'],
                     'submenu' => [
                         [
                             'text' => 'Global',
-                            'url'  => 'Inventory/System/Index',
+                            'url'  => 'inventory/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin','Inventory']
                         ],
                         [
                             'text' => 'System',
-                            'url'  => 'Inventory/System/Index',
+                            'url'  => 'inventory/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin','Inventory']
                         ],
                     ],
                 ],
