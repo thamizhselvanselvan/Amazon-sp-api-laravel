@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Bins')
+@section('title', 'Racks')
 
 @section('css')
 
@@ -9,7 +9,7 @@
 @stop
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Inventory Bin</h1>
+    <h1 class="m-0 text-dark">Inventory Racks</h1>
 
 @stop
 
@@ -28,21 +28,17 @@
             </div>
 
             <h2 class="mb-4">
-                <a href="{{ route('bins.create') }}">
-                    <x-adminlte-button label="Add Bin" theme="primary" icon="fas fa-plus" />
+                <a href="{{ route('racks.create') }}">
+                    <x-adminlte-button label="Add Rack" theme="primary" icon="fas fa-plus" />
                 </a>
             </h2>
 
             <table class="table table-bordered yajra-datatable table-striped">
                 <thead>
                     <tr>
-                        <th>Shelve ID</th>
-                        <th>Bin ID</th>
-                        <th>Name</th>
-                        <th>Depth</th>
-                        <th>Width</th>
-                        <th>Height</th>
-                        <th>Zone</th>
+                        <th>Rack ID</th>
+                        <th>Rack Name</th>
+                        <th>Number of Shelves</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -53,21 +49,16 @@
     </div>
 @stop
 
- @section('js')
+
+@section('js')
     <script type="text/javascript">
         $(function() {
 
             let yajra_table = $('.yajra-datatable').DataTable({
                 processing: true,
                 serverSide: true,
-                 ajax: "{{route('bins.index') }}",
-                columns: [
-                    {
-                        data: 'shelve_id',
-                        name: 'shelve_id'
-                    },
-                    
-                    {
+                ajax: "{{ route('racks.index') }}",
+                columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         orderable: false,
@@ -78,20 +69,8 @@
                         name: 'name'
                     },
                     {
-                        data: 'depth',
-                        name: 'depth'
-                    },
-                    {
-                        data: 'width',
-                        name: 'width'
-                    },
-                    {
-                        data: 'height',
-                        name: 'height'
-                    },
-                    {
-                        data: 'zone',
-                        name: 'zone'
+                        data: 'shelves_count',
+                        name: 'shelves_count'
                     },
                     {
                         data: 'action',
@@ -102,35 +81,34 @@
             });
             $(document).on('click', ".delete", function(e) {
                 e.preventDefault();
-             let bool = confirm('Are you sure you want to delete?');
-              
-                if(!bool) {
+                let bool = confirm('Are you sure you want to delete?');
+
+                if (!bool) {
                     return false;
                 }
                 let self = $(this);
                 let id = self.attr('data-id');
-               
+
                 self.prop('disable', true);
-
-
+                                
                 $.ajax({
                     method: 'post',
-                    url: '/inventory/bins/'+id,
+                    url: "/inventory/racks/"+id,
                     data: {
                         "_token": "{{ csrf_token() }}",
                         "_method": 'DELETE'
-                   },
-                   response: 'json',
-                    success: function (response) {
+                    },
+                    response: 'json',
+                    success: function(response) {
                         alert('Delete success');
                         location.reload()
-                    }, 
-                    error: function (response) {
+                    },
+                    error: function(response) {
 
-                        
+
                     }
                 });
             });
         });
     </script>
-@stop  
+@stop
