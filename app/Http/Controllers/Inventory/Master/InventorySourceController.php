@@ -9,6 +9,6 @@ class InventorySourceController extends Controller
 {
     public function view()
     {
-        return view('inventory.master.Source.Index');
+        return view('inventory.master.source.index');
     }
 }
