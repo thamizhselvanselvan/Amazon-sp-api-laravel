@@ -154,7 +154,6 @@ class BOEController extends Controller
 
         $file_path = 'BOE/' . $company_id . '/' . $year . '/' . $month;
         $path = (storage_path('app/' . $file_path));
-        $count =0;
         foreach ($pdfList as $file_name) {
 
             $storage_path = $path . '/' . $file_name;
@@ -163,7 +162,7 @@ class BOEController extends Controller
             $content = $pdf->getText();
 
             $pdfReader->BOEPDFReader($content, $file_path . '/' . $file_name, $company_id, $user_id);
-             $count++;
+
         }
         return response()->json(["message" => "all file uploaded successfully"]);
         // return redirect('/BOE/index')->with('success', 'All PDF Imported successfully');
