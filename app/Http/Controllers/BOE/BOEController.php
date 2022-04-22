@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use AmazonPHP\SellingPartner\Model\MerchantFulfillment\Length;
 use App\Models\Company\CompanyMaster;
-use App\Services\BOE\BOEPDFReader;
+use App\Services\BOE\BOEPdfReader;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToArray;
 
@@ -101,7 +101,7 @@ class BOEController extends Controller
         $file_path = 'BOE/' . $company_id . '/' . $year . '/' . $month;
         $path = (storage_path('app/' . $file_path));
         $files = (scandir($path));
-        $pdfReader = new BOEPDFReader();
+        $pdfReader = new BOEPdfReader();
 
         foreach ($files as $key => $file) {
             if ($key > 1) {
