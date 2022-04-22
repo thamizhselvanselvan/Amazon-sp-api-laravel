@@ -53,6 +53,7 @@ class BoeUploadServerToDo extends Command
                 if (is_file($file)) {
                     unlink($file);
                 }
+                
             }
         });
     }
