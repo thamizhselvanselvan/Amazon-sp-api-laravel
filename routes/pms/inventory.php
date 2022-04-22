@@ -67,4 +67,4 @@ Route::resource('inventory/bins', 'Inventory\Master\Rack\InventoryBinController'
 
 
 
-Route::get('inventory/Index','Inventory\Master\InventorySourceController@view');
+Route::get('inventory/Index','Inventory\Master\InventorySourceController@index');

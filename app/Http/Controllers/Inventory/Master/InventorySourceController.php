@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class InventorySourceController extends Controller
 {
-    public function view1()
+    public function index()
     {
         return view('inventory.master.source.index');
     }
