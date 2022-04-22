@@ -18,7 +18,7 @@ use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\CatalogItemsV0Api as CatalogItemsV0ApiProduct;
 use SellingPartnerApi\Api\ProductPricingApi as ProductPricingApiProduct;
 
-class BOEPDFReader
+class BOEPdfReader
 {
     public $check_table = 0;
     public $count = 0;
