@@ -63,7 +63,7 @@ class BOEController extends Controller
         'quantity',
         'descriptionof_goods'
     ];
-    
+
     public function index(Request $request)
     {
         if ($request->ajax()) {
@@ -146,22 +146,24 @@ class BOEController extends Controller
                 $fileName = uniqid() . ($fileName);
                 $desinationPath = 'BOE/' . $company_id . '/' . $year . '/' . $month . '/' . $fileName;
                 Storage::put($desinationPath,  file_get_contents($file));
-                $pdfList[] = $desinationPath;
+
+                $pdfList[] = $fileName;
             }
         }
         // reading saved file from storage
+
         $file_path = 'BOE/' . $company_id . '/' . $year . '/' . $month;
         $path = (storage_path('app/' . $file_path));
-        $files = (scandir($path));
-        foreach ($files as $key => $file) {
-            if ($key > 1) {
-                $storage_path = $path . '/' . $file;
-                $pdfParser = new Parser();
-                $pdf = $pdfParser->parseFile($storage_path);
-                $content = $pdf->getText();
+        $count =0;
+        foreach ($pdfList as $file_name) {
 
-                $pdfReader->BOEPDFReader($content, $file_path . '/' . $file, $company_id, $user_id);
-            }
+            $storage_path = $path . '/' . $file_name;
+            $pdfParser = new Parser();
+            $pdf = $pdfParser->parseFile($storage_path);
+            $content = $pdf->getText();
+
+            $pdfReader->BOEPDFReader($content, $file_path . '/' . $file_name, $company_id, $user_id);
+             $count++;
         }
         return response()->json(["message" => "all file uploaded successfully"]);
         // return redirect('/BOE/index')->with('success', 'All PDF Imported successfully');
