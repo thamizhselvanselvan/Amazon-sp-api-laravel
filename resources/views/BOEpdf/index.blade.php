@@ -24,13 +24,13 @@
     </div>
     <h2 class="mb-4">
         <a href="upload">
-            <x-adminlte-button label=" Pdf Upload" theme="primary" icon="fas fa-file-export" />
+            <x-adminlte-button label="Upload BOE" theme="primary" icon="fas fa-file-upload" />
         </a>
         <a href="Export/view">
             <x-adminlte-button label="Export to CSV" theme="primary" icon="fas fa-file-export" />
         </a>
         <a href="Download">
-            <x-adminlte-button label="Download CSV file" theme="primary" icon="fas fa-file-export" />
+            <x-adminlte-button label="Download CSV file" theme="primary" icon="fas fa-file-download" />
         </a>
     </h2>
     <table class="table table-bordered yajra-datatable table-striped">

@@ -129,7 +129,7 @@ class BOEController extends Controller
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
 
-        $pdfReader = new BOEPDFReader();
+        $pdfReader = new BOEPdfReader();
         $year = date('Y');
         $month = date('F');
         $user = Auth::user();
