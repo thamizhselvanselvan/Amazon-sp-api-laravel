@@ -10,7 +10,7 @@
 
     <div class="row">
         <div class="col">
-             <a href="{{ route('inventory.Shelves_index') }}" class="btn btn-primary">  
+             <a href="{{ route('shelves.index') }}" class="btn btn-primary">  
                 <i class="fas fa-long-arrow-alt-left"></i> Back
             </a>
         </div>
@@ -49,27 +49,38 @@
                 </x-adminlte-alert>
             @endif
 
-             <form action=" " method="POST" id="admin_user">
-
-
+             <form action="{{ route('shelves.store') }}" method="POST" id="admin_user">
                 @csrf
 
-                <div class="row">
+                <div class="row justify-content-center">
+
+                    <div class="col-6">
+
+                        <x-adminlte-select name="rack_id" label="Select Rack">
+
+                            @foreach ($rack_lists as $rack_list)
+               
+                                <option value="{{ $rack_list->id }}">{{ $rack_list->name  }}</option>
+
+                            @endforeach
+
+                        </x-adminlte-select>
+
+                    </div>
                     
-                    <div class="col-6">
-                        <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name"
-                            value="{{ old('name') }}" />
-                    </div>
-                    <div class="col-6">
-                        <x-adminlte-input label="No of Bins" name="Number of Bins" id="Number of Bins" type="text" placeholder="Number of Bins"
-                            value="{{ old('ID') }}" />
-                    </div>
                 </div>
 
+                <div class="row justify-content-center">
+                    <div class="col-6">
+                        <x-adminlte-input label="Shelves Name" name="name" type="text" placeholder="Name"
+                            value="{{ old('name') }}" />
+                    </div>
+                </div>
 
                 <div class="text-center">
                     <x-adminlte-button label="Add Shelves" theme="primary" icon="fas fa-plus" type="submit" />
                 </div>
+
             </form>
         </div>
         <div class="col"></div>

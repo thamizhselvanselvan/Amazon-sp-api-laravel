@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Database\Seeders\Inventory\INUserSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,6 +19,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             Catalog_Manager::class,
             Boe_Account::class,
+            INUserSeeder::class,
         ]);
     }
 }

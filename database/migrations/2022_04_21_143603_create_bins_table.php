@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRacksTable extends Migration
+class CreateBinsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,14 @@ class CreateRacksTable extends Migration
      */
     public function up()
     {
-        Schema::connection('in')->create('racks', function (Blueprint $table) {
+        Schema::connection('in')->create('bins', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('shelve_id');
             $table->string('name');
+            $table->string('depth');
+            $table->string('width');
+            $table->string('height');
+            $table->string('zone');
             $table->timestamps();
         });
     }
@@ -27,6 +32,6 @@ class CreateRacksTable extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->dropIfExists('racks');
+        Schema::connection('in')->dropIfExists('bins');
     }
 }

@@ -1,4 +1,6 @@
-@extends('adminlte::page')
+<h1 style="text-align: center">Under Development</h1>
+
+{{-- @extends('adminlte::page')
 
 @section('title', 'Source')
 
@@ -46,4 +48,4 @@
         </div>
     </div>
 @stop
-
+ --}}

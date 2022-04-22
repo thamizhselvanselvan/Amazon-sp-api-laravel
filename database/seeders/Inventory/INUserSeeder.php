@@ -3,6 +3,8 @@
 namespace Database\Seeders\Inventory;
 
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 use Database\Seeders\InventoryUserSeeder;
 
 class INUserSeeder extends Seeder
@@ -14,6 +16,10 @@ class INUserSeeder extends Seeder
      */
     public function run()
     {
-        //
+        $roleInvManager = Role::create(['name' => 'Inventory']);
+
+        $permissionInvAccount = Permission::create(['name' => 'Inventory']);
+
+        $roleInvManager->givePermissionTo($permissionInvAccount);
     }
 }

@@ -10,7 +10,7 @@
 
     <div class="row">
         <div class="col">
-             <a href="{{ route('inventory.rack_index') }}" class="btn btn-primary">  
+            <a href="{{ route('racks.index') }}" class="btn btn-primary">
                 <i class="fas fa-long-arrow-alt-left"></i> Back
             </a>
         </div>
@@ -49,30 +49,24 @@
                 </x-adminlte-alert>
             @endif
 
-             <form action="{{ Route('inventory.rack_save') }}" method="POST" id="admin_user">
-
-
+            <form action="{{ Route('racks.store') }}" method="POST" id="admin_user">
                 @csrf
 
                 <div class="row">
-                    
-                    <div class="col-12">
-                        <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name"
-                            value="{{ old('name') }}" />
-                    </div>
-                    {{-- <div class="col-6">
-                        <x-adminlte-input label="No of shelves" name="Number of Shelves" id="Number of Shelves" type="text" placeholder="Number of Shelves"
-                            value="{{ old('ID') }}" />
-                    </div> --}}
-                </div>
 
+                    <div class="col-12">
+                        <x-adminlte-input label="Name" name="name" type="text" placeholder="Name" value="{{ old('name') }}" />
+                    </div>
+
+                </div>
 
                 <div class="text-center">
                     <x-adminlte-button label="Add Racks" theme="primary" icon="fas fa-plus" type="submit" />
                 </div>
+
             </form>
         </div>
         <div class="col"></div>
     </div>
 
-@stop  
+@stop
