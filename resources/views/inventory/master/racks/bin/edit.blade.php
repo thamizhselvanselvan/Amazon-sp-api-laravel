@@ -70,18 +70,19 @@
                     <div class="col-6">
                         <x-adminlte-input label="Name" name="name" id="" value="{{ $name->name }}" type="text" placeholder="Name " />    
                     </div>
-            
-                    <div class=" col-6">
-                        <x-adminlte-input label="Depth" name="depth" id=""  value="{{ $name->depth }}" type="text" placeholder="Depth" />
-                    </div>
-                    
                     <div class=" col-6">
                         <x-adminlte-input label="Width" name="width" id=""  value="{{ $name->width }}" type="text" placeholder="Width" />
                     </div>
                     
                     <div class=" col-6">
-                        <x-adminlte-input label="Hight" name="height" id=""  value="{{ $name->height }}" type="text" placeholder="Height" />
+                        <x-adminlte-input label="Height" name="height" id=""  value="{{ $name->height }}" type="text" placeholder="Height" />
                     </div>
+            
+                    <div class=" col-6">
+                        <x-adminlte-input label="Depth" name="depth" id=""  value="{{ $name->depth }}" type="text" placeholder="Depth" />
+                    </div>
+                    
+                    
                     
                     <div class=" col-6">
                         <x-adminlte-input label="Zone" name="zone" id=""  value="{{ $name->zone }}" type="text" placeholder="Zone" />
@@ -93,7 +94,7 @@
         <div class="col-3"></div>
 
         <div class="col-12 text-center">
-            <x-adminlte-button label="Edit Bin" theme="primary" class="Bin.update" icon="fas fa-save" type="submit" />
+            <x-adminlte-button label="Submit" theme="primary" class="Bin.update" icon="fas fa-save" type="submit" />
         </div>
         </form>
     </div>

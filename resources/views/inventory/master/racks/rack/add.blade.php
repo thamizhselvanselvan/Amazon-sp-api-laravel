@@ -55,13 +55,13 @@
                 <div class="row">
 
                     <div class="col-12">
-                        <x-adminlte-input label="Name" name="name" type="text" placeholder="Name" value="{{ old('name') }}" />
+                        <x-adminlte-input label="Rack Name" name="name" type="text" placeholder="Name" value="{{ old('name') }}" />
                     </div>
 
                 </div>
 
                 <div class="text-center">
-                    <x-adminlte-button label="Add Racks" theme="primary" icon="fas fa-plus" type="submit" />
+                    <x-adminlte-button label="Submit" theme="primary" icon="fas fa-plus" type="submit" />
                 </div>
 
             </form>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Inventory\Master\Rack;
 
 use Illuminate\Http\Request;
 use App\Models\Inventory\Bin;
+use App\Models\Inventory\Rack;
 use App\Models\Inventory\Shelve;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -16,7 +17,7 @@ class InventoryBinController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     public function index(Request $request)
     {
 
@@ -33,7 +34,7 @@ class InventoryBinController extends Controller
 
                     $actionBtn = '<div class="d-flex"><a href="/inventory/bins/' . $row->id . '/edit" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
                     $actionBtn .= '<button data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
-                    
+
                     return $actionBtn;
                 })
                 ->rawColumns(['shelves_count', 'action'])
@@ -43,12 +44,35 @@ class InventoryBinController extends Controller
         return view('inventory.master.racks.bin.index');
     }
 
-    public function create()
+    public function create(Request $request, $rack_id = null, $shelve_id = null)
     {
-        $shelve_lists = Shelve::get();
+        $rack_lists = Rack::get();
+        $shelves = Shelve::query();
+        $shelve_lists = ($rack_id) ? $shelves->where('rack_id', $rack_id)->get() : [] ;
 
-        return view('inventory.master.racks.bin.add',compact('shelve_lists'));
+        $rack_id = $rack_id ? $rack_id : '';
+        $shelve_id = $shelve_id ? $shelve_id : '';
+
+        return view('inventory.master.racks.bin.add', compact('rack_lists','shelve_lists', 'rack_id', 'shelve_id'));
     }
+
+    // public function getshelves(Request $request)
+    // {
+    //     $shelves = DB::tables('shelves')
+    //         ->where('rack_id', $request->shelves_id)
+    //         ->get();
+    
+    //         return response()->json($shelves);
+            
+    // }
+    public function rackselect($id)
+    {
+
+        $name = Rack::where('id', $id)->first();
+
+        return view('inventory.master.racks.bin.edit', compact('name'));
+    }
+
 
     public function store(Request $request)
     {
@@ -63,7 +87,7 @@ class InventoryBinController extends Controller
 
         $shelve_exists = Shelve::where('id', $request->shelve_id)->exists();
 
-        if(!$shelve_exists) {
+        if (!$shelve_exists) {
             return redirect()->route('bins.create')->with('error', 'Selected shelve id invalid');
         }
 
@@ -110,6 +134,4 @@ class InventoryBinController extends Controller
 
         return redirect()->route('bins.index')->with('success', 'Bin has been Deleted successfully');
     }
-
-    
 }

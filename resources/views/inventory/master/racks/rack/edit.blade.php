@@ -77,7 +77,7 @@
             <div class="col-3"></div>
 
             <div class="col-12 text-center">
-                <x-adminlte-button label="Edit Rack" theme="primary" class="rack.update" icon="fas fa-save" type="submit" />
+                <x-adminlte-button label="Submit" theme="primary" class="rack.update" icon="fas fa-save" type="submit" />
             </div>
 
         </form>

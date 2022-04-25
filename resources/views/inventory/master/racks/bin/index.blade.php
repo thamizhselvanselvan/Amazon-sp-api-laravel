@@ -39,9 +39,9 @@
                         <th>Shelve ID</th>
                         <th>Bin ID</th>
                         <th>Name</th>
-                        <th>Depth</th>
                         <th>Width</th>
                         <th>Height</th>
+                        <th>Depth</th>
                         <th>Zone</th>
                         <th>Action</th>
                     </tr>
@@ -78,10 +78,6 @@
                         name: 'name'
                     },
                     {
-                        data: 'depth',
-                        name: 'depth'
-                    },
-                    {
                         data: 'width',
                         name: 'width'
                     },
@@ -89,6 +85,11 @@
                         data: 'height',
                         name: 'height'
                     },
+                    {
+                        data: 'depth',
+                        name: 'depth'
+                    },
+                   
                     {
                         data: 'zone',
                         name: 'zone'
