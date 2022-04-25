@@ -91,7 +91,7 @@
                 <div class="row justify-content-center">
 
                     <div class=" col-6">
-                        <x-adminlte-input label="Name" name="name" value="{{ $shelve->name }}" type="text" placeholder="name" />
+                        <x-adminlte-input label="Shelve Name" name="name" value="{{ $shelve->name }}" type="text" placeholder="name" />
                     </div>
                 
                 </div>    
@@ -99,7 +99,7 @@
                 <div class="col-3"></div>
 
                 <div class="col-12 text-center">
-                    <x-adminlte-button label="Edit Shelve" theme="primary" class="Shelves.update" icon="fas fa-save" type="submit" />
+                    <x-adminlte-button label="Submit" theme="primary" class="Shelves.update" icon="fas fa-save" type="submit" />
                 </div>
             </form>
         </div>

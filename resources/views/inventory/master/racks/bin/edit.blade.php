@@ -80,7 +80,7 @@
                     </div>
                     
                     <div class=" col-6">
-                        <x-adminlte-input label="Hight" name="height" id=""  value="{{ $name->height }}" type="text" placeholder="Height" />
+                        <x-adminlte-input label="Height" name="height" id=""  value="{{ $name->height }}" type="text" placeholder="Height" />
                     </div>
                     
                     <div class=" col-6">
@@ -93,7 +93,7 @@
         <div class="col-3"></div>
 
         <div class="col-12 text-center">
-            <x-adminlte-button label="Edit Bin" theme="primary" class="Bin.update" icon="fas fa-save" type="submit" />
+            <x-adminlte-button label="Submit" theme="primary" class="Bin.update" icon="fas fa-save" type="submit" />
         </div>
         </form>
     </div>

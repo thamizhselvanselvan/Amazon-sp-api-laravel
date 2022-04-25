@@ -53,19 +53,34 @@
 
                 @csrf
 
-                
-                <div class="col-12">
+                <div class="row justify-content-center">
+                <div class="col-6">
 
-                    <x-adminlte-select name="shelve_id" label="Select shelve">
+                    <x-adminlte-select name="shelve_id" label="Select Rack">
+                        title=""
 
-                        @foreach ($shelve_lists as $shelve_list)
+                        @foreach ($rack_lists as $rack_list)
            
-                            <option value="{{ $shelve_list->id }}">{{ $shelve_list->name  }}</option>
+                            <option value="{{ $rack_list->id }}">{{ $rack_list->name  }}</option>
 
                         @endforeach
 
                     </x-adminlte-select>
                 
+                </div>
+                <div class="col-6">
+
+                    <x-adminlte-select name="shelve_id" label="Select shelve">
+
+                        @foreach ($shelve_lists as $shelve_list)
+           
+                            <option value="{{$shelve_list->id }}">{{$shelve_list->name  }}</option>
+
+                        @endforeach
+
+                    </x-adminlte-select>
+                
+                </div>
             </div>
 
                 <div class="row justify-content-center">
@@ -82,7 +97,7 @@
                             value="{{ old('ID') }}" />    
                     </div>
                     <div class="col-6">
-                        <x-adminlte-input label="Hight" name="height" id="" type="text" placeholder="Height"
+                        <x-adminlte-input label="Height" name="height" id="" type="text" placeholder="Height"
                             value="{{ old('ID') }}" />    
                     </div>
                     <div class="col-6">
@@ -93,7 +108,7 @@
 
 
                 <div class="text-center">
-                    <x-adminlte-button label="Add Bin" theme="primary" icon="fas fa-plus" type="submit" />
+                    <x-adminlte-button label="Submit" theme="primary" icon="fas fa-plus" type="submit" />
                 </div>
             </form>
         </div>

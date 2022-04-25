@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Inventory\Master\Rack;
 
 use Illuminate\Http\Request;
 use App\Models\Inventory\Bin;
+use App\Models\Inventory\Rack;
 use App\Models\Inventory\Shelve;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -46,8 +47,9 @@ class InventoryBinController extends Controller
     public function create()
     {
         $shelve_lists = Shelve::get();
+        $rack_lists = Rack::get();
 
-        return view('inventory.master.racks.bin.add',compact('shelve_lists'));
+        return view('inventory.master.racks.bin.add',compact('shelve_lists','rack_lists'));
     }
 
     public function store(Request $request)

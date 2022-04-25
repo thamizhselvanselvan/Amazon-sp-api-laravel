@@ -72,13 +72,13 @@
 
                 <div class="row justify-content-center">
                     <div class="col-6">
-                        <x-adminlte-input label="Shelves Name" name="name" type="text" placeholder="Name"
+                        <x-adminlte-input label="Shelve Name" name="name" type="text" placeholder="Name"
                             value="{{ old('name') }}" />
                     </div>
                 </div>
 
                 <div class="text-center">
-                    <x-adminlte-button label="Add Shelves" theme="primary" icon="fas fa-plus" type="submit" />
+                    <x-adminlte-button label=" Submit" theme="primary" icon="fas fa-plus" type="submit" />
                 </div>
 
             </form>
