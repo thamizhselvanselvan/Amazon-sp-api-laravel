@@ -40,20 +40,14 @@ class BoeUploadServerToDo extends Command
      */
     public function handle()
     {
+        $chunk = 10;
+        BOE::where('do', 0)->chunk($chunk, function ($files_path) {
 
-        BOE::where('do', 0)->chunk(5, function ($files_path) {
+            foreach ($files_path as $fp) {
 
-            foreach ($files_path as $file_path) {
-
-                $file_path_array = explode('/', $file_path->download_file_path);
-                $file_name = $file_path_array[count($file_path_array) - 1];
-                $file = storage_path('app/' . $file_path->download_file_path);
-                Storage::disk('do')->put($file_path->download_file_path, file_get_contents($file));
-                BOE::where('id', $file_path->id)->update(['do' => 1]);
-                if (is_file($file)) {
-                    unlink($file);
-                }
-                
+                $file = storage_path('app/' . $fp->download_file_path);
+                Storage::disk('do')->put($fp->download_file_path, file_get_contents($file));
+                BOE::where('id', $fp->id)->update(['do' => 1]);
             }
         });
     }

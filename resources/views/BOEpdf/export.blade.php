@@ -16,13 +16,13 @@
 @stop
 
 @section('content')
-<div class="row">
+<!-- <div class="row">
     <div class="col-6sm">
         <a href="/BOE/index" class="btn btn-primary btn-xs">
             <i class="fas fa-long-arrow-alt-left"></i> Back
         </a>
     </div>
-</div>
+</div> -->
 <div class="row">
     <div class="col">
 
@@ -39,7 +39,7 @@
 
 <form action="{{ route('BOE.Export.Filter') }}" method="POST" id="boe_export_filter" class="row">
     @csrf
-    <div class="col-3">
+    <div class="col">
         <x-adminlte-select label="Company" name="company" id="company">
             @if($role == 'Admin')
             <option value="0">ALL</option>
@@ -52,7 +52,7 @@
     <!-- <div class="col-3">
         <x-adminlte-input label="Name Of Consignor" name="email" id="email" type="text" placeholder="" value="{{ old('email') }}" />
     </div> -->
-    <div class="col-3">
+    <div class="col">
         <div class="form-group">
             <label>Date Of Arrival:</label>
             <div class="input-group">
@@ -67,7 +67,7 @@
         </div>
         <!-- <x-adminlte-input label="Date Of Arrival" name="email" id="email" type="text" placeholder="Email" value="{{ old('email') }}" /> -->
     </div>
-    <div class="col-3">
+    <div class="col">
         <div class="form-group">
             <label>Challan Date:</label>
             <div class="input-group">
@@ -81,7 +81,7 @@
 
         </div>
     </div>
-    <div class="col-3">
+    <div class="col">
         <div class="form-group">
             <label>Upload Date:</label>
             <div class="input-group">
@@ -95,14 +95,15 @@
 
         </div>
     </div>
+    <div class="col-2">
+        <div style="margin-top: 2.4rem;">
+            <x-adminlte-button label="Search" theme="primary" icon="fas fa-search" id="search" class="btn-sm" />
+            <x-adminlte-button label="Export" theme="primary" icon="fas fa-file-export" id='export_boe' class="btn-sm" />
+        </div>
+    </div>
 </form>
 <div class="row">
 
-    <div class="text-center col-12">
-
-        <x-adminlte-button label="Search" theme="primary" icon="fas fa-search" id="search" class="btn-sm" />
-        <x-adminlte-button label="Export" theme="primary" icon="fas fa-file-export" id='export_boe' class="btn-sm" />
-    </div>
 </div>
 <br>
 <table class="table table-bordered yajra-datatable table-striped" id="report_table">
@@ -123,7 +124,7 @@
             <td>Total(Duty+Cess+IGST)</td>
             <td>Interest</td>
             <td>CBX II No</td>
-            <td>HSN Code Qty</td>
+            <td>HSN Code</td>
             <td>Qty</td>
             <td>Date of Arrival</td>
         </tr>
@@ -140,19 +141,19 @@
     $(document).ready(function($) {
         $("#report_table").hide();
         $('.datepicker').daterangepicker({
-            autoUpdateInput: false,   
+            autoUpdateInput: false,
             locale: {
                 format: 'YYYY-MM-DD',
             },
         });
 
         $('.datepicker').on('apply.daterangepicker', function(ev, picker) {
-      $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-  });
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
 
-  $('.datepicker').on('cancel.daterangepicker', function(ev, picker) {
-      $(this).val('');
-  });
+        $('.datepicker').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
 
     });
     $('#export_boe').on('click', function(e) {
@@ -178,7 +179,7 @@
                 data: {
                     company: company,
                     date_of_arrival: date_of_arrival,
-                    upload_date:upload_date,
+                    upload_date: upload_date,
                     challan_date: challan_date
                 },
             }),
@@ -194,15 +195,17 @@
                 },
                 {
                     data: 'courier_registration_number',
-                    name: 'courier_registration_number'
+                    name: 'courier_registration_number',
+                    orderable: false,
                 },
                 {
                     data: 'name_of_the_authorized_courier',
-                    name: 'name_of_the_authorized_courier'
+                    name: 'name_of_the_authorized_courier',
+                    orderable: false,
                 },
                 {
                     data: 'name_of_consignor',
-                    name: 'name_of_consignor'
+                    name: 'name_of_consignor',
                 },
                 {
                     data: 'name_of_consignee',
@@ -210,40 +213,57 @@
                 },
                 {
                     data: 'rateof_exchange',
-                    name: 'rateof_exchange'
+                    name: 'rateof_exchange',
+                    orderable: false,
+                    searchable: false
                 },
 
                 {
                     data: 'duty',
-                    name: 'duty'
+                    name: 'duty',
+                    orderable: false,
+                    searchable: false
                 },
                 {
                     data: 'swsrchrg',
-                    name: 'swsrchrg'
+                    name: 'swsrchrg',
+                    orderable: false,
+                    searchable: false
                 },
                 {
                     data: 'insurance',
-                    name: 'insurance'
+                    name: 'insurance',
+                    orderable: false,
+                    searchable: false
                 },
                 {
                     data: 'igst',
-                    name: 'igst'
+                    name: 'igst',
+                    orderable: false,
+                    searchable: false
                 },
                 {
                     data: 'duty_rs',
-                    name: 'duty_rs'
+                    name: 'duty_rs',
+                    
                 },
                 {
                     data: 'interest',
-                    name: 'interest'
+                    name: 'interest',
+                    orderable: false,
+                    searchable: false
                 },
                 {
                     data: 'cbe_number',
-                    name: 'cbe_number'
+                    name: 'cbe_number',
+                    orderable: false,
+                    searchable: false
                 },
                 {
                     data: 'ctsh',
-                    name: 'ctsh'
+                    name: 'ctsh',
+                    orderable: false,
+                    searchable: false
                 },
                 {
                     data: 'quantity',
