@@ -44,7 +44,6 @@ class BoeUploadServerToDo extends Command
         BOE::where('do', 0)->chunk($chunk, function ($files_path) {
 
             foreach ($files_path as $fp) {
-
                 $file = storage_path('app/' . $fp->download_file_path);
                 Storage::disk('do')->put($fp->download_file_path, file_get_contents($file));
                 BOE::where('id', $fp->id)->update(['do' => 1]);

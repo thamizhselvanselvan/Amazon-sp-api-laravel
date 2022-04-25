@@ -36,6 +36,16 @@
 </div>
 
 <table class="table table-bordered yajra-datatable table-striped">
+    <!-- <tfoot>
+        <tr>
+            <th>Name</th>
+            <th>Position</th>
+            <th>Office</th>
+            <th>Age</th>
+            <th>Start date</th>
+            <th>Salary</th>
+        </tr>
+    </tfoot> -->
     <thead>
     <tr>
             <td>S/N</td>
@@ -60,6 +70,7 @@
     </thead>
     <tbody>
     </tbody>
+   
 </table>
 
 
@@ -169,5 +180,35 @@
 
             ]
     });
+//     $('.yajra-datatable tfoot th').each( function () {
+//         var title = $(this).text();
+//         $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+//     } );
+
+//     var table = $('.yajra-datatable').DataTable({
+//         initComplete: function () {
+//             // Apply the search
+//             this.api().columns().every( function () {
+//                 var that = this;
+ 
+//                 $( 'input', this.footer() ).on( 'keyup change clear', function () {
+//                     if ( that.search() !== this.value ) {
+//                         that
+//                             .search( this.value )
+//                             .draw();
+//                     }
+//                 } );
+//             } );
+//         }
+//     });
+    	
+// $('.yajra-datatable tfoot tr').appendTo('.yajra-datatable thead');
+// var table = $('.yajra-datatable').DataTable({
+//     "columnDefs": [
+//         { "searchable": false, "targets": [1,2] }
+//     ],
+//     });
+
+// $('.yajra-datatable').api().column( [0,1,2] );
 </script>
 @stop
