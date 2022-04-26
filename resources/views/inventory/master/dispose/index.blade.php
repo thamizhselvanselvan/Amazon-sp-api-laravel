@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'All Users with roles')
+@section('title', 'Dispose')
 
 @section('css')
 
@@ -9,7 +9,7 @@
 @stop
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Admin And User Lists</h1>
+    <h1 class="m-0 text-dark">Dispose</h1>
 
 @stop
 
@@ -26,23 +26,24 @@
                     </div>
                 @endif
             </div>
-
+ 
             <h2 class="mb-4">
-                <a href="{{ route('create_user.create') }}">
-                    <x-adminlte-button label="Add User" theme="primary" icon="fas fa-plus" />
+                <a href="{{ route('disposes.create') }}">
+
+                    <x-adminlte-button label="Add Dispose reason" theme="primary" icon="fas fa-plus" />
                 </a>
-            </h2>
+            </h2> 
 
             <table class="table table-bordered yajra-datatable table-striped">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Permission</th>
+                        <th>Reson</th>
                         <th>Action</th>
+                       
                     </tr>
                 </thead>
+                
                 <tbody>
                 </tbody>
             </table>
@@ -51,14 +52,14 @@
 @stop
 
 
-{{-- @section('js')
+@section('js')
     <script type="text/javascript">
         $(function() {
 
             let yajra_table = $('.yajra-datatable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ url('admin/user_list') }}",
+                ajax: "{{ route('disposes.index') }}",
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -66,17 +67,9 @@
                         searchable: false
                     },
                     {
-                        data: 'name',
-                        name: 'name'
-                    },
-                    {
-                        data: 'email',
-                        name: 'email'
-                    },
-                    {
-                        data: 'permission',
-                        name: 'permission'
-                    },
+                        data: 'reason',
+                        name: 'reason'
+                    },                
                     {
                         data: 'action',
                         orderable: false,
@@ -84,7 +77,42 @@
                     },
                 ]
             });
+            $(document).on('click', ".delete", function(e) {
+                e.preventDefault();
+                let bool = confirm('Are you sure you want to delete?');
 
+                if (!bool) {
+                    return false;
+                }
+                let self = $(this);
+                let id = self.attr('data-id');
+
+                self.prop('disable', true);
+                                
+                $.ajax({
+                    method: 'post',
+                    url: "/inventory/disposes/"+id,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "_method": 'DELETE'
+                    },
+                    response: 'json',
+                    success: function(response) {
+                        alert('Delete success');
+                        location.reload()
+                    },
+                    error: function(response) {
+
+
+                    }
+                });
+            });
         });
     </script>
-@stop --}}
+@stop
+
+
+
+
+
+

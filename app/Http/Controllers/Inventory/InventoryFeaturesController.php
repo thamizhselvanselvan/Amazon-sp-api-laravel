@@ -9,8 +9,8 @@ use App\Http\Controllers\Controller;
 
 class InventoryFeaturesController extends Controller
 {
-    public function FeaturesIndex()
+    public function index()
     {
-        return view('Inventory.Features.Index');
+        return view('inventory.features.index');
     }
 }
