@@ -6,23 +6,18 @@ use App\Http\Controllers\Inventory\Master\Rack\InventoryRackController;
 
 
 
-Route::get('inventory/master/index', 'Inventory\InventoryMasterController@IndexView');
-Route::get('inventory/features/Index', 'Inventory\InventoryFeaturesController@FeaturesIndex');
-Route::get('inventory/reporting/Index', 'Inventory\InventoryReportingController@ReportingIndex');
-Route::get('inventory/Stock/Index', 'Inventory\InventoryStockController@StockIndex');
-Route::get('inventory/System/Index', 'Inventory\InventorySystemController@SystemIndex');
+// Route::get('inventory/master/index', 'Inventory\InventoryMasterController@IndexView');
+// Route::get('inventory/features/Index', 'Inventory\InventoryFeaturesController@FeaturesIndex');
+// Route::get('inventory/reporting/Index', 'Inventory\InventoryReportingController@ReportingIndex');
+// Route::get('inventory/Stock/Index', 'Inventory\InventoryStockController@StockIndex');
+// Route::get('inventory/System/Index', 'Inventory\InventorySystemController@SystemIndex');
 
-Route::get('Inventory/Roles/Index', 'Inventory\InventoryMasterController@RolesView');
+// Route::get('Inventory/Roles/Index', 'Inventory\InventoryMasterController@RolesView');
 
-Route::get('Inventory/Master/Users/Index', 'Inventory\Master\InventoryUserController@UsersView')->name('index.show');
-Route::get('Inventory/Master/Users/Add', 'Inventory\Master\InventoryUserController@create')->name('create_user.create');
-Route::post('admin/admin/save_user', 'Admin\AdminManagementController@save_user')->name('inventory_save_user');
-
-Route::get('inventory/bin/index','Inventory\Master\Rack\InventoryBinController@rackselect')->name('inventory.bin_shelve');;
-/**
- * 
- Route::get('inventory/racks/rack_list', 'Inventory\Master\InventoryRackController@index')->name('inv.rack_list');
- */
+// Route::get('Inventory/Master/Users/Index', 'Inventory\Master\InventoryUserController@UsersView')->name('index.show');
+// Route::get('Inventory/Master/Users/Add', 'Inventory\Master\InventoryUserController@create')->name('create_user.create');
+// Route::post('admin/admin/save_user', 'Admin\AdminManagementController@save_user')->name('inventory_save_user');
+// Route::get('inventory/bin/index','Inventory\Master\Rack\InventoryBinController@rackselect')->name('inventory.bin_shelve');;
 
  
 Route::resource('inventory/racks', 'Inventory\Master\Rack\InventoryRackController');
@@ -33,7 +28,11 @@ Route::get('inventory/bins/create/rack/{rack_id?}/shelve/{shelve_id?}','Inventor
 
 
 Route::resource('inventory/bins', 'Inventory\Master\Rack\InventoryBinController');
+Route::resource('inventory/sources', 'Inventory\Master\InventorySourceController');
+Route::resource('inventory/destinations','Inventory\Master\InventoryDestinationController');
+Route::resource('inventory/disposes','Inventory\Master\InventoryDisposeController');
 
+Route::resource('inventory/features','Inventory\InventoryFeaturesController');
 
 //  Route::get('inventory/racks','Inventory\Master\Rack\InventoryRackController@index')->name('inventory.rack.index');
 //  Route::get('inventory/racks/create','Inventory\Master\Rack\InventoryRackController@create')->name('inventory.rack.create');

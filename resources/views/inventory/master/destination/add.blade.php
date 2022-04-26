@@ -10,7 +10,7 @@
 
     <div class="row">
         <div class="col">
-             <a href="{{ route('inventory.destination_index') }}" class="btn btn-primary">  
+             <a href="{{ route('destinations.index') }}" class="btn btn-primary">  
                 <i class="fas fa-long-arrow-alt-left"></i> Back
             </a>
         </div>
@@ -49,7 +49,7 @@
                 </x-adminlte-alert>
             @endif
 
-             <form action=" " method="POST" id="admin_user">
+             <form action=" {{ route('destinations.store') }}" method="POST" id="admin_user">
 
 
                 @csrf

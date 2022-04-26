@@ -10,7 +10,7 @@
 
     <div class="row">
         <div class="col">
-             <a href="{{ route('inventory.source_index') }}" class="btn btn-primary">  
+            <a href="{{ route('sources.index') }}" class="btn btn-primary"> 
                 <i class="fas fa-long-arrow-alt-left"></i> Back
             </a>
         </div>
@@ -49,12 +49,13 @@
                 </x-adminlte-alert>
             @endif
 
-             <form action=" " method="POST" id="admin_user">
+             <form action=" {{ Route('sources.store') }}" method="POST" id="admin_user">
 
 
                 @csrf
 
-                <div class="row">
+                <div class="row justify-content-center">
+
                     
                     <div class="col-9">
                         <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name"
@@ -64,7 +65,7 @@
 
 
                 <div class="text-center">
-                    <x-adminlte-button label="Add Source" theme="primary" icon="fas fa-plus" type="submit" />
+                    <x-adminlte-button label="Submit" theme="primary" icon="fas fa-plus" type="submit" />
                 </div>
             </form>
         </div>

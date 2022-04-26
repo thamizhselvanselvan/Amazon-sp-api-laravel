@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class RemoveNumberOfShelvesFromInRacks extends Migration
+class CreateDisposesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class RemoveNumberOfShelvesFromInRacks extends Migration
      */
     public function up()
     {
-        Schema::connection('in')->table('racks', function (Blueprint $table) {
-            $table->dropColumn('number of Shelves');
+        Schema::connection('in')->create('disposes', function (Blueprint $table) {
+            $table->id();
+            $table->string('reason',1000);
+            $table->timestamps();
         });
     }
 
@@ -25,8 +27,6 @@ class RemoveNumberOfShelvesFromInRacks extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->table('racks', function (Blueprint $table) {
-            $table->string('number of Shelves');
-        });
+        Schema::connection('in')->dropIfExists('disposes');
     }
 }

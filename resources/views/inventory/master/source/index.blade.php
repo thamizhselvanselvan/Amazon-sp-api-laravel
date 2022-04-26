@@ -1,6 +1,4 @@
-<h1 style="text-align: center">Under Development</h1>
-
-{{-- @extends('adminlte::page')
+ @extends('adminlte::page')
 
 @section('title', 'Source')
 
@@ -11,7 +9,7 @@
 @stop
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Source</h1>
+    <h1 class="m-0 text-dark">Inventory Source</h1>
 
 @stop
 
@@ -30,7 +28,7 @@
             </div>
 
             <h2 class="mb-4">
-                <a href="{{ route('inventory.source_add') }}">
+                <a href="{{ Route('sources.create') }}">
                     <x-adminlte-button label="Add Source" theme="primary" icon="fas fa-plus" />
                 </a>
             </h2>
@@ -40,6 +38,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Name</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -48,4 +47,64 @@
         </div>
     </div>
 @stop
- --}}
+
+
+@section('js')
+    <script type="text/javascript">
+        $(function() {
+
+            let yajra_table = $('.yajra-datatable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('sources.index') }}",
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'name',
+                        name: 'name'
+                    },                
+                    {
+                        data: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
+                ]
+            });
+            $(document).on('click', ".delete", function(e) {
+                e.preventDefault();
+                let bool = confirm('Are you sure you want to delete?');
+
+                if (!bool) {
+                    return false;
+                }
+                let self = $(this);
+                let id = self.attr('data-id');
+
+                self.prop('disable', true);
+                                
+                $.ajax({
+                    method: 'post',
+                    url: "/inventory/sources/"+id,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "_method": 'DELETE'
+                    },
+                    response: 'json',
+                    success: function(response) {
+                        alert('Delete success');
+                        location.reload()
+                    },
+                    error: function(response) {
+
+
+                    }
+                });
+            });
+        });
+    </script>
+@stop
+
