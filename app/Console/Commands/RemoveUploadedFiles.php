@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\BOE\RemoveUploadedFile;
 use Illuminate\Console\Command;
 
 class RemoveUploadedFiles extends Command
@@ -11,14 +12,14 @@ class RemoveUploadedFiles extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'pms:remove-uploaded-boe';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Remove uploaded file from server';
 
     /**
      * Create a new command instance.
@@ -37,6 +38,6 @@ class RemoveUploadedFiles extends Command
      */
     public function handle()
     {
-        return 0;
+        RemoveUploadedFile::dispatch();
     }
 }

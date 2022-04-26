@@ -66,38 +66,38 @@ class BOEController extends Controller
 
     public function index(Request $request)
     {
-        
+
         if ($request->ajax()) {
             $user = Auth::user();
             $roles = ($user->roles->first()->name);
             $company_id = $user->company_id;
-            $boe_data = BOE::when($roles != "Admin", function($query) use($company_id){
-                $query-> where('company_id', $company_id);
+            $boe_data = BOE::when($roles != "Admin", function ($query) use ($company_id) {
+                $query->where('company_id', $company_id);
             });
 
             return DataTables::of($boe_data)
-            ->addIndexColumn()
-            ->addColumn('duty', function ($duty) {
-                if (isset($duty['duty_details'])) {
+                ->addIndexColumn()
+                ->addColumn('duty', function ($duty) {
+                    if (isset($duty['duty_details'])) {
 
-                    $duty = (json_decode($duty['duty_details']));
-                    return $duty[0]->DutyAmount;
-                }
-            })
-            ->addColumn('swsrchrg', function ($swchar) {
-                if (isset($swchar['duty_details'])) {
-                    $swchar = (json_decode($swchar['duty_details']));
-                    return $swchar[2]->DutyAmount;
-                }
-            })
-            ->addColumn('igst', function ($igst) {
-                if (isset($igst['duty_details'])) {
-                    $igst = (json_decode($igst['duty_details']));
-                    return $igst[3]->DutyAmount;
-                }
-            })
-            ->rawColumns(['duty', 'swsrchrg', 'igst'])
-            ->make(true);
+                        $duty = (json_decode($duty['duty_details']));
+                        return $duty[0]->DutyAmount;
+                    }
+                })
+                ->addColumn('swsrchrg', function ($swchar) {
+                    if (isset($swchar['duty_details'])) {
+                        $swchar = (json_decode($swchar['duty_details']));
+                        return $swchar[2]->DutyAmount;
+                    }
+                })
+                ->addColumn('igst', function ($igst) {
+                    if (isset($igst['duty_details'])) {
+                        $igst = (json_decode($igst['duty_details']));
+                        return $igst[3]->DutyAmount;
+                    }
+                })
+                ->rawColumns(['duty', 'swsrchrg', 'igst'])
+                ->make(true);
         }
         return view('BOEpdf.index');
     }
@@ -186,7 +186,6 @@ class BOEController extends Controller
             $content = $pdf->getText();
 
             $pdfReader->BOEPDFReader($content, $file_path . '/' . $file_name, $company_id, $user_id);
-
         }
         return response()->json(["message" => "all file uploaded successfully"]);
         // return redirect('/BOE/index')->with('success', 'All PDF Imported successfully');
@@ -328,12 +327,12 @@ class BOEController extends Controller
                 $query->whereBetween('challan_date', [$date[0], $date[1]]);
             })
             ->when(!empty(trim($request->date_of_arrival)), function ($query) use ($date_of_arrival) {
-               
+
                 $date = $this->split_date($date_of_arrival);
                 $query->whereBetween('date_of_arrival', [$date[0], $date[1]]);
             })
             ->when(!empty(trim($request->upload_date)), function ($query) use ($upload_date) {
-                
+
                 $date = $this->split_date($upload_date);
                 $query->whereBetween('created_at', [$date[0], $date[1]]);
             })
@@ -443,5 +442,11 @@ class BOEController extends Controller
         }
         echo 'success';
         // return redirect()->back();
+    }
+
+    public function RemoveUploadedFiles()
+    {
+        //  UploadBoeToDO::dispatch();
+        
     }
 }
