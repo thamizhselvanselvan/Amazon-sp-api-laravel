@@ -54,7 +54,7 @@
 
                 @csrf
 
-                <div class="row">
+                <div class="row justify-content-center">
                     
                     <div class="col-9">
                         <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name"
