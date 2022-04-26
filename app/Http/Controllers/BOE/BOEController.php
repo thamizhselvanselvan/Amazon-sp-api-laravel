@@ -446,7 +446,17 @@ class BOEController extends Controller
 
     public function RemoveUploadedFiles()
     {
-        //  UploadBoeToDO::dispatch();
-        
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan pms:remove-uploaded-boe > /dev/null &";
+            exec($command);
+
+            Log::warning("Export asin command executed production  !!!");
+        } else {
+
+            // Log::warning("Export asin command executed local !");
+            Artisan::call('pms:remove-uploaded-boe');
+        }
     }
 }
