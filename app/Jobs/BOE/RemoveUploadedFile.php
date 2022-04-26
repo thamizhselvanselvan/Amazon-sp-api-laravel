@@ -11,7 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 
-class UploadBoeToDO implements ShouldQueue
+class RemoveUploadedFile implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     protected $timeout = 500;
@@ -32,15 +32,14 @@ class UploadBoeToDO implements ShouldQueue
      */
     public function handle()
     {
-        
-        $chunk = 10;
-        BOE::where('do', 0)->chunk($chunk, function ($files_path) {
+        // $chunk = 10;
+        // BOE::where('do', 0)->chunk($chunk, function ($files_path) {
 
-            foreach ($files_path as $fp) {
-                $file = storage_path('app/' . $fp->download_file_path);
-                Storage::disk('do')->put($fp->download_file_path, file_get_contents($file));
-                BOE::where('id', $fp->id)->update(['do' => 1]);
-            }
-        });
+        //     foreach ($files_path as $fp) {
+        //         $file = storage_path('app/' . $fp->download_file_path);
+        //         Storage::disk('do')->put($fp->download_file_path, file_get_contents($file));
+        //         BOE::where('id', $fp->id)->update(['do' => 1]);
+        //     }
+        // });
     }
 }
