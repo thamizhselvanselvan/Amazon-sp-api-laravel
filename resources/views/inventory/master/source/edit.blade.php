@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Edit Rack')
+@section('title', 'Edit Source')
 
 @section('css')
 
@@ -21,7 +21,7 @@
 
     <div class="row mt-3">
         <div class="col">
-            <h1 class="m-0 text-dark text-center ">Edit Rack</h1>
+            <h1 class="m-0 text-dark text-center ">Edit Source</h1>
         </div>
     </div>
 
