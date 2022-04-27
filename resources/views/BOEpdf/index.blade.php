@@ -7,7 +7,7 @@
     <h1 class="m-0 text-dark col">Bill OF Entry</h1>
     <h2 class="mb-4 text-right col">
         <a href="upload">
-            <x-adminlte-button label="Upload BOE" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
+            <x-adminlte-button label="Upload New BOE Files" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
         </a>
         <a href="Export/view">
             <x-adminlte-button label="Export to CSV" theme="primary" icon="fas fa-file-export" class="btn-sm" />
@@ -38,22 +38,22 @@
 <table class="table table-bordered yajra-datatable table-striped">
     <thead>
         <tr>
-            <td>S/N</td>
+        <td>S/N</td>
             <!-- <td>Company Name</td> -->
             <td>AWB No.</td>
-            <td>Courier Registration Number</td>
-            <td>Name of the Authorized Courier</td>
+            <td>Reg No</td>
+            <td>Authorized Courier</td>
             <td>Name of Consignor</td>
             <td>Name of Consignee</td>
-            <td>BOE Booking Rate</td>
+            <td>Rate</td>
             <td>Duty</td>
             <td>SW Srchrg</td>
             <td>Insurance</td>
             <td>IGST</td>
-            <td>Total(Duty+Cess+IGST)</td>
+            <td>Total</td>
             <td>Interest</td>
-            <td>CBX II No</td>
-            <td>HSN Code Qty</td>
+            <!-- <td>CBX II No</td> -->
+            <td>HSN Code</td>
             <td>Qty</td>
             <td>Date of Arrival</td>
         </tr>
@@ -157,12 +157,12 @@
                 orderable: false,
                 searchable: false
             },
-            {
-                data: 'cbe_number',
-                name: 'cbe_number',
-                orderable: false,
-                searchable: false
-            },
+            // {
+            //     data: 'cbe_number',
+            //     name: 'cbe_number',
+            //     orderable: false,
+            //     searchable: false
+            // },
             {
                 data: 'ctsh',
                 name: 'ctsh',

@@ -19,6 +19,13 @@
 
 @stop
 
+@section('css')
+<style>
+  div.form-group{
+    margin-bottom: 0rem;
+  }
+  </style>
+@stop
 
 @section('content')
 
@@ -46,7 +53,7 @@
     @endif
 
     <x-adminlte-alert theme="danger" title="Error" dismissable id="alert">
-    You can upload miximum 200 BOE at a time.
+      Upload miximum 150 BOE at a time.
     </x-adminlte-alert>
 
     <form class="row" id="multi-file-upload" method="POST" action="javascript:void(0)" accept-charset="utf-8" enctype="multipart/form-data">
@@ -54,12 +61,10 @@
 
       <div class="col-3"></div>
 
-      <div class="col-6">
-        <x-adminlte-input label="Select BOE Files" name="files[]" id="files" type="file" multiple />
+      <div class="col-6" >
+        <x-adminlte-input label="Select BOE Files" name="files[]" id="files" type="file" multiple/>
+          <label > Upload up to 150 BEO at a time</label>
       </div>
-
-      <div class="col-3"></div>
-
       <div class="col-12">
         <div class="text-center">
           <x-adminlte-button label="Upload BOE" theme="primary" class="add_ btn-sm" id="upload_pdf" icon="fas fa-plus" type="submit" />
@@ -81,7 +86,7 @@
       e.preventDefault();
       let files = $('#files')[0].files;
       let TotalFiles = $('#files')[0].files.length; //Total files
-      if(TotalFiles >200){
+      if (TotalFiles > 200) {
 
         $('#alert').show();
         this.reset();

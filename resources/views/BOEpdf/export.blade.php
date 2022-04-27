@@ -112,18 +112,18 @@
             <td>S/N</td>
             <!-- <td>Company Name</td> -->
             <td>AWB No.</td>
-            <td>Courier Registration Number</td>
-            <td>Name of the Authorized Courier</td>
+            <td>Reg No</td>
+            <td>Authorized Courier</td>
             <td>Name of Consignor</td>
             <td>Name of Consignee</td>
-            <td>BOE Booking Rate</td>
+            <td>Rate</td>
             <td>Duty</td>
             <td>SW Srchrg</td>
             <td>Insurance</td>
             <td>IGST</td>
-            <td>Total(Duty+Cess+IGST)</td>
+            <td>Total</td>
             <td>Interest</td>
-            <td>CBX II No</td>
+            <!-- <td>CBX II No</td> -->
             <td>HSN Code</td>
             <td>Qty</td>
             <td>Date of Arrival</td>
@@ -253,12 +253,12 @@
                     orderable: false,
                     searchable: false
                 },
-                {
-                    data: 'cbe_number',
-                    name: 'cbe_number',
-                    orderable: false,
-                    searchable: false
-                },
+                // {
+                //     data: 'cbe_number',
+                //     name: 'cbe_number',
+                //     orderable: false,
+                //     searchable: false
+                // },
                 {
                     data: 'ctsh',
                     name: 'ctsh',
