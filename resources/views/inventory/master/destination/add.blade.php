@@ -64,7 +64,7 @@
 
 
                 <div class="text-center">
-                    <x-adminlte-button label="Add Destination" theme="primary" icon="fas fa-plus" type="submit" />
+                    <x-adminlte-button label="Submit" theme="primary" icon="fas fa-plus" type="submit" />
                 </div>
             </form>
         </div>

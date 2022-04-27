@@ -406,7 +406,7 @@ return [
                             'text' => 'Source',
                             'url'  => 'inventory/sources',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin'],
+                            'can' =>  ['Admin','Inventory'],
                             // 'submenu' => [
                             //     [
                             //         'text' => 'Amazon',
@@ -435,7 +435,7 @@ return [
                             'text' => 'Destination',
                             'url'  => 'inventory/destinations',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin'],  
+                            'can' =>  ['Admin','Inventory'],  
 
                             // 'submenu' => [
                             //     [
@@ -464,7 +464,7 @@ return [
                     'submenu' => [
                         [
                             'text' => 'Inwarding',
-                            'url'  => 'inventory/features',
+                            'url'  => 'inventory/inwardings',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin'],
                         ],

@@ -9,7 +9,7 @@
 @stop
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Inventory Racks Shelves</h1>
+    <h1 class="m-0 text-dark">Inventory  Shelves</h1>
 
 @stop
 
