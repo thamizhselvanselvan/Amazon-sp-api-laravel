@@ -34,6 +34,8 @@ Route::resource('inventory/disposes','Inventory\Master\InventoryDisposeControlle
 
 Route::resource('inventory/features','Inventory\InventoryFeaturesController');
 
+Route::resource('inventory/inwardings','Inventory\Stock\InventoryInwardingController');
+
 //  Route::get('inventory/racks','Inventory\Master\Rack\InventoryRackController@index')->name('inventory.rack.index');
 //  Route::get('inventory/racks/create','Inventory\Master\Rack\InventoryRackController@create')->name('inventory.rack.create');
 //  Route::post('inventory/racks','Inventory\Master\Rack\InventoryRackController@store')->name('inventory.rack.store');

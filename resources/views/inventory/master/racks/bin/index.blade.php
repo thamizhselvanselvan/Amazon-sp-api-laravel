@@ -9,7 +9,7 @@
 @stop
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Inventory Bin</h1>
+    <h1 class="m-0 text-dark">Inventory Bins</h1>
 
 @stop
 
