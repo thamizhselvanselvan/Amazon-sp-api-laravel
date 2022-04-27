@@ -36,18 +36,8 @@
 </div>
 
 <table class="table table-bordered yajra-datatable table-striped">
-    <!-- <tfoot>
-        <tr>
-            <th>Name</th>
-            <th>Position</th>
-            <th>Office</th>
-            <th>Age</th>
-            <th>Start date</th>
-            <th>Salary</th>
-        </tr>
-    </tfoot> -->
     <thead>
-    <tr>
+        <tr>
             <td>S/N</td>
             <!-- <td>Company Name</td> -->
             <td>AWB No.</td>
@@ -70,7 +60,17 @@
     </thead>
     <tbody>
     </tbody>
-   
+    <tfoot>
+        <tr>
+            <th>AWB No.</th>
+            <th>Courier Registration Number</th>
+            <th>Name of the Authorized Courier</th>
+            <th>Name of Consignor</th>
+            <th>Name of Consignee</th>
+            <th>BOE Booking Rate</th>
+        </tr>
+    </tfoot>
+
 </table>
 
 
@@ -88,127 +88,120 @@
 
         ajax: "{{ url('BOE/index') }}",
         columns: [{
-                    data: 'DT_RowIndex',
-                    name: 'DT_RowIndex',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'hawb_number',
-                    name: 'hawb_number'
-                },
-                {
-                    data: 'courier_registration_number',
-                    name: 'courier_registration_number',
-                    orderable: false,
-                },
-                {
-                    data: 'name_of_the_authorized_courier',
-                    name: 'name_of_the_authorized_courier',
-                    orderable: false,
-                },
-                {
-                    data: 'name_of_consignor',
-                    name: 'name_of_consignor',
-                },
-                {
-                    data: 'name_of_consignee',
-                    name: 'name_of_consignee'
-                },
-                {
-                    data: 'rateof_exchange',
-                    name: 'rateof_exchange',
-                    orderable: false,
-                    searchable: false
-                },
+                data: 'DT_RowIndex',
+                name: 'DT_RowIndex',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'hawb_number',
+                name: 'hawb_number'
+            },
+            {
+                data: 'courier_registration_number',
+                name: 'courier_registration_number',
+                orderable: false,
+            },
+            {
+                data: 'name_of_the_authorized_courier',
+                name: 'name_of_the_authorized_courier',
+                orderable: false,
+            },
+            {
+                data: 'name_of_consignor',
+                name: 'name_of_consignor',
+            },
+            {
+                data: 'name_of_consignee',
+                name: 'name_of_consignee'
+            },
+            {
+                data: 'rateof_exchange',
+                name: 'rateof_exchange',
+                orderable: false,
+                searchable: false
+            },
 
-                {
-                    data: 'duty',
-                    name: 'duty',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'swsrchrg',
-                    name: 'swsrchrg',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'insurance',
-                    name: 'insurance',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'igst',
-                    name: 'igst',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'duty_rs',
-                    name: 'duty_rs',
-                    
-                },
-                {
-                    data: 'interest',
-                    name: 'interest',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'cbe_number',
-                    name: 'cbe_number',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'ctsh',
-                    name: 'ctsh',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'quantity',
-                    name: 'quantity'
-                },
-                {
-                    data: 'date_of_arrival',
-                    name: 'date_of_arrival'
-                },
+            {
+                data: 'duty',
+                name: 'duty',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'swsrchrg',
+                name: 'swsrchrg',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'insurance',
+                name: 'insurance',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'igst',
+                name: 'igst',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'duty_rs',
+                name: 'duty_rs',
 
-            ]
+            },
+            {
+                data: 'interest',
+                name: 'interest',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'cbe_number',
+                name: 'cbe_number',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'ctsh',
+                name: 'ctsh',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'quantity',
+                name: 'quantity'
+            },
+            {
+                data: 'date_of_arrival',
+                name: 'date_of_arrival'
+            },
+
+        ],
+        initComplete: function() {
+            // Apply the search
+            this.api().columns([1, 2, 4, 5, 6]).every(function() {
+                var that = this;
+                $('input', this.footer()).on('keyup clear', function() {
+                    if (that.search() !== this.value) {
+                        that
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            });
+        }
     });
-//     $('.yajra-datatable tfoot th').each( function () {
-//         var title = $(this).text();
-//         $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
-//     } );
 
-//     var table = $('.yajra-datatable').DataTable({
-//         initComplete: function () {
-//             // Apply the search
-//             this.api().columns().every( function () {
-//                 var that = this;
- 
-//                 $( 'input', this.footer() ).on( 'keyup change clear', function () {
-//                     if ( that.search() !== this.value ) {
-//                         that
-//                             .search( this.value )
-//                             .draw();
-//                     }
-//                 } );
-//             } );
-//         }
-//     });
-    	
-// $('.yajra-datatable tfoot tr').appendTo('.yajra-datatable thead');
-// var table = $('.yajra-datatable').DataTable({
-//     "columnDefs": [
-//         { "searchable": false, "targets": [1,2] }
-//     ],
-//     });
 
-// $('.yajra-datatable').api().column( [0,1,2] );
+    $(document).ready(function() {
+        // Setup - add a text input to each footer cell
+        $('.yajra-datatable tfoot th').each(function() {
+            var title = $(this).text();
+            $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+            $('.yajra-datatable tfoot tr').appendTo('.yajra-datatable thead');
+        });
+    });
 </script>
 @stop
