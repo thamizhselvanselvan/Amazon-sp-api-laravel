@@ -83,10 +83,11 @@
   $(function() {
     $("#alert").hide();
     $('#multi-file-upload').submit(function(e) {
+      $("#upload_pdf").prop("disabled", true);
       e.preventDefault();
       let files = $('#files')[0].files;
       let TotalFiles = $('#files')[0].files.length; //Total files
-      if (TotalFiles > 200) {
+      if (TotalFiles > 150) {
 
         $('#alert').show();
         this.reset();
@@ -110,6 +111,8 @@
         success: (data) => {
           this.reset();
           alert('Files has been uploaded');
+          window.location.href = 'index';
+          $("#upload_pdf").removeAttr('disabled');
         },
         // error: function(data) {
         //     alert(data.responseJSON.errors.files[0]);
