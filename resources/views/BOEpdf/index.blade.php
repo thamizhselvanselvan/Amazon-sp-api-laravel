@@ -60,7 +60,7 @@
     </thead>
     <tbody>
     </tbody>
-    <tfoot>
+    <!-- <tfoot>
         <tr>
             <th>AWB No.</th>
             <th>Courier Registration Number</th>
@@ -69,7 +69,7 @@
             <th>Name of Consignee</th>
             <th>BOE Booking Rate</th>
         </tr>
-    </tfoot>
+    </tfoot> -->
 
 </table>
 
@@ -179,29 +179,29 @@
             },
 
         ],
-        initComplete: function() {
-            // Apply the search
-            this.api().columns([1, 2, 4, 5, 6]).every(function() {
-                var that = this;
-                $('input', this.footer()).on('keyup clear', function() {
-                    if (that.search() !== this.value) {
-                        that
-                            .search(this.value)
-                            .draw();
-                    }
-                });
-            });
-        }
+        // initComplete: function() {
+        //     // Apply the search
+        //     this.api().columns([1, 2, 4, 5, 6]).every(function() {
+        //         var that = this;
+        //         $('input', this.footer()).on('keyup clear', function() {
+        //             if (that.search() !== this.value) {
+        //                 that
+        //                     .search(this.value)
+        //                     .draw();
+        //             }
+        //         });
+        //     });
+        // }
     });
 
 
-    $(document).ready(function() {
-        // Setup - add a text input to each footer cell
-        $('.yajra-datatable tfoot th').each(function() {
-            var title = $(this).text();
-            $(this).html('<input type="text" placeholder="Search ' + title + '" />');
-            $('.yajra-datatable tfoot tr').appendTo('.yajra-datatable thead');
-        });
-    });
+    // $(document).ready(function() {
+    //     // Setup - add a text input to each footer cell
+    //     $('.yajra-datatable tfoot th').each(function() {
+    //         var title = $(this).text();
+    //         $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+    //         $('.yajra-datatable tfoot tr').appendTo('.yajra-datatable thead');
+    //     });
+    // });
 </script>
 @stop
