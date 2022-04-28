@@ -27,6 +27,8 @@ class BOEController extends Controller
     public $check_table = 0;
     public $count = 0;
     public $company_id;
+    public $sw_chrg = 0;
+    public $igst = 0;
     public $dataArray = [
         'hawb_number' => '',
         'date_of_arrival' => '',
@@ -68,11 +70,40 @@ class BOEController extends Controller
     {
         if ($request->ajax()) {
             $user = Auth::user();
+            $roles = ($user->roles->first()->name);
             $company_id = $user->company_id;
-            $data = BOE::where('company_id', $company_id);
+            $boe_data = BOE::when($roles != "Admin", function ($query) use ($company_id) {
+                $query->where('company_id', $company_id);
+            });
 
-            return DataTables::of($data)
-                ->addIndexColumn()
+            return DataTables::of($boe_data)
+            ->addIndexColumn()
+            // $duty_value = '';
+                ->addColumn('duty', function ($duty) {
+                    if (isset($duty['duty_details'])) {
+
+                        $duty = (json_decode($duty['duty_details']));
+                        foreach ($duty as $value) {
+                            if ($value->DutyHead == "BCD") {
+                                $duty_value = $value->DutyAmount;
+                            }
+                            elseif ($value->DutyHead == "SW Srchrg") {
+                                $this->sw_chrg = $value->DutyAmount;
+                            }
+                            elseif ($value->DutyHead == "IGST") {
+                                $this->igst = $value->DutyAmount;
+                            }
+                        }
+                        return $duty_value;
+                    }
+                })
+                ->addColumn('swsrchrg', function ($swchar) {
+                    return $this->sw_chrg;
+                })
+                ->addColumn('igst', function ($igst) {
+                    return $this->igst;
+                })
+                ->rawColumns(['duty', 'swsrchrg', 'igst'])
                 ->make(true);
         }
         return view('BOEpdf.index');
@@ -117,10 +148,11 @@ class BOEController extends Controller
 
     public function BulkPdfUpload(Request $request)
     {
-        $validatedData = $request->validate([
-            'files' => 'required',
-            'files.*' => 'mimes:pdf'
-        ]);
+        // $validatedData = $request->validate([
+        //     'files' => 'required',
+        //     'files.*' => 'mimes:pdf'
+        // ]);
+        // Log::alert("message");
         $host = config('database.connections.web.host');
         $dbname = config('database.connections.web.database');
         $port = config('database.connections.web.port');
@@ -141,13 +173,16 @@ class BOEController extends Controller
         foreach ($request->files as $key => $files) {
 
             foreach ($files as $keys => $file) {
+                $file_extension = $file->getClientOriginalExtension();
+                if ($file_extension == 'pdf') {
 
-                $fileName = $file->getClientOriginalName();
-                $fileName = uniqid() . ($fileName);
-                $desinationPath = 'BOE/' . $company_id . '/' . $year . '/' . $month . '/' . $fileName;
-                Storage::put($desinationPath,  file_get_contents($file));
+                    $fileName = $file->getClientOriginalName();
+                    $fileName = uniqid() . ($fileName);
+                    $desinationPath = 'BOE/' . $company_id . '/' . $year . '/' . $month . '/' . $fileName;
+                    Storage::put($desinationPath,  file_get_contents($file));
 
-                $pdfList[] = $fileName;
+                    $pdfList[] = $fileName;
+                }
             }
         }
         // reading saved file from storage
@@ -162,7 +197,6 @@ class BOEController extends Controller
             $content = $pdf->getText();
 
             $pdfReader->BOEPDFReader($content, $file_path . '/' . $file_name, $company_id, $user_id);
-
         }
         return response()->json(["message" => "all file uploaded successfully"]);
         // return redirect('/BOE/index')->with('success', 'All PDF Imported successfully');
@@ -262,25 +296,31 @@ class BOEController extends Controller
 
             $boe_data = $this->whereConditon($request);
             return DataTables::of($boe_data)
-                ->addIndexColumn()
+            ->addIndexColumn()
+            // $duty_value = '';
                 ->addColumn('duty', function ($duty) {
                     if (isset($duty['duty_details'])) {
 
                         $duty = (json_decode($duty['duty_details']));
-                        return $duty[0]->DutyAmount;
+                        foreach ($duty as $value) {
+                            if ($value->DutyHead == "BCD") {
+                                $duty_value = $value->DutyAmount;
+                            }
+                            elseif ($value->DutyHead == "SW Srchrg") {
+                                $this->sw_chrg = $value->DutyAmount;
+                            }
+                            elseif ($value->DutyHead == "IGST") {
+                                $this->igst = $value->DutyAmount;
+                            }
+                        }
+                        return $duty_value;
                     }
                 })
                 ->addColumn('swsrchrg', function ($swchar) {
-                    if (isset($swchar['duty_details'])) {
-                        $swchar = (json_decode($swchar['duty_details']));
-                        return $swchar[2]->DutyAmount;
-                    }
+                    return $this->sw_chrg;
                 })
                 ->addColumn('igst', function ($igst) {
-                    if (isset($igst['duty_details'])) {
-                        $igst = (json_decode($igst['duty_details']));
-                        return $igst[3]->DutyAmount;
-                    }
+                    return $this->igst;
                 })
                 ->rawColumns(['duty', 'swsrchrg', 'igst'])
                 ->make(true);
@@ -304,12 +344,12 @@ class BOEController extends Controller
                 $query->whereBetween('challan_date', [$date[0], $date[1]]);
             })
             ->when(!empty(trim($request->date_of_arrival)), function ($query) use ($date_of_arrival) {
-               
+
                 $date = $this->split_date($date_of_arrival);
                 $query->whereBetween('date_of_arrival', [$date[0], $date[1]]);
             })
             ->when(!empty(trim($request->upload_date)), function ($query) use ($upload_date) {
-                
+
                 $date = $this->split_date($upload_date);
                 $query->whereBetween('created_at', [$date[0], $date[1]]);
             })
@@ -371,9 +411,20 @@ class BOEController extends Controller
 
                 if ($datas['duty_details']) {
                     $duty_details = (json_decode($datas['duty_details']));
-                    $datas['Duty'] = $duty_details[0]->DutyAmount;
-                    $datas['SWsrchrg'] = $duty_details[2]->DutyAmount;
-                    $datas['IGST'] = $duty_details[3]->DutyAmount;
+                    foreach($duty_details as $duty_price){
+                        if($duty_price->DutyHead == 'BCD')
+                        {
+                            $datas['Duty'] = $duty_price->DutyAmount;
+                        }
+                        elseif($duty_price->DutyHead == 'SW Srchrg')
+                        {
+                            $datas['SWsrchrg'] = $duty_price->DutyAmount;
+                        }
+                        elseif($duty_price->DutyHead == 'IGST')
+                        {
+                            $datas['IGST'] = $duty_price->DutyAmount;
+                        }
+                    }
                 }
                 foreach ($datas as $key => $value) {
 
@@ -385,7 +436,6 @@ class BOEController extends Controller
 
                 return $this->dataArray;
             }, $records);
-
             $writer->insertall($recordsfinal);
         });
         return $this->Download_BOE();
@@ -419,5 +469,21 @@ class BOEController extends Controller
         }
         echo 'success';
         // return redirect()->back();
+    }
+
+    public function RemoveUploadedFiles()
+    {
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan pms:remove-uploaded-boe > /dev/null &";
+            exec($command);
+
+            Log::warning("Export asin command executed production  !!!");
+        } else {
+
+            // Log::warning("Export asin command executed local !");
+            Artisan::call('pms:remove-uploaded-boe');
+        }
     }
 }

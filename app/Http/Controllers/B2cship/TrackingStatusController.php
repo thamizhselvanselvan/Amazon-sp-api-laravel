@@ -8,9 +8,14 @@ use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 
 class TrackingStatusController extends Controller
-{
+{    public $micro_status= NULL;
     public function trackingStatusDetails(Request $request)
     {
+        $this->micro_status =  DB::connection('mssql')->select("SELECT DISTINCT Status, MicroStatusName FROM MicroStatusMapping ");
+        
+        
+        // dd($this->micro_status);
+
         if ($request->ajax()) {
 
             $data = $this->trackingStatusDetailsData();
@@ -53,6 +58,7 @@ class TrackingStatusController extends Controller
                 $PODeventsArray[$offset]['OurEventCode'] = NULL;
                 $PODeventsArray[$offset]['EventDescription'] = NULL;
                 $PODeventsArray[$offset]['TrackingAPIEvent'] = 'No';
+                $PODeventsArray[$offset]['MicroStatus'] = NULL;
 
                 $offset++;
             }

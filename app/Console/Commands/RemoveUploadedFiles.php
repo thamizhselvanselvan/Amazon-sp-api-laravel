@@ -2,27 +2,24 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\BOE\UploadBoeToDO;
-use App\Models\BOE;
+use App\Jobs\BOE\RemoveUploadedFile;
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Cache\Store;
-use Illuminate\Support\Facades\Storage;
 
-class BoeUploadServerToDo extends Command
+class RemoveUploadedFiles extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'pms:boe-upload-Do';
+    protected $signature = 'pms:remove-uploaded-boe';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Upload BOE file from server to DO';
+    protected $description = 'Remove uploaded file from server';
 
     /**
      * Create a new command instance.
@@ -41,7 +38,6 @@ class BoeUploadServerToDo extends Command
      */
     public function handle()
     {
-       UploadBoeToDO::dispatch();
-
+        RemoveUploadedFile::dispatch();
     }
 }

@@ -624,17 +624,18 @@ return [
             ],
         ],
         [
-            'text' => 'BOE',
+            'text' => 'BOE Manage',
             'can' =>  ['Admin', 'Account'],
-            'submenu' => [
-                [
-                    'text' => 'BOE',
-                    'url' => 'BOE/index',
-                    'can' => ['Admin', 'Account'],
-                    'icon' => 'far fa-fw fa-file',
+            'url' => 'BOE/index',
+            // 'submenu' => [
+            //     [
+            //         'text' => 'BOE',
+            //         'url' => 'BOE/index',
+            //         'can' => ['Admin', 'Account'],
+            //         'icon' => 'far fa-fw fa-file',
 
-                ],
-            ],
+            //     ],
+            // ],
         ],
 
         // [

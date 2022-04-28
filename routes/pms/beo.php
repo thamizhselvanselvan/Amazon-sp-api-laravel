@@ -15,4 +15,5 @@ Route::post('BOE/Export/filter', 'BOE\BOEController@BOEFilterExport')->name('BOE
 Route::get('BOE/Download', 'BOE\BOEController@Download_BOE');
 Route::get('BOE/readfromfile', 'BOE\BOEController@ReadFromfile');
 Route::get("BOE/upload/do", 'BOE\BOEController@Upload');
+Route::get("BOE/remove", 'BOE\BOEController@RemoveUploadedFiles');
 
