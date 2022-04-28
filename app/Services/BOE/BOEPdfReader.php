@@ -637,6 +637,8 @@ class BOEPdfReader
                 }
                 // R::freeze(true);
             }
+
+            //storing data into readbean 
             $boe_details->companyId = $company_id;
             $boe_details->userId = $user_id;
             $boe_details->currentStatusOfTheCbe = $current_Status_of_CBE['CurrentStatusOfTheCbe'];
@@ -695,10 +697,10 @@ class BOEPdfReader
 
                 R::store($boe_details);
             } else {
-                
-                $date = new DateTime(date('Y-m-d'));
-                $updated_at = $date->format('Y-m-d');
-                $boe_details->updated_at = $updated_at;
+                //update data
+                // $date = new DateTime(date('Y-m-d'));
+                // $updated_at = $date->format('Y-m-d');
+                // $boe_details->updated_at = $updated_at;
             }
         } else {
 
@@ -708,4 +710,6 @@ class BOEPdfReader
 
         // Log::alert($testcount);
     }
+
+
 }
