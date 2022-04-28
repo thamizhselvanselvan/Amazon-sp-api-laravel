@@ -68,28 +68,6 @@ class BOEController extends Controller
 
     public function index(Request $request)
     {
-                $user = Auth::user();
-                $roles = ($user->roles->first()->name);
-                $company_id = $user->company_id;
-                $boe_data = BOE::when($roles != "Admin", function ($query) use ($company_id) {
-                    $query->where('company_id', $company_id);
-                })->get()->toarray();
-                $val = json_decode($boe_data[3]['duty_details'], true);
-        dd($val);
-        //         if(gettype($val) == "array") {
-
-        //         }
-
-        //         foreach($val as $key => $value) {
-
-        //             if($value["DutyHead"] == "SW Srchrg") {
-        //                 echo $value['DutyAmount'];
-        //             }
-        //         }
-
-        // exit();
-
-
         if ($request->ajax()) {
             $user = Auth::user();
             $roles = ($user->roles->first()->name);

@@ -694,6 +694,11 @@ class BOEPdfReader
                 $boe_details->download_file_path = $storage_path;
 
                 R::store($boe_details);
+            } else {
+                
+                $date = new DateTime(date('Y-m-d'));
+                $updated_at = $date->format('Y-m-d');
+                $boe_details->updated_at = $updated_at;
             }
         } else {
 
