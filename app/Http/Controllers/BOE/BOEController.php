@@ -141,10 +141,11 @@ class BOEController extends Controller
 
     public function BulkPdfUpload(Request $request)
     {
-        $validatedData = $request->validate([
-            'files' => 'required',
-            'files.*' => 'mimes:pdf'
-        ]);
+        // $validatedData = $request->validate([
+        //     'files' => 'required',
+        //     'files.*' => 'mimes:pdf'
+        // ]);
+        // Log::alert("message");
         $host = config('database.connections.web.host');
         $dbname = config('database.connections.web.database');
         $port = config('database.connections.web.port');
@@ -165,13 +166,16 @@ class BOEController extends Controller
         foreach ($request->files as $key => $files) {
 
             foreach ($files as $keys => $file) {
-
-                $fileName = $file->getClientOriginalName();
-                $fileName = uniqid() . ($fileName);
-                $desinationPath = 'BOE/' . $company_id . '/' . $year . '/' . $month . '/' . $fileName;
-                Storage::put($desinationPath,  file_get_contents($file));
-
-                $pdfList[] = $fileName;
+                $file_extension = $file->getClientOriginalExtension();
+                if($file_extension == 'pdf'){
+                    
+                    $fileName = $file->getClientOriginalName();
+                    $fileName = uniqid() . ($fileName);
+                    $desinationPath = 'BOE/' . $company_id . '/' . $year . '/' . $month . '/' . $fileName;
+                    Storage::put($desinationPath,  file_get_contents($file));
+    
+                    $pdfList[] = $fileName;
+                }
             }
         }
         // reading saved file from storage

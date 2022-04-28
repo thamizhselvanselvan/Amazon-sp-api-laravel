@@ -21,10 +21,10 @@
 
 @section('css')
 <style>
-  div.form-group{
+  div.form-group {
     margin-bottom: 0rem;
   }
-  </style>
+</style>
 @stop
 
 @section('content')
@@ -53,7 +53,7 @@
     @endif
 
     <x-adminlte-alert theme="danger" title="Error" dismissable id="alert">
-      Upload miximum 150 BOE at a time.
+      Upload minimun 1 and miximum 150 BOE at a time.
     </x-adminlte-alert>
 
     <form class="row" id="multi-file-upload" method="POST" action="javascript:void(0)" accept-charset="utf-8" enctype="multipart/form-data">
@@ -61,9 +61,9 @@
 
       <div class="col-3"></div>
 
-      <div class="col-6" >
-        <x-adminlte-input label="Select BOE Files" name="files[]" id="files" type="file" multiple/>
-          <label > Upload up to 150 BEO at a time</label>
+      <div class="col-6">
+        <x-adminlte-input label="Select BOE Files" name="files[]" id="files" type="file" multiple />
+        <label> Upload up to 150 BEO at a time</label>
       </div>
       <div class="col-12">
         <div class="text-center">
@@ -83,21 +83,32 @@
   $(function() {
     $("#alert").hide();
     $('#multi-file-upload').submit(function(e) {
-      $("#upload_pdf").prop("disabled", true);
+      // $("#upload_pdf").prop("disabled", true);
+      // $("body").css("cursor", "progress");
       e.preventDefault();
       let files = $('#files')[0].files;
       let TotalFiles = $('#files')[0].files.length; //Total files
-      if (TotalFiles > 150) {
+      if (TotalFiles > 150 || TotalFiles < 1) {
 
         $('#alert').show();
         this.reset();
+        $("body").css("cursor", "default");
+        $("#upload_pdf").removeAttr('disabled');
         return false;
       }
 
       let formData = new FormData(this);
+      let count = 0;
+      re = /(\.pdf)$/i;
       $.each(files, function(index, elm) {
 
-        formData.append('files', elm[index]);
+        if (re.exec(elm['name'])) {
+          formData.append('files', elm[count]);
+        } else {
+          let file_extension = elm['name'].split('.').pop();
+          alert("File extension ." + file_extension +" not supported " );
+        }
+        ++count;
       });
 
       $.ajax({
@@ -111,8 +122,9 @@
         success: (data) => {
           this.reset();
           alert('Files has been uploaded');
-          window.location.href = 'index';
           $("#upload_pdf").removeAttr('disabled');
+          $("body").css("cursor", "default");
+          window.location.href = 'index';
         },
         // error: function(data) {
         //     alert(data.responseJSON.errors.files[0]);
