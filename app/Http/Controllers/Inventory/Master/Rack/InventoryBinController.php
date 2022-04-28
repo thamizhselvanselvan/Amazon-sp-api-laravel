@@ -56,15 +56,6 @@ class InventoryBinController extends Controller
         return view('inventory.master.racks.bin.add', compact('rack_lists','shelve_lists', 'rack_id', 'shelve_id'));
     }
 
-    // public function getshelves(Request $request)
-    // {
-    //     $shelves = DB::tables('shelves')
-    //         ->where('rack_id', $request->shelves_id)
-    //         ->get();
-    
-    //         return response()->json($shelves);
-            
-    // }
     public function rackselect($id)
     {
 
