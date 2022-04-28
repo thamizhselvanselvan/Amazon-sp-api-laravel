@@ -27,6 +27,7 @@
             <th>Our Event Code</th>
             <th>Event Description</th>
             <th>Tracking API Event</th>
+            <th>Micro Status</th>
         </tr>
     </thead>
     <tbody>
@@ -52,7 +53,8 @@
                 { data: 'TrackingMasterEventDescription' },
                 { data: 'OurEventCode' },
                 { data: 'EventDescription' },
-                { data: 'TrackingAPIEvent' }
+                { data: 'TrackingAPIEvent' },
+                { data: 'MicroStatus' }
             ],
         });
     });

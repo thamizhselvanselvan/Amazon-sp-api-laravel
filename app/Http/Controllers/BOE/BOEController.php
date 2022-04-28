@@ -27,6 +27,8 @@ class BOEController extends Controller
     public $check_table = 0;
     public $count = 0;
     public $company_id;
+    public $sw_chrg = 0;
+    public $igst = 0;
     public $dataArray = [
         'hawb_number' => '',
         'date_of_arrival' => '',
@@ -66,6 +68,27 @@ class BOEController extends Controller
 
     public function index(Request $request)
     {
+                $user = Auth::user();
+                $roles = ($user->roles->first()->name);
+                $company_id = $user->company_id;
+                $boe_data = BOE::when($roles != "Admin", function ($query) use ($company_id) {
+                    $query->where('company_id', $company_id);
+                })->get()->toarray();
+                $val = json_decode($boe_data[3]['duty_details'], true);
+        dd($val);
+        //         if(gettype($val) == "array") {
+
+        //         }
+
+        //         foreach($val as $key => $value) {
+
+        //             if($value["DutyHead"] == "SW Srchrg") {
+        //                 echo $value['DutyAmount'];
+        //             }
+        //         }
+
+        // exit();
+
 
         if ($request->ajax()) {
             $user = Auth::user();
@@ -76,25 +99,31 @@ class BOEController extends Controller
             });
 
             return DataTables::of($boe_data)
-                ->addIndexColumn()
+            ->addIndexColumn()
+            // $duty_value = '';
                 ->addColumn('duty', function ($duty) {
                     if (isset($duty['duty_details'])) {
 
                         $duty = (json_decode($duty['duty_details']));
-                        return $duty[0]->DutyAmount;
+                        foreach ($duty as $value) {
+                            if ($value->DutyHead == "BCD") {
+                                $duty_value = $value->DutyAmount;
+                            }
+                            elseif ($value->DutyHead == "SW Srchrg") {
+                                $this->sw_chrg = $value->DutyAmount;
+                            }
+                            elseif ($value->DutyHead == "IGST") {
+                                $this->igst = $value->DutyAmount;
+                            }
+                        }
+                        return $duty_value;
                     }
                 })
                 ->addColumn('swsrchrg', function ($swchar) {
-                    if (isset($swchar['duty_details'])) {
-                        $swchar = (json_decode($swchar['duty_details']));
-                        return $swchar[2]->DutyAmount;
-                    }
+                    return $this->sw_chrg;
                 })
                 ->addColumn('igst', function ($igst) {
-                    if (isset($igst['duty_details'])) {
-                        $igst = (json_decode($igst['duty_details']));
-                        return $igst[3]->DutyAmount;
-                    }
+                    return $this->igst;
                 })
                 ->rawColumns(['duty', 'swsrchrg', 'igst'])
                 ->make(true);
@@ -167,13 +196,13 @@ class BOEController extends Controller
 
             foreach ($files as $keys => $file) {
                 $file_extension = $file->getClientOriginalExtension();
-                if($file_extension == 'pdf'){
-                    
+                if ($file_extension == 'pdf') {
+
                     $fileName = $file->getClientOriginalName();
                     $fileName = uniqid() . ($fileName);
                     $desinationPath = 'BOE/' . $company_id . '/' . $year . '/' . $month . '/' . $fileName;
                     Storage::put($desinationPath,  file_get_contents($file));
-    
+
                     $pdfList[] = $fileName;
                 }
             }
@@ -289,25 +318,31 @@ class BOEController extends Controller
 
             $boe_data = $this->whereConditon($request);
             return DataTables::of($boe_data)
-                ->addIndexColumn()
+            ->addIndexColumn()
+            // $duty_value = '';
                 ->addColumn('duty', function ($duty) {
                     if (isset($duty['duty_details'])) {
 
                         $duty = (json_decode($duty['duty_details']));
-                        return $duty[0]->DutyAmount;
+                        foreach ($duty as $value) {
+                            if ($value->DutyHead == "BCD") {
+                                $duty_value = $value->DutyAmount;
+                            }
+                            elseif ($value->DutyHead == "SW Srchrg") {
+                                $this->sw_chrg = $value->DutyAmount;
+                            }
+                            elseif ($value->DutyHead == "IGST") {
+                                $this->igst = $value->DutyAmount;
+                            }
+                        }
+                        return $duty_value;
                     }
                 })
                 ->addColumn('swsrchrg', function ($swchar) {
-                    if (isset($swchar['duty_details'])) {
-                        $swchar = (json_decode($swchar['duty_details']));
-                        return $swchar[2]->DutyAmount;
-                    }
+                    return $this->sw_chrg;
                 })
                 ->addColumn('igst', function ($igst) {
-                    if (isset($igst['duty_details'])) {
-                        $igst = (json_decode($igst['duty_details']));
-                        return $igst[3]->DutyAmount;
-                    }
+                    return $this->igst;
                 })
                 ->rawColumns(['duty', 'swsrchrg', 'igst'])
                 ->make(true);
@@ -398,9 +433,20 @@ class BOEController extends Controller
 
                 if ($datas['duty_details']) {
                     $duty_details = (json_decode($datas['duty_details']));
-                    $datas['Duty'] = $duty_details[0]->DutyAmount;
-                    $datas['SWsrchrg'] = $duty_details[2]->DutyAmount;
-                    $datas['IGST'] = $duty_details[3]->DutyAmount;
+                    foreach($duty_details as $duty_price){
+                        if($duty_price->DutyHead == 'BCD')
+                        {
+                            $datas['Duty'] = $duty_price->DutyAmount;
+                        }
+                        elseif($duty_price->DutyHead == 'SW Srchrg')
+                        {
+                            $datas['SWsrchrg'] = $duty_price->DutyAmount;
+                        }
+                        elseif($duty_price->DutyHead == 'IGST')
+                        {
+                            $datas['IGST'] = $duty_price->DutyAmount;
+                        }
+                    }
                 }
                 foreach ($datas as $key => $value) {
 
@@ -412,7 +458,6 @@ class BOEController extends Controller
 
                 return $this->dataArray;
             }, $records);
-
             $writer->insertall($recordsfinal);
         });
         return $this->Download_BOE();
