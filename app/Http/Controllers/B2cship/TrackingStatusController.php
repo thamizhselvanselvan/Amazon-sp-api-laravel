@@ -11,11 +11,8 @@ class TrackingStatusController extends Controller
 {    public $micro_status= NULL;
     public function trackingStatusDetails(Request $request)
     {
-        $this->micro_status =  DB::connection('mssql')->select("SELECT DISTINCT Status, MicroStatusName FROM MicroStatusMapping ");
         
-        
-        // dd($this->micro_status);
-
+        // dd($micro_status_array);
         if ($request->ajax()) {
 
             $data = $this->trackingStatusDetailsData();
@@ -53,6 +50,7 @@ class TrackingStatusController extends Controller
             if ((!str_contains($trackingMsg, $ignorebombion))&&(!str_contains($trackingMsg, $ignoreDelivered)) && (!str_contains($trackingMsg, $ignoreOFD)) && (!str_contains($trackingMsg, $ignoreRunNO)) && (!str_contains($trackingMsg, $ignoreUnDelivered))) {
                 
                 $PODeventsArray[$offset]['TrackingMsg'] = $trackingMsg;
+                $PODeventsArray[$offset]['StatusDetails'] = $statusDetails;
                 $PODeventsArray[$offset]['TrackingMasterCode'] = NULL;
                 $PODeventsArray[$offset]['TrackingMasterEventDescription'] = NULL;
                 $PODeventsArray[$offset]['OurEventCode'] = NULL;
@@ -66,9 +64,17 @@ class TrackingStatusController extends Controller
         //our master event table and Tracking Msg
         $trackingEventsMapping = DB::connection('mssql')->select("SELECT TrackingMsg, TrackingMasterCode, OurEventCode, EventDescription FROM TrackingEventMapping");
 
+        //Micro Status table
+        $micro_status =  DB::connection('mssql')->select("SELECT DISTINCT Status, MicroStatusName FROM MicroStatusMapping ");
+        $micro_status_array =[];
+        foreach($micro_status as $key => $status)
+        {
+            $micro_status_array[$status->Status] = $status->MicroStatusName;
+        }
+        
         //Amazon master event table
         $trackingEventsMaster = DB::connection('mssql')->select("SELECT TrackingEventCode, EventCodeDescription FROM TrackingEventMaster");
-
+        
         $trackingEventsMasterArray = [];
 
         //making associative array for amazon master tracking table according to code and Description
@@ -114,6 +120,12 @@ class TrackingStatusController extends Controller
             $trackingmsg = $PODeventArray['TrackingMsg'];
             if (isset($trackingAPIMsg[$trackingmsg])) {
                 $PODeventsArray[$offset]['TrackingAPIEvent'] = $trackingAPIMsg[$trackingmsg];
+            }
+
+            $trackingStatusDetails = $PODeventArray['StatusDetails'];
+            if(isset($micro_status_array[$trackingStatusDetails])){
+                
+                $PODeventsArray[$offset]['MicroStatus'] = $micro_status_array[$trackingStatusDetails];
             }
             $offset++;
         }
