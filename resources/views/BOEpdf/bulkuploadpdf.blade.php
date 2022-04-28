@@ -83,8 +83,8 @@
   $(function() {
     $("#alert").hide();
     $('#multi-file-upload').submit(function(e) {
-      // $("#upload_pdf").prop("disabled", true);
-      // $("body").css("cursor", "progress");
+      $("#upload_pdf").prop("disabled", true);
+      $("body").css("cursor", "progress");
       e.preventDefault();
       let files = $('#files')[0].files;
       let TotalFiles = $('#files')[0].files.length; //Total files
