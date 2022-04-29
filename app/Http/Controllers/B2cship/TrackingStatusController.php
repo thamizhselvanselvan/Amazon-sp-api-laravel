@@ -18,7 +18,7 @@ class TrackingStatusController extends Controller
             $micro_status_array[$status->Status] = $status->MicroStatusName;
         }
         $PODtransEvents = DB::connection('mssql')->select("SELECT DISTINCT StatusDetails, FPCode FROM PODTrans ");
-        dd($micro_status_array, $PODtransEvents);
+        // dd($micro_status_array, $PODtransEvents);
         if ($request->ajax()) {
 
             $data = $this->trackingStatusDetailsData();
@@ -132,6 +132,10 @@ class TrackingStatusController extends Controller
             if(isset($micro_status_array[$trackingStatusDetails])){
                 
                 $PODeventsArray[$offset]['MicroStatus'] = $micro_status_array[$trackingStatusDetails];
+            }
+            elseif(str_contains($trackingStatusDetails, 'Shipment has been OUTWARDED With Bag No'))
+            {
+                $PODeventsArray[$offset]['MicroStatus'] = 'In Transit - US to India';
             }
             $offset++;
         }

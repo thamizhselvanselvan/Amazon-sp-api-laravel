@@ -1,5 +1,5 @@
 @extends('adminlte::page')
-@section('title', 'Import')
+@section('title', 'Status Details')
 
 @section('content_header')
 <h1 class="m-0 text-dark"> B2CShip Tracking Status Details</h1>
