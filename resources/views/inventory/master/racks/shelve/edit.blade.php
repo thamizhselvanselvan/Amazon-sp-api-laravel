@@ -75,7 +75,7 @@
                             @foreach ($rack_lists as $rack_list)
                
                                 @if ($rack_list->id == $shelve->rack_id)
-                                    <option value="{{ $rack_list->id }}" selected>{{ $rack_list->name  }}</option>
+                                    <option value="{{ $rack_list->id }}" selected>{{ $rack_list->id.'/'.  $rack_list->name  }}</option>
                                 @else
                                     <option value="{{ $rack_list->id }}">{{ $rack_list->name  }}</option>
                                 @endif

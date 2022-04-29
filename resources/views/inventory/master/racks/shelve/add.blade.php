@@ -57,10 +57,10 @@
                     <div class="col-6">
 
                         <x-adminlte-select name="rack_id" label="Select Rack">
-
+                            <option>Select Rack</option>
                             @foreach ($rack_lists as $rack_list)
                
-                                <option value="{{ $rack_list->id }}">{{ $rack_list->name  }}</option>
+                                <option value="{{ $rack_list->id }}">{{ $rack_list->id .'/'. $rack_list->name  }}</option>
 
                             @endforeach
 
