@@ -11,8 +11,14 @@ class TrackingStatusController extends Controller
 {    public $micro_status= NULL;
     public function trackingStatusDetails(Request $request)
     {
-        
-        // dd($micro_status_array);
+        $micro_status =  DB::connection('mssql')->select("SELECT DISTINCT Status, MicroStatusName FROM MicroStatusMapping ");
+        $micro_status_array =[];
+        foreach($micro_status as $key => $status)
+        {
+            $micro_status_array[$status->Status] = $status->MicroStatusName;
+        }
+        $PODtransEvents = DB::connection('mssql')->select("SELECT DISTINCT StatusDetails, FPCode FROM PODTrans ");
+        dd($micro_status_array, $PODtransEvents);
         if ($request->ajax()) {
 
             $data = $this->trackingStatusDetailsData();

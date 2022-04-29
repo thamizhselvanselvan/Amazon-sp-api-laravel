@@ -124,6 +124,7 @@ class BOEController extends Controller
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
 
+        $pdfReader = new BOEPdfReader();
         $year = date('Y');
         $month = date('F');
         $user = Auth::user();
@@ -132,8 +133,7 @@ class BOEController extends Controller
         $file_path = 'BOE/' . $company_id . '/' . $year . '/' . $month;
         $path = (storage_path('app/' . $file_path));
         $files = (scandir($path));
-        $pdfReader = new BOEPdfReader();
-
+        
         foreach ($files as $key => $file) {
             if ($key > 1) {
                 $storage_path = $path . '/' . $file;
