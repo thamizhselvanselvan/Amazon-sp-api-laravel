@@ -293,21 +293,22 @@ return [
                 [
                     'text' => 'User Master',
                     'icon' => 'far fa-fw fa-user',
+                    'url'  => 'admin/user_list',
                     'can'  => ['Admin'],
-                    'submenu' => [
-                        [
-                            'text' => 'Admin Management',
-                            'url'  => 'admin/user_list',
-                            'icon' => 'far fa-fw fa-user',
-                            'can' =>  ['Admin'],
-                        ],
-                        [
-                            'text' => 'Catalog Management',
-                            'url'  => 'admin/catalog_user',
-                            'icon' => 'far fa-fw fa-user',
-                            'can' =>  ['Admin']
-                        ]
-                    ],
+                    // 'submenu' => [
+                    //     [
+                    //         'text' => 'Admin Management',
+                    //         'url'  => 'admin/user_list',
+                    //         'icon' => 'far fa-fw fa-user',
+                    //         'can' =>  ['Admin'],
+                    //     ],
+                    //     [
+                    //         'text' => 'Catalog Management',
+                    //         'url'  => 'admin/catalog_user',
+                    //         'icon' => 'far fa-fw fa-user',
+                    //         'can' =>  ['Admin']
+                    //     ]
+                    // ],
                 ],
 
             ],
@@ -315,7 +316,7 @@ return [
 
         [
             'text'    => 'Catalog',
-            'can' =>   ['Admin', 'Catalog Manager'],
+            'can' =>   ['Admin', 'Catalog'],
             'submenu' => [
 
                 [
@@ -336,14 +337,14 @@ return [
                     'text' => 'Other Amazon.com',
                     'url'  => 'other-product/amazon_com',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin', 'Catalog Manager'],
+                    'can' =>  ['Admin', 'Catalog'],
                 ],
                 [
 
                     'text' => 'Other Amazon.IN',
                     'url'  => 'other-product/amazon_in',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin', 'Catalog Manager'],
+                    'can' =>  ['Admin', 'Catalog'],
                 ],
                 [
 
@@ -365,6 +366,13 @@ return [
                     'icon' => 'fas fa-user',
                     'can' =>  ['Admin','Inventory'],
                     'submenu' => [
+                        [
+                            'text' => 'warehouse',
+                            'url'  => 'inventory/features',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin']
+
+                        ],
 
                         [
                             'text' => 'Rack Master',

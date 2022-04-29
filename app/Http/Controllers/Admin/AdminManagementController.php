@@ -17,22 +17,19 @@ class AdminManagementController extends Controller
     {
 
         if ($request->ajax()) {
-            $login_id = Auth::user()->id;
-            $users = User::whereHas(
-                'roles',
-                function ($q) {
-                    $q->where('name', 'Admin')->orWhere('name', 'User')->orWhere('name', 'Account');
-                }
-            )->latest()->orderBy('created_at');
+            $user = Auth::user();
+            $login_id = $user->id;
+            $role = $user->roles->first()->name;
+            $users = User::latest()->orderBy('created_at');
 
             return DataTables::of($users)
                 ->addIndexColumn()
-                ->addColumn('action', function ($user)  use ($login_id) {
+                ->addColumn('action', function ($user)  use ($login_id, $role) {
                     $edit = '';
-                    if ($login_id == $user->id || $login_id == 1) {
+                    if ($login_id == $user->id || $role =='Admin' && $user->id != 1 ) {
                         $edit = "<a href='password_reset_view/" . $user->id . "' class='btn btn-primary btn-sm mr-2'><i class='fas fa-edit'></i>Change password</a>";
                     }
-                    if ($login_id == 1) {
+                    if ($login_id == $user->id || $role =='Admin' && $user->id != 1 ) {
                         $edit .= '<a href="/admin/' . $user->id . '/edit" class="edit btn btn-success btn-sm"> <i class="fas fa-edit"></i> Edit</a>';
                     }
                     return $edit;
@@ -46,10 +43,26 @@ class AdminManagementController extends Controller
         return view('admin.adminManagement.index');
     }
 
-    function password_Change_view(Request $request)
+    function password_Change_view(Request $request, $id)
     {
+
+        $user_exists = User::where('id', $id)->exists();
+
+        if(!$user_exists) {
+            return redirect()->intended('/admin/user_list')->with("error", "User does not exists");
+        }
+
+        $user = Auth::user();
+        $login_id = $user->id;
+        $role = $user->roles->first()->name;
+
         $user_id = $request->id;
-        return view('admin.adminManagement.password_reset', compact('user_id'));
+
+        if ($login_id == $user_id || $role == 'Admin' && $user_id != 1 ) {
+            return view('admin.adminManagement.password_reset', compact('user_id'));
+        }
+        
+        return redirect()->intended('/admin/user_list')->with("error", "You don't have permission to change the password");
     }
 
     public function password_reset_save(Request $request, $id)
@@ -57,6 +70,12 @@ class AdminManagementController extends Controller
         $request->validate([
             'password' => 'required|confirmed|min:3|max:18'
         ]);
+
+        $user_exists = User::where('id', $id)->exists();
+
+        if(!$user_exists) {
+            return redirect()->intended('/admin/user_list')->with("error", "User does not exists");
+        }
 
         User::where('id', $id)->update([
             'password' => Hash::make($request->password)
