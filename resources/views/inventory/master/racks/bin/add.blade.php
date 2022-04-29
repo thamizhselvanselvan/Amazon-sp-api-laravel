@@ -61,9 +61,9 @@
                             @foreach ($rack_lists as $rack_list)
 
                                 @if ($rack_list->id ==  $rack_id)
-                                    <option value="{{ $rack_list->id }}" selected>{{ $rack_list->name }}</option>
+                                    <option value="{{ $rack_list->id }}" selected>{{$rack_list->id.'/'. $rack_list->name }}</option>
                                 @else
-                                    <option value="{{ $rack_list->id }}">{{ $rack_list->name }}</option>
+                                    <option value="{{ $rack_list->id }}">{{$rack_list->id.'/'. $rack_list->name }}</option>
                                 @endif
                                 
                             @endforeach
@@ -110,15 +110,8 @@
                             value="{{ old('ID') }}" />
                     </div>
                 </div>
-                <div class="row justify-content-center">
-                    <div class="col-9">
-                        <x-adminlte-input label="Zone" name="zone" id="" type="text" placeholder="Zone "
-                            value="{{ old('ID') }}" />
-                    </div>
-                </div>
                 
-
-
+     
                 <div class="text-center">
                     <x-adminlte-button label="Submit" theme="primary" icon="fas fa-plus" type="submit" />
                 </div>

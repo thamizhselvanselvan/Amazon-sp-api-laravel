@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Bins')
+@section('title', 'Warehouses')
 
 @section('css')
 
@@ -9,7 +9,7 @@
 @stop
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Inventory Bins</h1>
+    <h1 class="m-0 text-dark">Inventory  Warehouses</h1>
 
 @stop
 
@@ -28,20 +28,25 @@
             </div>
 
             <h2 class="mb-4">
-                <a href="{{ route('bins.create') }}">
-                    <x-adminlte-button label="Add Bin" theme="primary" icon="fas fa-plus" />
+                <a href="{{ Route('warehouses.create') }}">
+                    <x-adminlte-button label="Add Warehouse" theme="primary" icon="fas fa-plus" />
                 </a>
             </h2>
 
             <table class="table table-bordered yajra-datatable table-striped">
                 <thead>
                     <tr>
-                        <th>Shelve ID</th>
-                        <th>Bin ID</th>
+                        <th>id</th>
                         <th>Name</th>
-                        <th>Width</th>
-                        <th>Height</th>
-                        <th>Depth</th>
+                        <th>Address 1</th>
+                        <th>Address 2</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Country</th>
+                        <th>Pin Code</th>
+                        <th>Contact Person Name</th>
+                        <th>Phone NO</th>
+                        <th>Email</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -51,21 +56,15 @@
         </div>
     </div>
 @stop
-
- @section('js')
+@section('js')
     <script type="text/javascript">
         $(function() {
 
             let yajra_table = $('.yajra-datatable').DataTable({
                 processing: true,
                 serverSide: true,
-                 ajax: "{{route('bins.index') }}",
+                ajax: "{{ route('warehouses.index') }}",
                 columns: [
-                    {
-                        data: 'shelve_id',
-                        name: 'shelve_id'
-                    },
-                    
                     {
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -74,21 +73,44 @@
                     },
                     {
                         data: 'name',
-                        name: 'name'
+                        name: 'gn'
                     },
                     {
-                        data: 'width',
-                        name: 'width'
+                        data: 'address_1',
+                        name: 'adress_1'
                     },
                     {
-                        data: 'height',
-                        name: 'height'
+                        data: 'address_2',
+                        name: 'address_2'
                     },
                     {
-                        data: 'depth',
-                        name: 'depth'
+                        data: 'city',
+                        name: 'city'
                     },
-                   
+                    {
+                        data: 'state',
+                        name: 'state'
+                    },
+                    {
+                        data: 'country',
+                        name: 'country'
+                    },
+                    {
+                        data: 'pin_code',
+                        name: 'pin_code'
+                    },
+                    {
+                        data: 'contact_person_name',
+                        name: 'contact_person_name'
+                    },
+                    {
+                        data: 'phone_number',
+                        name: 'phone_number'
+                    },
+                    {
+                        data: 'email',
+                        name: 'email'
+                    },
                     {
                         data: 'action',
                         orderable: false,
@@ -98,8 +120,8 @@
             });
             $(document).on('click', ".delete", function(e) {
                 e.preventDefault();
-             let bool = confirm('Are you sure you want to delete?');
-              
+                let bool = confirm('Are you sure you want to delete?');
+
                 if(!bool) {
                     return false;
                 }
@@ -111,15 +133,15 @@
 
                 $.ajax({
                     method: 'post',
-                    url: '/inventory/bins/'+id,
+                    url: '/inventory/warehouses/'+id,
                     data: {
                         "_token": "{{ csrf_token() }}",
                         "_method": 'DELETE'
-                   },
-                   response: 'json',
+                    },
+                    response: 'json',
                     success: function (response) {
                         alert('Delete success');
-                        location.reload()
+                        location.reload()  
                     }, 
                     error: function (response) {
 
@@ -127,6 +149,8 @@
                     }
                 });
             });
-        });
+            });
+
     </script>
-@stop  
+@stop
+

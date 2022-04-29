@@ -32,6 +32,8 @@ Route::resource('inventory/sources', 'Inventory\Master\InventorySourceController
 Route::resource('inventory/destinations','Inventory\Master\InventoryDestinationController');
 Route::resource('inventory/disposes','Inventory\Master\InventoryDisposeController');
 
+Route::resource('inventory/warehouses','Inventory\InventoryWarehouseController');
+
 Route::resource('inventory/features','Inventory\InventoryFeaturesController');
 
 Route::resource('inventory/inwardings','Inventory\Stock\InventoryInwardingController');

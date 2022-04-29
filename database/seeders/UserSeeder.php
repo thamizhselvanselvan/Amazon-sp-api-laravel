@@ -19,13 +19,13 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        // $roleAdmin = Role::create(['name' => 'Admin']);
+        $roleAdmin = Role::create(['name' => 'Admin']);
         $roleUser = Role::create(['name' => 'User']);
        
         $permissionAdmin = Permission::create(['name' => 'Admin']);
         $permissionUser = Permission::create(['name' => 'User']);
        
-        // $roleAdmin->givePermissionTo($permissionAdmin);
+        $roleAdmin->givePermissionTo($permissionAdmin);
         $roleUser->givePermissionTo($permissionUser);
 
         $robin = User::create([

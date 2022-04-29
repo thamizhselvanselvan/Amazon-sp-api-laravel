@@ -46,48 +46,46 @@
                 </div>
             @endif
 
-            @if(session()->has('error'))
-            <div class="alert alert-danger">
-                {{ session()->get('error') }}
-            </div>
-        @endif
+            @if (session()->has('error'))
+                <div class="alert alert-danger">
+                    {{ session()->get('error') }}
+                </div>
+            @endif
 
-        @if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-            <form  action="{{ route('bins.update', $name->id) }}" method="POST" id="">
+            <form action="{{ route('bins.update', $name->id) }}" method="POST" id="">
                 @csrf
                 @method('PUT')
 
                 <div class="row">
                     <div class="col-6">
-                        <x-adminlte-input label="Name" name="name" id="" value="{{ $name->name }}" type="text" placeholder="Name " />    
+                        <x-adminlte-input label="Name" name="name" id="" value="{{ $name->name }}" type="text"
+                            placeholder="Name " />
                     </div>
                     <div class=" col-6">
-                        <x-adminlte-input label="Width" name="width" id=""  value="{{ $name->width }}" type="text" placeholder="Width" />
+                        <x-adminlte-input label="Width" name="width" id="" value="{{ $name->width }}" type="text"
+                            placeholder="Width" />
                     </div>
-                    
+
                     <div class=" col-6">
-                        <x-adminlte-input label="Height" name="height" id=""  value="{{ $name->height }}" type="text" placeholder="Height" />
+                        <x-adminlte-input label="Height" name="height" id="" value="{{ $name->height }}" type="text"
+                            placeholder="Height" />
                     </div>
-            
+
                     <div class=" col-6">
-                        <x-adminlte-input label="Depth" name="depth" id=""  value="{{ $name->depth }}" type="text" placeholder="Depth" />
+                        <x-adminlte-input label="Depth" name="depth" id="" value="{{ $name->depth }}" type="text"
+                            placeholder="Depth" />
                     </div>
-                    
-                    
-                    
-                    <div class=" col-6">
-                        <x-adminlte-input label="Zone" name="zone" id=""  value="{{ $name->zone }}" type="text" placeholder="Zone" />
-                    </div>
-                    
+
 
                 </div>
         </div>
