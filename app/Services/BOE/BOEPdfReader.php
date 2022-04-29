@@ -37,15 +37,15 @@ class BOEPdfReader
         // $company_id = 1;
         // $user_id = 1;
         // $storage_path ='';
-        // $pdfParser = new Parser();
-        // $BOEPDFMaster = [];
+        $pdfParser = new Parser();
+        $BOEPDFMaster = [];
         // $pdf = $pdfParser->parseFile('D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000135.pdf');
         // $content = $pdf->getText();
-        // $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
+        $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
 
-        // $unsetKey = array_search('Page 1 of 2', $content);
-        // unset($content[$unsetKey]);
-        // $content = array_values($content);
+        $unsetKey = array_search('Page 1 of 2', $content);
+        unset($content[$unsetKey]);
+        $content = array_values($content);
 // dd($content);
         if ($content[0] == 'Form Courier Bill Of Entry -XIII (CBE-XIII)') {
 
@@ -632,7 +632,6 @@ class BOEPdfReader
                 $tableCheck = 1;
             }
             $dataCheck = 0;
-            $company_id=10;
             if ($tableCheck == 1) {
 
                 $awb_no = $courier_basic_details['HawbNumber'];
