@@ -130,6 +130,9 @@ class TrackingStatusController extends Controller
             elseif(str_contains($trackingStatusDetails,'CLEARANCE PROCEDURE')){
                 $PODeventsArray[$offset]['MicroStatus'] = 'In Transit - Under Custom';
             }
+            elseif(str_contains($trackingStatusDetails,'Delivery date rescheduled')){
+                $PODeventsArray[$offset]['MicroStatus'] = '	In Transit - Lastmile';
+            }
             $offset++;
         }
         // po($PODeventsArray);
