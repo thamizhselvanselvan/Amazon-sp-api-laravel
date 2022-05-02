@@ -23,8 +23,8 @@ class InventoryRackController extends Controller
         // dd($data);
         if ($request->ajax()) {
 
-            $data = Shelve::query()->join('racks as r', function($join) {
-                $join->on("r.id", "=", "shelves.rack_id");
+            $data = Shelve::query()->rightJoin('racks as r', function($join) {
+                $join->on("shelves.rack_id", "=", "r.id");
            })->orderBy('r.id')
            ->select('r.rack_id','r.id', 'r.name as rack_name', 'shelves.name')
            ;
@@ -41,8 +41,11 @@ class InventoryRackController extends Controller
 
                     return $cnt++;
                 })
-                ->addColumn('rack_name', function ($data) {
+                ->editColumn('rack_name', function ($data) {
                     return ($data->rack_name) ? $data->rack_name : "NA";
+                })
+                ->editColumn('name', function ($data) {
+                    return ($data->name) ? $data->name : "NA";
                 })
                 ->addColumn('action', function ($row) {
 
@@ -50,7 +53,7 @@ class InventoryRackController extends Controller
                     $actionBtn .= '<bu  tton data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</bu></div>';
                     return $actionBtn;
                 })
-                ->rawColumns([ 'shelves_no','rack_name', 'action'])
+                ->rawColumns(['name', 'shelves_no', 'rack_name', 'action'])
                 ->make(true);
         }
 
