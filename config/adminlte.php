@@ -69,7 +69,7 @@ return [
     'usermenu_header_class' => 'bg-primary',
     'usermenu_image' => false,
     'usermenu_desc' => false,
-    'usermenu_profile_url' => false, 
+    'usermenu_profile_url' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -316,7 +316,7 @@ return [
 
         [
             'text'    => 'Catalog',
-            'can' =>   ['Admin','Catalog Manager'],
+            'can' =>   ['Admin', 'Catalog Manager'],
             'submenu' => [
 
                 [
@@ -358,7 +358,7 @@ return [
 
         [
             'text'    => 'Inventory',
-            'can' =>   ['Admin','Inventory'],
+            'can' =>   ['Admin', 'Inventory'],
             'submenu' => [
 
                 [
@@ -373,7 +373,7 @@ return [
                             'text' => 'Manage',
                             'url'  => 'inventory/warehouses',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin','Inventory']
+                            'can' =>  ['Admin', 'Inventory']
                         ],
                     ],
 
@@ -382,44 +382,38 @@ return [
 
                     'text' => 'Racks',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin','Inventory'],
+                    'can' =>  ['Admin', 'Inventory'],
                     'submenu' => [
-                       
+
 
                         [
                             'text' => 'Rack Master',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin','Inventory'],
+                            'can' =>  ['Admin', 'Inventory'],
                             'submenu' => [
                                 [
 
                                     'text' => 'Racks',
                                     'url'  => 'inventory/racks',
                                     'icon' => 'far fa-fw fa-file',
-                                    'can' =>  ['Admin','Inventory']
+                                    'can' =>  ['Admin', 'Inventory']
                                 ],
                                 [
                                     'text' => 'Shelves',
                                     'url'  => 'inventory/shelves',
                                     'icon' => 'far fa-fw fa-file',
-                                    'can' =>  ['Admin','Inventory']
-                                 
+                                    'can' =>  ['Admin', 'Inventory']
+
                                 ],
                                 [
                                     'text' => 'Bins',
                                     'url'  => 'inventory/bins',
                                     'icon' => 'far fa-fw fa-file',
-                                    'can' =>  ['Admin','Inventory']
-                                 
+                                    'can' =>  ['Admin', 'Inventory']
+
                                 ],
                             ],
 
-                        ],
-                        [
-                            'text' => ' Dispose reason',
-                            'url'  => 'inventory/disposes',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin'],
                         ],
                     ],
                 ],
@@ -432,7 +426,7 @@ return [
                             'text' => 'Source',
                             'url'  => 'inventory/sources',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin','Inventory'],
+                            'can' =>  ['Admin', 'Inventory'],
                         ],
                         [
                             'text' => 'Shipment',
@@ -459,7 +453,7 @@ return [
                             'text' => 'Destination',
                             'url'  => 'inventory/destinations',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin','Inventory'],  
+                            'can' =>  ['Admin', 'Inventory'],
 
                         ],
                         [
@@ -478,6 +472,20 @@ return [
                     ],
                 ],
                 [
+                    'text' => 'Dispose',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin'],
+                    'submenu' => [
+
+                        [
+                            'text' => ' Dispose reason',
+                            'url'  => 'inventory/disposes',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin'],
+                        ],
+                    ],
+                ],
+                [
                     'text' => 'Reports',
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin'],
@@ -486,7 +494,7 @@ return [
                             'text' => 'Daily',
                             'url'  => 'inventory/features',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin','Inventory']
+                            'can' =>  ['Admin', 'Inventory']
                         ],
                         [
                             'text' => 'Weekly',
@@ -527,7 +535,7 @@ return [
                         ],
                     ],
                 ],
-               
+
             ],
         ],
         [

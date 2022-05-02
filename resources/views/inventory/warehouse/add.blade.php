@@ -52,24 +52,6 @@
              <form action="{{ route('warehouses.store') }}" method="POST" id="admin_user">
                @csrf
 
-                {{--  <div class="row justify-content-center">
-
-                    <div class="col-6">
-
-                        <x-adminlte-select name="rack_id" label="Select Rack">
-
-                            @foreach ($rack_lists as $rack_list)
-               
-                                <option value="{{ $rack_list->id }}">{{ $rack_list->name  }}</option>
-
-                            @endforeach
-
-                        </x-adminlte-select>
-
-                    </div>
-                    
-                </div> --}}
-
                 <div class="row justify-content-center">
                     <div class="col-6">
                         <x-adminlte-input label="Name" name="name" type="text" placeholder="Name"

@@ -11,14 +11,21 @@ class Warehouse extends Model
     use HasFactory;
     protected $connection = 'in';
 
-    protected $fillable = ['name',
-                           'address_1',
-                           'address_2',
-                           'city',
-                           'state',
-                           'country',
-                           'pin_code',
-                           'contact_person_name',
-                           'phone_number' ,
-                           'email',];
+    protected $fillable = [
+        'name',
+        'address_1',
+        'address_2',
+        'city',
+        'state',
+        'country',
+        'pin_code',
+        'contact_person_name',
+        'phone_number',
+        'email',
+    ];
+
+    public function racks()
+    {
+        return $this->hasMany(Racks::class);
+    }
 }

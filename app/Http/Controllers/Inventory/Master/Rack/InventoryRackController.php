@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Inventory\Rack;
 use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
+use App\Models\Inventory\Warehouse;
 
 class InventoryRackController extends Controller
 {
@@ -17,7 +18,6 @@ class InventoryRackController extends Controller
 
     public function index(Request $request)
     {
-
         if ($request->ajax()) {
 
             $data = Rack::query()->with(['shelves']);
@@ -27,34 +27,48 @@ class InventoryRackController extends Controller
                 ->addColumn('shelves_count', function ($data) {
                     return ($data->shelves) ? $data->shelves->count() : 0;
                 })
+
+                ->addColumn('shelve_name', function ($data) {
+                    return ($data->shelves->first()) ? $data->shelves->first()->name : "NA";
+                })
                 ->addColumn('action', function ($row) {
 
                     $actionBtn = '<div class="d-flex"><a href="/inventory/racks/' . $row->id . '/edit" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
-                    $actionBtn .= '<button data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
+                    $actionBtn .= '<bu  tton data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</bu></div>';
                     return $actionBtn;
                 })
-                ->rawColumns(['shelves_count', 'action'])
+                ->rawColumns(['shelves_count', 'shelve_name', 'action'])
                 ->make(true);
         }
+
 
         return view('inventory.master.racks.rack.index');
     }
 
+
     public function create()
     {
-        return view('inventory.master.racks.rack.add');
+        $warehouse_lists = Warehouse::get();
+        return view('inventory.master.racks.rack.add', compact('warehouse_lists'));
     }
 
     public function store(Request $request)
     {
 
         $request->validate([
-            'name' => 'required|min:3|max:100'
+            'name' => 'required|min:3|max:100',
+            'rack_id' => 'required|min:1|max:100'
         ]);
+        $warehouse_exists = Warehouse::where('id', $request->warehouse_id)->exists();
+
+        if (!$warehouse_exists) {
+            return redirect()->route('racks.create')->with('error', 'Selected Warehouse is invalid');
+        }
 
         $name = $request->name;
-
-        Rack::create(['name' => $name]);
+        $rack_id = $request->rack_id;
+        $warehouse_id = $request->warehouse_id;
+        Rack::create(['name' => $name, 'rack_id' => $rack_id, 'warehouse_id' => $warehouse_id]);
 
         return redirect()->route('racks.index')->with('success', 'Racks ' . $name . ' has been created successfully');
     }
@@ -73,6 +87,7 @@ class InventoryRackController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|min:3|max:100',
+            'rack_id' => 'required|min:1|max:100'
         ]);
 
         Rack::where('id', $id)->update($validated);
@@ -86,6 +101,4 @@ class InventoryRackController extends Controller
 
         return redirect()->route('racks.index')->with('success', 'Rack has been Deleted successfully');
     }
-    
 }
-
