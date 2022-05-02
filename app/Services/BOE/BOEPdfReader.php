@@ -3,9 +3,11 @@
 namespace App\Services\BOE;
 
 use helpers;
+use DateTime;
 use Exception;
 use RedBeanPHP\R as R;
 use App\Models\Asin_master;
+use Smalot\PdfParser\Parser;
 use Illuminate\Support\Carbon;
 use App\Models\Aws_credentials;
 use SellingPartnerApi\Endpoint;
@@ -13,7 +15,6 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Laravel\ServiceProvider;
 use Illuminate\Support\Facades\Log;
 use App\Services\Config\ConfigTrait;
-use DateTime;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\CatalogItemsV0Api as CatalogItemsV0ApiProduct;
 use SellingPartnerApi\Api\ProductPricingApi as ProductPricingApiProduct;
@@ -33,16 +34,19 @@ class BOEPdfReader
         // $password = config('database.connections.web.password');
 
         // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-        // $pdfParser = new Parser();
-        // $BOEPDFMaster = [];
-        // $pdf = $pdfParser->parseFile('D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000433.pdf');
+        // $company_id = 1;
+        // $user_id = 1;
+        // $storage_path ='';
+        $pdfParser = new Parser();
+        $BOEPDFMaster = [];
+        // $pdf = $pdfParser->parseFile('D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000135.pdf');
         // $content = $pdf->getText();
         $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
 
         $unsetKey = array_search('Page 1 of 2', $content);
         unset($content[$unsetKey]);
         $content = array_values($content);
-
+// dd($content);
         if ($content[0] == 'Form Courier Bill Of Entry -XIII (CBE-XIII)') {
 
             $BOEPDFMaster = $content;
@@ -631,85 +635,93 @@ class BOEPdfReader
             if ($tableCheck == 1) {
 
                 $awb_no = $courier_basic_details['HawbNumber'];
-                $selectAwb = DB::select("select hawb_number from boe where hawb_number = '$awb_no'");
+                $selectAwb = DB::select("select hawb_number,id from boe where hawb_number = '$awb_no' AND company_id='$company_id'");
                 if (array_key_exists(0, $selectAwb)) {
                     $dataCheck = 1;
                 }
                 // R::freeze(true);
             }
 
-            //storing data into readbean 
-            $boe_details->companyId = $company_id;
-            $boe_details->userId = $user_id;
-            $boe_details->currentStatusOfTheCbe = $current_Status_of_CBE['CurrentStatusOfTheCbe'];
-
-            foreach ($courier_basic_details as $key => $courier_basic_detail) {
-
-                $key = lcfirst($key);
-                $boe_details->$key = $courier_basic_detail;
-            }
-
-
-            foreach ($igm_details as $boe_key => $boe) {
-
-                $boe_key = lcfirst($boe_key);
-                if ($boe_key == 'dateOfArrival') {
-
-                    $date = new DateTime(str_replace('/', '-', $boe));
-                    $dateformate = $date->format('Y-m-d');
-                    $boe_details->$boe_key = $dateformate;
-                } else {
-                    // echo $boe;
-                    $boe_details->$boe_key = $boe;
-                }
-            }
-            // exit;
-            $boe_details->notificationDetails = json_encode($notification_details);
-            $boe_details->chargeDetails = json_encode($charge_details);
-            $boe_details->dutyDetails = json_encode($duty_details);
-
-            if (isset($payment_details[0]['ChallanNumber'])) {
-                $boe_details->challanNumber = $payment_details[0]['ChallanNumber'];
-            }
-            if (isset($payment_details[0]['TotalAmount'])) {
-
-                $boe_details->totalAmount = $payment_details[0]['TotalAmount'];
-            }
-            if (isset($payment_details[0]['ChallanDate'])) {
-                $challanDate = $payment_details[0]['ChallanDate'];
-
-                $date = new DateTime(str_replace('/', '-', $challanDate));
-                $challan_date_formate = $date->format('Y-m-d');
-                $boe_details->challanDate = $challan_date_formate;
-
-                // $boe_details->challanDate = $payment_details[0]['ChallanDate'];
-            }
-
-            $boe_details->paymentDetails = json_encode($payment_details);
-            $date = new DateTime(date('Y-m-d'));
-            $created_at = $date->format('Y-m-d');
-            $boe_details->created_at = $created_at;
             if ($dataCheck != 1) {
+                //add new 
+                $boe_bean_detials = $this->createbean($boe_details, $company_id, $user_id, $current_Status_of_CBE, $courier_basic_details, $igm_details, $notification_details, $charge_details, $duty_details, $payment_details);
+                $date = new DateTime(date('Y-m-d'));
+                $created_at = $date->format('Y-m-d');
+                $boe_bean_detials->do = 0;
+                $boe_bean_detials->download_file_path = $storage_path;
+                $boe_bean_detials->created_at = $created_at;
+                $boe_bean_detials->updated_at = $created_at;
 
-                $boe_details->do = 0;
-
-                $boe_details->download_file_path = $storage_path;
-
-                R::store($boe_details);
+                R::store($boe_bean_detials);
             } else {
+                $id = $selectAwb[0]->id;
                 //update data
-                // $date = new DateTime(date('Y-m-d'));
-                // $updated_at = $date->format('Y-m-d');
-                // $boe_details->updated_at = $updated_at;
+                $update_bean = R::load('boe',$id);
+                $update_bean->user_id = 1;
+
+                $boe_bean_update = $this->createbean($update_bean, $company_id, $user_id, $current_Status_of_CBE, $courier_basic_details, $igm_details, $notification_details, $charge_details, $duty_details, $payment_details);                
+                $date = new DateTime(date('Y-m-d'));
+                $updated_at = $date->format('Y-m-d');
+                $boe_bean_update->do = 0;
+                $boe_bean_update->download_file_path = $storage_path;
+                $boe_bean_update->updated_at = $updated_at;
+                R::store($update_bean);
             }
         } else {
 
             echo 'Invalid BOE file';
         }
-
-
-        // Log::alert($testcount);
     }
 
+    public function createbean($boe_details, $company_id, $user_id, $current_Status_of_CBE, $courier_basic_details, $igm_details, $notification_details, $charge_details, $duty_details, $payment_details)
+    {
+        $boe_details->companyId = $company_id;
+        $boe_details->userId = $user_id;
+        $boe_details->currentStatusOfTheCbe = $current_Status_of_CBE['CurrentStatusOfTheCbe'];
 
+        foreach ($courier_basic_details as $key => $courier_basic_detail) {
+
+            $key = lcfirst($key);
+            $boe_details->$key = $courier_basic_detail;
+        }
+
+        foreach ($igm_details as $boe_key => $boe) {
+
+            $boe_key = lcfirst($boe_key);
+            if ($boe_key == 'dateOfArrival') {
+
+                $date = new DateTime(str_replace('/', '-', $boe));
+                $dateformate = $date->format('Y-m-d');
+                $boe_details->$boe_key = $dateformate;
+            } else {
+                // echo $boe;
+                $boe_details->$boe_key = $boe;
+            }
+        }
+        // exit;
+        $boe_details->notificationDetails = json_encode($notification_details);
+        $boe_details->chargeDetails = json_encode($charge_details);
+        $boe_details->dutyDetails = json_encode($duty_details);
+
+        if (isset($payment_details[0]['ChallanNumber'])) {
+            $boe_details->challanNumber = $payment_details[0]['ChallanNumber'];
+        }
+        if (isset($payment_details[0]['TotalAmount'])) {
+
+            $boe_details->totalAmount = $payment_details[0]['TotalAmount'];
+        }
+        if (isset($payment_details[0]['ChallanDate'])) {
+            $challanDate = $payment_details[0]['ChallanDate'];
+
+            $date = new DateTime(str_replace('/', '-', $challanDate));
+            $challan_date_formate = $date->format('Y-m-d');
+            $boe_details->challanDate = $challan_date_formate;
+
+            // $boe_details->challanDate = $payment_details[0]['ChallanDate'];
+        }
+
+        $boe_details->paymentDetails = json_encode($payment_details);
+        
+        return $boe_details;
+    }
 }
