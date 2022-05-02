@@ -12,13 +12,6 @@ class TrackingStatusController extends Controller
     public $micro_status = NULL;
     public function trackingStatusDetails(Request $request)
     {
-        $micro_status =  DB::connection('mssql')->select("SELECT DISTINCT Status, MicroStatusName FROM MicroStatusMapping ");
-        $micro_status_array = [];
-        foreach ($micro_status as $key => $status) {
-            $micro_status_array[$status->Status] = $status->MicroStatusName;
-        }
-        $PODtransEvents = DB::connection('mssql')->select("SELECT DISTINCT StatusDetails, FPCode FROM PODTrans ");
-        // dd($micro_status_array, $PODtransEvents);
         if ($request->ajax()) {
 
             $data = $this->trackingStatusDetailsData();
@@ -143,13 +136,58 @@ class TrackingStatusController extends Controller
 
     public function microStatusReport()
     {
+
         return view('b2cship.trackingStatus.micro_status_report');
     }
-    
-    public function microStatusMissingReport()
+
+    public function microStatusMissingReport(Request $request)
     {
-        
-        
+        if ($request->ajax()) {
+            
+            $PODeventsArray = [];
+            $offset = 0;
+    
+            $PODtransEvents = DB::connection('mssql')->select("SELECT DISTINCT StatusDetails, FPCode FROM PODTrans ");
+           
+            foreach ($PODtransEvents as $PODtransEvent) {
+                $fpCode = $PODtransEvent->FPCode;
+                $statusDetails = $PODtransEvent->StatusDetails;
+                if ($fpCode == '') {
+                    $fpCode = 'B2CShip';
+                }
+                $ignorebombion = '[BOMBINO]';
+                $trackingMsg = $fpCode . ' : ' . $statusDetails;
+                if ((!str_contains($trackingMsg, $ignorebombion))) {
+                    $PODeventsArray[$offset]['TrackingMsg'] = $trackingMsg;
+                    $PODeventsArray[$offset]['StatusDetails'] = $statusDetails;
+    
+                    $offset++;
+                }
+            }
+    
+            $micro_status =  DB::connection('mssql')->select("SELECT DISTINCT Status, MicroStatusName FROM MicroStatusMapping ");
+            $micro_status_array = [];
+            foreach ($micro_status as $key => $status) {
+                $micro_status_array[strtoupper($status->Status)] = strtoupper($status->MicroStatusName);
+            }
+            $micro_status_missing = [];
+            $ms_offset = 0;
+    
+            foreach ($PODeventsArray as $PODevnetKey => $tracking) {
+                $tracking_msg = trim(strtoupper($tracking['StatusDetails']));
+    
+                if(!isset(($micro_status_array[$tracking_msg])) && !str_contains($tracking_msg, strtoupper('Shipment has been OUTWARDED With Bag No')) && !str_contains($tracking_msg, strtoupper(' CLEARANCE PROCEDURE IN PROGRESS Description: CLEARANCE PROGRESS')) && !str_contains($tracking_msg, strtoupper('Delivery date rescheduled'))){
+    
+                    $micro_status_missing[$ms_offset]['Status'] = $tracking_msg;
+                    $micro_status_missing[$ms_offset]['Tracking_msg'] = $tracking['TrackingMsg'];
+                    $ms_offset ++;
+                }
+            }
+            return DataTables::of($micro_status_missing)
+                ->addIndexColumn()
+                ->make(true);
+        }
+        // dd($micro_status_missing);
         return view('b2cship.trackingStatus.micro_status_missing_report');
     }
 }

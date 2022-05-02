@@ -7,9 +7,9 @@
 
 @section('css')
 <style>
-.table td{
-    padding: 0.1rem;
-}
+    .table td {
+        padding: 0.1rem;
+    }
 </style>
 @stop
 
@@ -20,10 +20,10 @@
 
     <thead>
         <tr>
-            <!-- <th>S/N</th> -->
-            <!-- <th>Tracking Message</th>
-            <th>Tracking Master Code</th>
-            <th>Tracking Master Event Description</th>
+            <th>S/N</th>
+            <th>Tracking Status</th>
+            <th>Tracking Message</th>
+            <!-- <th>Tracking Master Event Description</th>
             <th>Our Event Code</th>
             <th>Event Description</th>
             <th>Tracking API Event</th>
@@ -40,23 +40,29 @@
 <script type="text/javascript">
     $(function() {
 
-        // let data = [];
-        // let data_table = $('.yajra-datatable').DataTable({
-        //     processing: true,
-        //     serverSide: true,
-        //     ajax: "/B2cship/tracking_status/details",
-        //     pageLength: 200,
-        //     lengthMenu: [50, 100, 200, 500],
-        //     columns: [
-        //         { data: 'TrackingMsg' },
-        //         { data: 'TrackingMasterCode' },
-        //         { data: 'TrackingMasterEventDescription' },
-        //         { data: 'OurEventCode' },
-        //         { data: 'EventDescription' },
-        //         { data: 'TrackingAPIEvent' },
-        //         { data: 'MicroStatus' }
-        //     ],
-        // });
+        let data = [];
+        let data_table = $('.yajra-datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "/b2cship/micro_status_missing_report",
+            pageLength: 500,
+            lengthMenu: [50, 100, 200, 500],
+            columns: [
+                {
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'Status'
+                },
+                {
+                    data: 'Tracking_msg'
+                },
+
+            ],
+        });
     });
 </script>
 
