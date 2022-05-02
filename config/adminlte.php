@@ -591,6 +591,18 @@ return [
                     'url' => 'B2cship/booking',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Micro Status Report',
+                    'url' => 'b2cship/micro_status_report',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Micro Status Missing Report',
+                    'url' => 'b2cship/micro_status_missing_report',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
                 ]
             ],
         ],
