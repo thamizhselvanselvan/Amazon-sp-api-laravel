@@ -127,6 +127,9 @@ class TrackingStatusController extends Controller
             } elseif (str_contains($trackingStatusDetails, 'Shipment has been OUTWARDED With Bag No')) {
                 $PODeventsArray[$offset]['MicroStatus'] = 'In Transit - US to India';
             }
+            elseif(str_contains($trackingStatusDetails,'CLEARANCE PROCEDURE')){
+                $PODeventsArray[$offset]['MicroStatus'] = 'In Transit - Under Custom';
+            }
             $offset++;
         }
         // po($PODeventsArray);
