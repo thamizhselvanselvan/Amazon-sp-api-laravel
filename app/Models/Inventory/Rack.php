@@ -22,11 +22,15 @@ class Rack extends Model
     //     $this->getConnection()->setTablePrefix('sp_');
     // }
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name','rack_id','warehouse_id'];
 
 
     public function shelves()
     {
         return $this->hasMany(Shelve::class);
+    }
+    
+    public function warehouse() {
+        return $this->hasOne(Warehouse::class, 'id', 'warehouse_id');
     }
 }
