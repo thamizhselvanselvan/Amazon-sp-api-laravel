@@ -26,7 +26,7 @@
 
         <div class="row">
             <div class="col-3 ">
-                <h4 style="font-weight: bold; text-align: center;">Today's </h4>
+                <h4 style="font-weight: bold; text-align: center;">Today </h4>
                 <div class="info-box bg-info text-center">
                     <div class="info-box-content">
                         <h2>{{ $todayTotalBooking['totalBooking'] }}</h2>
@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div class="col-3 ">
-                <h4 style="font-weight: bold; text-align: center;">Yesterday's </h4>
+                <h4 style="font-weight: bold; text-align: center;">Yesterday </h4>
                 <div class="info-box bg-info text-center">
                     <div class="info-box-content">
                         <h2>{{ $yesterdayTotalBooking['totalBooking'] }}</h2>
@@ -44,7 +44,7 @@
                 </div>
             </div>
             <div class="col-3 ">
-                <h4 style="font-weight: bold; text-align: center;">Last 7 Day's </h4>
+                <h4 style="font-weight: bold; text-align: center;">Last 7 Days </h4>
                 <div class="info-box bg-info text-center">
                     <div class="info-box-content">
                         <h2>{{ $Last7DaysTotalBooking['totalBooking'] }}</h2>
@@ -53,7 +53,7 @@
                 </div>
             </div>
             <div class="col-3 ">
-                <h4 style="font-weight: bold; text-align: center;">Last 30 Day's </h4>
+                <h4 style="font-weight: bold; text-align: center;">Last 30 Days </h4>
                 <div class="info-box bg-info  text-center">
                     <div class="info-box-content">
                         <h2>{{ $Last30DaysTotalBooking['totalBooking'] }}</h2>

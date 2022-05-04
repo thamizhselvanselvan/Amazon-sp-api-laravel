@@ -44,8 +44,8 @@
         let data_table = $('.yajra-datatable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "/B2cship/tracking_status/details",
-            pageLength: 200,
+            ajax: "/b2cship/tracking_status/details",
+            pageLength: 500,
             lengthMenu: [50, 100, 200, 500],
             columns: [
                 { data: 'TrackingMsg' },
