@@ -29,7 +29,7 @@ class Bin extends Model
         'depth',
         'width',
         'height',
-        'zone',
+      
     ];
 
     public function shelves() {

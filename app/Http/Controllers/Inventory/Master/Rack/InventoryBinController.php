@@ -48,12 +48,12 @@ class InventoryBinController extends Controller
     {
         $rack_lists = Rack::get();
         $shelves = Shelve::query();
-        $shelve_lists = ($rack_id) ? $shelves->where('rack_id', $rack_id)->get() : [] ;
+        $shelve_lists = ($rack_id) ? $shelves->where('rack_id', $rack_id)->get() : [];
 
         $rack_id = $rack_id ? $rack_id : '';
         $shelve_id = $shelve_id ? $shelve_id : '';
 
-        return view('inventory.master.racks.bin.add', compact('rack_lists','shelve_lists', 'rack_id', 'shelve_id'));
+        return view('inventory.master.racks.bin.add', compact('rack_lists', 'shelve_lists', 'rack_id', 'shelve_id'));
     }
 
     public function rackselect($id)
@@ -70,10 +70,10 @@ class InventoryBinController extends Controller
 
         $request->validate([
             'name' => 'required|min:2|max:50',
-            'depth' => 'required|min:2|max:50',
-            'width' => 'required|min:2|max:50',
-            'height' => 'required|min:2|max:50',
-            'zone'  => 'required|min:2|max:50'
+            'depth' => 'required|min:1|max:50',
+            'width' => 'required|min:1|max:50',
+            'height' => 'required|min:1|max:50',
+
         ]);
 
         $shelve_exists = Shelve::where('id', $request->shelve_id)->exists();
@@ -88,7 +88,7 @@ class InventoryBinController extends Controller
             'depth' => $request->depth,
             'width' => $request->width,
             'height' => $request->height,
-            'zone' => $request->zone
+
         ]);
 
         return redirect()->route('bins.index')->with('success', 'Bin  has been created successfully');
@@ -111,7 +111,7 @@ class InventoryBinController extends Controller
             'depth' => 'required|min:2|max:50',
             'width' => 'required|min:2|max:50',
             'height' => 'required|min:2|max:50',
-            'zone'  => 'required|min:2|max:50'
+
         ]);
 
         Bin::where('id', $id)->update($validated);
