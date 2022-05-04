@@ -574,21 +574,21 @@ return [
             'can' =>  ['Admin'],
             'submenu' => [
                 [
-                    'text' => 'KYC',
-                    'url' => 'B2cship/kyc',
+                    'text' => 'KYC Status',
+                    'url' => 'b2cship/kyc',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
 
                 ],
                 [
-                    'text' => 'Status Details',
+                    'text' => 'Ship Tracking Status Details',
                     'icon' => 'far fa-fw fa-file',
                     'can' => ['Admin'],
-                    'url' => 'B2cship/tracking_status/details'
+                    'url' => 'b2cship/tracking_status/details'
                 ],
                 [
-                    'text' => 'Booking Status',
-                    'url' => 'B2cship/booking',
+                    'text' => 'Booking Report',
+                    'url' => 'b2cship/booking',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
                 ]
