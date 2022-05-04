@@ -396,7 +396,8 @@ class BOEController extends Controller
 
         $company_id = $user->company_id;
         $exportFilePath = "excel/downloads/BOE/$company_id/BOE_Details.csv";
-        $chunk = 1000;
+        // dd($boe_data->get());
+        $chunk = 10000;
         $boe_data->chunk($chunk, function ($records) use ($exportFilePath, $csvheaders) {
 
             if (!Storage::exists($exportFilePath)) {

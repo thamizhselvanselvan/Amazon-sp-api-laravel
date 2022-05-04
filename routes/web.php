@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Smalot\PdfParser\Parser;
 use Dflydev\DotAccessData\Data;
 use SellingPartnerApi\Endpoint;
+use App\Models\Inventory\Shelve;
 use App\Models\Universal_textile;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
@@ -31,7 +32,19 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 |
 */
 
+// Route::get('test', function() {
 
+//      $sh = Shelve::join('racks as r', function($join) {
+//           $join->on("r.id", "=", "shelves.rack_id");
+//      })
+//      ->select('r.id', 'r.name as rack_name', 'shelves.name')
+//      ->orderBy('r.id')
+    
+//      ->get();
+
+
+//      dd($sh);
+// });
 
 
 Route::get('/', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('/');

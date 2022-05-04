@@ -68,11 +68,10 @@
 
             <div class="row justify-content-center">
                 <div class="col-6">
-                    <x-adminlte-input label="Rack ID" name="rack_id" type="text" placeholder="ID"
-                        value="{{  $name->id }}" />
+                    <x-adminlte-input label="Rack ID" name="rack_id" type="text"  value="{{  $name->rack_id }}" />
                 </div>
                 <div class=" col-6">
-                    <x-adminlte-input label="name" name="name" value="{{ $name->name }}" type="text" placeholder="name" />
+                    <x-adminlte-input label="Name" name="name" value="{{ $name->name }}" type="text"  />
                 </div>
 
             </div>

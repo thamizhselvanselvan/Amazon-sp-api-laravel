@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Inventory\Master\Rack;
 
 use Illuminate\Http\Request;
 use App\Models\Inventory\Rack;
+use App\Models\Inventory\Shelve;
 use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory\Warehouse;
@@ -15,21 +16,33 @@ class InventoryRackController extends Controller
     {
         $this->middleware('auth');
     }
-
+    
     public function index(Request $request)
     {
+        // $data = Shelve::query()->with(['racks']);
+        // dd($data);
         if ($request->ajax()) {
 
-            $data = Rack::query()->with(['shelves']);
-
+            $data = Shelve::query()->join('racks as r', function($join) {
+                $join->on("r.id", "=", "shelves.rack_id");
+           })->orderBy('r.id')
+           ->select('r.rack_id','r.id', 'r.name as rack_name', 'shelves.name')
+           ;
+            $cnt = 1;
+            $rack_id = 0;
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('shelves_count', function ($data) {
-                    return ($data->shelves) ? $data->shelves->count() : 0;
-                })
+                ->addColumn('shelves_no', function ($data) use (&$cnt, &$rack_id) {
+                    
+                    if($rack_id != $data->id) {
+                        $rack_id = $data->id;
+                        $cnt = 1;
+                    }
 
-                ->addColumn('shelve_name', function ($data) {
-                    return ($data->shelves->first()) ? $data->shelves->first()->name : "NA";
+                    return $cnt++;
+                })
+                ->addColumn('rack_name', function ($data) {
+                    return ($data->rack_name) ? $data->rack_name : "NA";
                 })
                 ->addColumn('action', function ($row) {
 
@@ -37,7 +50,7 @@ class InventoryRackController extends Controller
                     $actionBtn .= '<bu  tton data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</bu></div>';
                     return $actionBtn;
                 })
-                ->rawColumns(['shelves_count', 'shelve_name', 'action'])
+                ->rawColumns([ 'shelves_no','rack_name', 'action'])
                 ->make(true);
         }
 
@@ -86,7 +99,7 @@ class InventoryRackController extends Controller
     {
 
         $validated = $request->validate([
-            'name' => 'required|min:3|max:100',
+            'name' => 'required|min:2|max:100',
             'rack_id' => 'required|min:1|max:100'
         ]);
 
