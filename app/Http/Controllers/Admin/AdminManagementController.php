@@ -15,12 +15,12 @@ class AdminManagementController extends Controller
 {
     function index(Request $request)
     {
-
+        $user = Auth::user();
+        $login_id = $user->id;
+        $role = $user->roles->first()->name;
+        $users = User::latest()->orderBy('created_at')->get();
+        // dd($users[0]->roles);
         if ($request->ajax()) {
-            $user = Auth::user();
-            $login_id = $user->id;
-            $role = $user->roles->first()->name;
-            $users = User::latest()->orderBy('created_at');
 
             return DataTables::of($users)
                 ->addIndexColumn()
@@ -35,7 +35,15 @@ class AdminManagementController extends Controller
                     return $edit;
                 })
                 ->addColumn('permission', function ($permission) {
-                    return $permission->roles->first()->name;
+                    $roles = $permission->roles;
+                    $roles = json_decode($roles);
+                    $multiple_roles = '';
+                    foreach($roles as $key => $role){
+                        $multiple_roles .= $role->name.', ';
+                    }
+
+                    return rtrim($multiple_roles,', ');
+
                 })
                 ->rawColumns(['action', 'permission'])
                 ->make(true);
@@ -134,17 +142,17 @@ class AdminManagementController extends Controller
             'name' => 'required',
             'email' => 'required'
         ]);
-        $am = User:: where('id', $id)->first();
+        $user = User:: where('id', $id)->first();
         
-        $am->update([
+        $user->update([
             'name' => $request->name,
             'email' => $request->email,
             'company_id' => $request->company,
-            
         ]);
 
         $role = $request->Role;
-        $am->assignRole($role);
+        $user->roles()->detach();
+        $user->assignRole($role);
         return redirect()->intended('/admin/user_list')->with('success', 'User ' . $request->name . ' has been updated successfully');
         // return $request;
     }

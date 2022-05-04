@@ -79,7 +79,7 @@
                 <div class="row">
                     <div class="col-6">
 
-                        <x-adminlte-select name="Role" id="status" label="Role">
+                        <x-adminlte-select name="Role[]" id="status" label="Role" multiple>
                             @foreach ($roles as $role)
                                 <option value="{{ $role->name }}"> {{ $role->name }}</option>
                             @endforeach
