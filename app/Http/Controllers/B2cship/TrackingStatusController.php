@@ -140,9 +140,55 @@ class TrackingStatusController extends Controller
         return $PODeventsArray;
     }
 
-    public function microStatusReport()
+    public function microStatusReport(Request $request)
     {
 
+        if ($request->ajax()) 
+        {
+            
+            $PODeventsArray = [];
+            $offset = 0;
+    
+            $PODtransEvents = DB::connection('mssql')->select("SELECT DISTINCT StatusDetails, FPCode FROM PODTrans ");
+           
+            foreach ($PODtransEvents as $PODtransEvent) {
+                $fpCode = $PODtransEvent->FPCode;
+                $statusDetails = $PODtransEvent->StatusDetails;
+                if ($fpCode == '') {
+                    $fpCode = 'B2CShip';
+                }
+                $ignorebombion = '[BOMBINO]';
+                $trackingMsg = $fpCode . ' : ' . $statusDetails;
+                if ((!str_contains($trackingMsg, $ignorebombion))) {
+                    $PODeventsArray[$offset]['TrackingMsg'] = $trackingMsg;
+                    $PODeventsArray[$offset]['StatusDetails'] = $statusDetails;
+    
+                    $offset++;
+                }
+            }
+    
+            $micro_status =  DB::connection('mssql')->select("SELECT DISTINCT Status, MicroStatusName FROM MicroStatusMapping ");
+            $micro_status_array = [];
+            foreach ($micro_status as $key => $status) {
+                $micro_status_array[strtoupper($status->Status)] = strtoupper($status->MicroStatusName);
+            }
+            $micro_status_missing = [];
+            $ms_offset = 0;
+    
+            foreach ($PODeventsArray as $PODevnetKey => $tracking) {
+                $tracking_msg = trim(strtoupper($tracking['StatusDetails']));
+    
+                if(isset(($micro_status_array[$tracking_msg]))){
+    
+                    $micro_status_missing[$ms_offset]['Status'] = $tracking_msg;
+                    $micro_status_missing[$ms_offset]['Tracking_msg'] = $tracking['TrackingMsg'];
+                    $ms_offset ++;
+                }
+            }
+            return DataTables::of($micro_status_missing)
+                ->addIndexColumn()
+                ->make(true);
+        }
         return view('b2cship.trackingStatus.micro_status_report');
     }
 
