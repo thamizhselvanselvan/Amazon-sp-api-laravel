@@ -45,7 +45,7 @@
             processing: true,
             serverSide: true,
             ajax: "/b2cship/micro_status_report",
-            pageLength: 200,
+            pageLength: 500,
             lengthMenu: [50, 100, 200, 500],
             columns: [
                 { data: 'Status' },
