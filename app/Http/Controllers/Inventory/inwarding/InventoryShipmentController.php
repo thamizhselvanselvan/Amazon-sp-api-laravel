@@ -15,7 +15,7 @@ class InventoryShipmentController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     public function index(Request $request)
     {
 
@@ -49,23 +49,23 @@ class InventoryShipmentController extends Controller
 
     public function store(Request $request)
     {
-        
+
         $request->validate([
             'Ship_id' => 'required|min:1|max:100',
             'asin' => 'required|min:1|max:100',
         ]);
-        
+
         $source_exists = Source::where('id', $request->source_id)->exists();
 
-        if(!$source_exists) {
+        if (!$source_exists) {
             return redirect()->route('shipments.create')->with('error', 'Selected Source id invalid');
         }
 
 
         Shipment::create([
             'Ship_id' => $request->Ship_id,
-            'asin' =>$request->asin,
-            'source_id'=> $request->source_id,
+            'asin' => $request->asin,
+            'source_id' => $request->source_id,
         ]);
 
         return redirect()->route('shipments.index')->with('success', 'Shipment ' . $request->Ship_id . ' has been created successfully');
@@ -92,7 +92,7 @@ class InventoryShipmentController extends Controller
         return redirect()->route('shipments.index')->with('success', 'Shipment has been updated successfully');
     }
 
-     public function destroy($id)
+    public function destroy($id)
     {
         Shipment::where('id', $id)->delete();
 
@@ -104,13 +104,23 @@ class InventoryShipmentController extends Controller
         return view('inventory.inward.shipment.create');
     }
 
-    public function autocomplete(Request $request) {
+    public function autocomplete(Request $request)
+    {
 
         $data = Product::select("asin1")
-        ->where("asin1","LIKE","%{$request->asin}%")
-        ->limit(50)
-        ->get();
+            ->where("asin1", "LIKE", "%{$request->asin}%")
+            ->limit(50)
+            ->get();
 
         return response()->json($data);
+    }
+
+    public function selectView(Request $request)
+    {
+
+        if ($request->ajax()) {
+
+            return Product::query()->where('asin1', $request->asin)->first();
+        }
     }
 }

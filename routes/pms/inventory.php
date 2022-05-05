@@ -37,7 +37,7 @@ Route::resource('inventory/features','Inventory\InventoryFeaturesController');
 Route::resource('inventory/inwardings','Inventory\Stock\InventoryInwardingController');
 Route::resource('inventory/shipments','Inventory\inwarding\InventoryShipmentController');
 
-Route::get('shipment/create/view', 'Inventory\inwarding\InventoryShipmentController@createView');
+Route::get('shipment/select/view', 'Inventory\inwarding\InventoryShipmentController@selectView');
 Route::get('shipment/autocomplete', 'Inventory\inwarding\InventoryShipmentController@autocomplete');
 
  
