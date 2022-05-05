@@ -29,7 +29,7 @@
  
             <h2 class="mb-4">
             <a href="{{ route('shipments.create') }}">
-                    <x-adminlte-button label="create Shipment" theme="primary" icon="fas fa-plus" />
+                    <x-adminlte-button label="Create Shipment" theme="primary" icon="fas fa-plus" />
                 </a>
             </h2> 
 
