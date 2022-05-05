@@ -10,4 +10,10 @@ class Source extends Model
     use HasFactory;
     protected $connection = 'in';
     protected $fillable = ['name'];
+
+    
+    public function shipments()
+    {
+        return $this->hasMany(Shipment::class);
+    }
 }

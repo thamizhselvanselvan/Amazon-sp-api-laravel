@@ -29,7 +29,7 @@
  
             <h2 class="mb-4">
             <a href="{{ route('shipments.create') }}">
-                    <x-adminlte-button label="Add Shipment" theme="primary" icon="fas fa-plus" />
+                    <x-adminlte-button label="create Shipment" theme="primary" icon="fas fa-plus" />
                 </a>
             </h2> 
 
@@ -52,4 +52,75 @@
     </div>
 @stop
 
+
+
+@section('js')
+    <script type="text/javascript">
+        $(function() {
+
+            let yajra_table = $('.yajra-datatable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('shipments.index') }}",
+                columns: [
+                    {
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'Ship_id',
+                        name: 'Ship_id'
+                    },
+                    {
+                        data: 'source_name',
+                        name: 'source_name'
+                    },
+                    {
+                        data: 'asin',
+                        name: 'asin'
+                    },
+                    {
+                        data: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
+                ]
+            });
+            $(document).on('click', ".delete", function(e) {
+                e.preventDefault();
+                let bool = confirm('Are you sure you want to delete?');
+
+                if(!bool) {
+                    return false;
+                }
+                let self = $(this);
+                let id = self.attr('data-id');
+               
+                self.prop('disable', true);
+
+
+                $.ajax({
+                    method: 'post',
+                    url: '/inventory/shipments/'+id,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "_method": 'DELETE'
+                    },
+                    response: 'json',
+                    success: function (response) {
+                        alert('Delete success');
+                        location.reload()  
+                    }, 
+                    error: function (response) {
+
+                        
+                    }
+                });
+            });
+            });
+
+    </script>
+@stop
 

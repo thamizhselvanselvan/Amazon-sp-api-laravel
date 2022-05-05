@@ -420,7 +420,7 @@ return [
                         ],
                         [
                             'text' => 'Shipment',
-                            'url'  => 'inventory/features',
+                            'url'  => 'inventory/shipments',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin','Inventory']
                         ],

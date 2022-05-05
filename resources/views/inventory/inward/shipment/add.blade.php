@@ -57,9 +57,14 @@
             <div class="row justify-content-center">
                 <div class="col-9">
 
-                    <x-adminlte-select name="" label="Select Source">
+                    <x-adminlte-select name="source_id" label="Select Source">
                         <option>Select Source</option>
-            
+
+                        @foreach ($source_lists as $source_list)
+
+                        <option value="{{ $source_list->id }}">{{$source_list->name  }}</option>
+
+                        @endforeach
 
                     </x-adminlte-select>
 
@@ -71,11 +76,11 @@
             <div class="row justify-content-center">
 
                 <div class="col-9">
-                    <x-adminlte-input label="Shipment ID" name="name" id="ID" type="text" placeholder="Shipment ID" value="{{ old('name') }}" />
+                    <x-adminlte-input label="Shipment ID" name="Ship_id" type="text" placeholder="Shipment ID" />
                 </div>
 
                 <div class="col-9">
-                    <x-adminlte-input label=" ASIN" name="ASIN" id="ASIN" type="text" placeholder=" ASIN" value="{{ old('name') }}" />
+                    <x-adminlte-input label=" ASIN" name="asin" type="text" placeholder=" ASIN" />
                 </div>
             </div>
 
