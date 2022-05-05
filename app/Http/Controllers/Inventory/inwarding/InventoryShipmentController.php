@@ -108,6 +108,7 @@ class InventoryShipmentController extends Controller
 
         $data = Product::select("asin1")
         ->where("asin1","LIKE","%{$request->asin}%")
+        ->limit(50)
         ->get();
 
         return response()->json($data);

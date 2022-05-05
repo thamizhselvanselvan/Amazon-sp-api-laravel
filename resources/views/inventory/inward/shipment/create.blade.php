@@ -103,74 +103,73 @@
 
 <script type="text/javascript">
 
-    $("#upload_asin").on('keyup', function(e) {
-        let self = $(this);
-        let query = self.val();
 
-        if(query.length > 2) {
+    autocomplete(document.getElementById("upload_asin"));
 
-
-            $.ajax({
-                method: 'GET',
-                url: '/shipment/autocomplete',
-                data: {'asin': query},
-                //response: 'json',
-                success: function(response) {
-                    console.log(response);
-                    autocomplete(document.getElementById("upload_asin"), response);
-
-                },
-                error: function(response) {
-                    console.log(response);
-
-                }
-            });
-
-        }
-        
-    });
-
-
-
-    function autocomplete(inp, arr) {
+    function autocomplete(inp) {
         /*the autocomplete function takes two arguments,
         the text field element and an array of possible autocompleted values:*/
         var currentFocus;
+        
         /*execute a function when someone writes in the text field:*/
         inp.addEventListener("input", function(e) {
             var a, b, i, val = this.value;
             /*close any already open lists of autocompleted values*/
             closeAllLists();
-            if (!val) { return false;}
+            
+            if (!val && val.length > 2) { return false;}
             currentFocus = -1;
             /*create a DIV element that will contain the items (values):*/
             a = document.createElement("DIV");
             a.setAttribute("id", this.id + "autocomplete-list");
             a.setAttribute("class", "autocomplete-items");
             /*append the DIV element as a child of the autocomplete container:*/
+    
             this.parentNode.appendChild(a);
             /*for each item in the array...*/
-            for (i = 0; i < arr.length; i++) {
-                /*check if the item starts with the same letters as the text field value:*/
-                if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-                /*create a DIV element for each matching element:*/
-                b = document.createElement("DIV");
-                /*make the matching letters bold:*/
-                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                b.innerHTML += arr[i].substr(val.length);
-                /*insert a input field that will hold the current array item's value:*/
-                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-                /*execute a function when someone clicks on the item value (DIV element):*/
-                    b.addEventListener("click", function(e) {
-                    /*insert the value for the autocomplete text field:*/
-                    inp.value = this.getElementsByTagName("input")[0].value;
-                    /*close the list of autocompleted values,
-                    (or any other open lists of autocompleted values:*/
-                    closeAllLists();
-                });
-                a.appendChild(b);
+
+            $.ajax({
+                method: 'GET',
+                url: '/shipment/autocomplete',
+                data: {'asin': val},
+                //response: 'json',
+                success: function(arr) {
+                   
+                    $.each(arr, function(index, val) {
+                      
+                        let asin = val.asin1;
+
+                        /*check if the item starts with the same letters as the text field value:*/
+                        if (asin.substr(0, asin.length).toUpperCase() == asin.toUpperCase()) {
+                            /*create a DIV element for each matching element:*/
+                            b = document.createElement("DIV");
+                            /*make the matching letters bold:*/
+                            b.innerHTML = "<strong>" + asin.substr(0, asin.length) + "</strong>";
+                            b.innerHTML += asin.substr(asin.length);
+                            /*insert a input field that will hold the current array item's value:*/
+                            b.innerHTML += "<input type='hidden' value='" + asin + "'>";
+                            /*execute a function when someone clicks on the item value (DIV element):*/
+                            b.addEventListener("click", function(e) {
+                                /*insert the value for the autocomplete text field:*/
+                                inp.value = this.getElementsByTagName("input")[0].value;
+                                /*close the list of autocompleted values,
+                                (or any other open lists of autocompleted values:*/
+                                closeAllLists();
+                            });
+                            a.appendChild(b);
+                        }
+
+                    });
+
+                    
+
+                },
+                error: function(response) {
+
                 }
-            }
+            });
+
+            
         });
         /*execute a function presses a key on the keyboard:*/
         inp.addEventListener("keydown", function(e) {
