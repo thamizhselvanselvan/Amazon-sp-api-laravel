@@ -364,8 +364,8 @@ return [
                 [
                     'text' => 'Master',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin','Inventory'],
-                    'submenu'   => [
+                    'can' =>  ['Admin', 'Inventory'],
+                    'submenu' => [
 
                         [
                             'text' => 'Warehouse',
@@ -436,7 +436,7 @@ return [
                 [
                     'text' => 'Inward ',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin','Inventory'],
+                    'can' =>  ['Admin', 'Inventory'],
                     'submenu' => [
                         [
                             'text' => 'Source',
@@ -448,13 +448,13 @@ return [
                             'text' => 'Shipment',
                             'url'  => 'inventory/features',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin','Inventory']
+                            'can' =>  ['Admin', 'Inventory']
                         ],
                         [
                             'text' => 'Inwarding',
                             'url'  => 'inventory/features',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin','Inventory']
+                            'can' =>  ['Admin', 'Inventory']
                         ],
 
                     ],
@@ -463,7 +463,7 @@ return [
                 [
                     'text' => 'Outward ',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin','Inventory'],
+                    'can' =>  ['Admin', 'Inventory'],
                     'submenu' => [
                         [
                             'text' => 'Destination',
@@ -476,13 +476,13 @@ return [
                             'text' => 'Shipment',
                             'url'  => 'inventory/features',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin','Inventory']
+                            'can' =>  ['Admin', 'Inventory']
                         ],
                         [
                             'text' => 'Outwarding',
                             'url'  => 'inventory/features',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin','Inventory']
+                            'can' =>  ['Admin', 'Inventory']
                         ],
 
                     ],
@@ -490,7 +490,7 @@ return [
                 [
                     'text' => 'Reports',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin','Inventory'],
+                    'can' =>  ['Admin', 'Inventory'],
                     'submenu' => [
                         [
                             'text' => 'Daily',
@@ -502,38 +502,38 @@ return [
                             'text' => 'Weekly',
                             'url'  => 'inventory/features',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin','Inventory']
+                            'can' =>  ['Admin', 'Inventory']
                         ],
                         [
                             'text' => 'Monthly',
                             'url'  => 'inventory/features',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin','Inventory']
+                            'can' =>  ['Admin', 'Inventory']
                         ],
                     ],
                 ],
                 [
                     'text' => 'System',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin','Inventory'],
+                    'can' =>  ['Admin', 'Inventory'],
                     'submenu' => [
                         [
                             'text' => 'Option',
                             'url'  => 'inventory/features',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin','Inventory']
+                            'can' =>  ['Admin', 'Inventory']
                         ],
                         [
                             'text' => 'Email',
                             'url'  => 'inventory/features',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin','Inventory']
+                            'can' =>  ['Admin', 'Inventory']
                         ],
                         [
                             'text' => 'Config',
                             'url'  => 'inventory/features',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin','Inventory']
+                            'can' =>  ['Admin', 'Inventory']
                         ],
                     ],
                 ],
@@ -573,39 +573,53 @@ return [
 
         [
             'text' => 'B2C Ship',
-            'can' =>  ['Admin','B2CShip'],
+            'can' =>  ['Admin', 'B2CShip'],
             'submenu' => [
                 [
-                    'text' => 'KYC Status',
-                    'url' => 'b2cship/kyc',
-                    'can' => ['Admin','B2CShip'],
-                    'icon' => 'far fa-fw fa-file',
+                    'text' => 'Details',
+                    'can' => ['Admin', 'B2CShip'],
+                    'submenu' => [
+                        [
+                            'text' => 'Ship Tracking Status',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' => ['Admin', 'B2CShip'],
+                            'url' => 'b2cship/tracking_status/details'
+                        ],
+                        [
+                            'text' => 'Micro Status Missing',
+                            'url' => 'b2cship/micro_status_missing_report',
+                            'can' => ['Admin', 'B2CShip'],
+                            'icon' => 'far fa-fw fa-file',
+                        ]
+                    ]
 
                 ],
                 [
-                    'text' => 'Ship Tracking Status Details',
-                    'icon' => 'far fa-fw fa-file',
-                    'can' => ['Admin','B2CShip'],
-                    'url' => 'b2cship/tracking_status/details'
+                    'text' => 'Report',
+                    'can' => ['Admin', 'B2CShip'],
+                    'submenu' => [
+                        [
+                            'text' => 'KYC Status',
+                            'url' => 'b2cship/kyc',
+                            'can' => ['Admin', 'B2CShip'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ],
+
+                        [
+                            'text' => 'Booking Status',
+                            'url' => 'b2cship/booking',
+                            'can' => ['Admin', 'B2CShip'],
+                            'icon' => 'far fa-fw fa-file',
+                        ],
+                        [
+                            'text' => 'Micro Status',
+                            'url' => 'b2cship/micro_status_report',
+                            'can' => ['Admin', 'B2CShip'],
+                            'icon' => 'far fa-fw fa-file',
+                        ],
+                    ]
                 ],
-                [
-                    'text' => 'Booking Report',
-                    'url' => 'b2cship/booking',
-                    'can' => ['Admin','B2CShip'],
-                    'icon' => 'far fa-fw fa-file',
-                ],
-                [
-                    'text' => 'Micro Status Report',
-                    'url' => 'b2cship/micro_status_report',
-                    'can' => ['Admin','B2CShip'],
-                    'icon' => 'far fa-fw fa-file',
-                ],
-                [
-                    'text' => 'Micro Status Missing Report',
-                    'url' => 'b2cship/micro_status_missing_report',
-                    'can' => ['Admin','B2CShip'],
-                    'icon' => 'far fa-fw fa-file',
-                ]
             ],
         ],
         [
