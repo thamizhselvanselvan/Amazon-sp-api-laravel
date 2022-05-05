@@ -7,6 +7,7 @@ use App\Models\inventory\Shipment;
 use App\Models\Inventory\Source;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\Product;
 
 class InventoryShipmentController extends Controller
 {
@@ -96,5 +97,19 @@ class InventoryShipmentController extends Controller
         Shipment::where('id', $id)->delete();
 
         return redirect()->route('shipments.index')->with('success', 'Shipment has been Deleted successfully');
+    }
+    public function createView(Request $request)
+    {
+
+        return view('inventory.inward.shipment.create');
+    }
+
+    public function autocomplete(Request $request) {
+
+        $data = Product::select("asin1")
+        ->where("asin1","LIKE","%{$request->asin}%")
+        ->get();
+
+        return response()->json($data);
     }
 }
