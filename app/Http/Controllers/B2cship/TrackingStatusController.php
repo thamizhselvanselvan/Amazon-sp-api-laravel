@@ -201,14 +201,17 @@ class TrackingStatusController extends Controller
         $yesterday_end_date = $yesterday_start_date->toDateString();
         $yesterday_end_date = $yesterday_end_date . ' 23:59:59';
 
+
         $last7day_start_date = Carbon::today()->subDays(7);
+        // echo $yesterday_start_date;
+        // echo "<br>";
         $last7day_end_date = $yesterday_end_date;
 
         $last30day_start_date = Carbon::today()->subDays(30);
         $last30day_end_date = $yesterday_end_date;
 
-        echo $last30day_start_date;
-        echo ' End Time-> ' . $last30day_end_date;
+        // echo $last30day_start_date;
+        // echo ' End Time-> ' . $last30day_end_date;
 
         $micro_status_mapping = DB::connection('mssql')->select("SELECT DISTINCT Status, MicroStatusCode, MicroStatusName FROM MicroStatusMapping");
         $micro_status_name = [];
@@ -218,7 +221,7 @@ class TrackingStatusController extends Controller
             $micro_status[$micro_status_value->Status] = $micro_status_value->MicroStatusName;
         }
 
-        $packet_status = DB::connection('mssql')->select("SELECT DISTINCT 
+        $packet_status = DB::connection('mssql')->select("SELECT DISTINCT TOP 2000
          AwbNo, StatusDetails, CreatedDate 
          FROM PODTrans 
          WHERE CreatedDate BETWEEN '$last30day_start_date' AND '$today_end_date'
@@ -243,13 +246,14 @@ class TrackingStatusController extends Controller
         $micro_status_30_days_count = [];
         $offset_7_days = 0;
         $offset_yesterdays = 0;
+        $offset = 0;
 
+        // po($pdo_status);
+        // exit;
         foreach ($pdo_status as $pdo_value) {
             $create_date = $pdo_value['CreatedDate'];
             foreach ($micro_status as $key => $micro_status_value) {
-                if (($pdo_value['StatusDetails']) == $key)
-                 {
-                    
+                if (($pdo_value['StatusDetails']) == $key) {
                     //last 30 days details;
                     if ($create_date <= $last30day_end_date && $create_date >= $last30day_start_date) {
 
@@ -269,7 +273,7 @@ class TrackingStatusController extends Controller
                         }
                     }
                     //yesterday details 
-                    else if ($create_date <= $yesterday_end_date && $create_date >= $yesterday_start_date) {
+                    if ($create_date >= $yesterday_end_date && $create_date <= $yesterday_start_date) {
 
                         if (isset($micro_status_yesterday_count[$micro_status_value])) {
                             $micro_status_yesterday_count[$micro_status_value] += 1;
@@ -280,11 +284,35 @@ class TrackingStatusController extends Controller
                 }
             }
         }
+        // dd('yesterday', $micro_status_yesterday_count, '7 days', $micro_status_7_days_count, '30 days', $micro_status_30_days_count);
 
+        $micro_status_final_array = [];
+        foreach ($micro_status as $micro_status_key => $micro_status_value) {
 
-        dd('yesterday',$micro_status_yesterday_count, '7 days',$micro_status_7_days_count, '30 days',$micro_status_30_days_count);
+            $yesterday_value = NULL;
+            $last7day_value = NULL;
+            $last30day_value = NULL;
 
+            if (isset($micro_status_yesterday_count[$micro_status_value])) {
 
-        return view('b2cship.trackingStatus.micro_status_report');
+                $yesterday_value = $micro_status_yesterday_count[$micro_status_value];
+            }
+            if (isset($micro_status_7_days_count[$micro_status_value])) {
+
+                $last7day_value = $micro_status_7_days_count[$micro_status_value];
+            }
+            if (isset($micro_status_30_days_count[$micro_status_value])) {
+
+                $last7day_value = $micro_status_30_days_count[$micro_status_value];
+            }
+            $micro_status_final_array[$micro_status_value] = [
+                
+                'Yesterday' => $yesterday_value,
+                'Last7days' => $last7day_value,
+                'Last30days' => $last30day_value,
+            ];
+        }
+        // dd($micro_status_final_array);
+        return view('b2cship.trackingStatus.micro_status_report', compact(['micro_status_final_array']));
     }
 }

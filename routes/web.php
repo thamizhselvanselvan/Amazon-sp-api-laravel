@@ -83,6 +83,10 @@ Route::resource('/tests', 'TestController');
 //      exit;
 Route::get('/asin/{asin}/{code}', 'TestController@getASIN');
 Route::get("b2cship", function () {
+
+
+     $totalBookings = DB::connection('mssql')->select("SELECT TOP 10 AwbNo FROM Packet ");
+     dd($totalBookings);
      $starTime = Carbon::today();
      echo $starTime;
      $endTime = Carbon::now();
