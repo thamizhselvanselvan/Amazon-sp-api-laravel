@@ -34,7 +34,7 @@
         @endempty
 
         {{-- Footer --}}
-        @hasSection('footer')
+        @if('footer')
             @include('adminlte::partials.footer.footer')
         @endif
 
@@ -50,3 +50,4 @@
     @stack('js')
     @yield('js')
 @stop
+
