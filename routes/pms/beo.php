@@ -16,4 +16,5 @@ Route::get('BOE/Download', 'BOE\BOEController@Download_BOE');
 Route::get('BOE/readfromfile', 'BOE\BOEController@ReadFromfile');
 Route::get("BOE/upload/do", 'BOE\BOEController@Upload');
 Route::get("BOE/remove", 'BOE\BOEController@RemoveUploadedFiles');
+Route::get("BOE/report","BOE\BOEController@boeReport");
 
