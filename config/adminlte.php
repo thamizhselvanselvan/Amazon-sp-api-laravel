@@ -87,7 +87,7 @@ return [
     'layout_boxed' => null,
     'layout_fixed_sidebar' => null,
     'layout_fixed_navbar' => null,
-    'layout_fixed_footer' => null,
+    'layout_fixed_footer' => false,
     'layout_dark_mode' => null,
 
     /*
@@ -625,16 +625,22 @@ return [
         [
             'text' => 'BOE Manage',
             'can' =>  ['Admin', 'Account'],
-            'url' => 'BOE/index',
-            // 'submenu' => [
-            //     [
-            //         'text' => 'BOE',
-            //         'url' => 'BOE/index',
-            //         'can' => ['Admin', 'Account'],
-            //         'icon' => 'far fa-fw fa-file',
+            'submenu' => [
+                [
+                    'text' => 'Manage',
+                    'url' => 'BOE/index',
+                    'can' => ['Admin', 'Account'],
+                    'icon' => 'far fa-fw fa-file',
 
-            //     ],
-            // ],
+                ],
+                [
+                    'text' => 'Report',
+                    'url' => 'BOE/report',
+                    'can' => ['Admin', 'Account'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+            ],
         ],
 
         // [
