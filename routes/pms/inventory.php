@@ -33,27 +33,12 @@ Route::resource('inventory/destinations','Inventory\Master\InventoryDestinationC
 Route::resource('inventory/disposes','Inventory\Master\InventoryDisposeController');
 
 Route::resource('inventory/warehouses','Inventory\InventoryWarehouseController');
-
 Route::resource('inventory/features','Inventory\InventoryFeaturesController');
-
 Route::resource('inventory/inwardings','Inventory\Stock\InventoryInwardingController');
-
 Route::resource('inventory/shipments','Inventory\inwarding\InventoryShipmentController');
-//  Route::get('inventory/racks','Inventory\Master\Rack\InventoryRackController@index')->name('inventory.rack.index');
-//  Route::get('inventory/racks/create','Inventory\Master\Rack\InventoryRackController@create')->name('inventory.rack.create');
-//  Route::post('inventory/racks','Inventory\Master\Rack\InventoryRackController@store')->name('inventory.rack.store');
-//  Route::get('inventory/racks/{id}/edit', 'Inventory\Master\Rack\InventoryRackController@edit')->name('inventory.rack.edit');
-//  Route::put('inventory/racks/{id}','Inventory\Master\Rack\InventoryRackController@update')->name('inventory.rack.update');
-//  Route::delete('inventory/racks/{id}', 'Inventory\Master\Rack\InventoryRackController@destroy')->name('inventory.rack.destroy');
 
-//  Route::get('inventory/shelves', 'Inventory\Master\Rack\InventoryshelvesController@index')->name('inventory.shelve.index');
-//  Route::get('inventory/shelves/create','Inventory\Master\Rack\InventoryshelvesController@create')->name('inventory.shelve.create');
-//  Route::post('inventory/shelves','Inventory\Master\Rack\InventoryshelvesController@save')->name('inventory.shelve.store');
-//  Route::get('inventory/shelves/{id}/edit', 'Inventory\Master\Rack\InventoryshelvesController@edit')->name('inventory.shelve.edit');
-//  Route::put('inventory/shelves/{id}','Inventory\Master\Rack\InventoryshelvesController@update')->name('inventory.shelve.update');
-//  Route::delete('inventory/Shelve/{id}', 'Inventory\Master\Rack\InventoryshelvesController@destory')->name('inventory.shelve.destory');
-
-
+Route::get('shipment/select/view', 'Inventory\inwarding\InventoryShipmentController@selectView');
+Route::get('shipment/autocomplete', 'Inventory\inwarding\InventoryShipmentController@autocomplete');
 
  
 //  Route::get('inventory/master/racks/bin/index','Inventory\Master\Rack\InventoryBinController@view')->name('inventory.bin_index');;
@@ -63,18 +48,6 @@ Route::resource('inventory/shipments','Inventory\inwarding\InventoryShipmentCont
 //  Route::get('inventory/master/racks/bin/Bin/Edit_bin/{id}', 'Inventory\Master\Rack\InventoryBinController@edit');
 //  Route::put('inventory/master/racks/bin/edit_bin/{id}','Inventory\Master\Rack\InventoryBinController@update')->name('inv.bin_update');
 //  Route::post('Bin/delete/{id}', 'Inventory\Master\Rack\InventoryBinController@trash');
-
-
-
-//  Route::get('Inventory/Master/Company/Index','Inventory\Master\InventoryCompanyController@companyview')->name('inventory.company_index');;
-//  Route::get('Inventory/Master/Company/Add','Inventory\Master\InventoryCompanyController@companyadd')->name('inventory.company_add');
-
-//  Route::get('Inventory/Master/Source/Index','Inventory\Master\InventorySourceController@sourceview')->name('inventory.source_index');;
-//  Route::get('Inventory/Master/Source/Add','Inventory\Master\InventorySourceController@sourceadd')->name('inventory.source_add');
-
-//  Route::get('Inventory/Master/Destination/Index','Inventory\Master\InventoryDestinationController@destinationview')->name('inventory.destination_index');;
-//  Route::get('Inventory/Master/Destination/Add','Inventory\Master\InventoryDestinationController@destinationadd')->name('inventory.destination_add');
-
 
 
 Route::get('inventory/Index','Inventory\Master\InventorySourceController@index');
