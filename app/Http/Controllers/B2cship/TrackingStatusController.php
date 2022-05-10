@@ -236,6 +236,7 @@ class TrackingStatusController extends Controller
         $status_count_last_7day = $this->micro_status_count($micro_status, $packet_status_7_day);
         $status_count_last_30day = $this->micro_status_count($micro_status, $packet_status_30_days);
 
+        
         $micro_status_today_count = [];
         $micro_status_yesterday_count = [];
         $micro_status_7_days_count = [];
@@ -246,11 +247,13 @@ class TrackingStatusController extends Controller
 
         $micro_status_final_array = [];
         foreach ($micro_status as $micro_status_key => $micro_status_value) {
+            $micro_status_key = trim($micro_status_key);
+            $micro_status_value = trim($micro_status_value);
             $today_value = 0;
             $yesterday_value = 0;
             $last7day_value = 0;
             $last30day_value = 0;
-
+            $micro_status_value = trim($micro_status_value);
             if (isset($status_count_today[$micro_status_value])) {
 
                 $today_value = $status_count_today[$micro_status_value];
@@ -281,17 +284,31 @@ class TrackingStatusController extends Controller
 
     public function packet_status($packet_status_details, $start_date, $end_date)
     {
-        return $packet_status_details->whereBetween('CreatedDate', [$start_date, $end_date])
+        $packet_detials = $packet_status_details->whereBetween('CreatedDate', [$start_date, $end_date])
             ->groupBy('StatusDetails')
             ->map(function ($row) {
                 return $row->count();
             });
+        $shipment_status_count =[];
+        foreach($packet_detials as $key => $value) 
+        {   $key = trim($key);
+            if(isset( $shipment_status_count[$key]))
+            {
+                $shipment_status_count[$key] +=  $value;
+            }
+            else{
+                $shipment_status_count[$key] = $value;
+            }
+        }
+        return $shipment_status_count;
     }
 
     public function micro_status_count($micro_status, $packet_status)
     {
         $status_count = [];
         foreach ($micro_status as $micro_status_key => $micro_status_value) {
+            $micro_status_key = trim($micro_status_key);
+            $micro_status_value = trim($micro_status_value);
             if (isset($packet_status[$micro_status_key])) {
                 if (isset($status_count[$micro_status_value])) {
                     $status_count[$micro_status_value] += $packet_status[$micro_status_key];
