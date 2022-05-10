@@ -32,19 +32,30 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 |
 */
 
-// Route::get('test', function() {
+Route::get('test', function() {
 
-//      $sh = Shelve::join('racks as r', function($join) {
-//           $join->on("r.id", "=", "shelves.rack_id");
-//      })
-//      ->select('r.id', 'r.name as rack_name', 'shelves.name')
-//      ->orderBy('r.id')
-    
-//      ->get();
+        // $startTime = Carbon::today();
+        $endTime = Carbon::now();
+        // $todayTotalBooking =  $this->kycDetails($startTime, $endTime);
+        // $startTime = Carbon::yesterday();
+        // $startTime = Carbon::today()->subDays(7);
+        $startTime = Carbon::today()->subDays(10);
+        // $Last30DaysTotalBooking =  $this->kycDetails($startTime, $endTime);
+        $endTimeYesterday = $startTime->toDateString();
+        $endTimeYesterday = $endTimeYesterday . ' 23:59:59';
+        echo $startTime; echo 'End Time-> '.$endTimeYesterday;
+        // $totalBookings = DB::connection('mssql')->select("SELECT DISTINCT TOP 200 AwbNo, PacketStatus, StatusDetails, FPCode, CreatedDate FROM PODTrans WHERE CreatedDate BETWEEN '$startTime' AND '$endTimeYesterday' ORDER BY CreatedDate DESC");
+        $totalBookings = DB::connection('mssql')->select("SELECT DISTINCT AwbNo, CreatedDate FROM PODTrans WHERE CreatedDate BETWEEN '$startTime' AND '$endTime' GROUP BY AwbNo, CreatedDate ORDER BY CreatedDate DESC");
+        $ne = collect($totalBookings);
+     //    $ne = $ne->groupBy('AwbNo')->map(function() {
+     //    });
 
+          po($ne);
 
-//      dd($sh);
-// });
+        exit;
+        return view('b2cship.trackingStatus.micro_status_report');
+ 
+});
 
 
 Route::get('/', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('/');
