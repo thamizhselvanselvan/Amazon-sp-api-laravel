@@ -612,12 +612,12 @@ return [
                             'can' => ['Admin', 'B2CShip'],
                             'icon' => 'far fa-fw fa-file',
                         ],
-                        [
-                            'text' => 'Micro Status',
-                            'url' => 'b2cship/micro_status_report',
-                            'can' => ['Admin', 'B2CShip'],
-                            'icon' => 'far fa-fw fa-file',
-                        ],
+                        // [
+                        //     'text' => 'Micro Status',
+                        //     'url' => 'b2cship/micro_status_report',
+                        //     'can' => ['Admin', 'B2CShip'],
+                        //     'icon' => 'far fa-fw fa-file',
+                        // ],
                     ]
                 ],
             ],

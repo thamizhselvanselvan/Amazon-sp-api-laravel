@@ -7,9 +7,9 @@
 
 @section('css')
 <style>
-.table td{
-    padding: 0.1rem;
-}
+    .table td {
+        padding: 0.1rem;
+    }
 </style>
 @stop
 
@@ -19,18 +19,27 @@
 <table class="table table-bordered yajra-datatable table-striped" style="font-size:13px;">
 
     <thead>
-        <tr>
-            <!-- <th>S/N</th> -->
-            <th>Tracking Status</th>
-            <th>Tracking Message </th>
-            <!-- <th>Tracking Master Event Description</th>
-            <th>Our Event Code</th>
-            <th>Event Description</th>
-            <th>Tracking API Event</th>
-            <th>Micro Status</th> -->
-        </tr>
+        <div class="row">
+            <div class="col">Status</div>
+            <div class="col"> Today</div>
+            <div class="col"> Yesterday</div>
+            <div class="col"> Last 7 Days</div>
+            <div class="col"> Last 30 Days</div>
+        </div>
+
     </thead>
     <tbody>
+        @foreach ($micro_status_final_array as $key => $values )
+
+        <div class ='row'>
+            {{$key}}
+            @foreach ($values as $key => $value)
+                <div class="col-3">
+                    {{$value}}
+                </div>
+            @endforeach
+        </div>
+        @endforeach
     </tbody>
 </table>
 
@@ -38,26 +47,7 @@
 
 @section('js')
 <script type="text/javascript">
-    $(function() {
 
-        let data = [];
-        let data_table = $('.yajra-datatable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: "/b2cship/micro_status_report",
-            pageLength: 500,
-            lengthMenu: [50, 100, 200, 500],
-            columns: [
-                { data: 'Status' },
-                { data: 'Tracking_msg' },
-                // { data: 'TrackingMasterEventDescription' },
-                // { data: 'OurEventCode' },
-                // { data: 'EventDescription' },
-                // { data: 'TrackingAPIEvent' },
-                // { data: 'MicroStatus' }
-            ],
-        });
-    });
 </script>
 
 @stop
