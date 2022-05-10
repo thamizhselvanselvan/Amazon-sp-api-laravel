@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Concerns\ToArray;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -213,7 +215,7 @@ class TrackingStatusController extends Controller
         // echo $last30day_start_date;
         // echo ' End Time-> ' . $last30day_end_date;
 
-        $micro_status_mapping = DB::connection('mssql')->select("SELECT DISTINCT Status, MicroStatusCode, MicroStatusName FROM MicroStatusMapping");
+        $micro_status_mapping = DB::connection('mssql')->select("SELECT DISTINCT  MicroStatusCode, Status, MicroStatusName FROM MicroStatusMapping");
         $micro_status_name = [];
         foreach ($micro_status_mapping as $micro_status_value) {
             $micro_status_name[$micro_status_value->MicroStatusCode] = $micro_status_value->MicroStatusName;
@@ -221,7 +223,7 @@ class TrackingStatusController extends Controller
             $micro_status[$micro_status_value->Status] = $micro_status_value->MicroStatusName;
         }
 
-        $packet_status = DB::connection('mssql')->select("SELECT DISTINCT TOP 2000
+        $packet_status = DB::connection('mssql')->select("SELECT DISTINCT
          AwbNo, StatusDetails, CreatedDate 
          FROM PODTrans 
          WHERE CreatedDate BETWEEN '$last30day_start_date' AND '$today_end_date'
@@ -231,16 +233,23 @@ class TrackingStatusController extends Controller
         $packet_status = collect($packet_status);
         $packet_status = $packet_status->groupBy('AwbNo');
         $count = 0;
+
+        // po($packet_status);
+        // exit;
         foreach ($packet_status as $status) {
             $pdo_status[$count]['AwbNo'] = $status[0]->AwbNo;
             $pdo_status[$count]['StatusDetails'] = $status[0]->StatusDetails;
             $pdo_status[$count]['CreatedDate'] = $status[0]->CreatedDate;
             $count++;
         }
+        // po($pdo_status);
+        // exit;
         // dd($micro_status, $packet_status);
+        $pdo_status_yesterdays = [];
         $pdo_status_30_days = $pdo_status;
         $pdo_status_7_days = [];
-        $pdo_status_yesterdays = [];
+
+        $micro_status_today_count =[];
         $micro_status_yesterday_count = [];
         $micro_status_7_days_count = [];
         $micro_status_30_days_count = [];
@@ -250,10 +259,14 @@ class TrackingStatusController extends Controller
 
         // po($pdo_status);
         // exit;
+        // echo $today_start_date .'-> end date'.$today_end_date;
         foreach ($pdo_status as $pdo_value) {
             $create_date = $pdo_value['CreatedDate'];
             foreach ($micro_status as $key => $micro_status_value) {
-                if (($pdo_value['StatusDetails']) == $key) {
+                if (($pdo_value['StatusDetails']) == $key)
+                 {
+                    //  echo $key;
+                    //  echo "<hr>";
                     //last 30 days details;
                     if ($create_date <= $last30day_end_date && $create_date >= $last30day_start_date) {
 
@@ -273,7 +286,7 @@ class TrackingStatusController extends Controller
                         }
                     }
                     //yesterday details 
-                    if ($create_date >= $yesterday_end_date && $create_date <= $yesterday_start_date) {
+                    if ($create_date <= $yesterday_end_date && $create_date >= $yesterday_start_date) {
 
                         if (isset($micro_status_yesterday_count[$micro_status_value])) {
                             $micro_status_yesterday_count[$micro_status_value] += 1;
@@ -281,18 +294,33 @@ class TrackingStatusController extends Controller
                             $micro_status_yesterday_count[$micro_status_value] = 1;
                         }
                     }
+                    //Today details
+                    // echo 'Created Date->'.$create_date.'start date'. $today_start_date. 'end date'.$today_end_date; 
+                    if ($create_date <= $today_end_date && $create_date >= $today_start_date) {
+
+                        if (isset($micro_status_today_count[$micro_status_value])) {
+                            $micro_status_today_count[$micro_status_value] += 1;
+                        } else {
+                            $micro_status_today_count[$micro_status_value] = 1;
+                        }
+                    }
                 }
             }
         }
-        // dd('yesterday', $micro_status_yesterday_count, '7 days', $micro_status_7_days_count, '30 days', $micro_status_30_days_count);
+        // dd($micro_status_today_count);
+        // dd('today',$micro_status_today_count, 'yesterday', $micro_status_yesterday_count, '7 days', $micro_status_7_days_count, '30 days', $micro_status_30_days_count);
 
         $micro_status_final_array = [];
         foreach ($micro_status as $micro_status_key => $micro_status_value) {
+            $today_value = 0;
+            $yesterday_value = 0;
+            $last7day_value = 0;
+            $last30day_value = 0;
 
-            $yesterday_value = NULL;
-            $last7day_value = NULL;
-            $last30day_value = NULL;
+            if (isset($micro_status_today_count[$micro_status_value])) {
 
+                $today_value = $micro_status_today_count[$micro_status_value];
+            }
             if (isset($micro_status_yesterday_count[$micro_status_value])) {
 
                 $yesterday_value = $micro_status_yesterday_count[$micro_status_value];
@@ -303,16 +331,16 @@ class TrackingStatusController extends Controller
             }
             if (isset($micro_status_30_days_count[$micro_status_value])) {
 
-                $last7day_value = $micro_status_30_days_count[$micro_status_value];
+                $last30day_value = $micro_status_30_days_count[$micro_status_value];
             }
             $micro_status_final_array[$micro_status_value] = [
-                
+                'Today' => $today_value,
                 'Yesterday' => $yesterday_value,
                 'Last7days' => $last7day_value,
                 'Last30days' => $last30day_value,
             ];
         }
-        // dd($micro_status_final_array);
+
         return view('b2cship.trackingStatus.micro_status_report', compact(['micro_status_final_array']));
     }
 }
