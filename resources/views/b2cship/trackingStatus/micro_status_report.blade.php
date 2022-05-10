@@ -2,7 +2,15 @@
 @section('title', 'Status Details')
 
 @section('content_header')
-<h1 class="m-0 text-dark"> B2CShip Micro Status Report</h1>
+<div class="row">
+
+    <h1 class="m-0 text-dark"> B2CShip Micro Status Report </h1>
+    <h2 class="mb-4 text-right col">
+        <a href="update-report">
+            <x-adminlte-button label="Update Report" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
+        </a>
+    </h2>
+</div>
 @stop
 
 @section('css')

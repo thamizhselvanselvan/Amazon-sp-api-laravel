@@ -5,11 +5,14 @@ namespace App\Http\Controllers\B2cship;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Concerns\ToArray;
 use Yajra\DataTables\Facades\DataTables;
+use phpDocumentor\Reflection\Types\Null_;
 
 class TrackingStatusController extends Controller
 {
@@ -194,7 +197,7 @@ class TrackingStatusController extends Controller
         return view('b2cship.trackingStatus.micro_status_missing_report');
     }
 
-    public function microStatusReport(Request $request)
+    public function microStatusReport()
     {
         $today_sd = Carbon::today();
         $today_ed = Carbon::now();
@@ -208,6 +211,15 @@ class TrackingStatusController extends Controller
 
         $last30day_sd = Carbon::today()->subDays(30);
         $last30day_ed = $yesterday_ed;
+        $file_path = "MicroStatusJson/microstatus_details.json";
+
+        $micro_status_today_count = [];
+        $micro_status_yesterday_count = [];
+        $micro_status_7_days_count = [];
+        $micro_status_30_days_count = [];
+        $offset_7_days = 0;
+        $offset_yesterdays = 0;
+        $offset = 0;
 
         $micro_status_mapping = DB::connection('mssql')->select("SELECT DISTINCT  MicroStatusCode, Status, MicroStatusName FROM MicroStatusMapping");
         $micro_status_name = [];
@@ -216,34 +228,33 @@ class TrackingStatusController extends Controller
 
             $micro_status[$micro_status_value->Status] = $micro_status_value->MicroStatusName;
         }
+        if (!Storage::exists($file_path)) {
+
+            $micro_status_final_array[] = [
+                'Today' => Null,
+                'Yesterday' => NULL,
+                'Last7days' => NULL,
+                'Last30days' => NULL,
+            ];
+            return view('b2cship.trackingStatus.micro_status_report', compact(['micro_status_final_array']));
+        }
 
         $packet_status = DB::connection('mssql')->select("SELECT DISTINCT
-         AwbNo, StatusDetails, CreatedDate 
-         FROM PODTrans 
-         WHERE CreatedDate BETWEEN '$last30day_sd' AND '$today_ed'
-         ORDER BY CreatedDate DESC
-         ");
-
+            AwbNo, StatusDetails, CreatedDate 
+            FROM PODTrans 
+            WHERE CreatedDate BETWEEN '$today_sd' AND '$today_ed'
+            ORDER BY CreatedDate DESC
+            ");
         $packet_status_details = collect($packet_status);
-
         $packet_status = $this->packet_status($packet_status_details, $today_sd, $today_ed);
-        $packet_status_yesterday = $this->packet_status($packet_status_details, $yesterday_sd, $yesterday_ed);
-        $packet_status_7_day = $this->packet_status($packet_status_details, $last7day_sd, $last7day_ed);    
-        $packet_status_30_days = $this->packet_status($packet_status_details, $last30day_sd, $last30day_ed);
-
         $status_count_today = $this->micro_status_count($micro_status, $packet_status);
-        $status_count_yesterday = $this->micro_status_count($micro_status, $packet_status_yesterday);
-        $status_count_last_7day = $this->micro_status_count($micro_status, $packet_status_7_day);
-        $status_count_last_30day = $this->micro_status_count($micro_status, $packet_status_30_days);
 
-        
-        $micro_status_today_count = [];
-        $micro_status_yesterday_count = [];
-        $micro_status_7_days_count = [];
-        $micro_status_30_days_count = [];
-        $offset_7_days = 0;
-        $offset_yesterdays = 0;
-        $offset = 0;
+        $micro_staus_jd = Storage::get($file_path);
+
+        $data = json_decode($micro_staus_jd);
+        $status_count_yesterday = (array)$data->yesterday;
+        $status_count_last_7day = (array)$data->last7days;
+        $status_count_last_30day = (array)$data->last30days;
 
         $micro_status_final_array = [];
         foreach ($micro_status as $micro_status_key => $micro_status_value) {
@@ -289,14 +300,12 @@ class TrackingStatusController extends Controller
             ->map(function ($row) {
                 return $row->count();
             });
-        $shipment_status_count =[];
-        foreach($packet_detials as $key => $value) 
-        {   $key = trim($key);
-            if(isset( $shipment_status_count[$key]))
-            {
+        $shipment_status_count = [];
+        foreach ($packet_detials as $key => $value) {
+            $key = trim($key);
+            if (isset($shipment_status_count[$key])) {
                 $shipment_status_count[$key] +=  $value;
-            }
-            else{
+            } else {
                 $shipment_status_count[$key] = $value;
             }
         }
@@ -319,5 +328,23 @@ class TrackingStatusController extends Controller
         }
 
         return $status_count;
+    }
+
+    public function update_report()
+    {
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+            
+            // exec('nohup php artisan pms:textiles-import  > /dev/null &');
+            $base_path = base_path();
+            $command = "cd $base_path && pms:microstatus-report > /dev/null &";
+            exec($command);
+            
+        } else {
+
+            Artisan::call('pms:microstatus-report');
+        }
+
+        // $this->microStatusReport();
+        return redirect()->back();
     }
 }
