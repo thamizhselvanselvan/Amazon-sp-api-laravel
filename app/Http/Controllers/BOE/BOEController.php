@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\BOE;
 
+
 use RedBeanPHP\R;
+use Carbon\Carbon;
 use App\Models\BOE;
 use League\Csv\Writer;
 use Illuminate\Http\Request;
@@ -487,4 +489,72 @@ class BOEController extends Controller
             Artisan::call('pms:remove-uploaded-boe');
         }
     }
+
+    public function boeReport()
+    {
+        $companys = DB::select("SELECT distinct id, company_name FROM sp_company_masters");
+
+        $company_lists = [];
+
+        foreach($companys as $company) {
+
+            $company_lists[$company->id] = $company->company_name;
+          
+        }
+        
+        $total_companys = [];
+
+        foreach($company_lists as $id => $company_name){
+
+            $query_results = DB::select("SELECT distinct hawb_number, company_id  FROM boe where company_id = $id ");
+
+            $total_companys[$id] = [
+
+                "awb_number" => $query_results,
+
+                "products_count" => count($query_results),
+
+                "name" => $company_name,
+
+                "id" => $id
+            ];
+            
+        }
+
+        $current=Carbon::today();
+        $endTime=Carbon::now();
+        $todayTotalBOE  =   $this-> data_details($current, $endTime);
+
+        
+        $yesterday  =   Carbon::yesterday();
+        $currentyesterday    =   $yesterday->toDateString();
+        $currentyesterday    =   $currentyesterday .' 23:59:59';
+        $yesterdayTotalBOE  =   $this-> data_details($yesterday, $currentyesterday );
+
+
+        $Last7days  =Carbon::today()->subWeek();
+        $Last7daysBOE  = $this-> data_details($Last7days, $yesterday);
+
+
+        $Last30days  =  Carbon::yesterday()->subMonth();
+        $Last30daysBOE  = $this-> data_details($Last30days, $yesterday);
+
+        
+        return view('BOEpdf.boeReport',compact(['total_companys','todayTotalBOE','yesterdayTotalBOE','Last7daysBOE','Last30daysBOE']));
+
+
+        
+    }
+
+    public function data_details($begin,$end)
+    {
+       
+       $totalBOE   =   [];
+
+       $total_results   =   DB::select("SELECT hawb_number, created_at FROM boe WHERE created_at AND updated_at BETWEEN '$begin' AND '$end' ");  
+        
+       return $totalBOE=count($total_results);
+
+    }
+
 }
