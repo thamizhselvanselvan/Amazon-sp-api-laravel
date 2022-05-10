@@ -19,26 +19,23 @@
 <table class="table table-bordered yajra-datatable table-striped" style="font-size:13px;">
 
     <thead>
-        <div class="row">
-            <div class="col">Status</div>
-            <div class="col"> Today</div>
-            <div class="col"> Yesterday</div>
-            <div class="col"> Last 7 Days</div>
-            <div class="col"> Last 30 Days</div>
-        </div>
-
+        <tr>
+            <td><strong>Today</strong></td>
+            <td><strong>Yesterday</strong></td>
+            <td><strong>Last 7 days</strong></td>
+            <td><strong>Last 30 days</strong></td>
+        </tr>
     </thead>
     <tbody>
         @foreach ($micro_status_final_array as $key => $values )
-
-        <div class ='row'>
-            {{$key}}
-            @foreach ($values as $key => $value)
-                <div class="col-3">
-                    {{$value}}
-                </div>
+        <tr>
+            @foreach ($values as $value)
+            <td>
+                {{$key}}
+                <strong style="padding-left: 10px;">{{$value}}</strong>
+            </td>
             @endforeach
-        </div>
+        </tr>
         @endforeach
     </tbody>
 </table>
