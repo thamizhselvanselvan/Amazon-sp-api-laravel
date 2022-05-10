@@ -69,16 +69,16 @@
     </div>
 </div>
 
-
+<div class="row">
     <div class="col-2">
         <div class="form-group">
             <label>Enter ASIN:</label>
             <div class="autocomplete" style="width:300px;">
                 <input id="upload_asin" type="text" name="upload_asin" placeholder="Enter Asin here..." class="form-control">
-                <x-adminlte-button label="Add" theme="primary" icon="fas fa-plus" id="search" class="btn-sm" />
             </div>
             
         </div>
+    </div>
     </div>
 
 <div class="row">
@@ -88,9 +88,7 @@
 <table class="table table-bordered yajra-datatable table-striped" id="report_table">
     <thead>
         <tr>
-            <td>S/N</td>
             <td>asin</td>
-            <td>Seller ID</td>
             <td>Item Name</td>
         </tr>
     </thead>
@@ -152,6 +150,9 @@
                             b.addEventListener("click", function(e) {
                                 /*insert the value for the autocomplete text field:*/
                                 inp.value = this.getElementsByTagName("input")[0].value;
+
+                                getData(inp.value);
+
                                 /*close the list of autocompleted values,
                                 (or any other open lists of autocompleted values:*/
                                 closeAllLists();
@@ -168,9 +169,13 @@
 
                 }
             });
+            
+           
+                      
 
             
         });
+
         /*execute a function presses a key on the keyboard:*/
         inp.addEventListener("keydown", function(e) {
             var x = document.getElementById(this.id + "autocomplete-list");
@@ -226,6 +231,32 @@
         document.addEventListener("click", function (e) {
             closeAllLists(e.target);
         });
+    }
+
+    function getData(asin) {
+
+        $.ajax({
+                method: 'GET',
+                url: '/shipment/select/view',
+                data: {'asin': asin},
+                success: function(arr) {
+                    console.log(arr);
+
+                    let html = "<tr>";
+                        html += "<td>"+ arr.asin1 +"</td>";
+                        html += "<td>"+ arr.item_name +"</td>"
+                        html += "</tr>";
+
+                    $("#report_table").append(html);
+
+
+                }, 
+                error: function(response) {
+                    console.log(response);
+                }
+            });
+
+
     }
 </script>
 @stop
