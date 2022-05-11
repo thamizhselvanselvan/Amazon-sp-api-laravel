@@ -18,7 +18,7 @@
 @section('content')
 
 
-<table class="table table-bordered yajra-datatable table-striped" style="font-size:13px;">
+<table class="table table-bordered yajra-datatable table-striped" style="font-size:12px;">
 
     <!-- <thead>
         <tr>
@@ -33,7 +33,7 @@
         <tr>
             @foreach ($values as  $value)
             <td>
-                <strong style="padding:2px;">{{$value}}</strong>
+                 {{$value}}
             </td>
             @endforeach
         </tr>
