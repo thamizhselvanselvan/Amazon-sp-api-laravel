@@ -95,7 +95,6 @@ Route::resource('/tests', 'TestController');
 Route::get('/asin/{asin}/{code}', 'TestController@getASIN');
 Route::get("b2cship", function () {
 
-
      $data = DB::connection('mssql')->select("SELECT DISTINCT Status from MicroStatusMapping where MicroStatusCode = 'ITOFD'");
 
      foreach ($data as $totalBooking) {
