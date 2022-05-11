@@ -1,22 +1,47 @@
 <?php
 
-namespace App\Http\Controllers\B2cship;
+namespace App\Console\Commands;
 
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
+use Illuminate\Console\Command;
 
-class B2cshipKycController extends Controller
+class B2cship_kyc_status extends Command
 {
-    public function index()
-    {
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'pms:b2cship_kyc:status';
 
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Command description';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
+    public function handle()
+    {
+        Log::alert("command executed at 1 am");
         $startTime = Carbon::today();
         $endTime = Carbon::now();
 
         $todayTotalBooking =  $this->kycDetails($startTime, $endTime);
-
 
         $startTime = Carbon::yesterday();
         $endTimeYesterday = $startTime->toDateString();
@@ -31,8 +56,14 @@ class B2cshipKycController extends Controller
         $startTime = Carbon::today()->subDays(30);
         $Last30DaysTotalBooking =  $this->kycDetails($startTime, $endTime);
 
-        return view('b2cship.kyc.index', compact(['todayTotalBooking', 'yesterdayTotalBooking', 'Last7DaysTotalBooking', 'Last30DaysTotalBooking']));
+        // PUT DATA IN JSON FILE
+        
+        $arr=array($todayTotalBooking,  $yesterdayTotalBooking, $Last7DaysTotalBooking, $Last30DaysTotalBooking);
+        $result['b2cship_kyc']=json_encode($arr);
+
+        Storage::disk('local')->put('B2cship_kyc/B2cship_kyc.json', $result);
     }
+
 
     public function kycDetails($start, $end)
     {
@@ -53,15 +84,14 @@ class B2cshipKycController extends Controller
             }
             $awb = implode(',', $totalBookingArray);
             $awb = ltrim($awb);
-
-            // $kycApproved = DB::connection('mssql')->select("SELECT DISTINCT AwbNo, IsRejected FROM KYCStatus WHERE AwbNo IN ($awb) AND IsRejected = '0' ");
+          
             $kycStatus = DB::connection('mssql')->select("SELECT DISTINCT AwbNo, IsRejected FROM KYCStatus WHERE AwbNo IN ($awb) AND ModifiedDate BETWEEN '$start' AND '$end' ");
-           
             
             $kycApproved = [];
             $kycApprovedOffset = 0;
             $kycRejected = [];
             $kycRejectedOffset = 0;
+
             foreach ($kycStatus as $kyc) {
                 if ($kyc->IsRejected == '0') {
                     $kycApproved[$kycApprovedOffset] = $kyc;
@@ -72,11 +102,7 @@ class B2cshipKycController extends Controller
                     $kycRejectedOffset++;
                 }
             }
-            // po($kycRejected);
-            // echo count($kycApproved);
-            // exit;
-            // $kycRejected = DB::connection('mssql')->select("SELECT DISTINCT AwbNo FROM KYCStatus WHERE AwbNo IN ($awb) AND IsRejected = '1' ");
-
+           
             $totalBookingCount = count($totalBookingArray);
             $totalkycApprovedCount = count($kycApproved);
             $totalkycRejectedCount = count($kycRejected);
@@ -87,6 +113,7 @@ class B2cshipKycController extends Controller
             $finalArray['kycApproved'] = $totalkycApprovedCount;
             $finalArray['kycRejected'] = $totalkycRejectedCount;
             $finalArray['kycPending'] = $totalkycPendingCount;
+
             return ($finalArray);
         } else {
 
@@ -94,7 +121,10 @@ class B2cshipKycController extends Controller
             $finalArray['kycApproved'] = $totalkycApprovedCount;
             $finalArray['kycRejected'] = $totalkycRejectedCount;
             $finalArray['kycPending'] = $totalkycPendingCount;
+
             return ($finalArray);
         }
+
+        
     }
 }
