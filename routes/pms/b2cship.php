@@ -8,6 +8,7 @@ Route::get('b2cship/tracking_status/details', 'B2cship\TrackingStatusController@
 Route::get('b2cship/booking', 'B2cship\B2cshipbookingController@Bookingstatus');
 Route::get('b2cship/micro_status_report', 'B2cship\TrackingStatusController@microStatusReport');
 Route::get('b2cship/micro_status_missing_report', 'B2cship\TrackingStatusController@microStatusMissingReport');
+Route::get('b2cship/update-report', 'B2cship\TrackingStatusController@update_report');
 
 
 

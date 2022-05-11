@@ -64,7 +64,6 @@ class InventoryShipmentController extends Controller
 
         Shipment::create([
             'Ship_id' => $request->Ship_id,
-            'asin' => $request->asin,
             'source_id' => $request->source_id,
         ]);
 
@@ -124,3 +123,4 @@ class InventoryShipmentController extends Controller
         }
     }
 }
+ 

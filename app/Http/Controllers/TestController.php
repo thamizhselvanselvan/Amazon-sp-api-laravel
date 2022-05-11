@@ -9,6 +9,7 @@ use SellingPartnerApi\Endpoint;
 use Smalot\PdfParser\Parser;
 use Illuminate\Support\Facades\DB;
 use App\Services\Config\ConfigTrait;
+use App\Services\SP_API\CatalogImport;
 use Illuminate\Support\Facades\Auth;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\CatalogApi;
@@ -26,35 +27,40 @@ class TestController extends Controller
    */
   public function index()
   {
-    
+
+    $catalogImport = new CatalogImport();
+    $catalogData = $catalogImport->amazonCatalogImport();
+
+
+    exit;
     $year = date('Y');
     $month = date('F');
 
     echo date('d/m/Y');
     exit;
-$pdfParser = new Parser();
-        $BOEPDFMaster = [];
-        $pdf = $pdfParser->parseFile('D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000433.pdf');
-        $content = $pdf->getText();
-        $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
-        dd($content);
+    $pdfParser = new Parser();
+    $BOEPDFMaster = [];
+    $pdf = $pdfParser->parseFile('D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000433.pdf');
+    $content = $pdf->getText();
+    $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
+    dd($content);
     exit;
-  //   $file_path = BOE::first();
-  //   $file_path_array = explode('/', $file_path->download_file_path);
-  //   // dd($file_path_array);
-  //   $file_name = $file_path_array[count($file_path_array) - 1];
+    //   $file_path = BOE::first();
+    //   $file_path_array = explode('/', $file_path->download_file_path);
+    //   // dd($file_path_array);
+    //   $file_name = $file_path_array[count($file_path_array) - 1];
 
-  //   $file = storage_path('app/' . $file_path->download_file_path);
+    //   $file = storage_path('app/' . $file_path->download_file_path);
 
-  //   if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv')) {
+    //   if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv')) {
 
-  //      Storage::disk('do')->put("BOE/$file_path->download_file_path", '');
-  // }
+    //      Storage::disk('do')->put("BOE/$file_path->download_file_path", '');
+    // }
 
-  //   Storage::disk('do')->put("BOE/$file_path->download_file_path", file_get_contents($file));
+    //   Storage::disk('do')->put("BOE/$file_path->download_file_path", file_get_contents($file));
 
-  //   // dd($file_name);
-  //   dd($file_path->download_file_path);
+    //   // dd($file_name);
+    //   dd($file_path->download_file_path);
 
 
 
