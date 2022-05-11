@@ -7,12 +7,12 @@
 <link rel="stylesheet" href="/css/styles.css">
 
 <style>
-
     .autocomplete {
-    /*the container must be positioned relative:*/
-    position: relative;
-    display: inline-block;
+        /*the container must be positioned relative:*/
+        position: relative;
+        display: inline-block;
     }
+
     .autocomplete-items {
         position: absolute;
         border: 1px solid #d4d4d4;
@@ -24,16 +24,19 @@
         left: 0;
         right: 0;
     }
+
     .autocomplete-items div {
         padding: 10px;
         cursor: pointer;
         background-color: #fff;
         border-bottom: 1px solid #d4d4d4;
     }
+
     .autocomplete-items div:hover {
         /*when hovering an item:*/
         background-color: #e9e9e9;
     }
+
     .autocomplete-active {
         /*when navigating through the items using the arrow keys:*/
         background-color: DodgerBlue !important;
@@ -44,7 +47,7 @@
 @stop
 
 @section('content_header')
-<h1 class="m-0 text-dark">Create Shipment</h1>
+<h1 class="m-0 text-dark">Shipment</h1>
 @stop
 @section('content')
 <!-- 
@@ -68,18 +71,21 @@
         </div>
     </div>
 </div>
-
 <div class="row">
-    <div class="col-2">
+    <div class="col-5">
         <div class="form-group">
             <label>Enter ASIN:</label>
             <div class="autocomplete" style="width:300px;">
                 <input id="upload_asin" type="text" name="upload_asin" placeholder="Enter Asin here..." class="form-control">
             </div>
-            
         </div>
     </div>
+    <div class="col text-right">
+        <a href="#" >
+            <x-adminlte-button label="Create Shipment" theme="primary" icon="fas fa-plus" class="btn-sm" />
+        </a>
     </div>
+</div>
 
 <div class="row">
 
@@ -90,6 +96,8 @@
         <tr>
             <td>asin</td>
             <td>Item Name</td>
+            <td>Quantity</td>
+            <td>Action</td>
         </tr>
     </thead>
     <tbody>
@@ -100,41 +108,43 @@
 @section('js')
 
 <script type="text/javascript">
-
-
     autocomplete(document.getElementById("upload_asin"));
 
     function autocomplete(inp) {
         /*the autocomplete function takes two arguments,
         the text field element and an array of possible autocompleted values:*/
         var currentFocus;
-        
+
         /*execute a function when someone writes in the text field:*/
         inp.addEventListener("input", function(e) {
             var a, b, i, val = this.value;
             /*close any already open lists of autocompleted values*/
             closeAllLists();
-            
-            if (!val && val.length > 2) { return false;}
+
+            if (!val && val.length > 2) {
+                return false;
+            }
             currentFocus = -1;
             /*create a DIV element that will contain the items (values):*/
             a = document.createElement("DIV");
             a.setAttribute("id", this.id + "autocomplete-list");
             a.setAttribute("class", "autocomplete-items");
             /*append the DIV element as a child of the autocomplete container:*/
-    
+
             this.parentNode.appendChild(a);
             /*for each item in the array...*/
 
             $.ajax({
                 method: 'GET',
                 url: '/shipment/autocomplete',
-                data: {'asin': val},
+                data: {
+                    'asin': val
+                },
                 //response: 'json',
                 success: function(arr) {
-                   
+
                     $.each(arr, function(index, val) {
-                      
+
                         let asin = val.asin1;
 
                         /*check if the item starts with the same letters as the text field value:*/
@@ -159,21 +169,10 @@
                             });
                             a.appendChild(b);
                         }
-
                     });
-
-                    
-
                 },
-                error: function(response) {
-
-                }
+                error: function(response) {}
             });
-            
-           
-                      
-
-            
         });
 
         /*execute a function presses a key on the keyboard:*/
@@ -196,11 +195,12 @@
                 /*If the ENTER key is pressed, prevent the form from being submitted,*/
                 e.preventDefault();
                 if (currentFocus > -1) {
-                /*and simulate a click on the "active" item:*/
-                if (x) x[currentFocus].click();
+                    /*and simulate a click on the "active" item:*/
+                    if (x) x[currentFocus].click();
                 }
             }
         });
+
         function addActive(x) {
             /*a function to classify an item as "active":*/
             if (!x) return false;
@@ -211,24 +211,26 @@
             /*add class "autocomplete-active":*/
             x[currentFocus].classList.add("autocomplete-active");
         }
+
         function removeActive(x) {
             /*a function to remove the "active" class from all autocomplete items:*/
             for (var i = 0; i < x.length; i++) {
-            x[i].classList.remove("autocomplete-active");
+                x[i].classList.remove("autocomplete-active");
             }
         }
+
         function closeAllLists(elmnt) {
             /*close all autocomplete lists in the document,
             except the one passed as an argument:*/
             var x = document.getElementsByClassName("autocomplete-items");
             for (var i = 0; i < x.length; i++) {
-            if (elmnt != x[i] && elmnt != inp) {
-            x[i].parentNode.removeChild(x[i]);
+                if (elmnt != x[i] && elmnt != inp) {
+                    x[i].parentNode.removeChild(x[i]);
+                }
             }
         }
-        }
         /*execute a function when someone clicks in the document:*/
-        document.addEventListener("click", function (e) {
+        document.addEventListener("click", function(e) {
             closeAllLists(e.target);
         });
     }
@@ -236,27 +238,37 @@
     function getData(asin) {
 
         $.ajax({
-                method: 'GET',
-                url: '/shipment/select/view',
-                data: {'asin': asin},
-                success: function(arr) {
-                    console.log(arr);
+            method: 'GET',
+            url: '/shipment/select/view',
+            data: {
+                'asin': asin
+            },
+            success: function(arr) {
+                console.log(arr);
 
-                    let html = "<tr>";
-                        html += "<td>"+ arr.asin1 +"</td>";
-                        html += "<td>"+ arr.item_name +"</td>"
-                        html += "</tr>";
+                let html = "<tr class='table_row'>";
+                html += "<td>" + arr.asin1 + "</td>";
+                html += "<td>" + arr.item_name + "</td>"
+                html += '<td> <input type="text" value="1" name="Quantity" id="quantity"> </td>'
+                html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
+                html += "</tr>";
 
-                    $("#report_table").append(html);
+                $("#report_table").append(html);
 
-
-                }, 
-                error: function(response) {
-                    console.log(response);
-                }
-            });
+                // <button onclick="myCreateFunction()">Create row</button>
+            },
+            error: function(response) {
+                console.log(response);
+            }
+        });
 
 
     }
+
+    $('#report_table').on('click' , ".remove1",function(){
+
+        $(this).closest("tr").remove();
+    });
+    
 </script>
 @stop
