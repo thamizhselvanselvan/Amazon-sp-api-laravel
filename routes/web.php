@@ -96,6 +96,30 @@ Route::get('/asin/{asin}/{code}', 'TestController@getASIN');
 Route::get("b2cship", function () {
 
 
+     $data = DB::connection('mssql')->select("SELECT DISTINCT Status from MicroStatusMapping where MicroStatusCode = 'ITOFD'");
+
+     foreach ($data as $totalBooking) {
+          foreach ($totalBooking as $totalBookingAWB) {
+              if(str_contains($totalBookingAWB,"'"))
+              {
+
+               $totalBookingAWB = str_replace("'","/''",$totalBookingAWB);
+               // echo $totalBookingAWB;
+
+              }
+               $totalBookingArray[] = "'$totalBookingAWB'";
+
+          }
+      }
+      $awb = implode(',', $totalBookingArray);
+      $awb = ltrim($awb);
+// dd($awb);
+      $kycStatus = DB::connection('mssql')->select("SELECT AwbNo FROM PODTrans WHERE StatusDetails IN ($awb) and CreatedDate BETWEEN '2022-04-10 00:00:00' and '2022-05-09 23:59:00' ");
+
+     po(count($kycStatus));
+     exit;
+
+
      $totalBookings = DB::connection('mssql')->select("SELECT TOP 10 AwbNo FROM Packet ");
      dd($totalBookings);
      $starTime = Carbon::today();

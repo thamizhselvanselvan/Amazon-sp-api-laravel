@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
@@ -41,6 +42,7 @@ class MicroStatusReport extends Command
      */
     public function handle()
     {
+        Log::alert("json file created");
         $today_sd = Carbon::today();
         $today_ed = Carbon::now();
 
@@ -62,13 +64,6 @@ class MicroStatusReport extends Command
 
             $micro_status[$micro_status_value->Status] = $micro_status_value->MicroStatusName;
         }
-        $micro_status_today_count = [];
-        $micro_status_yesterday_count = [];
-        $micro_status_7_days_count = [];
-        $micro_status_30_days_count = [];
-        $offset_7_days = 0;
-        $offset_yesterdays = 0;
-        $offset = 0;
         $packet_status = DB::connection('mssql')->select("SELECT DISTINCT
             AwbNo, StatusDetails, CreatedDate 
             FROM PODTrans 

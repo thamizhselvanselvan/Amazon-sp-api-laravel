@@ -336,7 +336,7 @@ class TrackingStatusController extends Controller
             
             // exec('nohup php artisan pms:textiles-import  > /dev/null &');
             $base_path = base_path();
-            $command = "cd $base_path && pms:microstatus-report > /dev/null &";
+            $command = "cd $base_path && php artisan pms:microstatus-report > /dev/null &";
             exec($command);
             
         } else {
