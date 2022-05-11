@@ -3,13 +3,7 @@
 
 @section('content_header')
 <div class="row">
-
     <h1 class="m-0 text-dark"> Bombino Packet Activities</h1>
-    <h2 class="mb-4 text-right col">
-        <a href="update-report">
-            <x-adminlte-button label="Update Report" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
-        </a>
-    </h2>
 </div>
 @stop
 
@@ -39,7 +33,7 @@
         <tr>
             @foreach ($values as  $value)
             <td>
-                <strong style="padding-left: 10px;">{{$value}}</strong>
+                <strong style="padding:2px;">{{$value}}</strong>
             </td>
             @endforeach
         </tr>

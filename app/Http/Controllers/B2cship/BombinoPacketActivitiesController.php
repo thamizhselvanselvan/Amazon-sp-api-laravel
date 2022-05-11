@@ -10,7 +10,7 @@ class BombinoPacketActivitiesController extends Controller
 {
     public function PacketActivitiesDetails()
     {
-        $packet_detials = DB::connection('mssql')->select("SELECT DISTINCT TOP 1000 AwbNo, PODLocation, StatusDetails,FPCode,CreatedDate from PODTrans WHERE FPCode ='BOMBINO' ORDER BY CreatedDate DESC");
+        $packet_detials = DB::connection('mssql')->select("SELECT DISTINCT TOP 5000 AwbNo, PODLocation, StatusDetails,FPCode,CreatedDate from PODTrans WHERE FPCode ='BOMBINO' ORDER BY CreatedDate DESC");
         $packet_detials = collect($packet_detials);
         $packet_detials = $packet_detials->groupBy('AwbNo');
 
@@ -27,7 +27,7 @@ class BombinoPacketActivitiesController extends Controller
                 $created_date = substr($pd_data->CreatedDate, 0, 10);
                 $statusDetails = trim($pd_data->StatusDetails);
                 
-                $pd_final_array[$offset][$suboffset] = $statusDetails . ' ['.$created_date.']';
+                $pd_final_array[$offset][$suboffset] = $statusDetails . ' ['.$pod_location.']';
             }
             $offset++;
         }
