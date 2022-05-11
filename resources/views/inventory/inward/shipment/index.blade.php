@@ -39,7 +39,6 @@
                         <th>ID</th>
                         <th>Shipment ID</th>
                         <th>Source</th>
-                        <th>ASIN</th>
                         <th>Action</th>
                        
                     </tr>
@@ -77,10 +76,7 @@
                         data: 'source_name',
                         name: 'source_name'
                     },
-                    {
-                        data: 'asin',
-                        name: 'asin'
-                    },
+                   
                     {
                         data: 'action',
                         orderable: false,
