@@ -5,11 +5,14 @@ namespace App\Http\Controllers\B2cship;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Concerns\ToArray;
 use Yajra\DataTables\Facades\DataTables;
+use phpDocumentor\Reflection\Types\Null_;
 
 class TrackingStatusController extends Controller
 {
@@ -194,26 +197,29 @@ class TrackingStatusController extends Controller
         return view('b2cship.trackingStatus.micro_status_missing_report');
     }
 
-    public function microStatusReport(Request $request)
+    public function microStatusReport()
     {
-        $today_start_date = Carbon::today();
-        $today_end_date = Carbon::now();
+        $today_sd = Carbon::today();
+        $today_ed = Carbon::now();
 
-        $yesterday_start_date = Carbon::yesterday();
-        $yesterday_end_date = $yesterday_start_date->toDateString();
-        $yesterday_end_date = $yesterday_end_date . ' 23:59:59';
+        $yesterday_sd = Carbon::yesterday();
+        $yesterday_ed = $yesterday_sd->toDateString();
+        $yesterday_ed = $yesterday_ed . ' 23:59:59';
 
+        $last7day_sd = Carbon::today()->subDays(7);
+        $last7day_ed = $yesterday_ed;
 
-        $last7day_start_date = Carbon::today()->subDays(7);
-        // echo $yesterday_start_date;
-        // echo "<br>";
-        $last7day_end_date = $yesterday_end_date;
+        $last30day_sd = Carbon::today()->subDays(30);
+        $last30day_ed = $yesterday_ed;
+        $file_path = "MicroStatusJson/microstatus_details.json";
 
-        $last30day_start_date = Carbon::today()->subDays(30);
-        $last30day_end_date = $yesterday_end_date;
-
-        // echo $last30day_start_date;
-        // echo ' End Time-> ' . $last30day_end_date;
+        $micro_status_today_count = [];
+        $micro_status_yesterday_count = [];
+        $micro_status_7_days_count = [];
+        $micro_status_30_days_count = [];
+        $offset_7_days = 0;
+        $offset_yesterdays = 0;
+        $offset = 0;
 
         $micro_status_mapping = DB::connection('mssql')->select("SELECT DISTINCT  MicroStatusCode, Status, MicroStatusName FROM MicroStatusMapping");
         $micro_status_name = [];
@@ -222,116 +228,58 @@ class TrackingStatusController extends Controller
 
             $micro_status[$micro_status_value->Status] = $micro_status_value->MicroStatusName;
         }
+        if (!Storage::exists($file_path)) {
+
+            $micro_status_final_array[] = [
+                'Today' => Null,
+                'Yesterday' => NULL,
+                'Last7days' => NULL,
+                'Last30days' => NULL,
+            ];
+            return view('b2cship.trackingStatus.micro_status_report', compact(['micro_status_final_array']));
+        }
 
         $packet_status = DB::connection('mssql')->select("SELECT DISTINCT
-         AwbNo, StatusDetails, CreatedDate 
-         FROM PODTrans 
-         WHERE CreatedDate BETWEEN '$last30day_start_date' AND '$today_end_date'
-         ORDER BY CreatedDate DESC
-         ");
+            AwbNo, StatusDetails, CreatedDate 
+            FROM PODTrans 
+            WHERE CreatedDate BETWEEN '$today_sd' AND '$today_ed'
+            ORDER BY CreatedDate DESC
+            ");
+        $packet_status_details = collect($packet_status);
+        $packet_status = $this->packet_status($packet_status_details, $today_sd, $today_ed);
+        $status_count_today = $this->micro_status_count($micro_status, $packet_status);
 
-        $packet_status = collect($packet_status);
-        $packet_status = $packet_status->groupBy('AwbNo');
-        $count = 0;
+        $micro_staus_jd = Storage::get($file_path);
 
-        // po($packet_status);
-        // exit;
-        foreach ($packet_status as $status) {
-            $pdo_status[$count]['AwbNo'] = $status[0]->AwbNo;
-            $pdo_status[$count]['StatusDetails'] = $status[0]->StatusDetails;
-            $pdo_status[$count]['CreatedDate'] = $status[0]->CreatedDate;
-            $count++;
-        }
-        // po($pdo_status);
-        // exit;
-        // dd($micro_status, $packet_status);
-        $pdo_status_yesterdays = [];
-        $pdo_status_30_days = $pdo_status;
-        $pdo_status_7_days = [];
-
-        $micro_status_today_count =[];
-        $micro_status_yesterday_count = [];
-        $micro_status_7_days_count = [];
-        $micro_status_30_days_count = [];
-        $offset_7_days = 0;
-        $offset_yesterdays = 0;
-        $offset = 0;
-
-        // po($pdo_status);
-        // exit;
-        // echo $today_start_date .'-> end date'.$today_end_date;
-        foreach ($pdo_status as $pdo_value) {
-            $create_date = $pdo_value['CreatedDate'];
-            foreach ($micro_status as $key => $micro_status_value) {
-                if (($pdo_value['StatusDetails']) == $key)
-                 {
-                    //  echo $key;
-                    //  echo "<hr>";
-                    //last 30 days details;
-                    if ($create_date <= $last30day_end_date && $create_date >= $last30day_start_date) {
-
-                        if (isset($micro_status_30_days_count[$micro_status_value])) {
-                            $micro_status_30_days_count[$micro_status_value] += 1;
-                        } else {
-                            $micro_status_30_days_count[$micro_status_value] = 1;
-                        }
-                    }
-                    //last 7 days details;
-                    if ($create_date <= $last7day_end_date && $create_date >= $last7day_start_date) {
-
-                        if (isset($micro_status_7_days_count[$micro_status_value])) {
-                            $micro_status_7_days_count[$micro_status_value] += 1;
-                        } else {
-                            $micro_status_7_days_count[$micro_status_value] = 1;
-                        }
-                    }
-                    //yesterday details 
-                    if ($create_date <= $yesterday_end_date && $create_date >= $yesterday_start_date) {
-
-                        if (isset($micro_status_yesterday_count[$micro_status_value])) {
-                            $micro_status_yesterday_count[$micro_status_value] += 1;
-                        } else {
-                            $micro_status_yesterday_count[$micro_status_value] = 1;
-                        }
-                    }
-                    //Today details
-                    // echo 'Created Date->'.$create_date.'start date'. $today_start_date. 'end date'.$today_end_date; 
-                    if ($create_date <= $today_end_date && $create_date >= $today_start_date) {
-
-                        if (isset($micro_status_today_count[$micro_status_value])) {
-                            $micro_status_today_count[$micro_status_value] += 1;
-                        } else {
-                            $micro_status_today_count[$micro_status_value] = 1;
-                        }
-                    }
-                }
-            }
-        }
-        // dd($micro_status_today_count);
-        // dd('today',$micro_status_today_count, 'yesterday', $micro_status_yesterday_count, '7 days', $micro_status_7_days_count, '30 days', $micro_status_30_days_count);
+        $data = json_decode($micro_staus_jd);
+        $status_count_yesterday = (array)$data->yesterday;
+        $status_count_last_7day = (array)$data->last7days;
+        $status_count_last_30day = (array)$data->last30days;
 
         $micro_status_final_array = [];
         foreach ($micro_status as $micro_status_key => $micro_status_value) {
+            $micro_status_key = trim($micro_status_key);
+            $micro_status_value = trim($micro_status_value);
             $today_value = 0;
             $yesterday_value = 0;
             $last7day_value = 0;
             $last30day_value = 0;
+            $micro_status_value = trim($micro_status_value);
+            if (isset($status_count_today[$micro_status_value])) {
 
-            if (isset($micro_status_today_count[$micro_status_value])) {
-
-                $today_value = $micro_status_today_count[$micro_status_value];
+                $today_value = $status_count_today[$micro_status_value];
             }
-            if (isset($micro_status_yesterday_count[$micro_status_value])) {
+            if (isset($status_count_yesterday[$micro_status_value])) {
 
-                $yesterday_value = $micro_status_yesterday_count[$micro_status_value];
+                $yesterday_value = $status_count_yesterday[$micro_status_value];
             }
-            if (isset($micro_status_7_days_count[$micro_status_value])) {
+            if (isset($status_count_last_7day[$micro_status_value])) {
 
-                $last7day_value = $micro_status_7_days_count[$micro_status_value];
+                $last7day_value = $status_count_last_7day[$micro_status_value];
             }
-            if (isset($micro_status_30_days_count[$micro_status_value])) {
+            if (isset($status_count_last_30day[$micro_status_value])) {
 
-                $last30day_value = $micro_status_30_days_count[$micro_status_value];
+                $last30day_value = $status_count_last_30day[$micro_status_value];
             }
             $micro_status_final_array[$micro_status_value] = [
                 'Today' => $today_value,
@@ -341,6 +289,62 @@ class TrackingStatusController extends Controller
             ];
         }
 
+        // po($micro_status_final_array);
         return view('b2cship.trackingStatus.micro_status_report', compact(['micro_status_final_array']));
+    }
+
+    public function packet_status($packet_status_details, $start_date, $end_date)
+    {
+        $packet_detials = $packet_status_details->whereBetween('CreatedDate', [$start_date, $end_date])
+            ->groupBy('StatusDetails')
+            ->map(function ($row) {
+                return $row->count();
+            });
+        $shipment_status_count = [];
+        foreach ($packet_detials as $key => $value) {
+            $key = trim($key);
+            if (isset($shipment_status_count[$key])) {
+                $shipment_status_count[$key] +=  $value;
+            } else {
+                $shipment_status_count[$key] = $value;
+            }
+        }
+        return $shipment_status_count;
+    }
+
+    public function micro_status_count($micro_status, $packet_status)
+    {
+        $status_count = [];
+        foreach ($micro_status as $micro_status_key => $micro_status_value) {
+            $micro_status_key = trim($micro_status_key);
+            $micro_status_value = trim($micro_status_value);
+            if (isset($packet_status[$micro_status_key])) {
+                if (isset($status_count[$micro_status_value])) {
+                    $status_count[$micro_status_value] += $packet_status[$micro_status_key];
+                } else {
+                    $status_count[$micro_status_value] = $packet_status[$micro_status_key];
+                }
+            }
+        }
+
+        return $status_count;
+    }
+
+    public function update_report()
+    {
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+            
+            // exec('nohup php artisan pms:textiles-import  > /dev/null &');
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan pms:microstatus-report > /dev/null &";
+            exec($command);
+            
+        } else {
+
+            Artisan::call('pms:microstatus-report');
+        }
+
+        // $this->microStatusReport();
+        return redirect()->back();
     }
 }
