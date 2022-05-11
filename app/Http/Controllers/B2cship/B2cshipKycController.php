@@ -55,8 +55,9 @@ class B2cshipKycController extends Controller
             $awb = ltrim($awb);
 
             // $kycApproved = DB::connection('mssql')->select("SELECT DISTINCT AwbNo, IsRejected FROM KYCStatus WHERE AwbNo IN ($awb) AND IsRejected = '0' ");
-            $kycStatus = DB::connection('mssql')->select("SELECT DISTINCT AwbNo, IsRejected FROM KYCStatus WHERE AwbNo IN ($awb) ");
-
+            $kycStatus = DB::connection('mssql')->select("SELECT DISTINCT AwbNo, IsRejected FROM KYCStatus WHERE AwbNo IN ($awb) AND ModifiedDate BETWEEN '$start' AND '$end' ");
+           
+            
             $kycApproved = [];
             $kycApprovedOffset = 0;
             $kycRejected = [];
