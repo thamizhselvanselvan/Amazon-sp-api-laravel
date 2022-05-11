@@ -105,7 +105,7 @@ class InventoryShipmentController extends Controller
     public function autocomplete(Request $request)
     {
 
-        $data = Product::select("asin1")
+        $data = Product::select("asin1")->distinct()
             ->where("asin1", "LIKE", "%{$request->asin}%")
             ->limit(50)
             ->get();
@@ -126,7 +126,7 @@ class InventoryShipmentController extends Controller
     public function storeshipment(Request $request)
     {
 
-        return $request->data;
+        return $request->all();
 
         $rn = random_int(1000, 9999);
 

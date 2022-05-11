@@ -141,36 +141,38 @@
     $(".create_shipmtn_btn").on("click", function() {
         let self = $(this);
         let table = $("#report_table tbody tr");
-        let data = {};
+        //let data = {};
+        let data = new FormData();
 
         table.each(function(index, elm) {
 
             let cnt = 0;
             let td = $(this).find('td');   
             console.log(td);
-            data[index] = {
-                asin: td[0].innerText,
-                name: td[1].innerText,
-                quantity: td[2].children[0].value,
-                price: td[3].children[0].value
-            };
 
+            data.append('asin[]', td[0].innerText); 
+            data.append('name[]', td[1].innerText); 
+            data.append('quantity[]', td[2].children[0].value); 
+            data.append('price[]', td[3].children[0].value); 
 
         });
 
-
-        console.log(data);
-
+        //let t = data.getAll('asin');
         $.ajax({
             method: 'POST',
             url: '/shipment/storeshipment',
             data: data,
+            processData: false,
+            contentType: false,
             success: function(arr) {
                 console.log(arr);
             }
         });
 
-    })    
+        
+
+    });    
+
     autocomplete(document.getElementById("upload_asin"));
 
     function autocomplete(inp) {
@@ -197,6 +199,10 @@
             this.parentNode.appendChild(a);
             /*for each item in the array...*/
 
+            if(val.length <= 1) {
+                return false;
+            }
+
             $.ajax({
                 method: 'GET',
                 url: '/shipment/autocomplete',
@@ -222,9 +228,10 @@
                             /*execute a function when someone clicks on the item value (DIV element):*/
                             b.addEventListener("click", function(e) {
                                 /*insert the value for the autocomplete text field:*/
-                                inp.value = this.getElementsByTagName("input")[0].value;
+                                //inp.value = this.getElementsByTagName("input")[0].value;
+                                inp.value = '';
 
-                                getData(inp.value);
+                                getData(this.getElementsByTagName("input")[0].value);
 
                                 /*close the list of autocompleted values,
                                 (or any other open lists of autocompleted values:*/
