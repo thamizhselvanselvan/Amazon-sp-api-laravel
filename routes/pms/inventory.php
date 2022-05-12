@@ -39,8 +39,10 @@ Route::resource('inventory/shipments','Inventory\inwarding\InventoryShipmentCont
 
 Route::get('shipment/select/view', 'Inventory\inwarding\InventoryShipmentController@selectView');
 Route::get('shipment/autocomplete', 'Inventory\inwarding\InventoryShipmentController@autocomplete');
+Route::post('shipment/storeshipment', 'Inventory\inwarding\InventoryShipmentController@storeshipment');
 
 Route::get('shipment/select/region', 'Inventory\inwarding\InventoryShipmentController@selectregion');
+
 
  
 //  Route::get('inventory/master/racks/bin/index','Inventory\Master\Rack\InventoryBinController@view')->name('inventory.bin_index');;
