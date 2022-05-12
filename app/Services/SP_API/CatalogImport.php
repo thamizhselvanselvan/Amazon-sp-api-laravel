@@ -13,8 +13,7 @@ use Carbon\Laravel\ServiceProvider;
 use Illuminate\Support\Facades\Log;
 use App\Services\Config\ConfigTrait;
 use SellingPartnerApi\Configuration;
-use SellingPartnerApi\Api\CatalogItemsV0Api as CatalogItemsV0ApiProduct;
-use SellingPartnerApi\Api\ProductPricingApi as ProductPricingApiProduct;
+use SellingPartnerApi\Api\CatalogItemsV0Api;
 
 class CatalogImport
 {
@@ -74,7 +73,7 @@ class CatalogImport
                 "roleArn" => 'arn:aws:iam::659829865986:role/Mosh-E-Com-SP-API-Role'
             ]);
 
-            $apiInstance = new CatalogItemsV0ApiProduct($config);
+            $apiInstance = new CatalogItemsV0Api($config);
 
             // $apiInstancePricing = new ProductPricingApiProduct($config);
             $item_type = 'Asin';
