@@ -45,7 +45,11 @@
 
 @section('js')
 <script type="text/javascript">
-
+$(document).ready(function() {
+    $('.yajra-datatable').DataTable( {
+        "pagingType": "full_numbers"
+    } );
+} );
 </script>
 
 @stop
