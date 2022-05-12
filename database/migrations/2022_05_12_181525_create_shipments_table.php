@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateInventoryTable extends Migration
+class CreateShipmentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,16 @@ class CreateInventoryTable extends Migration
      */
     public function up()
     {
-        Schema::connection('in')->create('inventory', function (Blueprint $table) {
+        Schema::connection('in')->create('shipments', function (Blueprint $table) {
             $table->id();
+            $table->string('source_id');
+            $table->string('ship_id');
             $table->string('asin');
             $table->string('item_name');
-            $table->integer('quantity');
+            $table->string('price');
+            $table->string('quantity');
             $table->timestamps();
         });
-      
     }
 
     /**
@@ -30,6 +32,6 @@ class CreateInventoryTable extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->dropIfExists('inventory');
+        Schema::connection('in')->dropIfExists('shipments');
     }
 }

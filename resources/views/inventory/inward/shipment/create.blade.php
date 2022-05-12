@@ -82,7 +82,7 @@
     </div>
     <div class="col-2">
         <div class="form-group">
-            <x-adminlte-select name="source" label="Select Source:">
+            <x-adminlte-select name="source" label="Select Source:" id="source">
                 <option>Select source</option>
                 @foreach ($source_lists as $source_list)
                 <option value="{{ $source_list->id }}">{{$source_list->name }}</option>
@@ -102,12 +102,12 @@
     <div class="col text-right">
         <div style="margin-top: 1.8rem;">
             <!-- //<a href="/shipment/storeshipment"> -->
-                <x-adminlte-button label="Create Shipment" theme="primary" icon="fas fa-plus" class="btn-sm create_shipmtn_btn" />
+            <x-adminlte-button label="Create Shipment" theme="primary" onclick="openNewTab()" icon="fas fa-plus" class="btn-sm create_shipmtn_btn" />
             <!-- </a> -->
+
         </div>
     </div>
 </div>
-
 
 <div class="row">
 
@@ -131,13 +131,12 @@
 @section('js')
 
 <script type="text/javascript">
-
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-    
+
     $(".create_shipmtn_btn").on("click", function() {
         let self = $(this);
         let table = $("#report_table tbody tr");
@@ -147,31 +146,84 @@
         table.each(function(index, elm) {
 
             let cnt = 0;
-            let td = $(this).find('td');   
-            console.log(td);
+            let td = $(this).find('td');
+            //  console.log(td);
 
-            data.append('asin[]', td[0].innerText); 
-            data.append('name[]', td[1].innerText); 
-            data.append('quantity[]', td[2].children[0].value); 
-            data.append('price[]', td[3].children[0].value); 
+            data.append('asin[]', td[0].innerText);
+            data.append('name[]', td[1].innerText);
+            data.append('quantity[]', td[2].children[0].value);
+            data.append('price[]', td[3].children[0].value);
 
         });
 
-        //let t = data.getAll('asin');
+        let source = $('#source').val();
+        data.append('source', source);
+
+
         $.ajax({
             method: 'POST',
             url: '/shipment/storeshipment',
             data: data,
             processData: false,
             contentType: false,
-            success: function(arr) {
-                console.log(arr);
+            response: 'json',
+            success: function(response) {
+
+                console.log(response);
+                //alert('success');
+                // location.reload()
+
+            },
+            error: function(response) {
+                console.log(response);
             }
+
+
         });
 
-        
+    });
+    // $('.create_shipmtn_btn').click(function(event) {
+    //     event.preventDefault();
+    //     if (navigator.userAgent.toLowerCase().indexOf('msie') > -1) {
+    //         $("body").append($('<div id="imageloader" class="loader"><img id="spinner" src="/images/ajax-loader.gif" alt="Spinner" /></div>'));
+    //     } else {
+    //         $('#imageloader').css('display', 'block');
+    //     }
+    //     $(this).prop("disabled", true);
+    //     $(this).closest('form').submit();
+    //     $(this).css({
+    //         "opacity": ".2",
+    //         "cursor": "progress"
+    //     });
+    //     $("#hideWindowButton").attr("click", "return false;"); // disabled cancel button 
+    //     $("#hideWindowButton").css({
+    //         "opacity": ".2",
+    //         "cursor": "progress"
+    //     });
+    // });
+    function openNewTab(){
+        childWindow = window.open('/inventory/shipments');
+    }
 
-    });    
+
+
+    $(document).ready(function() {
+
+        $("#create_shipmtn_btn").submit(function(e) {
+
+            //stop submitting the form to see the disabled button effect
+            e.preventDefault();
+
+            //disable the submit button
+            $("#create_shipmtn_btn").attr("disabled", true);
+
+            //disable a normal button
+            $("#create_shipmtn_btn").attr("disabled", true);
+
+            return true;
+
+        });
+    });
 
     autocomplete(document.getElementById("upload_asin"));
 
@@ -199,7 +251,7 @@
             this.parentNode.appendChild(a);
             /*for each item in the array...*/
 
-            if(val.length <= 1) {
+            if (val.length <= 1) {
                 return false;
             }
 
@@ -316,20 +368,20 @@
                 'asin': asin
             },
             success: function(arr) {
-                console.log(arr);
+                // console.log(arr);
 
                 let html = "<tr class='table_row'>";
-                html += "<td>" + arr.asin1 + "</td>";
-                html += "<td>" + arr.item_name + "</td>";
-                html += '<td> <input type="text" value="1" name="quantity" id="quantity"> </td>'
-                html += '<td> <input type="text" value="1" name="Price" id="price"> </td>'
+                html += "<td name='asin[]'>" + arr.asin1 + "</td>";
+                html += "<td name='name[]'>" + arr.item_name + "</td>";
+                html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
+                html += '<td> <input type="text" value="1" name="price[]" id="price"> </td>'
                 html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
                 html += "</tr>";
 
                 $("#report_table").append(html);
             },
             error: function(response) {
-                console.log(response);
+                // console.log(response);
             }
         });
 

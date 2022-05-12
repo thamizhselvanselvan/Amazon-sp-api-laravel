@@ -369,19 +369,19 @@ return [
 
                         [
                             'text' => 'Warehouse',
-                            // 'url'  => 'inventory/features',
+                            'url'  => 'inventory/warehouses',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory'],
-                            'submenu' => [
+                            // 'submenu' => [
 
-                                [
+                            //     [
 
-                                    'text' => 'Manage',
-                                    'url'  => 'inventory/warehouses',
-                                    'icon' => 'far fa-fw fa-file',
-                                    'can' =>  ['Admin', 'Inventory']
-                                ],
-                            ],
+                            //         'text' => 'Manage',
+                            //         'url'  => 'inventory/warehouses',
+                            //         'icon' => 'far fa-fw fa-file',
+                            //         'can' =>  ['Admin', 'Inventory']
+                            //     ],
+                            // ],
 
                         ],
                         [
@@ -626,7 +626,7 @@ return [
                     'submenu' => [
                         [
                             'text' => 'Packet Activities',
-                            'url' => 'bombion/packet-activities',
+                            'url' => 'bombion/packet-activities/1',
                             'can' => ['Admin', 'B2CShip'],
                             'icon' => 'far fa-fw fa-file',
 

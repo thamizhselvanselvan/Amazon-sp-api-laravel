@@ -10,7 +10,7 @@ Route::get('b2cship/micro_status_report', 'B2cship\TrackingStatusController@micr
 Route::get('b2cship/micro_status_missing_report', 'B2cship\TrackingStatusController@microStatusMissingReport');
 Route::get('b2cship/update-report', 'B2cship\TrackingStatusController@update_report');
 
-Route::get('bombion/packet-activities','B2cship\BombinoPacketActivitiesController@PacketActivitiesDetails');
+Route::get('bombion/packet-activities/{id}','B2cship\BombinoPacketActivitiesController@PacketActivitiesDetails');
 
 
 

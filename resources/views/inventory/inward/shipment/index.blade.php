@@ -39,7 +39,7 @@
                         <th>ID</th>
                         <th>Shipment ID</th>
                         <th>Source</th>
-                        <th>Action</th>
+                        <!-- <th>Action</th> -->
                        
                     </tr>
                 </thead>
@@ -69,19 +69,19 @@
                         searchable: false
                     },
                     {
-                        data: 'Ship_id',
-                        name: 'Ship_id'
+                        data: 'ship_id',
+                        name: 'ship_id'
                     },
                     {
                         data: 'source_name',
                         name: 'source_name'
                     },
                    
-                    {
-                        data: 'action',
-                        orderable: false,
-                        searchable: false
-                    },
+                    // {
+                    //     data: 'action',
+                    //     orderable: false,
+                    //     searchable: false
+                    // },
                 ]
             });
             $(document).on('click', ".delete", function(e) {

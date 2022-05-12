@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\inventory\inwarding;
 
-use App\Http\Controllers\Controller;
-use App\Models\inventory\Shipment;
-use App\Models\Inventory\Source;
-use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables;
 use App\Models\Product;
+use Illuminate\Http\Request;
+use App\Models\Inventory\Source;
+use App\Models\inventory\Shipment;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Yajra\DataTables\Facades\DataTables;
 
 class InventoryShipmentController extends Controller
 {
@@ -15,13 +16,13 @@ class InventoryShipmentController extends Controller
     {
         $this->middleware('auth');
     }
-
     public function index(Request $request)
     {
         if ($request->ajax()) {
 
-            $data = Shipment::query()->with(['sources']);
+            $data = Shipment::select("ship_id","source_id")->distinct()->with(['sources']);
 
+          
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('source_name', function ($data) {
@@ -125,36 +126,35 @@ class InventoryShipmentController extends Controller
 
     public function storeshipment(Request $request)
     {
+ 
+        $ship_id = random_int(1000, 9999);
+  
+        $create = [];
 
-        return $request->all();
+       foreach($request->asin as $key => $asin) {
 
-        $rn = random_int(1000, 9999);
-
-        $request->validate([
-            'ship_id' => 'required|min:2|max:9999',
-            'source_id' => 'required|min:1|max:100',
-            'asin' => 'required|min:9|max:100',
-            'item_name' => 'required|min:1|max:1000',
-            'quantity' => 'required|min:1|max:1000',
-            'price' => 'required|min:1|max:100000',
-        ]);
-
-        $source_exists = Source::where('id', $request->source_id)->exists();
-
-        if (!$source_exists) {
-            return redirect()->route('shipments.index')->with('error', 'Selected Source is invalid');
-        }
+            $create[] = [
+                "Ship_id" => $ship_id,
+                "source_id" => $request->source,
+                "asin" => $asin,
+                "item_name" => $request->name[$key],
+                "quantity" => $request->quantity[$key],
+                "price" => $request->price[$key],
+                "created_at" => now(),
+                "updated_at" => now()
+            ];
+            
+       }
 
 
-        Shipment::create([
-            'Ship_id' == $rn,
-            'source_id' => $request->source,
-            'asin'  => $request->asin,
-            'item_name'  => $request->item_name,
-            'quantity' => $request->quantity,
-            'price' => $request->price,
-                    ]);
+        // $source_exists = Source::where('id', $request->source_id)->exists();
 
-        return redirect()->route('shipments.index')->with('success', 'Shipment ' . $request->$rn . ' has been created successfully');
+        // if (!$source_exists) {
+        //     return redirect()->route('shipments.index')->with('error', 'Selected Source is invalid');
+        // }
+
+        Shipment::insert($create);
+        
+        return response()->json(['success' => 'Shipment has Created successfully']);
     }
 }
