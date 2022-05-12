@@ -14,6 +14,7 @@ class CreateInventoryTable extends Migration
     public function up()
     {
         Schema::connection('in')->create('inventory', function (Blueprint $table) {
+            $table->id();
             $table->string('asin');
             $table->string('item_name');
             $table->integer('quantity');
