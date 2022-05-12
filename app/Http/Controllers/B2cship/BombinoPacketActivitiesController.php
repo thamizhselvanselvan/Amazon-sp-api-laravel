@@ -5,14 +5,24 @@ namespace App\Http\Controllers\B2cship;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use League\CommonMark\Extension\CommonMark\Node\Inline\Strong;
 
 class BombinoPacketActivitiesController extends Controller
 {
-    public function PacketActivitiesDetails($id)
+    public function PacketActivitiesDetails()
     {
+        $today_sd = Carbon::today();
+        $today_ed = Carbon::now();
+
+         
+
+
+        exit;
+        $id = 1;
         // echo $id;
         $start = ($id-1)*2000;
         $total_count = DB::connection('mssql')->select("SELECT DISTINCT COUNT(AwbNo) as awb from PODTrans WHERE FPCode = 'BOMBINO'");
@@ -50,5 +60,32 @@ class BombinoPacketActivitiesController extends Controller
 
         //  po($pd_final_array);
         return view('b2cship.bombinoActivities.index', compact(['pd_final_array','total_count']));
+    }
+
+    public function UpdatePacketDetails()
+    {
+        $today_sd = Carbon::today();
+        $today_ed = Carbon::now();
+        
+        $current_month = $today_sd->month;
+
+        for($month = 1; $month<=$current_month; $month++)
+        {
+            if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+            
+                // exec('nohup php artisan pms:textiles-import  > /dev/null &');
+               
+                $base_path = base_path();
+                $command = "cd $base_path && php artisan pms:bombino-packet-activities $month > /dev/null &";
+                exec($command);
+                
+                // Log::warning("Export asin command executed production  !!!");
+            } else {
+    
+                // Log::warning("Export asin command executed local !");
+                Artisan::call('pms:bombino-packet-activities '.$month);
+            }
+        }
+        // echo $current_mo
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class BombinoPacketActivitie extends Command
 {
@@ -18,7 +19,7 @@ class BombinoPacketActivitie extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Create json file according to month for bombino packet activities details';
 
     /**
      * Create a new command instance.
@@ -37,6 +38,17 @@ class BombinoPacketActivitie extends Command
      */
     public function handle()
     {
-        return 0;
+        $month = $this->argument('month');
+        $start_date ='';
+        $end_date = '';
+
+        $packet_detials = DB::connection('mssql')->select("SELECT DISTINCT
+        AwbNo, PODLocation, StatusDetails,FPCode,CreatedDate 
+        from PODTrans
+        WHERE CreatedDate BETWEEN '$start_date' AND '$end_date'
+        AND FPCode ='BOMBINO' 
+        ORDER BY CreatedDate DESC");
+
+
     }
 }
