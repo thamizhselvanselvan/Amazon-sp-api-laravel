@@ -1,4 +1,5 @@
 <?php
+
 use RedBeanPHP\R;
 use Carbon\Carbon;
 use App\Models\User;
@@ -32,29 +33,47 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 |
 */
 
-Route::get('test', function() {
+Route::get('test', function () {
 
-        // $startTime = Carbon::today();
-        $endTime = Carbon::now();
-        // $todayTotalBooking =  $this->kycDetails($startTime, $endTime);
-        // $startTime = Carbon::yesterday();
-        // $startTime = Carbon::today()->subDays(7);
-        $startTime = Carbon::today()->subDays(10);
-        // $Last30DaysTotalBooking =  $this->kycDetails($startTime, $endTime);
-        $endTimeYesterday = $startTime->toDateString();
-        $endTimeYesterday = $endTimeYesterday . ' 23:59:59';
-        echo $startTime; echo 'End Time-> '.$endTimeYesterday;
-        // $totalBookings = DB::connection('mssql')->select("SELECT DISTINCT TOP 200 AwbNo, PacketStatus, StatusDetails, FPCode, CreatedDate FROM PODTrans WHERE CreatedDate BETWEEN '$startTime' AND '$endTimeYesterday' ORDER BY CreatedDate DESC");
-        $totalBookings = DB::connection('mssql')->select("SELECT DISTINCT AwbNo, CreatedDate FROM PODTrans WHERE CreatedDate BETWEEN '$startTime' AND '$endTime' GROUP BY AwbNo, CreatedDate ORDER BY CreatedDate DESC");
-        $ne = collect($totalBookings);
-     //    $ne = $ne->groupBy('AwbNo')->map(function() {
-     //    });
+     $today_sd = Carbon::today();
+     $today_ed = Carbon::now();
 
-          po($ne);
+     $packet_detials = DB::connection('mssql')->select("SELECT 
+          DISTINCT TOP 1000 AwbNo,
+          packetstatus = STUFF((
+               SELECT distinct  ',' + POD1.StatusDetails
+               FROM PODTrans POD1
+               WHERE POD.AwbNo = POD1.AwbNo AND FPCode = 'BOMBINO'
+               FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 1, ''),
+          packetlocation = STUFF((
+               SELECT  ',' + POD2.PODLocation
+               FROM PODTrans POD2
+               WHERE POD.AwbNo = POD2.AwbNo AND FPCode = 'BOMBINO'
+               FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 1, '')
+          from PODTrans POD
+          WHERE FPCode ='BOMBINO' 
+          Group By AwbNo, PODLocation
+          ORDER BY AwbNo DESC
+     ");
+     $pd_final = [];
+     $offset = 0;
+     foreach ($packet_detials as $value) {
 
-        exit;
-        return view('b2cship.trackingStatus.micro_status_report');
- 
+          $packet_status = $value->packetstatus;
+          $packet_location = $value->packetlocation;
+          $packet_array = explode(',', $packet_status);
+          $pl_array = explode(',', $packet_location);
+
+          foreach ($packet_array as $key => $status) {
+               $pd_final[$offset][0] = $value->AwbNo;
+               $pd_final[$offset][$key + 1] = $status . ' [' . $pl_array[$key] . ']';
+          }
+          $offset++;
+     }
+
+     po($pd_final);
+     exit;
+     return view('b2cship.trackingStatus.micro_status_report');
 });
 
 
@@ -99,21 +118,19 @@ Route::get("b2cship", function () {
 
      foreach ($data as $totalBooking) {
           foreach ($totalBooking as $totalBookingAWB) {
-              if(str_contains($totalBookingAWB,"'"))
-              {
+               if (str_contains($totalBookingAWB, "'")) {
 
-               $totalBookingAWB = str_replace("'","/''",$totalBookingAWB);
-               // echo $totalBookingAWB;
+                    $totalBookingAWB = str_replace("'", "/''", $totalBookingAWB);
+                    // echo $totalBookingAWB;
 
-              }
+               }
                $totalBookingArray[] = "'$totalBookingAWB'";
-
           }
-      }
-      $awb = implode(',', $totalBookingArray);
-      $awb = ltrim($awb);
-// dd($awb);
-      $kycStatus = DB::connection('mssql')->select("SELECT AwbNo FROM PODTrans WHERE StatusDetails IN ($awb) and CreatedDate BETWEEN '2022-04-10 00:00:00' and '2022-05-09 23:59:00' ");
+     }
+     $awb = implode(',', $totalBookingArray);
+     $awb = ltrim($awb);
+     // dd($awb);
+     $kycStatus = DB::connection('mssql')->select("SELECT AwbNo FROM PODTrans WHERE StatusDetails IN ($awb) and CreatedDate BETWEEN '2022-04-10 00:00:00' and '2022-05-09 23:59:00' ");
 
      po(count($kycStatus));
      exit;
