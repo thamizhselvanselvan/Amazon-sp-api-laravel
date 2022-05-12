@@ -371,18 +371,18 @@ return [
                             'text' => 'Warehouse',
                             // 'url'  => 'inventory/features',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin','Inventory'],
+                            'can' =>  ['Admin', 'Inventory'],
                             'submenu' => [
-        
+
                                 [
-        
+
                                     'text' => 'Manage',
                                     'url'  => 'inventory/warehouses',
                                     'icon' => 'far fa-fw fa-file',
                                     'can' =>  ['Admin', 'Inventory']
                                 ],
                             ],
-        
+
                         ],
                         [
 
@@ -401,16 +401,16 @@ return [
                                     'url'  => 'inventory/shelves',
                                     'icon' => 'far fa-fw fa-file',
                                     'can' =>  ['Admin', 'Inventory']
-        
+
                                 ],
                                 [
                                     'text' => 'Bins',
                                     'url'  => 'inventory/bins',
                                     'icon' => 'far fa-fw fa-file',
                                     'can' =>  ['Admin', 'Inventory']
-        
+
                                 ],
-        
+
                             ],
                         ],
                         [
@@ -418,7 +418,7 @@ return [
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin'],
                             'submenu' => [
-        
+
                                 [
                                     'text' => ' Dispose reason',
                                     'url'  => 'inventory/disposes',
@@ -431,8 +431,8 @@ return [
                     ],
                 ],
 
-                
-                
+
+
                 [
                     'text' => 'Inward ',
                     'icon' => 'far fa-fw fa-file',
@@ -618,6 +618,19 @@ return [
                             'can' => ['Admin', 'B2CShip'],
                             'icon' => 'far fa-fw fa-file',
                         ],
+                    ]
+                ],
+                [
+                    'text' => 'Bombino',
+                    'can' => ['Admin', 'B2CShip'],
+                    'submenu' => [
+                        [
+                            'text' => 'Packet Activities',
+                            'url' => 'bombion/packet-activities',
+                            'can' => ['Admin', 'B2CShip'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ]
                     ]
                 ],
             ],

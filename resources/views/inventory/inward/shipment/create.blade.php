@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'create Shipment')
+@section('title', 'Create Shipment')
 
 @section('css')
 
@@ -72,20 +72,42 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-5">
+    <div class="col-2">
         <div class="form-group">
             <label>Enter ASIN:</label>
-            <div class="autocomplete" style="width:300px;">
-                <input id="upload_asin" type="text" name="upload_asin" placeholder="Enter Asin here..." class="form-control">
+            <div class="autocomplete" style="width:200px;">
+                <input id="upload_asin" type="text" autocomplete="off" name="upload_asin" placeholder="Enter Asin here..." class="form-control">
             </div>
         </div>
     </div>
+    <div class="col-2">
+        <div class="form-group">
+            <x-adminlte-select name="source" label="Select Source:">
+                <option>Select source</option>
+                @foreach ($source_lists as $source_list)
+                <option value="{{ $source_list->id }}">{{$source_list->name }}</option>
+                @endforeach
+            </x-adminlte-select>
+
+        </div>
+    </div>
+    <!-- <div class="col-2">
+        <div class="form-group">
+            <label>Enter Shipment ID:</label>
+            <div class="Shipment" style="width:200px;">
+                <input id="Shipment" type="text" name="Shipment" placeholder="enter Shipment ID" class="form-control">
+            </div>
+        </div>
+    </div> -->
     <div class="col text-right">
-        <a href="#" >
-            <x-adminlte-button label="Create Shipment" theme="primary" icon="fas fa-plus" class="btn-sm" />
-        </a>
+        <div style="margin-top: 1.8rem;">
+            <!-- //<a href="/shipment/storeshipment"> -->
+                <x-adminlte-button label="Create Shipment" theme="primary" icon="fas fa-plus" class="btn-sm create_shipmtn_btn" />
+            <!-- </a> -->
+        </div>
     </div>
 </div>
+
 
 <div class="row">
 
@@ -97,6 +119,7 @@
             <td>asin</td>
             <td>Item Name</td>
             <td>Quantity</td>
+            <td>Price</td>
             <td>Action</td>
         </tr>
     </thead>
@@ -108,6 +131,48 @@
 @section('js')
 
 <script type="text/javascript">
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    
+    $(".create_shipmtn_btn").on("click", function() {
+        let self = $(this);
+        let table = $("#report_table tbody tr");
+        //let data = {};
+        let data = new FormData();
+
+        table.each(function(index, elm) {
+
+            let cnt = 0;
+            let td = $(this).find('td');   
+            console.log(td);
+
+            data.append('asin[]', td[0].innerText); 
+            data.append('name[]', td[1].innerText); 
+            data.append('quantity[]', td[2].children[0].value); 
+            data.append('price[]', td[3].children[0].value); 
+
+        });
+
+        //let t = data.getAll('asin');
+        $.ajax({
+            method: 'POST',
+            url: '/shipment/storeshipment',
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function(arr) {
+                console.log(arr);
+            }
+        });
+
+        
+
+    });    
+
     autocomplete(document.getElementById("upload_asin"));
 
     function autocomplete(inp) {
@@ -134,6 +199,10 @@
             this.parentNode.appendChild(a);
             /*for each item in the array...*/
 
+            if(val.length <= 1) {
+                return false;
+            }
+
             $.ajax({
                 method: 'GET',
                 url: '/shipment/autocomplete',
@@ -159,9 +228,10 @@
                             /*execute a function when someone clicks on the item value (DIV element):*/
                             b.addEventListener("click", function(e) {
                                 /*insert the value for the autocomplete text field:*/
-                                inp.value = this.getElementsByTagName("input")[0].value;
+                                //inp.value = this.getElementsByTagName("input")[0].value;
+                                inp.value = '';
 
-                                getData(inp.value);
+                                getData(this.getElementsByTagName("input")[0].value);
 
                                 /*close the list of autocompleted values,
                                 (or any other open lists of autocompleted values:*/
@@ -235,6 +305,8 @@
         });
     }
 
+
+
     function getData(asin) {
 
         $.ajax({
@@ -248,14 +320,13 @@
 
                 let html = "<tr class='table_row'>";
                 html += "<td>" + arr.asin1 + "</td>";
-                html += "<td>" + arr.item_name + "</td>"
-                html += '<td> <input type="text" value="1" name="Quantity" id="quantity"> </td>'
+                html += "<td>" + arr.item_name + "</td>";
+                html += '<td> <input type="text" value="1" name="quantity" id="quantity"> </td>'
+                html += '<td> <input type="text" value="1" name="Price" id="price"> </td>'
                 html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
                 html += "</tr>";
 
                 $("#report_table").append(html);
-
-                // <button onclick="myCreateFunction()">Create row</button>
             },
             error: function(response) {
                 console.log(response);
@@ -265,10 +336,9 @@
 
     }
 
-    $('#report_table').on('click' , ".remove1",function(){
+    $('#report_table').on('click', ".remove1", function() {
 
         $(this).closest("tr").remove();
     });
-    
 </script>
 @stop

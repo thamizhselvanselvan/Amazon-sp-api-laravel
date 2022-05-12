@@ -18,7 +18,6 @@ class InventoryShipmentController extends Controller
 
     public function index(Request $request)
     {
-
         if ($request->ajax()) {
 
             $data = Shipment::query()->with(['sources']);
@@ -106,7 +105,7 @@ class InventoryShipmentController extends Controller
     public function autocomplete(Request $request)
     {
 
-        $data = Product::select("asin1")
+        $data = Product::select("asin1")->distinct()
             ->where("asin1", "LIKE", "%{$request->asin}%")
             ->limit(50)
             ->get();
@@ -122,5 +121,40 @@ class InventoryShipmentController extends Controller
             return Product::query()->where('asin1', $request->asin)->first();
         }
     }
+
+
+    public function storeshipment(Request $request)
+    {
+
+        return $request->all();
+
+        $rn = random_int(1000, 9999);
+
+        $request->validate([
+            'ship_id' => 'required|min:2|max:9999',
+            'source_id' => 'required|min:1|max:100',
+            'asin' => 'required|min:9|max:100',
+            'item_name' => 'required|min:1|max:1000',
+            'quantity' => 'required|min:1|max:1000',
+            'price' => 'required|min:1|max:100000',
+        ]);
+
+        $source_exists = Source::where('id', $request->source_id)->exists();
+
+        if (!$source_exists) {
+            return redirect()->route('shipments.index')->with('error', 'Selected Source is invalid');
+        }
+
+
+        Shipment::create([
+            'Ship_id' == $rn,
+            'source_id' => $request->source,
+            'asin'  => $request->asin,
+            'item_name'  => $request->item_name,
+            'quantity' => $request->quantity,
+            'price' => $request->price,
+                    ]);
+
+        return redirect()->route('shipments.index')->with('success', 'Shipment ' . $request->$rn . ' has been created successfully');
+    }
 }
- 

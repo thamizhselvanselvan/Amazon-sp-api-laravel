@@ -13,8 +13,7 @@ use Carbon\Laravel\ServiceProvider;
 use Illuminate\Support\Facades\Log;
 use App\Services\Config\ConfigTrait;
 use SellingPartnerApi\Configuration;
-use SellingPartnerApi\Api\CatalogItemsV0Api as CatalogItemsV0ApiProduct;
-use SellingPartnerApi\Api\ProductPricingApi as ProductPricingApiProduct;
+use SellingPartnerApi\Api\CatalogItemsV0Api;
 
 class CatalogImport
 {
@@ -34,110 +33,7 @@ class CatalogImport
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password); // Log::warning($datas[0]->asin);
         // exit;
-        $datas = Asin_Master::limit(15)->offset(0)->get();
-
-        $datas = [
-            "B07C84Y9N3",
-            "B00CRMMGX8",
-            "B076PW5ZLQ",
-            "B07BBVMWSG",
-            "B07B2KXRH7",
-            "B006UGY5OU",
-            "B0017O6LLU",
-            "B079SVN629",
-            "B08P2BJTHR",
-            "B0791D9YSW",
-            "B078V69RY4",
-            "B007CKI0PI",
-            "B00AQ5O2Z8",
-            "B077H43CJR",
-            "B078YP2GSH",
-            "B078C7F21X",
-            "B01EY6JZCY",
-            "B00WG4S3BQ",
-            "B00O1R4BXK",
-            "B071ZHLBDW",
-            "B076936NQJ",
-            "B077B7BQS5",
-            "B000ZQ4NUC",
-            "B00H3HLD0Y",
-            "B076Q9285S",
-            "B00ISZXHNG",
-            "B0711T81MY",
-            "B075QBGXN9",
-            "B07CCYLXCD",
-            "B07GBSR53R",
-            "B073XVQF7K",
-            "B0748KNZYB",
-            "B00JQA0RVC",
-            "B07PLMWC2C",
-            "B07252Y92P",
-            "B002KCC9LY",
-            "B00NH0VBUI",
-            "B0711C8P46",
-            "B071NTL796",
-            "B07FQ9FG7S",
-            "B01MR67XWC",
-            "B08QB2BMX8",
-            "B08L25L3TK",
-            "B06ZYR75RQ",
-            "B07FKTJMC9",
-            "B078HTPGFJ",
-            "B005MQNTGE",
-            "B06XPCSDDN",
-            "B01NBVK3G3",
-            "B073V9VG8M",
-            "B0752X59R3",
-            "B07CKCQQGS",
-            "B07FN4K7M8",
-            "B087JX2LDS",
-            "B002JK4KXW",
-            "B00NFVIWQA",
-            "B07RCCPLY5",
-            "B06XQ11WHX",
-            "B000R4PW8E",
-            "B01N6K04Y4",
-            "B000BREP3K",
-            "B01N39KJ67",
-            "B01MXOJL3H",
-            "B01CGBT0GK",
-            "B005NB03US",
-            "B01MQ14D9M",
-            "B00M34QG5O",
-            "B07G348RJH",
-            "B01N0XPX4Q",
-            "B01MCX2B3M",
-            "B01MYY13TF",
-            "B01MZALB27",
-            "B00QH1CP18",
-            "B00X7CJ55E",
-            "B01257UAWS",
-            "B0077T4T86",
-            "B00YSW1Q7C",
-            "B0733KBF7H",
-            "B08V22ZLQ9",
-            "B08MQN2TYP",
-            "B019GBKAC6",
-            "B00WYXN9M2",
-            "B009UK21OY",
-            "B07VWNCVX9",
-            "B06WP5P3C9",
-            "B00JJ165MS",
-            "B00MPRQVRM",
-            "B081NJ2GZ9",
-            "B00O4AO468",
-            "B00W2BWX46",
-            "B0151GI5VI",
-            "B08QD9HSFX",
-            "B00DF6XYEU",
-            "B071RS2SR7",
-            "B013IJPTFK",
-            "B07G9LQ69N",
-            "B00N549N7Y",
-            "B00VSHW62O",
-            "B00AQSCKH2",
-            "B00KJJ84X2"
-        ];
+        $datas = Asin_Master::limit(100)->offset(1400)->get();
 
         // dd($datas);
 
@@ -145,8 +41,8 @@ class CatalogImport
 
         foreach ($datas as $data) {
             // Log::info('AWS Auth Code - '. $data['aws']['auth_code']);
-
-            $asin = $data;
+// dd($data->asin);
+            $asin = $data->asin;
             // dd($data);
             // $asin = 'B000R1RKVY';
             // Log::info($asin);
@@ -177,7 +73,7 @@ class CatalogImport
                 "roleArn" => 'arn:aws:iam::659829865986:role/Mosh-E-Com-SP-API-Role'
             ]);
 
-            $apiInstance = new CatalogItemsV0ApiProduct($config);
+            $apiInstance = new CatalogItemsV0Api($config);
 
             // $apiInstancePricing = new ProductPricingApiProduct($config);
             $item_type = 'Asin';
@@ -191,7 +87,7 @@ class CatalogImport
                 if (isset(($result->payload->AttributeSets[0]))) {
 
                     $result = (array)($result->payload->AttributeSets[0]);
-                    $productcatalogs = R::dispense('amazonusdata');
+                    $productcatalogs = R::dispense('bookswagon');
 
                     $productcatalogs->asin = $asin;
                     $productcatalogs->source = $country_code;
@@ -201,7 +97,12 @@ class CatalogImport
                         if (is_object($data)) {
 
                             $productcatalogs->{$key} = json_encode($data);
-                        } else {
+                        } 
+                        elseif(is_string($data)) 
+                        {
+                            $productcatalogs->{$key} = ($data);
+                        }
+                        else{
                             $productcatalogs->{$key} = json_encode($data);
                             // $value [][$key] = ($data);
                         }
