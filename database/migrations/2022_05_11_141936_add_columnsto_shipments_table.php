@@ -11,20 +11,13 @@ class AddColumnstoShipmentsTable extends Migration
      *
      * @return void
      */
-    public function up()
-    {
+        public function up()
 
-        Schema::connection('in')->table('shipments', function (Blueprint $table) {
-            $table->renameColumn('Ship_id', 'ship_id');
-            $table->string('asin')->after('ship_id');
-            $table->string('item_name')->after('asin');
-            $table->integer('price')->after('item_name');
-            $table->integer('quantity')->after('price');
-            $table->dropColumn('old_quantity');
+        {
+            Schema::connection('in')->dropIfExists('shipments');
+        }
 
-            
-        });
-    }
+    
 
     /**
      * Reverse the migrations.
@@ -33,11 +26,14 @@ class AddColumnstoShipmentsTable extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->table('shipments', function (Blueprint $table) {
-            $table->dropColumn(['asin','item_name','price','quantity']);
-            $table->renameColumn('ship_id','Ship_id');
-            $table->integer('old_quantity');
+        Schema::connection('in')->create('shipments', function (Blueprint $table) {
+            $table->id();
+            $table->string('source_id');
+            $table->string('Ship_id');
+            $table->string('quantity');
+            $table->timestamps();
     
         });
     }
+
 }
