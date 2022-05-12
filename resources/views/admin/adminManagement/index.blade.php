@@ -36,13 +36,13 @@
                 @endif
             </div>
 
-            <h2 class="mb-4">
+            <h2 class="mb-2">
                 <a href="{{ route('add_user.create') }}">
                     <x-adminlte-button label="Add User" theme="primary" icon="fas fa-plus" />
                 </a>
             </h2>
 
-            <table class="table table-bordered yajra-datatable table-striped">
+            <table class="table table-bordered yajra-datatable table-striped text-center" style="line-height:12px">
                 <thead>
                     <tr>
                         <th>ID</th>
