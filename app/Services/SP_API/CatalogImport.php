@@ -34,7 +34,7 @@ class CatalogImport
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password); // Log::warning($datas[0]->asin);
         // exit;
-        $datas = Asin_Master::limit(100)->offset(100)->get();
+        $datas = Asin_Master::limit(100)->offset(1400)->get();
 
         // dd($datas);
 
@@ -88,7 +88,7 @@ class CatalogImport
                 if (isset(($result->payload->AttributeSets[0]))) {
 
                     $result = (array)($result->payload->AttributeSets[0]);
-                    $productcatalogs = R::dispense('amazonusdatanew');
+                    $productcatalogs = R::dispense('bookswagon');
 
                     $productcatalogs->asin = $asin;
                     $productcatalogs->source = $country_code;
@@ -98,7 +98,12 @@ class CatalogImport
                         if (is_object($data)) {
 
                             $productcatalogs->{$key} = json_encode($data);
-                        } else {
+                        } 
+                        elseif(is_string($data)) 
+                        {
+                            $productcatalogs->{$key} = ($data);
+                        }
+                        else{
                             $productcatalogs->{$key} = json_encode($data);
                             // $value [][$key] = ($data);
                         }
