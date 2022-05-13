@@ -24,21 +24,28 @@ class BombinoPacketActivitiesController extends Controller
 
         if (!file_exists(storage_path('app/' . $file_path))) {
 
-            $pd_final_array [] =[
+            $pd_final_array[] = [
 
-                '0'=> NULL,
+                '0' => NULL,
             ];
             return view('b2cship.bombinoActivities.index', compact(['pd_final_array']));
         }
 
         $path = storage_path('app/' . $file_path);
         $files = (scandir($path));
+        $new_files_list = [];
+        $ignored = array('.', '..');
         foreach ($files as $key => $file) {
-            if ($key > 1) {
-                $content = Storage::get($file_path . '/' . $file);
-                $content = json_decode($content);
-                $final_array = array_merge((array)$content, $final_array);
+            if (!in_array($file, $ignored)) {
+                $new_files_list[$file] =  date("y-m-d H:i:s", filemtime($path . '/' . $file));
             }
+        }
+
+        arsort($new_files_list);
+        foreach ($new_files_list as $key => $files) {
+            $content = Storage::get($file_path . '/' . $key);
+            $content = json_decode($content);
+            $final_array = array_merge($final_array, (array)$content);
         }
         $packet_detials = DB::connection('mssql')->select("SELECT DISTINCT
         AwbNo, PODLocation, StatusDetails,FPCode,CreatedDate 
