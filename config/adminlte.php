@@ -626,7 +626,7 @@ return [
                     'submenu' => [
                         [
                             'text' => 'Packet Activities',
-                            'url' => 'bombion/packet-activities/1',
+                            'url' => 'bombion/packet-activities',
                             'can' => ['Admin', 'B2CShip'],
                             'icon' => 'far fa-fw fa-file',
 
