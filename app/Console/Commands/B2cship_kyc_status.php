@@ -3,6 +3,11 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Carbon\Carbon;
+use League\Csv\Reader;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class B2cship_kyc_status extends Command
 {
@@ -37,7 +42,7 @@ class B2cship_kyc_status extends Command
      */
     public function handle()
     {
-        Log::alert("command executed at 1 am");
+        // Log::alert("command executed at 1 am");
         $startTime = Carbon::today();
         $endTime = Carbon::now();
 
