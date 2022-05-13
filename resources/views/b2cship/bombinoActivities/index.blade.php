@@ -4,6 +4,11 @@
 @section('content_header')
 <div class="row">
     <h1 class="m-0 text-dark"> Bombino Packet Activities</h1>
+    <h2 class="mb-4 text-right col">
+        <a href="update-packet-details">
+            <x-adminlte-button label="Update Packet Details" theme="primary" icon="fas fa-file-import" class="btn-sm" />
+        </a>
+    </h2>
 </div>
 @stop
 
