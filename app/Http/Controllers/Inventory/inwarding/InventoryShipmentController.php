@@ -5,7 +5,7 @@ namespace App\Http\Controllers\inventory\inwarding;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\Inventory\Source;
-use App\Models\inventory\Shipment;
+use App\Models\Inventory\Shipment;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
