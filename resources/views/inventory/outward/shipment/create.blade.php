@@ -45,15 +45,14 @@
 </style>
 
 @stop
-
 @section('content_header')
-<h1 class="m-0 text-dark">Shipment</h1>
+<h1 class="m-0 text-dark">Outward Shipment</h1>
 @stop
 @section('content')
 <!-- 
 <div class="row">
     <div class="col">
-        <a href="{{ route('shipments.index') }}" class="btn btn-primary">
+        <a href="{{ route('outwardings.index') }}" class="btn btn-primary">
             <i class="fas fa-long-arrow-alt-left btn-sm"></i> Back
         </a>
     </div>
@@ -82,11 +81,9 @@
     </div>
     <div class="col-2">
         <div class="form-group">
-            <x-adminlte-select name="source" label="Select Source:" id="source">
-                <option>Select source</option>
-                @foreach ($source_lists as $source_list)
-                <option value="{{ $source_list->id }}">{{$source_list->name }}</option>
-                @endforeach
+            <x-adminlte-select name="Destination" label="Select Destination:" id="Destination">
+                <option>Select Destination</option>
+               
             </x-adminlte-select>
 
         </div>
@@ -128,6 +125,7 @@
 </table>
 @stop
 
+
 @section('js')
 
 <script type="text/javascript">
@@ -135,79 +133,6 @@
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
-    });
-
-    $(".create_shipmtn_btn").on("click", function() {
-        let self = $(this);
-        let table = $("#report_table tbody tr");
-        //let data = {};
-        let data = new FormData();
-
-        table.each(function(index, elm) {
-
-            let cnt = 0;
-            let td = $(this).find('td');
-            //  console.log(td);
-
-            data.append('asin[]', td[0].innerText);
-            data.append('name[]', td[1].innerText);
-            data.append('quantity[]', td[2].children[0].value);
-            data.append('price[]', td[3].children[0].value);
-
-        });
-
-        let source = $('#source').val();
-        data.append('source', source);
-
-
-        $.ajax({
-            method: 'POST',
-            url: '/shipment/storeshipment',
-            data: data,
-            processData: false,
-            contentType: false,
-            response: 'json',
-            success: function(response) {
-
-                console.log(response);
-                //alert('success');
-                // location.reload()
-
-            },
-            error: function(response) {
-                console.log(response);
-            }
-
-
-        });
-
-    });
- 
-    function getBack(){
-        // window.location.assign('/inventory/shipments')
-        window.location.href = '/inventory/shipments'
-    
-    }
-
-
-
-
-    $(document).ready(function() {
-
-        $("#create_shipmtn_btn").submit(function(e) {
-
-            //stop submitting the form to see the disabled button effect
-            e.preventDefault();
-
-            //disable the submit button
-            $("#create_shipmtn_btn").attr("disabled", true);
-
-            //disable a normal button
-            $("#create_shipmtn_btn").attr("disabled", true);
-
-            return true;
-
-        });
     });
 
     autocomplete(document.getElementById("upload_asin"));
@@ -242,7 +167,7 @@
 
             $.ajax({
                 method: 'GET',
-                url: '/shipment/autocomplete',
+                url: 'shipment/autocomplete',
                 data: {
                     'asin': val
                 },
@@ -342,40 +267,5 @@
         });
     }
 
-
-
-    function getData(asin) {
-
-        $.ajax({
-            method: 'GET',
-            url: '/shipment/select/view',
-            data: {
-                'asin': asin
-            },
-            success: function(arr) {
-                // console.log(arr);
-
-                let html = "<tr class='table_row'>";
-                html += "<td name='asin[]'>" + arr.asin1 + "</td>";
-                html += "<td name='name[]'>" + arr.item_name + "</td>";
-                html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
-                html += '<td> <input type="text" value="1" name="price[]" id="price"> </td>'
-                html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
-                html += "</tr>";
-
-                $("#report_table").append(html);
-            },
-            error: function(response) {
-                // console.log(response);
-            }
-        });
-
-
-    }
-
-    $('#report_table').on('click', ".remove1", function() {
-
-        $(this).closest("tr").remove();
-    });
 </script>
 @stop

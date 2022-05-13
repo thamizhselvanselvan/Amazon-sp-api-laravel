@@ -8,6 +8,7 @@ use App\Models\Inventory\Source;
 use App\Models\Inventory\Shipment;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Inventory\Inventory;
 use Yajra\DataTables\Facades\DataTables;
 
 class InventoryShipmentController extends Controller
@@ -16,13 +17,14 @@ class InventoryShipmentController extends Controller
     {
         $this->middleware('auth');
     }
+    
     public function index(Request $request)
     {
         if ($request->ajax()) {
 
-            $data = Shipment::select("ship_id","source_id")->distinct()->with(['sources']);
+            $data = Shipment::select("ship_id", "source_id")->distinct()->with(['sources']);
 
-          
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('source_name', function ($data) {
@@ -69,34 +71,34 @@ class InventoryShipmentController extends Controller
 
         return redirect()->route('shipments.index')->with('success', 'Shipment ' . $request->Ship_id . ' has been created successfully');
     }
-    public function edit($id)
-    {
+    // public function edit($id)
+    // {
 
-        $name = Shipment::where('id', $id)->first();
+    //     $name = Shipment::where('id', $id)->first();
 
-        return view('inventory.inward.shipment.edit', compact('name'));
-    }
+    //     return view('inventory.inward.shipment.edit', compact('name'));
+    // }
 
 
-    public function update(Request $request, $id)
-    {
+    // public function update(Request $request, $id)
+    // {
 
-        $validated = $request->validate([
-            'ship_id' => 'required|min:2|max:100',
-            'asin' => 'required|min:2|max:100',
-        ]);
+    //     $validated = $request->validate([
+    //         'ship_id' => 'required|min:2|max:100',
+    //         'asin' => 'required|min:2|max:100',
+    //     ]);
 
-        Shipment::where('id', $id)->update($validated);
+    //     Shipment::where('id', $id)->update($validated);
 
-        return redirect()->route('shipments.index')->with('success', 'Shipment has been updated successfully');
-    }
+    //     return redirect()->route('shipments.index')->with('success', 'Shipment has been updated successfully');
+    // }
 
-    public function destroy($id)
-    {
-        Shipment::where('id', $id)->delete();
+    // public function destroy($id)
+    // {
+    //     Shipment::where('id', $id)->delete();
 
-        return redirect()->route('shipments.index')->with('success', 'Shipment has been Deleted successfully');
-    }
+    //     return redirect()->route('shipments.index')->with('success', 'Shipment has been Deleted successfully');
+    // }
     public function createView(Request $request)
     {
 
@@ -126,12 +128,13 @@ class InventoryShipmentController extends Controller
 
     public function storeshipment(Request $request)
     {
- 
-        $ship_id = random_int(1000, 9999);
-  
-        $create = [];
 
-       foreach($request->asin as $key => $asin) {
+        $ship_id = random_int(1000, 9999);
+
+        $create = [];
+        $createin = [];
+
+        foreach ($request->asin as $key => $asin) {
 
             $create[] = [
                 "Ship_id" => $ship_id,
@@ -143,18 +146,21 @@ class InventoryShipmentController extends Controller
                 "created_at" => now(),
                 "updated_at" => now()
             ];
-            
-       }
-
-
-        // $source_exists = Source::where('id', $request->source_id)->exists();
-
-        // if (!$source_exists) {
-        //     return redirect()->route('shipments.index')->with('error', 'Selected Source is invalid');
-        // }
+        }
 
         Shipment::insert($create);
-        
+
+        foreach ($request->asin as $key => $asin) {
+
+            $createin[] = [
+                "asin" => $asin,
+                "item_name" => $request->name[$key],
+                "quantity" => $request->quantity[$key],
+                "created_at" => now(),
+                "updated_at" => now()
+            ];
+        }
+        Inventory::insert($createin);
         return response()->json(['success' => 'Shipment has Created successfully']);
     }
 }
