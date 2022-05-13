@@ -1,5 +1,5 @@
 @extends('adminlte::page')
-@section('title', 'Import')
+@section('title', 'Status Details')
 
 @section('content_header')
 <h1 class="m-0 text-dark"> B2CShip Tracking Status Details</h1>
@@ -27,6 +27,7 @@
             <th>Our Event Code</th>
             <th>Event Description</th>
             <th>Tracking API Event</th>
+            <th>Micro Status</th>
         </tr>
     </thead>
     <tbody>
@@ -43,8 +44,8 @@
         let data_table = $('.yajra-datatable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "/B2cship/tracking_status/details",
-            pageLength: 200,
+            ajax: "/b2cship/tracking_status/details",
+            pageLength: 500,
             lengthMenu: [50, 100, 200, 500],
             columns: [
                 { data: 'TrackingMsg' },
@@ -52,7 +53,8 @@
                 { data: 'TrackingMasterEventDescription' },
                 { data: 'OurEventCode' },
                 { data: 'EventDescription' },
-                { data: 'TrackingAPIEvent' }
+                { data: 'TrackingAPIEvent' },
+                { data: 'MicroStatus' }
             ],
         });
     });

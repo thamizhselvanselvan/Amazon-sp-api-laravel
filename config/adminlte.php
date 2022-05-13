@@ -87,7 +87,7 @@ return [
     'layout_boxed' => null,
     'layout_fixed_sidebar' => null,
     'layout_fixed_navbar' => null,
-    'layout_fixed_footer' => null,
+    'layout_fixed_footer' => false,
     'layout_dark_mode' => null,
 
     /*
@@ -249,69 +249,76 @@ return [
             'url'  => 'admin/blog',
             'can'  => 'manage-blog',
         ],
+        [
+            'text'    => 'Master',
+            'can' =>  ['Admin'],
+            'submenu' => [
+                [
+                    'text' => 'Company Master',
+                    'url' => 'company',
+                    'can' => ['Admin', 'Account'],
+                    'icon' => 'far fa-fw fa-file',
+                ],
+
+                [
+                    'text' => 'Region Master ',
+                    'url'  => 'admin/mws_regions',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin']
+                ],
+                [
+                    'text' => 'Credentials Master',
+                    'url'  => 'admin/credentials',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin']
+                ],
+                [
+                    'text' => 'Currency Master',
+                    'url'  => 'admin/currencys',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin']
+                ],
+                [
+                    'text' => 'Asin Master',
+                    'url'  => 'asin-master',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin']
+                ],
+                [
+                    'text' => 'Roles',
+                    'url' => 'admin/rolespermissions',
+                    'icon' => 'fas fa-user',
+                    'can' =>  ['Admin']
+                ],
+                [
+                    'text' => 'User Master',
+                    'icon' => 'far fa-fw fa-user',
+                    'url'  => 'admin/user_list',
+                    'can'  => ['Admin'],
+                    // 'submenu' => [
+                    //     [
+                    //         'text' => 'Admin Management',
+                    //         'url'  => 'admin/user_list',
+                    //         'icon' => 'far fa-fw fa-user',
+                    //         'can' =>  ['Admin'],
+                    //     ],
+                    //     [
+                    //         'text' => 'Catalog Management',
+                    //         'url'  => 'admin/catalog_user',
+                    //         'icon' => 'far fa-fw fa-user',
+                    //         'can' =>  ['Admin']
+                    //     ]
+                    // ],
+                ],
+
+            ],
+        ],
 
         [
             'text'    => 'Catalog',
             'can' =>   ['Admin', 'Catalog Manager'],
             'submenu' => [
-                [
-                    'text'    => 'Master',
-                    'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin'],
-                    'submenu' => [
 
-                        [
-                            'text' => 'Region Master ',
-                            'url'  => 'admin/mws_regions',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
-                        ],
-                        [
-                            'text' => 'Credentials Master',
-                            'url'  => 'admin/credentials',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
-                        ],
-                        [
-                            'text' => 'Currency Master',
-                            'url'  => 'admin/currencys',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
-                        ],
-                        [
-                            'text' => 'Asin Master',
-                            'url'  => 'asin-master',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
-                        ],
-                        [
-                            'text' => 'Roles',
-                            'url' => 'admin/rolespermissions',
-                            'icon' => 'fas fa-user',
-                            'can' =>  ['Admin']
-                        ],
-                        [
-                            'text' => 'User Master',
-                            'icon' => 'far fa-fw fa-user',
-                            'can'  => ['Admin'],
-                            'submenu' => [
-                                [
-                                    'text' => 'Admin Management',
-                                    'url'  => 'admin/user_list',
-                                    'icon' => 'far fa-fw fa-user',
-                                    'can' =>  ['Admin'],
-                                ],
-                                [
-                                    'text' => 'Catalog Management',
-                                    'url'  => 'admin/catalog_user',
-                                    'icon' => 'far fa-fw fa-user',
-                                    'can' =>  ['Admin']
-                                ]
-                            ],
-                        ],
-
-                    ],
-                ],
                 [
                     'text' => 'Universal Textiles',
                     'url'  => 'textiles',
@@ -351,191 +358,186 @@ return [
 
         [
             'text'    => 'Inventory',
-            'can' =>   ['Admin'],
+            'can' =>   ['Admin', 'Inventory'],
             'submenu' => [
-                [
 
+                [
                     'text' => 'Master',
-                    'icon' => 'fas fa-user',
-                    'can' =>  ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin', 'Inventory'],
                     'submenu' => [
 
                         [
-                            'text' => 'Roles',
-                            'url'  => 'Inventory/Roles/Index',
-                            'icon' => 'fas fa-user',
-                            'can' =>  ['Admin']
-                         
-                        ],
-
-                        [
-                            'text' => 'Users',
-                            'url'  => 'Inventory/Master/Users/Index',
+                            'text' => 'Warehouse',
+                            'url'  => 'inventory/warehouses',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin', 'Inventory'],
+                            // 'submenu' => [
 
-                        ],
-                        [
-                            'text' => 'Racks',
-                            'url'  => 'Inventory/Master/Racks/Index',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            //     [
+
+                            //         'text' => 'Manage',
+                            //         'url'  => 'inventory/warehouses',
+                            //         'icon' => 'far fa-fw fa-file',
+                            //         'can' =>  ['Admin', 'Inventory']
+                            //     ],
+                            // ],
 
                         ],
                         [
-                            'text' => 'Company',
-                            'url'  => 'Inventory/master/Index',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
 
-                        ],
-                        [
-                            'text' => 'Source',
-                            'url'  => 'Inventory/master/Index',
+                            'text' => 'Rack Master',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin'],
+                            'can' =>  ['Admin', 'Inventory'],
                             'submenu' => [
                                 [
-                                      'text' => 'Amazon',
-                                      'url'  => 'Inventory/master/Index',
-                                      'icon' => 'far fa-fw fa-file',
-                                      'can' =>  ['Admin']
-                                  ],
-                                  [
-                                      'text' => 'Maxcon',
-                                      'url'  => 'Inventory/master/Index',
-                                      'icon' => 'far fa-fw fa-file',
-                                      'can' =>  ['Admin']
-                                  ],
-                                  [
-                                      'text' => 'CStuart',
-                                      'url'  => 'Inventory/master/Index',
-                                      'icon' => 'far fa-fw fa-file',
-                                      'can' =>  ['Admin']
-                                  ],
-  
-                          ],
-
-                        ],
-                        [
-                            'text' => 'Destination',
-                            'url'  => 'Inventory/master/Index',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin'],
-                            'submenu'=> [
-                                [
-                                    'text' => 'Amazon Order',
-                                    'url'  => 'Inventory/master/Index',
+                                    'text' => 'Racks',
+                                    'url'  => 'inventory/racks',
                                     'icon' => 'far fa-fw fa-file',
-                                    'can' =>  ['Admin']
+                                    'can' =>  ['Admin', 'Inventory']
                                 ],
-                                
-                                
-                            ],
+                                [
+                                    'text' => 'Shelves',
+                                    'url'  => 'inventory/shelves',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' =>  ['Admin', 'Inventory']
 
-                        ],
-                    ],
-                ],
-                [
-                    'text' => 'Stock Master',
-                    'icon' => 'fas fa-user',
-                    'can' =>  ['Admin'],
-                    'submenu' => [
-                        [
-                            'text' => 'Inwarding',
-                            'url'  => 'Inventory/Stock/Index',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
-                        ],
-                        [
-                            'text' => 'Outwarding',
-                            'url'  => 'Inventory/Stock/Index',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
-                        ],
-                        [
-                            'text' => 'Disposing',
-                            'url'  => 'Inventory/Stock/Index',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
-                        ],
-                        [
-                            'text' => 'Adjustment',
-                            'url'  => 'Inventory/Stock/Index',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
-                        ],
-                    ],
-                ],
-                [
-                    'text' => 'Reporting',
-                    'icon' => 'fas fa-user',
-                    'can' =>  ['Admin'],
-                    'submenu' => [
-                        [
-                            'text' => 'Daily/Weekly/Monthly',
-                            'url'  => 'Inventory/Reporting/Index',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
-                        ],
-                        [
-                            'text' => 'Inwarding V/S Outwarding',
-                            'url'  => 'Inventory/Reporting/Index',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                                ],
+                                [
+                                    'text' => 'Bins',
+                                    'url'  => 'inventory/bins',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' =>  ['Admin', 'Inventory']
+
+                                ],
+
+                            ],
                         ],
                         [
                             'text' => 'Dispose',
-                            'url'  => 'Inventory/Reporting/Index',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin'],
+                            'submenu' => [
+
+                                [
+                                    'text' => ' Dispose reason',
+                                    'url'  => 'inventory/disposes',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' =>  ['Admin'],
+                                ],
+                            ],
+                        ],
+
+                    ],
+                ],
+
+
+
+                [
+                    'text' => 'Inward ',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin', 'Inventory'],
+                    'submenu' => [
+                        [
+                            'text' => 'Source',
+                            'url'  => 'inventory/sources',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin', 'Inventory'],
                         ],
                         [
-                            'text' => 'Aging Report',
-                            'url'  => 'Inventory/Reporting/Index',
+                            'text' => 'Shipment',
+                            'url'  => 'inventory/shipments',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin', 'Inventory']
                         ],
+                        [
+                            'text' => 'Inwarding',
+                            'url'  => 'inventory/features',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin', 'Inventory']
+                        ],
+
+                    ],
+                ],
+
+                [
+                    'text' => 'Outward ',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin', 'Inventory'],
+                    'submenu' => [
+                        [
+                            'text' => 'Destination',
+                            'url'  => 'inventory/destinations',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin', 'Inventory'],
+
+                        ],
+                        [
+                            'text' => 'Shipment',
+                            'url'  => 'inventory/features',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin', 'Inventory']
+                        ],
+                        [
+                            'text' => 'Outwarding',
+                            'url'  => 'inventory/features',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin', 'Inventory']
+                        ],
+
                     ],
                 ],
                 [
-                    'text' => 'Features',
-                    'icon' => 'fas fa-user',
-                    'can' =>  ['Admin'],
+                    'text' => 'Reports',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin', 'Inventory'],
                     'submenu' => [
                         [
-                            'text' => 'Excel Import/Export',
-                            'url'  => 'Inventory/Features/Index',
+                            'text' => 'Daily',
+                            'url'  => 'inventory/features',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin', 'Inventory']
                         ],
                         [
-                            'text' => 'Email',
-                            'url'  => 'Inventory/Features/Index',
+                            'text' => 'Weekly',
+                            'url'  => 'inventory/features',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin', 'Inventory']
+                        ],
+                        [
+                            'text' => 'Monthly',
+                            'url'  => 'inventory/features',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin', 'Inventory']
                         ],
                     ],
                 ],
                 [
                     'text' => 'System',
-                    'icon' => 'fas fa-user',
-                    'can' =>  ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin', 'Inventory'],
                     'submenu' => [
                         [
-                            'text' => 'Global',
-                            'url'  => 'Inventory/System/Index',
+                            'text' => 'Option',
+                            'url'  => 'inventory/features',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin', 'Inventory']
                         ],
                         [
-                            'text' => 'System',
-                            'url'  => 'Inventory/System/Index',
+                            'text' => 'Email',
+                            'url'  => 'inventory/features',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin', 'Inventory']
+                        ],
+                        [
+                            'text' => 'Config',
+                            'url'  => 'inventory/features',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin', 'Inventory']
                         ],
                     ],
                 ],
+
             ],
         ],
         [
@@ -571,49 +573,89 @@ return [
 
         [
             'text' => 'B2C Ship',
-            'can' =>  ['Admin'],
+            'can' =>  ['Admin', 'B2CShip'],
             'submenu' => [
                 [
-                    'text' => 'KYC',
-                    'url' => 'B2cship/kyc',
-                    'can' => ['Admin'],
-                    'icon' => 'far fa-fw fa-file',
+                    'text' => 'Details',
+                    'can' => ['Admin', 'B2CShip'],
+                    'submenu' => [
+                        [
+                            'text' => 'Ship Tracking Status',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' => ['Admin', 'B2CShip'],
+                            'url' => 'b2cship/tracking_status/details'
+                        ],
+                        [
+                            'text' => 'Micro Status Missing',
+                            'url' => 'b2cship/micro_status_missing_report',
+                            'can' => ['Admin', 'B2CShip'],
+                            'icon' => 'far fa-fw fa-file',
+                        ]
+                    ]
 
                 ],
                 [
-                    'text' => 'Status Details',
-                    'icon' => 'far fa-fw fa-file',
-                    'can' => ['Admin'],
-                    'url' => 'B2cship/tracking_status/details'
+                    'text' => 'Report',
+                    'can' => ['Admin', 'B2CShip'],
+                    'submenu' => [
+                        [
+                            'text' => 'KYC Status',
+                            'url' => 'b2cship/kyc',
+                            'can' => ['Admin', 'B2CShip'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ],
+
+                        [
+                            'text' => 'Booking Status',
+                            'url' => 'b2cship/booking',
+                            'can' => ['Admin', 'B2CShip'],
+                            'icon' => 'far fa-fw fa-file',
+                        ],
+                        [
+                            'text' => 'Micro Status',
+                            'url' => 'b2cship/micro_status_report',
+                            'can' => ['Admin', 'B2CShip'],
+                            'icon' => 'far fa-fw fa-file',
+                        ],
+                    ]
                 ],
                 [
-                    'text' => 'Booking Status',
-                    'url' => 'B2cship/booking',
-                    'can' => ['Admin'],
-                    'icon' => 'far fa-fw fa-file',
-                ]
+                    'text' => 'Bombino',
+                    'can' => ['Admin', 'B2CShip'],
+                    'submenu' => [
+                        [
+                            'text' => 'Packet Activities',
+                            'url' => 'bombion/packet-activities',
+                            'can' => ['Admin', 'B2CShip'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ]
+                    ]
+                ],
             ],
         ],
         [
-            'text' => 'BOE',
-            'can' =>  ['Admin','Account'],
+            'text' => 'BOE Manage',
+            'can' =>  ['Admin', 'Account'],
             'submenu' => [
                 [
-                    'text' => 'BOE',
+                    'text' => 'Manage',
                     'url' => 'BOE/index',
-                    'can' => ['Admin','Account'],
+                    'can' => ['Admin', 'Account'],
                     'icon' => 'far fa-fw fa-file',
 
                 ],
-                // 
-                //     'text' => 'View Uploded PDF',
-                //     'url' => 'BOE/uplod',
-                //     'can' => ['Admin'],
-                //     'icon' => 'far fa-fw fa-file',
+                [
+                    'text' => 'Report',
+                    'url' => 'BOE/report',
+                    'can' => ['Admin', 'Account'],
+                    'icon' => 'far fa-fw fa-file',
 
-                // ],
+                ],
             ],
         ],
+
         // [
         //     'text' => 'Download Files',
         //     'url'  => 'file_downloads',

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Database\Seeders\Inventory\INUserSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,9 +16,10 @@ class DatabaseSeeder extends Seeder
     {
         
         $this->call([
-            UserSeeder::class,
-            Catalog_Manager::class,
-            Boe_Account::class,
+             UserSeeder::class,
+             Catalog_Manager::class,
+             Boe_Account::class,
+             INUserSeeder::class,
         ]);
     }
 }

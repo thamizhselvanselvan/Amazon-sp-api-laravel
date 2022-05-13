@@ -7,5 +7,7 @@ use Illuminate\Http\Request;
 
 class InventoryInwardingController extends Controller
 {
-    //
+  function index(){
+      return view('inventory.stock.inwarding.index');
+  }
 }

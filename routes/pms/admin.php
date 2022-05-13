@@ -14,6 +14,8 @@ Route::get('admin/password_reset_view/{id}', 'Admin\AdminManagementController@pa
 Route::post('admin/password_reset_save/{id}', 'Admin\AdminManagementController@password_reset_save')->name('admin.password_reset_save');
 Route::get('admin/user/create', 'Admin\AdminManagementController@create')->name('add_user.create');
 Route::post('admin/save_user', 'Admin\AdminManagementController@save_user')->name('admin_save_user');
+Route::get('admin/{id}/edit','Admin\AdminManagementController@edit')->name('admin.edit');
+Route::post('admin/update/{id}','Admin\AdminManagementController@update')->name('admin.update_user');
 
 Route::get('admin/catalog_user', 'Admin\CatalogManagementController@index')->name('admin.catalog_user');
 Route::get('admin/catalog/{id}/password_reset', 'Admin\CatalogManagementController@password_reset_view');

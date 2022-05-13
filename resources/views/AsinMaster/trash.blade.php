@@ -125,7 +125,8 @@
         });
         $(document).on('click', ".restore", function(e) {
                 e.preventDefault();
-                let bool = confirm('Are you sure you wanna delete this asin?');
+                
+                let bool = confirm('Are you sure you want to restore  this asin?');
 
                 if(!bool) {
                     return false;
@@ -157,16 +158,16 @@
                     },
                     response: 'json',
                     success: function (response) {
-                        alert('Restore success');
-                        // self.prop('disable', false);
-                        // // loader.addClass('d-none');
+                        // alert('Restore success');
+                        self.prop('disable', false);
+                        // loader.addClass('d-none');
 
-                        // yajra_table.ajax.reload();
+                        yajra_table.ajax.reload();
 
-                        // if(response.success) {
-                        //     alert_main.removeClass('d-none alert-danger').addClass('alert-success');
-                        //     alert_message.html(response.success);
-                        // }
+                        if(response.success) {
+                            alert_main.removeClass('d-none alert-danger').addClass('alert-success');
+                            alert_message.html(response.success);
+                        }
 
                     }, 
                     error: function (response) {

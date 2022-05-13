@@ -27,19 +27,28 @@
                 @endif
             </div>
 
-            <h2 class="mb-4">
+            <div class="alert_display">
+                @if ($message = Session::get('error'))
+                    <div class="alert alert-danger alert-block">
+                        <button type="button" class="close" data-dismiss="alert">×</button>
+                        <strong>{{ $message }}</strong>
+                    </div>
+                @endif
+            </div>
+
+            <h2 class="mb-2">
                 <a href="{{ route('add_user.create') }}">
                     <x-adminlte-button label="Add User" theme="primary" icon="fas fa-plus" />
                 </a>
             </h2>
 
-            <table class="table table-bordered yajra-datatable table-striped">
+            <table class="table table-bordered yajra-datatable table-striped text-center" style="line-height:12px">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Name</th>
                         <th>Email</th>
-                        <th>Permission</th>
+                        <th>Role</th>
                         <th>Action</th>
                     </tr>
                 </thead>

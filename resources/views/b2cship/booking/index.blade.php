@@ -2,7 +2,7 @@
 @section('title', 'Import')
 
 @section('content_header')
-<h1 class="m-0 text-dark"> Booking Status</h1>
+<h1 class="m-0 text-dark"> Booking Report</h1>
 @stop
 
 @section('content')
@@ -23,7 +23,7 @@
 </div>
 
 <div class="container-fluid">
-<h3 style="font-weight: bold;">Today's</h3>
+<h3 style="font-weight: bold;">Today</h3>
     <div class="row">
            <div class="col-2 ">
              <div class="info-box bg-info text-center">
@@ -79,7 +79,7 @@
             </div>
         </div>
   </div>
- <h3 style="font-weight: bold;">Yesterday's</h3>
+ <h3 style="font-weight: bold;">Yesterday</h3>
     <div class="row">
            <div class="col-2 ">
              <div class="info-box bg-info text-center">
@@ -135,7 +135,7 @@
         </div>
   </div>
 
-<h3 style="font-weight: bold;" >Last 7 Day's</h3>
+<h3 style="font-weight: bold;" >Last 7 Days</h3>
   <div class="row">
            <div class="col-2 ">
              <div class="info-box bg-info text-center">
@@ -190,7 +190,7 @@
             </div>
         </div>
   </div>
-   <h3 style="font-weight: bold;">Last 30 Day's</h3>
+   <h3 style="font-weight: bold;">Last 30 Days</h3>
      <div class="row">
            <div class="col-2 ">
              <div class="info-box bg-info text-center">

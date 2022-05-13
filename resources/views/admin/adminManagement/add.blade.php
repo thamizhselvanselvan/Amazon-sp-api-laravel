@@ -76,12 +76,25 @@
                             value="{{ old('password_confirmation') }}" />
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-6">
 
-                <x-adminlte-select name="Role" id="status" label="Role">
-                    @foreach ($roles as $role)
-                        <option value="{{ $role->name }}"> {{ $role->name }}</option>
-                    @endforeach
-                </x-adminlte-select>
+                        <x-adminlte-select name="Role[]" id="status" label="Role" multiple>
+                            @foreach ($roles as $role)
+                                <option value="{{ $role->name }}"> {{ $role->name }}</option>
+                            @endforeach
+                        </x-adminlte-select>
+                    </div>
+                    <div class="col-6">
+
+                        <x-adminlte-select name="company" id="company" label="Company">
+                            @foreach ($companys as $company)
+                                <option value="{{ $company->id }}"> {{ $company->company_name }}</option>
+                            @endforeach
+                        </x-adminlte-select>
+                    </div>
+
+                </div>
 
 
 

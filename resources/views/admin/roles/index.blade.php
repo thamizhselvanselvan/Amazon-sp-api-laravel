@@ -9,40 +9,50 @@
 
 @section('content')
 
-<div class="row">
-    <div class="col">
-        
-        <table class="table table-bordered yajra-datatable table-striped">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Role Name</th>
-                    <th>Permission</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+    <div class="row">
+        <div class="col">
+
+            <table class="table table-bordered yajra-datatable table-striped">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Role Name</th>
+                        <th>Permission</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
 @stop
 
 
 @section('js')
     <script type="text/javascript">
-        $(function () {
+        $(function() {
 
             let yajra_table = $('.yajra-datatable').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    ajax: "{{ url('admin/rolespermissions') }}",
-                    columns: [
-                        {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-                        {data: 'name', name: 'name'},
-                        {data: 'permissions', name: 'permissions'}
-                    ]
+                processing: true,
+                serverSide: true,
+                ajax: "{{ url('admin/rolespermissions') }}",
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'name',
+                        name: 'name'
+                    },
+                    {
+                        data: 'permissions',
+                        name: 'permissions'
+                    }
+                ]
             });
-            
+
         });
     </script>
 @stop

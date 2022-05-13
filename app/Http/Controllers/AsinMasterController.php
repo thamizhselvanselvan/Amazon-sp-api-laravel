@@ -70,7 +70,7 @@ class AsinMasterController extends Controller
     {
        Asin_master::where('id', $request->id)->delete();
 
-    //    return redirect()->intended('/asin-master')->with('success', 'Asin has been pushed to Bin successfully');
+   return redirect()->intended('/asin-master')->with('success', 'Asin has been pushed to Bin successfully');
     }
 
 
