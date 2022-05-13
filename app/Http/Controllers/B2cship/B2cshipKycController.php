@@ -31,7 +31,7 @@ class B2cshipKycController extends Controller
             // echo $json;
         
              $jsonFile=json_decode($json);
-            
+             
              $todayTotalBooking=(array)$jsonFile[0];
              $yesterdayTotalBooking=(array)$jsonFile[1];
              $Last7DaysTotalBooking=(array)$jsonFile[2];
