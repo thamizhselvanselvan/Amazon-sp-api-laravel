@@ -46,24 +46,20 @@ class B2cship_kyc_status extends Command
         $startTime = Carbon::today();
         $endTime = Carbon::now();
 
-        $todayTotalBooking =  $this->kycDetails($startTime, $endTime);
-
         $startTime = Carbon::yesterday();
         $endTimeYesterday = $startTime->toDateString();
         $endTimeYesterday = $endTimeYesterday . ' 23:59:59';
         $yesterdayTotalBooking =  $this->kycDetails($startTime, $endTimeYesterday);
 
-
         $startTime = Carbon::today()->subDays(7);
         $Last7DaysTotalBooking =  $this->kycDetails($startTime, $endTime);
-
 
         $startTime = Carbon::today()->subDays(30);
         $Last30DaysTotalBooking =  $this->kycDetails($startTime, $endTime);
 
         // PUT DATA IN JSON FILE
         
-        $arr=array($todayTotalBooking,  $yesterdayTotalBooking, $Last7DaysTotalBooking, $Last30DaysTotalBooking);
+        $arr=array($yesterdayTotalBooking, $Last7DaysTotalBooking, $Last30DaysTotalBooking);
         $result['b2cship_kyc']=json_encode($arr);
 
         Storage::disk('local')->put('B2cship_kyc/B2cship_kyc.json', $result);
