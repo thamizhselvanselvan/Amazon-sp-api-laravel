@@ -14,31 +14,98 @@ class B2cshipKycController extends Controller
     public function index()
     {
 
+
+        $path = 'B2cship_kyc\B2cship_kyc.json';
+
+        if (!Storage::exists($path)) {
+            $b2cship_array = [
+
+                'totalBooking' => NULL,
+                'kycApproved' => NULL,
+                'kycPending' => NULL,
+                'kycRejected' => NULL
+            ];
+            $todayTotalBooking = $b2cship_array;
+            $yesterdayTotalBooking = $b2cship_array;
+            $Last7DaysTotalBooking = $b2cship_array;
+            $Last30DaysTotalBooking = $b2cship_array;
+
+            return view('b2cship.kyc.index', compact(['todayTotalBooking', 'yesterdayTotalBooking', 'Last7DaysTotalBooking', 'Last30DaysTotalBooking']));
+        }
+
         $startTime = Carbon::today();
         $endTime = Carbon::now();
+        $todayTotalBooking =  $this->kycDetails($startTime, $endTime);
 
-        // $todayTotalBooking =  $this->kycDetails($startTime, $endTime);
+        $file_path = Storage::get($path);
+        $jsonFile = json_decode($file_path);
 
-         $path='D:\laragon\www\amazon-sp-api-laravel\storage\app\B2cship_kyc\B2cship_kyc.json';
+        $yesterdayTotalBooking = (array)$jsonFile[0];
+        $Last7DaysTotalBooking = (array)$jsonFile[1];
+        $Last30DaysTotalBooking = (array)$jsonFile[2];
 
-        // if(!Storage::exists($path))
-        // {
-        //     return "file not found";
-        // }
 
-        // $path=Reader::createFromPath('D:\laragon\www\amazon-sp-api-laravel\storage\app\B2cship_kyc\B2cship_kyc.json','r');
-            $json=file_get_contents($path,true);
-            // echo $json;
-        
-             $jsonFile=json_decode($json);
-             
-             $todayTotalBooking=(array)$jsonFile[0];
-             $yesterdayTotalBooking=(array)$jsonFile[1];
-             $Last7DaysTotalBooking=(array)$jsonFile[2];
-             $Last30DaysTotalBooking=(array)$jsonFile[3];
-
-       
         return view('b2cship.kyc.index', compact(['todayTotalBooking', 'yesterdayTotalBooking', 'Last7DaysTotalBooking', 'Last30DaysTotalBooking']));
     }
 
+    public function kycDetails($start, $end)
+    {
+        $totalBookingArray = [];
+        $totalBookingCount = 0;
+        $totalkycApprovedCount = 0;
+        $totalkycRejectedCount = 0;
+        $totalkycPendingCount = 0;
+
+        $totalBookings = DB::connection('mssql')->select("SELECT AwbNo FROM Packet WHERE CreatedDate BETWEEN '$start' AND '$end'");
+
+        if (count($totalBookings)) {
+
+            foreach ($totalBookings as $totalBooking) {
+                foreach ($totalBooking as $totalBookingAWB) {
+                    $totalBookingArray[] = "'$totalBookingAWB'";
+                }
+            }
+            $awb = implode(',', $totalBookingArray);
+            $awb = ltrim($awb);
+
+            $kycStatus = DB::connection('mssql')->select("SELECT DISTINCT AwbNo, IsRejected FROM KYCStatus WHERE AwbNo IN ($awb) AND ModifiedDate BETWEEN '$start' AND '$end' ");
+
+            $kycApproved = [];
+            $kycApprovedOffset = 0;
+            $kycRejected = [];
+            $kycRejectedOffset = 0;
+
+            foreach ($kycStatus as $kyc) {
+                if ($kyc->IsRejected == '0') {
+                    $kycApproved[$kycApprovedOffset] = $kyc;
+                    $kycApprovedOffset++;
+                } else {
+
+                    $kycRejected[$kycRejectedOffset] = $kyc;
+                    $kycRejectedOffset++;
+                }
+            }
+
+            $totalBookingCount = count($totalBookingArray);
+            $totalkycApprovedCount = count($kycApproved);
+            $totalkycRejectedCount = count($kycRejected);
+            $totalkycPendingCount = $totalBookingCount - ($totalkycApprovedCount + $totalkycRejectedCount);
+            $totalkycPendingCount = $totalkycPendingCount < 0 ? 0 : $totalkycPendingCount;
+
+            $finalArray['totalBooking'] = $totalBookingCount;
+            $finalArray['kycApproved'] = $totalkycApprovedCount;
+            $finalArray['kycRejected'] = $totalkycRejectedCount;
+            $finalArray['kycPending'] = $totalkycPendingCount;
+
+            return ($finalArray);
+        } else {
+
+            $finalArray['totalBooking'] = $totalBookingCount;
+            $finalArray['kycApproved'] = $totalkycApprovedCount;
+            $finalArray['kycRejected'] = $totalkycRejectedCount;
+            $finalArray['kycPending'] = $totalkycPendingCount;
+
+            return ($finalArray);
+        }
+    }
 }

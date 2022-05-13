@@ -16,7 +16,7 @@ class B2cship_kyc_status extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:b2cship_kyc:status';
+    protected $signature = 'pms:b2cship-kyc-status';
 
     /**
      * The console command description.
