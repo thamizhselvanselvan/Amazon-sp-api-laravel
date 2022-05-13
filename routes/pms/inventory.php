@@ -35,16 +35,18 @@ Route::resource('inventory/disposes','Inventory\Master\InventoryDisposeControlle
 Route::resource('inventory/warehouses','Inventory\InventoryWarehouseController');
 Route::resource('inventory/features','Inventory\InventoryFeaturesController');
 Route::resource('inventory/inwardings','Inventory\Stock\InventoryInwardingController');
-Route::resource('inventory/shipments','Inventory\inwarding\InventoryShipmentController');
 
+Route::resource('inventory/shipments','Inventory\inwarding\InventoryShipmentController');
 Route::get('shipment/select/view', 'Inventory\inwarding\InventoryShipmentController@selectView');
 Route::get('shipment/autocomplete', 'Inventory\inwarding\InventoryShipmentController@autocomplete');
 Route::post('shipment/storeshipment', 'Inventory\inwarding\InventoryShipmentController@storeshipment');
-
 Route::get('shipment/select/region', 'Inventory\inwarding\InventoryShipmentController@selectregion');
 
 
- 
+Route::resource('inventory/outwardings','Inventory\outwarding\InventoryOutwardShipmentController');
+// Route::get('shipment/autocomplete', 'Inventory\inwarding\InventoryOutwardShipmentController@autocomplete');
+
+
 //  Route::get('inventory/master/racks/bin/index','Inventory\Master\Rack\InventoryBinController@view')->name('inventory.bin_index');;
 //  Route::get('inventory/master/racks/bin/add','Inventory\Master\Rack\InventoryBinController@add')->name('inventory.bin_add');
 //  Route::post('inventory/master/racks/bin/save_bin','Inventory\Master\Rack\InventoryBinController@save')->name('inventory.bin_save');
