@@ -93,6 +93,24 @@ class InventoryOutwardShipmentController extends Controller
 
         return response()->json(['success' => 'Shipment has Created successfully']);
     }
+    public function outwardingview(Request $request)
+    {
+
+        if ($request->ajax()) {
+
+            $data = Outshipment::query()->with(['destinations']);
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('destination_name', function ($data) {
+                    return ($data->destinations) ? $data->destinations->name : " NA";
+                })
+                ->rawColumns(['destination_name'])
+                ->make(true);
+        }
+
+        return view('inventory.outward.shipment.view');
+    }
 }
 
     

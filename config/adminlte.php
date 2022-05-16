@@ -452,7 +452,7 @@ return [
                         ],
                         [
                             'text' => 'Inwarding',
-                            'url'  => 'inventory/features',
+                            'url'  => 'shipment/inward/view',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory']
                         ],
@@ -480,7 +480,7 @@ return [
                         ],
                         [
                             'text' => 'Outwarding',
-                            'url'  => 'inventory/features',
+                            'url'  => 'shipment/outwarding/view',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory']
                         ],
