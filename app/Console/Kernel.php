@@ -19,7 +19,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('pms:textiles-import')->everyFourHours()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');;
         $schedule->command('pms:microstatus-report')->dailyAt('1:00')->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
         
-        $schedule->command('pms:b2cship_kyc:status')->dailyAt('1:00');
+        $schedule->command('pms:b2cship-kyc-status')->dailyAt('1:00')->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
     }
 
     /**
