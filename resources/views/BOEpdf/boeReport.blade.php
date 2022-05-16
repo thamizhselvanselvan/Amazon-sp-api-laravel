@@ -30,7 +30,7 @@
 
                     <div class = "info-box-content">
 
-                        <h3 style = "font-weight:bold; text-align-center;"> {{$company['products_count']}} </h3>
+                        <h3 style = "font-weight:bold; text-align:center;"> {{$company['products_count']}} </h3>
 
                         <h6 style = "text-align:center;"> {{$company['name']}} </h6>
 
@@ -58,9 +58,9 @@
 
                 <div class = "info-box-content">
 
-                    <h4 style = "font-weight:bold; text-align-center;"> {{$todayTotalBOE}}   </h4>
+                    <h4 style = "font-weight:bold; text-align:center;"> {{$todayTotalBOE}}   </h4>
 
-                    <h6 style = "text-align-center;">   Total BOE   </h6>
+                    <h6 style = "text-align:center;">   Total BOE   </h6>
 
                 </div>
 
@@ -76,9 +76,9 @@
 
                 <div class = "info-box-content">
 
-                    <h4 style = "font-weight:bold; text-align-center;"> {{$yesterdayTotalBOE}}  </h4>
+                    <h4 style = "font-weight:bold; text-align:center;"> {{$yesterdayTotalBOE}}  </h4>
 
-                    <h6 style = "text-align-center;">   Total BOE   </h6>
+                    <h6 style = "text-align:center;">   Total BOE   </h6>
 
                 </div>
 
@@ -94,9 +94,9 @@
 
                 <div class = "info-box-content">
 
-                    <h4 style = "font-weight:bold; text-align-center;"> {{$Last7daysBOE}}   </h4>
+                    <h4 style = "font-weight:bold; text-align:center;"> {{$Last7daysBOE}}   </h4>
 
-                    <h6 style = "text-align-center;">   Total BOE   </h6>
+                    <h6 style = "text-align:center;">   Total BOE   </h6>
 
                 </div>
 
@@ -112,9 +112,9 @@
                 
                 <div class = "info-box-content">
 
-                    <h4 style = "font-weight:bold; text-align-center;"> {{$Last30daysBOE}}  </h4>
+                    <h4 style = "font-weight:bold; text-align:center;"> {{$Last30daysBOE}}  </h4>
 
-                    <h6 style = "text-align-center;">   Total BOE   </h6>
+                    <h6 style = "text-align:center;">   Total BOE   </h6>
 
                 </div>
 
