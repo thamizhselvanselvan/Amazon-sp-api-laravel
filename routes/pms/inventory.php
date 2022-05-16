@@ -29,6 +29,8 @@ Route::get('inventory/bins/create/rack/{rack_id?}/shelve/{shelve_id?}','Inventor
 
 Route::resource('inventory/bins', 'Inventory\Master\Rack\InventoryBinController');
 Route::resource('inventory/sources', 'Inventory\Master\InventorySourceController');
+
+
 Route::resource('inventory/destinations','Inventory\Master\InventoryDestinationController');
 Route::resource('inventory/disposes','Inventory\Master\InventoryDisposeController');
 
@@ -41,10 +43,15 @@ Route::get('shipment/select/view', 'Inventory\inwarding\InventoryShipmentControl
 Route::get('shipment/autocomplete', 'Inventory\inwarding\InventoryShipmentController@autocomplete');
 Route::post('shipment/storeshipment', 'Inventory\inwarding\InventoryShipmentController@storeshipment');
 Route::get('shipment/select/region', 'Inventory\inwarding\InventoryShipmentController@selectregion');
+Route::get('shipment/inward/view', 'Inventory\inwarding\InventoryShipmentController@inwardingdata')->name('shipments.view');
 
 
-Route::resource('inventory/outwardings','Inventory\outwarding\InventoryOutwardShipmentController');
-// Route::get('shipment/autocomplete', 'Inventory\inwarding\InventoryOutwardShipmentController@autocomplete');
+ Route::resource('inventory/outwardings','Inventory\outwarding\InventoryOutwardShipmentController');
+ Route::get('shipment/autofinish', 'Inventory\outwarding\InventoryOutwardShipmentController@autofinish');
+ Route::post('shipment/storeoutshipment', 'Inventory\outwarding\InventoryOutwardShipmentController@storeoutshipment');
+ Route::get('shipment/select/View', 'Inventory\outwarding\InventoryOutwardShipmentController@selectview');
+ Route::get('shipment/outwarding/view', 'Inventory\outwarding\InventoryOutwardShipmentController@outwardingview')->name('outwarding.view');
+ 
 
 
 //  Route::get('inventory/master/racks/bin/index','Inventory\Master\Rack\InventoryBinController@view')->name('inventory.bin_index');;

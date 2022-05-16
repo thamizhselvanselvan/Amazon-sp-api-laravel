@@ -17,7 +17,7 @@ class InventoryShipmentController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     public function index(Request $request)
     {
         if ($request->ajax()) {
@@ -162,5 +162,23 @@ class InventoryShipmentController extends Controller
         }
         Inventory::insert($createin);
         return response()->json(['success' => 'Shipment has Created successfully']);
+    }
+
+    public function inwardingdata(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $data = Shipment::query()->with(['sources']);
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('source_name', function ($data) {
+                    return ($data->sources) ? $data->sources->name : " NA";
+                })
+                ->rawColumns(['source_name'])
+                ->make(true);
+        }
+
+        return view('inventory.inward.shipment.view');
     }
 }

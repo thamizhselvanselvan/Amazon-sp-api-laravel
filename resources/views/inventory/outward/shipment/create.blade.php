@@ -81,9 +81,12 @@
     </div>
     <div class="col-2">
         <div class="form-group">
-            <x-adminlte-select name="Destination" label="Select Destination:" id="Destination">
+            <x-adminlte-select name="destination" label="Select Destination:" id="destination">
                 <option>Select Destination</option>
-               
+                @foreach ($destination_lists as $destination_list)
+                <option value="{{ $destination_list->id }}">{{$destination_list->name }}</option>
+                @endforeach
+
             </x-adminlte-select>
 
         </div>
@@ -99,7 +102,7 @@
     <div class="col text-right">
         <div style="margin-top: 1.8rem;">
             <!-- //<a href="/shipment/storeshipment"> -->
-            <x-adminlte-button label="Create Shipment" theme="primary" onclick="getBack()" icon="fas fa-plus" class="btn-sm create_shipmtn_btn" />
+            <x-adminlte-button label="Create Shipment" theme="primary" onclick="getBack()" icon="fas fa-plus" class="btn-sm create_outshipmtn_btn" />
             <!-- </a> -->
 
         </div>
@@ -110,7 +113,7 @@
 
 </div>
 <br>
-<table class="table table-bordered yajra-datatable table-striped" id="report_table">
+<table class="table table-bordered yajra-datatable table-striped" id="outward_table">
     <thead>
         <tr>
             <td>asin</td>
@@ -135,6 +138,59 @@
         }
     });
 
+
+    
+    $(".create_outshipmtn_btn").on("click", function() {
+        let self = $(this);
+        let table = $("#outward_table tbody tr");
+        //let data = {};
+        let data = new FormData();
+
+        table.each(function(index, elm) {
+
+            let cnt = 0;
+            let td = $(this).find('td');
+            //  console.log(td);
+
+            data.append('asin[]', td[0].innerText);
+            data.append('name[]', td[1].innerText);
+            data.append('quantity[]', td[2].children[0].value);
+            data.append('price[]', td[3].children[0].value);
+
+        });
+
+        let destination = $('#destination').val();
+        data.append('destination', destination);
+
+
+        $.ajax({
+            method: 'POST',
+            url: '/shipment/storeoutshipment',
+            data: data,
+            processData: false,
+            contentType: false,
+            response: 'json',
+            success: function(response) {
+
+                console.log(response);
+                //alert('success');
+                // location.reload()
+
+            },
+            error: function(response) {
+                console.log(response);
+            }
+
+
+        });
+
+    });
+ 
+    function getBack(){
+        // window.location.assign('/inventory/shipments')
+        window.location.href = '/inventory/outwardings'
+    
+    }
     autocomplete(document.getElementById("upload_asin"));
 
     function autocomplete(inp) {
@@ -167,7 +223,7 @@
 
             $.ajax({
                 method: 'GET',
-                url: 'shipment/autocomplete',
+                url: '/shipment/autofinish',
                 data: {
                     'asin': val
                 },
@@ -176,7 +232,7 @@
 
                     $.each(arr, function(index, val) {
 
-                        let asin = val.asin1;
+                        let asin = val.asin;
 
                         /*check if the item starts with the same letters as the text field value:*/
                         if (asin.substr(0, asin.length).toUpperCase() == asin.toUpperCase()) {
@@ -267,5 +323,36 @@
         });
     }
 
-</script>
+    function getData(asin) {
+
+        $.ajax({
+            method: 'GET',
+            url: '/shipment/select/View',
+            data: {
+                'asin': asin
+            },
+            success: function(arr) {
+                // console.log(arr);
+
+                let html = "<tr class='table_row'>";
+                html += "<td name='asin[]'>" + arr.asin + "</td>";
+                html += "<td name='name[]'>" + arr.item_name + "</td>";
+                html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
+                html += '<td> <input type="text" value="1" name="price[]" id="price"> </td>'
+                html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
+                html += "</tr>";
+
+                $("#outward_table").append(html);
+            },
+            error: function(response) {
+                // console.log(response);
+            }
+        });
+    }  
+        $('#outward_table').on('click', ".remove1", function() {
+
+            $(this).closest("tr").remove();
+        });
+  
+  </script>
 @stop
