@@ -634,7 +634,7 @@
         $('#file_download_modal').modal('hide');
     });
 
-    $('#exportToCsv').on('click', function() {
+     $('#exportToCsv').on('click', function() {
         $('#productExport').modal('hide');
         $('.progress_bar').show();
 
