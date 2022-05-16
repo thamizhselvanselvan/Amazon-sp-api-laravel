@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\inventory\inwarding;
 
+use Carbon\Carbon;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\Inventory\Source;
 use App\Models\Inventory\Shipment;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 use App\Models\Inventory\Inventory;
+use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 
 class InventoryShipmentController extends Controller
@@ -175,7 +176,12 @@ class InventoryShipmentController extends Controller
                 ->addColumn('source_name', function ($data) {
                     return ($data->sources) ? $data->sources->name : " NA";
                 })
-                ->rawColumns(['source_name'])
+                    ->editColumn('created_at', function ($row) {
+                        return Carbon::parse($row['created_at'])->format('M d Y');
+                   
+                    
+                })
+                ->rawColumns(['source_name','created_at'])
                 ->make(true);
         }
 

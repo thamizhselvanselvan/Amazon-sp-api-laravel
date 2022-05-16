@@ -46,11 +46,11 @@ Route::get('shipment/select/region', 'Inventory\inwarding\InventoryShipmentContr
 Route::get('shipment/inward/view', 'Inventory\inwarding\InventoryShipmentController@inwardingdata')->name('shipments.view');
 
 
- Route::resource('inventory/outwardings','Inventory\outwarding\InventoryOutwardShipmentController');
- Route::get('shipment/autofinish', 'Inventory\outwarding\InventoryOutwardShipmentController@autofinish');
- Route::post('shipment/storeoutshipment', 'Inventory\outwarding\InventoryOutwardShipmentController@storeoutshipment');
- Route::get('shipment/select/View', 'Inventory\outwarding\InventoryOutwardShipmentController@selectview');
- Route::get('shipment/outwarding/view', 'Inventory\outwarding\InventoryOutwardShipmentController@outwardingview')->name('outwarding.view');
+ Route::resource('inventory/outwardings','Inventory\Outwarding\InventoryOutwardShipmentController');
+ Route::get('shipment/autofinish', 'Inventory\Outwarding\InventoryOutwardShipmentController@autofinish');
+ Route::post('shipment/storeoutshipment', 'Inventory\Outwarding\InventoryOutwardShipmentController@storeoutshipment');
+ Route::get('shipment/select/View', 'Inventory\Outwarding\InventoryOutwardShipmentController@selectview');
+ Route::get('shipment/outwarding/view', 'Inventory\Outwarding\InventoryOutwardShipmentController@outwardingview')->name('outwarding.view');
  
 
 
