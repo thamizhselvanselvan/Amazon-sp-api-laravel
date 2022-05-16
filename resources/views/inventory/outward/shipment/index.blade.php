@@ -51,3 +51,71 @@
     </div>
 @stop
 
+
+@section('js')
+    <script type="text/javascript">
+        $(function() {
+
+            let yajra_table = $('.yajra-datatable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('outwardings.index') }}",
+                columns: [
+                    {
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'ship_id',
+                        name: 'ship_id'
+                    },
+                    {
+                        data: 'destination_name',
+                        name: 'destination_name'
+                    },
+                   
+                    // {
+                    //     data: 'action',
+                    //     orderable: false,
+                    //     searchable: false
+                    // },
+                ]
+            });
+            $(document).on('click', ".delete", function(e) {
+                e.preventDefault();
+                let bool = confirm('Are you sure you want to delete?');
+
+                if(!bool) {
+                    return false;
+                }
+                let self = $(this);
+                let id = self.attr('data-id');
+               
+                self.prop('disable', true);
+
+
+                $.ajax({
+                    method: 'post',
+                    url: '/inventory/outwardings/'+id,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "_method": 'DELETE'
+                    },
+                    response: 'json',
+                    success: function (response) {
+                        alert('Delete success');
+                        location.reload()  
+                    }, 
+                    error: function (response) {
+
+                        
+                    }
+                });
+            });
+            });
+
+    </script>
+@stop
+
