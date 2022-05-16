@@ -32,7 +32,10 @@ class BOEController extends Controller
     public $company_id;
     public $sw_chrg = 0;
     public $igst = 0;
-    public $dataArray = [
+    public $dataArray = [];
+    public $csv_header = [];
+    
+    public $tem = [
         'hawb_number' => '',
         'date_of_arrival' => '',
         'courier_registration_number' => '',
@@ -205,6 +208,7 @@ class BOEController extends Controller
         // return redirect('/BOE/index')->with('success', 'All PDF Imported successfully');
     }
 
+    //not using
     public function BOEExportToCSV()
     {
         $dbheaders = [
@@ -373,9 +377,19 @@ class BOEController extends Controller
     public function BOEFilterExport(Request $request)
     {
         $user = Auth::user();
-        $company_id = $request->company;
+        $selected_value = explode('=!',$request->selected);
 
-        $boe_data = $this->whereConditon($request, $this->dbheaders);
+        $selected_filter = (array_slice($selected_value, -4));
+        $selected_header = array_slice($selected_value, 0, -4);
+
+        // $request = (object)$selected_filter;
+        $filter = [];
+        $filter['company'] = $selected_filter[0];
+        $filter['date_of_arrival'] = $selected_filter[1];
+        $filter['challan_date'] = $selected_filter[2];
+        $filter['upload_date'] = $selected_filter[3];
+    
+        $boe_data = $this->whereConditon((object)$filter, $selected_header);
 
         $csvheaders = [
             'AWB no.',
@@ -400,60 +414,76 @@ class BOEController extends Controller
         $company_id = $user->company_id;
         $exportFilePath = "excel/downloads/BOE/$company_id/BOE_Details.csv";
         // dd($boe_data->get());
-        $chunk = 10000;
-        $boe_data->chunk($chunk, function ($records) use ($exportFilePath, $csvheaders) {
+        $count=0;
+        $chunk = 100;
+        $boe_data->chunk($chunk, function ($records) use ($exportFilePath, $selected_header, &$count) {
 
             if (!Storage::exists($exportFilePath)) {
                 Storage::put($exportFilePath, '');
             }
             $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
-            $writer->insertOne($csvheaders);
+            $writer->insertOne($selected_header);
 
             $records = $records->toArray();
 
             $recordsfinal = array_map(function ($datas) {
 
-                if ($datas['duty_details']) {
-                    $duty_details = (json_decode($datas['duty_details']));
-                    foreach($duty_details as $duty_price){
-                        if($duty_price->DutyHead == 'BCD')
-                        {
-                            $datas['Duty'] = $duty_price->DutyAmount;
-                        }
-                        elseif($duty_price->DutyHead == 'SW Srchrg')
-                        {
-                            $datas['SWsrchrg'] = $duty_price->DutyAmount;
-                        }
-                        elseif($duty_price->DutyHead == 'IGST')
-                        {
-                            $datas['IGST'] = $duty_price->DutyAmount;
-                        }
-                    }
-                }
-                foreach ($datas as $key => $value) {
+                // if (isset($datas['duty_details'])) {
+                //     $duty_details = (json_decode($datas['duty_details']));
+                //     foreach($duty_details as $duty_price){
+                //         if($duty_price->DutyHead == 'BCD')
+                //         {
+                //             $datas['Duty'] = $duty_price->DutyAmount;
+                //         }
+                //         elseif($duty_price->DutyHead == 'SW Srchrg')
+                //         {
+                //             $datas['SWsrchrg'] = $duty_price->DutyAmount;
+                //         }
+                //         elseif($duty_price->DutyHead == 'IGST')
+                //         {
+                //             $datas['IGST'] = $duty_price->DutyAmount;
+                //         }
+                //     }
+                // }
+                // foreach ($datas as $key => $value) {
 
-                    if ($key != 'duty_details') {
+                //     if ($key != 'duty_details') {
 
-                        $this->dataArray[$key] = $value;
-                    }
-                }
+                //         $this->dataArray[$key] = $value;
+                //     }
+                // }
 
-                return $this->dataArray;
+                // return $this->dataArray;
+
+                return $datas;
+            
             }, $records);
+            if($count == 0)
+            {
+
+            }
+            $count ++;
             $writer->insertall($recordsfinal);
         });
-        return $this->Download_BOE();
+
+        $user = Auth::user();
+        $company_id = $user->company_id;
+        $file_path = "excel/downloads/BOE/$company_id/BOE_Details.csv";
+        
+        if (Storage::exists($exportFilePath)) {
+            Log::alert("FILE EXISTS");
+            return response()->download(Storage::path($exportFilePath));
+            // return Storage::download($exportFilePath);
+        }
+
+        //return $this->Download_BOE();
         return redirect()->intended('/BOE/Export/view')->with('success', 'BOE CSV Exported successfully');
     }
 
     public function Download_BOE()
     {
-        $user = Auth::user();
-        $company_id = $user->company_id;
-        $file_path = "excel/downloads/BOE/$company_id/BOE_Details.csv";
-        if (Storage::exists($file_path)) {
-            return Storage::download($file_path);
-        }
+        
+        
         return 'file not exist';
     }
 
@@ -510,7 +540,6 @@ class BOEController extends Controller
         $current=Carbon::today();
         $endTime=Carbon::now();
         $todayTotalBOE  =   $this-> data_details($current, $endTime);
-        
         $yesterday  =   Carbon::yesterday();
         $currentyesterday    =   $yesterday->toDateString();
         $currentyesterday    =   $currentyesterday .' 23:59:59';
@@ -522,8 +551,7 @@ class BOEController extends Controller
         $Last30days  =  Carbon::yesterday()->subMonth();
         $Last30daysBOE  = $this-> data_details($Last30days, $yesterday);
 
-        return view('BOEpdf.boeReport',compact(['Total_array','todayTotalBOE','yesterdayTotalBOE','Last7daysBOE','Last30daysBOE']));
-        
+        return view('BOEpdf.boeReport',compact(['Total_array','todayTotalBOE','yesterdayTotalBOE','Last7daysBOE','Last30daysBOE']));        
     }
 
     public function data_details($begin,$end)

@@ -800,6 +800,12 @@
     });
 
     $('#boe_export_csv').on('click', function() {
+        let date_of_arrival = $('#date_of_arrival').val();
+        let company = $('#company').val();
+        let challan_date = $('#challan_date').val();
+        let upload_date = $('#upload_date').val();
+        // alert(company);
+        // return false;
         let select_header = [];
         let count = 0;
         $("input[name='boedata[]']:checked").each(function() {
@@ -807,7 +813,7 @@
 
                 select_header += $(this).val();
             } else {
-                select_header += '-' + $(this).val();
+                select_header += '=!' + $(this).val();
             }
             count++;
         });
@@ -817,21 +823,22 @@
             // $('.progress_bar').hide();
         }
         else {
+            select_header += '=!' +company + '=!' +date_of_arrival + '=!' +challan_date+ '=!'+upload_date;
             $('#exportboe').modal('hide');
             console.log(select_header);
-        //     $.ajax({
-        //         method: 'post',
-        //         url: '/other-product/export',
-        //         data: {
-        //             "_token": "{{ csrf_token() }}",
-        //             "_method": 'post',
-        //             'selected': select_header,
-        //         },
-        //         success: function(response) {
-        //             // $('.progress_bar').hide();
-        //             // yajra_table.ajax.reload();
-        //         }
-        //     })
+            $.ajax({
+                method: 'post',
+                url: '/BOE/Export/filter',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "_method": 'post',
+                    'selected': select_header,
+                },
+                success: function(response) {
+                    // $('.progress_bar').hide();
+                    // yajra_table.ajax.reload();
+                }
+            })
         }
 
     }).get();
