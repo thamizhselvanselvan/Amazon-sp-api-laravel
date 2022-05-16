@@ -494,28 +494,17 @@ class BOEController extends Controller
     public function boeReport()
     {
         $companys = Company_master::all( 'id', 'company_name');
-
         $company_lists = [];
-
         foreach($companys as $company) {
-
             $company_lists[$company->id] = $company->company_name;
-          
-        }
-        
+        }  
         foreach($company_lists as $id => $company_name){
-
             $query_results = BOE::where( 'company_id', $id )->count();
-
             $Total_array[] = [
-
                         "Total_boe" => $query_results,
-
                         "Comapny_Name" => $company_name,
-
                         "id" => $id
                     ];
-            
         }
         
         $current=Carbon::today();
