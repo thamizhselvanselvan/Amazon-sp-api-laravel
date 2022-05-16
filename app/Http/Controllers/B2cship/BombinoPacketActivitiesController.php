@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
@@ -37,11 +38,10 @@ class BombinoPacketActivitiesController extends Controller
         $file_path = 'Bombino';
         $final_array = [];
         $pd_final_array = [];
-
         if (!file_exists(storage_path('app/' . $file_path))) {
-
+            
             $pd_final_array[] = [
-
+                
                 '0' => NULL,
             ];
             return view('b2cship.bombinoActivities.index', compact(['pd_final_array']));
@@ -56,7 +56,8 @@ class BombinoPacketActivitiesController extends Controller
                 $new_files_list[$file] =  date("y-m-d H:i:s", filemtime($path . '/' . $file));
             }
         }
-
+        
+        Log::alert(json_encode($new_files_list));
         arsort($new_files_list);
         foreach ($new_files_list as $key => $files) {
             $content = Storage::get($file_path . '/' . $key);
@@ -154,6 +155,8 @@ class BombinoPacketActivitiesController extends Controller
 
                 Artisan::call('pms:bombino-packet-activities ' . $month . ' ' . $year);
             }
+
+            sleep(2);
         }
 
         return redirect()->back();
