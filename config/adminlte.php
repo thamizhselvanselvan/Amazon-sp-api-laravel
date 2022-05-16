@@ -474,7 +474,7 @@ return [
                         ],
                         [
                             'text' => 'Shipment',
-                            'url'  => 'inventory/features',
+                            'url'  => 'inventory/outwardings',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory']
                         ],
