@@ -36,9 +36,15 @@
     <tbody>
         @foreach ($pd_final_array as $values )
         <tr>
-            @foreach ($values as  $value)
+            @foreach ($values as $key => $value)
             <td>
-                 {{$value}}
+                @if ($value != NULL)
+                    @if ($key == 'Awb')
+                        {{$value}}
+                    @else
+                    {{$key}}
+                    @endif
+                @endif
             </td>
             @endforeach
         </tr>
@@ -50,11 +56,11 @@
 
 @section('js')
 <script type="text/javascript">
-$(document).ready(function() {
-    $('.yajra-datatable').DataTable( {
-        "pagingType": "full_numbers"
-    } );
-} );
+    $(document).ready(function() {
+        $('.yajra-datatable').DataTable({
+            "pagingType": "full_numbers"
+        });
+    });
 </script>
 
 @stop

@@ -18,6 +18,22 @@ class BombinoPacketActivitiesController extends Controller
         $today_sd = Carbon::today();
         $today_ed = Carbon::now();
 
+        $packet_status =
+            [
+                "Awb" => NULL,
+                "SHIPMENT INFORMATION RECEIVED" => NULL,
+                "SHIPMENT READY FOR DEPARTURE" => NULL,
+                "IN TRANSIT" => NULL,
+                "FLIGHT DELAY" => NUll,
+                "SHIPMENT FORWARDED FROM NEW YORK TO DELHI" => NULL,
+                "ARRIVED AT AIRPORT" => NULL,
+                "CLEARANCE IN PROGRESS" => NULL,
+                "SHIPMENT RECEIVED AT DELHI FROM NEW YORK" => NULL,
+                "OFD" => NULL,
+                "OUT FOR DELIVERY" => NULL,
+                "DELIVERED" => NULL,
+            ];
+
         $file_path = 'Bombino';
         $final_array = [];
         $pd_final_array = [];
@@ -60,24 +76,60 @@ class BombinoPacketActivitiesController extends Controller
         $pd_details = $pd_collect->groupBy('AwbNo');
 
         $offset = 0;
-
+        $temp_packetStauts = [];
         foreach ($pd_details as $pd_key => $pd_value) {
 
+            $packet_status =
+            [
+                "Awb" => NULL,
+                "SHIPMENT INFORMATION RECEIVED" => NULL,
+                "SHIPMENT READY FOR DEPARTURE" => NULL,
+                "IN TRANSIT" => NULL,
+                "FLIGHT DELAY" => NUll,
+                "SHIPMENT FORWARDED FROM NEW YORK TO DELHI" => NULL,
+                "ARRIVED AT AIRPORT" => NULL,
+                "CLEARANCE IN PROGRESS" => NULL,
+                "CLEARANCE PROCEDURE IN PROGRESS" => NULL,
+                "SHIPMENT RECEIVED AT DELHI FROM NEW YORK" => NULL,
+                "OFD" => NULL,
+                "OUT FOR DELIVERY" => NULL,
+                "DELIVERED" => NULL,
+            ];
+
             $suboffset = 0;
-            $pd_final_array[$offset][$suboffset] = $pd_key;
+            $packet_status['Awb'] = $pd_key;
             foreach ($pd_value as $pd_data) {
 
-                $suboffset++;
-                $pod_location = $pd_data->PODLocation;
-                $created_date = substr($pd_data->CreatedDate, 0, 10);
-                $statusDetails = trim($pd_data->StatusDetails);
+                $statusDetails = strtoupper(trim($pd_data->StatusDetails));
+                if (array_key_exists($statusDetails, $packet_status)) {
 
-                $pd_final_array[$offset][$suboffset] = $statusDetails . ' [' . $created_date . ']';
+                    $packet_status[$statusDetails]  = 1;
+                }
             }
+            $pd_final_array[$offset]= $packet_status;
             $offset++;
         }
 
-        //  po($pd_final_array);
+
+
+        // exit;
+
+        // foreach ($pd_details as $pd_key => $pd_value) {
+
+        //     $suboffset = 0;
+        //     $pd_final_array[$offset][$suboffset] = $pd_key;
+        //     foreach ($pd_value as $pd_data) {
+
+        //         $suboffset++;
+        //         $pod_location = $pd_data->PODLocation;
+        //         $created_date = substr($pd_data->CreatedDate, 0, 10);
+        //         $statusDetails = trim($pd_data->StatusDetails);
+
+        //         $pd_final_array[$offset][$suboffset] = $statusDetails ;
+        //     }
+        //     $offset++;
+        // }
+
         return view('b2cship.bombinoActivities.index', compact(['pd_final_array']));
     }
 
