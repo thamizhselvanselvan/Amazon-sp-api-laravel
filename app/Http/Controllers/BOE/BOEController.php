@@ -507,7 +507,7 @@ class BOEController extends Controller
 
             $query_results = BOE::where( 'company_id', $id )->count();
 
-            $array[] = [
+            $Total_array[] = [
 
                         "Total_boe" => $query_results,
 
@@ -533,7 +533,7 @@ class BOEController extends Controller
         $Last30days  =  Carbon::yesterday()->subMonth();
         $Last30daysBOE  = $this-> data_details($Last30days, $yesterday);
 
-        return view('BOEpdf.boeReport',compact(['array','todayTotalBOE','yesterdayTotalBOE','Last7daysBOE','Last30daysBOE']));
+        return view('BOEpdf.boeReport',compact(['Total_array','todayTotalBOE','yesterdayTotalBOE','Last7daysBOE','Last30daysBOE']));
         
     }
 

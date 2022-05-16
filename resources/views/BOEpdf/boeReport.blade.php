@@ -23,7 +23,7 @@
 
     <div class = "row">
 
-        @foreach ($array as $result)
+        @foreach ($Total_array as $result)
             
            <div class = "col">
 
