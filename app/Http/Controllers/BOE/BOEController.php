@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use AmazonPHP\SellingPartner\Model\MerchantFulfillment\Length;
 use App\Models\Company\CompanyMaster;
+use App\Models\Company_master;
 use App\Services\BOE\BOEPdfReader;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToArray;
@@ -492,7 +493,7 @@ class BOEController extends Controller
 
     public function boeReport()
     {
-        $companys = DB::select("SELECT distinct id, company_name FROM sp_company_masters");
+        $companys = Company_master::all( 'id', 'company_name');
 
         $company_lists = [];
 
@@ -502,47 +503,37 @@ class BOEController extends Controller
           
         }
         
-        $total_companys = [];
-
         foreach($company_lists as $id => $company_name){
 
-            $query_results = DB::select("SELECT distinct hawb_number, company_id  FROM boe where company_id = $id ");
+            $query_results = BOE::where( 'company_id', $id )->count();
 
-            $total_companys[$id] = [
+            $array[] = [
 
-                "awb_number" => $query_results,
+                        "Total_boe" => $query_results,
 
-                "products_count" => count($query_results),
+                        "Comapny_Name" => $company_name,
 
-                "name" => $company_name,
-
-                "id" => $id
-            ];
+                        "id" => $id
+                    ];
             
         }
-
+        
         $current=Carbon::today();
         $endTime=Carbon::now();
         $todayTotalBOE  =   $this-> data_details($current, $endTime);
-
         
         $yesterday  =   Carbon::yesterday();
         $currentyesterday    =   $yesterday->toDateString();
         $currentyesterday    =   $currentyesterday .' 23:59:59';
         $yesterdayTotalBOE  =   $this-> data_details($yesterday, $currentyesterday );
 
-
         $Last7days  =Carbon::today()->subWeek();
         $Last7daysBOE  = $this-> data_details($Last7days, $yesterday);
-
 
         $Last30days  =  Carbon::yesterday()->subMonth();
         $Last30daysBOE  = $this-> data_details($Last30days, $yesterday);
 
-        
-        return view('BOEpdf.boeReport',compact(['total_companys','todayTotalBOE','yesterdayTotalBOE','Last7daysBOE','Last30daysBOE']));
-
-
+        return view('BOEpdf.boeReport',compact(['array','todayTotalBOE','yesterdayTotalBOE','Last7daysBOE','Last30daysBOE']));
         
     }
 

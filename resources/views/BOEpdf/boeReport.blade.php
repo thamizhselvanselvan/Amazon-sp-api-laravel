@@ -11,6 +11,7 @@
 @stop
 
 
+
 @section('content_header')
 
 <h1 class = "m-0 text-dark"> BOE Report </h1>
@@ -22,17 +23,17 @@
 
     <div class = "row">
 
-       @foreach ($total_companys as $key => $company)
-
+        @foreach ($array as $result)
+            
            <div class = "col">
 
                 <div class = "info-box bg-info text-center">
 
                     <div class = "info-box-content">
 
-                        <h3 style = "font-weight:bold; text-align:center;"> {{$company['products_count']}} </h3>
+                        <h3 style = "font-weight:bold; text-align:center;"> {{$result['Total_boe']}} </h3>
 
-                        <h6 style = "text-align:center;"> {{$company['name']}} </h6>
+                        <h6 style = "text-align:center;"> {{$result['Comapny_Name']}} </h6>
 
                     </div>
 
@@ -40,12 +41,14 @@
                 
            </div>
 
-       @endforeach
-        
+        @endforeach
+             
     </div>
 
 </div>
+
 <br>
+
 <div class = "continer-fluid">
 
     <div class = "row">
@@ -103,7 +106,7 @@
             </div>
 
         </div>
-        
+
         <div class="col-3">
 
             <h3 style = "font-weight:bold; text-align:center;"> Last 30 Days    </h3>
