@@ -8,7 +8,11 @@
         <a href="update-packet-details">
             <x-adminlte-button label="Update Packet Details" theme="primary" icon="fas fa-file-import" class="btn-sm" />
         </a>
+        <a href="csv-export">
+            <x-adminlte-button label="Export to CSV" theme="primary" icon="fas fa-file-import" class="btn-sm" />
+        </a>
     </h2>
+    
 </div>
 @stop
 
@@ -36,9 +40,15 @@
     <tbody>
         @foreach ($pd_final_array as $values )
         <tr>
-            @foreach ($values as  $value)
+            @foreach ($values as $key => $value)
             <td>
-                 {{$value}}
+                @if ($value != NULL)
+                    @if ($key == 'Awb')
+                        {{$value}}
+                    @else
+                    {{$key}}
+                    @endif
+                @endif
             </td>
             @endforeach
         </tr>
@@ -50,11 +60,11 @@
 
 @section('js')
 <script type="text/javascript">
-$(document).ready(function() {
-    $('.yajra-datatable').DataTable( {
-        "pagingType": "full_numbers"
-    } );
-} );
+    $(document).ready(function() {
+        $('.yajra-datatable').DataTable({
+            "pagingType": "full_numbers"
+        });
+    });
 </script>
 
 @stop

@@ -107,24 +107,35 @@
 
 <!-- Modal -->
 <div class="modal fade" id="exportboe" tabindex="-1" role="dialog" aria-labelledby="exportboeModalLabel" aria-hidden="true">
+
     <div class="modal-dialog modal-xl" role="document">
+
         <div class="modal-content">
+
             <div class="modal-header">
+
                 <h5 class="modal-title" id="exportboeModalLabel">Select Headers</h5>
+
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+
                     <span aria-hidden="true">&times;</span>
+
                 </button>
             </div>
+
             <div class="modal-body" id="checkbox">
 
                 <div class="form-check d-flex row">
+
                     <div class="col-12">
                         <input type="checkbox" class="form-check-input all" value="all" id="all">
                         <h6>Select All</h6>
                     </div>
 
                 </div>
+
                 <hr>
+
                 <div class=" form-check d-flex row">
 
                     <div class="col-3">
@@ -148,6 +159,7 @@
                     </div>
 
                 </div>
+
                 <hr>
 
                 <div class="form-check d-flex row">
@@ -174,6 +186,7 @@
                     </div>
 
                 </div>
+
                 <hr>
 
                 <div class="form-check d-flex row">
@@ -198,6 +211,7 @@
                     </div>
 
                 </div>
+
                 <hr>
 
                 <div class="form-check d-flex row">
@@ -223,6 +237,7 @@
                     </div>
 
                 </div>
+
                 <hr>
 
                 <div class="form-check d-flex row">
@@ -248,6 +263,7 @@
                     </div>
 
                 </div>
+
                 <hr>
 
                 <div class="form-check d-flex row">
@@ -258,28 +274,53 @@
                     </div>
 
                     <div class="col-3">
+                        <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="invoice_value" id="invoice_value">
+                        <h6>Invoice Value</h6>
+                    </div>
+
+                    <div class="col-3">
+                        <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="case_of_crn" id="case_of_crn">
+                        <h6>Case of CRN</h6>
+                    </div>
+
+                    <div class="col-3">
+                        <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="kyc_document" id="kyc_document">
+                        <h6>Kyc Document</h6>
+                    </div>
+
+                    
+                </div>
+
+                <hr>
+                
+                <div class="form-check d-flex row">
+
+                    <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="kyc_no" id="kyc_no">
                         <h6>Kyc No</h6>
                     </div>
+
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="state_code" id="state_code">
                         <h6>State Code</h6>
                     </div>
+
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="interest" id="interest">
                         <h6>Interest</h6>
                     </div>
 
-                </div>
-                <hr>
-
-                <div class="form-check d-flex row">
-
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="government_or_non_gov" id="government_or_non_gov">
                         <h6>Gov. or Non Gov.</h6>
                     </div>
+                    
+                </div>
 
+                <hr>
+                
+                <div class="form-check d-flex row">
+                    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="ad_code" id="ad_code">
                         <h6>AD Code</h6>
@@ -295,229 +336,250 @@
                         <h6>License Number</h6>
                     </div>
 
-                </div>
-                <hr>
-
-                <div class="form-check d-flex row">
-
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="ctsh" id="ctsh">
                         <h6>CTSH</h6>
                     </div>
 
+                    
+                </div>
+
+                <hr>
+                
+                <div class="form-check d-flex row">
+
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="cetsh" id="cetsh">
                         <h6>CETSH</h6>
                     </div>
-
+    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="countryof_origin" id="countryof_origin">
                         <h6>Country Of Origin</h6>
                     </div>
-
+    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="descriptionof_goods" id="descriptionof_goods">
                         <h6>Description of Goods</h6>
                     </div>
-
-                </div>
-                <hr>
-
-                <div class="form-check d-flex row">
 
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="nameof_manufacturer" id="nameof_manufacturer">
                         <h6>Name of Manufacturer</h6>
                     </div>
 
+                    
+                </div>
+
+                <hr>
+                
+                <div class="form-check d-flex row">
+                    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="address_of_manufacturer" id="address_of_manufacturer">
                         <h6>Add. of Manufacturer</h6>
                     </div>
-
+    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="numberof_packages" id="numberof_packages">
                         <h6>Number of Packages</h6>
                     </div>
-
+    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="markson_packages" id="markson_packages">
                         <h6>Markson Packages </h6>
                     </div>
-
-                </div>
-                <hr>
-
-                <div class="form-check d-flex row">
 
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="unitof_measure" id="unitof_measure">
                         <h6>Unit of Measure</h6>
                     </div>
 
+                    
+                </div>
+
+                <hr>
+                
+                <div class="form-check d-flex row">
+                    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="quantity" id="quantity">
                         <h6>Quantity </h6>
                     </div>
-
+    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="invoice_number" id="invoice_number">
                         <h6>Invoice Number</h6>
                     </div>
-
+    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="unit_price" id="unit_price">
                         <h6>Unit Price </h6>
                     </div>
-
-                </div>
-                <hr>
-
-                <div class="form-check d-flex row">
 
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="currencyof_unit_price" id="currencyof_unit_price">
                         <h6>Currency of Unit Price</h6>
                     </div>
 
+                    
+                </div>
+
+                <hr>
+                
+                <div class="form-check d-flex row">
+                    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="currencyof_invoice" id="currencyof_invoice">
                         <h6>Currency of Invoice</h6>
                     </div>
-
+    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="rateof_exchange" id="rateof_exchange">
                         <h6>Rate of Exchange</h6>
                     </div>
-
+    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="invoice_term" id="invoice_term">
                         <h6>Invoice Term </h6>
                     </div>
-
-                </div>
-                <hr>
-
-                <div class="form-check d-flex row">
 
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="landing_charges" id="landing_charges">
                         <h6>Landing Charges</h6>
                     </div>
 
+                    
+                </div>
+
+                <hr>
+                
+                <div class="form-check d-flex row">
+                    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="insurance" id="insurance">
                         <h6>Insurance</h6>
                     </div>
-
+    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="freight" id="freight">
                         <h6>Freight </h6>
                     </div>
-
+    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="discount_amount" id="discount_amount">
                         <h6>Discount Amount </h6>
                     </div>
-
-                </div>
-                <hr>
-
-                <div class="form-check d-flex row">
 
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="currencyof_discount" id="currencyof_discount">
                         <h6>Currency of Discount </h6>
                     </div>
 
+                    
+                </div>
+
+                <hr>
+                
+                <div class="form-check d-flex row">
+                    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="airlines" id="airlines">
                         <h6>Airlines </h6>
                     </div>
-
+    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="flight_no" id="flight_no">
                         <h6>Flight Number </h6>
                     </div>
-
+    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="airport_of_arrival" id="airport_of_arrival">
                         <h6>Airport of Arrival </h6>
                     </div>
-
-                </div>
-                <hr>
-
-                <div class="form-check d-flex row">
 
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="first_port_of_arrival" id="first_port_of_arrival">
                         <h6>First Port of Arrival </h6>
                     </div>
 
+                    
+                </div>
+
+                <hr>
+                
+                <div class="form-check d-flex row">
+                    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="date_of_arrival" id="date_of_arrival">
                         <h6>Date of Arrival </h6>
                     </div>
-
+    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="time_of_arrival" id="time_of_arrival">
                         <h6>Time of Arrival </h6>
                     </div>
-
+    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="notification_details" id="notification_details">
                         <h6>Notification Details </h6>
                     </div>
-
-                </div>
-                <hr>
-
-                <div class="form-check d-flex row">
 
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="charge_details" id="charge_details">
                         <h6>Charge Details </h6>
                     </div>
 
+                </div>
+
+                <hr>
+                
+                <div class="form-check d-flex row">
+                    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="duty_details" id="duty_details">
                         <h6>Duty Details </h6>
                     </div>
-
+    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="challan_number" id="challan_number">
                         <h6>Challan Number </h6>
                     </div>
-
+    
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="total_amount" id="total_amount">
                         <h6>Total Amount </h6>
                     </div>
-
-                </div>
-                <hr>
-
-                <div class="form-check d-flex row">
 
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="challan_date" id="challan_date">
                         <h6>Challan Date </h6>
                     </div>
 
+                </div>
+
+                <hr>
+
+                <div class="form-check d-flex row">
+
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="payment_details" id="payment_details">
                         <h6>Payment Details </h6>
                     </div>
+
                 </div>
+
             </div>
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary button_close" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="boe_export_csv">Export to Csv</button>
             </div>
+
         </div>
+
     </div>
+
 </div>
 
 
@@ -730,7 +792,7 @@
             count++;
         });
 
-        if (count === 62) {
+        if (count === 65) {
             $(".all").prop("checked", true);
         } else {
             $(".all").prop("checked", false);
@@ -738,6 +800,12 @@
     });
 
     $('#boe_export_csv').on('click', function() {
+        let date_of_arrival = $('#date_of_arrival').val();
+        let company = $('#company').val();
+        let challan_date = $('#challan_date').val();
+        let upload_date = $('#upload_date').val();
+        // alert(company);
+        // return false;
         let select_header = [];
         let count = 0;
         $("input[name='boedata[]']:checked").each(function() {
@@ -745,7 +813,7 @@
 
                 select_header += $(this).val();
             } else {
-                select_header += '-' + $(this).val();
+                select_header += '=!' + $(this).val();
             }
             count++;
         });
@@ -755,21 +823,22 @@
             // $('.progress_bar').hide();
         }
         else {
+            select_header += '=!' +company + '=!' +date_of_arrival + '=!' +challan_date+ '=!'+upload_date;
             $('#exportboe').modal('hide');
             console.log(select_header);
-        //     $.ajax({
-        //         method: 'post',
-        //         url: '/other-product/export',
-        //         data: {
-        //             "_token": "{{ csrf_token() }}",
-        //             "_method": 'post',
-        //             'selected': select_header,
-        //         },
-        //         success: function(response) {
-        //             // $('.progress_bar').hide();
-        //             // yajra_table.ajax.reload();
-        //         }
-        //     })
+            $.ajax({
+                method: 'post',
+                url: '/BOE/Export/filter',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "_method": 'post',
+                    'selected': select_header,
+                },
+                success: function(response) {
+                    // $('.progress_bar').hide();
+                    // yajra_table.ajax.reload();
+                }
+            })
         }
 
     }).get();

@@ -12,6 +12,7 @@ Route::get('b2cship/update-report', 'B2cship\TrackingStatusController@update_rep
 
 Route::get('bombion/packet-activities','B2cship\BombinoPacketActivitiesController@PacketActivitiesDetails');
 Route::get('bombion/update-packet-details','B2cship\BombinoPacketActivitiesController@UpdatePacketDetails');
+Route::get('bombion/csv-export','B2cship\BombinoPacketActivitiesController@ExportToCSV');
 
 
 

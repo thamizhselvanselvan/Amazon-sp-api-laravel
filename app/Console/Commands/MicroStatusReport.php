@@ -42,7 +42,7 @@ class MicroStatusReport extends Command
      */
     public function handle()
     {
-        Log::alert("json file created");
+
         $today_sd = Carbon::today();
         $today_ed = Carbon::now();
 
