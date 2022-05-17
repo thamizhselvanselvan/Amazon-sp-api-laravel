@@ -8,7 +8,11 @@
         <a href="update-packet-details">
             <x-adminlte-button label="Update Packet Details" theme="primary" icon="fas fa-file-import" class="btn-sm" />
         </a>
+        <a href="csv-export">
+            <x-adminlte-button label="Export to CSV" theme="primary" icon="fas fa-file-import" class="btn-sm" />
+        </a>
     </h2>
+    
 </div>
 @stop
 

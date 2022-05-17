@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Inventory\Outwarding;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Inventory\Inventory;
 use App\Http\Controllers\Controller;
@@ -105,7 +106,12 @@ class InventoryOutwardShipmentController extends Controller
                 ->addColumn('destination_name', function ($data) {
                     return ($data->destinations) ? $data->destinations->name : " NA";
                 })
-                ->rawColumns(['destination_name'])
+                ->editColumn('created_at', function ($row) {
+                    return Carbon::parse($row['created_at'])->format('M d Y');
+               
+                })
+                ->rawColumns(['destination_name', 'created_at'])
+              
                 ->make(true);
         }
 
