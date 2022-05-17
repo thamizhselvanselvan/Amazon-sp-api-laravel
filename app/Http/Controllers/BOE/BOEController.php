@@ -445,6 +445,7 @@ class BOEController extends Controller
                                 $datas['IGST'] = $duty_price->DutyAmount;
                             }
                         }
+                        
                     }
                     else{
                         $datas[$key] = $val;
