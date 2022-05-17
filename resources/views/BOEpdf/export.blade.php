@@ -521,12 +521,12 @@
                     </div>
     
                     <div class="col-3">
-                        <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="notification_details" id="notification_details">
+                        <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="" id="notification_details">
                         <h6>Notification Details </h6>
                     </div>
 
                     <div class="col-3">
-                        <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="charge_details" id="charge_details">
+                        <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="" id="charge_details">
                         <h6>Charge Details </h6>
                     </div>
 
@@ -825,7 +825,7 @@
         else {
             select_header += '=!' +company + '=!' +date_of_arrival + '=!' +challan_date+ '=!'+upload_date;
             $('#exportboe').modal('hide');
-            console.log(select_header);
+            // console.log(select_header);
             $.ajax({
                 method: 'post',
                 url: '/BOE/Export/filter',
@@ -835,8 +835,8 @@
                     'selected': select_header,
                 },
                 success: function(response) {
-                    // $('.progress_bar').hide();
-                    // yajra_table.ajax.reload();
+
+                    window.location ='/BOE/Download';
                 }
             })
         }
