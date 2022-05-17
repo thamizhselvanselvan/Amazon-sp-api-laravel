@@ -431,7 +431,12 @@ return [
                     ],
                 ],
 
-
+                [
+                    'text' => 'Vendor',
+                    'url'  => 'inventory/vendors',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin', 'Inventory'],
+                ],
 
                 [
                     'text' => 'Inward ',

@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Shipment')
+@section('title', 'Vendor')
 
 @section('css')
 
@@ -9,7 +9,7 @@
 @stop
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Shipment</h1>
+    <h1 class="m-0 text-dark">Inventory Vendors</h1>
 
 @stop
 
@@ -28,11 +28,8 @@
             </div>
  
             <h2 class="mb-4">
-            <a href="{{ route('shipments.create') }}">
-                    <x-adminlte-button label="Create Shipment" theme="primary" icon="fas fa-plus" />
-                </a>
-                <a href="{{ route('shipments.view') }}">
-                    <x-adminlte-button label="View Shipment" theme="primary" icon="fas fa-file" />
+            <a href="{{ route('vendors.create') }}">
+                    <x-adminlte-button label="Add Vendor" theme="primary" icon="fas fa-plus" />
                 </a>
             </h2> 
 
@@ -42,9 +39,11 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Shipment ID</th>
-                        <th>Source</th>
-                        <!-- <th>Action</th> -->
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Country</th>
+                        <th>Currency</th>
+                        <th>Action</th>
                        
                     </tr>
                 </thead>
@@ -65,63 +64,68 @@
             let yajra_table = $('.yajra-datatable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('shipments.index') }}",
-                columns: [
-                    {
+                ajax: "{{ route('vendors.index') }}",
+                columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         orderable: false,
                         searchable: false
                     },
                     {
-                        data: 'ship_id',
-                        name: 'ship_id'
+                        data: 'name',
+                        name: 'name'
                     },
                     {
-                        data: 'source_name',
-                        name: 'source_name'
+                        data: 'type',
+                        name: 'type'
                     },
-                   
-                    // {
-                    //     data: 'action',
-                    //     orderable: false,
-                    //     searchable: false
-                    // },
+                    {
+                        data: 'country',
+                        name: 'country'
+                    },
+                    {
+                        data: 'currency',
+                        name: 'currency'
+                    },
+                    {
+                        data: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
                 ]
             });
             $(document).on('click', ".delete", function(e) {
                 e.preventDefault();
                 let bool = confirm('Are you sure you want to delete?');
 
-                if(!bool) {
+                if (!bool) {
                     return false;
                 }
                 let self = $(this);
                 let id = self.attr('data-id');
-               
+
                 self.prop('disable', true);
-
-
+                                
                 $.ajax({
                     method: 'post',
-                    url: '/inventory/shipments/'+id,
+                    url: "/inventory/vendors/"+id,
                     data: {
                         "_token": "{{ csrf_token() }}",
                         "_method": 'DELETE'
                     },
                     response: 'json',
-                    success: function (response) {
+                    success: function(response) {
                         alert('Delete success');
-                        location.reload()  
-                    }, 
-                    error: function (response) {
+                        location.reload()
+                    },
+                    error: function(response) {
 
-                        
+
                     }
                 });
             });
-            });
-
+        });
     </script>
 @stop
+
 

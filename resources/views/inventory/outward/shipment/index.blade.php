@@ -31,6 +31,10 @@
             <a href="{{ route('outwardings.create') }}">
                     <x-adminlte-button label="Create Shipment" theme="primary" icon="fas fa-plus" />
                 </a>
+            
+            <a href="{{ route('outwarding.view') }}">
+                    <x-adminlte-button label="View Shipment" theme="primary" icon="fas fa-file" />
+                </a>
             </h2> 
 
             <table class="table table-bordered yajra-datatable table-striped">

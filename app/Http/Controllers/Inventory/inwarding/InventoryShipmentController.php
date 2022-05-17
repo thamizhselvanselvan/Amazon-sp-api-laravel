@@ -10,6 +10,7 @@ use App\Models\Inventory\Shipment;
 use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
 use App\Http\Controllers\Controller;
+use App\Models\Inventory\Vendor;
 use Yajra\DataTables\Facades\DataTables;
 
 class InventoryShipmentController extends Controller
@@ -47,7 +48,8 @@ class InventoryShipmentController extends Controller
     public function create()
     {
         $source_lists = Source::get();
-        return view('inventory.inward.shipment.create', compact('source_lists'));
+        $country_lists = Vendor::get();
+        return view('inventory.inward.shipment.create', compact('source_lists','country_lists'));
     }
 
     public function store(Request $request)
