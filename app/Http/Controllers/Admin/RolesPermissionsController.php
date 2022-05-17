@@ -13,17 +13,17 @@ class RolesPermissionsController extends Controller
 {
     public function index(Request $request)
     {
+        $roles = Role::with('permissions')->get();
+        // po($roles[0]->permissions->first()['name']);exit;
+
         if ($request->ajax()) {
-
             $roles = Role::with('permissions')->get();
-
             return DataTables::of($roles)
                 ->addIndexColumn()
                 ->editColumn('permissions', function ($roles) {
-
-                    return $roles->permissions[0]['name'];
+                    return $roles->permissions->first()['name'];
                 })
-                
+                ->rawColumns(['permissions'])
                 ->make(true);
         }
         return view('admin.roles.index');
