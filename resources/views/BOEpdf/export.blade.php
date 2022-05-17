@@ -835,6 +835,13 @@
                     'selected': select_header,
                 },
                 success: function(response) {
+
+                    if(response.success) {
+                        window.location = '/BOE/Download';
+                    } else if(response.error) {
+                        alert(response.error);
+                    }
+
                     // $('.progress_bar').hide();
                     // yajra_table.ajax.reload();
                 }
