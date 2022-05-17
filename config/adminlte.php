@@ -660,6 +660,34 @@ return [
                 ],
             ],
         ],
+        [
+            'text' => 'Seller Central',
+            'can' =>  ['Admin', 'Seller'],
+            'submenu' => [
+                [
+                    'text' => 'Dashboard',
+                    'url' => 'seller/dashboard',
+                    'can' => ['Admin', 'Seller'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+                [
+                    'text' => 'Asin Master',
+                    'url' => 'seller/asin-master',
+                    'can' => ['Admin', 'Seller'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+                [
+                    'text' => 'Catalog Details',
+                    'url' => 'seller/catalog-details',
+                    'can' => ['Admin', 'Seller'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+
+            ]
+        ]
 
         // [
         //     'text' => 'Download Files',
