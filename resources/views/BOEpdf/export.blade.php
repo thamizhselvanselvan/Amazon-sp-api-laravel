@@ -521,12 +521,12 @@
                     </div>
     
                     <div class="col-3">
-                        <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="" id="notification_details">
+                        <input type="checkbox" class="form-check-input header_option" value="" id="notification_details">
                         <h6>Notification Details </h6>
                     </div>
 
                     <div class="col-3">
-                        <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="" id="charge_details">
+                        <input type="checkbox" class="form-check-input header_option"  value="" id="charge_details">
                         <h6>Charge Details </h6>
                     </div>
 
