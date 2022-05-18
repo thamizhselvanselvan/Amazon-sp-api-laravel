@@ -13,7 +13,7 @@ class AddIdColumnInRacks extends Migration
      */
     public function up()
     {
-        Schema::connection('in')->table('racks', function (Blueprint $table) {
+        Schema::connection('inventory')->table('racks', function (Blueprint $table) {
             $table->integer("rack_id");
             $table->integer("warehouse_id");
         });
@@ -27,7 +27,7 @@ class AddIdColumnInRacks extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->table('racks', function (Blueprint $table) {
+        Schema::connection('inventory')->table('racks', function (Blueprint $table) {
             $table->dropColumn('user_id');
         });
     }

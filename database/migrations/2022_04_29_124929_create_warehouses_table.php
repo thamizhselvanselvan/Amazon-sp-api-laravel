@@ -13,7 +13,7 @@ class CreateWarehousesTable extends Migration
      */
     public function up()
     {
-        Schema::connection('in')->create('warehouses', function (Blueprint $table) {
+        Schema::connection('inventory')->create('warehouses', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('address_1');
@@ -37,6 +37,6 @@ class CreateWarehousesTable extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->dropIfExists('warehouses');
+        Schema::connection('inventory')->dropIfExists('warehouses');
     }
 }

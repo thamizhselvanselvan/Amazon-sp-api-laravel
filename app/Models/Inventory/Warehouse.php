@@ -9,7 +9,7 @@ class Warehouse extends Model
 {
     use HasFactory;
     use HasFactory;
-    protected $connection = 'in';
+    protected $connection = 'inventory';
 
     protected $fillable = [
         'name',

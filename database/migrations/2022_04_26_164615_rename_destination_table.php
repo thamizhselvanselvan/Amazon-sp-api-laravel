@@ -13,7 +13,7 @@ class RenameDestinationTable extends Migration
      */
     public function up()
     {
-        Schema::connection('in')->rename('destination', 'destinations');
+        Schema::connection('inventory')->rename('destination', 'destinations');
     }
     
 
@@ -24,6 +24,6 @@ class RenameDestinationTable extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->rename('destinations','destination');
+        Schema::connection('inventory')->rename('destinations','destination');
     }
 }

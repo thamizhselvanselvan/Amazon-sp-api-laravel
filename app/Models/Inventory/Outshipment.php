@@ -9,7 +9,7 @@ class Outshipment extends Model
 {
     use HasFactory;
 
-    protected $connection = 'in';
+    protected $connection = 'inventory';
     protected $fillable = ['destination_id','asin','ship_id','item_name','quantity','price'];
 
     public function destinations() {
