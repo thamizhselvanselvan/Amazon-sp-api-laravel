@@ -51,7 +51,7 @@ class B2cshipbookingController extends Controller
         }
         $count ++;
       }
-      return rtrim($final_date, ',  ').' Ago';
+      return rtrim($final_date, ',  ').' before';
     }
     else{
       return 'Data Not Avaliable';

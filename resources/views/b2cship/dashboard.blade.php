@@ -16,7 +16,7 @@
 @stop
 
 @section('content')
-<h3 class="m-0 text-dark">Tacking Update Details</h3>
+<h3 class="m-0 text-dark">Packet Update Details</h3>
 <div class="container-fluid">
 
     <div class="row">
@@ -24,8 +24,8 @@
             
             <div class="info-box bg-info text-center">
                 <div class="info-box-content">
-                    <h4>{{$bombino_date}}</h4>
-                    <h5>Bombino Last Update </h5>
+                    <h5>Bombino Update </h5>
+                    <div>{{$bombino_date}}</div>
                 </div>
             </div>
         </div>
@@ -33,8 +33,8 @@
            
             <div class="info-box bg-info text-center">
                 <div class="info-box-content">
-                    <h4>{{$bluedart_date}}</h4>
-                    <h5>Bluedart Last Update </h5>
+                    <h5>Bluedart Update </h5>
+                    <div>{{$bluedart_date}}</div>
                 </div>
             </div>
         </div>
@@ -42,8 +42,8 @@
            
             <div class="info-box bg-info text-center">
                 <div class="info-box-content">
-                    <h4>{{$delivery_date}}</h4>
-                    <h5>Delivery Last Update </h5>
+                    <h5>Delivery Update </h5>
+                    <div>{{$delivery_date}}</div>
                 </div>
             </div>
         </div>
@@ -51,8 +51,8 @@
             <!-- <h4 style="font-weight: bold; text-align: center;">Last 30 Days </h4> -->
             <div class="info-box bg-info  text-center">
                 <div class="info-box-content">
-                    <h4>{{$dl_delhi_date}}</h4>
-                    <h5>DL Delhi last Update </h5>
+                    <h5>DL Delhi Update </h5>
+                    <div>{{$dl_delhi_date}}</div>
                 </div>
             </div>
         </div>
