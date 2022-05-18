@@ -13,7 +13,7 @@ class CreateDestinationTable extends Migration
      */
     public function up()
     {
-        Schema::connection('in')->create('destination', function (Blueprint $table) {
+        Schema::connection('inventory')->create('destination', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->timestamps();
@@ -27,6 +27,6 @@ class CreateDestinationTable extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->dropIfExists('destination');
+        Schema::connection('inventory')->dropIfExists('destination');
     }
 }

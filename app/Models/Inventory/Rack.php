@@ -9,7 +9,7 @@ class Rack extends Model
 {
     use HasFactory;
 
-    protected $connection = 'in';
+    protected $connection = 'inventory';
 
     // public function __construct(array $attributes = [])
     // {

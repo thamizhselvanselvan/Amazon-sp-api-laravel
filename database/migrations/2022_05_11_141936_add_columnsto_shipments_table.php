@@ -14,7 +14,7 @@ class AddColumnstoShipmentsTable extends Migration
         public function up()
 
         {
-            Schema::connection('in')->dropIfExists('shipments');
+            Schema::connection('inventory')->dropIfExists('shipments');
         }
 
     
@@ -26,7 +26,7 @@ class AddColumnstoShipmentsTable extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->create('shipments', function (Blueprint $table) {
+        Schema::connection('inventory')->create('shipments', function (Blueprint $table) {
             $table->id();
             $table->string('source_id');
             $table->string('Ship_id');

@@ -13,7 +13,7 @@ class EditShipmentTable extends Migration
      */
     public function up()
     {
-        Schema::connection('in')->table('shipments', function (Blueprint $table) {
+        Schema::connection('inventory')->table('shipments', function (Blueprint $table) {
             $table->dropColumn('asin');
             $table->integer('quantity')->default(1);
         });
@@ -26,7 +26,7 @@ class EditShipmentTable extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->table('bins', function (Blueprint $table) {
+        Schema::connection('inventory')->table('bins', function (Blueprint $table) {
             $table->string('asin');
             $table->dropColumn('quantity');
         });

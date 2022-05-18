@@ -13,7 +13,7 @@ class CreateShelvesTable extends Migration
      */
     public function up()
     {
-        Schema::connection('in')->create('shelves', function (Blueprint $table) {
+        Schema::connection('inventory')->create('shelves', function (Blueprint $table) {
             $table->id();
             $table->foreignId('rack_id');
             $table->string('name');
@@ -28,6 +28,6 @@ class CreateShelvesTable extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->dropIfExists('shelves');
+        Schema::connection('inventory')->dropIfExists('shelves');
     }
 }

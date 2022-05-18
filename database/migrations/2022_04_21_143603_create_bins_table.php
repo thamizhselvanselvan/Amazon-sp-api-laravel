@@ -13,7 +13,7 @@ class CreateBinsTable extends Migration
      */
     public function up()
     {
-        Schema::connection('in')->create('bins', function (Blueprint $table) {
+        Schema::connection('inventory')->create('bins', function (Blueprint $table) {
             $table->id();
             $table->foreignId('shelve_id');
             $table->string('name');
@@ -32,6 +32,6 @@ class CreateBinsTable extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->dropIfExists('bins');
+        Schema::connection('inventory')->dropIfExists('bins');
     }
 }
