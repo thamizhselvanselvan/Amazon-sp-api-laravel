@@ -460,8 +460,8 @@ class BOEController extends Controller
             }
             // $writer->insertall($recordsfinal);
         });
-
-        return redirect()->intended('/BOE/Export/view')->with('success', 'BOE CSV Exported successfully');
+        return response()->json(['success' => 'BOE CSV Exported successfully']);
+        // return back()->intended('/BOE/Export/view')->with('success', 'BOE CSV Exported successfully');
     }
 
     public function Download_BOE()
@@ -475,7 +475,7 @@ class BOEController extends Controller
             return response()->download(Storage::path($file_path));
             // return Storage::download($exportFilePath);
         }
-        return redirect()->intended('/BOE/Export/view')->with('error', 'File does not exists');
+        return response()->json('error', 'File does not exists');
     }
 
     public function Upload()
