@@ -13,7 +13,7 @@ class CreateRacksTable extends Migration
      */
     public function up()
     {
-        Schema::connection('in')->create('racks', function (Blueprint $table) {
+        Schema::connection('inventory')->create('racks', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->timestamps();
@@ -27,6 +27,6 @@ class CreateRacksTable extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->dropIfExists('racks');
+        Schema::connection('inventory')->dropIfExists('racks');
     }
 }

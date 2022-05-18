@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Source extends Model
 {
     use HasFactory;
-    protected $connection = 'in';
+    protected $connection = 'inventory';
     protected $fillable = ['name'];
 
     

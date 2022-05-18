@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Dispose extends Model
 {
     use HasFactory;
-    protected $connection = 'in';
+    protected $connection = 'inventory';
     protected $fillable = ['reason'];
 }

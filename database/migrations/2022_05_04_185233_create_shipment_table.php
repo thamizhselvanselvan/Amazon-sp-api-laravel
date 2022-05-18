@@ -13,7 +13,7 @@ class CreateShipmentTable extends Migration
      */
     public function up()
     {
-        Schema::connection('in')->create('shipments', function (Blueprint $table) {
+        Schema::connection('inventory')->create('shipments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('source_id');
             $table->string('Ship_id');
@@ -29,6 +29,6 @@ class CreateShipmentTable extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->dropIfExists('shipments');
+        Schema::connection('inventory')->dropIfExists('shipments');
     }
 }
