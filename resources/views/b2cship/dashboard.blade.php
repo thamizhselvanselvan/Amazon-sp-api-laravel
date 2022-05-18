@@ -17,46 +17,31 @@
 
 @section('content')
 <h3 class="m-0 text-dark">Packet Update Details</h3>
-<div class="container-fluid">
-
-    <div class="row">
-        <div class="col-3 ">
-            
-            <div class="info-box bg-info text-center">
-                <div class="info-box-content">
-                    <h5>Bombino Update </h5>
-                    <div>{{$bombino_date}}</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-3 ">
-           
-            <div class="info-box bg-info text-center">
-                <div class="info-box-content">
-                    <h5>Bluedart Update </h5>
-                    <div>{{$bluedart_date}}</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-3 ">
-           
-            <div class="info-box bg-info text-center">
-                <div class="info-box-content">
-                    <h5>Delivery Update </h5>
-                    <div>{{$delivery_date}}</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-3 ">
-            <!-- <h4 style="font-weight: bold; text-align: center;">Last 30 Days </h4> -->
-            <div class="info-box bg-info  text-center">
-                <div class="info-box-content">
-                    <h5>DL Delhi Update </h5>
-                    <div>{{$dl_delhi_date}}</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<table class="table table-bordered yajra-datatable table-striped">
+    <thead>
+        <tr>
+            <td>Status</td>
+            <td>Updated Details</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Bombino</td>
+            <td>{{$bombino_date}}</td>
+        </tr>
+        <tr>
+            <td>Bluedart</td>
+            <td>{{$bluedart_date}}</td>
+        </tr>
+        <tr>
+            <td>DL Delhi</td>
+            <td>{{$dl_delhi_date}}</td>
+        </tr>
+        <tr>
+            <td>Delivery</td>
+            <td>{{$delivery_date}}</td>
+        </tr>
+    </tbody>
+</table>
 
 @stop

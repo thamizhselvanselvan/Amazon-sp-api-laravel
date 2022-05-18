@@ -51,7 +51,7 @@ class B2cshipDashboardController extends Controller
       return rtrim($final_date, ',  ').' before';
     }
     else{
-      return 'Data Not Avaliable';
+      return 'Details Not Avaliable';
     }
   }
 }
