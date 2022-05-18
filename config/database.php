@@ -54,19 +54,18 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
-
-        'in' => [
+        'inventory' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
-            'host' => env('WEB_DB_HOST', '127.0.0.1'),
-            'port' => env('WEB_DB_PORT', '3306'),
-            'database' => env('WEB_DB_DATABASE', 'forge'),
-            'username' => env('WEB_DB_USERNAME', 'forge'),
-            'password' => env('WEB_DB_PASSWORD', ''),
-            'unix_socket' => env('WEB_DB_SOCKET', ''),
+            'host' => env('INVENTORY_DB_HOST', '127.0.0.1'),
+            'port' => env('INVENTORY_DB_PORT', '3306'),
+            'database' => env('INVENTORY_DB_DATABASE', 'forge'),
+            'username' => env('INVENTORY_DB_USERNAME', 'forge'),
+            'password' => env('INVENTORY_DB_PASSWORD', ''),
+            'unix_socket' => env('INVENTORY_DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => 'in_',
+            'prefix' => env('INVENTORY_DB_PREFIX') . '_',
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
@@ -74,23 +73,63 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
-
-        'mysql' => [
+        'catalog' => [
             'driver' => 'mysql',
-            'host' => env('TEST_DB_HOST', '127.0.0.1'),
-            'port' => env('TEST_DB_PORT', '3306'),
-            'database' => env('TEST_DB_DATABASE', 'forge'),
-            'username' => env('TEST_DB_USERNAME', 'forge'),
-            'password' => env('TEST_DB_PASSWORD', ''),
-            'unix_socket' => env('TEST_DB_SOCKET', ''),
+            'url' => env('DATABASE_URL'),
+            'host' => env('CATALOG_DB_HOST', '127.0.0.1'),
+            'port' => env('CATALOG_DB_PORT', '3306'),
+            'database' => env('CATALOG_DB_DATABASE', 'forge'),
+            'username' => env('CATALOG_DB_USERNAME', 'forge'),
+            'password' => env('CATALOG_DB_PASSWORD', ''),
+            'unix_socket' => env('CATALOG_DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => env('TEST_DB_PREFIX'),
-            'prefix_indexes' => false,
-            'strict' => false,
-            'engine' => 'InnoDB ROW_FORMAT=DYNAMIC',
+            'prefix' => env('CATALOG_DB_PREFIX') . '_',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
         ],
-
+        'order' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('ORDER_DB_HOST', '127.0.0.1'),
+            'port' => env('ORDER_DB_PORT', '3306'),
+            'database' => env('ORDER_DB_DATABASE', 'forge'),
+            'username' => env('ORDER_DB_USERNAME', 'forge'),
+            'password' => env('ORDER_DB_PASSWORD', ''),
+            'unix_socket' => env('ORDER_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => env('ORDER_DB_PREFIX') . '_',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],        
+        'seller' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('SELLER_DB_HOST', '127.0.0.1'),
+            'port' => env('SELLER_DB_PORT', '3306'),
+            'database' => env('SELLER_DB_DATABASE', 'forge'),
+            'username' => env('SELLER_DB_USERNAME', 'forge'),
+            'password' => env('SELLER_DB_PASSWORD', ''),
+            'unix_socket' => env('SELLER_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => env('SELLER_DB_PREFIX') . '_',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],        
         'aws' => [
             'driver' => 'mysql',
             'read' => [
@@ -114,7 +153,7 @@ return [
             'engine' => 'InnoDB ROW_FORMAT=DYNAMIC',
         ],
 
-        'mssql' => [
+        'b2cship' => [
             'driver' => 'sqlsrv',
             'read' => [
                 'host' => [

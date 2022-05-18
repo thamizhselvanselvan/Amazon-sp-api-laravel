@@ -140,7 +140,7 @@
 
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="current_status_of_the_cbe" id="current_status_of_the_cbe">
-                        <h6>Current Status Of The Cbe </h6>
+                        <h6>Awb No </h6>
                     </div>
 
                     <div class="col-3">
@@ -182,7 +182,7 @@
 
                     <div class="col-3">
                         <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="hawb_number" id="hawb_number">
-                        <h6>Awb No</h6>
+                        <h6> Current Status Of The Cbe</h6>
                     </div>
 
                 </div>
@@ -521,12 +521,12 @@
                     </div>
     
                     <div class="col-3">
-                        <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="" id="notification_details">
+                        <input type="checkbox" class="form-check-input header_option" value="" id="notification_details">
                         <h6>Notification Details </h6>
                     </div>
 
                     <div class="col-3">
-                        <input type="checkbox" class="form-check-input header_option" name='boedata[]' value="" id="charge_details">
+                        <input type="checkbox" class="form-check-input header_option"  value="" id="charge_details">
                         <h6>Charge Details </h6>
                     </div>
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\inventory\inwarding;
+namespace App\Http\Controllers\Inventory\Inwarding;
 
 use Carbon\Carbon;
 use App\Models\Product;
