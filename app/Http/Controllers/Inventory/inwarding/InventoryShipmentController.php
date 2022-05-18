@@ -22,6 +22,7 @@ class InventoryShipmentController extends Controller
 
     public function index(Request $request)
     {
+
         if ($request->ajax()) {
 
             $data = Shipment::select("ship_id", "source_id")->distinct()->with(['sources']);
@@ -47,9 +48,10 @@ class InventoryShipmentController extends Controller
     }
     public function create()
     {
-        $source_lists = Source::get();
-        $country_lists = Vendor::get();
-        return view('inventory.inward.shipment.create', compact('source_lists','country_lists'));
+      
+        $source_lists = Vendor::where('type', 'Source')->get();
+        //   dd($source_lists);
+        return view('inventory.inward.shipment.create', compact('source_lists'));
     }
 
     public function store(Request $request)

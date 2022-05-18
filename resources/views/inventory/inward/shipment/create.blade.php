@@ -95,8 +95,8 @@
         <div class="form-group">
             <x-adminlte-select name="country" label="Select Country:" id="country">
                 <option>Select Country</option>
-                @foreach ($country_lists as $country_list)
-                <option value="{{ $country_list->id }}">{{$country_list->country }}</option>
+                @foreach ($source_lists as $source_list)
+                <option value="{{ $source_list->id }}">{{$source_list->country }}</option>
                 @endforeach
             </x-adminlte-select>
 
