@@ -14,9 +14,9 @@ class AddWarehouseToShipmentTable extends Migration
     public function up()
     { 
         Schema::connection('inventory')->table('shipments', function (Blueprint $table) {
-        $table->string('warehouse')->after('id');
-        $table->string('country')->after('warehouse');
-        $table->string('currency')->after('country');
+        $table->string('warehouse')->nullable()->after('id');
+        $table->string('country')->nullable()->after('warehouse');
+        $table->string('currency')->nullable()->after('country');
     });
     }
 
