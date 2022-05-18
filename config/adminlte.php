@@ -581,6 +581,11 @@ return [
             'can' =>  ['Admin', 'B2CShip'],
             'submenu' => [
                 [
+                    'text' => 'Dashboard',
+                    'can' => ['Admin', 'B2CShip'],
+                    'url' => 'b2cship/dashboard'
+                ],
+                [
                     'text' => 'Details',
                     'can' => ['Admin', 'B2CShip'],
                     'submenu' => [
