@@ -94,7 +94,7 @@ class BombinoPacketActivitie extends Command
             $end_date = $year . '-' . $end . ' 23:59:59';
         }
 
-        $packet_detials = DB::connection('mssql')->select("SELECT DISTINCT
+        $packet_detials = DB::connection('b2cship')->select("SELECT DISTINCT
         AwbNo, PODLocation, StatusDetails,FPCode,CreatedDate 
         from PODTrans
         WHERE CreatedDate BETWEEN convert(datetime, '$start_date') AND convert(datetime,'$end_date')

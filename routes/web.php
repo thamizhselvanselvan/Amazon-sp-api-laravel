@@ -38,7 +38,7 @@ Route::get('test', function () {
      $today_sd = Carbon::today();
      $today_ed = Carbon::now();
 
-     $packet_detials = DB::connection('mssql')->select("SELECT 
+     $packet_detials = DB::connection('b2cship')->select("SELECT 
           DISTINCT TOP 1000 AwbNo,
           packetstatus = STUFF((
                SELECT distinct  ',' + POD1.StatusDetails
@@ -114,7 +114,7 @@ Route::resource('/tests', 'TestController');
 Route::get('/asin/{asin}/{code}', 'TestController@getASIN');
 Route::get("b2cship", function () {
 
-     $data = DB::connection('mssql')->select("SELECT DISTINCT Status from MicroStatusMapping where MicroStatusCode = 'ITOFD'");
+     $data = DB::connection('b2cship')->select("SELECT DISTINCT Status from MicroStatusMapping where MicroStatusCode = 'ITOFD'");
 
      foreach ($data as $totalBooking) {
           foreach ($totalBooking as $totalBookingAWB) {
@@ -130,13 +130,13 @@ Route::get("b2cship", function () {
      $awb = implode(',', $totalBookingArray);
      $awb = ltrim($awb);
      // dd($awb);
-     $kycStatus = DB::connection('mssql')->select("SELECT AwbNo FROM PODTrans WHERE StatusDetails IN ($awb) and CreatedDate BETWEEN '2022-04-10 00:00:00' and '2022-05-09 23:59:00' ");
+     $kycStatus = DB::connection('b2cship')->select("SELECT AwbNo FROM PODTrans WHERE StatusDetails IN ($awb) and CreatedDate BETWEEN '2022-04-10 00:00:00' and '2022-05-09 23:59:00' ");
 
      po(count($kycStatus));
      exit;
 
 
-     $totalBookings = DB::connection('mssql')->select("SELECT TOP 10 AwbNo FROM Packet ");
+     $totalBookings = DB::connection('b2cship')->select("SELECT TOP 10 AwbNo FROM Packet ");
      dd($totalBookings);
      $starTime = Carbon::today();
      echo $starTime;
@@ -144,29 +144,29 @@ Route::get("b2cship", function () {
      echo $endTime;
      $date = $starTime->toDateString();
      exit;
-     // $ans = DB::connection('mssql')->select("SELECT Top 5 * FROM KYCStatus ");
+     // $ans = DB::connection('b2cship')->select("SELECT Top 5 * FROM KYCStatus ");
      // po($ans);
      // exit;
      echo ' yesterday Total KYC pending :- ';
-     $and = DB::connection('mssql')->select("SELECT DISTINCT Packet.AwbNo, Packet.CreatedDate FROM Packet Left JOIN KYCStatus on Packet.AwbNo = KYCStatus.AwbNo  where Packet.CreatedDate between '$starTime' and '$date 23:59:59' AND KYCStatus.AwbNo IS NULL");
+     $and = DB::connection('b2cship')->select("SELECT DISTINCT Packet.AwbNo, Packet.CreatedDate FROM Packet Left JOIN KYCStatus on Packet.AwbNo = KYCStatus.AwbNo  where Packet.CreatedDate between '$starTime' and '$date 23:59:59' AND KYCStatus.AwbNo IS NULL");
      echo count($and);
      exit;
-     $and = DB::connection('mssql')->select("SELECT DISTINCT Packet.AwbNo, Packet.CreatedDate FROM Packet INNER JOIN KYCStatus on Packet.AwbNo = KYCStatus.AwbNo  where Packet.CreatedDate between '$date 00:00:00' and '$date 23:59:59' ");
+     $and = DB::connection('b2cship')->select("SELECT DISTINCT Packet.AwbNo, Packet.CreatedDate FROM Packet INNER JOIN KYCStatus on Packet.AwbNo = KYCStatus.AwbNo  where Packet.CreatedDate between '$date 00:00:00' and '$date 23:59:59' ");
      //     echo count($and);
      echo '<br>';
      echo 'yesterday total packet booked :- ';
-     $ans = DB::connection('mssql')->select("SELECT AwbNo FROM Packet where CreatedDate between '$date 00:00:00' and '$date 23:59:59'");
+     $ans = DB::connection('b2cship')->select("SELECT AwbNo FROM Packet where CreatedDate between '$date 00:00:00' and '$date 23:59:59'");
      echo count($ans);
      echo '<br>';
      // exit;
      // echo 'total kyc status ' ;
-     // $ans = DB::connection('mssql')->select("SELECT count(DISTINCT AwbNo) FROM KYCStatus where CreatedDate between '$date 00:00:00' and '$date 23:59:59'");
+     // $ans = DB::connection('b2cship')->select("SELECT count(DISTINCT AwbNo) FROM KYCStatus where CreatedDate between '$date 00:00:00' and '$date 23:59:59'");
      // po($ans);
      echo 'kyc rejected ';
-     $ans = DB::connection('mssql')->select("SELECT count(DISTINCT AwbNo) FROM KYCStatus where IsRejected = '1' AND (CreatedDate between '$date 00:00:00' and '$date 23:59:59')");
+     $ans = DB::connection('b2cship')->select("SELECT count(DISTINCT AwbNo) FROM KYCStatus where IsRejected = '1' AND (CreatedDate between '$date 00:00:00' and '$date 23:59:59')");
      po($ans);
      echo 'kyc Approved ';
-     $ans = DB::connection('mssql')->select("SELECT count(DISTINCT AwbNo) FROM KYCStatus where IsRejected = '0' AND (CreatedDate between '$date 00:00:00' and '$date 23:59:59')");
+     $ans = DB::connection('b2cship')->select("SELECT count(DISTINCT AwbNo) FROM KYCStatus where IsRejected = '0' AND (CreatedDate between '$date 00:00:00' and '$date 23:59:59')");
      po($ans);
      exit;
 });
