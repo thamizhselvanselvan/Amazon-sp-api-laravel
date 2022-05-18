@@ -13,7 +13,7 @@ class CreateDisposesTable extends Migration
      */
     public function up()
     {
-        Schema::connection('in')->create('disposes', function (Blueprint $table) {
+        Schema::connection('inventory')->create('disposes', function (Blueprint $table) {
             $table->id();
             $table->string('reason',1000);
             $table->timestamps();
@@ -27,6 +27,6 @@ class CreateDisposesTable extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->dropIfExists('disposes');
+        Schema::connection('inventory')->dropIfExists('disposes');
     }
 }

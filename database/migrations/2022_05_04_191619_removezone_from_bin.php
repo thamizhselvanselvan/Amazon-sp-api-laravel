@@ -13,7 +13,7 @@ class RemovezoneFromBin extends Migration
      */
     public function up()
     {
-        Schema::connection('in')->table('bins', function (Blueprint $table) {
+        Schema::connection('inventory')->table('bins', function (Blueprint $table) {
             $table->dropColumn('zone');
         });
     }
@@ -25,7 +25,7 @@ class RemovezoneFromBin extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->table('bins', function (Blueprint $table) {
+        Schema::connection('inventory')->table('bins', function (Blueprint $table) {
             $table->string('zone');
         });
     }

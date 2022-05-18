@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Vendor extends Model
 {
     use HasFactory;
-    protected $connection = 'in';
+    protected $connection = 'inventory';
     protected $fillable = ['name','type','country','currency'];
 
 }

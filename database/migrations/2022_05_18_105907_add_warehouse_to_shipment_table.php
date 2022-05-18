@@ -13,7 +13,7 @@ class AddWarehouseToShipmentTable extends Migration
      */
     public function up()
     { 
-        Schema::connection('in')->table('shipments', function (Blueprint $table) {
+        Schema::connection('inventory')->table('shipments', function (Blueprint $table) {
         $table->string('warehouse')->after('id');
         $table->string('country')->after('warehouse');
         $table->string('currency')->after('country');
@@ -29,7 +29,7 @@ class AddWarehouseToShipmentTable extends Migration
 
     public function down()
     {
-        Schema::connection('in')->table('shipments', function (Blueprint $table) {
+        Schema::connection('inventory')->table('shipments', function (Blueprint $table) {
             $table->dropColumn('warehouse');
             $table->dropColumn('country');
             $table->dropColumn('currency');

@@ -13,7 +13,7 @@ class CreateSourcesTable extends Migration
      */
     public function up()
     {
-        Schema::connection('in')->create('sources', function (Blueprint $table) {
+        Schema::connection('inventory')->create('sources', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->timestamps();
@@ -27,6 +27,6 @@ class CreateSourcesTable extends Migration
      */
     public function down()
     {
-        Schema::connection('in')->dropIfExists('sources');
+        Schema::connection('inventory')->dropIfExists('sources');
     }
 }
