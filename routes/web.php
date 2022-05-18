@@ -38,41 +38,50 @@ Route::get('test', function () {
      $today_sd = Carbon::today();
      $today_ed = Carbon::now();
 
-     $packet_detials = DB::connection('b2cship')->select("SELECT 
-          DISTINCT TOP 1000 AwbNo,
-          packetstatus = STUFF((
-               SELECT distinct  ',' + POD1.StatusDetails
-               FROM PODTrans POD1
-               WHERE POD.AwbNo = POD1.AwbNo AND FPCode = 'BOMBINO'
-               FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 1, ''),
-          packetlocation = STUFF((
-               SELECT  ',' + POD2.PODLocation
-               FROM PODTrans POD2
-               WHERE POD.AwbNo = POD2.AwbNo AND FPCode = 'BOMBINO'
-               FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 1, '')
-          from PODTrans POD
-          WHERE FPCode ='BOMBINO' 
-          Group By AwbNo, PODLocation
-          ORDER BY AwbNo DESC
-     ");
-     $pd_final = [];
-     $offset = 0;
-     foreach ($packet_detials as $value) {
+     // $packet_detials = DB::connection('b2cship')->select("SELECT 
+     //      DISTINCT TOP 1000 AwbNo,
+     //      packetstatus = STUFF((
+     //           SELECT distinct  ',' + POD1.StatusDetails
+     //           FROM PODTrans POD1
+     //           WHERE POD.AwbNo = POD1.AwbNo AND FPCode = 'BOMBINO'
+     //           FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 1, ''),
+     //      packetlocation = STUFF((
+     //           SELECT  ',' + POD2.PODLocation
+     //           FROM PODTrans POD2
+     //           WHERE POD.AwbNo = POD2.AwbNo AND FPCode = 'BOMBINO'
+     //           FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 1, '')
+     //      from PODTrans POD
+     //      WHERE FPCode ='BOMBINO' 
+     //      Group By AwbNo, PODLocation
+     //      ORDER BY AwbNo DESC
+     // ");
+     // $pd_final = [];
+     // $offset = 0;
+     // foreach ($packet_detials as $value) {
 
-          $packet_status = $value->packetstatus;
-          $packet_location = $value->packetlocation;
-          $packet_array = explode(',', $packet_status);
-          $pl_array = explode(',', $packet_location);
+     //      $packet_status = $value->packetstatus;
+     //      $packet_location = $value->packetlocation;
+     //      $packet_array = explode(',', $packet_status);
+     //      $pl_array = explode(',', $packet_location);
 
-          foreach ($packet_array as $key => $status) {
-               $pd_final[$offset][0] = $value->AwbNo;
-               $pd_final[$offset][$key + 1] = $status . ' [' . $pl_array[$key] . ']';
-          }
-          $offset++;
-     }
+     //      foreach ($packet_array as $key => $status) {
+     //           $pd_final[$offset][0] = $value->AwbNo;
+     //           $pd_final[$offset][$key + 1] = $status . ' [' . $pl_array[$key] . ']';
+     //      }
+     //      $offset++;
+     // }
 
-     po($pd_final);
-     exit;
+     // po($pd_final);
+     // exit;
+
+
+     $array = "'BOMBINO', 'BLUEDART', 'DELIVERY'";
+     $test = DB::connection('b2cship')->select("
+          SELECT TOP 4 FPCode, packetstatus = STUFF((
+               SELECT ',' + POD.CreatedDate FROM PODTrans POD WHERE POD.FPCode = PODS.FPCode WHERE FPCode IN ($array) FOR XML PATH('')), 1, 1, '') 
+          FROM PODTrans PODS WHERE FPCode IN ($array) GROUP BY FPCode ORDER BY FPCode");
+     dd($test);
+
      return view('b2cship.trackingStatus.micro_status_report');
 });
 
