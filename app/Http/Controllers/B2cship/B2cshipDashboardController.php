@@ -18,7 +18,7 @@ class B2cshipDashboardController extends Controller
     $dl_delhi_last_update = DB::connection('b2cship')->select("SELECT TOP 1 CreatedDate  FROM PODTrans WHERE FPCode ='DL DELHI' ORDER BY CreatedDate DESC");
     $delivery_last_update = DB::connection('b2cship')->select("SELECT TOP 1 CreatedDate  FROM PODTrans WHERE FPCode ='DELIVERY' ORDER BY CreatedDate DESC");
 
-    $date_details_array =['Year','Month','Day','Hours', 'Minutes', 'Second'];
+    $date_details_array =['Year','Month','Day','Hour', 'Minute', 'Second'];
     
     $bombino_date = $this->CarbonDateDiff($bombino_last_update, $date_details_array);
     $dl_delhi_date = $this->CarbonDateDiff($dl_delhi_last_update, $date_details_array);
@@ -44,7 +44,8 @@ class B2cshipDashboardController extends Controller
       {
         if($value != 0 && $count < 6) 
         {
-          $final_date .= $value .' ' .$date_details_array[$count].',  ';
+          $final_date .= $value > 1? $value .' ' .$date_details_array[$count].'s,  ' : $value .' ' .$date_details_array[$count].',  ';
+          // $final_date .= $value .' ' .$date_details_array[$count].',  ';
         }
         $count ++;
       }
