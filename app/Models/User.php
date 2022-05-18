@@ -13,12 +13,12 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
-    // protected $table = 'user'; 
-    // public function __construct(array $attributes = [])
-    // {
-    //     parent::__construct($attributes);
-    //     $this->getConnection()->setTablePrefix('');
-    // } 
+    protected $table = 'users'; 
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->getConnection()->setTablePrefix('sp_');
+    } 
 
     /**
      * The attributes that are mass assignable.
