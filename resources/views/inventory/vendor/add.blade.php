@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Add Source')
+@section('title', 'Add Vendor')
 
 @section('css')
 <link rel="stylesheet" href="/css/styles.css">
@@ -10,7 +10,7 @@
 
 <div class="row">
     <div class="col">
-        <a href="{{ route('sources.index') }}" class="btn btn-primary">
+        <a href="{{ route('vendors.index') }}" class="btn btn-primary btn-sm">
             <i class="fas fa-long-arrow-alt-left"></i> Back
         </a>
     </div>
@@ -18,7 +18,7 @@
 
 <div class="row mt-3">
     <div class="col">
-        <h1 class="m-0 text-dark text-center">Add Source</h1>
+        <h3 class="m-0 text-dark text-center">Add Source/Destination</h3>
     </div>
 </div>
 
@@ -49,23 +49,28 @@
         </x-adminlte-alert>
         @endif
 
-        <form action=" {{ Route('sources.store') }}" method="POST" id="admin_user">
-
+        <form action="{{ route('vendors.store') }}" method="POST" id="admin_user">
 
             @csrf
 
             <div class="row justify-content-center">
-                <div class="col-5">
-                    <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name" value="{{ old('name') }}" />
+                <div class="col-6">
+                    <x-adminlte-input label="Name" name="name" id="" type="text" placeholder="Name " value="{{ old('ID') }}" />
                 </div>
-
-                <div class="col-5">
-
-                    <x-adminlte-select name="source" id='shelve_id' label="Select Type">
-                        <option>Source</option>
-                        <option>Destination</option>
-                    </x-adminlte-select>
-
+                <div class="col-6">
+                    <x-adminlte-select name="type" label="Select type">
+                            <option>Select Type</option>
+                            <option>Source</option>
+                            <option>Destination</option>
+                        </x-adminlte-select>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-6">
+                    <x-adminlte-input label="Country" name="country" id="" type="text" placeholder="country" value="{{ old('ID') }}" />
+                </div>
+                <div class="col-6">
+                    <x-adminlte-input label="Currency" name="currency" id="" type="text" placeholder="currency " value="{{ old('ID') }}" />
                 </div>
             </div>
 
@@ -79,3 +84,4 @@
 </div>
 
 @stop
+
