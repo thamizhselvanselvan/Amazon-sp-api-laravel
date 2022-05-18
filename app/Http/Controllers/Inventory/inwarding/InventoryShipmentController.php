@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory\Vendor;
+use App\Models\Inventory\Warehouse;
 use Yajra\DataTables\Facades\DataTables;
 
 class InventoryShipmentController extends Controller
@@ -25,21 +26,21 @@ class InventoryShipmentController extends Controller
 
         if ($request->ajax()) {
 
-            $data = Shipment::select("ship_id", "source_id")->distinct()->with(['sources']);
+            $data = Shipment::select("ship_id")->distinct();
 
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('source_name', function ($data) {
-                    return ($data->sources) ? $data->sources->name : " NA";
-                })
+                // ->addColumn('type', function ($data) {
+                //     return ($data->type) ? $data->vendors->name : " NA";
+                // })
                 ->addColumn('action', function ($row) {
 
                     $actionBtn = '<div class="d-flex"><a href="/inventory/shipments/' . $row->id . '/edit" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
                     $actionBtn .= '<button data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
                     return $actionBtn;
                 })
-                ->rawColumns(['source_name', 'action'])
+                // ->rawColumns(['action'])
                 ->make(true);
         }
 
@@ -51,31 +52,32 @@ class InventoryShipmentController extends Controller
       
         $source_lists = Vendor::where('type', 'Source')->get();
         //   dd($source_lists);
-        return view('inventory.inward.shipment.create', compact('source_lists'));
+        $ware_lists = Warehouse::get();
+        return view('inventory.inward.shipment.create', compact('source_lists','ware_lists'));
     }
 
-    public function store(Request $request)
-    {
+    // public function store(Request $request)
+    // {
 
-        $request->validate([
-            'Ship_id' => 'required|min:1|max:100',
-            'asin' => 'required|min:1|max:100',
-        ]);
+    //     $request->validate([
+    //         'Ship_id' => 'required|min:1|max:100',
+    //         'asin' => 'required|min:1|max:100',
+    //     ]);
 
-        $source_exists = Source::where('id', $request->source_id)->exists();
+    //     $source_exists = Source::where('id', $request->source_id)->exists();
 
-        if (!$source_exists) {
-            return redirect()->route('shipments.create')->with('error', 'Selected Source id invalid');
-        }
+    //     if (!$source_exists) {
+    //         return redirect()->route('shipments.create')->with('error', 'Selected Source id invalid');
+    //     }
 
 
-        Shipment::create([
-            'Ship_id' => $request->Ship_id,
-            'source_id' => $request->source_id,
-        ]);
+    //     Shipment::create([
+    //         'Ship_id' => $request->Ship_id,
+    //         'source_id' => $request->source_id,
+    //     ]);
 
-        return redirect()->route('shipments.index')->with('success', 'Shipment ' . $request->Ship_id . ' has been created successfully');
-    }
+    //     return redirect()->route('shipments.index')->with('success', 'Shipment ' . $request->Ship_id . ' has been created successfully');
+    // }
     // public function edit($id)
     // {
 
@@ -143,6 +145,9 @@ class InventoryShipmentController extends Controller
 
             $create[] = [
                 "Ship_id" => $ship_id,
+                "warehouse" => $request->warehouse,
+                "country" => $request->country,
+                "currency" => $request->currency,
                 "source_id" => $request->source,
                 "asin" => $asin,
                 "item_name" => $request->name[$key],
@@ -152,6 +157,8 @@ class InventoryShipmentController extends Controller
                 "updated_at" => now()
             ];
         }
+
+        // return $create;
 
         Shipment::insert($create);
 

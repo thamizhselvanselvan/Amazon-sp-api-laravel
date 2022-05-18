@@ -74,6 +74,17 @@
 <div class="row">
     <div class="col-2">
         <div class="form-group">
+            <x-adminlte-select name="warehouse" label="Select warehouse:" id="warehouse">
+                <option>Select warehouse</option>
+                @foreach ($ware_lists as $ware_list)
+                <option value="{{ $ware_list->id }}">{{$ware_list->name }}</option>
+                @endforeach
+            </x-adminlte-select>
+
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="form-group">
             <label>Enter ASIN:</label>
             <div class="autocomplete" style="width:200px;">
                 <input id="upload_asin" type="text" autocomplete="off" name="upload_asin" placeholder="Enter Asin here..." class="form-control">
@@ -102,7 +113,10 @@
 
         </div>
     </div>
-    
+    <div class="col-1">
+        <x-adminlte-input label="Currency:" name="currency" type="text" placeholder="Currency" />
+
+    </div>
 
     <!-- <div class="col-2">
         <div class="form-group">
@@ -172,6 +186,15 @@
         let source = $('#source').val();
         data.append('source', source);
 
+        let warehouse = $('#warehouse').val();
+        data.append('warehouse', warehouse);
+
+        let country = $('#country').val();
+        data.append('country', country);
+
+        let currency = $('#currency').val();
+        data.append('currency', currency);
+
 
         $.ajax({
             method: 'POST',
@@ -195,11 +218,11 @@
         });
 
     });
- 
-    function getBack(){
+
+    function getBack() {
         // window.location.assign('/inventory/shipments')
         window.location.href = '/inventory/shipments'
-    
+
     }
 
 
