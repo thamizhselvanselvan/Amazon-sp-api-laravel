@@ -443,12 +443,12 @@ return [
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin', 'Inventory'],
                     'submenu' => [
-                        [
-                            'text' => 'Source',
-                            'url'  => 'inventory/sources',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin', 'Inventory'],
-                        ],
+                        // [
+                        //     'text' => 'Source',
+                        //     'url'  => 'inventory/sources',
+                        //     'icon' => 'far fa-fw fa-file',
+                        //     'can' =>  ['Admin', 'Inventory'],
+                        // ],
                         [
                             'text' => 'Shipment',
                             'url'  => 'inventory/shipments',
@@ -470,13 +470,13 @@ return [
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin', 'Inventory'],
                     'submenu' => [
-                        [
-                            'text' => 'Destination',
-                            'url'  => 'inventory/destinations',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin', 'Inventory'],
+                        // [
+                        //     'text' => 'Destination',
+                        //     'url'  => 'inventory/destinations',
+                        //     'icon' => 'far fa-fw fa-file',
+                        //     'can' =>  ['Admin', 'Inventory'],
 
-                        ],
+                        // ],
                         [
                             'text' => 'Shipment',
                             'url'  => 'inventory/outwardings',
