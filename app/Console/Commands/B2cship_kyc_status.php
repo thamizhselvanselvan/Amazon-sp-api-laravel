@@ -74,7 +74,7 @@ class B2cship_kyc_status extends Command
         $totalkycRejectedCount = 0;
         $totalkycPendingCount = 0;
 
-        $totalBookings = DB::connection('mssql')->select("SELECT AwbNo FROM Packet WHERE CreatedDate BETWEEN '$start' AND '$end'");
+        $totalBookings = DB::connection('b2cship')->select("SELECT AwbNo FROM Packet WHERE CreatedDate BETWEEN '$start' AND '$end'");
 
         if (count($totalBookings)) {
 
@@ -86,7 +86,7 @@ class B2cship_kyc_status extends Command
             $awb = implode(',', $totalBookingArray);
             $awb = ltrim($awb);
           
-            $kycStatus = DB::connection('mssql')->select("SELECT DISTINCT AwbNo, IsRejected FROM KYCStatus WHERE AwbNo IN ($awb) AND ModifiedDate BETWEEN '$start' AND '$end' ");
+            $kycStatus = DB::connection('b2cship')->select("SELECT DISTINCT AwbNo, IsRejected FROM KYCStatus WHERE AwbNo IN ($awb) AND ModifiedDate BETWEEN '$start' AND '$end' ");
             
             $kycApproved = [];
             $kycApprovedOffset = 0;

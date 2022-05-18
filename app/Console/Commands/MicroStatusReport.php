@@ -57,14 +57,14 @@ class MicroStatusReport extends Command
         $last30day_ed = $yesterday_ed;
         $file_path = "MicroStatusJson/microstatus_details.json";
 
-        $micro_status_mapping = DB::connection('mssql')->select("SELECT DISTINCT  MicroStatusCode, Status, MicroStatusName FROM MicroStatusMapping");
+        $micro_status_mapping = DB::connection('b2cship')->select("SELECT DISTINCT  MicroStatusCode, Status, MicroStatusName FROM MicroStatusMapping");
         $micro_status_name = [];
         foreach ($micro_status_mapping as $micro_status_value) {
             $micro_status_name[$micro_status_value->MicroStatusCode] = $micro_status_value->MicroStatusName;
 
             $micro_status[$micro_status_value->Status] = $micro_status_value->MicroStatusName;
         }
-        $packet_status = DB::connection('mssql')->select("SELECT DISTINCT
+        $packet_status = DB::connection('b2cship')->select("SELECT DISTINCT
             AwbNo, StatusDetails, CreatedDate 
             FROM PODTrans 
             WHERE CreatedDate BETWEEN '$last30day_sd' AND '$yesterday_ed'

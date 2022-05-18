@@ -14,10 +14,10 @@ class B2cshipbookingController extends Controller
   {
     
     $array = "'BOMBINO', 'BLUEDART', 'DELIVERY'";
-    $bombino_last_update = DB::connection('mssql')->select("SELECT TOP 1 CreatedDate, AwbNo  FROM PODTrans WHERE FPCode ='BOMBINO' ORDER BY CreatedDate DESC");
-    $bluedart_last_update = DB::connection('mssql')->select("SELECT TOP 1 CreatedDate, AwbNo  FROM PODTrans WHERE FPCode ='BLUEDART' ORDER BY CreatedDate DESC");
-    $dl_delhi_last_update = DB::connection('mssql')->select("SELECT TOP 1 CreatedDate, AwbNo  FROM PODTrans WHERE FPCode ='DL DELHI' ORDER BY CreatedDate DESC");
-    $delivery_last_update = DB::connection('mssql')->select("SELECT TOP 1 CreatedDate, AwbNo  FROM PODTrans WHERE FPCode ='DELIVERY' ORDER BY CreatedDate DESC");
+    $bombino_last_update = DB::connection('b2cship')->select("SELECT TOP 1 CreatedDate, AwbNo  FROM PODTrans WHERE FPCode ='BOMBINO' ORDER BY CreatedDate DESC");
+    $bluedart_last_update = DB::connection('b2cship')->select("SELECT TOP 1 CreatedDate, AwbNo  FROM PODTrans WHERE FPCode ='BLUEDART' ORDER BY CreatedDate DESC");
+    $dl_delhi_last_update = DB::connection('b2cship')->select("SELECT TOP 1 CreatedDate, AwbNo  FROM PODTrans WHERE FPCode ='DL DELHI' ORDER BY CreatedDate DESC");
+    $delivery_last_update = DB::connection('b2cship')->select("SELECT TOP 1 CreatedDate, AwbNo  FROM PODTrans WHERE FPCode ='DELIVERY' ORDER BY CreatedDate DESC");
     
     $date_details_array =[
        'Year','Month','Day','Hours', 'Minutes', 'Second'
@@ -87,7 +87,7 @@ class B2cshipbookingController extends Controller
     $Ofd = 0;
     $delivered = 0;
     $undeliverd = 0;
-    $totalBookings = DB::connection('mssql')->select("SELECT PacketStatus FROM Packet WHERE  CreatedDate BETWEEN '$start' AND '$end'");
+    $totalBookings = DB::connection('b2cship')->select("SELECT PacketStatus FROM Packet WHERE  CreatedDate BETWEEN '$start' AND '$end'");
     //    po($totalBookings);
     //    exit;
     foreach ($totalBookings as $totalBooking) {

@@ -65,7 +65,7 @@ class BombinoPacketActivitiesController extends Controller
             $content = json_decode($content);
             $final_array = array_merge($final_array, (array)$content);
         }
-        $packet_detials = DB::connection('mssql')->select("SELECT DISTINCT
+        $packet_detials = DB::connection('b2cship')->select("SELECT DISTINCT
         AwbNo, PODLocation, StatusDetails,FPCode,CreatedDate 
         from PODTrans
         WHERE CreatedDate BETWEEN convert(datetime, '$today_sd') AND convert(datetime,'$today_ed')
@@ -198,7 +198,7 @@ class BombinoPacketActivitiesController extends Controller
             $content = json_decode($content);
             $final_array = array_merge($final_array, (array)$content);
         }
-        $packet_detials = DB::connection('mssql')->select("SELECT DISTINCT
+        $packet_detials = DB::connection('b2cship')->select("SELECT DISTINCT
         AwbNo, PODLocation, StatusDetails,FPCode,CreatedDate 
         from PODTrans
         WHERE CreatedDate BETWEEN convert(datetime, '$today_sd') AND convert(datetime,'$today_ed')

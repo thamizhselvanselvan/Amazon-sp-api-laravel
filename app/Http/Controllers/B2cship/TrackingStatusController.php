@@ -34,7 +34,7 @@ class TrackingStatusController extends Controller
         $PODeventsArray = [];
         $offset = 0;
 
-        $PODtransEvents = DB::connection('mssql')->select("SELECT DISTINCT StatusDetails, FPCode FROM PODTrans ");
+        $PODtransEvents = DB::connection('b2cship')->select("SELECT DISTINCT StatusDetails, FPCode FROM PODTrans ");
         // WHERE StatusDetails NOT LIKE '%\[BOMBINO]%' ESCAPE '\' 
 
         // Making By default null for every code and description
@@ -68,17 +68,17 @@ class TrackingStatusController extends Controller
             }
         }
         //our master event table and Tracking Msg
-        $trackingEventsMapping = DB::connection('mssql')->select("SELECT TrackingMsg, TrackingMasterCode, OurEventCode, EventDescription FROM TrackingEventMapping");
+        $trackingEventsMapping = DB::connection('b2cship')->select("SELECT TrackingMsg, TrackingMasterCode, OurEventCode, EventDescription FROM TrackingEventMapping");
 
         //Micro Status table
-        $micro_status =  DB::connection('mssql')->select("SELECT DISTINCT Status, MicroStatusName FROM MicroStatusMapping ");
+        $micro_status =  DB::connection('b2cship')->select("SELECT DISTINCT Status, MicroStatusName FROM MicroStatusMapping ");
         $micro_status_array = [];
         foreach ($micro_status as $key => $status) {
             $micro_status_array[$status->Status] = $status->MicroStatusName;
         }
 
         //Amazon master event table
-        $trackingEventsMaster = DB::connection('mssql')->select("SELECT TrackingEventCode, EventCodeDescription FROM TrackingEventMaster");
+        $trackingEventsMaster = DB::connection('b2cship')->select("SELECT TrackingEventCode, EventCodeDescription FROM TrackingEventMaster");
 
         $trackingEventsMasterArray = [];
 
@@ -89,7 +89,7 @@ class TrackingStatusController extends Controller
             $trackingEventsMasterArray[$trackingEventMaster->TrackingEventCode] = $trackingEventMaster->EventCodeDescription;
         }
 
-        $B2CShipEventsMapping = DB::connection('mssql')->select("SELECT B2CShipMsg, B2CShipSource, IsActive from B2CShipEventMapping");
+        $B2CShipEventsMapping = DB::connection('b2cship')->select("SELECT B2CShipMsg, B2CShipSource, IsActive from B2CShipEventMapping");
         $trackingAPIMsg = [];
         foreach ($B2CShipEventsMapping as $B2CShipEventMapping) {
 
@@ -153,7 +153,7 @@ class TrackingStatusController extends Controller
             $PODeventsArray = [];
             $offset = 0;
 
-            $PODtransEvents = DB::connection('mssql')->select("SELECT DISTINCT StatusDetails, FPCode FROM PODTrans ");
+            $PODtransEvents = DB::connection('b2cship')->select("SELECT DISTINCT StatusDetails, FPCode FROM PODTrans ");
 
             foreach ($PODtransEvents as $PODtransEvent) {
                 $fpCode = $PODtransEvent->FPCode;
@@ -171,7 +171,7 @@ class TrackingStatusController extends Controller
                 }
             }
 
-            $micro_status =  DB::connection('mssql')->select("SELECT DISTINCT Status, MicroStatusName FROM MicroStatusMapping ");
+            $micro_status =  DB::connection('b2cship')->select("SELECT DISTINCT Status, MicroStatusName FROM MicroStatusMapping ");
             $micro_status_array = [];
             foreach ($micro_status as $key => $status) {
                 $micro_status_array[strtoupper($status->Status)] = strtoupper($status->MicroStatusName);
@@ -221,7 +221,7 @@ class TrackingStatusController extends Controller
         $offset_yesterdays = 0;
         $offset = 0;
 
-        $micro_status_mapping = DB::connection('mssql')->select("SELECT DISTINCT  MicroStatusCode, Status, MicroStatusName FROM MicroStatusMapping");
+        $micro_status_mapping = DB::connection('b2cship')->select("SELECT DISTINCT  MicroStatusCode, Status, MicroStatusName FROM MicroStatusMapping");
         $micro_status_name = [];
         foreach ($micro_status_mapping as $micro_status_value) {
             $micro_status_name[$micro_status_value->MicroStatusCode] = $micro_status_value->MicroStatusName;
@@ -239,7 +239,7 @@ class TrackingStatusController extends Controller
             return view('b2cship.trackingStatus.micro_status_report', compact(['micro_status_final_array']));
         }
 
-        $packet_status = DB::connection('mssql')->select("SELECT DISTINCT
+        $packet_status = DB::connection('b2cship')->select("SELECT DISTINCT
             AwbNo, StatusDetails, CreatedDate 
             FROM PODTrans 
             WHERE CreatedDate BETWEEN '$today_sd' AND '$today_ed'
