@@ -37,6 +37,7 @@ Route::resource('inventory/disposes','Inventory\Master\InventoryDisposeControlle
 Route::resource('inventory/warehouses','Inventory\InventoryWarehouseController');
 Route::resource('inventory/features','Inventory\InventoryFeaturesController');
 Route::resource('inventory/inwardings','Inventory\Stock\InventoryInwardingController');
+Route::resource('inventory/vendors','Inventory\InventoryVendorController');
 
 Route::resource('inventory/shipments','Inventory\inwarding\InventoryShipmentController');
 Route::get('shipment/select/view', 'Inventory\inwarding\InventoryShipmentController@selectView');
