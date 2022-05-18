@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Inventory\Outwarding;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\Inventory\Vendor;
 use App\Models\Inventory\Inventory;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory\Destination;
@@ -47,7 +48,8 @@ class InventoryOutwardShipmentController extends Controller
 
     public function create()
     {
-         $destination_lists = Destination::get();
+         $destination_lists =Vendor::where('type', 'Destination')->get();
+        //  dd($destination_lists);
         return view('inventory.outward.shipment.create',compact(('destination_lists')));
     }
 

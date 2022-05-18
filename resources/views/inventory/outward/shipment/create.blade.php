@@ -91,6 +91,17 @@
 
         </div>
     </div>
+    <div class="col-2">
+        <div class="form-group">
+            <x-adminlte-select name="country" label="Select Country:" id="country">
+                <option>Select Country</option>
+                @foreach ($destination_lists as $destination_list)
+                <option value="{{ $destination_list->id }}">{{$destination_list->country }}</option>
+                @endforeach
+            </x-adminlte-select>
+
+        </div>
+    </div>
     <!-- <div class="col-2">
         <div class="form-group">
             <label>Enter Shipment ID:</label>
