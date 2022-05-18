@@ -460,6 +460,7 @@ class BOEController extends Controller
             }
             // $writer->insertall($recordsfinal);
         });
+<<<<<<< HEAD
 
 
         //return $this->Download_BOE();
@@ -469,6 +470,10 @@ class BOEController extends Controller
         $path = Storage::path($file_path);
     
         return response()->json(['success' => '']);
+=======
+        return response()->json(['success' => 'BOE CSV Exported successfully']);
+        // return back()->intended('/BOE/Export/view')->with('success', 'BOE CSV Exported successfully');
+>>>>>>> 0eafffe4e02e252822e5d025d72a7ad6531e054b
     }
 
     public function Download_BOE()
@@ -476,11 +481,21 @@ class BOEController extends Controller
         $user = Auth::user();
         $company_id = $user->company_id;
         $file_path = "excel/downloads/BOE/$company_id/BOE_Details.csv";
+<<<<<<< HEAD
         if (Storage::exists($file_path)) {
             Log::alert("FILE EXISTS");
             return Storage::download($file_path);
         }
         return 'file not exist';
+=======
+
+        if (Storage::exists($file_path)) {
+            Log::alert("FILE EXISTS");
+            return response()->download(Storage::path($file_path));
+            // return Storage::download($exportFilePath);
+        }
+        return response()->json('error', 'File does not exists');
+>>>>>>> 0eafffe4e02e252822e5d025d72a7ad6531e054b
     }
 
     public function Upload()

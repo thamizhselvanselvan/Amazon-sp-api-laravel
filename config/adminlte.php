@@ -51,7 +51,7 @@ return [
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
     'logo_img_alt' => 'Mosh Ecom',
-
+    
     /*
     |--------------------------------------------------------------------------
     | User Menu
