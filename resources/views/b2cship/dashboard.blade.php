@@ -92,4 +92,29 @@
         @endforeach
     </tbody>
 </table>
+<br>
+<h3 class="m-0 text-dark">B2CShip Booking And Kyc Status</h3>
+<table class="table table-bordered yajra-datatable table-striped">
+    <thead>
+        <tr>
+            <td>Description </td>
+            <td>AwbNo</td>
+            <td>Days</td>
+            <td>Time</td>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach ($kyc_booking_status as $value)
+
+        <tr>
+            <td>{{$value['Status']}}</td>
+            <td>{{$value['AwbNo']}}</td>
+            <td>{{$value['day']}}</td>
+            <td>{{$value['time']}}</td>
+
+        </tr>
+        @endforeach
+    </tbody>
+</table>
 @stop

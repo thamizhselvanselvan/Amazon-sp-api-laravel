@@ -11,6 +11,8 @@ class B2cshipDashboardController extends Controller
 {
   public function Dashboard()
   {
+    $kyc_booking_status = $this->BookingAndKycStatusDetails();
+
     $status_detials = DB::connection('b2cship')->select("SELECT StatusDetails, AwbNo, CreatedDate,FPCode
         FROM (
               SELECT StatusDetails, AwbNo, CreatedDate, FPCode
@@ -34,7 +36,7 @@ class B2cshipDashboardController extends Controller
     }
     $bombino_status = $this->BombinoStatus();
     $delivery_status = $this->BlueDartAndDeliveryStatus();
-    return view('b2cship.dashboard', compact(['status_detials_array', 'bombino_status', 'delivery_status']));
+    return view('b2cship.dashboard', compact(['status_detials_array', 'bombino_status', 'delivery_status','kyc_booking_status']));
   }
 
   public function CarbonGetDateDiff($date)
@@ -54,30 +56,64 @@ class B2cshipDashboardController extends Controller
       $count++;
     }
     return  [
-      'Days' => $differnce->days>1 ? $differnce->days.' Days': $differnce->days.' Day',
-      'time' => rtrim($final_date, ' ,').' Before'
+      'Days' => $differnce->days > 1 ? $differnce->days . ' Days' : $differnce->days . ' Day',
+      'time' => rtrim($final_date, ' ,') . ' Before'
     ];
   }
   public function BookingAndKycStatusDetails()
   {
-    // $kyc_status = DB::connection('b2cship')->select("SELECT Status, AwbNo,CreatedDate
-    //     FROM (
-    //           SELECT Status, AwbNo, CreatedDate
-    //                 , ROW_NUMBER() OVER(PARTITION BY Status ORDER BY CreatedDate desc)row_num
-    //           FROM KYCStatus
-    //         ) sub
-    //     WHERE row_num = 1");
+    $kyc_received = DB::connection('b2cship')->select("SELECT TOP 1 AWBNO, CreatedDate
+    FROM Packet WHERE IsKYC ='true' ORDER BY CreatedDate DESC");
 
-    // po($kyc_status);
-    // exit;
+    $kyc_status = DB::connection('b2cship')->select("SELECT AwbNo, CreatedDate, Status
+        FROM (
+              SELECT Status, AwbNo, CreatedDate
+                    , ROW_NUMBER() OVER(PARTITION BY ISRejected ORDER BY CreatedDate desc)row_num
+              FROM KYCStatus Where Status != '' 
+            ) sub
+        WHERE row_num = 1");
 
+    $b2c_booking = DB::connection('b2cship')->select("SELECT TOP 1 AWBNO, CreatedDate
+    FROM Packet ORDER BY CreatedDate DESC");
+    
+    $date_booking = $this->CarbonGetDateDiff($b2c_booking[0]->CreatedDate);
 
-    exit;
+    $b2c_booking_array[0] = [
+      'Status' => 'B2CShip Booking',
+      'AwbNo' => $b2c_booking[0]->AWBNO,
+      'day' => $date_booking['Days'],
+      'time' => $date_booking['time']
+    ];
+
+    $date_time = $this->CarbonGetDateDiff($kyc_received[0]->CreatedDate);
+    $kyc_received_array[0] = [
+      'Status' => 'KYC Received',
+      'AwbNo' => $kyc_received[0]->AWBNO,
+      'day' => $date_time['Days'],
+      'time' => $date_time['time']
+    ];
+
+    $kyc_status_array = [];
+    foreach($kyc_status as $key => $value)
+    {
+      $date = $value->CreatedDate;
+      $date_time = $this->CarbonGetDateDiff($date);
+
+      $kyc_status_array[$key] = [
+
+        'Status' => 'KYC '.$value->Status,
+        'AwbNo' => $value->AwbNo,
+        'day' => $date_time['Days'],
+        'time' => $date_time['time']
+      ];
+    }
+
+    return array_merge($b2c_booking_array, $kyc_status_array, $kyc_received_array);
   }
 
   public function BombinoStatus()
   {
-    $kyc_status = DB::connection('b2cship')->select("SELECT StatusDetails, AwbNo, CreatedDate
+    $bombino_status = DB::connection('b2cship')->select("SELECT StatusDetails, AwbNo, CreatedDate
         FROM (
               SELECT StatusDetails, AwbNo, CreatedDate
                     , ROW_NUMBER() OVER(PARTITION BY StatusDetails ORDER BY CreatedDate desc)row_num
@@ -87,18 +123,18 @@ class B2cshipDashboardController extends Controller
     $bombino_each_staus_detials = [];
     $ignore = 'Run No.';
     $offset = 0;
-    foreach ($kyc_status as $value) {
+    foreach ($bombino_status as $value) {
 
       if (!str_contains($value->StatusDetails, $ignore)) {
 
         $date = $value->CreatedDate;
         $final_date = $this->CarbonGetDateDiff($date);
-        $bombino_each_staus_detials[$offset]=
-        [ 
-          'Status' => $value->StatusDetails,
-          'day' => $final_date['Days'],
-          'time' => $final_date['time'],
-        ];
+        $bombino_each_staus_detials[$offset] =
+          [
+            'Status' => $value->StatusDetails,
+            'day' => $final_date['Days'],
+            'time' => $final_date['time'],
+          ];
 
         $offset++;
       }
