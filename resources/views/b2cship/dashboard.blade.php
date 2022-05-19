@@ -22,30 +22,21 @@
         <tr>
             <td>Description</td>
             <td>Last Record</td>
+            <td>Days</td>
             <td>Time</td>
         </tr>
     </thead>
     <tbody>
+        @foreach ($status_detials_array as $value)
         <tr>
-            <td>Bombino</td>
-            <td>{{$bombino_date['lastRecord']}}</td>
-            <td>{{$bombino_date['Diff']}}</td>
+            <td>{{$value['FPCode']}}</td>
+            <td>{{$value['StatusDetials']}} </td>
+            <td>{{$value['day']}}</td>
+            <td>{{$value['time']}}</td>
+
         </tr>
-        <tr>
-            <td>Bluedart</td>
-            <td>{{$bluedart_date['lastRecord']}}</td>
-            <td>{{$bluedart_date['Diff']}}</td>
-        </tr>
-        <tr>
-            <td>DL Delhi</td>
-            <td>{{$dl_delhi_date['lastRecord']}}</td>
-            <td>{{$dl_delhi_date['Diff']}}</td>
-        </tr>
-        <tr>
-            <td>Delivery</td>
-            <td>{{$delivery_date['lastRecord']}}</td>
-            <td>{{$delivery_date['Diff']}}</td>
-        </tr>
+
+        @endforeach
     </tbody>
 </table>
 <br>
@@ -53,23 +44,26 @@
 
 <table class="table table-bordered yajra-datatable table-striped">
 
-<thead>
-    <tr>
-        <td>Description </td>
-        <td>Status</td>
-        <td>Updated Date</td>
-    </tr>
-</thead>
-<tbody>
-    @foreach ($bombino_status as $value )
+    <thead>
+        <tr>
+            <td>Description </td>
+            <td>Status</td>
+            <td>Days</td>
+            <td>Time</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach ($bombino_status as $value )
         <tr>
             <td>Bombino</td>
             <td>{{$value['Status']}}</td>
-            <td>{{$value['updatedDate']}}</td>
+            <td>{{$value['day']}}</td>
+            <td>{{$value['time']}}</td>
+
         </tr>
-    @endforeach
-    <tr></tr>
-</tbody>
+        @endforeach
+        <tr></tr>
+    </tbody>
 </table>
 
 <br>
@@ -80,18 +74,21 @@
         <tr>
             <td>Description </td>
             <td>Status</td>
-            <td>Updated Date</td>
+            <td>Days</td>
+            <td>Time</td>
         </tr>
     </thead>
 
     <tbody>
         @foreach ($delivery_status as $value)
-            
-            <tr>
-                <td>{{$value['FPCode']}}</td>
-                <td>{{$value['StatusDetails']}}</td>
-                <td>{{$value['updatedDate']}}</td>
-            </tr>
+
+        <tr>
+            <td>{{$value['FPCode']}}</td>
+            <td>{{$value['StatusDetails']}}</td>
+            <td>{{$value['day']}}</td>
+            <td>{{$value['time']}}</td>
+
+        </tr>
         @endforeach
     </tbody>
 </table>

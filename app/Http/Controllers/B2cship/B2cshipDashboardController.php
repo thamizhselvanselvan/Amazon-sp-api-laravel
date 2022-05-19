@@ -11,62 +11,36 @@ class B2cshipDashboardController extends Controller
 {
   public function Dashboard()
   {
-    // $this->BlueDartAndDeliveryStatus();
-    // exit;
-    $array = "'BOMBINO', 'BLUEDART', 'DELIVERY'";
-    $bombino_last_update = DB::connection('b2cship')->select("SELECT TOP 1 CreatedDate, AwbNo, StatusDetails  FROM PODTrans WHERE FPCode ='BOMBINO' ORDER BY CreatedDate DESC");
-    $bluedart_last_update = DB::connection('b2cship')->select("SELECT TOP 1 CreatedDate, AwbNo, StatusDetails  FROM PODTrans WHERE FPCode ='BLUEDART' ORDER BY CreatedDate DESC");
-    $dl_delhi_last_update = DB::connection('b2cship')->select("SELECT TOP 1 CreatedDate, AwbNo, StatusDetails  FROM PODTrans WHERE FPCode ='DL DELHI' ORDER BY CreatedDate DESC");
-    $delivery_last_update = DB::connection('b2cship')->select("SELECT TOP 1 CreatedDate, AwbNo, StatusDetails  FROM PODTrans WHERE FPCode ='DELIVERY' ORDER BY CreatedDate DESC");
+    $status_detials = DB::connection('b2cship')->select("SELECT StatusDetails, AwbNo, CreatedDate,FPCode
+        FROM (
+              SELECT StatusDetails, AwbNo, CreatedDate, FPCode
+                    , ROW_NUMBER() OVER(PARTITION BY FPCode ORDER BY CreatedDate desc)row_num
+              FROM PODTrans Where FPCode != '' AND FPCode != 'BD Delhi' 
+            ) sub
+        WHERE row_num = 1");
 
-    $date_details_array = ['Year', 'Month', 'Day', 'Hour', 'Minute', 'Second'];
+    $status_detials_array = [];
+    foreach ($status_detials as $key => $value) {
+      $date = $value->CreatedDate;
+      $date_time = $this->CarbonGetDateDiff($date);
+      $status_detials_array[$key] = [
 
-    $bombino_date = $this->CarbonDateDiff($bombino_last_update, $date_details_array);
-    $dl_delhi_date = $this->CarbonDateDiff($dl_delhi_last_update, $date_details_array);
-    $bluedart_date = $this->CarbonDateDiff($bluedart_last_update, $date_details_array);
-    $delivery_date = $this->CarbonDateDiff($delivery_last_update, $date_details_array);
+        'StatusDetials' => $value->StatusDetails . ' [' . $value->AwbNo . ']',
+        'FPCode' => $value->FPCode,
+        'day' => $date_time['Days'],
+        'time' => $date_time['time'],
 
+      ];
+    }
     $bombino_status = $this->BombinoStatus();
     $delivery_status = $this->BlueDartAndDeliveryStatus();
-    return view('b2cship.dashboard', compact(['bombino_date', 'dl_delhi_date', 'bluedart_date', 'delivery_date','bombino_status','delivery_status']));
-  }
-
-  public function CarbonDateDiff($last_update_date, $date_details_array)
-  {
-    if ($last_update_date) {
-
-      $date = $last_update_date[0]->CreatedDate;
-      $date = substr($date, 0, strpos($date, "."));
-      $created = new Carbon($date);
-      $now = Carbon::now();
-      $differnce = $created->diff($now);
-      $final_date = '';
-      $count = 0;
-      foreach ((array)$differnce as $key => $value) {
-        if ($value != 0 && $count < 6) {
-          $final_date .= $value > 1 ? $value . ' ' . $date_details_array[$count] . 's,  ' : $value . ' ' . $date_details_array[$count] . ',  ';
-        }
-        $count++;
-      }
-      $time_array = [
-        'lastRecord' => $last_update_date[0]->AwbNo . '  ' . $last_update_date[0]->StatusDetails,
-        'Diff' => rtrim($final_date, ',  ') . ' before',
-      ];
-      return $time_array;
-    } else {
-      $time_array = [
-        'lastRecord' => 'NA',
-        'Diff' => 'NA'
-      ];
-      return $time_array;
-    }
+    return view('b2cship.dashboard', compact(['status_detials_array', 'bombino_status', 'delivery_status']));
   }
 
   public function CarbonGetDateDiff($date)
   {
     $date_details_array = ['Year', 'Month', 'Day', 'Hour', 'Minute', 'Second'];
 
-    // $date = $last_update_date[0]->CreatedDate;
     $date = substr($date, 0, strpos($date, "."));
     $created = new Carbon($date);
     $now = Carbon::now();
@@ -74,12 +48,15 @@ class B2cshipDashboardController extends Controller
     $final_date = '';
     $count = 0;
     foreach ((array)$differnce as $key => $value) {
-      if ($value != 0 && $count < 6) {
+      if ($value != 0 && $count < 6 && $count > 2) {
         $final_date .= $value > 1 ? $value . ' ' . $date_details_array[$count] . 's,  ' : $value . ' ' . $date_details_array[$count] . ',  ';
       }
       $count++;
     }
-    return $final_date;
+    return  [
+      'Days' => $differnce->days>1 ? $differnce->days.' Days': $differnce->days.' Day',
+      'time' => rtrim($final_date, ' ,').' Before'
+    ];
   }
   public function BookingAndKycStatusDetails()
   {
@@ -94,7 +71,7 @@ class B2cshipDashboardController extends Controller
     // po($kyc_status);
     // exit;
 
-   
+
     exit;
   }
 
@@ -108,21 +85,25 @@ class B2cshipDashboardController extends Controller
             ) sub
         WHERE row_num = 1");
     $bombino_each_staus_detials = [];
-    $date_details_array = ['Year', 'Month', 'Day', 'Hour', 'Minute', 'Second'];
     $ignore = 'Run No.';
     $offset = 0;
     foreach ($kyc_status as $value) {
 
-      if(!str_contains($value->StatusDetails, $ignore)) {
+      if (!str_contains($value->StatusDetails, $ignore)) {
 
-        $bombino_each_staus_detials[$offset]['Status'] = $value->StatusDetails;
         $date = $value->CreatedDate;
         $final_date = $this->CarbonGetDateDiff($date);
-        $bombino_each_staus_detials[$offset]['updatedDate'] = $final_date;
+        $bombino_each_staus_detials[$offset]=
+        [ 
+          'Status' => $value->StatusDetails,
+          'day' => $final_date['Days'],
+          'time' => $final_date['time'],
+        ];
+
         $offset++;
       }
     }
-   return $bombino_each_staus_detials;
+    return $bombino_each_staus_detials;
   }
 
 
@@ -136,19 +117,18 @@ class B2cshipDashboardController extends Controller
         ) sub
     WHERE row_num = 1");
 
-      $delivery_status = [];
-      foreach($delivery_last_update as $key => $value)
-      {
-        $date = $value->CreatedDate;
-        $final_date = $this->CarbonGetDateDiff($date);
-        $delivery_status[$key] =[
+    $delivery_status = [];
+    foreach ($delivery_last_update as $key => $value) {
+      $date = $value->CreatedDate;
+      $final_date = $this->CarbonGetDateDiff($date);
+      $delivery_status[$key] = [
 
-          'StatusDetails' => $value->PacketStatus.' [ '.$value->AwbNo.' ] ',
-          'FPCode' => $value->FPCode,
-          'updatedDate' => $final_date
-        ];
-      }
-      return $delivery_status;
-    // po($delivery_last_update);
+        'StatusDetails' => $value->PacketStatus . ' [ ' . $value->AwbNo . ' ] ',
+        'FPCode' => $value->FPCode,
+        'day' => $final_date['Days'],
+        'time' => $final_date['time'],
+      ];
+    }
+    return $delivery_status;
   }
 }
