@@ -40,10 +40,13 @@
                     <tr>
                         <th> ID</th>
                         <th>Shipment ID</th>
+                        <th>Warehouse</th>
                         <th>Source</th>
+                        <th>Country</th>
                         <th>ASIN</th>
                         <th>Item Name</th>
                         <th>Price</th>
+                        <th>Currency</th>
                         <th>Quantity</th>
                         <th>Inwarding Date</th>
                     </tr>
@@ -74,8 +77,16 @@
                         name: 'ship_id'
                     },
                     {
-                        data: 'source_name',
-                        name: 'source_name'
+                        data: 'warehouse',
+                        name: 'warehouse'
+                    },
+                    {
+                        data: 'source_id',
+                        name: 'source_id'
+                    },
+                    {
+                        data: 'country',
+                        name: 'country'
                     },
                     {
                         data: 'asin',
@@ -88,6 +99,10 @@
                     {
                         data: 'price',
                         name: 'price'
+                    },
+                    {
+                        data: 'currency',
+                        name: 'currency'
                     },
                     {
                         data: 'quantity',

@@ -73,6 +73,17 @@
 <div class="row">
     <div class="col-2">
         <div class="form-group">
+            <x-adminlte-select name="warehouse" label="Select warehouse:" id="warehouse">
+                <option>Select warehouse</option>
+                @foreach ($ware_lists as $ware_list)
+                <option value="{{ $ware_list->id }}">{{$ware_list->name }}</option>
+                @endforeach
+            </x-adminlte-select>
+
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="form-group">
             <label>Enter ASIN:</label>
             <div class="autocomplete" style="width:200px;">
                 <input id="upload_asin" type="text" autocomplete="off" name="upload_asin" placeholder="Enter Asin here..." class="form-control">
@@ -110,6 +121,11 @@
             </div>
         </div>
     </div> -->
+
+    <div class="col-1">
+        <x-adminlte-input label="Currency:" name="currency" type="text" placeholder="Currency" />
+
+    </div>
     <div class="col text-right">
         <div style="margin-top: 1.8rem;">
             <!-- //<a href="/shipment/storeshipment"> -->
@@ -118,6 +134,7 @@
 
         </div>
     </div>
+
 </div>
 
 <div class="row">
@@ -150,7 +167,7 @@
     });
 
 
-    
+
     $(".create_outshipmtn_btn").on("click", function() {
         let self = $(this);
         let table = $("#outward_table tbody tr");
@@ -196,11 +213,11 @@
         });
 
     });
- 
-    function getBack(){
+
+    function getBack() {
         // window.location.assign('/inventory/shipments')
         window.location.href = '/inventory/outwardings'
-    
+
     }
     autocomplete(document.getElementById("upload_asin"));
 
@@ -349,7 +366,7 @@
                 html += "<td name='asin[]'>" + arr.asin + "</td>";
                 html += "<td name='name[]'>" + arr.item_name + "</td>";
                 html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
-                html += '<td> <input type="text" value="1" name="price[]" id="price"> </td>'
+                html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
                 html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
                 html += "</tr>";
 
@@ -359,11 +376,10 @@
                 // console.log(response);
             }
         });
-    }  
-        $('#outward_table').on('click', ".remove1", function() {
+    }
+    $('#outward_table').on('click', ".remove1", function() {
 
-            $(this).closest("tr").remove();
-        });
-  
-  </script>
+        $(this).closest("tr").remove();
+    });
+</script>
 @stop

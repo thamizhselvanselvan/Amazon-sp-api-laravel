@@ -31,9 +31,9 @@
             <a href="{{ route('shipments.create') }}">
                     <x-adminlte-button label="Create Shipment" theme="primary" icon="fas fa-plus" />
                 </a>
-                <a href="{{ route('shipments.view') }}">
+                <!-- <a href="{{ route('shipments.view') }}">
                     <x-adminlte-button label="View Shipment" theme="primary" icon="fas fa-file" />
-                </a>
+                </a> -->
             </h2> 
 
             </h2> 
@@ -44,7 +44,7 @@
                         <th>ID</th>
                         <th>Shipment ID</th>
                         <th>Source</th>
-                        <!-- <th>Action</th> -->
+                        <th>Action</th>
                        
                     </tr>
                 </thead>
@@ -82,11 +82,11 @@
                         name: 'source_name'
                     },
                    
-                    // {
-                    //     data: 'action',
-                    //     orderable: false,
-                    //     searchable: false
-                    // },
+                    {
+                        data: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
                 ]
             });
             $(document).on('click', ".delete", function(e) {

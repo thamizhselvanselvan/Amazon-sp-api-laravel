@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Inventory\Vendor;
 use App\Models\Inventory\Inventory;
+use App\Models\Inventory\Warehouse;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory\Destination;
 use App\Models\Inventory\Outshipment;
@@ -22,13 +23,13 @@ class InventoryOutwardShipmentController extends Controller
         
             if ($request->ajax()) {
     
-                $data = Outshipment::select("ship_id", "destination_id")->distinct()->with(['destinations']);
+                $data = Outshipment::select("ship_id", "destination_id")->distinct()->with(['vendors']);
     
     
                 return DataTables::of($data)
                     ->addIndexColumn()
                     ->addColumn('destination_name', function ($data) {
-                        return ($data->destinations) ? $data->destinations->name : " NA";
+                        return ($data->vendors) ? $data->vendors->name : " NA";
                     })
                     ->addColumn('action', function ($row) {
     
@@ -50,7 +51,8 @@ class InventoryOutwardShipmentController extends Controller
     {
          $destination_lists =Vendor::where('type', 'Destination')->get();
         //  dd($destination_lists);
-        return view('inventory.outward.shipment.create',compact(('destination_lists')));
+         $ware_lists = Warehouse::get();
+        return view('inventory.outward.shipment.create',compact('destination_lists','ware_lists'));
     }
 
     public function autofinish(Request $request)
@@ -101,7 +103,7 @@ class InventoryOutwardShipmentController extends Controller
 
         if ($request->ajax()) {
 
-            $data = Outshipment::query()->with(['destinations']);
+            $data = Outshipment::query();
 
             return DataTables::of($data)
                 ->addIndexColumn()

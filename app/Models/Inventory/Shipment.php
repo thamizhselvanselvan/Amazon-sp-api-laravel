@@ -11,7 +11,7 @@ class Shipment extends Model
     protected $connection = 'inventory';
     protected $fillable = ['source_id','asin','ship_id','item_name','quantity','price','currency','country','warehouse'];
 
-    public function sources() {
-        return $this->hasOne(Source::class, 'id', 'source_id');
+    public function vendors() {
+        return $this->hasOne(Vendor::class, 'id', 'source_id');
     }
 }

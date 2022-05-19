@@ -26,21 +26,21 @@ class InventoryShipmentController extends Controller
 
         if ($request->ajax()) {
 
-            $data = Shipment::select("ship_id")->distinct();
+            $data = Shipment::select("ship_id","source_id")->distinct()->with(['vendors']);
 
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                // ->addColumn('type', function ($data) {
-                //     return ($data->type) ? $data->vendors->name : " NA";
-                // })
+                ->addColumn('source_name', function ($data) {
+                    return ($data->vendors) ? $data->vendors->name : " NA";
+                })
                 ->addColumn('action', function ($row) {
 
-                    $actionBtn = '<div class="d-flex"><a href="/inventory/shipments/' . $row->id . '/edit" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
-                    $actionBtn .= '<button data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
+                    $actionBtn = '<div class="d-flex"><a href="/inventory/shipments/' . $row->id . '/edit" class="edit btn btn-success btn-sm"><i class="fas fa-file `   "></i> View Shipment</a>';
+                    // $actionBtn .= '<button data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
                     return $actionBtn;
                 })
-                // ->rawColumns(['action'])
+                ->rawColumns(['source_name', 'action'])
                 ->make(true);
         }
 
@@ -51,8 +51,8 @@ class InventoryShipmentController extends Controller
     {
       
         $source_lists = Vendor::where('type', 'Source')->get();
-        //   dd($source_lists);
         $ware_lists = Warehouse::get();
+        // dd($ware_lists);
         return view('inventory.inward.shipment.create', compact('source_lists','ware_lists'));
     }
 
@@ -146,7 +146,6 @@ class InventoryShipmentController extends Controller
             $create[] = [
                 "Ship_id" => $ship_id,
                 "warehouse" => $request->warehouse,
-                "country" => $request->country,
                 "currency" => $request->currency,
                 "source_id" => $request->source,
                 "asin" => $asin,
@@ -157,9 +156,7 @@ class InventoryShipmentController extends Controller
                 "updated_at" => now()
             ];
         }
-
-        // return $create;
-
+    
         Shipment::insert($create);
 
         foreach ($request->asin as $key => $asin) {
@@ -180,13 +177,13 @@ class InventoryShipmentController extends Controller
     {
         if ($request->ajax()) {
 
-            $data = Shipment::query()->with(['sources']);
+            $data = Shipment::query();
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('source_name', function ($data) {
-                    return ($data->sources) ? $data->sources->name : " NA";
-                })
+                // ->addColumn('source_name', function ($data) {
+                //     return ($data->sources) ? $data->sources->name : " NA";
+                // })
                     ->editColumn('created_at', function ($row) {
                         return Carbon::parse($row['created_at'])->format('M d Y');
                    

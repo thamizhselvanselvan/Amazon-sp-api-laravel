@@ -102,7 +102,7 @@
 
         </div>
     </div>
-    <div class="col-2">
+    <!-- <div class="col-2">
         <div class="form-group">
             <x-adminlte-select name="country" label="Select Country:" id="country">
                 <option>Select Country</option>
@@ -112,7 +112,7 @@
             </x-adminlte-select>
 
         </div>
-    </div>
+    </div> -->
     <div class="col-1">
         <x-adminlte-input label="Currency:" name="currency" type="text" placeholder="Currency" />
 
@@ -225,6 +225,13 @@
 
     }
 
+
+    // const div = document.getElementById("warehouse");
+    // div.addEventListener("click", function() {
+    // 	// hide element: element.hidden = true;
+    // 	// show element: element.hidden = false;
+    // 	div.hidden = false;
+    // });
 
 
 
@@ -395,7 +402,7 @@
                 html += "<td name='asin[]'>" + arr.asin1 + "</td>";
                 html += "<td name='name[]'>" + arr.item_name + "</td>";
                 html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
-                html += '<td> <input type="text" value="1" name="price[]" id="price"> </td>'
+                html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
                 html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
                 html += "</tr>";
 
