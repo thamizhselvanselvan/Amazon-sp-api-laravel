@@ -48,7 +48,7 @@
         </tr>
     </tbody>
 </table>
-
+<br>
 <h3 class="m-0 text-dark">Bombino Status Details</h3>
 
 <table class="table table-bordered yajra-datatable table-striped">
@@ -70,5 +70,29 @@
     @endforeach
     <tr></tr>
 </tbody>
+</table>
+
+<br>
+<h3 class="m-0 text-dark">Bluedart, DL Delhi And Delivery Last Packet Delivered Status</h3>
+
+<table class="table table-bordered yajra-datatable table-striped">
+    <thead>
+        <tr>
+            <td>Description </td>
+            <td>Status</td>
+            <td>Updated Date</td>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach ($delivery_status as $value)
+            
+            <tr>
+                <td>{{$value['FPCode']}}</td>
+                <td>{{$value['StatusDetails']}}</td>
+                <td>{{$value['updatedDate']}}</td>
+            </tr>
+        @endforeach
+    </tbody>
 </table>
 @stop
