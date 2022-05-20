@@ -4,7 +4,7 @@ use App\Http\Controllers\PMSPHPUnitTestController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('seller/')->group(function () {
-    Route::get('asin-master', 'seller\AsinMasterController@index');
+    Route::get('asin-master', 'seller\AsinMasterController@index')->name('asin-master');
     Route::get('add-asin', 'seller\AsinMasterController@addAsin');
     Route::get('import-bulk-asin', 'seller\AsinMasterController@importBulkAsin');
     Route::get('export-asin', 'seller\AsinMasterController@exportAsinToCSV');
