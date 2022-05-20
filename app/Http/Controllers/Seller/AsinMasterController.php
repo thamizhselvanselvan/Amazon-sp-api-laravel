@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\seller;
+namespace App\Http\Controllers\Seller;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
