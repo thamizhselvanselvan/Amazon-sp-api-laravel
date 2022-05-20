@@ -42,7 +42,6 @@
                         <th>Shipment ID</th>
                         <th>Warehouse</th>
                         <th>Source</th>
-                        <th>Country</th>
                         <th>ASIN</th>
                         <th>Item Name</th>
                         <th>Price</th>
@@ -77,17 +76,14 @@
                         name: 'ship_id'
                     },
                     {
-                        data: 'warehouse',
-                        name: 'warehouse'
+                        data: 'warehouse_name',
+                        name: 'warehouse_name'
                     },
                     {
-                        data: 'source_id',
-                        name: 'source_id'
+                        data: 'source_name',
+                        name: 'source_name'
                     },
-                    {
-                        data: 'country',
-                        name: 'country'
-                    },
+                    
                     {
                         data: 'asin',
                         name: 'asin'

@@ -6,12 +6,13 @@ use Carbon\Carbon;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\Inventory\Source;
+use App\Models\Inventory\Vendor;
 use App\Models\Inventory\Shipment;
 use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
-use App\Http\Controllers\Controller;
-use App\Models\Inventory\Vendor;
 use App\Models\Inventory\Warehouse;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
 class InventoryShipmentController extends Controller
@@ -35,9 +36,9 @@ class InventoryShipmentController extends Controller
                     return ($data->vendors) ? $data->vendors->name : " NA";
                 })
                 ->addColumn('action', function ($row) {
-
-                    $actionBtn = '<div class="d-flex"><a href="/inventory/shipments/' . $row->id . '/edit" class="edit btn btn-success btn-sm"><i class="fas fa-file `   "></i> View Shipment</a>';
-                    // $actionBtn .= '<button data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
+                    $actionBtn = '<div class="d-flex"><a href="/inventory/shipments' . $row->id . '/edit" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i>  View Shipment</a>';
+                    // $actionBtn = '<div class="d-flex"><a href=/shipment/single/view class="edit btn btn-success btn-sm"><i class="fas fa-file `   "></i> View Shipment</a>';
+                   
                     return $actionBtn;
                 })
                 ->rawColumns(['source_name', 'action'])
@@ -78,13 +79,13 @@ class InventoryShipmentController extends Controller
 
     //     return redirect()->route('shipments.index')->with('success', 'Shipment ' . $request->Ship_id . ' has been created successfully');
     // }
-    // public function edit($id)
-    // {
+    public function edit($id)
+    {
 
-    //     $name = Shipment::where('id', $id)->first();
+        $name = Shipment::where('id', $id)->first();
 
-    //     return view('inventory.inward.shipment.edit', compact('name'));
-    // }
+        return view('inventory.inward.shipment.edit', compact('name'));
+    }
 
 
     // public function update(Request $request, $id)
@@ -177,19 +178,24 @@ class InventoryShipmentController extends Controller
     {
         if ($request->ajax()) {
 
-            $data = Shipment::query();
+            $data = Shipment::query()->with(['vendors','warehouses']);
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                // ->addColumn('source_name', function ($data) {
-                //     return ($data->sources) ? $data->sources->name : " NA";
-                // })
+
+                ->editColumn('source_name', function ($data) {
+                    return ($data->vendors) ? $data->vendors->name : "NA";
+                })
+                ->editColumn('warehouse_name', function ($data) {
+                    return ($data->warehouses) ? $data->warehouses->name : "NA";
+                })
+                
                     ->editColumn('created_at', function ($row) {
                         return Carbon::parse($row['created_at'])->format('M d Y');
                    
                     
                 })
-                ->rawColumns(['source_name','created_at'])
+                ->rawColumns(['source_name','created_at','warehouse_name'])
                 ->make(true);
         }
 

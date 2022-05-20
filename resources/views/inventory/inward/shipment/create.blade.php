@@ -85,14 +85,6 @@
     </div>
     <div class="col-2">
         <div class="form-group">
-            <label>Enter ASIN:</label>
-            <div class="autocomplete" style="width:200px;">
-                <input id="upload_asin" type="text" autocomplete="off" name="upload_asin" placeholder="Enter Asin here..." class="form-control">
-            </div>
-        </div>
-    </div>
-    <div class="col-2">
-        <div class="form-group">
             <x-adminlte-select name="source" label="Select Source:" id="source">
                 <option>Select source</option>
                 @foreach ($source_lists as $source_list)
@@ -102,30 +94,18 @@
 
         </div>
     </div>
-    <!-- <div class="col-2">
+    <div class="col-2">
         <div class="form-group">
-            <x-adminlte-select name="country" label="Select Country:" id="country">
-                <option>Select Country</option>
-                @foreach ($source_lists as $source_list)
-                <option value="{{ $source_list->id }}">{{$source_list->country }}</option>
-                @endforeach
-            </x-adminlte-select>
-
-        </div>
-    </div> -->
-    <div class="col-1">
-        <x-adminlte-input label="Currency:" name="currency" type="text" placeholder="Currency" />
-
-    </div>
-
-    <!-- <div class="col-2">
-        <div class="form-group">
-            <label>Enter Shipment ID:</label>
-            <div class="Shipment" style="width:200px;">
-                <input id="Shipment" type="text" name="Shipment" placeholder="enter Shipment ID" class="form-control">
+            <label>Enter ASIN:</label>
+            <div class="autocomplete" style="width:200px;">
+                <input id="upload_asin" type="text" autocomplete="off" name="upload_asin" placeholder="Enter Asin here..." class="form-control">
             </div>
         </div>
-    </div> -->
+    </div>
+   
+    <div class="col-1">
+        <x-adminlte-input label="Currency:" name="currency" type="text" placeholder="Currency" />
+    </div>
     <div class="col text-right">
         <div style="margin-top: 1.8rem;">
             <!-- //<a href="/shipment/storeshipment"> -->
