@@ -47,7 +47,7 @@
 @stop
 
 @section('content_header')
-<h1 class="m-0 text-dark"> Inward Shipment</h1>
+<h1 class="m-0 text-dark">Shipment</h1>
 @stop
 @section('content')
 <!-- 
@@ -94,7 +94,7 @@
 
         </div>
     </div>
-    <div class="col-2">
+    <div class="col-2"  id="asin">
         <div class="form-group">
             <label>Enter ASIN:</label>
             <div class="autocomplete" style="width:200px;">
@@ -102,14 +102,16 @@
             </div>
         </div>
     </div>
-   
+
     <div class="col-1">
-        <x-adminlte-input label="Currency:" name="currency" type="text" placeholder="Currency" />
+        <div id="currency">
+        <x-adminlte-input label="Currency:" name="currency" type="text" placeholder="Currency"  />
+    </div>
     </div>
     <div class="col text-right">
         <div style="margin-top: 1.8rem;">
             <!-- //<a href="/shipment/storeshipment"> -->
-            <x-adminlte-button label="Create Shipment" theme="primary" onclick="getBack()" icon="fas fa-plus" class="btn-sm create_shipmtn_btn" />
+            <x-adminlte-button label="Create Shipment" theme="primary" onclick="getBack()" icon="fas fa-plus" id="create" class="btn-sm create_shipmtn_btn" />
             <!-- </a> -->
 
         </div>
@@ -206,12 +208,21 @@
     }
 
 
-    // const div = document.getElementById("warehouse");
-    // div.addEventListener("click", function() {
-    // 	// hide element: element.hidden = true;
-    // 	// show element: element.hidden = false;
-    // 	div.hidden = false;
-    // });
+    $("#report_table").hide();
+    $("#create").hide();
+    $("#asin").hide();
+    $("#currency").hide();
+
+$("#source").on('change', function(e) {
+        $("#report_table,#create,#asin").show();
+});
+$("#asin").on('change', function(e) {
+        $("#currency").show();
+});
+
+
+
+
 
 
 

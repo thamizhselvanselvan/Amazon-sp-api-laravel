@@ -26,7 +26,7 @@ class EditShipmentTable extends Migration
      */
     public function down()
     {
-        Schema::connection('inventory')->table('bins', function (Blueprint $table) {
+        Schema::connection('inventory')->table('shipments', function (Blueprint $table) {
             $table->string('asin');
             $table->dropColumn('quantity');
         });

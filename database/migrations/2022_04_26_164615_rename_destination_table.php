@@ -13,9 +13,11 @@ class RenameDestinationTable extends Migration
      */
     public function up()
     {
-        Schema::connection('inventory')->rename('destination', 'destinations');
+        Schema::connection('inventory')->hasTable('destination', function (Blueprint $table) {
+            $table->rename('destination', 'destinations');
+        });
     }
-    
+
 
     /**
      * Reverse the migrations.
@@ -24,6 +26,8 @@ class RenameDestinationTable extends Migration
      */
     public function down()
     {
-        Schema::connection('inventory')->rename('destinations','destination');
+        Schema::connection('inventory')->hasTable('destinations', function (Blueprint $table) {
+            $table->rename('destinations', 'destination');
+        });
     }
 }

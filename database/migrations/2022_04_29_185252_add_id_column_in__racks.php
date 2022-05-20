@@ -28,7 +28,8 @@ class AddIdColumnInRacks extends Migration
     public function down()
     {
         Schema::connection('inventory')->table('racks', function (Blueprint $table) {
-            $table->dropColumn('user_id');
+            $table->dropColumn('rack_id');
+            $table->dropColumn('warehouse_id');
         });
     }
 }
