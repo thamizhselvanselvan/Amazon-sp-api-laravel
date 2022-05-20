@@ -27,7 +27,7 @@ class InventoryShipmentController extends Controller
 
         if ($request->ajax()) {
 
-            $data = Shipment::select("ship_id","source_id")->distinct()->with(['vendors']);
+            $data = Shipment::select("ship_id", "source_id")->distinct()->with(['vendors']);
 
 
             return DataTables::of($data)
@@ -37,8 +37,6 @@ class InventoryShipmentController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $actionBtn = '<div class="d-flex"><a href="/inventory/shipments' . $row->id . '/edit" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i>  View Shipment</a>';
-                    // $actionBtn = '<div class="d-flex"><a href=/shipment/single/view class="edit btn btn-success btn-sm"><i class="fas fa-file `   "></i> View Shipment</a>';
-                   
                     return $actionBtn;
                 })
                 ->rawColumns(['source_name', 'action'])
@@ -50,11 +48,11 @@ class InventoryShipmentController extends Controller
     }
     public function create()
     {
-      
+
         $source_lists = Vendor::where('type', 'Source')->get();
         $ware_lists = Warehouse::get();
         // dd($ware_lists);
-        return view('inventory.inward.shipment.create', compact('source_lists','ware_lists'));
+        return view('inventory.inward.shipment.create', compact('source_lists', 'ware_lists'));
     }
 
     // public function store(Request $request)
@@ -82,9 +80,9 @@ class InventoryShipmentController extends Controller
     public function edit($id)
     {
 
-        $name = Shipment::where('id', $id)->first();
+        $id = Shipment::where('id', $id)->first();
 
-        return view('inventory.inward.shipment.edit', compact('name'));
+        return view('inventory.inward.shipment.singleview', compact('id'));
     }
 
 
@@ -140,24 +138,35 @@ class InventoryShipmentController extends Controller
         $ship_id = random_int(1000, 9999);
 
         $create = [];
-        $createin = [];
+        $items = [];
 
         foreach ($request->asin as $key => $asin) {
-
+            
+            $items[] = [
+                "asin" => $asin,
+                "item_name" => $request->name,
+                "quantity" => $request->quantity,
+                "price" => $request->price,
+            ];
+        }
+       
             $create[] = [
                 "Ship_id" => $ship_id,
                 "warehouse" => $request->warehouse,
                 "currency" => $request->currency,
                 "source_id" => $request->source,
-                "asin" => $asin,
-                "item_name" => $request->name[$key],
-                "quantity" => $request->quantity[$key],
-                "price" => $request->price[$key],
+                "items" => json_encode($items),
                 "created_at" => now(),
                 "updated_at" => now()
             ];
-        }
-    
+
+            /**
+             * "asin" => json_encode($asin_json), 
+                "item_name" =>json_encode($item_name_json), 
+                "quantity" => json_encode($quantity_json), 
+                "price" =>json_encode($price_json), 
+             */
+        
         Shipment::insert($create);
 
         foreach ($request->asin as $key => $asin) {
@@ -178,7 +187,7 @@ class InventoryShipmentController extends Controller
     {
         if ($request->ajax()) {
 
-            $data = Shipment::query()->with(['vendors','warehouses']);
+            $data = Shipment::query()->with(['vendors', 'warehouses']);
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -189,13 +198,12 @@ class InventoryShipmentController extends Controller
                 ->editColumn('warehouse_name', function ($data) {
                     return ($data->warehouses) ? $data->warehouses->name : "NA";
                 })
+
                 
-                    ->editColumn('created_at', function ($row) {
-                        return Carbon::parse($row['created_at'])->format('M d Y');
-                   
-                    
+                ->editColumn('created_at', function ($row) {
+                    return Carbon::parse($row['created_at'])->format('M d Y');
                 })
-                ->rawColumns(['source_name','created_at','warehouse_name'])
+                ->rawColumns(['source_name', 'created_at', 'warehouse_name'])
                 ->make(true);
         }
 

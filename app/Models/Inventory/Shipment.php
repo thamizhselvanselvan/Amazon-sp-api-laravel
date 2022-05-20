@@ -9,7 +9,8 @@ class Shipment extends Model
 {
     use HasFactory;
     protected $connection = 'inventory';
-    protected $fillable = ['source_id','asin','ship_id','item_name','quantity','price','currency','warehouse'];
+    protected $fillable = ['warehouse', 'source_id', 'currency', 'ship_id', 'items'];
+
 
     public function vendors() {
         return $this->hasOne(Vendor::class, 'id', 'source_id');
