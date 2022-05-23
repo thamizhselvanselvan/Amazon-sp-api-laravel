@@ -15,17 +15,16 @@ class CreateSellerAsinTable extends Migration
     {
         Schema::connection('seller')->create('asin_master_sellers', function (Blueprint $table) {
             $table->id();
-            $table->string('seller_id')->nullable();
-            $table->string('asin')->nullable();
+            $table->string('seller_id');
+            $table->string('asin');
             $table->string('source')->nullable();
             $table->string('destination_1')->nullable();
             $table->string('destination_2')->nullable();
             $table->string('destination_3')->nullable();
             $table->string('destination_4')->nullable();
             $table->string('destination_5')->nullable();
-            $table->softDeletes();
             $table->timestamps();
-
+            $table->softDeletes();
         });
     }
 

@@ -14,7 +14,7 @@ class AddStatusColumnInSellerAsinTable extends Migration
     public function up()
     {
         Schema::connection('seller')->table('asin_master_sellers', function (Blueprint $table) {
-            $table->integer("status")->default('0');
+            $table->integer("status")->default('0')->after('destination_5');
         }); 
     }
 

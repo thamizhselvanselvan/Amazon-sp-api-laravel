@@ -74,7 +74,7 @@ class seller_asin_import extends Command
                     'destination_2' => $record['Destination 2'],
                     'destination_3' => $record['Destination 3'],
                     'destination_4' => $record['Destination 4'],
-                    'destination_5' => $record['Destination 5'],
+                    'destination_5' => $record['Destination 5'],         
                     'created_at' => now(),
                     'updated_at' => now()
                 ];

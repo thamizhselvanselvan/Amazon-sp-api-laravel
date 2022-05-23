@@ -9,18 +9,7 @@ class Aws_credential extends Model
 {
     use HasFactory;
 
-    protected $table = 'aws_credentials';
-
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-        $this->getConnection()->setTablePrefix('bb_');
-    }
-
-    public function __destruct()
-    {
-        $this->getConnection()->setTablePrefix('sa_');
-    }
+    protected $connection = 'buybox';
 
     protected $fillable = [
         'seller_id',
