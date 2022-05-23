@@ -21,20 +21,20 @@ class UserSeeder extends Seeder
     {
         $roleAdmin = Role::create(['name' => 'Admin']);
         $roleUser = Role::create(['name' => 'User']);
-        $roleInvManager = Role::create(['name' => 'Inventory']);
         $roleAmazon = Role::create(['name' => 'Amazon']);
         $roleB2cship = Role::create(['name' => 'B2CShip']);
+        $roleInvManager = Role::create(['name' => 'Inventory']);
 
+        $permissionAdmin = Permission::create(['name' => 'Admin']);
+        $permissionUser = Permission::create(['name' => 'User']);
         $permissionAmazon = Permission::create(['name' => 'Amazon']);
         $permissionB2schip = Permission::create(['name' => 'B2CShip']);
         $permissionInvAccount = Permission::create(['name' => 'Inventory']);
-        $permissionAdmin = Permission::create(['name' => 'Admin']);
-        $permissionUser = Permission::create(['name' => 'User']);
        
         $roleAdmin->givePermissionTo($permissionAdmin);
         $roleUser->givePermissionTo($permissionUser);
         $roleAmazon->givePermissionTo($permissionAmazon);
-        $roleB2schip->givePermissionTo($permissionB2schip);
+        $roleB2cship->givePermissionTo($permissionB2schip);
         $roleInvManager->givePermissionTo($permissionInvAccount);
 
         $robin = User::create([
