@@ -135,40 +135,22 @@
                 let id = self.attr('data-id');
                
                 self.prop('disable', true);
-                // let loader = $('.loader');
-
-                // let alert_dislay_div = $('.alert_display');
-                // let alert_template = `<div class="alert alert-block d-none alert_main">
-                //                         <button type="button" class="close" data-dismiss="alert">×</button>
-                //                         <strong class="alert_message"></strong>
-                //                     </div>`;
-                // alert_dislay_div.html(alert_template);
-
-                // let alert_message = $('.alert_message');
-                // let alert_main = $('.alert_main');
-
-                // loader.removeClass('d-none');
-
                 $.ajax({
                     method: 'post',
-                    url: '/asin/restore/'+id,
+                    url: '/seller/asin/restore/'+id,
                     data: {
                         "_token": "{{ csrf_token() }}",
                         "_method": 'POST'
                     },
                     response: 'json',
                     success: function (response) {
-                        // alert('Restore success');
-                        self.prop('disable', false);
-                        // loader.addClass('d-none');
-
-                        yajra_table.ajax.reload();
-
+                        
                         if(response.success) {
                             alert_main.removeClass('d-none alert-danger').addClass('alert-success');
                             alert_message.html(response.success);
                         }
-
+                        
+                        location.reload()
                     }, 
                     error: function (response) {
 

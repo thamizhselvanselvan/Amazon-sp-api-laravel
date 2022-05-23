@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\seller;
+namespace App\Http\Controllers\Seller;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\seller\AsinMasterSeller;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -16,8 +17,10 @@ class AsinMasterController extends Controller
         public function index(Request $request)
         {
             if ($request->ajax()) {
-                
-                $data = AsinMasterSeller::query();
+                $user = Auth::user();
+                $seller_id = $user->id;
+
+                $data = AsinMasterSeller::query()->where('seller_id', $seller_id);
     
                 return DataTables::of($data)
                     ->addIndexColumn()
@@ -49,7 +52,6 @@ class AsinMasterController extends Controller
     
             $validated = $request->validate([
                 'asin' => 'required|min:4|max:25',
-                'seller_id' =>'required',
                 'source' => 'required|min:2|max:15',
                 'destination_1' => 'nullable|min:2|max:15',
                 'destination_2' => 'nullable|min:2|max:15',
@@ -62,7 +64,7 @@ class AsinMasterController extends Controller
     
             AsinMasterSeller::where('id', $id)->update($validated);
     
-            return redirect()->intended('/asin-master')->with('success', 'Asin has been updated successfully');
+            return redirect()->intended('/seller/asin-master')->with('success', 'Asin has been updated successfully');
         }
     
     
@@ -103,16 +105,14 @@ class AsinMasterController extends Controller
         public function importBulkAsin()
         {
     
-            return view('AsinMaster.importAsin');
+            return view('seller.asin_master.importAsin');
         }
     
         public function addBulkAsin(Request $request)
         {
-    
             $request->validate([
                 'asin' => 'required|mimes:csv,txt,xls,xlsx'
             ]);
-    
             if (!$request->hasFile('asin')) {
                 return back()->with('error', "Please upload file to import it to the database");
             }
@@ -120,24 +120,26 @@ class AsinMasterController extends Controller
             $msg = "Asin import has been completed!";
     
             $source = file_get_contents($request->asin);
-            $path = 'AsinMaster/asin.csv';
+            $path = 'Seller/AsinMaster/asin.csv';
             Storage::put($path, $source);
-    
+            $user = Auth::user();
+            $seller_id = $user->id;
+
             if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
     
                 Log::warning("asin production executed");
     
                 $base_path = base_path();
-                $command = "cd $base_path && php artisan pms:asin-import > /dev/null &";
+                $command = "cd $base_path && php artisan pms:seller-asin-import $seller_id > /dev/null &";
                 exec($command);
                 Log::warning("asin production command executed");
             } else {
     
                 Log::warning("Export coma executed local !");
-                Artisan::call('pms:asin-import');
+                Artisan::call('pms:seller-asin-import '.$seller_id);
             }
     
-            return redirect('/import-bulk-asin')->with('success', 'All Asins uploaded successfully');
+            return redirect('/seller/import-bulk-asin')->with('success', 'All Asins uploaded successfully');
         }
 
 }

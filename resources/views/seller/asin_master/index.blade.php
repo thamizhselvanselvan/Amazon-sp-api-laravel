@@ -25,16 +25,16 @@
                 <!-- <a href="add-asin">
                                         <x-adminlte-button label="Add Asin" theme="primary" icon="fas fa-plus-circle"/>
                                     </a> -->
-                <a href="import-bulk-asin">
+                <a href="/seller/import-bulk-asin">
                     <x-adminlte-button label="Asin Bulk Import" theme="primary" icon="fas fa-file-import" />
                 </a>
-                <a href="export-asin">
+                <!-- <a href="/seller/export-asin">
                     <x-adminlte-button label="Asin Export" theme="primary" icon="fas fa-file-export" />
                 </a>
 
 
                 <x-adminlte-button label="Download Asin" theme="primary" icon="fas fa-file-download" data-toggle="modal"
-                    data-target="#exampleModal"></x-adminlte-button>
+                    data-target="#exampleModal"></x-adminlte-button> -->
 
 
                 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -73,7 +73,6 @@
                 <thead>
                     <tr class="length">
                         <th>S/N</th>
-                        <th>Seller</th>
                         <th>ASIN</th>
                         <th>Source</th>
                         <th>Destination 1</th>
@@ -178,7 +177,7 @@
 
                 $.ajax({
                     method: 'post',
-                    url: '/asin/soft-delete/'+id,
+                    url: '/seller/asin/soft-delete/'+id,
                     data: {
                         "_token": "{{ csrf_token() }}",
                         "_method": 'POST'

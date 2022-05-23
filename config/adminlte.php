@@ -669,13 +669,13 @@ return [
             'text' => 'Seller Central',
             'can' =>  ['Admin', 'Seller'],
             'submenu' => [
-                [
-                    'text' => 'Dashboard',
-                    'url' => 'seller/dashboard',
-                    'can' => ['Admin', 'Seller'],
-                    'icon' => 'far fa-fw fa-file',
+                // [
+                //     'text' => 'Dashboard',
+                //     'url' => 'seller/dashboard',
+                //     'can' => ['Admin', 'Seller'],
+                //     'icon' => 'far fa-fw fa-file',
 
-                ],
+                // ],
                 [
                     'text' => 'Asin Master',
                     'url' => 'seller/asin-master',
@@ -690,6 +690,13 @@ return [
                     'icon' => 'far fa-fw fa-file',
 
                 ],
+                // [
+                //     'text' => 'Seller Credentials', 
+                //     'url' => 'seller/credentials', 
+                //     'can' => ['Admin', 'Seller'], 
+                //     'icon' => 'far fa-fw fa-user', 
+
+                // ],
 
             ]
         ]

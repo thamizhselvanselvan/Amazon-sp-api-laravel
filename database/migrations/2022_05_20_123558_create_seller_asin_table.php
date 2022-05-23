@@ -13,7 +13,7 @@ class CreateSellerAsinTable extends Migration
      */
     public function up()
     {
-        Schema::connection('seller')->create('asin_master_seller', function (Blueprint $table) {
+        Schema::connection('seller')->create('asin_master_sellers', function (Blueprint $table) {
             $table->id();
             $table->string('seller_id');
             $table->string('asin');
@@ -24,6 +24,7 @@ class CreateSellerAsinTable extends Migration
             $table->string('destination_4')->nullable();
             $table->string('destination_5')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -34,6 +35,6 @@ class CreateSellerAsinTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('asin_master_seller');
+        Schema::dropIfExists('asin_master_sellers');
     }
 }

@@ -67,7 +67,7 @@
 </table>
 
 <br>
-<h3 class="m-0 text-dark">Bluedart, DL Delhi And Delivery Last Packet Delivered Status</h3>
+<h3 class="m-0 text-dark">Bluedart, DL Delhi And DELHIVERY Last Packet Delivered Status</h3>
 
 <table class="table table-bordered yajra-datatable table-striped">
     <thead>
