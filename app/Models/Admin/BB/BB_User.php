@@ -12,7 +12,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class BB_User extends Model
 {
     use HasFactory, Notifiable, HasRoles, SoftDeletes;
-    protected $connectio = 'buybox';
+    protected $connection = 'buybox';
+    protected $table ='Users';
     
     protected $fillable = [
         'internal_seller',

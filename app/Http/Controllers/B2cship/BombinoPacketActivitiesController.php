@@ -157,7 +157,7 @@ class BombinoPacketActivitiesController extends Controller
                 Artisan::call('pms:bombino-packet-activities ' . $month . ' ' . $year);
             }
 
-            sleep(2);
+            // sleep(2);
         }
 
         return redirect()->back();

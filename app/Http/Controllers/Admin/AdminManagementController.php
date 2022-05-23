@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Roles;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Admin\BB\BB_User;
 use App\Models\Company\CompanyMaster;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -104,9 +105,19 @@ class AdminManagementController extends Controller
         $request->validate([
             'password' => 'required|confirmed|min:3|max:18'
         ]);
-
-        // return $request->company;
-        // exit;
+        foreach($request->Role as $role)
+        {
+           if($role == 'Seller')
+           {
+               BB_User::create([
+                'internal_seller' => 0,
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'status' => 1
+               ]);
+           }
+        }
         $am = User::create([
             'name' => $request->name,
             'email' => $request->email,
