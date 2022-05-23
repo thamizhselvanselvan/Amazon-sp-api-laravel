@@ -20,7 +20,6 @@ class CreateBinsTable extends Migration
             $table->string('depth');
             $table->string('width');
             $table->string('height');
-            $table->string('zone');
             $table->timestamps();
         });
     }

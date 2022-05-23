@@ -12,7 +12,6 @@
         position: relative;
         display: inline-block;
     }
-
     .autocomplete-items {
         position: absolute;
         border: 1px solid #d4d4d4;
@@ -24,30 +23,25 @@
         left: 0;
         right: 0;
     }
-
     .autocomplete-items div {
         padding: 10px;
         cursor: pointer;
         background-color: #fff;
         border-bottom: 1px solid #d4d4d4;
     }
-
     .autocomplete-items div:hover {
         /*when hovering an item:*/
         background-color: #e9e9e9;
     }
-
     .autocomplete-active {
         /*when navigating through the items using the arrow keys:*/
         background-color: DodgerBlue !important;
         color: #ffffff;
     }
 </style>
-
 @stop
-
 @section('content_header')
-<h1 class="m-0 text-dark">Shipment</h1>
+<h1 class="m-0 text-dark">Inward Shipment</h1>
 @stop
 @section('content')
 <!-- 
@@ -74,10 +68,12 @@
 <div class="row">
     <div class="col-2">
         <div class="form-group">
-            <label>Enter ASIN:</label>
-            <div class="autocomplete" style="width:200px;">
-                <input id="upload_asin" type="text" autocomplete="off" name="upload_asin" placeholder="Enter Asin here..." class="form-control">
-            </div>
+            <x-adminlte-select name="warehouse" label="Select warehouse:" id="warehouse">
+                <option>Select warehouse</option>
+                @foreach ($ware_lists as $ware_list)
+                <option value="{{ $ware_list->id }}">{{$ware_list->name }}</option>
+                @endforeach
+            </x-adminlte-select>
         </div>
     </div>
     <div class="col-2">
@@ -88,34 +84,25 @@
                 <option value="{{ $source_list->id }}">{{$source_list->name }}</option>
                 @endforeach
             </x-adminlte-select>
-
         </div>
     </div>
-    <div class="col-2">
+    <div class="col-2" id="asin">
         <div class="form-group">
-            <x-adminlte-select name="country" label="Select Country:" id="country">
-                <option>Select Country</option>
-                @foreach ($source_lists as $source_list)
-                <option value="{{ $source_list->id }}">{{$source_list->country }}</option>
-                @endforeach
-            </x-adminlte-select>
-
-        </div>
-    </div>
-    
-
-    <!-- <div class="col-2">
-        <div class="form-group">
-            <label>Enter Shipment ID:</label>
-            <div class="Shipment" style="width:200px;">
-                <input id="Shipment" type="text" name="Shipment" placeholder="enter Shipment ID" class="form-control">
+            <label>Enter ASIN:</label>
+            <div class="autocomplete" style="width:200px;">
+                <input id="upload_asin" type="text" autocomplete="off" name="upload_asin" placeholder="Enter Asin here..." class="form-control">
             </div>
         </div>
-    </div> -->
+    </div>
+    <div class="col-1">
+        <div id="currency">
+            <x-adminlte-input label="Currency:" id="currency_input" name="currency" type="text" placeholder="Currency" />
+        </div>
+    </div>
     <div class="col text-right">
         <div style="margin-top: 1.8rem;">
             <!-- //<a href="/shipment/storeshipment"> -->
-            <x-adminlte-button label="Create Shipment" theme="primary" onclick="getBack()" icon="fas fa-plus" class="btn-sm create_shipmtn_btn" />
+            <x-adminlte-button label="Create Shipment" theme="primary" onclick="getBack()" icon="fas fa-plus" id="create" class="btn-sm create_shipmtn_btn" />
             <!-- </a> -->
 
         </div>
@@ -172,6 +159,12 @@
         let source = $('#source').val();
         data.append('source', source);
 
+        let warehouse = $('#warehouse').val();
+        data.append('warehouse', warehouse);
+
+
+        let currency = $('#currency_input').val();
+        data.append('currency', currency);
 
         $.ajax({
             method: 'POST',
@@ -184,25 +177,29 @@
 
                 console.log(response);
                 //alert('success');
-                // location.reload()
-
             },
             error: function(response) {
                 console.log(response);
             }
-
-
         });
-
     });
- 
-    function getBack(){
-        // window.location.assign('/inventory/shipments')
-        window.location.href = '/inventory/shipments'
-    
+    /*Redirect to Index:*/
+    function getBack() {
+       window.location.href = '/inventory/shipments'
     }
+    /*Hide Fields Untill Selection Is Made:*/
+    $("#report_table").hide();
+    $("#create").hide();
+    $("#asin").hide();
+    $("#currency").hide();
 
+    $("#source").on('change', function(e) {
+        $("#asin").show();
+    });
 
+    $("#asin").on('change', function(e) {
+        $("#currency,#report_table,#create").show();
+    });
 
 
     $(document).ready(function() {
@@ -355,10 +352,8 @@
         });
     }
 
-
-
+    /* Display Autocomplete data:*/
     function getData(asin) {
-
         $.ajax({
             method: 'GET',
             url: '/shipment/select/view',
@@ -372,7 +367,7 @@
                 html += "<td name='asin[]'>" + arr.asin1 + "</td>";
                 html += "<td name='name[]'>" + arr.item_name + "</td>";
                 html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
-                html += '<td> <input type="text" value="1" name="price[]" id="price"> </td>'
+                html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
                 html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
                 html += "</tr>";
 
@@ -382,10 +377,8 @@
                 // console.log(response);
             }
         });
-
-
     }
-
+    /*Delete Row :*/
     $('#report_table').on('click', ".remove1", function() {
 
         $(this).closest("tr").remove();

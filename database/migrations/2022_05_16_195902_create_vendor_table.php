@@ -18,6 +18,8 @@ class CreateVendorTable extends Migration
             $table->string('name');
             $table->string('type');  
             $table->string('country');  
+            $table->string('state');  
+            $table->string('city');  
             $table->string('currency');  
             $table->timestamps();
         });
