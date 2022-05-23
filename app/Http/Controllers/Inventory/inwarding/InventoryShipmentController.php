@@ -166,12 +166,13 @@ class InventoryShipmentController extends Controller
                 "quantity" => json_encode($quantity_json), 
                 "price" =>json_encode($price_json), 
              */
-        
-        Shipment::insert($create);
+       
+         Shipment::insert($create);
 
         foreach ($request->asin as $key => $asin) {
 
             $createin[] = [
+                 "warehouse_id" => $request->warehouse,
                 "asin" => $asin,
                 "item_name" => $request->name[$key],
                 "quantity" => $request->quantity[$key],

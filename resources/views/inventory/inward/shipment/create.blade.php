@@ -12,7 +12,6 @@
         position: relative;
         display: inline-block;
     }
-
     .autocomplete-items {
         position: absolute;
         border: 1px solid #d4d4d4;
@@ -24,30 +23,25 @@
         left: 0;
         right: 0;
     }
-
     .autocomplete-items div {
         padding: 10px;
         cursor: pointer;
         background-color: #fff;
         border-bottom: 1px solid #d4d4d4;
     }
-
     .autocomplete-items div:hover {
         /*when hovering an item:*/
         background-color: #e9e9e9;
     }
-
     .autocomplete-active {
         /*when navigating through the items using the arrow keys:*/
         background-color: DodgerBlue !important;
         color: #ffffff;
     }
 </style>
-
 @stop
-
 @section('content_header')
-<h1 class="m-0 text-dark">Shipment</h1>
+<h1 class="m-0 text-dark">Inward Shipment</h1>
 @stop
 @section('content')
 <!-- 
@@ -80,7 +74,6 @@
                 <option value="{{ $ware_list->id }}">{{$ware_list->name }}</option>
                 @endforeach
             </x-adminlte-select>
-
         </div>
     </div>
     <div class="col-2">
@@ -91,10 +84,9 @@
                 <option value="{{ $source_list->id }}">{{$source_list->name }}</option>
                 @endforeach
             </x-adminlte-select>
-
         </div>
     </div>
-    <div class="col-2"  id="asin">
+    <div class="col-2" id="asin">
         <div class="form-group">
             <label>Enter ASIN:</label>
             <div class="autocomplete" style="width:200px;">
@@ -102,11 +94,10 @@
             </div>
         </div>
     </div>
-
     <div class="col-1">
         <div id="currency">
-        <x-adminlte-input label="Currency:" name="currency" type="text" placeholder="Currency"  />
-    </div>
+            <x-adminlte-input label="Currency:" id="currency_input" name="currency" type="text" placeholder="Currency" />
+        </div>
     </div>
     <div class="col text-right">
         <div style="margin-top: 1.8rem;">
@@ -171,12 +162,9 @@
         let warehouse = $('#warehouse').val();
         data.append('warehouse', warehouse);
 
-        let country = $('#country').val();
-        data.append('country', country);
 
-        let currency = $('#currency').val();
+        let currency = $('#currency_input').val();
         data.append('currency', currency);
-
 
         $.ajax({
             method: 'POST',
@@ -189,41 +177,29 @@
 
                 console.log(response);
                 //alert('success');
-                // location.reload()
-
             },
             error: function(response) {
                 console.log(response);
             }
-
-
         });
-
     });
-
+    /*Redirect to Index:*/
     function getBack() {
-        // window.location.assign('/inventory/shipments')
-        window.location.href = '/inventory/shipments'
-
+       window.location.href = '/inventory/shipments'
     }
-
-
+    /*Hide Fields Untill Selection Is Made:*/
     $("#report_table").hide();
     $("#create").hide();
     $("#asin").hide();
     $("#currency").hide();
 
-$("#source").on('change', function(e) {
-        $("#report_table,#create,#asin").show();
-});
-$("#asin").on('change', function(e) {
-        $("#currency").show();
-});
+    $("#source").on('change', function(e) {
+        $("#asin").show();
+    });
 
-
-
-
-
+    $("#asin").on('change', function(e) {
+        $("#currency,#report_table,#create").show();
+    });
 
 
     $(document).ready(function() {
@@ -376,10 +352,8 @@ $("#asin").on('change', function(e) {
         });
     }
 
-
-
+    /* Display Autocomplete data:*/
     function getData(asin) {
-
         $.ajax({
             method: 'GET',
             url: '/shipment/select/view',
@@ -403,10 +377,8 @@ $("#asin").on('change', function(e) {
                 // console.log(response);
             }
         });
-
-
     }
-
+    /*Delete Row :*/
     $('#report_table').on('click', ".remove1", function() {
 
         $(this).closest("tr").remove();

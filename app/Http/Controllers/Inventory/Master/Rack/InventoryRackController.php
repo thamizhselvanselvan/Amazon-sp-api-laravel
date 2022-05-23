@@ -23,29 +23,24 @@ class InventoryRackController extends Controller
         // dd($data);
         if ($request->ajax()) {
 
-            $data = Shelve::query()->rightJoin('racks as r', function($join) {
-                $join->on("shelves.rack_id", "=", "r.id");
-           })->orderBy('r.id')
-           ->select('r.rack_id','r.id', 'r.name as rack_name', 'shelves.name')
-           ;
-            $cnt = 1;
-            $rack_id = 0;
+        //     $data = Shelve::query()->rightJoin('racks as r', function($join) {
+        //         $join->on("shelves.rack_id", "=", "r.id");
+        //    })->orderBy('r.id')
+        //    ->select('r.rack_id','r.id', 'r.name as rack_name', 'shelves.name')
+        //    ;
+
+            $data = Rack::with(['shelves']);
+       
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('shelves_no', function ($data) use (&$cnt, &$rack_id) {
-                    
-                    if($rack_id != $data->id) {
-                        $rack_id = $data->id;
-                        $cnt = 1;
-                    }
-
-                    return $cnt++;
-                })
-                ->editColumn('rack_name', function ($data) {
-                    return ($data->rack_name) ? $data->rack_name : "NA";
+                    return (isset($data->shelves->first()->name)) ? $data->shelves->count() : 0;
                 })
                 ->editColumn('name', function ($data) {
                     return ($data->name) ? $data->name : "NA";
+                })
+                ->editColumn('shelve_name', function ($data) {
+                    return (isset($data->shelves->first()->name)) ? $data->shelves->first()->name : "NA";
                 })
                 ->addColumn('action', function ($row) {
 
@@ -53,7 +48,7 @@ class InventoryRackController extends Controller
                     $actionBtn .= '<bu  tton data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</bu></div>';
                     return $actionBtn;
                 })
-                ->rawColumns(['name', 'shelves_no', 'rack_name', 'action'])
+                ->rawColumns(['name', 'shelves_no', 'shelve_name', 'action'])
                 ->make(true);
         }
 

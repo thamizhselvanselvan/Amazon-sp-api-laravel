@@ -84,14 +84,6 @@
     </div>
     <div class="col-2">
         <div class="form-group">
-            <label>Enter ASIN:</label>
-            <div class="autocomplete" style="width:200px;">
-                <input id="upload_asin" type="text" autocomplete="off" name="upload_asin" placeholder="Enter Asin here..." class="form-control">
-            </div>
-        </div>
-    </div>
-    <div class="col-2">
-        <div class="form-group">
             <x-adminlte-select name="destination" label="Select Destination:" id="destination">
                 <option>Select Destination</option>
                 @foreach ($destination_lists as $destination_list)
@@ -102,7 +94,15 @@
 
         </div>
     </div>
-    <div class="col-2">
+    <div class="col-2"  id="asin">
+        <div class="form-group">
+            <label>Enter ASIN:</label>
+            <div class="autocomplete" style="width:200px;">
+                <input id="upload_asin" type="text" autocomplete="off" name="upload_asin" placeholder="Enter Asin here..." class="form-control">
+            </div>
+        </div>
+    </div>
+    <!-- <div class="col-2">
         <div class="form-group">
             <x-adminlte-select name="country" label="Select Country:" id="country">
                 <option>Select Country</option>
@@ -112,7 +112,7 @@
             </x-adminlte-select>
 
         </div>
-    </div>
+    </div> -->
     <!-- <div class="col-2">
         <div class="form-group">
             <label>Enter Shipment ID:</label>
@@ -122,11 +122,11 @@
         </div>
     </div> -->
 
-    <div class="col-1">
+    <div class="col-1" id="currency">
         <x-adminlte-input label="Currency:" name="currency" type="text" placeholder="Currency" />
 
     </div>
-    <div class="col text-right">
+    <div class="col text-right" id="create">
         <div style="margin-top: 1.8rem;">
             <!-- //<a href="/shipment/storeshipment"> -->
             <x-adminlte-button label="Create Shipment" theme="primary" onclick="getBack()" icon="fas fa-plus" class="btn-sm create_outshipmtn_btn" />
@@ -219,6 +219,21 @@
         window.location.href = '/inventory/outwardings'
 
     }
+
+    $("#outward_table").hide();
+    $("#create").hide();
+    $("#asin").hide();
+    $("#currency").hide();
+
+    $("#destination").on('change', function(e) {
+        $("#asin").show();
+    });
+    $("#asin").on('change', function(e) {
+        $("#currency,#outward_table,#create").show();
+    });
+
+
+
     autocomplete(document.getElementById("upload_asin"));
 
     function autocomplete(inp) {

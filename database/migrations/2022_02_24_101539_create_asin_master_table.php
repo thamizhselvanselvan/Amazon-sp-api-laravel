@@ -22,6 +22,7 @@ class CreateAsinMasterTable extends Migration
             $table->string('destination_3')->nullable();
             $table->string('destination_4')->nullable();
             $table->string('destination_5')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
