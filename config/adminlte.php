@@ -690,13 +690,13 @@ return [
                     'icon' => 'far fa-fw fa-file',
 
                 ],
-                [
-                    'text' => 'Seller Credentials',
-                    'url' => 'seller/credentials',
-                    'can' => ['Admin', 'Seller'],
-                    'icon' => 'far fa-fw fa-user',
+                // [
+                //     'text' => 'Seller Credentials',
+                //     'url' => 'seller/credentials',
+                //     'can' => ['Admin', 'Seller'],
+                //     'icon' => 'far fa-fw fa-user',
 
-                ],
+                // ],
 
             ]
         ]

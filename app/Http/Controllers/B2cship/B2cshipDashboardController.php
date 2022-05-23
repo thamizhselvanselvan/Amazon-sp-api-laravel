@@ -56,7 +56,7 @@ class B2cshipDashboardController extends Controller
       $count++;
     }
     return  [
-      'Days' => $differnce->days > 1 ? $differnce->days . ' Days' : $differnce->days . ' Day',
+      'Days' => $differnce->days > 1 ? $differnce->days . ' Days' : 'Today',
       'time' => rtrim($final_date, ' ,') . ' Before'
     ];
   }
@@ -119,7 +119,7 @@ class B2cshipDashboardController extends Controller
                     , ROW_NUMBER() OVER(PARTITION BY StatusDetails ORDER BY CreatedDate desc)row_num
               FROM PODTrans Where FPCode = 'BOMBINO' 
             ) sub
-        WHERE row_num = 1");
+        WHERE row_num = 1 ORDER BY CreatedDate DESC");
     $bombino_each_staus_detials = [];
     $ignore = 'Run No.';
     $offset = 0;
@@ -149,7 +149,7 @@ class B2cshipDashboardController extends Controller
     FROM (
           SELECT PacketStatus, AwbNo, CreatedDate, FPCode
                 , ROW_NUMBER() OVER(PARTITION BY FPCode ORDER BY CreatedDate desc)row_num
-          FROM PODTrans Where FPCode IN ('BLUEDART', 'DL Delhi', 'DELIVERY') AND PacketStatus = 'DELIVERED'
+          FROM PODTrans Where FPCode IN ('BLUEDART', 'DL Delhi', 'DELHIVERY') AND PacketStatus = 'DELIVERED'
         ) sub
     WHERE row_num = 1");
 
