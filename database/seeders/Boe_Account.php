@@ -15,9 +15,8 @@ class Boe_Account extends Seeder
      */
     public function run()
     {
-        $roleBoeAccounts = Role::create(['name' => 'Account']);
-
-        $permissionBoeAccounts = Permission::create(['name' => 'Account']);
+        $roleBoeAccounts = Role::create(['name' => 'BOE']);
+        $permissionBoeAccounts = Permission::create(['name' => 'BOE']);
 
         $roleBoeAccounts->givePermissionTo($permissionBoeAccounts);
     }
