@@ -15,6 +15,8 @@ class CreateRacksTable extends Migration
     {
         Schema::connection('inventory')->create('racks', function (Blueprint $table) {
             $table->id();
+            $table->foreignId("warehouse_id");
+            $table->string("rack_id");
             $table->string('name');
             $table->timestamps();
         });

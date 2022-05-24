@@ -15,10 +15,13 @@ class CreateShipmentTable extends Migration
     {
         Schema::connection('inventory')->create('shipments', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('warehouse');
             $table->foreignId('source_id');
-            $table->string('Ship_id');
-            $table->text('asin');
+            $table->string('ship_id');
+            $table->string('currency');
+            $table->text('items');
             $table->timestamps();
+
         });
     }
 

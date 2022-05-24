@@ -15,12 +15,11 @@ class CreateOutshipmentsTable extends Migration
     {
         Schema::connection('inventory')->create('outshipments', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('warehouse');
             $table->foreignId('destination_id');
             $table->string('ship_id');
-            $table->string('asin');
-            $table->string('item_name');
-            $table->string('price');
-            $table->string('quantity');
+            $table->string('currency');
+            $table->text('items');
             $table->timestamps();
            
         });
