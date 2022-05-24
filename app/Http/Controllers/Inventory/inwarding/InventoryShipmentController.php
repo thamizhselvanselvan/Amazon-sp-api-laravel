@@ -24,6 +24,10 @@ class InventoryShipmentController extends Controller
 
     public function index(Request $request)
     {
+        // $user = Inventory::select('id')->get();
+   
+        //  dd($user);
+        // exit;
 
         if ($request->ajax()) {
 
@@ -36,7 +40,7 @@ class InventoryShipmentController extends Controller
                     return ($data->vendors) ? $data->vendors->name : " NA";
                 })
                 ->addColumn('action', function ($row) {
-                    $actionBtn = '<div class="d-flex"><a href="/shipment/inward/view" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i>  View Shipment</a>';
+                    $actionBtn = '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i>  View Shipment</a>';
                     return $actionBtn;
                 })
                 ->rawColumns(['source_name', 'action'])
@@ -51,60 +55,18 @@ class InventoryShipmentController extends Controller
 
         $source_lists = Vendor::where('type', 'Source')->get();
         $ware_lists = Warehouse::get();
-        // dd($ware_lists);
         return view('inventory.inward.shipment.create', compact('source_lists', 'ware_lists'));
     }
 
-    // public function store(Request $request)
-    // {
-
-    //     $request->validate([
-    //         'Ship_id' => 'required|min:1|max:100',
-    //         'asin' => 'required|min:1|max:100',
-    //     ]);
-
-    //     $source_exists = Source::where('id', $request->source_id)->exists();
-
-    //     if (!$source_exists) {
-    //         return redirect()->route('shipments.create')->with('error', 'Selected Source id invalid');
-    //     }
-
-
-    //     Shipment::create([
-    //         'Ship_id' => $request->Ship_id,
-    //         'source_id' => $request->source_id,
-    //     ]);
-
-    //     return redirect()->route('shipments.index')->with('success', 'Shipment ' . $request->Ship_id . ' has been created successfully');
-    // }
-    public function edit($id)
+    public function show($id)
     {
+        
+        $view = Shipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
 
-        $id = Shipment::where('id', $id)->first();
-
-        return view('inventory.inward.shipment.singleview', compact('id'));
+        return view('inventory.inward.shipment.view', compact('view'));
     }
 
 
-    // public function update(Request $request, $id)
-    // {
-
-    //     $validated = $request->validate([
-    //         'ship_id' => 'required|min:2|max:100',
-    //         'asin' => 'required|min:2|max:100',
-    //     ]);
-
-    //     Shipment::where('id', $id)->update($validated);
-
-    //     return redirect()->route('shipments.index')->with('success', 'Shipment has been updated successfully');
-    // }
-
-    // public function destroy($id)
-    // {
-    //     Shipment::where('id', $id)->delete();
-
-    //     return redirect()->route('shipments.index')->with('success', 'Shipment has been Deleted successfully');
-    // }
     public function createView(Request $request)
     {
 
@@ -141,7 +103,7 @@ class InventoryShipmentController extends Controller
         $items = [];
 
         foreach ($request->asin as $key => $asin) {
-            
+
             $items[] = [
                 "asin" => $asin,
                 "item_name" => $request->name,
@@ -149,30 +111,30 @@ class InventoryShipmentController extends Controller
                 "price" => $request->price,
             ];
         }
-       
-            $create[] = [
-                "Ship_id" => $ship_id,
-                "warehouse" => $request->warehouse,
-                "currency" => $request->currency,
-                "source_id" => $request->source,
-                "items" => json_encode($items),
-                "created_at" => now(),
-                "updated_at" => now()
-            ];
 
-            /**
-             * "asin" => json_encode($asin_json), 
+        $create[] = [
+            "Ship_id" => $ship_id,
+            "warehouse" => $request->warehouse,
+            "currency" => $request->currency,
+            "source_id" => $request->source,
+            "items" => json_encode($items),
+            "created_at" => now(),
+            "updated_at" => now()
+        ];
+
+        /**
+         * "asin" => json_encode($asin_json), 
                 "item_name" =>json_encode($item_name_json), 
                 "quantity" => json_encode($quantity_json), 
                 "price" =>json_encode($price_json), 
-             */
-       
-         Shipment::insert($create);
+         */
+
+        Shipment::insert($create);
 
         foreach ($request->asin as $key => $asin) {
 
             $createin[] = [
-                 "warehouse_id" => $request->warehouse,
+                "warehouse_id" => $request->warehouse,
                 "asin" => $asin,
                 "item_name" => $request->name[$key],
                 "quantity" => $request->quantity[$key],
@@ -190,6 +152,7 @@ class InventoryShipmentController extends Controller
 
             $data = Shipment::query()->with(['vendors', 'warehouses']);
 
+
             return DataTables::of($data)
                 ->addIndexColumn()
 
@@ -200,7 +163,8 @@ class InventoryShipmentController extends Controller
                     return ($data->warehouses) ? $data->warehouses->name : "NA";
                 })
 
-                
+
+
                 ->editColumn('created_at', function ($row) {
                     return Carbon::parse($row['created_at'])->format('M d Y');
                 })
@@ -211,5 +175,4 @@ class InventoryShipmentController extends Controller
 
         return view('inventory.inward.shipment.view');
     }
-    
 }

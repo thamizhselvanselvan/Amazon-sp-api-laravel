@@ -41,19 +41,21 @@ Route::resource('inventory/features','Inventory\InventoryFeaturesController');
 Route::resource('inventory/inwardings','Inventory\Stock\InventoryInwardingController');
 Route::resource('inventory/vendors','Inventory\InventoryVendorController');
 
-Route::resource('inventory/shipments','Inventory\inwarding\InventoryShipmentController');
 Route::get('shipment/select/view', 'Inventory\inwarding\InventoryShipmentController@selectView');
 Route::get('shipment/autocomplete', 'Inventory\inwarding\InventoryShipmentController@autocomplete');
 Route::post('shipment/storeshipment', 'Inventory\inwarding\InventoryShipmentController@storeshipment');
 Route::get('shipment/select/region', 'Inventory\inwarding\InventoryShipmentController@selectregion');
 Route::get('shipment/inward/view', 'Inventory\inwarding\InventoryShipmentController@inwardingdata')->name('shipments.view');
 Route::get('shipment/single/view', 'Inventory\inwarding\InventoryShipmentController@singleview')->name('shipments.single_view');
+Route::resource('inventory/shipments','Inventory\inwarding\InventoryShipmentController');
 
- Route::resource('inventory/outwardings','Inventory\Outwarding\InventoryOutwardShipmentController');
- Route::get('shipment/autofinish', 'Inventory\Outwarding\InventoryOutwardShipmentController@autofinish');
+
+Route::get('shipment/autofinish', 'Inventory\Outwarding\InventoryOutwardShipmentController@autofinish');
  Route::post('shipment/storeoutshipment', 'Inventory\Outwarding\InventoryOutwardShipmentController@storeoutshipment');
  Route::get('shipment/select/View', 'Inventory\Outwarding\InventoryOutwardShipmentController@selectview');
  Route::get('shipment/outwarding/view', 'Inventory\Outwarding\InventoryOutwardShipmentController@outwardingview')->name('outwarding.view');
+ Route::resource('inventory/outwardings','Inventory\Outwarding\InventoryOutwardShipmentController');
+ 
  
 
 

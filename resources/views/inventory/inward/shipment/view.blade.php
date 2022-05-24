@@ -32,68 +32,46 @@
                     </div>
                 @endif
             </div>
-
-    
+            
+            <div >
+                <h4>Currency :- {{ $view->currency }} </h4>
+                <h4>Shipment ID :- {{ $view->ship_id }} </h4>
+                <h4>warehouse :- {{ $view->warehouses->name }} </h4>
+                <h4>warehouse :- {{ $view->vendors->name }} </h4>
+            </div>
 
             <table class="table table-bordered yajra-datatable table-striped">
                 <thead>
                     <tr>
-                        <th> ID</th>
-                        <th>Shipment ID</th>
-                        <th>Warehouse</th>
-                        <th>Source</th>
-                        <th>Currency</th>
-                        <th>Items</th>
-                        <th>Inwarding Date</th>
+                        <!-- <th>sl</th> -->
+                        <th>asin</th>
+                        <th>item name</th>
+                        <th>quantity</th>
+                        <th>Price</th>
+                      
                     </tr>
                 </thead>
                 <tbody>
+                    @php
+                        $data = json_decode($view['items'], true);
+                        
+                        $data = (count($data) > 0) ? $data : [];
+                       
+                    @endphp
+                    @foreach ($data as $key => $val)
+
+                        <tr>
+                            <!-- <td>01</td> -->
+                            <td>{{$val['asin']}}</td>
+                            <td>{{$val['item_name'][0]}}</td>
+                            <td>{{$val['quantity'][0]}}</td>
+                            <td>{{$val['price'][0]}}</td>
+                        </tr>
+                        
+                    @endforeach
                 </tbody>
             </table>
+          
         </div>
     </div>
-@stop
-
-@section('js')
-    <script type="text/javascript">
-        $(function() {
-
-            let yajra_table = $('.yajra-datatable').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: "{{ route('shipments.view') }}",
-                columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'ship_id',
-                        name: 'ship_id'
-                    },
-                    {
-                        data: 'warehouse_name',
-                        name: 'warehouse_name'
-                    },
-                    {
-                        data: 'source_name',
-                        name: 'source_name'
-                    },
-                    {
-                        data: 'currency',
-                        name: 'currency'
-                    },
-                    {
-                        data: 'items',
-                        name: 'items'
-                    },
-                    {
-                        data: 'created_at',
-                        name: 'created_at'
-                    },
-                ]
-            });
-        });
-    </script>
 @stop
