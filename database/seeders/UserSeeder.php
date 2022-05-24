@@ -21,18 +21,26 @@ class UserSeeder extends Seeder
     {
         $roleAdmin = Role::create(['name' => 'Admin']);
         $roleUser = Role::create(['name' => 'User']);
-       
+        $roleAmazon = Role::create(['name' => 'Amazon']);
+        $roleB2cship = Role::create(['name' => 'B2CShip']);
+        $roleInvManager = Role::create(['name' => 'Inventory']);
+
         $permissionAdmin = Permission::create(['name' => 'Admin']);
         $permissionUser = Permission::create(['name' => 'User']);
+        $permissionAmazon = Permission::create(['name' => 'Amazon']);
+        $permissionB2schip = Permission::create(['name' => 'B2CShip']);
+        $permissionInvAccount = Permission::create(['name' => 'Inventory']);
        
         $roleAdmin->givePermissionTo($permissionAdmin);
         $roleUser->givePermissionTo($permissionUser);
+        $roleAmazon->givePermissionTo($permissionAmazon);
+        $roleB2cship->givePermissionTo($permissionB2schip);
+        $roleInvManager->givePermissionTo($permissionInvAccount);
 
         $robin = User::create([
             'name' => 'Robin Singh',
             'email' => 'contact@palmatesolutions.com',
             'password' => Hash::make(123456),
-
         ]);
 
         $amit = User::create([
@@ -57,7 +65,6 @@ class UserSeeder extends Seeder
             'name' => 'Amit Mishra',
             'email' => 'am@moshecom.com',
             'password' => Hash::make(123456),
-
         ]);
 
         $robin->assignRole('Admin');

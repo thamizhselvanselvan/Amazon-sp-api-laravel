@@ -316,7 +316,7 @@ return [
 
         [
             'text'    => 'Catalog',
-            'can' =>   ['Admin', 'Catalog Manager'],
+            'can' =>   ['Admin', 'Catalog'],
             'submenu' => [
 
                 [
@@ -337,14 +337,14 @@ return [
                     'text' => 'Other Amazon.com',
                     'url'  => 'other-product/amazon_com',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin', 'Catalog Manager'],
+                    'can' =>  ['Admin', 'Catalog'],
                 ],
                 [
 
                     'text' => 'Other Amazon.IN',
                     'url'  => 'other-product/amazon_in',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin', 'Catalog Manager'],
+                    'can' =>  ['Admin', 'Catalog'],
                 ],
                 [
 

@@ -17,11 +17,10 @@ class Catalog_Manager extends Seeder
      */
     public function run()
     {
-        $roleCatalogManager = Role::create(['name' => 'Catalog Manager']);
-
-        $permissionCatalogManager = Permission::create(['name' => 'Catalog Manager']);
-
-        $roleCatalogManager->givePermissionTo($permissionCatalogManager);
+        $roleCatalog = Role::create(['name' => 'Catalog']);
+        $permissionCatalog = Permission::create(['name' => 'Catalog']);
+        
+        $roleCatalog->givePermissionTo($permissionCatalog);
 
         $mudassir = User::create([
             'name' => 'Mudassir',
@@ -29,6 +28,6 @@ class Catalog_Manager extends Seeder
             'password' => Hash::make(123456),
         ]);
 
-        $mudassir->assignRole('Catalog Manager');
+        $mudassir->assignRole('Catalog');
     }
 }
