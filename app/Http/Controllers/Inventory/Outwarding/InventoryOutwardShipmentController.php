@@ -20,39 +20,39 @@ class InventoryOutwardShipmentController extends Controller
     }
     public function index(Request $request)
     {
-        
-            if ($request->ajax()) {
-    
-                $data = Outshipment::select("ship_id", "destination_id")->distinct()->with(['vendors']);
-    
-    
-                return DataTables::of($data)
-                    ->addIndexColumn()
-                    ->addColumn('destination_name', function ($data) {
-                        return ($data->vendors) ? $data->vendors->name : " NA";
-                    })
-                    ->addColumn('action', function ($row) {
-    
-                        $actionBtn = '<div class="d-flex"><a href="/inventory/shipments/' . $row->id . '/edit" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
-                        $actionBtn .= '<button data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
-                        return $actionBtn;
-                    })
-                    ->rawColumns(['destinations_name', 'action'])
-                    ->make(true);
-            }
-    
-    
-        
+
+        if ($request->ajax()) {
+
+            $data = Outshipment::select("ship_id", "destination_id")->distinct()->with(['vendors']);
+
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('destination_name', function ($data) {
+                    return ($data->vendors) ? $data->vendors->name : " NA";
+                })
+                ->addColumn('action', function ($row) {
+
+                    $actionBtn = '<div class="d-flex"><a href="/inventory/shipments/' . $row->id . '/edit" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
+                    $actionBtn .= '<button data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
+                    return $actionBtn;
+                })
+                ->rawColumns(['destinations_name', 'action'])
+                ->make(true);
+        }
+
+
+
 
         return view('inventory.outward.shipment.index');
     }
 
     public function create()
     {
-         $destination_lists =Vendor::where('type', 'Destination')->get();
+        $destination_lists = Vendor::where('type', 'Destination')->get();
         //  dd($destination_lists);
-         $ware_lists = Warehouse::get();
-        return view('inventory.outward.shipment.create',compact('destination_lists','ware_lists'));
+        $ware_lists = Warehouse::get();
+        return view('inventory.outward.shipment.create', compact('destination_lists', 'ware_lists'));
     }
 
     public function autofinish(Request $request)
@@ -82,17 +82,25 @@ class InventoryOutwardShipmentController extends Controller
 
         foreach ($request->asin as $key => $asin) {
 
-            $createout[] = [
-                "ship_id" => $shipment_id,
-                "destination_id" => $request->destination,
+            $items[] = [
                 "asin" => $asin,
-                "item_name" => $request->name[$key],
-                "quantity" => $request->quantity[$key],
-                "price" => $request->price[$key],
-                "created_at" => now(),
-                "updated_at" => now()
+                "item_name" => $request->name,
+                "quantity" => $request->quantity,
+                "price" => $request->price,
             ];
         }
+
+        $createout[] = [
+            "Ship_id" => $shipment_id,
+            "warehouse" => $request->warehouse,
+            "currency" => $request->currency,
+            "destination_id" => $request->destination,
+            "items" => json_encode($items),
+            "created_at" => now(),
+            "updated_at" => now()
+        ];
+        // return $create;
+        // exit;
 
         Outshipment::insert($createout);
 
@@ -103,24 +111,24 @@ class InventoryOutwardShipmentController extends Controller
 
         if ($request->ajax()) {
 
-            $data = Outshipment::query();
+            $data = Outshipment::query()->with(['vendors', 'warehouses']);
 
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('destination_name', function ($data) {
-                    return ($data->destinations) ? $data->destinations->name : " NA";
+                    return ($data->vendors) ? $data->vendors->name : "NA";
+                })
+                ->editColumn('warehouse_name', function ($data) {
+                    return ($data->warehouses) ? $data->warehouses->name : "NA";
                 })
                 ->editColumn('created_at', function ($row) {
                     return Carbon::parse($row['created_at'])->format('M d Y');
-               
                 })
-                ->rawColumns(['destination_name', 'created_at'])
-              
+                ->rawColumns(['destination_name', 'created_at', 'warehouse_name'])
+
                 ->make(true);
         }
 
         return view('inventory.outward.shipment.view');
     }
 }
-
-    

@@ -12,4 +12,8 @@ class Inventory extends Model
     protected $fillable = ['asin','item_name','quantity'];
     protected $table = "inventory";
 
+   public function warehouses() {
+        return $this->hasOne(Warehouse::class, 'id', 'warehouse');
+    }
+    
 }

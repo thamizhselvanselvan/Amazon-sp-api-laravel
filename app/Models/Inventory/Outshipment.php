@@ -15,4 +15,8 @@ class Outshipment extends Model
     public function vendors() {
         return $this->hasOne(Vendor::class, 'id', 'destination_id');
     }
+
+    public function warehouses() {
+        return $this->hasOne(Warehouse::class, 'id', 'warehouse');
+    } 
 }

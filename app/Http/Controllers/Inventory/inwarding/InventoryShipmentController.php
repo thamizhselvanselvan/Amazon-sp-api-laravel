@@ -208,6 +208,8 @@ class InventoryShipmentController extends Controller
                 ->make(true);
         }
 
+
         return view('inventory.inward.shipment.view');
     }
+    
 }

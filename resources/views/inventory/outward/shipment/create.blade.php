@@ -123,7 +123,7 @@
     </div> -->
 
     <div class="col-1" id="currency">
-        <x-adminlte-input label="Currency:" name="currency" type="text" placeholder="Currency" />
+        <x-adminlte-input label="Currency:"  id="currency_output"   name="currency" type="text" placeholder="Currency" />
 
     </div>
     <div class="col text-right" id="create">
@@ -187,6 +187,13 @@
 
         });
 
+        let warehouse = $('#warehouse').val();
+        data.append('warehouse', warehouse);
+
+
+        let currency = $('#currency_output').val();
+        data.append('currency', currency);
+
         let destination = $('#destination').val();
         data.append('destination', destination);
 
@@ -216,7 +223,7 @@
 
     function getBack() {
         // window.location.assign('/inventory/shipments')
-        window.location.href = '/inventory/outwardings'
+         window.location.href = '/inventory/outwardings'
 
     }
 
