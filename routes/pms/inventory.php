@@ -69,3 +69,6 @@ Route::get('shipment/autofinish', 'Inventory\Outwarding\InventoryOutwardShipment
 
 
 Route::get('inventory/Index','Inventory\Master\InventorySourceController@index');
+// Route::get('inventory/warehouse/testing','Inventory\InventoryWarehouseController@CountryStateCity');
+Route::post('json/{id}','Inventory\InventoryWarehouseController@CountryStateCity')->name('country.name');
+Route::post('stateId/{id}','Inventory\InventoryWarehouseController@getState');

@@ -4,7 +4,7 @@
 
 @section('css')
     <link rel="stylesheet" href="/css/styles.css">
-@stop
+    @stop
 
 @section('content_header')
 
@@ -67,16 +67,26 @@
                             value="{{ old('name') }}" />
                     </div>
                     <div class="col-6">
-                        <x-adminlte-input label="city" name="city" type="text" placeholder="City"
-                            value="{{ old('name') }}" />
+                        
+                        <x-adminlte-select name="country" label="Select Country:" id="country">
+                            <option >Select Country</option>
+                            @foreach ($country as $countries)
+                            <option value="{{ ($countries->id) }}">{{$countries->name}}</option>
+                            @endforeach
+                        </x-adminlte-select>
+                        
+                        
                     </div>
                     <div class="col-6">
-                        <x-adminlte-input label="State" name="state" type="text" placeholder="State"
-                            value="{{ old('name') }}" />
+                        <x-adminlte-select label="State" id="state" name="state" type="text" placeholder="State">
+                            <option > Select State</option>
+                        </x-adminlte-select>
+                            
                     </div>
                     <div class="col-6">
-                        <x-adminlte-input label="Country" name="country" type="text" placeholder="Country"
-                            value="{{ old('name') }}" />
+                        <x-adminlte-select label="City" id="city" name="city" type="text" placeholder="City">
+                            <option > Select City</option>
+                        </x-adminlte-select>
                     </div>
                 </div>
                     <div class="col-6">
@@ -110,5 +120,80 @@
         </div>
         <div class="col"></div>
     </div>
+    @stop
+
+    @section('js')
+    <script >
+
+    $(document).ready(function(){
+
+        $('#country').change(function(e){
+            e.preventDefault();
+           var id=$(this).val();
+            // alert(id);
+                // $('#state').val(id);
+
+            $.ajax({
+                method:'POST',
+                url:'/json/'+id,
+                data:{ 
+                    'id':id,
+                    "_token": "{{ csrf_token() }}",
+                },
+               
+                response:'json',
+                success:function(response){
+                   
+                $('#state').empty();
+                    let state_data ='<option >Select State</option>';
+                $.each(response ,function(i,response){
+                    state_data+= "<option value='"+response.id+"'>"+response.name+"</option>";
+                });
+                $('#state').append(state_data);
+                
+                },
+                failure:function(response){
+                    console.log(response);
+                },
+                error:function(response){
+                    console.log(response);
+                }
+                
+            });
+        });
+
+        $('#state').change(function(e){
+            e.preventDefault();
+            var id =$(this).val();
+            // var countryid=$('#country').val();
+            // alert(countryid);
+            // alert(sname);
+
+            $.ajax({
+                method:'POST',
+                url:'/stateId/'+id,
+                data:{
+                    'id':id,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success:function(result){
+                       
+                $('#city').empty();
+                    let city_data ='<option >Select City</option>';
+                $.each(result ,function(i,result){
+                    city_data+= "<option value='"+result.id+"'>"+result.name+"</option>";
+                });
+                $('#city').append(city_data);
+                
+                },
+            });
+        });
+        
+    });
+
+
+</script> 
 
 @stop  
+
+

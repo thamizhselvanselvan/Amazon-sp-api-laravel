@@ -78,16 +78,22 @@
                         <x-adminlte-input label="Address 2" name="address_2"   value="{{$name->address_2 }}" type="text" />
                     </div>
                     <div class="col-6">
-                        <x-adminlte-input label="city" name="city" type="text" 
-                            value="{{ $name->city }}" />
+                        <x-adminlte-select label="Country" id="country" name="country" type="text">
+                            <option >Select Country</option>
+                            @foreach ($country as $countries)
+                            <option value="{{($countries->country_name) }}">{{$countries->country_name }}</option>
+                            @endforeach
+                        </x-adminlte-select>
                     </div>
                     <div class="col-6">
-                        <x-adminlte-input label="State" name="state" type="text"
-                            value="{{$name->state }}" />
+                        <x-adminlte-select label="State" id="state" name="state" type="text">
+                            <option >Select State</option>
+                        </x-adminlte-select>
                     </div>
                     <div class="col-6">
-                        <x-adminlte-input label="Country" name="country" type="text" 
-                            value="{{ $name->country }}" />
+                        <x-adminlte-select label="city" name="city" type="text"> 
+                            <option >Select City</option>
+                        </x-adminlte-select>
                     </div>
                 </div>
                     <div class="col-6">
@@ -127,3 +133,77 @@
     </div>
 
 @stop
+@section('js')
+    <script >
+
+$(document).ready(function(){
+
+$('#country').change(function(e){
+    e.preventDefault();
+   var cname=$(this).val();
+    // alert(cname);
+        // $('#state').val(id);
+
+    $.ajax({
+        method:'POST',
+        url:'/json/'+cname,
+        data:{ 
+            'cname':cname,
+            "_token": "{{ csrf_token() }}",
+        },
+       
+        response:'json',
+        success:function(response){
+           
+        $('#state').empty();
+            let state_data ='<option >Select State</option>';
+        $.each(response ,function(i,response){
+            state_data+= "<option value='"+response.state_name+"'>"+response.state_name+"</option>";
+        });
+        $('#state').append(state_data);
+        
+        },
+        failure:function(response){
+            console.log(response);
+        },
+        error:function(response){
+            console.log(response);
+        }
+        
+    });
+});
+
+$('#state').change(function(e){
+    e.preventDefault();
+    var sname =$(this).val();
+    // var countryid=$('#country').val();
+    // alert(countryid);
+    // alert(sname);
+
+    $.ajax({
+        method:'POST',
+        url:'/stateId/'+sname,
+        data:{
+            'sname':sname,
+            "_token": "{{ csrf_token() }}",
+        },
+        success:function(result){
+               
+        $('#city').empty();
+            let city_data ='<option >Select City</option>';
+        $.each(result ,function(i,result){
+            city_data+= "<option value='"+result.city_name+"'>"+result.city_name+"</option>";
+        });
+        $('#city').append(city_data);
+        
+        },
+    });
+});
+
+});
+
+
+
+</script> 
+
+@stop  

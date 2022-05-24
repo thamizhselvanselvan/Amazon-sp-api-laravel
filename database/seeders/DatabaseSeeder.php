@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
              Catalog_Manager::class,
              Boe_Account::class,
              Seller_Management::class,
+             CountryStateCitySeeder::class,
         ]);
     }
 }
