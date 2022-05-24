@@ -82,7 +82,7 @@ class InventoryWarehouseController extends Controller
     }
     public function edit($id)
     {
-        $country =Country::select('id','country_name')->get();
+        $country =Country::select('id','name')->get();
 
         $name = Warehouse::where('id', $id)->first();
 

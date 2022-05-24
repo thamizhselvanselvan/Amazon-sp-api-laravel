@@ -9,6 +9,6 @@ class Vendor extends Model
 {
     use HasFactory;
     protected $connection = 'inventory';
-    protected $fillable = ['name','type','country','currency'];
+    protected $fillable = ['name','type','country','state','city','currency'];
 
 }

@@ -67,8 +67,25 @@
             </div>
             <div class="row justify-content-center">
                 <div class="col-6">
-                    <x-adminlte-input label="Country" name="country" id="" type="text" placeholder="country" value="{{ old('ID') }}" />
+                    <x-adminlte-select label="Country" name="country" id="country" type="text" placeholder="" value="{{ old('ID') }}" >
+                    <option value="">Select Country</option>
+                        @foreach ($country as $countries)
+                            <option value="{{$countries->id}}">{{$countries->name}}</option>
+                        @endforeach
+                        
+                    </x-adminlte-select>
                 </div>
+                <div class="col-6">
+                    <x-adminlte-select label="State" name="state" id="state" type="text" placeholder="" value="{{ old('ID') }}" >
+                        <option value="">Select State</option>
+                    </x-adminlte-select>
+                </div>
+                 <div class="col-6">
+                    <x-adminlte-select label="City" name="city" id="city" type="text" placeholder="" value="{{ old('ID') }}" >
+                        <option value="">Select City</option>
+                    </x-adminlte-select>
+                </div>
+                
                 <div class="col-6">
                     <x-adminlte-input label="Currency" name="currency" id="" type="text" placeholder="currency " value="{{ old('ID') }}" />
                 </div>
@@ -85,3 +102,75 @@
 
 @stop
 
+@section('js')
+
+<script>
+    
+    $(document).ready(function(){
+
+        $('#country').change(function(e){
+            e.preventDefault();
+        var id=$(this).val();
+            // alert(id);
+                // $('#state').val(id);
+
+            $.ajax({
+                method:'POST',
+                url:'/vendor/'+id,
+                data:{ 
+                    'id':id,
+                    "_token": "{{ csrf_token() }}",
+                },
+            
+                response:'json',
+                success:function(response){
+                
+                $('#state').empty();
+                    let state_data ='<option >Select State</option>';
+                $.each(response ,function(i,response){
+                    state_data+= "<option value='"+response.id+"'>"+response.name+"</option>";
+                });
+                $('#state').append(state_data);
+                
+                },
+                failure:function(response){
+                    console.log(response);
+                },
+                error:function(response){
+                    console.log(response);
+                }
+                
+            });
+        });
+
+        $('#state').change(function(e){
+            e.preventDefault();
+            var id =$(this).val();
+            // var countryid=$('#country').val();
+            // alert(countryid);
+            // alert(sname);
+
+            $.ajax({
+                method:'POST',
+                url:'/vendorstate/'+id,
+                data:{
+                    'id':id,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success:function(result){
+                    
+                $('#city').empty();
+                    let city_data ='<option >Select City</option>';
+                $.each(result ,function(i,result){
+                    city_data+= "<option value='"+result.id+"'>"+result.name+"</option>";
+                });
+                $('#city').append(city_data);
+                
+                },
+            });
+        });
+
+    });
+
+</script>
+@stop

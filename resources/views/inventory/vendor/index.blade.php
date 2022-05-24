@@ -42,6 +42,8 @@
                         <th>Name</th>
                         <th>Type</th>
                         <th>Country</th>
+                        <th>State</th>
+                        <th>City</th>
                         <th>Currency</th>
                         <th>Action</th>
                        
@@ -82,6 +84,14 @@
                     {
                         data: 'country',
                         name: 'country'
+                    },
+                    {
+                        data: 'state',
+                        name: 'state'
+                    },
+                    {
+                        data: 'city',
+                        name: 'city'
                     },
                     {
                         data: 'currency',
