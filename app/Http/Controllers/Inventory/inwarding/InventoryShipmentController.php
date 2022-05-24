@@ -36,7 +36,7 @@ class InventoryShipmentController extends Controller
                     return ($data->vendors) ? $data->vendors->name : " NA";
                 })
                 ->addColumn('action', function ($row) {
-                    $actionBtn = '<div class="d-flex"><a href="/inventory/shipments' . $row->id . '/edit" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i>  View Shipment</a>';
+                    $actionBtn = '<div class="d-flex"><a href="/shipment/inward/view" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i>  View Shipment</a>';
                     return $actionBtn;
                 })
                 ->rawColumns(['source_name', 'action'])

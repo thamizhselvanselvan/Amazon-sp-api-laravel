@@ -32,9 +32,7 @@ class InventoryOutwardShipmentController extends Controller
                     return ($data->vendors) ? $data->vendors->name : " NA";
                 })
                 ->addColumn('action', function ($row) {
-
-                    $actionBtn = '<div class="d-flex"><a href="/inventory/shipments/' . $row->id . '/edit" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
-                    $actionBtn .= '<button data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
+                    $actionBtn = '<div class="d-flex"><a href="/shipment/outwarding/view" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i>  View Shipment</a>';
                     return $actionBtn;
                 })
                 ->rawColumns(['destinations_name', 'action'])

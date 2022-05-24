@@ -368,21 +368,36 @@ return [
                     'submenu' => [
 
                         [
+                            'text' => 'Region',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin', 'Inventory'],
+                            'submenu' => [
+                                    [
+                                        'text' => 'Country',
+                                        'url'  => 'inventory/features',
+                                        'icon' => 'far fa-fw fa-file',
+                                        'can' =>  ['Admin', 'Inventory']
+                                    ],
+                                    [
+                                        'text' => 'State',
+                                        'url'  => 'inventory/features',
+                                        'icon' => 'far fa-fw fa-file',
+                                        'can' =>  ['Admin', 'Inventory']
+                                    ],
+                                    [
+                                        'text' => 'City',
+                                        'url'  => 'inventory/features',
+                                        'icon' => 'far fa-fw fa-file',
+                                        'can' =>  ['Admin', 'Inventory']
+                                    ],
+                                ],
+                        ],
+                       
+                        [
                             'text' => 'Warehouse',
                             'url'  => 'inventory/warehouses',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory'],
-                            // 'submenu' => [
-
-                            //     [
-
-                            //         'text' => 'Manage',
-                            //         'url'  => 'inventory/warehouses',
-                            //         'icon' => 'far fa-fw fa-file',
-                            //         'can' =>  ['Admin', 'Inventory']
-                            //     ],
-                            // ],
-
                         ],
                         [
 
@@ -455,35 +470,37 @@ return [
                     [
                         'text' => 'Inward ',
                         'icon' => 'far fa-fw fa-file',
+                        'url'  => 'inventory/shipments',
                         'can' =>  ['Admin', 'Inventory'],
-                        'submenu' => [
-                            // [
-                            //     'text' => 'Source',
-                            //     'url'  => 'inventory/sources',
-                            //     'icon' => 'far fa-fw fa-file',
-                            //     'can' =>  ['Admin', 'Inventory'],
-                            // ],
-                            [
-                                'text' => 'Shipment',
-                                'url'  => 'inventory/shipments',
-                                'icon' => 'far fa-fw fa-file',
-                                'can' =>  ['Admin', 'Inventory']
-                            ],
-                            [
-                                'text' => 'Inwarding',
-                                'url'  => 'shipment/inward/view',
-                                'icon' => 'far fa-fw fa-file',
-                                'can' =>  ['Admin', 'Inventory']
-                            ],
+                        // 'submenu' => [
+                        //     // [
+                        //     //     'text' => 'Source',
+                        //     //     'url'  => 'inventory/sources',
+                        //     //     'icon' => 'far fa-fw fa-file',
+                        //     //     'can' =>  ['Admin', 'Inventory'],
+                        //     // ],
+                        //     [
+                        //         'text' => 'Shipment',
+                        //         'url'  => 'inventory/shipments',
+                        //         'icon' => 'far fa-fw fa-file',
+                        //         'can' =>  ['Admin', 'Inventory']
+                        //     ],
+                        //     [
+                        //         'text' => 'Inwarding',
+                        //         'url'  => 'shipment/inward/view',
+                        //         'icon' => 'far fa-fw fa-file',
+                        //         'can' =>  ['Admin', 'Inventory']
+                        //     ],
     
-                        ],
+                        // ],
                     ],
     
                     [
                         'text' => 'Outward ',
                         'icon' => 'far fa-fw fa-file',
+                        'url'  => 'inventory/outwardings',
                         'can' =>  ['Admin', 'Inventory'],
-                        'submenu' => [
+                        // 'submenu' => [
                             // [
                             //     'text' => 'Destination',
                             //     'url'  => 'inventory/destinations',
@@ -491,19 +508,19 @@ return [
                             //     'can' =>  ['Admin', 'Inventory'],
     
                             // ],
-                            [
-                                'text' => 'Shipment',
-                                'url'  => 'inventory/outwardings',
-                                'icon' => 'far fa-fw fa-file',
-                                'can' =>  ['Admin', 'Inventory']
-                            ],
-                            [
-                                'text' => 'Outwarding',
-                                'url'  => 'shipment/outwarding/view',
-                                'icon' => 'far fa-fw fa-file',
-                                'can' =>  ['Admin', 'Inventory']
-                            ],
-                        ],
+                        //     [
+                        //         'text' => 'Shipment',
+                        //         'url'  => 'inventory/outwardings',
+                        //         'icon' => 'far fa-fw fa-file',
+                        //         'can' =>  ['Admin', 'Inventory']
+                        //     ],
+                        //     [
+                        //         'text' => 'Outwarding',
+                        //         'url'  => 'shipment/outwarding/view',
+                        //         'icon' => 'far fa-fw fa-file',
+                        //         'can' =>  ['Admin', 'Inventory']
+                        //     ],
+                        // ],
                         ],
                     ],
                 ],
