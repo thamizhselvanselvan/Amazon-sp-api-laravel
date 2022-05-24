@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Inventory;
 
 use Illuminate\Http\Request;
 use App\Models\Inventory\Vendor;
+use App\Models\Inventory\City;
+use App\Models\Inventory\State;
+use App\Models\Inventory\Country;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -30,7 +33,8 @@ class InventoryVendorController extends Controller
     }
     public function create()
     {
-        return view('inventory.vendor.add');
+        $country = Country::select('id','name')->get();
+        return view('inventory.vendor.add',compact('country'));
     }
     public function store(Request $request)
     {
@@ -38,14 +42,18 @@ class InventoryVendorController extends Controller
         $request->validate([
             'name' => 'required|min:3|max:100',
             'type' => 'required|in:Source,Destination',
-            'country' => 'required|min:1|max:100',
-            'currency' => 'required|min:1|max:10',
+            'country' => 'required',
+            'state' => 'required',
+            'city' => 'required',
+            'currency' => 'required',
         ]);
 
         Vendor::create([
             'name' => $request->name,
             'type' => $request->type,
             'country' => $request->country,
+            'state' => $request->state,
+            'city' => $request->city,
             'currency' => $request->currency,
         ]);
 
@@ -56,8 +64,9 @@ class InventoryVendorController extends Controller
     {
 
         $name = Vendor::where('id', $id)->first();
+        $country = Country::select('id','name')->get();
 
-        return view('inventory.vendor.edit', compact('name'));
+        return view('inventory.vendor.edit', compact('name','country'));
     }
 
 
@@ -67,7 +76,9 @@ class InventoryVendorController extends Controller
         $validated = $request->validate([
             'name' => 'required|min:3|max:100',
             'type' => 'required|in:Source,Destination',
-            'country' => 'required|min:1|max:100',
+            'country' => 'required',
+            'state' => 'required',
+            'city' => 'required',
             'currency' => 'required|min:1|max:10',
         ]);
 
@@ -81,5 +92,23 @@ class InventoryVendorController extends Controller
         Vendor::where('id', $id)->delete();
 
         return redirect()->route('vendors.index')->with('success', 'Vendor has been Deleted successfully');
+    }
+
+    public function getState(Request $request, $id)
+    {
+        if($request->ajax())
+        {
+            $state = State::where('country_id',$id)->get();
+        }
+        return response()->json($state);
+    }
+    
+    public function getCity(Request $request, $id)
+    {
+        if($request->ajax())
+        {
+            $city = City::where('state_id',$id)->get();
+        }
+        return response()->json($city);
     }
 }

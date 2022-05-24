@@ -67,6 +67,7 @@ Route::get('shipment/single/view', 'Inventory\inwarding\InventoryShipmentControl
 
 
 Route::get('inventory/Index','Inventory\Master\InventorySourceController@index');
-// Route::get('inventory/warehouse/testing','Inventory\InventoryWarehouseController@CountryStateCity');
 Route::post('json/{id}','Inventory\InventoryWarehouseController@CountryStateCity')->name('country.name');
 Route::post('stateId/{id}','Inventory\InventoryWarehouseController@getState');
+Route::post('vendor/{id}','Inventory\InventoryVendorController@getState');
+Route::post('vendorstate/{id}','Inventory\InventoryVendorController@getCity');
