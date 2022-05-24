@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
              UserSeeder::class,
              Catalog_Manager::class,
              Boe_Account::class,
-             INUserSeeder::class,
              Seller_Management::class,
              CountryStateCitySeeder::class,
         ]);

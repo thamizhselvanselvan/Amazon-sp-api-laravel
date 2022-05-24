@@ -25,6 +25,7 @@ class CreateUniversalTextilesTable extends Migration
             $table->string('shipping_weight')->nullable();
             $table->string('product_type')->nullable();
             $table->string('quantity')->nullable();
+            $table->unique('textile_id', 'textile_id_unique_index');
             $table->timestamps();
         });
     }

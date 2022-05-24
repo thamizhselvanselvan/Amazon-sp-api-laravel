@@ -34,6 +34,8 @@ Route::resource('inventory/sources', 'Inventory\Master\InventorySourceController
 Route::resource('inventory/destinations','Inventory\Master\InventoryDestinationController');
 Route::resource('inventory/disposes','Inventory\Master\InventoryDisposeController');
 
+Route::get('inventory/stocks','Inventory\Master\InventoryDisposeController@stokes')->name('inventory.stocks');
+
 Route::resource('inventory/warehouses','Inventory\InventoryWarehouseController');
 Route::resource('inventory/features','Inventory\InventoryFeaturesController');
 Route::resource('inventory/inwardings','Inventory\Stock\InventoryInwardingController');
@@ -45,7 +47,7 @@ Route::get('shipment/autocomplete', 'Inventory\inwarding\InventoryShipmentContro
 Route::post('shipment/storeshipment', 'Inventory\inwarding\InventoryShipmentController@storeshipment');
 Route::get('shipment/select/region', 'Inventory\inwarding\InventoryShipmentController@selectregion');
 Route::get('shipment/inward/view', 'Inventory\inwarding\InventoryShipmentController@inwardingdata')->name('shipments.view');
-
+Route::get('shipment/single/view', 'Inventory\inwarding\InventoryShipmentController@singleview')->name('shipments.single_view');
 
  Route::resource('inventory/outwardings','Inventory\Outwarding\InventoryOutwardShipmentController');
  Route::get('shipment/autofinish', 'Inventory\Outwarding\InventoryOutwardShipmentController@autofinish');

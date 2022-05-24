@@ -12,7 +12,11 @@ class Outshipment extends Model
     protected $connection = 'inventory';
     protected $fillable = ['destination_id','asin','ship_id','item_name','quantity','price'];
 
-    public function destinations() {
-        return $this->hasOne(Destination::class, 'id', 'destination_id');
+    public function vendors() {
+        return $this->hasOne(Vendor::class, 'id', 'destination_id');
     }
+
+    public function warehouses() {
+        return $this->hasOne(Warehouse::class, 'id', 'warehouse');
+    } 
 }

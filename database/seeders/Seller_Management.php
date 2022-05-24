@@ -16,7 +16,6 @@ class Seller_Management extends Seeder
     public function run()
     {
         $rolesllerManager = Role::create(['name' => 'Seller']);
-
         $permissionsllerAccount = Permission::create(['name' => 'Seller']);
 
         $rolesllerManager->givePermissionTo($permissionsllerAccount);

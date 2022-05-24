@@ -71,16 +71,16 @@
                         name: 'rack_id'
                     },
                     {
-                        data: 'rack_name',
-                        name: 'rack_name'
+                        data: 'name',
+                        name: 'name'
                     },
                     {
                         data: 'shelves_no',
                         name: 'shelves_no'
                     },
                     {
-                        data: 'name',
-                        name: 'name'
+                        data: 'shelve_name',
+                        name: 'shelve_name'
                     },
                     {
                         data: 'action',

@@ -43,7 +43,7 @@
                         <th>ID</th>
                         <th>Shipment ID</th>
                         <th>Destination</th>
-                        <!-- <th>Action</th> -->
+                        <th>Action</th>
                        
                     </tr>
                 </thead>
@@ -80,11 +80,11 @@
                         name: 'destination_name'
                     },
                    
-                    // {
-                    //     data: 'action',
-                    //     orderable: false,
-                    //     searchable: false
-                    // },
+                    {
+                        data: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
                 ]
             });
             $(document).on('click', ".delete", function(e) {

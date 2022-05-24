@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Inwardings')
+@section('title', 'Inventory Stocks')
 
 @section('css')
 
@@ -9,14 +9,8 @@
 @stop
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Inventory Inwarding</h1>
-    <div class="row">
-        <div class="col">
-            <a href="{{ route('shipments.index') }}" class="btn btn-primary btn-sm">
-                <i class="fas fa-long-arrow-alt-left"></i> Back
-            </a>
-        </div>
-    </div>
+    <h1 class="m-0 text-dark"> Stocks</h1>
+
 @stop
 
 @section('content')
@@ -32,27 +26,28 @@
                     </div>
                 @endif
             </div>
-
-    
+ 
+         
 
             <table class="table table-bordered yajra-datatable table-striped">
                 <thead>
                     <tr>
-                        <th> ID</th>
-                        <th>Shipment ID</th>
+                        <th>ID</th>
                         <th>Warehouse</th>
-                        <th>Source</th>
-                        <th>Currency</th>
-                        <th>Items</th>
-                        <th>Inwarding Date</th>
+                        <th>ASIN</th>
+                        <th>Item Name</th>
+                        <th>Quantity</th>
+                       
                     </tr>
                 </thead>
+                
                 <tbody>
                 </tbody>
             </table>
         </div>
     </div>
 @stop
+
 
 @section('js')
     <script type="text/javascript">
@@ -61,7 +56,7 @@
             let yajra_table = $('.yajra-datatable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('shipments.view') }}",
+                ajax: "{{ route('inventory.stocks') }}",
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -69,31 +64,31 @@
                         searchable: false
                     },
                     {
-                        data: 'ship_id',
-                        name: 'ship_id'
-                    },
-                    {
                         data: 'warehouse_name',
                         name: 'warehouse_name'
-                    },
+                    },                
+                    
                     {
-                        data: 'source_name',
-                        name: 'source_name'
-                    },
+                        data: 'asin',
+                        name: 'asin'
+                        
+                    },           
                     {
-                        data: 'currency',
-                        name: 'currency'
-                    },
+                        name: 'item_name',
+                        data: 'item_name'
+                    },           
                     {
-                        data: 'items',
-                        name: 'items'
-                    },
-                    {
-                        data: 'created_at',
-                        name: 'created_at'
-                    },
+                        data: 'quantity',
+                        name: 'quantity'
+                    },           
                 ]
             });
         });
     </script>
 @stop
+
+
+
+
+
+

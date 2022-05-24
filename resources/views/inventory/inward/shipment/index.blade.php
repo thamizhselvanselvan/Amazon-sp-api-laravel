@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Shipment')
+@section('title', ' Inward Shipment')
 
 @section('css')
 
@@ -9,7 +9,7 @@
 @stop
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Shipment</h1>
+    <h1 class="m-0 text-dark"> Inward Shipment</h1>
 
 @stop
 
@@ -44,7 +44,7 @@
                         <th>ID</th>
                         <th>Shipment ID</th>
                         <th>Source</th>
-                        <!-- <th>Action</th> -->
+                        <th>Action</th>
                        
                     </tr>
                 </thead>
@@ -82,11 +82,11 @@
                         name: 'source_name'
                     },
                    
-                    // {
-                    //     data: 'action',
-                    //     orderable: false,
-                    //     searchable: false
-                    // },
+                    {
+                        data: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
                 ]
             });
             $(document).on('click', ".delete", function(e) {

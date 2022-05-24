@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Inventory\Master;
 use Illuminate\Http\Request;
 use App\Models\Inventory\Dispose;
 use App\Http\Controllers\Controller;
+use App\Models\Inventory\Inventory;
 use Yajra\DataTables\Facades\DataTables;
 
 class InventoryDisposeController extends Controller
@@ -83,5 +84,24 @@ class InventoryDisposeController extends Controller
         Dispose::where('id', $id)->delete();
 
         return redirect()->route('disposes.index')->with('success', 'Dispose has been Deleted successfully');
+    }
+
+    public function stokes(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $data = Inventory::query()->with(['warehouses']);
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+
+                ->editColumn('warehouse_name', function ($data) {
+                    return ($data->warehouses) ? $data->warehouses->name : "NA";
+                })
+                ->rawColumns(['warehouse_name'])
+                ->make(true);
+        }
+
+        return view('inventory.master.dispose.view');
     }
 }
