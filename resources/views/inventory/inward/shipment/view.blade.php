@@ -32,68 +32,23 @@
                     </div>
                 @endif
             </div>
-
-    
-
+            
             <table class="table table-bordered yajra-datatable table-striped">
-                <thead>
-                    <tr>
-                        <th> ID</th>
-                        <th>Shipment ID</th>
-                        <th>Warehouse</th>
-                        <th>Source</th>
-                        <th>Currency</th>
-                        <th>Items</th>
-                        <th>Inwarding Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+            <thead>
+                <tr>
+                    <th> ID</th>
+                    <th>Shipment ID</th>
+                    <th>Warehouse</th>
+                    <th>Source</th>
+                    <th>Currency</th>
+                    <th>Items</th>
+                    <th>Inwarding Date</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+            
         </div>
     </div>
-@stop
-
-@section('js')
-    <script type="text/javascript">
-        $(function() {
-
-            let yajra_table = $('.yajra-datatable').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: "{{ route('shipments.view') }}",
-                columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'ship_id',
-                        name: 'ship_id'
-                    },
-                    {
-                        data: 'warehouse_name',
-                        name: 'warehouse_name'
-                    },
-                    {
-                        data: 'source_name',
-                        name: 'source_name'
-                    },
-                    {
-                        data: 'currency',
-                        name: 'currency'
-                    },
-                    {
-                        data: 'items',
-                        name: 'items'
-                    },
-                    {
-                        data: 'created_at',
-                        name: 'created_at'
-                    },
-                ]
-            });
-        });
-    </script>
 @stop
