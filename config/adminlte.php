@@ -316,7 +316,7 @@ return [
 
         [
             'text'    => 'Catalog',
-            'can' =>   ['Admin', 'Catalog Manager'],
+            'can' =>   ['Admin', 'Catalog'],
             'submenu' => [
 
                 [
