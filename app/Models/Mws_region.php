@@ -10,18 +10,8 @@ class Mws_region extends Model
 {
     use SoftDeletes;
 
+    protected $connection = 'buybox';
     protected $table = 'mws_regions';
-
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-        $this->getConnection()->setTablePrefix('bb_');
-    }
-
-    public function __destruct()
-    {
-        $this->getConnection()->setTablePrefix('sa_');
-    }
 
     protected $fillable = [
         'region',
