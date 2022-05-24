@@ -35,6 +35,7 @@ class UserSeeder extends Seeder
 
         ]);
 
+
         $amit = User::create([
             'name' => 'Amit Kumar',
             'email' => 'nu.palmate@gmail.com',
@@ -60,11 +61,18 @@ class UserSeeder extends Seeder
 
         ]);
 
+        $vikesh = User::create([
+            'name'  => 'Vikesh kumar',
+            'email' =>  'zeta.palmate@gmail.com',
+            'password' => Hash::make(123456),
+        ]);
+
         $robin->assignRole('Admin');
         $amit->assignRole('Admin');
         $satish->assignRole('Admin');
         $sanjay->assignRole('Admin');
         $am->assignRole('Admin');
+        $vikesh->assignRole('Admin');
         
     }
 }

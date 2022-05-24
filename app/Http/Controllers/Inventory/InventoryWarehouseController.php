@@ -3,8 +3,13 @@
 namespace App\Http\Controllers\Inventory;
 
 use Illuminate\Http\Request;
+use League\Csv\Reader;
+use App\Models\Inventory\City;
+use App\Models\Inventory\State;
 use App\Models\Inventory\Warehouse;
+use App\Models\Inventory\Country;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
 class InventoryWarehouseController extends Controller
@@ -37,20 +42,22 @@ class InventoryWarehouseController extends Controller
     }
     public function create()
     {
-        return view('inventory.warehouse.add');
+        $country =Country::select('id','name')->get();
+
+        return view('inventory.warehouse.add',compact('country'));
     }
 
     public function store(Request $request)
     {
         
         $request->validate([
-            'name' => 'required|min:3|max:100',
+          
             'name' =>'required|min:3|max:100',
             'address_1'=>'required|min:3|max:100',
             'address_2'=>'required|min:3|max:100',
-            'city'=>'required|min:3|max:100',
-            'state'=>'required|min:3|max:100',
-            'country'=>'required|min:3|max:100',
+            'city'=>'required',
+            'state'=>'required',
+            'country'=>'required',
             'pin_code'=>'required|min:3|max:100',
             'contact_person_name'=>'required|min:3|max:100',
             'phone_number' =>'required|min:3|max:100',
@@ -75,24 +82,24 @@ class InventoryWarehouseController extends Controller
     }
     public function edit($id)
     {
+        $country =Country::select('id','country_name')->get();
 
         $name = Warehouse::where('id', $id)->first();
 
-        return view('inventory.warehouse.edit', compact('name'));
+        return view('inventory.warehouse.edit', compact('name','country'));
     }
-
 
     public function update(Request $request, $id)
     {
 
         $validated = $request->validate([
-            'name' => 'required|min:3|max:100',
+           
             'name' =>'required|min:3|max:100',
             'address_1'=>'required|min:3|max:100',
             'address_2'=>'required|min:3|max:100',
-            'city'=>'required|min:3|max:100',
-            'state'=>'required|min:3|max:100',
-            'country'=>'required|min:3|max:100',
+            'city'=>'required',
+            'state'=>'required',
+            'country'=>'required',
             'pin_code'=>'required|min:3|max:100',
             'contact_person_name'=>'required|min:3|max:100',
             'phone_number' =>'required|min:3|max:100',
@@ -109,5 +116,24 @@ class InventoryWarehouseController extends Controller
         Warehouse::where('id', $id)->delete();
 
         return redirect()->route('warehouses.index')->with('success', 'Warehouse has been Deleted successfully');
+    }
+
+    public function CountryStateCity(Request $request,$id)
+    {
+        if($request->ajax())
+        {
+            $statename = State::where('country_id', $id)->get();
+        }
+        return response()->json($statename);
+    }
+
+    public function getState(Request $request, $id)
+    {
+        if($request->ajax())
+        {
+            $city=City::where('state_id',$id)->get();
+        }
+        return response()->json( $city);
+        
     }
 }

@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
              Boe_Account::class,
              INUserSeeder::class,
              Seller_Management::class,
+             CountryStateCitySeeder::class,
         ]);
     }
 }
