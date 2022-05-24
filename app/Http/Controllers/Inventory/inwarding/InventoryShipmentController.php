@@ -60,7 +60,8 @@ class InventoryShipmentController extends Controller
 
     public function show($id)
     {
-        $view = Inventory::where('id', $id)->first();
+        
+        $view = Shipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
 
         return view('inventory.inward.shipment.view', compact('view'));
     }
