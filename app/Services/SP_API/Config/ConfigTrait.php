@@ -13,7 +13,6 @@ trait ConfigTrait
 
     public function  config($aws_key, $country_code, $auth_code = NULL)
     {
-        Log::alert("confing working");
         $token = '';
         $region = $this->region_code($country_code);
         if (isset($auth_code)) {
