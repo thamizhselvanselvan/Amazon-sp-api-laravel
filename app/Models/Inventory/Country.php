@@ -9,5 +9,6 @@ class Country extends Model
 {
     use HasFactory;
     protected $connection =  'inventory';
-    Protected $table ="countries";
+    Protected $table = "countries";
+    protected $fillable = ['name','created_at','updated_at'];
 }
