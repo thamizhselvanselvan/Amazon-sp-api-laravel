@@ -28,4 +28,18 @@ class Warehouse extends Model
     {
         return $this->hasMany(Racks::class);
     }
+    public function countrys()
+    {
+        return $this->hasOne(Country::class, 'id', 'country_id');
+    }
+   
+    public function states()
+    {
+        return $this->hasOne(State::class, 'id', 'country_id');
+    }
+
+    public function citys()
+    {
+        return $this->hasOne(City::class ,'id','state_id');
+    }
 }

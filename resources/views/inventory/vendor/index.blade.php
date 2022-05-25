@@ -82,16 +82,16 @@
                         name: 'type'
                     },
                     {
-                        data: 'country',
-                        name: 'country'
+                        data: 'country_name',
+                        name: 'country_name'
                     },
                     {
-                        data: 'state',
-                        name: 'state'
+                        data: 'state_name',
+                        name: 'state_name'
                     },
                     {
-                        data: 'city',
-                        name: 'city'
+                        data: 'city_name',
+                        name: 'city_name'
                     },
                     {
                         data: 'currency',
