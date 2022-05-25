@@ -679,19 +679,19 @@ return [
         ],
         [
             'text' => 'BOE Manage',
-            'can' =>  ['Admin', 'Account'],
+            'can' =>  ['Admin', 'BOE'],
             'submenu' => [
                 [
                     'text' => 'Manage',
                     'url' => 'BOE/index',
-                    'can' => ['Admin', 'Account'],
+                    'can' => ['Admin', 'BOE'],
                     'icon' => 'far fa-fw fa-file',
 
                 ],
                 [
                     'text' => 'Report',
                     'url' => 'BOE/report',
-                    'can' => ['Admin', 'Account'],
+                    'can' => ['Admin', 'BOE'],
                     'icon' => 'far fa-fw fa-file',
 
                 ],

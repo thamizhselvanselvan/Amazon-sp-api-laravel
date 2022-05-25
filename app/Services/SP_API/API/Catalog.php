@@ -23,7 +23,6 @@ class Catalog
 
     public function getCatalog()
     {
-        $startTime = startTime();
         $host = config('database.connections.seller.host');
         $dbname = config('database.connections.seller.database');
         $port = config('database.connections.seller.port');
@@ -43,13 +42,17 @@ class Catalog
         foreach ($datas as $value) {
 
             $asin = $value->asin;
+            $country_code = $value->source;
+
             $seller_id = $value->seller_id;
-            echo $seller_id;
+            // echo $seller_id;
         }
+
         $seller_detilas = Aws_credential::where('seller_id', $seller_id)->get();
-        exit;
+
         $asin = '';
-        $config = $this->config(1, 1, 1);
+        $config = $this->config(Null, 1);
+
         $apiInstance = new CatalogItemsV0Api($config);
         $marketplace = $this->marketplace_id('US');
         $country_code = '';
@@ -61,7 +64,7 @@ class Catalog
             if (isset(($result->payload->AttributeSets[0]))) {
 
                 $result = (array)($result->payload->AttributeSets[0]);
-                $productcatalogs = R::dispense('bookswagon');
+                $productcatalogs = R::dispense('amazonseller');
 
                 $productcatalogs->asin = $asin;
                 $productcatalogs->source = $country_code;
