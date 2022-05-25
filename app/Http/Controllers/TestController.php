@@ -164,9 +164,9 @@ class TestController extends Controller
     echo "<pre>";
 
     try {
-      $result = $apiInstance->getCatalogItem($asin, $marketplace, 'attributes');
+      $result = $apiInstance->getCatalogItem($asin, $marketplace);
       $result = json_decode(json_encode($result));
-      print_r($result);
+      po($result->summaries[0]->itemName);
     } catch (Exception $e) {
       echo 'Exception when calling CatalogApi->getCatalogItem: ', $e->getMessage(), PHP_EOL;
     }
@@ -174,7 +174,7 @@ class TestController extends Controller
     echo 'Product Pricing Api / getCompetitivePricing';
     echo "<hr>";
 
-
+exit;
     $apiInstance = new ProductPricingApi($config);
     try {
       $result = $apiInstance->getCompetitivePricing($marketplace, $item_type, $asins)->getPayload();
