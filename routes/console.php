@@ -17,3 +17,27 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+
+//if ('staging' === App::environment() || 'production' === App::environment()) {
+
+Artisan::command('migrate:fresh', function () {
+    $this->comment('You are not allowed to do this in production!');
+})->describe('Override default command in production.');
+
+Artisan::command('migrate:rollback', function () {
+    $this->comment('You are not allowed to do this in production!');
+})->describe('Override default command in production.');
+
+Artisan::command('migrate:install', function () {
+    $this->comment('You are not allowed to do this in production!');
+})->describe('Override default command in production.');
+
+Artisan::command('migrate:refresh', function () {
+    $this->comment('You are not allowed to do this in production!');
+})->describe('Override default command in production.');
+
+Artisan::command('migrate:reset', function () {
+    $this->comment('You are not allowed to do this in production!');
+})->describe('Override default command in production.');
+
+//}
