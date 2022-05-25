@@ -84,16 +84,16 @@
                         name: 'address_2'
                     },
                     {
-                        data: 'city',
-                        name: 'city'
+                        data: 'city_name',
+                        name: 'city_name'
                     },
                     {
-                        data: 'state',
-                        name: 'state'
+                        data: 'state_name',
+                        name: 'state_name'
                     },
                     {
-                        data: 'country',
-                        name: 'country'
+                        data: 'country_name',
+                        name: 'country_name'
                     },
                     {
                         data: 'pin_code',

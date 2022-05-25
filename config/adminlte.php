@@ -367,31 +367,31 @@ return [
                     'can' =>  ['Admin', 'Inventory'],
                     'submenu' => [
 
-                        [
-                            'text' => 'Region',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin', 'Inventory'],
-                            'submenu' => [
-                                    [
-                                        'text' => 'Country',
-                                        'url'  => 'inventory/features',
-                                        'icon' => 'far fa-fw fa-file',
-                                        'can' =>  ['Admin', 'Inventory']
-                                    ],
-                                    [
-                                        'text' => 'State',
-                                        'url'  => 'inventory/features',
-                                        'icon' => 'far fa-fw fa-file',
-                                        'can' =>  ['Admin', 'Inventory']
-                                    ],
-                                    [
-                                        'text' => 'City',
-                                        'url'  => 'inventory/features',
-                                        'icon' => 'far fa-fw fa-file',
-                                        'can' =>  ['Admin', 'Inventory']
-                                    ],
-                                ],
-                        ],
+                        // [
+                        //     'text' => 'Region',
+                        //     'icon' => 'far fa-fw fa-file',
+                        //     'can' =>  ['Admin', 'Inventory'],
+                        //     'submenu' => [
+                        //             [
+                        //                 'text' => 'Country',
+                        //                 'url'  => 'inventory/features',
+                        //                 'icon' => 'far fa-fw fa-file',
+                        //                 'can' =>  ['Admin', 'Inventory']
+                        //             ],
+                        //             [
+                        //                 'text' => 'State',
+                        //                 'url'  => 'inventory/features',
+                        //                 'icon' => 'far fa-fw fa-file',
+                        //                 'can' =>  ['Admin', 'Inventory']
+                        //             ],
+                        //             [
+                        //                 'text' => 'City',
+                        //                 'url'  => 'inventory/features',
+                        //                 'icon' => 'far fa-fw fa-file',
+                        //                 'can' =>  ['Admin', 'Inventory']
+                        //             ],
+                        //         ],
+                        // ],
                        
                         [
                             'text' => 'Warehouse',
