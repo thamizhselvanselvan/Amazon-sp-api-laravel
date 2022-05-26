@@ -105,6 +105,7 @@ class AdminManagementController extends Controller
         $request->validate([
             'password' => 'required|confirmed|min:3|max:18'
         ]);
+        $seller_id = NULL;
         foreach($request->Role as $role)
         {
            if($role == 'Seller')
@@ -116,10 +117,14 @@ class AdminManagementController extends Controller
                 'password' => Hash::make($request->password),
                 'status' => 1
                ]);
+
+               $user_details = BB_User::where('email', $request->email)->get('id');
+               $seller_id = $user_details->first()->id;
            }
         }
         $am = User::create([
             'name' => $request->name,
+            'bb_seller_id' => $seller_id,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'company_id' => $request->company,

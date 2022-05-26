@@ -15,7 +15,7 @@ class seller_catalog_import extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:seller-catalog-import {login_id} {email}';
+    protected $signature = 'pms:seller-catalog-import {seller_id}';
 
     /**
      * The console command description.
@@ -41,15 +41,14 @@ class seller_catalog_import extends Command
      */
     public function handle()
     {
-        $login_id = $this->argument('login_id');
-        $email = $this->argument('email');
+        $seller_id = $this->argument('seller_id');
 
         $chunk = 10;
-        $datas = AsinMasterSeller::limit(10)->offset(0)->where('status', 0)->where('seller_id', $login_id)->get();
+        $datas = AsinMasterSeller::limit(10)->offset(0)->where('status', 0)->where('seller_id', $seller_id)->get();
         // $datas = AsinMasterSeller::chunk($chunk)->where('status', 0)->where('seller_id', $login_id)->get();
         Seller_catalog_import_job::dispatch(
             [
-                'email' => $email,
+                'seller_id' => $seller_id,
                 'datas' => $datas,
             ]
         );

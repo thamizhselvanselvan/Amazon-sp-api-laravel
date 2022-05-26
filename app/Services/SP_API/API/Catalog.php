@@ -20,10 +20,8 @@ class Catalog
 {
 
     use ConfigTrait;
-    public function index($datas, $email)
+    public function index($datas, $seller_id)
     {
-        $DB_user = BB_User::where('email', $email)->get();
-        $seller_id = $DB_user[0]->id;
         $host = config('database.connections.seller.host');
         $dbname = config('database.connections.seller.database');
         $port = config('database.connections.seller.port');
