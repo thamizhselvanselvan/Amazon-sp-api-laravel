@@ -21,20 +21,33 @@ class InventoryWarehouseController extends Controller
     
     public function index(Request $request)
     {
-
         if ($request->ajax()) {
-
-            $data = Warehouse::query();
+            
+            $data = Warehouse::query()->with(['countrys','states', 'citys']);
+            
 
             return DataTables::of($data)
                 ->addIndexColumn()
+
+                ->editColumn('country_name', function ($data) {
+                    return ($data->countrys) ? $data->countrys->name : "NA";
+                })
+
+                ->editColumn('state_name', function ($data) {
+                    return ($data->states) ? $data->states->name : "NA";
+                })
+                ->editColumn('city_name', function ($data) {
+                    return ($data->citys) ? $data->citys->name : "NA";
+                })
+
+
                 ->addColumn('action', function ($row) {
 
                     $actionBtn = '<div class="d-flex"><a href="/inventory/warehouses/' . $row->id . '/edit" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
                     $actionBtn .= '<button data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
                     return $actionBtn;
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action','country_name','state_name','city_name'])
                 ->make(true);
         }
 

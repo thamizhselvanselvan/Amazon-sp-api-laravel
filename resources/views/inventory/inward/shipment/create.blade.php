@@ -260,8 +260,9 @@
                 success: function(arr) {
 
                     $.each(arr, function(index, val) {
-
+               
                         let asin = val.asin1;
+                        let item_name = val.item_name;
 
                         /*check if the item starts with the same letters as the text field value:*/
                         if (asin.substr(0, asin.length).toUpperCase() == asin.toUpperCase()) {
@@ -278,7 +279,7 @@
                                 //inp.value = this.getElementsByTagName("input")[0].value;
                                 inp.value = '';
 
-                                getData(this.getElementsByTagName("input")[0].value);
+                                getData(asin, item_name);
 
                                 /*close the list of autocompleted values,
                                 (or any other open lists of autocompleted values:*/
@@ -353,35 +354,25 @@
     }
 
     /* Display Autocomplete data:*/
-    function getData(asin) {
-        $.ajax({
-            method: 'GET',
-            url: '/shipment/select/view',
-            data: {
-                'asin': asin
-            },
-            success: function(arr) {
-                // console.log(arr);
+    function getData(asin, item_name) {
 
-                let html = "<tr class='table_row'>";
-                html += "<td name='asin[]'>" + arr.asin1 + "</td>";
-                html += "<td name='name[]'>" + arr.item_name + "</td>";
-                html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
-                html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
-                html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
-                html += "</tr>";
+        let html = "<tr class='table_row'>";
+        html += "<td name='asin[]'>" + asin + "</td>";
+        html += "<td name='name[]'>" + item_name + "</td>";
+        html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
+        html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
+        html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
+        html += "</tr>";
 
-                $("#report_table").append(html);
-            },
-            error: function(response) {
-                // console.log(response);
-            }
-        });
-    }
+        $("#report_table").append(html);
+ 
+     }
+
     /*Delete Row :*/
     $('#report_table').on('click', ".remove1", function() {
 
         $(this).closest("tr").remove();
     });
+
 </script>
 @stop

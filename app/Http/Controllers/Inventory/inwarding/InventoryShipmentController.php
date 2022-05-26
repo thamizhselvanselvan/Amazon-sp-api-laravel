@@ -7,10 +7,12 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\Inventory\Source;
 use App\Models\Inventory\Vendor;
+use App\Models\Inventory\Catalog;
 use App\Models\Inventory\Shipment;
 use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
+use App\Services\SP_API\CatalogAPI;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
@@ -76,10 +78,17 @@ class InventoryShipmentController extends Controller
     public function autocomplete(Request $request)
     {
 
-        $data = Product::select("asin1")->distinct()
+        $data = Product::select("asin1", "item_name")->distinct()
             ->where("asin1", "LIKE", "%{$request->asin}%")
             ->limit(50)
             ->get();
+        
+        if($data->count() > 0) {
+            return response()->json($data);
+        }
+
+        $catalogApi = new CatalogAPI();
+        $data[] = $catalogApi->getAsin($request->asin);
 
         return response()->json($data);
     }
@@ -122,13 +131,6 @@ class InventoryShipmentController extends Controller
             "updated_at" => now()
         ];
 
-        /**
-         * "asin" => json_encode($asin_json), 
-                "item_name" =>json_encode($item_name_json), 
-                "quantity" => json_encode($quantity_json), 
-                "price" =>json_encode($price_json), 
-         */
-
         Shipment::insert($create);
 
         foreach ($request->asin as $key => $asin) {
@@ -143,6 +145,17 @@ class InventoryShipmentController extends Controller
             ];
         }
         Inventory::insert($createin);
+
+        foreach ($request->asin as $key => $asin) {
+
+            $createcat[] = [
+                "asin" => $asin,
+                "item_name" => $request->name[$key],
+                "created_at" => now(),
+                "updated_at" => now()
+            ];
+        }
+        Catalog::insert($createcat);
         return response()->json(['success' => 'Shipment has Created successfully']);
     }
 

@@ -32,7 +32,7 @@ class InventoryOutwardShipmentController extends Controller
                     return ($data->vendors) ? $data->vendors->name : " NA";
                 })
                 ->addColumn('action', function ($row) {
-                    $actionBtn = '<div class="d-flex"><a href="/shipment/outwarding/view" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i>  View Shipment</a>';
+                    $actionBtn = '<div class="d-flex"><a href="/inventory/outwardings/' . $row->ship_id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i>  View Shipment</a>';
                     return $actionBtn;
                 })
                 ->rawColumns(['destinations_name', 'action'])
@@ -53,6 +53,14 @@ class InventoryOutwardShipmentController extends Controller
         return view('inventory.outward.shipment.create', compact('destination_lists', 'ware_lists'));
     }
 
+
+    public function show($id)
+    {
+        
+        $outview = Outshipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
+
+        return view('inventory.outward.shipment.view', compact('outview'));
+    }
     public function autofinish(Request $request)
     {
 
