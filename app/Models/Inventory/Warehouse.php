@@ -35,11 +35,11 @@ class Warehouse extends Model
    
     public function states()
     {
-        return $this->hasOne(State::class, 'id', 'country');
+        return $this->hasOne(State::class, 'id', 'state');
     }
 
     public function citys()
     {
-        return $this->hasOne(City::class ,'id','state');
+        return $this->hasOne(City::class ,'id','city');
     }
 }
