@@ -421,33 +421,24 @@ class BOEController extends Controller
             // $writer->insertOne($selected_header);
             $records = $records->toArray();
 
-            foreach($records as  $values)
-            {
-                foreach($values as $key => $val)
-                {
-                    if ( $key == 'duty_details') {
+            foreach ($records as  $values) {
+                foreach ($values as $key => $val) {
+                    if ($key == 'duty_details') {
 
                         $duty_details = (json_decode($val));
-                        foreach($duty_details as $duty_price){
-                            if($duty_price->DutyHead == 'BCD')
-                            {
+                        foreach ($duty_details as $duty_price) {
+                            if ($duty_price->DutyHead == 'BCD') {
                                 $datas['Duty'] = $duty_price->DutyAmount;
-                                $this->csv_header [] = 'Duty';
-                            }
-                            elseif($duty_price->DutyHead == 'SW Srchrg')
-                            {
-                                $this->csv_header [] = 'SW Srchrg';
+                                $this->csv_header[] = 'Duty';
+                            } elseif ($duty_price->DutyHead == 'SW Srchrg') {
+                                $this->csv_header[] = 'SW Srchrg';
                                 $datas['SWsrchrg'] = $duty_price->DutyAmount;
-                            }
-                            elseif($duty_price->DutyHead == 'IGST')
-                            {
-                                $this->csv_header [] = 'IGST';
+                            } elseif ($duty_price->DutyHead == 'IGST') {
+                                $this->csv_header[] = 'IGST';
                                 $datas['IGST'] = $duty_price->DutyAmount;
                             }
                         }
-                        
-                    }
-                    else{
+                    } else {
                         $datas[$key] = $val;
                         $this->csv_header[] = $key;
                     }

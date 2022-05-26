@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use SellingPartnerApi\Configuration;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use SellingPartnerApi\Api\ProductPricingApi;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
