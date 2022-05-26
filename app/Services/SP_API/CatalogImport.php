@@ -107,18 +107,6 @@ class CatalogImport
                             // $value [][$key] = ($data);
                         }
                     }
-                    // $result = $apiInstancePricing->getCompetitivePricing($marketplace_id, $item_type, $asins)->getPayload();
-                    // $result = json_decode(json_encode($result));
-
-                    // if (isset($result[0]->Product->CompetitivePricing->CompetitivePrices[0]->Price->LandedPrice)) {
-
-                    //     $pricing = $result[0]->Product->CompetitivePricing->CompetitivePrices[0]->Price->LandedPrice;
-                    //     $currencyCode =  $pricing->CurrencyCode;
-                    //     $Amount = $pricing->Amount;
-
-                    //     $productcatalogs->currencyCode = $currencyCode;
-                    //     $productcatalogs->amount = $Amount;
-                    // }
                     echo $asin;
                     echo "<hr>";
                     R::store($productcatalogs);

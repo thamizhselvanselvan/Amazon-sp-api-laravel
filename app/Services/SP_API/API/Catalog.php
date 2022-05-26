@@ -20,49 +20,45 @@ class Catalog
 {
 
     use ConfigTrait;
-
-    public function getCatalog()
+    public function index($datas, $email)
     {
-        $startTime = startTime();
+        $DB_user = BB_User::where('email', $email)->get();
+        $seller_id = $DB_user[0]->id;
         $host = config('database.connections.seller.host');
         $dbname = config('database.connections.seller.database');
         $port = config('database.connections.seller.port');
         $username = config('database.connections.seller.username');
         $password = config('database.connections.seller.password');
 
-        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password); // Log::warning($datas[0]->asin);
-        
-        $login_user = Auth::user();
-        $email = $login_user->email;
-        $login_id = $login_user->id;
-        
-        $DB_user = BB_User::where('email', $email)->get();
-        $seller_id = $DB_user[0]->id;
-        $datas = AsinMasterSeller::limit(100)->offset(1400)->where('status', 0)->where('seller_id', $login_id)->get();
-       
+        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
         foreach ($datas as $value) {
-
             $asin = $value->asin;
+            $country_code = $value->source;
             $seller_id = $value->seller_id;
-            echo $seller_id;
+
+            $seller_detilas = Aws_credential::where('seller_id', $seller_id)->get();
+            $auth_code = ($seller_detilas[0]->auth_code);
+            $token = "Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg";
+            $this->getCatalog($country_code, $token, $asin, $seller_id);
         }
-        $seller_detilas = Aws_credential::where('seller_id', $seller_id)->get();
-        exit;
-        $asin = '';
-        $config = $this->config(1, 1, 1);
+    }
+
+    public function getCatalog($country_code, $auth_code, $asin, $seller_id)
+    {
+        $config = $this->config(Null, $country_code, $auth_code);
         $apiInstance = new CatalogItemsV0Api($config);
-        $marketplace = $this->marketplace_id('US');
+        $marketplace = $this->marketplace_id($country_code);
         $country_code = '';
 
         try {
             $result = $apiInstance->getCatalogItem($marketplace, $asin);
             $result = json_decode(json_encode($result));
-
             if (isset(($result->payload->AttributeSets[0]))) {
 
                 $result = (array)($result->payload->AttributeSets[0]);
-                $productcatalogs = R::dispense('bookswagon');
+                $productcatalogs = R::dispense('amazonseller');
 
+                $productcatalogs->seller_id = $seller_id;
                 $productcatalogs->asin = $asin;
                 $productcatalogs->source = $country_code;
 
@@ -80,12 +76,9 @@ class Catalog
                 }
                 R::store($productcatalogs);
             } else {
-
-                // Log::info($asin);
+                Log::info($asin);
             }
         } catch (Exception $e) {
-
-            echo $e . '<hr>';
             Log::alert($e);
         }
     }
