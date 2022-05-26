@@ -9,6 +9,8 @@ class City extends Model
 {
     use HasFactory;
     protected $connection = 'inventory';
+    protected $table ='cities';
+    protected $fillable = ['state_id','name','created_at','updated_at'];
 
     
     public function states()

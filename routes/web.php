@@ -32,6 +32,10 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('command',function(){
+
+     Artisan::call('pms:country-state-city');
+});
 
 Route::get('test', function () {
 

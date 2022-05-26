@@ -10,6 +10,8 @@ class State extends Model
     use HasFactory;
  
     protected $connection = 'inventory';
+    protected $table = 'states';
+    protected $fillable = ['country_id','name','created_at','updated_at'];
 
     public function citys()
     {
