@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Admin\BB\BB_Product;
+use App\Models\Admin\BB\BB_Product_lowest_price_offer;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use Illuminate\Console\Command;
@@ -60,16 +62,21 @@ class seller_asin_import extends Command
            
         $records = $stmt->process($csv);
 
-        $asin = [];
+        $asin_master = [];
+        $product = [];
+        $product_lowest_price = [];
           
 
             $count = 0;
             foreach($records as $key => $record)
             {
-                $asin[] = [
+                $asin = $record['ASIN'];
+                $country_code = $record['Source'];
+
+                $asin_master[] = [
                     'seller_id' => $seller_id,
-                    'asin' => $record['ASIN'],
-                    'source' => $record['Source'],
+                    'asin' => $asin,
+                    'source' => $country_code,
                     'destination_1' => $record['Destination 1'],
                     'destination_2' => $record['Destination 2'],
                     'destination_3' => $record['Destination 3'],
@@ -78,16 +85,38 @@ class seller_asin_import extends Command
                     'created_at' => now(),
                     'updated_at' => now()
                 ];
+                
+                $product [] = [
+                    'seller_id' => $seller_id,
+                    'asin1' => $asin,
+                    'country_code'=> $country_code,
+                ];
+
+                $product_lowest_price [] = [
+
+                    'asin' => $asin,
+                    'import_type' => 'Seller',
+                    'country_code' => $country_code,
+                ];
+
                 if($count == 1000) {
-                    AsinMasterSeller::insert($asin);
+
+                    AsinMasterSeller::insert($asin_master);
+                    BB_Product::insert($product);
+                    BB_Product_lowest_price_offer::upsert($product_lowest_price, ['asin','country_code'],['asin','country_code']);
                     $count = 0;
-                    $asin = [];
+                    $asin_master = [];
+                    $product = [];
+                    $product_lowest_price = [];
                 }
                 $count++;
                 
             }	
             
-            AsinMasterSeller::insert($asin); 
+            AsinMasterSeller::insert($asin_master); 
+            BB_Product::insert($product);
+            BB_Product_lowest_price_offer::upsert($product_lowest_price, ['asin', 'country_code'], ['asin', 'country_code']);
+
             Log::warning(" asin import successfully");
     }
 }

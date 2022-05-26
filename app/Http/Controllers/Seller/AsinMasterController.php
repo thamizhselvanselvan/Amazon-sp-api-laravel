@@ -18,7 +18,7 @@ class AsinMasterController extends Controller
         {
             if ($request->ajax()) {
                 $user = Auth::user();
-                $seller_id = $user->id;
+                $seller_id = $user->bb_seller_id;
 
                 $data = AsinMasterSeller::query()->where('seller_id', $seller_id);
     
@@ -123,7 +123,11 @@ class AsinMasterController extends Controller
             $path = 'Seller/AsinMaster/asin.csv';
             Storage::put($path, $source);
             $user = Auth::user();
-            $seller_id = $user->id;
+            $seller_id = $user->bb_seller_id;
+            if(!$seller_id)
+            {
+                $seller_id = $user->id;
+            }
 
             if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
     

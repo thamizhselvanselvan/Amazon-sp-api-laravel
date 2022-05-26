@@ -32,9 +32,9 @@ class Seller_catalog_import_job implements ShouldQueue
     public function handle()
     {
         $datas = $this->payload['datas'];
-        $email = $this->payload['email'];
+        $seller_id = $this->payload['seller_id'];
         
         $catalog =   new Catalog();
-        $catalogApi = $catalog->index($datas, $email);
+        $catalogApi = $catalog->index($datas, $seller_id);
     }
 }

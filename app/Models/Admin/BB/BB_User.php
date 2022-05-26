@@ -13,7 +13,7 @@ class BB_User extends Model
 {
     use HasFactory, Notifiable, HasRoles, SoftDeletes;
     protected $connection = 'buybox';
-    protected $table ='Users';
+    protected $table ='users';
     
     protected $fillable = [
         'internal_seller',
