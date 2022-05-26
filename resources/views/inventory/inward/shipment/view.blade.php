@@ -35,7 +35,7 @@
             
             <div >
                 <h4 style="font-family:Times New Roman ;">Shipment ID : {{ $view->ship_id }}</h4>
-                <h4 style="font-family:Times New Roman;">warehouse   : {{ $view->warehouses->name }} </h4>
+                <h4 style="font-family:Times New Roman;">Warehouse   : {{ $view->warehouses->name }} </h4>
                 <h4 style="font-family:Times New Roman;"> Source :  {{ $view->vendors->name }} </h4>
                 <h4 style="font-family:Times New Roman ;">Currency : {{ $view->currency }} </h4>
                 <h6></h6>
@@ -45,9 +45,9 @@
                 <thead>
                     <tr>
                        
-                        <th>asin</th>
-                        <th>item name</th>
-                        <th>quantity</th>
+                        <th>ASIN</th>
+                        <th>Item Name</th>
+                        <th>Quantity</th>
                         <th>Price</th>
                       
                     </tr>
@@ -64,9 +64,9 @@
                         <tr>
                             
                             <td>{{$val['asin']}}</td>
-                            <td>{{$val['item_name'][0]}}</td>
-                            <td>{{$val['quantity'][0]}}</td>
-                            <td>{{$val['price'][0]}}</td>
+                            <td>{{$val['item_name']}}</td>
+                            <td>{{$val['quantity']}}</td>
+                            <td>{{$val['price']}}</td>
                         </tr>
                         
                     @endforeach

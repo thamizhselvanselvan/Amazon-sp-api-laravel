@@ -86,22 +86,5 @@ class InventoryDisposeController extends Controller
         return redirect()->route('disposes.index')->with('success', 'Dispose has been Deleted successfully');
     }
 
-    public function stokes(Request $request)
-    {
-        if ($request->ajax()) {
-
-            $data = Inventory::query()->with(['warehouses']);
-
-            return DataTables::of($data)
-                ->addIndexColumn()
-
-                ->editColumn('warehouse_name', function ($data) {
-                    return ($data->warehouses) ? $data->warehouses->name : "NA";
-                })
-                ->rawColumns(['warehouse_name'])
-                ->make(true);
-        }
-
-        return view('inventory.master.dispose.view');
-    }
+  
 }

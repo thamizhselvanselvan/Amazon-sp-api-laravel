@@ -26,8 +26,9 @@ class InventoryShipmentController extends Controller
 
     public function index(Request $request)
     {
+        
         // $user = Inventory::select('id')->get();
-   
+
         //  dd($user);
         // exit;
 
@@ -62,7 +63,7 @@ class InventoryShipmentController extends Controller
 
     public function show($id)
     {
-        
+
         $view = Shipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
 
         return view('inventory.inward.shipment.view', compact('view'));
@@ -77,13 +78,24 @@ class InventoryShipmentController extends Controller
 
     public function autocomplete(Request $request)
     {
-
         $data = Product::select("asin1", "item_name")->distinct()
             ->where("asin1", "LIKE", "%{$request->asin}%")
             ->limit(50)
             ->get();
-        
-        if($data->count() > 0) {
+
+        if ($data->count() > 0) {
+            return response()->json($data);
+        }
+
+        $data = Catalog::select("asin", "item_name")->distinct()
+            ->where("asin", "LIKE", "%{$request->asin}%")
+            ->limit(50)
+            ->get();
+
+        if ($data->count() > 0) {
+            $datas[] = [
+                'asin' => $data->asin1
+            ];
             return response()->json($data);
         }
 
@@ -107,21 +119,19 @@ class InventoryShipmentController extends Controller
     {
 
         $ship_id = random_int(1000, 9999);
-
-        $create = [];
         $items = [];
 
         foreach ($request->asin as $key => $asin) {
 
             $items[] = [
                 "asin" => $asin,
-                "item_name" => $request->name,
-                "quantity" => $request->quantity,
-                "price" => $request->price,
+                "item_name" => $request->name[$key],
+                "quantity" => $request->quantity[$key],
+                "price" => $request->price[$key],
             ];
         }
 
-        $create[] = [
+        Shipment::insert( [
             "Ship_id" => $ship_id,
             "warehouse" => $request->warehouse,
             "currency" => $request->currency,
@@ -129,9 +139,7 @@ class InventoryShipmentController extends Controller
             "items" => json_encode($items),
             "created_at" => now(),
             "updated_at" => now()
-        ];
-
-        Shipment::insert($create);
+        ]);
 
         foreach ($request->asin as $key => $asin) {
 
@@ -144,8 +152,17 @@ class InventoryShipmentController extends Controller
                 "updated_at" => now()
             ];
         }
-        Inventory::insert($createin);
 
+        Inventory::insert($createin);
+        // foreach ($asin as $key => $asin) {
+            // if (Inventory::where('asin', $asin)->exists()) {
+            //     // $quant = Inventory::select('quantity')->get();
+               
+            // } else {
+            //     Inventory::insert($createin);
+            // }
+    
+        // }
         foreach ($request->asin as $key => $asin) {
 
             $createcat[] = [

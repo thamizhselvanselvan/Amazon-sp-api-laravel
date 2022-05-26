@@ -13,7 +13,7 @@ class Inventory extends Model
     protected $table = "inventory";
 
    public function warehouses() {
-        return $this->hasOne(Warehouse::class, 'id', 'warehouse');
+        return $this->hasOne(Warehouse::class, 'id', 'warehouse_id');
     }
     
 }
