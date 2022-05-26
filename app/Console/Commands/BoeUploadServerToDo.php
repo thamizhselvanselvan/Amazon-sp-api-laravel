@@ -2,9 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\BOE\UploadBoeToDO;
 use App\Models\BOE;
+use App\Jobs\BOE\UploadBoeToDO;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Support\Facades\Storage;
 
@@ -41,7 +42,18 @@ class BoeUploadServerToDo extends Command
      */
     public function handle()
     {
-       UploadBoeToDO::dispatch();
+        $chunk = 100;
+        BOE::where('do', 0)->chunk($chunk, function ($files_path) {
+
+            foreach ($files_path as $fp) {
+                $file = storage_path('app/' . $fp->download_file_path);
+                Storage::disk('do')->put('prod/'.$fp->download_file_path, file_get_contents($file));
+                BOE::where('id', $fp->id)->update(['do' => 1]);
+            }
+        });
+
+        Log::alert('Success');
+    //    UploadBoeToDO::dispatch();
 
     }
 }
