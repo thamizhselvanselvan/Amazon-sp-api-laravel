@@ -84,19 +84,19 @@ class InventoryOutwardShipmentController extends Controller
 
         $shipment_id = random_int(1000, 9999);
 
-        $createout = [];
 
         foreach ($request->asin as $key => $asin) {
 
             $items[] = [
                 "asin" => $asin,
-                "item_name" => $request->name,
-                "quantity" => $request->quantity,
-                "price" => $request->price,
+                "item_name" => $request->name[$key],
+                "quantity" => $request->quantity[$key],
+                "price" => $request->price[$key],
             ];
         }
 
-        $createout[] = [
+
+        Outshipment::insert( [
             "Ship_id" => $shipment_id,
             "warehouse" => $request->warehouse,
             "currency" => $request->currency,
@@ -104,12 +104,20 @@ class InventoryOutwardShipmentController extends Controller
             "items" => json_encode($items),
             "created_at" => now(),
             "updated_at" => now()
-        ];
-        // return $create;
-        // exit;
+        ]);
 
-        Outshipment::insert($createout);
 
+        foreach ($request->asin as $key1 => $asin1) {
+            if ($inventory = Inventory::where('asin', $asin1)->first()) {
+              
+                Inventory::where('asin', $asin1)->update([
+                    'warehouse_id' => $request->warehouse,
+                    'item_name' => $request->name[$key1],
+                    'quantity' => $inventory->quantity - $request->quantity[$key1],
+                ]);
+
+            }
+        }
         return response()->json(['success' => 'Shipment has Created successfully']);
     }
     public function outwardingview(Request $request)
