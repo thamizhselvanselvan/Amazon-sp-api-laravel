@@ -76,6 +76,11 @@ class Catalog
             } else {
                 Log::info($asin);
             }
+            
+            AsinMasterSeller::where('status', 0)
+                ->where('asin', $asin)
+                ->update(['status' => 1]);
+
         } catch (Exception $e) {
             Log::alert($e);
         }
