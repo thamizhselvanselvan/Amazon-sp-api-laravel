@@ -26,7 +26,16 @@
                     </div>
                 @endif
             </div>
- 
+               <h2>
+
+
+               <a href="{{ route('shipments.create') }}">
+                    <x-adminlte-button label="Inward" theme="primary" icon="fas fa-plus" />
+                </a>
+                <a href="{{ route('outwardings.create') }}">
+                    <x-adminlte-button label="Outward" theme="primary" icon="fas fa-minus" />
+                </a>
+               </h2>
          
 
             <table class="table table-bordered yajra-datatable table-striped">
