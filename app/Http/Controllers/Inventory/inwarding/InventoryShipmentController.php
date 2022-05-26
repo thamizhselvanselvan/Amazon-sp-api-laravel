@@ -26,7 +26,7 @@ class InventoryShipmentController extends Controller
 
     public function index(Request $request)
     {
-        
+
         // $user = Inventory::select('id')->get();
 
         //  dd($user);
@@ -131,7 +131,7 @@ class InventoryShipmentController extends Controller
             ];
         }
 
-        Shipment::insert( [
+        Shipment::insert([
             "Ship_id" => $ship_id,
             "warehouse" => $request->warehouse,
             "currency" => $request->currency,
@@ -141,28 +141,26 @@ class InventoryShipmentController extends Controller
             "updated_at" => now()
         ]);
 
-        foreach ($request->asin as $key => $asin) {
-
-            $createin[] = [
-                "warehouse_id" => $request->warehouse,
-                "asin" => $asin,
-                "item_name" => $request->name[$key],
-                "quantity" => $request->quantity[$key],
-                "created_at" => now(),
-                "updated_at" => now()
-            ];
+        foreach ($request->asin as $key1 => $asin1) {
+            if ($inventory = Inventory::where('asin', $asin1)->first()) {
+              
+                Inventory::where('asin', $asin1)->update([
+                    'warehouse_id' => $request->warehouse,
+                    'item_name' => $request->name[$key1],
+                    'quantity' => $inventory->quantity + $request->quantity[$key1],
+                ]);
+            } else {
+                Inventory::create([
+                    "warehouse_id" => $request->warehouse,
+                    "asin" => $asin1,
+                    "item_name" => $request->name[$key1],
+                    "quantity" => $request->quantity[$key1],
+                    "created_at" => now(),
+                    "updated_at" => now()
+                ]);
+            }
         }
 
-        Inventory::insert($createin);
-        // foreach ($asin as $key => $asin) {
-            // if (Inventory::where('asin', $asin)->exists()) {
-            //     // $quant = Inventory::select('quantity')->get();
-               
-            // } else {
-            //     Inventory::insert($createin);
-            // }
-    
-        // }
         foreach ($request->asin as $key => $asin) {
 
             $createcat[] = [
@@ -173,6 +171,7 @@ class InventoryShipmentController extends Controller
             ];
         }
         Catalog::insert($createcat);
+
         return response()->json(['success' => 'Shipment has Created successfully']);
     }
 

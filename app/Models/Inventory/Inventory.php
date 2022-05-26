@@ -9,8 +9,9 @@ class Inventory extends Model
 {
     use HasFactory;
     protected $connection = 'inventory';
-    protected $fillable = ['asin','item_name','quantity'];
     protected $table = "inventory";
+
+    protected $fillable = ['warehouse_id', 'asin','item_name', 'quantity'];
 
    public function warehouses() {
         return $this->hasOne(Warehouse::class, 'id', 'warehouse_id');

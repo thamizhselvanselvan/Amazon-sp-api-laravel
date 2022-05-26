@@ -106,6 +106,18 @@ class InventoryOutwardShipmentController extends Controller
             "updated_at" => now()
         ]);
 
+
+        foreach ($request->asin as $key1 => $asin1) {
+            if ($inventory = Inventory::where('asin', $asin1)->first()) {
+              
+                Inventory::where('asin', $asin1)->update([
+                    'warehouse_id' => $request->warehouse,
+                    'item_name' => $request->name[$key1],
+                    'quantity' => $inventory->quantity - $request->quantity[$key1],
+                ]);
+
+            }
+        }
         return response()->json(['success' => 'Shipment has Created successfully']);
     }
     public function outwardingview(Request $request)
