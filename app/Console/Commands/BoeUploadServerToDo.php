@@ -43,7 +43,7 @@ class BoeUploadServerToDo extends Command
     public function handle()
     {
         $chunk = 100;
-        BOE::where('do', 0)->orderBy('id','DESC')->chunk($chunk, function ($files_path) {
+        BOE::where('do', 0)->chunk($chunk, function ($files_path) {
 
             foreach ($files_path as $fp) {
                 $file = storage_path('app/' . $fp->download_file_path);
