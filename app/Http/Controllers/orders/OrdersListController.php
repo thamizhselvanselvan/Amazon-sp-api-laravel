@@ -75,6 +75,7 @@ class OrdersListController extends Controller
 
     public function selectStore(Request $request)
     {
+        // dd($aws_credential);
         if ($request->ajax()) {
             $aws_credential = Aws_Credential::with('mws_region')->where('api_type', 1)->get();
             return DataTables::of($aws_credential)
@@ -84,7 +85,14 @@ class OrdersListController extends Controller
                     return $mws_region['mws_region']['region'] . ' [' . $mws_region['mws_region']['region_code'] . ']';
                 })
                 ->addColumn('action', function ($id) {
-                    $action = '<div class="pl-2"><input class="" type="checkbox" value=' . $id['id'] . ' name="options[]" ></div>';
+                    if($id['dump_order'] == 1)
+                    {
+
+                        $action = '<div class="pl-2"><input class="" type="checkbox" value=' . $id['id'] . ' name="options[]" checked></div>';
+                    }
+                    else{
+                        $action = '<div class="pl-2"><input class="" type="checkbox" value=' . $id['id'] . ' name="options[]" ></div>';
+                    }
                     return $action;
                 })
                 ->rawColumns(['region', 'action'])
@@ -94,8 +102,19 @@ class OrdersListController extends Controller
         return view('orders.listorders.selectstore');
     }
 
+    public function updateStore(Request $request)
+    {
+        Aws_Credential::query()->update(['dump_order' => 0]);
+
+        $selected_store = explode('-', $request->selected_store);
+        foreach ($selected_store as $id) {
+            Aws_Credential::where('id', $id)->update(['dump_order' => 1]);
+        }
+        return response()->json(['success' => 'Store Selected']);
+    }
+
     public function OrderDetails(Request $request)
-    {   
+    {
         if ($request->ajax()) {
             $data = DB::select('select amazon_order_identifier,purchase_date,last_update_date,order_status,fulfillment_channel,order_total,number_of_items_shipped,number_of_items_unshipped,shipping_address from orderdetails');
             // dd($data);
@@ -151,9 +170,8 @@ class OrdersListController extends Controller
     }
 
     public function OrderItemDetails(Request $request)
-    {   
-        if($request->ajax())
-        {
+    {
+        if ($request->ajax()) {
             $data = DB::select('select order_identifier,asin,order_item_identifier,title,quantity_ordered,quantity_shipped,item_price from orderitems');
             // dd($data);
             return DataTables::of($data)
