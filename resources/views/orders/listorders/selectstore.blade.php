@@ -2,14 +2,20 @@
 @section('title', 'Orders List')
 
 @section('content_header')
-<h1 class="m-0 text-dark">Select store to fetch order</h1>
+<div class='row'>
+    <h1 class="m-0 text-dark col">Select Store</h1>
+    <h2 class="mb-4 text-right col">
+        <x-adminlte-button label="Select Store" id='select_store' theme="primary" icon="fas fa-check-circle" />
+    </h2>
+
+</div>
 @stop
 
 @section('css')
 <style>
-.table td{
-    padding: 0.2rem;
-}
+    .table td {
+        padding: 0.1rem;
+    }
 </style>
 @stop
 @section('content')
@@ -82,6 +88,36 @@
 
 
         ]
+    });
+
+    $('#select_store').on('click', function() {
+
+        let selected_store = '';
+        let count = 0;
+        $("input[name='options[]']:checked").each(function() {
+            if (count == 0) {
+
+                selected_store += $(this).val();
+            } else {
+                selected_store += '-' + $(this).val();
+            }
+            count++;
+        });
+
+        $.ajax({
+            method: 'post',
+            url: '/orders/update-store',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "_method": 'post',
+                'selected_store': selected_store,
+            },
+            success: function(response) {
+                
+                alert(response.success);
+                window.location = '/orders/list';
+            }
+        })
     });
 </script>
 
