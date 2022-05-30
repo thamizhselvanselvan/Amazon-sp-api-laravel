@@ -37,6 +37,7 @@
                 <thead>
                     <tr>
                         <th>id</th>
+                        <th>Warheouse Name</th>
                         <th>Rack Name</th>
                         <th>Shelves Name</th>
                         <th>Number of Bins</th>
@@ -64,6 +65,10 @@
                         name: 'DT_RowIndex',
                         orderable: false,
                         searchable: false
+                    },
+                    {
+                        data: 'warehouse_name',
+                        name: 'warehouse_name'
                     },
                     {
                         data: 'rack_name',
