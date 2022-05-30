@@ -11,7 +11,7 @@ class Inventory extends Model
     protected $connection = 'inventory';
     protected $table = "inventory";
 
-    protected $fillable = ['warehouse_id', 'asin','item_name', 'quantity'];
+    protected $fillable = ['warehouse_id', 'asin','item_name','price','quantity'];
 
    public function warehouses() {
         return $this->hasOne(Warehouse::class, 'id', 'warehouse_id');
