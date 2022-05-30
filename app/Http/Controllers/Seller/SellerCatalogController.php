@@ -16,17 +16,17 @@ class SellerCatalogController extends Controller
   public function index()
   {
      $login_user = Auth::user();
-    $login_id = $login_user->id;
+    $seller_id = $login_user->bb_seller_id;
     $email = $login_user->email;
 
       if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
         $base_path = base_path();
-        $command = "cd $base_path && php artisan pms:seller-catalog-import $login_id $email > /dev/null &";
+        $command = "cd $base_path && php artisan pms:seller-catalog-import $seller_id > /dev/null &";
         exec($command);
     } else {
 
-        Artisan::call('pms:seller-catalog-import ' .$login_id.' '.$email);
+        Artisan::call('pms:seller-catalog-import ' .$seller_id);
     }
 
    

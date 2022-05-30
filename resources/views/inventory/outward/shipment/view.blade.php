@@ -34,19 +34,19 @@
             </div>
             
             <div >
-            <h4 style="font-family:Times New Roman;">Currency : {{ $outview->currency }} </h4>
             <h4 style="font-family:Times New Roman;">Shipment ID : {{ $outview->ship_id }} </h4>
-            <h4 style="font-family:Times New Roman;">warehouse : {{ $outview->warehouses->name }} </h4>
-            <h4 style="font-family:Times New Roman;">warehouse : {{ $outview->vendors->name }} </warehouse>
+            <h4 style="font-family:Times New Roman;">Warehouse : {{ $outview->warehouses->name }} </h4>
+            <h4 style="font-family:Times New Roman;">Destination : {{ $outview->vendors->name }} </warehouse>
+            <h4 style="font-family:Times New Roman;">Currency : {{ $outview->currency }} </h4>
             </div>
 
             <table class="table table-bordered yajra-datatable table-striped">
                 <thead>
                     <tr>
                        
-                        <th>asin</th>
-                        <th>item name</th>
-                        <th>quantity</th>
+                        <th>ASIN</th>
+                        <th>Item Name</th>
+                        <th>Quantity</th>
                         <th>Price</th>
                       
                     </tr>
@@ -63,9 +63,9 @@
                         <tr>
                             
                             <td>{{$val['asin']}}</td>
-                            <td>{{$val['item_name'][0]}}</td>
-                            <td>{{$val['quantity'][0]}}</td>
-                            <td>{{$val['price'][0]}}</td>
+                            <td>{{$val['item_name']}}</td>
+                            <td>{{$val['quantity']}}</td>
+                            <td>{{$val['price']}}</td>
                         </tr>
                         
                     @endforeach

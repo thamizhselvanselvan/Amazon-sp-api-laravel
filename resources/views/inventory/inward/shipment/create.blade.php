@@ -94,9 +94,15 @@
             </div>
         </div>
     </div>
-    <div class="col-1">
+    <div class="col-2">
         <div id="currency">
-            <x-adminlte-input label="Currency:" id="currency_input" name="currency" type="text" placeholder="Currency" />
+        <x-adminlte-select name="currency" id="currency_input" label="Currency:" >
+                <option> </option>
+                @foreach ($currency_lists as $currency_list)
+                <option value="{{ $currency_list->id }}">{{$currency_list->code }}</option>
+                @endforeach
+            </x-adminlte-select>
+            <!-- <x-adminlte-input label="Currency:" id="currency_input" name="currency" type="text" placeholder="Currency" /> -->
         </div>
     </div>
     <div class="col text-right">

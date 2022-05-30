@@ -28,18 +28,26 @@ class Warehouse extends Model
     {
         return $this->hasMany(Racks::class);
     }
+    public function shelves()
+    {
+        return $this->hasMany(Shelve::class);
+    }
+    public function bins()
+    {
+        return $this->hasMany(Bin::class);
+    }
     public function countrys()
     {
-        return $this->hasOne(Country::class, 'id', 'country_id');
+        return $this->hasOne(Country::class, 'id', 'country');
     }
    
     public function states()
     {
-        return $this->hasOne(State::class, 'id', 'country_id');
+        return $this->hasOne(State::class, 'id', 'state');
     }
 
     public function citys()
     {
-        return $this->hasOne(City::class ,'id','state_id');
+        return $this->hasOne(City::class ,'id','city');
     }
 }

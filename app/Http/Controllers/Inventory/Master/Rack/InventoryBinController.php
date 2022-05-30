@@ -7,6 +7,7 @@ use App\Models\Inventory\Bin;
 use App\Models\Inventory\Rack;
 use App\Models\Inventory\Shelve;
 use Illuminate\Support\Facades\DB;
+use App\Models\Inventory\Warehouse;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -48,6 +49,7 @@ class InventoryBinController extends Controller
     {
         $rack_lists = Rack::get();
         $shelves = Shelve::query();
+        $ware_list = Warehouse::query();
         $shelve_lists = ($rack_id) ? $shelves->where('rack_id', $rack_id)->get() : [];
 
         $rack_id = $rack_id ? $rack_id : '';

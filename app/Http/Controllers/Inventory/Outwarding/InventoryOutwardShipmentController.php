@@ -9,6 +9,7 @@ use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory\Destination;
+use App\Models\Currency;
 use App\Models\Inventory\Outshipment;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -48,9 +49,10 @@ class InventoryOutwardShipmentController extends Controller
     public function create()
     {
         $destination_lists = Vendor::where('type', 'Destination')->get();
+        $currency_lists = Currency::get();
         //  dd($destination_lists);
         $ware_lists = Warehouse::get();
-        return view('inventory.outward.shipment.create', compact('destination_lists', 'ware_lists'));
+        return view('inventory.outward.shipment.create', compact('destination_lists', 'ware_lists','currency_lists'));
     }
 
 
@@ -84,19 +86,19 @@ class InventoryOutwardShipmentController extends Controller
 
         $shipment_id = random_int(1000, 9999);
 
-        $createout = [];
 
         foreach ($request->asin as $key => $asin) {
 
             $items[] = [
                 "asin" => $asin,
-                "item_name" => $request->name,
-                "quantity" => $request->quantity,
-                "price" => $request->price,
+                "item_name" => $request->name[$key],
+                "quantity" => $request->quantity[$key],
+                "price" => $request->price[$key],
             ];
         }
 
-        $createout[] = [
+
+        Outshipment::insert( [
             "Ship_id" => $shipment_id,
             "warehouse" => $request->warehouse,
             "currency" => $request->currency,
@@ -104,12 +106,20 @@ class InventoryOutwardShipmentController extends Controller
             "items" => json_encode($items),
             "created_at" => now(),
             "updated_at" => now()
-        ];
-        // return $create;
-        // exit;
+        ]);
 
-        Outshipment::insert($createout);
 
+        foreach ($request->asin as $key1 => $asin1) {
+            if ($inventory = Inventory::where('asin', $asin1)->first()) {
+              
+                Inventory::where('asin', $asin1)->update([
+                    'warehouse_id' => $request->warehouse,
+                    'item_name' => $request->name[$key1],
+                    'quantity' => $inventory->quantity - $request->quantity[$key1],
+                ]);
+
+            }
+        }
         return response()->json(['success' => 'Shipment has Created successfully']);
     }
     public function outwardingview(Request $request)

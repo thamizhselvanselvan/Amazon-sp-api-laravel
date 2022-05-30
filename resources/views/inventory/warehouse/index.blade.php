@@ -40,9 +40,9 @@
                         <th>Name</th>
                         <th>Address 1</th>
                         <th>Address 2</th>
-                        <th>City</th>
-                        <th>State</th>
                         <th>Country</th>
+                        <th>State</th>
+                        <th>City</th>
                         <th>Pin Code</th>
                         <th>Contact Person Name</th>
                         <th>Phone NO</th>
@@ -84,16 +84,16 @@
                         name: 'address_2'
                     },
                     {
-                        data: 'city_name',
-                        name: 'city_name'
+                        data: 'country_name',
+                        name: 'country_name'
                     },
                     {
                         data: 'state_name',
                         name: 'state_name'
                     },
                     {
-                        data: 'country_name',
-                        name: 'country_name'
+                        data: 'city_name',
+                        name: 'city_name'
                     },
                     {
                         data: 'pin_code',
