@@ -9,10 +9,10 @@ use App\Http\Controllers\Controller;
 
 class B2cshipDashboardController extends Controller
 {
-  public function Dashboard()
-  {
-    $kyc_booking_status = $this->BookingAndKycStatusDetails();
+  
 
+  public function TrackingApiDetials()
+  {
     $status_detials = DB::connection('b2cship')->select("SELECT StatusDetails, AwbNo, CreatedDate,FPCode
         FROM (
               SELECT StatusDetails, AwbNo, CreatedDate, FPCode
@@ -34,9 +34,27 @@ class B2cshipDashboardController extends Controller
 
       ];
     }
-    $bombino_status = $this->BombinoStatus();
-    $delivery_status = $this->BlueDartAndDeliveryStatus();
-    return view('b2cship.dashboard', compact(['status_detials_array', 'bombino_status', 'delivery_status','kyc_booking_status']));
+    return $status_detials_array;
+  }
+
+  public function Dashboard()
+  {
+    // $kyc_booking_status = $this->BookingAndKycStatusDetails();
+      $status_detials_array = $this->TrackingApiDetials();
+    
+    // $bombino_status = $this->BombinoStatus();
+    // $bombino_inactive =$this->BombinoInactive();
+    // $delivery_status = $this->BlueDartAndDeliveryStatus();
+    // return view('b2cship.dashboard', compact(['status_detials_array', 'bombino_status', 'delivery_status','kyc_booking_status','bombino_inactive']));
+    return view('b2cship.dashboard', compact(['status_detials_array']));
+    
+  }
+
+  public function showDashboard()
+  {
+    $status_detials_array = $this->TrackingApiDetials();
+    return response()->json($status_detials_array);
+
   }
 
   public function CarbonGetDateDiff($date)
@@ -60,8 +78,10 @@ class B2cshipDashboardController extends Controller
       'time' => rtrim($final_date, ' ,') . ' Before'
     ];
   }
+
   public function BookingAndKycStatusDetails()
   {
+    
     $kyc_received = DB::connection('b2cship')->select("SELECT TOP 1 AWBNO, CreatedDate
     FROM Packet WHERE IsKYC ='true' ORDER BY CreatedDate DESC");
 
@@ -108,7 +128,7 @@ class B2cshipDashboardController extends Controller
       ];
     }
 
-    return array_merge($b2c_booking_array, $kyc_status_array, $kyc_received_array);
+    return response()->json(array_merge($b2c_booking_array, $kyc_status_array, $kyc_received_array));
   }
 
   public function BombinoStatus()
@@ -139,9 +159,39 @@ class B2cshipDashboardController extends Controller
         $offset++;
       }
     }
-    return $bombino_each_staus_detials;
+    return response()->json($bombino_each_staus_detials);
   }
 
+  public function BombinoInactive()
+  {
+    $bombino_status = DB::connection('b2cship')->select("SELECT StatusDetails, AwbNo, CreatedDate
+        FROM (
+              SELECT StatusDetails, AwbNo, CreatedDate
+                    , ROW_NUMBER() OVER(PARTITION BY StatusDetails ORDER BY CreatedDate desc)row_num
+              FROM PODTrans Where FPCode = 'BOMBINO' 
+            ) sub
+        WHERE row_num = 1 ORDER BY CreatedDate DESC");
+    $bombino_inactive = [];
+    $ignore = 'Run No.';
+    $offset = 0;
+    foreach ($bombino_status as $value) {
+
+      if (str_contains($value->StatusDetails, $ignore)) {
+
+        $date = $value->CreatedDate;
+        $final_date = $this->CarbonGetDateDiff($date);
+        $bombino_inactive[$offset] =
+          [
+            'inactive' => $value->StatusDetails,
+            'day' => $final_date['Days'],
+            'time' => $final_date['time'],
+          ];
+
+        $offset++;
+      }
+    }
+    return $bombino_inactive;
+  }
 
   public function BlueDartAndDeliveryStatus()
   {
@@ -165,6 +215,6 @@ class B2cshipDashboardController extends Controller
         'time' => $final_date['time'],
       ];
     }
-    return $delivery_status;
+    return response()->json( $delivery_status);
   }
 }
