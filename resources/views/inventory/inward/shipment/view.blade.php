@@ -16,7 +16,7 @@
     <a href="{{ route('shipments.index') }}" class="btn btn-primary btn-sm">
         <i class="fas fa-long-arrow-alt-left"></i> Back
     </a>
-    <a href="#" class="btn btn-primary btn-sm">
+    <a href="#"  class="btn btn-primary btn-sm" id="printinv">
         <i class="fa-solid fa-print"></i> Print
     </a>
 
@@ -79,4 +79,13 @@
 
     </div>
 </div>
+@stop
+
+@section('js')
+<script type="text/javascript"> 
+$('#printinv').on('click', function() {
+    window.print();
+
+});
+</script>
 @stop
