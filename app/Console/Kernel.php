@@ -20,6 +20,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('pms:microstatus-report')->dailyAt('1:00')->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
         
         $schedule->command('pms:b2cship-kyc-status')->dailyAt('1:00')->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+        $schedule->command('pms:boe-upload-Do')->everyFourHours()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+        $schedule->command('pms:remove-uploaded-boe')->dailyAt('1:00')->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
     }
 
     /**
