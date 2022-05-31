@@ -22,7 +22,7 @@
 </div>
 
 <div class="container-fluid">
-    <!-- <h3 style="font-weight: bold;">Today</h3> -->
+    <h3 style="font-weight: bold;">Last 3 Days Details</h3>
     <div class="row">
         @foreach ($order_status_count as $key => $value)
             <div class="col-2 ">
