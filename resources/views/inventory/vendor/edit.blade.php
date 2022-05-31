@@ -72,18 +72,28 @@
                 </div>
                 <div class="col-6">
                     <x-adminlte-select name="type" label="Select type" value="{{ $name->type  }}">
-                            <option>Select Type</option>
-                            <option>Source</option>
-                            <option>Destination</option>
-                        </x-adminlte-select>
+                        <option>Select Type</option> 
+                        @if ($name->type == "Source")
+                        <option value="{{$name->type}}" selected>{{$name->type}}</option>
+                        <option value="Destination">Destination</option>
+                        @else
+                        <option value="{{$name->type}}" selected>{{$name->type}}</option>
+                        <option value="Source">Source</option>
+                        @endif
+                    </x-adminlte-select>
                 </div>
             </div>
             <div class="row justify-content-center">
                 <div class="col-6">
-                    <x-adminlte-select label="Country" name="country" id="country" type="text" placeholder="" value="{{ old('ID') }}" >
+                    <x-adminlte-select label="Country" name="country" id="country" type="text" placeholder="" value="{{ $name->country  }}" >
                          <option value="">Select Country</option>
                             @foreach ($country as $countries)
+                              @if ($countries->id == $selected_country)
+                                <option value="{{$countries->id}}" selected>{{$countries->name}}</option>
+                              @else
                                 <option value="{{$countries->id}}">{{$countries->name}}</option>
+                              @endif
+                                
                             @endforeach
                         
                     </x-adminlte-select>
@@ -91,43 +101,62 @@
                 <div class="col-6">
                     <x-adminlte-select label="State" name="state" id="state" type="text" placeholder="" value="{{ old('ID') }}" >
                          <option value="">Select Country</option>
+                        @foreach ($state as $states)
+                         
+                            @if ($states->country_id == $selected_country)
+                         
+                                @if (($states->id == $selected_state))
+                                    <option value="{{$states->id}}" selected>{{$states->name}}</option>
+                                @else
+                                    <option value="{{$states->id}}">{{$states->name}}</option>
+                                @endif
+
+                            @endif
+
+                        @endforeach
                     </x-adminlte-select>
                 </div>
                 <div class="col-6">
                     <x-adminlte-select label="City" name="city" id="city" type="text" placeholder="" value="{{ old('ID') }}" >
                         <option value="">Select Country</option>
+                        @foreach ($city as $cities)
+                         
+                            @if ($cities->state_id == $selected_state)
+                         
+                                @if (($cities->id == $selected_city))
+                                    <option value="{{$cities->id}}" selected>{{$cities->name}}</option>
+                                @else
+                                    <option value="{{$cities->id}}">{{$cities->name}}</option>
+                                @endif
+
+                            @endif
+
+                        @endforeach
                     </x-adminlte-select>
                 </div>
                 <div class="col-6">
                     <x-adminlte-input label="Currency" name="currency" type="text" value="{{  $name->currency }}" />
                 </div>
             </div>
-
-
-         
-            <!-- <x-adminlte-input label="Name" name="name" value="{{ $name->name }}" type="text"  /> -->
             <div class="col-3"></div>
-
             <div class="col-12 text-center">
                 <x-adminlte-button label="Submit" theme="primary" class="rack.update" icon="fas fa-save" type="submit" />
             </div>
-
         </form>
-
     </div>
     <div class="col"></div>
-</div>
+    </div>
 
 @stop
 
-@section('js')
+<!-- @section('js')
     <script>
         
         $(document).ready(function(){
 
-            $('#country').change(function(e){
+            $('#country').on('change',function(e){
                 e.preventDefault();
-            var id=$(this).val();
+                var id=$(this).val();
                 // alert(id);
                     // $('#state').val(id);
 
@@ -145,7 +174,9 @@
                     $('#state').empty();
                         let state_data ='<option >Select State</option>';
                     $.each(response ,function(i,response){
-                        state_data+= "<option value='"+response.id+"'>"+response.name+"</option>";
+                        
+                        state_data+= "<option value='"+response.id+"'selected>"+response.name+"</option>";
+                        
                     });
                     $('#state').append(state_data);
                     
@@ -190,4 +221,4 @@
         });
 
     </script>
-@stop
+@stop -->
