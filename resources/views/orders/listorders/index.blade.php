@@ -20,8 +20,8 @@
         </div>
 
         <h2 class="mb-4">
-            <a href="{{route('getOrder.list',6)}}">
-                <x-adminlte-button label="Orders List" theme="primary" icon="fas fa-file-import" />
+            <a href="{{route('getOrder.list')}}">
+                <x-adminlte-button label="Selected Store Orders List" theme="primary" icon="fas fa-file-import" />
             </a>
             <a href="{{route('select.store')}}">
             <!-- <i class="fa-solid fa-circle-check"></i> -->

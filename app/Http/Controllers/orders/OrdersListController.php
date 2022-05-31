@@ -55,19 +55,17 @@ class OrdersListController extends Controller
         return view('orders.listorders.index');
     }
 
-    public function GetOrdersList(Request $request)
+    public function GetOrdersList()
     {
-        $sellerId = $request->seller_id;
-
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
             Log::warning("Export asin command executed local !");
             $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:sellers-orders-import $sellerId > /dev/null &";
+            $command = "cd $base_path && php artisan pms:sellers-orders-import > /dev/null &";
             exec($command);
         } else {
 
-            Artisan::call('pms:sellers-orders-import ' . $sellerId);
+            Artisan::call('pms:sellers-orders-import ');
         }
         //API will hit here and records will be save into DB
         return redirect()->back();
@@ -85,12 +83,10 @@ class OrdersListController extends Controller
                     return $mws_region['mws_region']['region'] . ' [' . $mws_region['mws_region']['region_code'] . ']';
                 })
                 ->addColumn('action', function ($id) {
-                    if($id['dump_order'] == 1)
-                    {
+                    if ($id['dump_order'] == 1) {
 
                         $action = '<div class="pl-2"><input class="" type="checkbox" value=' . $id['id'] . ' name="options[]" checked></div>';
-                    }
-                    else{
+                    } else {
                         $action = '<div class="pl-2"><input class="" type="checkbox" value=' . $id['id'] . ' name="options[]" ></div>';
                     }
                     return $action;
