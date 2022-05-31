@@ -34,12 +34,7 @@ use App\Services\SP_API\Config\ConfigTrait as ConfigConfigTrait;
 class OrdersListController extends Controller
 {
     use ConfigTrait;
-    public function Dashboard()
-    {
-
-        return view('orders.dashboard');
-    }
-
+    
     public function index(Request $request)
     {
         if ($request->ajax()) {

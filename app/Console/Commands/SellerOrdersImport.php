@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use RedBeanPHP\R;
 use Aws\AwsClient;
+use Carbon\Carbon;
 use App\Models\Aws_credential;
 use Illuminate\Console\Command;
 use SellingPartnerApi\Endpoint;
@@ -79,74 +80,93 @@ class SellerOrdersImport extends Command
         $marketplace_ids = [$marketplace_ids];
 
         $apiInstance = new OrdersApi($config);
-        $createdAfter = now()->subDays(2)->toISOString();
+        $startTime = Carbon::today()->subDays(2)->toISOString();
+        // $startTime = Carbon::today()->toISOString();
+        $createdAfter = $startTime;
         $lastUpdatedBefore = now()->toISOString();
-
+        $max_results_per_page = 100;
+        $next_token = NULL;
         try {
 
-            $results = $apiInstance->getOrders($marketplace_ids, $createdAfter)->getPayload()->getOrders();
-            $results = json_decode(json_encode($results));
-            // dd($results);
+            next_token_exist:
+            $results = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses = null, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, $next_token, $amazon_order_ids = null, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
+            $next_token = $results['next_token'];
+          
+            // $results_getorder = json_decode(json_encode($results));
+             $this->OrderDataFormating($results, $seller_id);
+            if(isset($next_token))
+            {
+                goto next_token_exist;
+            }
             $orders = '';
             $amazon_order_id = '';
-            foreach ($results as $resultkey => $result) {
-                
-                $amazon_order_details = [];
-                $orders = R::dispense('orders');
-                $orders->seller_identifier = $seller_id;
-                foreach ((array)$result as $detailsKey => $details) {
-                    $detailsKey = lcfirst($detailsKey);
-                    if (is_Object($details)) {
-                        
-                        $amazon_order_details[$detailsKey] = json_encode($details);
-                        $orders->{$detailsKey} = json_encode($details);
 
-                    } else if (is_array($details)) {
-
-                        $amazon_order_details[$detailsKey] = json_encode($details);
-                        $orders->{$detailsKey} = json_encode($details);
-
-                    } else {
-                        if ($detailsKey == 'amazonOrderId') {
-
-                            $amazon_order_id = $details;
-                            $amazon_order_details['amazon_order_identifier'] = $details;
-                            $orders->amazon_order_identifier = $details;
-
-                        } else if ($detailsKey == 'marketplaceId') {
-
-                            $amazon_order_details['marketplace'] = $details;
-                            $orders->marketplace = $details;
-
-                        } else {
-
-                            $amazon_order_details[$detailsKey] = (string)$details;
-                            $orders->{$detailsKey} = (string)$details;
-
-                        }
-                    }
-                }
-                $data = DB::select("select id from orders where amazon_order_identifier = '$amazon_order_id'");
-                if (array_key_exists(0, $data)) {
-
-                    $dataCheck = 1;
-                    $id = $data[0]->id;
-                    $update_orders = R::load('orders',$id);
-                    foreach($amazon_order_details as $key => $value)
-                    {
-                        $update_orders->{$key} = $value;
-                    }
-                    // $update_orders->updatedat = now();
-                    R::store($update_orders);
-                }
-                else{
-                    // $orders->updatedat = now();
-                    R::store($orders);
-                }
-            }
         } catch (Exception $e) {
 
             Log::warning('Exception when calling OrdersApi->getOrders: ', $e->getMessage(), PHP_EOL);
         }
+    }
+
+    public function OrderDataFormating($results, $seller_id)
+    {   
+        $result_data = $results->getOrders();
+        $result_data = json_decode(json_encode($result_data));
+
+        foreach ($result_data as $resultkey => $result) {
+                
+            $amazon_order_details = [];
+            $orders = R::dispense('orders');
+            $orders->seller_identifier = $seller_id;
+            foreach ((array)$result as $detailsKey => $details) {
+                $detailsKey = lcfirst($detailsKey);
+                if (is_Object($details)) {
+                    
+                    $amazon_order_details[$detailsKey] = json_encode($details);
+                    $orders->{$detailsKey} = json_encode($details);
+
+                } else if (is_array($details)) {
+
+                    $amazon_order_details[$detailsKey] = json_encode($details);
+                    $orders->{$detailsKey} = json_encode($details);
+
+                } else {
+                    if ($detailsKey == 'amazonOrderId') {
+
+                        $amazon_order_id = $details;
+                        $amazon_order_details['amazon_order_identifier'] = $details;
+                        $orders->amazon_order_identifier = $details;
+
+                    } else if ($detailsKey == 'marketplaceId') {
+
+                        $amazon_order_details['marketplace'] = $details;
+                        $orders->marketplace = $details;
+
+                    } else {
+
+                        $amazon_order_details[$detailsKey] = (string)$details;
+                        $orders->{$detailsKey} = (string)$details;
+
+                    }
+                }
+            }
+            $data = DB::select("select id from orders where amazon_order_identifier = '$amazon_order_id'");
+            if (array_key_exists(0, $data)) {
+
+                $dataCheck = 1;
+                $id = $data[0]->id;
+                $update_orders = R::load('orders',$id);
+                foreach($amazon_order_details as $key => $value)
+                {
+                    $update_orders->{$key} = $value;
+                }
+                // $update_orders->updatedat = now();
+                R::store($update_orders);
+            }
+            else{
+                // $orders->updatedat = now();
+                R::store($orders);
+            }
+        }
+        return true;
     }
 }
