@@ -60,28 +60,42 @@ class InventoryRackController extends Controller
     public function create()
     {
         $warehouse_lists = Warehouse::get();
+        
         return view('inventory.master.racks.rack.add', compact('warehouse_lists'));
     }
 
     public function store(Request $request)
     {
 
-        $request->validate([
-            'name' => 'required|min:3|max:100',
-            'rack_id' => 'required|min:1|max:100'
-        ]);
-        $warehouse_exists = Warehouse::where('id', $request->warehouse_id)->exists();
+        // $request->validate([
+        //     'name' => 'required|min:3|max:100',
+        //     'rack_id' => 'required|min:1|max:100'
+        // ]);
 
+        // dd($request->all());
+        $warehouse_exists = Warehouse::where('id', $request->warehouse_id)->exists();
+      
         if (!$warehouse_exists) {
-            return redirect()->route('racks.create')->with('error', 'Selected Warehouse is invalid');
+            return redirect()->route('racks.create')->with('error', 'Selected  Warehouse is invalid');
         }
 
-        $name = $request->name;
-        $rack_id = $request->rack_id;
-        $warehouse_id = $request->warehouse_id;
-        Rack::create(['name' => $name, 'rack_id' => $rack_id, 'warehouse_id' => $warehouse_id]);
+        $rack_lists = [];
 
-        return redirect()->route('racks.index')->with('success', 'Racks ' . $name . ' has been created successfully');
+         foreach ($request->rack_id as $key => $rack_id) {
+
+            $rack_lists[] = [
+                'name' =>  $request->name[$key],
+                'rack_id' =>  $rack_id,
+                'warehouse_id' => $request->warehouse_id,
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
+        
+        }
+
+        Rack::insert($rack_lists);
+        
+        return redirect()->route('racks.index')->with('success', 'Racks  has been created successfully');
     }
 
     public function edit($id)

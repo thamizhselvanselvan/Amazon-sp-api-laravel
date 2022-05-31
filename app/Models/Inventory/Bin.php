@@ -32,6 +32,10 @@ class Bin extends Model
       
     ];
 
+
+    public function warehouses() {
+        return $this->hasOne(Warehouse::class, 'id', 'warehouse');
+    }
     public function shelves() {
         return $this->hasOne(Shelve::class, 'id', 'shelve_id');
     }
