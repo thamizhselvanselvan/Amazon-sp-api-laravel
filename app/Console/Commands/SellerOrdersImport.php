@@ -91,7 +91,8 @@ class SellerOrdersImport extends Command
             next_token_exist:
             $results = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses = null, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, $next_token, $amazon_order_ids = null, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
             $next_token = $results['next_token'];
-          
+        //   po($results);
+        //   exit;
             // $results_getorder = json_decode(json_encode($results));
              $this->OrderDataFormating($results, $seller_id);
             if(isset($next_token))
@@ -130,18 +131,29 @@ class SellerOrdersImport extends Command
                     $orders->{$detailsKey} = json_encode($details);
 
                 } else {
-                    if ($detailsKey == 'amazonOrderId') {
+
+                    $id = substr($detailsKey, -2);
+                    if($id == 'Id'){
+                        $detailsKey = str_replace("Id","Identifier",$detailsKey);
+                    }
+                    if ($detailsKey == 'amazonOrderIdentifier') {
 
                         $amazon_order_id = $details;
                         $amazon_order_details['amazon_order_identifier'] = $details;
                         $orders->amazon_order_identifier = $details;
 
-                    } else if ($detailsKey == 'marketplaceId') {
+                    } 
+                    // else if ($detailsKey == 'marketplaceId') {
 
-                        $amazon_order_details['marketplace'] = $details;
-                        $orders->marketplace = $details;
+                    //     $amazon_order_details['marketplace'] = $details;
+                    //     $orders->marketplace = $details;
 
-                    } else {
+                    // }else if($detailsKey == 'sellerOrderId')
+                    // {
+                    //     $amazon_order_details['seller_order_identifier'] = $details;
+                    //     $orders->seller_order_identifier = $details;
+                    // }
+                     else {
 
                         $amazon_order_details[$detailsKey] = (string)$details;
                         $orders->{$detailsKey} = (string)$details;

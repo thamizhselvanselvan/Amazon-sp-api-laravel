@@ -28,9 +28,9 @@
             <div class="col-2 ">
                 <div class="info-box bg-info ">
                     <div class="info-box-content">
-                        <h3>{{$key}}</h3>
+                        <h4>{{$key}}</h4>
                         @foreach ($value as $key1 => $data)
-                        <h5>{{$key1}}:- {{$data}}</h5>
+                        <h5>{{$key1}}: {{$data}}</h5>
                             
                         @endforeach
                     </div>
