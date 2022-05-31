@@ -155,12 +155,14 @@ class InventoryShipmentController extends Controller
                 Inventory::where('asin', $asin1)->update([
                     'warehouse_id' => $request->warehouse,
                     'item_name' => $request->name[$key1],
+                    "price" => $request->price[$key1],
                     'quantity' => $inventory->quantity + $request->quantity[$key1],
                 ]);
             } else {
                 Inventory::create([
                     "warehouse_id" => $request->warehouse,
                     "asin" => $asin1,
+                    "price" => $request->price[$key1],
                     "item_name" => $request->name[$key1],
                     "quantity" => $request->quantity[$key1],
                     "created_at" => now(),
