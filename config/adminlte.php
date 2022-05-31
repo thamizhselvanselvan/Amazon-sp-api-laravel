@@ -582,6 +582,13 @@ return [
             'can' =>  ['Admin'],
             'submenu' => [
                 [
+                    'text' => 'Dashboard',
+                    'url' => 'orders/dashboard',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+                [
                     'text' => 'Order',
                     'url' => 'orders/list',
                     'can' => ['Admin'],
