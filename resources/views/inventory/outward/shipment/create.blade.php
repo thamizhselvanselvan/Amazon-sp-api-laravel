@@ -122,8 +122,15 @@
         </div>
     </div> -->
 
-    <div class="col-1" id="currency">
-        <x-adminlte-input label="Currency:"  id="currency_output"   name="currency" type="text" placeholder="Currency" />
+    <div class="col-2" id="currency">
+
+        <x-adminlte-select name="currency" id="currency_output" label="Currency:" >
+                <option> </option>
+                @foreach ($currency_lists as $currency_list)
+                <option value="{{ $currency_list->id }}">{{$currency_list->code }}</option>
+                @endforeach
+            </x-adminlte-select>
+         <!-- <x-adminlte-input label="Currency:"  id="currency_output"   name="currency" type="text" placeholder="Currency" /> -->
 
     </div>
     <div class="col text-right" id="create">
@@ -146,8 +153,9 @@
         <tr>
             <td>asin</td>
             <td>Item Name</td>
+            <td>Inwarding Price</td>
             <td>Quantity</td>
-            <td>Price</td>
+            <td>Outwarding Price</td>
             <td>Action</td>
         </tr>
     </thead>
@@ -182,8 +190,9 @@
 
             data.append('asin[]', td[0].innerText);
             data.append('name[]', td[1].innerText);
-            data.append('quantity[]', td[2].children[0].value);
-            data.append('price[]', td[3].children[0].value);
+            data.append('price[]', td[2].innerText);
+            data.append('quantity[]', td[3].children[0].value);
+            data.append('price[]', td[4].children[0].value);
 
         });
 
@@ -387,6 +396,7 @@
                 let html = "<tr class='table_row'>";
                 html += "<td name='asin[]'>" + arr.asin + "</td>";
                 html += "<td name='name[]'>" + arr.item_name + "</td>";
+                html += "<td name='price[]'>" + arr.price + "</td>";
                 html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
                 html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
                 html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'

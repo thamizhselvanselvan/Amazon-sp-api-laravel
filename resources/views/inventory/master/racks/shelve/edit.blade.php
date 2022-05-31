@@ -70,6 +70,17 @@
 
                     <div class="col-6">
 
+
+                    <x-adminlte-select name="ware_id" label="Select Warehouse">
+                        <option>Select Warehouse</option>
+                        @foreach ($ware_lists as $ware_list)
+
+                        <option value="{{ $ware_list->id }}">{{  $ware_list->name  }}</option>
+
+                        @endforeach
+
+                    </x-adminlte-select>
+                    
                         <x-adminlte-select name="rack_id" label="Select Rack">
 
                             @foreach ($rack_lists as $rack_list)

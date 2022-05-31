@@ -9,6 +9,7 @@ use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory\Destination;
+use App\Models\Currency;
 use App\Models\Inventory\Outshipment;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -48,9 +49,10 @@ class InventoryOutwardShipmentController extends Controller
     public function create()
     {
         $destination_lists = Vendor::where('type', 'Destination')->get();
+        $currency_lists = Currency::get();
         //  dd($destination_lists);
         $ware_lists = Warehouse::get();
-        return view('inventory.outward.shipment.create', compact('destination_lists', 'ware_lists'));
+        return view('inventory.outward.shipment.create', compact('destination_lists', 'ware_lists','currency_lists'));
     }
 
 
