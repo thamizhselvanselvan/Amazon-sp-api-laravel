@@ -46,3 +46,4 @@ Route::post('json/{id}','Inventory\InventoryWarehouseController@CountryStateCity
 Route::post('stateId/{id}','Inventory\InventoryWarehouseController@getState');
 Route::post('vendor/{id}','Inventory\InventoryVendorController@getState');
 Route::post('vendorstate/{id}','Inventory\InventoryVendorController@getCity');
+Route::post('rack/{id}','Inventory\Master\Rack\InventoryShelveController@getRack');
