@@ -71,7 +71,7 @@
                 </div>
                 <div class="col-6">
                     <x-adminlte-select label="Select Rack" name="rack_id" id="rack">
-                        <option>Select Rack</option>
+                        <option value="">Select Rack</option>
                     </x-adminlte-select>
 
 
@@ -159,6 +159,7 @@
                      rack_data += "<option value='"+result.rack_id+"'>"+result.rack_id+"/"+result.name+"</option>";
                     });
                     $('#rack').append(rack_data);
+                    console.log(result);
                 },
                 error:function(){
                     alert('ERROR');

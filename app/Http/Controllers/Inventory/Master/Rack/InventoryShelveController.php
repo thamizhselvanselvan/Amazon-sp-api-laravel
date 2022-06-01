@@ -22,6 +22,10 @@ class InventoryShelveController extends Controller
 
         //$rt = Shelve::query()->with(['bins', 'racks'])->get();
 
+        // $data = Shelve::query()->with(['bins', 'racks', 'warehouses'])->get();
+
+        // dd($data);
+
         if ($request->ajax()) {
 
             $data = Shelve::query()->with(['bins', 'racks', 'warehouses']);
@@ -29,7 +33,7 @@ class InventoryShelveController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('rack_name', function ($data) {
-                    return ($data->racks) ? $data->racks->name : "";
+                    return ($data->racks) ? $data->racks->name : "NA";
                 })
                 ->addColumn('bins_count', function ($data) {
                     return ($data->bins) ? $data->bins->count() : 0;
@@ -65,7 +69,7 @@ class InventoryShelveController extends Controller
         //     'name' => 'required|min:3|max:100',
         // ]);
 
-        $rack_exists = Rack::where('id', $request->rack_id)->exists();
+        $rack_exists = Rack::where('rack_id', $request->rack_id)->exists();
 
         if (!$rack_exists) {
             return redirect()->route('shelves.create')->with('error', 'Selected Rack is invalid');
@@ -140,7 +144,6 @@ class InventoryShelveController extends Controller
     public function getRack($id)
     {
         $rack = Rack::where('warehouse_id', $id)->get();
-        
         return response()->json($rack);
     }
 }

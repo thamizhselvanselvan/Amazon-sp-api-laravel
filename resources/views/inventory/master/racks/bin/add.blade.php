@@ -56,8 +56,8 @@
             <div class="row justify-content-center">
                 <div class="col-6">
 
-                    <x-adminlte-select name="ware_id" label="Select Warehouse">
-                        <option>Select Warehouse</option>
+                    <x-adminlte-select label="Select Warehouse" name="ware_id" id="warehouse">
+                        <option value="">Select Warehouse</option>
                         @foreach ($ware_lists as $ware_list)
 
                         <option value="{{ $ware_list->id }}">{{ $ware_list->name  }}</option>
@@ -69,17 +69,9 @@
                 </div>
                 <div class="col-6">
 
-                    <x-adminlte-select name="rack_id" id='rack_id' label="Select Rack">
-                        <option>Select Rack</option>
-                        @foreach ($rack_lists as $rack_list)
-
-                        @if ($rack_list->id == $rack_id)
-                        <option value="{{ $rack_list->id }}" selected>{{$rack_list->id.'/'. $rack_list->name }}</option>
-                        @else
-                        <option value="{{ $rack_list->id }}">{{$rack_list->id.'/'. $rack_list->name }}</option>
-                        @endif
-
-                        @endforeach
+                    <x-adminlte-select label="Select Rack" name="rack_id" id='rack_id'>
+                        <option value="">Select Rack</option>
+                       
                     </x-adminlte-select>
                 </div>
             </div>
@@ -87,19 +79,8 @@
                 <div class="col-6">
 
                     <x-adminlte-select name="shelve_id" id='shelve_id' label="Select Shelve">
-
-                        @forelse ($shelve_lists as $shelve_list)
-
-                        @if ($shelve_list->id == $shelve_id)
-                        <option value="{{ $shelve_list->id }}" selected>{{ $shelve_list->name }}</option>
-                        @else
-                        <option value="{{ $shelve_list->id }}">{{ $shelve_list->name }}</option>
-                        @endif
-
-                        @empty
-                        <option>Select Shelves</option>
-                        @endforelse
-
+                        <option value=""> Select Shelve </option>
+                        
                     </x-adminlte-select>
 
                 </div>
@@ -156,28 +137,7 @@
 
 @section('js')
 <script>
-    $('#rack_id').on('change', function() {
-
-        let self = $(this);
-
-        if (self.val()) {
-            window.location = "/inventory/bins/create/rack/" + self.val();
-        }
-
-    });
-
-    $('#shelve_id').on('change', function() {
-
-        let self = $(this);
-        let rack_id = $("#rack_id").val();
-
-        if (self.val()) {
-            window.location = "/inventory/bins/create/rack/" + rack_id + "/shelve/" + self.val();
-        }
-
-    });
-
-
+    
     /*hide untill data is filled*/
     $("#bin_table").hide();
     $("#add").on('click', function(e) {
@@ -207,8 +167,63 @@
             $(this).closest("tr").remove();
         });
 
+        bin_name = $('#name').val('');
+        width=$('#width').val('');
+        height=$('#height').val('');
+        depth=$('#depth').val('');
+        
+    });
 
-        shelve_name = $('#shelve_name').val('');
+    $(document).ready(function(){
+
+        $('#warehouse').change(function(){
+            var id=$(this).val();
+            $.ajax({
+                url :'/Binrack/'+id,
+                method : 'POST',
+                data:{ 
+                        'id':id,
+                        "_token": "{{ csrf_token() }}",
+                    },
+                success:function(result){
+                    // alert('success');
+                    $('#rack_id').empty();
+                    let rack_data ='<option> Select Rack </option>';
+                    $.each(result, function(i, result){
+                    rack_data += "<option value='"+result.rack_id+"'>"+result.rack_id+"/"+result.name+"</option>";
+                    });
+                    $('#rack_id').append(rack_data);
+                },
+                error:function(){
+                    alert('ERROR');
+                }  
+            });
+        });
+
+        $('#rack_id').change(function(){
+            var id=$(this).val();
+            
+            $.ajax({
+                url :'/BinShelves/'+id,
+                method : 'POST',
+                data:{ 
+                        'id':id,
+                        "_token": "{{ csrf_token() }}",
+                    },
+                success:function(result){
+                    // alert('success');
+                    $('#shelve_id').empty();
+                    let shelve_data ='<option> Select Shelve </option>';
+                    $.each(result, function(i, result){
+                        shelve_data += "<option value='"+result.rack_id+"'>"+result.rack_id+"/"+result.name+"</option>";
+                    });
+                    $('#shelve_id').append(shelve_data);
+                },
+                error:function(){
+                    alert('ERROR');
+                }  
+            });
+        });
     });
 </script>
 
