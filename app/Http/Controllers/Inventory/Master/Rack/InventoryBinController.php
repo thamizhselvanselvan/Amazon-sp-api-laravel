@@ -49,13 +49,13 @@ class InventoryBinController extends Controller
     {
         $rack_lists = Rack::get();
         $shelves = Shelve::query();
-        $ware_list = Warehouse::query();
+        $ware_lists = Warehouse::query();
         $shelve_lists = ($rack_id) ? $shelves->where('rack_id', $rack_id)->get() : [];
 
         $rack_id = $rack_id ? $rack_id : '';
         $shelve_id = $shelve_id ? $shelve_id : '';
 
-        return view('inventory.master.racks.bin.add', compact('rack_lists', 'shelve_lists', 'rack_id', 'shelve_id'));
+        return view('inventory.master.racks.bin.add', compact('rack_lists', 'shelve_lists', 'rack_id', 'shelve_id','ware_lists'));
     }
 
     public function rackselect($id)
