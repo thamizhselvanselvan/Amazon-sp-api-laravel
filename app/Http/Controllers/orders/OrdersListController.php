@@ -38,7 +38,7 @@ class OrdersListController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = DB::select('select amazon_order_identifier,purchase_date,last_update_date,order_status,order_total,number_of_items_shipped from orders');
+            $data = DB::connection('order')->select('select amazon_order_identifier,purchase_date,last_update_date,order_status,order_total,number_of_items_shipped from orders');
 
             return DataTables::of($data)
                 ->addIndexColumn()
