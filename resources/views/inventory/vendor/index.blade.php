@@ -94,8 +94,8 @@
                         name: 'city_name'
                     },
                     {
-                        data: 'currency',
-                        name: 'currency'
+                        data: 'currency_name',
+                        name: 'currency_name'
                     },
                     {
                         data: 'action',

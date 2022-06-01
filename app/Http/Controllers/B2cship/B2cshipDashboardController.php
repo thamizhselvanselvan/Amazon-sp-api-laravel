@@ -272,7 +272,7 @@ class B2cshipDashboardController extends Controller
     $delivery_status = [];
     $ignore = 'DL Delhi';
     foreach ($delivery_last_update as $key => $value) {
-      if(str_contains($value->FPCode, $ignore))
+      if((str_contains($value->FPCode, $ignore)))
       {
         $date = $value->CreatedDate;
         $final_date = $this->CarbonGetDateDiff($date);

@@ -7,6 +7,7 @@ use App\Models\Inventory\Vendor;
 use App\Models\Inventory\City;
 use App\Models\Inventory\State;
 use App\Models\Inventory\Country;
+use App\Models\Currency;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -16,13 +17,17 @@ class InventoryVendorController extends Controller
     {
          if ($request->ajax()) {
 
-            $data = Vendor::query()->with(['countrys','states', 'citys']);
+            $data = Vendor::query()->with(['countrys','states', 'citys','currencies']);
 
             return DataTables::of($data)
                 ->addIndexColumn()
 
                 ->editColumn('country_name', function ($data) {
                     return ($data->countrys) ? $data->countrys->name : "NA";
+                })
+
+                ->editColumn('currency_name', function ($data) {
+                    return ($data->currencies) ? $data->currencies->code : "NA";
                 })
 
                 ->editColumn('state_name', function ($data) {
@@ -38,15 +43,17 @@ class InventoryVendorController extends Controller
                     $actionBtn .= '<button data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
                     return $actionBtn;
                 })
-                ->rawColumns(['action','country_name','state_name','city_name'])
+                ->rawColumns(['action','country_name','state_name','city_name','currency_name'])
                 ->make(true);
         }
         return view('inventory.vendor.index');
     }
     public function create()
     {
-        $country = Country::select('id','name')->get();
-        return view('inventory.vendor.add',compact('country'));
+        $currency_lists = Currency::get();
+        // $country = Country::select('id','name')->get();
+        $country = Country::get();
+        return view('inventory.vendor.add',compact('country','currency_lists'));
     }
     public function store(Request $request)
     {
@@ -66,19 +73,27 @@ class InventoryVendorController extends Controller
             'country' => $request->country,
             'state' => $request->state,
             'city' => $request->city,
-            'currency' => $request->currency,
+            'currency_id' => $request->currency,
         ]);
 
         return redirect()->route('vendors.index')->with('success', 'Vendor ' . $request->name . ' has been created successfully');
     }
     
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
 
         $name = Vendor::where('id', $id)->first();
-        $country = Country::select('id','name')->get();
+        // $country = Country::select('id','name')->get();
+        $country = Country::get();
+        $state = State::get();
+        $city = City::get();
 
-        return view('inventory.vendor.edit', compact('name','country'));
+        $selected_type = $name->type;
+        $selected_country = $name->country;
+        $selected_state = $name->state;
+        $selected_city = $name->city;
+
+        return view('inventory.vendor.edit', compact('name','country','state','city','selected_country','selected_state','selected_city','selected_type'));
     }
 
 
@@ -91,7 +106,7 @@ class InventoryVendorController extends Controller
             'country' => 'required',
             'state' => 'required',
             'city' => 'required',
-            'currency' => 'required|min:1|max:10',
+            'currency_id' => 'required|min:1|max:10',
         ]);
 
         Vendor::where('id', $id)->update($validated);
