@@ -49,8 +49,9 @@
         </x-adminlte-alert>
         @endif
 
-        <form action="{{ Route('racks.store') }}" method="POST" id="admin_user">
+        <form action="{{Route('racks.store')}}" method="POST" id="admin_user">
             @csrf
+
             <div class="row">
 
                 <div class="col-4">
@@ -69,23 +70,26 @@
 
             <div class="row justify-content-center">
 
+                <div class="col-4">
+                    <x-adminlte-input label="Rack ID" name="rid" type="text" placeholder="ID" />
+                </div>
 
                 <div class="col-4">
-                    <x-adminlte-input label="Rack ID" name='rack_id' type="text" placeholder="ID" value="{{ old('name') }}" />
+                    <x-adminlte-input label="Rack Name" name="rack" type="text" placeholder="Name" />
                 </div>
-                <div class="col-4">
-                    <x-adminlte-input label="Rack Name" name="name" type="text" placeholder="Name" value="{{ old('name') }}" />
-                </div>
+
                 <div class="col-4" id="add">
                     <div style="margin-top: 2.3rem;">
-                        <x-adminlte-button label="Add" theme="primary" onclick="add()" icon="fas fa-plus" id="create" class="btn-sm " />
+                        <x-adminlte-button label="Add" theme="primary" icon="fas fa-plus" id="create" class="btn-sm " />
                     </div>
                 </div>
-            </div>
-            <div class="row">
 
             </div>
+
+            <div class="row"> </div>
+
             <br>
+
             <table class="table table-bordered yajra-datatable table-striped" id="rack_table">
                 <thead>
                     <tr>
@@ -94,84 +98,47 @@
                         <td>Action</td>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="data">
                 </tbody>
             </table>
+
             <div class="text-center">
                 <x-adminlte-button label="Submit" theme="primary" icon="fas fa-plus" type="submit" />
             </div>
-
         </form>
+
     </div>
     <div class="col"></div>
 </div>
 
 @stop
 
-<!-- 
 @section('js')
 
 <script type="text/javascript">
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-    $("#rack_table").hide();
     /*hide untill data is filled*/
-
+    $("#rack_table").hide();
     $("#add").on('click', function(e) {
         $("#rack_table").show();
-    });
+        let rack_id;
+        let rack_name;
+        rack_id = $('#rid').val();
+        rack_name = $('#rack').val();
 
-    $(".add").on("click", function() {
-        let self = $(this);
-        let table = $("#rack_table tbody tr");
-        //let data = {};
-        let data = new FormData();
-
-        table.each(function(index, elm) {
-
-            let cnt = 0;
-            let td = $(this).find('td');
-            //  console.log(td);
-
-            data.append('rack_id[]', td[0].innerText);
-            data.append('nack_ame[]', td[1].innerText);
-
-        });
-    });
-
-    $(document).ready(function() {
-
-        $("#add").submit(function(e) {
-
-            //stop submitting the form to see the disabled button effect
-            e.preventDefault();
-
-            //disable the submit button
-            $("#add").attr("disabled", true);
-
-            //disable a normal button
-            $("#add").attr("disabled", true);
-
-            return true;
-
-        });
-    });
-
-
-    /* Display Autocomplete data:*/
-    function getData(rack_id, rack_name) {
 
         let html = "<tr class='table_row'>";
-        html += "<td name='asin[]'>" + rack_id + "</td>";
-        html += "<td name='name[]'>" + rack_name + "</td>";
+        html += "<td> <input type='hidden' name='rack_id[]' value='"+ rack_id +"' />" + rack_id + "</td>";
+        html += "<td> <input type='hidden'  name='name[]' value='" + rack_name + "' /> " + rack_name + "</td>";
         html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
-        html += "</tr>";
 
         $("#rack_table").append(html);
 
-    }
+
+        $('#rack_table').on('click', ".remove1", function() {
+            $(this).closest("tr").remove();
+        });
+        rack_id = $('#rid').val('');
+        rack_name = $('#rack').val('');
+    });
 </script>
-@stop -->
+@stop

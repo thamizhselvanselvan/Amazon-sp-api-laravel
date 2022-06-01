@@ -4,7 +4,10 @@
 
 @section('css')
 <link rel="stylesheet" href="/css/styles.css">
-@stop
+
+
+
+
 
 @section('content_header')
 
@@ -60,13 +63,13 @@
                         <option>Select Warehouse</option>
                         @foreach ($ware_lists as $ware_list)
 
-                        <option value="{{ $ware_list->id }}">{{  $ware_list->name  }}</option>
+                        <option value="{{ $ware_list->id }}">{{ $ware_list->name  }}</option>
 
                         @endforeach
 
                     </x-adminlte-select>
-
-                    
+                </div>
+                <div class="col-6">
                     <x-adminlte-select name="rack_id" label="Select Rack">
                         <option>Select Rack</option>
                         @foreach ($rack_lists as $rack_list)
@@ -77,16 +80,33 @@
 
                     </x-adminlte-select>
 
-                </div>
 
+                </div>
             </div>
 
-            <div class="row justify-content-center">
+            <div class="row ">
                 <div class="col-6">
-                    <x-adminlte-input label="Shelve Name" name="name" type="text" placeholder="Name" value="{{ old('name') }}" />
+                    <x-adminlte-input label="Shelve Name" name="name" type="text" placeholder="Name" id="shelve_name" />
+                </div>
+
+                <div class="col-4" id="add">
+                    <div style="margin-top: 2.3rem;">
+                        <x-adminlte-button label="Add" theme="primary" icon="fas fa-plus" id="create" class="btn-sm " />
+                    </div>
                 </div>
             </div>
+            <br>
+            <table class="table table-bordered yajra-datatable table-striped" id="rack_table">
+                <thead>
+                    <tr>
 
+                        <td>Shelve Name</td>
+                        <td>Action</td>
+                    </tr>
+                </thead>
+                <tbody id="data">
+                </tbody>
+            </table>
             <div class="text-center">
                 <x-adminlte-button label=" Submit" theme="primary" icon="fas fa-plus" type="submit" />
             </div>
@@ -96,4 +116,34 @@
     <div class="col"></div>
 </div>
 
+@stop
+
+
+
+@section('js')
+
+<script type="text/javascript">
+    /*hide untill data is filled*/
+    $("#rack_table").hide();
+    $("#add").on('click', function(e) {
+        $("#rack_table").show();
+
+        let shelve_name;
+
+        shelve_name = $('#shelve_name').val();
+
+        let html = "<tr class='table_row'>";
+        html += "<td> <input type='hidden'  name='name[]' value='" + shelve_name + "' /> " + shelve_name + "</td>";
+        html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
+
+        $("#rack_table").append(html);
+
+
+        $('#rack_table').on('click', ".remove1", function() {
+            $(this).closest("tr").remove();
+        });
+
+        shelve_name = $('#shelve_name').val('');
+    });
+</script>
 @stop
