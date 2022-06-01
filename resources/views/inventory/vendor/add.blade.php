@@ -86,9 +86,17 @@
                     </x-adminlte-select>
                 </div>
                 
-                <div class="col-6">
-                    <x-adminlte-input label="Currency" name="currency" id="" type="text" placeholder="currency " value="{{ old('ID') }}" />
-                </div>
+               <div class="col-6">
+        <div id="currency">
+            <x-adminlte-select name="currency" id="currency_input" label="Currency:" >
+                <option>Select Currency</option>
+                @foreach ($currency_lists as $currency_list)
+                <option value="{{ $currency_list->id }}">{{$currency_list->code }}</option>
+                @endforeach
+            </x-adminlte-select>
+            <!-- <x-adminlte-input label="Currency:" id="currency_input" name="currency" type="text" placeholder="Currency" /> -->
+        </div>
+    </div>
             </div>
 
 
@@ -110,10 +118,8 @@
 
         $('#country').change(function(e){
             e.preventDefault();
-        var id=$(this).val();
-            // alert(id);
-                // $('#state').val(id);
-
+            var id=$(this).val();
+            
             $.ajax({
                 method:'POST',
                 url:'/vendor/'+id,
@@ -146,10 +152,6 @@
         $('#state').change(function(e){
             e.preventDefault();
             var id =$(this).val();
-            // var countryid=$('#country').val();
-            // alert(countryid);
-            // alert(sname);
-
             $.ajax({
                 method:'POST',
                 url:'/vendorstate/'+id,
@@ -165,11 +167,9 @@
                     city_data+= "<option value='"+result.id+"'>"+result.name+"</option>";
                 });
                 $('#city').append(city_data);
-                
-                },
+                }
             });
         });
-
     });
 
 </script>
