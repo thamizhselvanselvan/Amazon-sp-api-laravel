@@ -42,7 +42,7 @@ class MicroStatusReport extends Command
      */
     public function handle()
     {
-
+        Log::alert("microstatus report command executed at ".now());
         $today_sd = Carbon::today();
         $today_ed = Carbon::now();
 

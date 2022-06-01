@@ -42,7 +42,7 @@ class B2cship_kyc_status extends Command
      */
     public function handle()
     {
-        // Log::alert("command executed at 1 am");
+        Log::alert("b2cship kyc status command executed at ".now());
         $startTime = Carbon::today();
         $endTime = Carbon::now();
 

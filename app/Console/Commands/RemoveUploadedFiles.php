@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\BOE;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use App\Jobs\BOE\RemoveUploadedFile;
 
 class RemoveUploadedFiles extends Command
@@ -38,7 +39,7 @@ class RemoveUploadedFiles extends Command
      * @return int
      */
     public function handle()
-    {
+    {Log::alert("remove uploaded file from server command executed at ".now());
         $count = BOE::where('do', 0)->count();
         $chunk = 10;
         if ($count == 0) {
