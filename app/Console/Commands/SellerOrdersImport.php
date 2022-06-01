@@ -51,7 +51,7 @@ class SellerOrdersImport extends Command
      */
     public function handle()
     {
-        Log::alert('working');
+        Log::info('seller order import working every 30 mins.');
 
         $host = config('database.connections.order.host');
         $dbname = config('database.connections.order.database');

@@ -75,8 +75,6 @@ class OrdersListController extends Controller
 
     public function selectStore(Request $request)
     {
-        
-            // exit;
         if ($request->ajax()) {
             $store_status_array = [];
             $store_status = OrderSellerCredentials::where('dump_order', 1)->get();
