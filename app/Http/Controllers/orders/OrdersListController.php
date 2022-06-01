@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\order\OrderSellerCredentials;
 use App\Services\Config\ConfigTrait;
 use Illuminate\Support\Facades\Auth;
 use SellingPartnerApi\Api\OrdersApi;
@@ -33,6 +34,7 @@ use App\Services\SP_API\Config\ConfigTrait as ConfigConfigTrait;
 class OrdersListController extends Controller
 {
     use ConfigTrait;
+    
     public function index(Request $request)
     {
         if ($request->ajax()) {
@@ -67,7 +69,7 @@ class OrdersListController extends Controller
 
             Artisan::call('pms:sellers-orders-import ');
         }
-        //API will hit here and records will be save into DB
+
         return redirect()->back();
     }
 
@@ -83,12 +85,7 @@ class OrdersListController extends Controller
                     return $mws_region['mws_region']['region'] . ' [' . $mws_region['mws_region']['region_code'] . ']';
                 })
                 ->addColumn('action', function ($id) {
-                    if ($id['dump_order'] == 1) {
-
-                        $action = '<div class="pl-2"><input class="" type="checkbox" value=' . $id['id'] . ' name="options[]" checked></div>';
-                    } else {
                         $action = '<div class="pl-2"><input class="" type="checkbox" value=' . $id['id'] . ' name="options[]" ></div>';
-                    }
                     return $action;
                 })
                 ->rawColumns(['region', 'action'])
@@ -100,11 +97,23 @@ class OrdersListController extends Controller
 
     public function updateStore(Request $request)
     {
-        Aws_Credential::query()->update(['dump_order' => 0]);
-
         $selected_store = explode('-', $request->selected_store);
+        OrderSellerCredentials::query()->update(['dump_order' => 0]);
+        
         foreach ($selected_store as $id) {
-            Aws_Credential::where('id', $id)->update(['dump_order' => 1]);
+
+            $aws_cred = Aws_credential::with(['mws_region'])->where('id', $id)->get();
+            $aws_cred_array = [
+                'seller_id' => $aws_cred[0]->seller_id,
+                'mws_region_id' => $aws_cred[0]->mws_region_id,
+                'country_code' => $aws_cred[0]['mws_region']->region_code,
+                'store_name' => $aws_cred[0]->store_name,
+                'merchant_id' => $aws_cred[0]->merchant_id,
+                'auth_code' => $aws_cred[0]->auth_code,
+                'dump_order' => 1
+            
+        ];
+            OrderSellerCredentials::upsert([$aws_cred_array], ['seller_id'], ['seller_id','mws_region_id','store_name','country_code' , 'merchant_id', 'auth_code','dump_order']);
         }
         return response()->json(['success' => 'Store Selected']);
     }
@@ -131,6 +140,7 @@ class OrdersListController extends Controller
 
         return view('orders.ordersDetails.index');
     }
+
     public function GetOrderDetails()
     {
         // $token = 'Atzr|IwEBIG3zt3kKghE3Bl56OEGAxxeodmEzfaMAnMl0PivBlfumR8224Adu9lb33DKLEvHD6OBwdIBkaVlIZ5L2axypPm-LLuKPabvUCmRZ6F6C8KZKBJYS2u1sJVqzMxxoFSs6DTFLMxx8WBVXY395aKUzK3plz3-ttDN-YUGjiKR9-kFhLek1ZdjxwTQkvUdWdfpuDtcnW0veAPS0JUHVwTN39hpwJtPXm98XwD-wEe16n9qoWoak-UvtuML8irbdUdATSA4FLSX08H2V7SFAjdktXEW13v6gBs3xfCYn_w9Y4H29K5i5_vkQyiqj0j1FMK0nmtU';
@@ -186,8 +196,6 @@ class OrdersListController extends Controller
         }
         return view('orders.itemDetails.index');
     }
-
-
 
     public function GetOrderitems()
     {
