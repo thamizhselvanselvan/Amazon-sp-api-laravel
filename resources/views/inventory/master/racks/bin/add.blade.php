@@ -107,19 +107,19 @@
 
 
                 <div class="col-6">
-                    <x-adminlte-input label="Name" name="name" id="" type="text" placeholder="Name " value="{{ old('ID') }}" />
+                    <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name "  />
                 </div>
             </div>
 
             <div class="row justify-content-center">
                 <div class="col-3">
-                    <x-adminlte-input label="Width" name="width" id="" type="text" placeholder="Width" value="{{ old('ID') }}" />
+                    <x-adminlte-input label="Width" name="width" id="width" type="text" placeholder="Width"  />
                 </div>
                 <div class="col-3">
-                    <x-adminlte-input label="Height" name="height" id="" type="text" placeholder="Height" value="{{ old('ID') }}" />
+                    <x-adminlte-input label="Height" name="height" id="height" type="text" placeholder="Height"  />
                 </div>
                 <div class="col-3">
-                    <x-adminlte-input label="Depth" name="depth" id="" type="text" placeholder="Depth " value="{{ old('ID') }}" />
+                    <x-adminlte-input label="Depth" name="depth" id="depth" type="text" placeholder="Depth "  />
                 </div>
                 <div class="col-3" id="add">
                     <div style="margin-top: 2.3rem;">
@@ -135,7 +135,7 @@
                         <td>Bin Name</td>
                         <td>Width</td>
                         <td>Height</td>
-                        <td></td>
+                        <td>Depth</td>
                         <td>Action</td>
                     </tr>
                 </thead>
@@ -146,7 +146,7 @@
                 <x-adminlte-button label=" Submit" theme="primary" icon="fas fa-plus" type="submit" />
             </div>
 
-           
+
         </form>
     </div>
     <div class="col"></div>
@@ -178,27 +178,38 @@
     });
 
 
- /*hide untill data is filled*/
-//  $("#bin_table").hide();
-//     $("#add").on('click', function(e) {
-//         $("#bin_table").show();
+    /*hide untill data is filled*/
+    $("#bin_table").hide();
+    $("#add").on('click', function(e) {
+        $("#bin_table").show();
 
-//         let shelve_name;
+        let bin_name;
+        let width;
+        let height;
+        let depth;
 
-//         bin_name = $('#bin_name').val();
+        bin_name = $('#name').val();
+        width=$('#width').val();
+        height=$('#height').val();
+        depth=$('#depth').val();
 
-//         let html = "<tr class='table_row'>";
-//         html += "<td> <input type='hidden'  name='name[]' value='" + bin_name + "' /> " + bin_name + "</td>";
-//         html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
+        let html = "<tr class='table_row'>";
+        html += "<td> <input type='hidden'  name='name[]' value='" + bin_name + "' /> " + bin_name + "</td>";
+        html += "<td> <input type='hidden'  name='width[]' value='" + width + "' /> " + width + "</td>";
+        html += "<td> <input type='hidden'  name='height[]' value='" + height + "' /> " + height + "</td>";
+        html += "<td> <input type='hidden'  name='depth[]' value='" + depth + "' /> " + depth + "</td>";
+        html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
 
-//         $("#bin_table").append(html);
+        $("#bin_table").append(html);
 
 
-      
+        $('#bin_table').on('click', ".remove1", function() {
+            $(this).closest("tr").remove();
+        });
 
-//         shelve_name = $('#shelve_name').val('');
-//     });
 
+        shelve_name = $('#shelve_name').val('');
+    });
 </script>
 
 @stop
