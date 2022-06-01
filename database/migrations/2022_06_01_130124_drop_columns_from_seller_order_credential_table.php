@@ -28,7 +28,7 @@ class DropColumnsFromSellerOrderCredentialTable extends Migration
      */
     public function down()
     {
-        Schema::connection('order')->table('seller_order_credential', function (Blueprint $table) {
+        Schema::connection('order')->table('order_seller_credentials', function (Blueprint $table) {
 
             $table->string('mws_region_id')->nullable();
             $table->string('merchant_id')->nullable();
