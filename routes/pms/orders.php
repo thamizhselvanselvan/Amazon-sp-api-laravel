@@ -9,6 +9,7 @@ Route::get('orders/getlist', 'orders\OrdersListController@GetOrdersList')->name(
 Route::get('orders/select-store', 'orders\OrdersListController@selectStore')->name('select.store');
 Route::post('orders/update-store', 'orders\OrdersListController@updateStore');
 
+
 Route::get('orders/details', 'orders\OrdersListController@OrderDetails');
 Route::get('orders/item-details', 'orders\OrdersListController@OrderItemDetails');
 Route::get('orders/getdetails/', 'orders\OrdersListController@GetOrderDetails')->name('getOrder.details');

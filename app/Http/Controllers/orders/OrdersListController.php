@@ -38,7 +38,7 @@ class OrdersListController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = DB::select('select amazon_order_identifier,purchase_date,last_update_date,order_status,order_total,number_of_items_shipped from orders');
+            $data = DB::connection('order')->select('select amazon_order_identifier,purchase_date,last_update_date,order_status,order_total,number_of_items_shipped from orders');
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -105,15 +105,11 @@ class OrdersListController extends Controller
             $aws_cred = Aws_credential::with(['mws_region'])->where('id', $id)->get();
             $aws_cred_array = [
                 'seller_id' => $aws_cred[0]->seller_id,
-                'mws_region_id' => $aws_cred[0]->mws_region_id,
                 'country_code' => $aws_cred[0]['mws_region']->region_code,
                 'store_name' => $aws_cred[0]->store_name,
-                'merchant_id' => $aws_cred[0]->merchant_id,
-                'auth_code' => $aws_cred[0]->auth_code,
                 'dump_order' => 1
-            
         ];
-            OrderSellerCredentials::upsert([$aws_cred_array], ['seller_id'], ['seller_id','mws_region_id','store_name','country_code' , 'merchant_id', 'auth_code','dump_order']);
+            OrderSellerCredentials::upsert([$aws_cred_array], ['seller_id'], ['seller_id','store_name','country_code', 'dump_order']);
         }
         return response()->json(['success' => 'Store Selected']);
     }

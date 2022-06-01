@@ -52,22 +52,25 @@ class SellerOrdersImport extends Command
     {
         Log::alert('working');
 
-        $host = config('database.connections.web.host');
-        $dbname = config('database.connections.web.database');
-        $port = config('database.connections.web.port');
-        $username = config('database.connections.web.username');
-        $password = config('database.connections.web.password');
+        $host = config('database.connections.order.host');
+        $dbname = config('database.connections.order.database');
+        $port = config('database.connections.order.port');
+        $username = config('database.connections.order.username');
+        $password = config('database.connections.order.password');
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
         // $aws_data = Aws_credential::with('mws_region')->where('dump_order', 1)->where('verified', 1)->get();
         $aws_data = OrderSellerCredentials::where('dump_order', 1)->get();
-
+        
         foreach ($aws_data as $aws_value) {
-
+            
             $awsId  = $aws_value['id'];
-            $awsAuth_code = $aws_value['auth_code'];
+            // $awsAuth_code = $aws_value['auth_code'];
             $awsCountryCode = $aws_value['country_code'];
             $seller_id = $aws_value['seller_id'];
+            $bb_aws_cred = Aws_credential::where('seller_id', $seller_id)->get();
+            $awsAuth_code = $bb_aws_cred[0]->auth_code;
+
             $this->SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code, $seller_id);
         }
     }

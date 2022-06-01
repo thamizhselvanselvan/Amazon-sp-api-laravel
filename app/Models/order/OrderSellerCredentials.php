@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class OrderSellerCredentials extends Model
 {
     use HasFactory;
+    protected $connection = 'order';
     protected $fillable = [
 
         'seller_id',
