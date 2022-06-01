@@ -19,6 +19,7 @@ use AmazonPHP\SellingPartner\Exception\Exception;
 class SellerOrdersImport extends Command
 {
     use ConfigTrait;
+    public $seller_id;
     /**
      * The name and signature of the console command.
      *
@@ -67,15 +68,16 @@ class SellerOrdersImport extends Command
             $awsId  = $aws_value['id'];
             // $awsAuth_code = $aws_value['auth_code'];
             $awsCountryCode = $aws_value['country_code'];
-            $seller_id = $aws_value['seller_id'];
-            $bb_aws_cred = Aws_credential::where('seller_id', $seller_id)->get();
+            $this->seller_id = $aws_value['seller_id'];
+            $bb_aws_cred = Aws_credential::where('seller_id', $this->seller_id)->get();
             $awsAuth_code = $bb_aws_cred[0]->auth_code;
-
-            $this->SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code, $seller_id);
+// po($this->seller_id);
+            $this->SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code);
         }
+        // exit;
     }
 
-    public function SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code, $seller_id)
+    public function SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code)
     {
 
         $config = $this->config($awsId, $awsCountryCode, $awsAuth_code);
@@ -94,10 +96,8 @@ class SellerOrdersImport extends Command
             next_token_exist:
             $results = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses = null, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, $next_token, $amazon_order_ids = null, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
             $next_token = $results['next_token'];
-        //   po($results);
-        //   exit;
-            // $results_getorder = json_decode(json_encode($results));
-             $this->OrderDataFormating($results, $seller_id);
+             $this->OrderDataFormating($results);
+            
             if(isset($next_token))
             {
                 goto next_token_exist;
@@ -111,17 +111,20 @@ class SellerOrdersImport extends Command
         }
     }
 
-    public function OrderDataFormating($results, $seller_id)
+    public function OrderDataFormating($results)
     {   
         $result_data = $results->getOrders();
         $result_data = json_decode(json_encode($result_data));
 
         foreach ($result_data as $resultkey => $result) {
-                
-            $amazon_order_details = [];
+            
             $orders = R::dispense('orders');
-            $orders->seller_identifier = $seller_id;
+            $amazon_order_details = [];
+            $orders->our_seller_identifier = $this->seller_id;
+            
             foreach ((array)$result as $detailsKey => $details) {
+
+
                 $detailsKey = lcfirst($detailsKey);
                 if (is_Object($details)) {
                     
@@ -164,14 +167,17 @@ class SellerOrdersImport extends Command
                     }
                 }
             }
-            $data = DB::select("select id from orders where amazon_order_identifier = '$amazon_order_id'");
+            $data = DB::connection('order')->select("select id from orders where EXISTS( select id from orders where amazon_order_identifier = '$amazon_order_id')");
+
+            // $data =[];
             if (array_key_exists(0, $data)) {
 
                 $dataCheck = 1;
                 $id = $data[0]->id;
                 $update_orders = R::load('orders',$id);
+                
                 foreach($amazon_order_details as $key => $value)
-                {
+                {   
                     $update_orders->{$key} = $value;
                 }
                 // $update_orders->updatedat = now();

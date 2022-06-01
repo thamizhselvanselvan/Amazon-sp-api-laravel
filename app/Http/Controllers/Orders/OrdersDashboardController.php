@@ -11,7 +11,7 @@ class OrdersDashboardController extends Controller
 {
     public function Dashboard()
     {
-        $order_sql = DB::connection('order')->select('select order_status, seller_identifier,COUNT(order_status) as count, os.store_name, os.country_code from orders join ord_order_seller_credentials as os where os.seller_id = orders.seller_identifier GROUP BY seller_identifier,order_status;');
+        $order_sql = DB::connection('order')->select('select order_status, our_seller_identifier,COUNT(order_status) as count, os.store_name, os.country_code from orders join ord_order_seller_credentials as os where os.seller_id = orders.our_seller_identifier GROUP BY our_seller_identifier,order_status;');
         $order_collect = collect($order_sql);
         $order_groupby = $order_collect->groupBy('store_name');
 
