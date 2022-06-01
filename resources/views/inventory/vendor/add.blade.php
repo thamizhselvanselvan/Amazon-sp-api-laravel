@@ -55,7 +55,7 @@
 
             <div class="row justify-content-center">
                 <div class="col-6">
-                    <x-adminlte-input label="Name" name="name" id="" type="text" placeholder="Name " value="{{ old('ID') }}" />
+                    <x-adminlte-input label="Name" name="name" id="" type="text" placeholder="Name " />
                 </div>
                 <div class="col-6">
                     <x-adminlte-select name="type" label="Select type">
@@ -67,7 +67,7 @@
             </div>
             <div class="row justify-content-center">
                 <div class="col-6">
-                    <x-adminlte-select label="Country" name="country" id="country" type="text" placeholder="" value="{{ old('ID') }}" >
+                    <x-adminlte-select label="Country" name="country" id="country" type="text" placeholder="" >
                     <option value="">Select Country</option>
                         @foreach ($country as $countries)
                             <option value="{{$countries->id}}">{{$countries->name}}</option>
@@ -76,27 +76,26 @@
                     </x-adminlte-select>
                 </div>
                 <div class="col-6">
-                    <x-adminlte-select label="State" name="state" id="state" type="text" placeholder="" value="{{ old('ID') }}" >
+                    <x-adminlte-select label="State" name="state" id="state" type="text" placeholder="" >
                         <option value="">Select State</option>
                     </x-adminlte-select>
                 </div>
                  <div class="col-6">
-                    <x-adminlte-select label="City" name="city" id="city" type="text" placeholder="" value="{{ old('ID') }}" >
+                    <x-adminlte-select label="City" name="city" id="city" type="text" placeholder="" >
                         <option value="">Select City</option>
                     </x-adminlte-select>
                 </div>
                 
                <div class="col-6">
-        <div id="currency">
-            <x-adminlte-select name="currency" id="currency_input" label="Currency:" >
-                <option>Select Currency</option>
-                @foreach ($currency_lists as $currency_list)
-                <option value="{{ $currency_list->id }}">{{$currency_list->code }}</option>
-                @endforeach
-            </x-adminlte-select>
-            <!-- <x-adminlte-input label="Currency:" id="currency_input" name="currency" type="text" placeholder="Currency" /> -->
-        </div>
-    </div>
+                    <x-adminlte-select label="Currency" name="currency" id="currency" type="text" placeholder="" >
+                        <option value="">Select Currency</option>
+
+                        @foreach ($currency_lists as $currency_list)
+                            <option value="{{ $currency_list->id }}">{{$currency_list->code }}</option>
+                        @endforeach
+                        
+                    </x-adminlte-select>
+                </div>
             </div>
 
 
