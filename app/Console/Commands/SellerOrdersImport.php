@@ -180,11 +180,11 @@ class SellerOrdersImport extends Command
                 {   
                     $update_orders->{$key} = $value;
                 }
-                // $update_orders->updatedat = now();
+                $update_orders->updatedat = now();
                 R::store($update_orders);
             }
             else{
-                // $orders->updatedat = now();
+                $orders->createdat = now();
                 R::store($orders);
             }
         }
