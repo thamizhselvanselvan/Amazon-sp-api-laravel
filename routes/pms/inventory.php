@@ -18,7 +18,9 @@ Route::resource('inventory/sources', 'Inventory\Master\InventorySourceController
 Route::resource('inventory/destinations','Inventory\Master\InventoryDestinationController');
 Route::resource('inventory/disposes','Inventory\Master\InventoryDisposeController');
 
-Route::get('inventory/stocks','Inventory\StockController@stokes')->name('inventory.stocks');
+// Route::get('inventory/stocks','Inventory\StockController@stokes')->name('inventory.stocks');
+Route::get('inventory/stocks','Inventory\StockController@dashboard')->name('inventory.stocks');
+Route::get('inventory/list', 'Inventory\StockController@getlist');
 
 Route::resource('inventory/warehouses','Inventory\InventoryWarehouseController');
 Route::resource('inventory/features','Inventory\InventoryFeaturesController');
