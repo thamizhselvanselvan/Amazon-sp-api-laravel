@@ -582,28 +582,35 @@ return [
             'can' =>  ['Admin'],
             'submenu' => [
                 [
+                    'text' => 'Dashboard',
+                    'url' => 'orders/dashboard',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+                [
                     'text' => 'Order',
                     'url' => 'orders/list',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
 
                 ],
-                [
-                    'text' => 'Orders Details',
-                    'url' => 'orders/details ',
-                    'can' => ['Admin'],
-                    'icon' => 'far fa-fw fa-file',
+                // [
+                //     'text' => 'Orders Details',
+                //     'url' => 'orders/details ',
+                //     'can' => ['Admin'],
+                //     'icon' => 'far fa-fw fa-file',
 
 
-                ],
-                [
-                    'text' => 'Orders Item Details',
-                    'url' => 'orders/item-details ',
-                    'can' => ['Admin'],
-                    'icon' => 'far fa-fw fa-file',
+                // ],
+                // [
+                //     'text' => 'Orders Item Details',
+                //     'url' => 'orders/item-details ',
+                //     'can' => ['Admin'],
+                //     'icon' => 'far fa-fw fa-file',
 
 
-                ],
+                // ],
             ],
         ],
 

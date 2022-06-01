@@ -20,16 +20,16 @@
     <div class="row">
         <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" id="TrackingAPI" data-target="#Tracking"  href="Trackingtab">Tracking API</a>
+            <a class="nav-link active" data-toggle="tab" id="TrackingAPI" data-target="#Tracking"  href="">Tracking API</a>
             </li>
             <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" id="BombinoStatus" data-target="#Bombinotab" href="Bombinotab">Bombino Status</a>
+            <a class="nav-link" data-toggle="tab" id="BombinoStatus" data-target="#Bombinotab" href="">Bombino Status</a>
             </li>
             <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" id="DeliveryStatus" data-target="#Deliverytab" href="Deliverytab">Delivery Status</a>
+            <a class="nav-link" data-toggle="tab" id="DeliveryStatus" data-target="#Deliverytab" href="">Delivery Status</a>
             </li>
             <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" id="MiscStatus" data-target="#Misctab" href="Misctab">Misc Status</a>
+            <a class="nav-link" data-toggle="tab" id="MiscStatus" href="">Misc Status</a>
             </li>
         </ul>
     </div>
@@ -38,50 +38,42 @@
         <div class="tab-pane active" id="Tracking">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" id="TrackingAPIActive" href="Trackingtab">Active</a>
+                <a class="nav-link active" data-toggle="tab" id="TrackingAPIActive" href="">Active</a>
                 </li>
                 <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" id="TrackingAPInActive"  href="TrackingAPInActive" >Inactive</a>
+                <a class="nav-link" data-toggle="tab" id="TrackingAPInActive"  href="" >Inactive</a>
                 </li>
             </ul>
         </div>
         <div class="tab-pane " id="Bombinotab">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" id="BombinoStatusActive" href="Bombinotab">Active</a>
+                    <a class="nav-link active" data-toggle="tab" id="BombinoStatusActive" href="">Active</a>
                     </li>
                     <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" id="BombinoStatusInactive"  href="BombinoStatusInactive" >Inactive</a>
+                    <a class="nav-link" data-toggle="tab" id="BombinoStatusInactive"  href="" >Inactive</a>
                 </li>
             </ul>
         </div>
         <div class="tab-pane " id="Deliverytab">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" id="DeliveryStatusActive" href="Deliverytab">Active</a>
+                    <a class="nav-link active" data-toggle="tab" id="DeliveryStatusActive" href="">Active</a>
                     </li>
                     <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" id="DeliveryStatusInactive"  href="" >Inactive</a>
                 </li>
             </ul>
         </div>
-        <div class="tab-pane " id="Misctab">
-            <ul class="nav nav-tabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" id="MiscStatusActive" href="Misctab">Active</a>
-                    </li>
-                    <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" id="MiscStatusInactive"  href="" >Inactive</a>
-                </li>
-            </ul>
+        <div class="tab-pane " id="MiscActiveShow">
+
         </div>
+            
     </div>
 
-    
-
-    <div class="mt-4 tab-content">
-        <div class="tab-pane active" id="active1">
-            <h3 class="m-4 text-dark">Status Details</h3>
+    <div class=" tab-content">
+        <div class="tab-pane active" id="TrackingAPIActiveShow">
+            <h3 class="mt-4 text-dark">Status Details</h3>
             <table class="table table-bordered yajra-datatable table-striped">
                 <thead>
                     <tr>
@@ -106,47 +98,40 @@
             </table>
             <br>
         </div>
-        <div class="tab-pane " id="inactive1">
+        <div class="tab-pane" id="TrackingAPInActiveShow">
 
         </div>
     </div>
 
     <div class="tab-content">
-        <div class="tab-pane " id="active2">
+        <div class="tab-pane " id="BombinoStatusActiveShow">
 
         </div>
-        <div class="tab-pane " id="inactive2">
-
-        </div>
-    </div>
-    <div class="tab-content">
-        <div class="tab-pane" id="active3">
-
-        </div>
-        <div class="tab-pane" id="inactive3">
+        <div class="tab-pane " id="BombinoStatusInactiveShow">
 
         </div>
     </div>
     <div class="tab-content">
-        <div class="tab-pane" id="active4">
+        <div class="tab-pane" id="DeliveryStatusActiveShow">
 
         </div>
-        <div class="tab-pane" id="inactive4">
+        <div class="tab-pane" id="DeliveryStatusInactiveShow">
 
         </div>
     </div>
+  
 </div>
 @stop
 
 @section('js')
 <script>
 $(document).ready(function(){
+
     $('#TrackingAPI').click(function(){
-        // var url=$(this).attr('href');
-        // alert(url);
+
         $('#TrackingAPIActive').addClass('active');
         $('#TrackingAPInActive').removeClass('active');
-        $('#active1').empty();
+        $('#TrackingAPIActiveShow').empty();
         $('.tab-pane').removeClass('active');
         $.ajax({
             url :'Trackingtab',
@@ -154,9 +139,12 @@ $(document).ready(function(){
             success:function(response){
                 let track ="<h3 class=m-4 text-dark>Status Details</h3><table class=table table-bordered yajra-datatable table-striped> <thead> <tr><td>Description</td><td>Last Record</td><td>Days</td><td>Time</td></tr></thead><tbody>";
                 $.each(response, function(i, response){
-                track +="<tr><td>"+response.StatusDetials+"</td><td>"+response.FPCode+"</td><td>"+response.day+"</td><td>"+response.time+"</td></tr>";
+                track +="<tr><td>"+response.FPCode+"</td><td>"+response.StatusDetials+"</td><td>"+response.day+"</td><td>"+response.time+"</td></tr>";
                 });
-                $('#active1').append(track).addClass('active');
+                $('#TrackingAPIActiveShow').html(track).addClass('active');
+                $('#BombinoStatusActiveShow').removeClass('active');
+                $('#DeliveryStatusActiveShow').removeClass('active');
+                $('#MiscActiveShow').removeClass('active');
                 
             },
             error:function(){
@@ -165,9 +153,7 @@ $(document).ready(function(){
         });
     });
     $('#TrackingAPIActive').click(function(){
-        // var url=$(this).attr('href');
-        // alert(url);
-        $('#inactive1').empty();
+        
         $.ajax({
             url :'Trackingtab',
             method : 'GET',
@@ -175,33 +161,47 @@ $(document).ready(function(){
                 ;
                 let track ="<h3 class=m-4 text-dark>Status Details</h3><table class=table table-bordered yajra-datatable table-striped> <thead> <tr><td>Description</td><td>Last Record</td><td>Days</td><td>Time</td></tr></thead><tbody>";
                 $.each(response, function(i, response){
-                track +="<tr><td>"+response.StatusDetials+"</td><td>"+response.FPCode+"</td><td>"+response.day+"</td><td>"+response.time+"</td></tr>";
+                track +="<tr><td>"+response.FPCode+"</td><td>"+response.StatusDetials+"</td><td>"+response.day+"</td><td>"+response.time+"</td></tr>";
                 });
-                $('#active1').append(track).addClass('active');
+                $('#TrackingAPIActiveShow').html(track).addClass('active');
+                $('#TrackingAPInActiveShow').removeClass('active');
                 
             },
             error:function(){
                 alert('ERROR');
             }
         });
+        
     });
 
     $('#TrackingAPInActive').click(function(){
-        $('#active1').empty();
-        $('#inactive1').html("<h2>No record here......</h2>").addClass('active');
+        
+        $.ajax({
+            url :'TrackingAPInActive',
+            method : 'GET',
+            success:function(response){
+                ;
+                let track ="<h3 class=m-4 text-dark>Status Details</h3><table class=table table-bordered yajra-datatable table-striped> <thead> <tr><td>Description</td><td>Last Record</td><td>Days</td><td>Time</td></tr></thead><tbody>";
+                $.each(response, function(i, response){
+                track +="<tr><td>"+response.FPCode+"</td><td>"+response.StatusDetials+"</td><td>"+response.day+"</td><td>"+response.time+"</td></tr>";
+                });
+                $('#TrackingAPInActiveShow').html(track).addClass('active');
+                $('#TrackingAPIActiveShow').removeClass('active');
+            },
+            error:function(){
+                alert('ERROR');
+            }
+        });
+      
     });
-});
-
-$(document).ready(function(){
 
     $('#BombinoStatus').click(function(){
 
         $('#BombinoStatusActive').addClass('active');
         $('#BombinoStatusInactive').removeClass('active');
-        $('#active2').empty();
+        $('#BombinoStatusActiveShow').empty();
         $('.tab-pane').removeClass('active');
-        // var url=$(this).attr('href');
-            // alert(url);
+        
         $.ajax({
             url :'Bombinotab',
             method : 'GET',
@@ -211,7 +211,10 @@ $(document).ready(function(){
                 $.each(result, function(i, result){
                 bombino +="<tr><td>"+result.Status+"</td><td>"+result.day+"</td><td>"+result.time+"</td></tr>";
                 });
-                $('#active2').append(bombino).addClass('active');
+                $('#BombinoStatusActiveShow').html(bombino).addClass('active');
+                $('#TrackingAPIActiveShow').removeClass('active');
+                $('#DeliveryStatusActiveShow').removeClass('active');
+                $('#MiscActiveShow').removeClass('active');
                 
             },
             error:function(){
@@ -219,42 +222,30 @@ $(document).ready(function(){
             }
         });
     });
-});
 
-$(document).ready(function(){
     
     $('#BombinoStatusActive').click(function(){
-        $('#active2').empty();
-        $('#inactive2').removeClass('active');
-        // var url=$(this).attr('href');
-           
+          
         $.ajax({
             url :'Bombinotab',
             method : 'GET',
             success:function(result){
-                // alert('success');
                 let bombino ="<h3 class=m-4 text-dark>Bombino Status Details</h3><table class=table table-bordered yajra-datatable table-striped> <thead> <tr><td>Last Record</td><td>Days</td><td>Time</td></tr></thead><tbody>";
                 $.each(result, function(i, result){
                 bombino +="<tr><td>"+result.Status+"</td><td>"+result.day+"</td><td>"+result.time+"</td></tr>";
                 });
-                $('#active2').append(bombino).addClass('active');
-                $(this).addClass('active');
-                
+                $('#BombinoStatusActiveShow').html(bombino).addClass('active');
+                $('#BombinoStatusInactiveShow').removeClass('active');
+                   
             },
             error:function(){
                 alert('ERROR');
             }
         });
     });
-});
 
-$(document).ready(function(){
     $('#BombinoStatusInactive').click(function(){
-        var url=$(this).attr('href');
-           
-        $('#inactive2').empty();
-        $('#active2').removeClass('active');
-
+        
         $.ajax({
             url :'BombinoStatusInactive',
             method : 'GET',
@@ -264,7 +255,8 @@ $(document).ready(function(){
                 $.each(result, function(i, result){
                 bombino +="<tr><td>"+result.inactive+"</td><td>"+result.day+"</td><td>"+result.time+"</td></tr>";
                 });
-                $('#inactive2').append(bombino).addClass('active');
+                $('#BombinoStatusInactiveShow').html(bombino).addClass('active');
+                $('#BombinoStatusActiveShow').removeClass('active');
                 
             },
             error:function(){
@@ -272,17 +264,15 @@ $(document).ready(function(){
             }
         });   
     });
-});
 
-$(document).ready(function(){
     $('#DeliveryStatus').click(function(){
-        // var url=$(this).attr('href');
         
         $('#DeliveryStatusActive').addClass('active');
         $('#DeliveryStatusInactive').removeClass('active');
-        $('#active3').empty();
+        $('#DeliveryStatusActiveShow').empty();
         $('.tab-pane').removeClass('active');
-
+        $('#MiscActiveShow').removeClass('active');
+        
         $.ajax({
             url :'Deliverytab',
             method : 'GET',
@@ -292,7 +282,11 @@ $(document).ready(function(){
                 $.each(result, function(i, result){
                 deliver +="<tr><td>"+result.FPCode+"</td><td>"+result.StatusDetails+"</td><td>"+result.day+"</td><td>"+result.time+"</td></tr>";
                 });
-                $('#active3').append(deliver).addClass('active');
+                $('#DeliveryStatusActiveShow').html(deliver).addClass('active');
+                $('#DeliveryStatusInactiveShow').removeClass('active');
+                $('#TrackingAPIActiveShow').removeClass('active');
+                $('#BombinoStatusActiveShow').removeClass('active');
+                $('#MiscActiveShow').removeClass('active');
             },
             error:function(){
                 alert('ERROR');
@@ -302,9 +296,7 @@ $(document).ready(function(){
     });
 
     $('#DeliveryStatusActive').click(function(){
-        // var url=$(this).attr('href');
-        // alert(url);
-        $('#inactive3').empty();
+        
         $.ajax({
             url :'Deliverytab',
             method : 'GET',
@@ -312,65 +304,58 @@ $(document).ready(function(){
                 
                 let deliver ="<h3 class=m-4 text-dark>Bluedart, DL Delhi And DELHIVERY Last Packet Delivered Status</h3><table class=table table-bordered yajra-datatable table-striped> <thead> <tr><td>Description</td><td>Status</td><td>Days</td><td>Time</td></tr></thead><tbody>";
                 $.each(result, function(i, result){
-                deliver +="<tr><td>"+result.FPCode+"</td><td>"+result.StatusDetials+"</td><td>"+result.day+"</td><td>"+result.time+"</td></tr>";
+                deliver +="<tr><td>"+result.FPCode+"</td><td>"+result.StatusDetails+"</td><td>"+result.day+"</td><td>"+result.time+"</td></tr>";
                 });
-                $('#active3').append(deliver).addClass('active');
+                $('#DeliveryStatusActiveShow').html(deliver).addClass('active');
+                $('#DeliveryStatusInactiveShow').removeClass('active');
                 
             },
             error:function(){
                 alert('ERROR');
             }
         });
-
-
     });
 
     $('#DeliveryStatusInactive').click(function(){
-            // alert('working');
-            $('#active3').empty();
-            $('#inactive3').html("<h2> No records here....</h2>").addClass('active');
-    })
-});
+              
+        $.ajax({
+            url :'DeliveryStatusInactive',
+            method : 'GET',
+            success:function(result){
+                
+                let deliver ="<h3 class=m-4 text-dark>Bluedart, DL Delhi And DELHIVERY Last Packet Delivered Status</h3><table class=table table-bordered yajra-datatable table-striped> <thead> <tr><td>Description</td><td>Status</td><td>Days</td><td>Time</td></tr></thead><tbody>";
+                $.each(result, function(i, result){
+                deliver +="<tr><td>"+result.FPCode+"</td><td>"+result.StatusDetails+"</td><td>"+result.day+"</td><td>"+result.time+"</td></tr>";
+                });
+                $('#DeliveryStatusInactiveShow').html(deliver).addClass('active');
+                $('#DeliveryStatusActiveShow').removeClass('active');
+                
+            },
+            error:function(){
+                alert('ERROR');
+            }
+        });
+    });
 
-$(document).ready(function(){
     $('#MiscStatus').click(function(){
-        // var url=$(this).attr('href');
-        $('#MiscStatusActive').addClass('active');
-        $('#MiscStatusInactive').removeClass('active');
-        $('#active4').empty();
-        $('.tab-pane').removeClass('active');
-        // alert(url);
-        $.ajax({
-            url :'Misctab',
-            method : 'GET',
-            success:function(result){
-                
-                let micro ="<h3 class=m-4 text-dark>B2CShip Booking And Kyc Status</h3><table class=table table-bordered yajra-datatable table-striped> <thead> <tr><td>Description</td><td>Awb No.</td><td>Days</td><td>Time</td></tr></thead><tbody>";
-                $.each(result, function(i, result){
-                micro +="<tr><td>"+result.Status+"</td><td>"+result.AwbNo+"</td><td>"+result.day+"</td><td>"+result.time+"</td></tr>";
-                });
-                $('#active4').append(micro).addClass('active');
-                
-            },
-            error:function(){
-                alert('ERROR');
-            }
-        });
-    });
-
-    $('#MiscStatusActive').click(function(){
-        var url=$(this).attr('href');
-        $('#inactive4').empty();
         
+        
+        $('#MiscActiveShow').empty();
+        $('.tab-pane').removeClass('active');
+       
         $.ajax({
             url :'Misctab',
             method : 'GET',
             success:function(result){
+                
                 let micro ="<h3 class=m-4 text-dark>B2CShip Booking And Kyc Status</h3><table class=table table-bordered yajra-datatable table-striped> <thead> <tr><td>Description</td><td>Awb No.</td><td>Days</td><td>Time</td></tr></thead><tbody>";
                 $.each(result, function(i, result){
                 micro +="<tr><td>"+result.Status+"</td><td>"+result.AwbNo+"</td><td>"+result.day+"</td><td>"+result.time+"</td></tr>";
                 });
-                $('#active4').append(micro).addClass('active');
+                $('#MiscActiveShow').html(micro).addClass('active');
+                $('#TrackingAPIActiveShow').removeClass('active');
+                $('#DeliveryStatusActiveShow').removeClass('active');
+                $('#BombinoStatusActiveShow').removeClass('active');
                 
             },
             error:function(){
@@ -378,11 +363,6 @@ $(document).ready(function(){
             }
         });
     });
-
-    $('#MiscStatusInactive').click(function(){
-        $('#active4').empty();
-        $('#inactive4').html("<h2> No records available here....</h2>").addClass('active');
-    })
 });
 
 </script>

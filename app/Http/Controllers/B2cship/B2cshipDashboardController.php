@@ -10,7 +10,7 @@ use App\Http\Controllers\Controller;
 class B2cshipDashboardController extends Controller
 {
   
-
+// public $bomobino_inactive = [];
   public function TrackingApiDetials()
   {
     $status_detials = DB::connection('b2cship')->select("SELECT StatusDetails, AwbNo, CreatedDate,FPCode
@@ -20,21 +20,57 @@ class B2cshipDashboardController extends Controller
               FROM PODTrans Where FPCode != '' AND FPCode != 'BD Delhi' 
             ) sub
         WHERE row_num = 1");
-
+        
     $status_detials_array = [];
+    $ignore = 'DL Delhi';
     foreach ($status_detials as $key => $value) {
-      $date = $value->CreatedDate;
-      $date_time = $this->CarbonGetDateDiff($date);
-      $status_detials_array[$key] = [
+      if(!str_contains($value->FPCode, $ignore))
+      {
+        $date = $value->CreatedDate;
+        $date_time = $this->CarbonGetDateDiff($date);
+        $status_detials_array[$key] = [
 
-        'StatusDetials' => $value->StatusDetails . ' [' . $value->AwbNo . ']',
-        'FPCode' => $value->FPCode,
-        'day' => $date_time['Days'],
-        'time' => $date_time['time'],
+          'StatusDetials' => $value->StatusDetails . ' [' . $value->AwbNo . ']',
+          'FPCode' => $value->FPCode,
+          'day' => $date_time['Days'],
+          'time' => $date_time['time'],
 
-      ];
+        ];
+      }
     }
     return $status_detials_array;
+  }
+
+  public function TrackingApiDetailsInactive()
+  {
+    $status_detials = DB::connection('b2cship')->select("SELECT StatusDetails, AwbNo, CreatedDate,FPCode
+        FROM (
+              SELECT StatusDetails, AwbNo, CreatedDate, FPCode
+                    , ROW_NUMBER() OVER(PARTITION BY FPCode ORDER BY CreatedDate desc)row_num
+              FROM PODTrans Where FPCode != '' AND FPCode != 'BD Delhi' 
+            ) sub
+        WHERE row_num = 1");
+        
+    $status_detials_array = [];
+    $today = Carbon::today();
+    $ignore = 'DL Delhi';
+    foreach ($status_detials as $key => $value) {
+
+      if(str_contains($value->FPCode, $ignore))
+      {
+        $date = $value->CreatedDate;
+        $date_time = $this->CarbonGetDateDiff($date);
+        $status_detials_array[$key] = [
+
+          'StatusDetials' => $value->StatusDetails . ' [' . $value->AwbNo . ']',
+          'FPCode' => $value->FPCode,
+          'day' => $date_time['Days'],
+          'time' => $date_time['time'],
+
+        ];
+       }
+    }
+    return response()->json($status_detials_array);
   }
 
   public function Dashboard()
@@ -143,6 +179,7 @@ class B2cshipDashboardController extends Controller
     $bombino_each_staus_detials = [];
     $ignore = 'Run No.';
     $offset = 0;
+    $inactive_offset = 0;
     foreach ($bombino_status as $value) {
 
       if (!str_contains($value->StatusDetails, $ignore)) {
@@ -190,7 +227,7 @@ class B2cshipDashboardController extends Controller
         $offset++;
       }
     }
-    return $bombino_inactive;
+    return response()->json($bombino_inactive);
   }
 
   public function BlueDartAndDeliveryStatus()
@@ -204,16 +241,49 @@ class B2cshipDashboardController extends Controller
     WHERE row_num = 1");
 
     $delivery_status = [];
+    $ignore = 'DL Delhi';
     foreach ($delivery_last_update as $key => $value) {
-      $date = $value->CreatedDate;
-      $final_date = $this->CarbonGetDateDiff($date);
-      $delivery_status[$key] = [
+      if(!str_contains($value->FPCode, $ignore))
+      {
+        $date = $value->CreatedDate;
+        $final_date = $this->CarbonGetDateDiff($date);
+        $delivery_status[$key] = [
 
-        'StatusDetails' => $value->PacketStatus . ' [ ' . $value->AwbNo . ' ] ',
-        'FPCode' => $value->FPCode,
-        'day' => $final_date['Days'],
-        'time' => $final_date['time'],
-      ];
+          'StatusDetails' => $value->PacketStatus . ' [ ' . $value->AwbNo . ' ] ',
+          'FPCode' => $value->FPCode,
+          'day' => $final_date['Days'],
+          'time' => $final_date['time'],
+        ];
+      }
+    }
+    return response()->json( $delivery_status);
+  }
+
+  public function DeliveryStatusInactive()
+  {
+    $delivery_last_update = DB::connection('b2cship')->select("SELECT PacketStatus, AwbNo, CreatedDate, FPCode
+    FROM (
+          SELECT PacketStatus, AwbNo, CreatedDate, FPCode
+                , ROW_NUMBER() OVER(PARTITION BY FPCode ORDER BY CreatedDate desc)row_num
+          FROM PODTrans Where FPCode IN ('BLUEDART', 'DL Delhi', 'DELHIVERY') AND PacketStatus = 'DELIVERED'
+        ) sub
+    WHERE row_num = 1");
+
+    $delivery_status = [];
+    $ignore = 'DL Delhi';
+    foreach ($delivery_last_update as $key => $value) {
+      if(str_contains($value->FPCode, $ignore))
+      {
+        $date = $value->CreatedDate;
+        $final_date = $this->CarbonGetDateDiff($date);
+        $delivery_status[$key] = [
+
+          'StatusDetails' => $value->PacketStatus . ' [ ' . $value->AwbNo . ' ] ',
+          'FPCode' => $value->FPCode,
+          'day' => $final_date['Days'],
+          'time' => $final_date['time'],
+        ];
+      }
     }
     return response()->json( $delivery_status);
   }
