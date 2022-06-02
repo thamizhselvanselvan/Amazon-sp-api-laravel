@@ -19,6 +19,7 @@ use AmazonPHP\SellingPartner\Exception\Exception;
 class SellerOrdersImport extends Command
 {
     use ConfigTrait;
+    public $seller_id;
     /**
      * The name and signature of the console command.
      *
@@ -50,29 +51,33 @@ class SellerOrdersImport extends Command
      */
     public function handle()
     {
-        Log::alert('working');
+        Log::info('seller order import working every 30 mins.');
 
-        $host = config('database.connections.web.host');
-        $dbname = config('database.connections.web.database');
-        $port = config('database.connections.web.port');
-        $username = config('database.connections.web.username');
-        $password = config('database.connections.web.password');
+        $host = config('database.connections.order.host');
+        $dbname = config('database.connections.order.database');
+        $port = config('database.connections.order.port');
+        $username = config('database.connections.order.username');
+        $password = config('database.connections.order.password');
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
         // $aws_data = Aws_credential::with('mws_region')->where('dump_order', 1)->where('verified', 1)->get();
         $aws_data = OrderSellerCredentials::where('dump_order', 1)->get();
-
+        
         foreach ($aws_data as $aws_value) {
-
+            
             $awsId  = $aws_value['id'];
-            $awsAuth_code = $aws_value['auth_code'];
+            // $awsAuth_code = $aws_value['auth_code'];
             $awsCountryCode = $aws_value['country_code'];
-            $seller_id = $aws_value['seller_id'];
-            $this->SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code, $seller_id);
+            $this->seller_id = $aws_value['seller_id'];
+            $bb_aws_cred = Aws_credential::where('seller_id', $this->seller_id)->get();
+            $awsAuth_code = $bb_aws_cred[0]->auth_code;
+// po($this->seller_id);
+            $this->SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code);
         }
+        // exit;
     }
 
-    public function SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code, $seller_id)
+    public function SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code)
     {
 
         $config = $this->config($awsId, $awsCountryCode, $awsAuth_code);
@@ -91,10 +96,8 @@ class SellerOrdersImport extends Command
             next_token_exist:
             $results = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses = null, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, $next_token, $amazon_order_ids = null, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
             $next_token = $results['next_token'];
-        //   po($results);
-        //   exit;
-            // $results_getorder = json_decode(json_encode($results));
-             $this->OrderDataFormating($results, $seller_id);
+             $this->OrderDataFormating($results);
+            
             if(isset($next_token))
             {
                 goto next_token_exist;
@@ -108,17 +111,20 @@ class SellerOrdersImport extends Command
         }
     }
 
-    public function OrderDataFormating($results, $seller_id)
+    public function OrderDataFormating($results)
     {   
         $result_data = $results->getOrders();
         $result_data = json_decode(json_encode($result_data));
 
         foreach ($result_data as $resultkey => $result) {
-                
-            $amazon_order_details = [];
+            
             $orders = R::dispense('orders');
-            $orders->seller_identifier = $seller_id;
+            $amazon_order_details = [];
+            $orders->our_seller_identifier = $this->seller_id;
+            
             foreach ((array)$result as $detailsKey => $details) {
+
+
                 $detailsKey = lcfirst($detailsKey);
                 if (is_Object($details)) {
                     
@@ -161,21 +167,24 @@ class SellerOrdersImport extends Command
                     }
                 }
             }
-            $data = DB::select("select id from orders where amazon_order_identifier = '$amazon_order_id'");
+            $data = DB::connection('order')->select("select id from orders where EXISTS( select id from orders where amazon_order_identifier = '$amazon_order_id')");
+
+            // $data =[];
             if (array_key_exists(0, $data)) {
 
                 $dataCheck = 1;
                 $id = $data[0]->id;
                 $update_orders = R::load('orders',$id);
+                
                 foreach($amazon_order_details as $key => $value)
-                {
+                {   
                     $update_orders->{$key} = $value;
                 }
-                // $update_orders->updatedat = now();
+                $update_orders->updatedat = now();
                 R::store($update_orders);
             }
             else{
-                // $orders->updatedat = now();
+                $orders->createdat = now();
                 R::store($orders);
             }
         }

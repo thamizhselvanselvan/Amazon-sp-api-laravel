@@ -34,11 +34,11 @@ use App\Services\SP_API\Config\ConfigTrait as ConfigConfigTrait;
 class OrdersListController extends Controller
 {
     use ConfigTrait;
-    
+
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = DB::select('select amazon_order_identifier,purchase_date,last_update_date,order_status,order_total,number_of_items_shipped from orders');
+            $data = DB::connection('order')->select('select amazon_order_identifier,purchase_date,last_update_date,order_status,order_total,number_of_items_shipped from orders');
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -75,8 +75,12 @@ class OrdersListController extends Controller
 
     public function selectStore(Request $request)
     {
-        // dd($aws_credential);
         if ($request->ajax()) {
+            $store_status_array = [];
+            $store_status = OrderSellerCredentials::where('dump_order', 1)->get();
+            foreach ($store_status as $key => $value) {
+                $store_status_array[$value['seller_id']] = 1;
+            }
             $aws_credential = Aws_Credential::with('mws_region')->where('api_type', 1)->get();
             return DataTables::of($aws_credential)
                 ->addIndexColumn()
@@ -84,8 +88,12 @@ class OrdersListController extends Controller
 
                     return $mws_region['mws_region']['region'] . ' [' . $mws_region['mws_region']['region_code'] . ']';
                 })
-                ->addColumn('action', function ($id) {
+                ->addColumn('action', function ($id) use ($store_status_array) {
+                    if (array_key_exists($id['seller_id'], $store_status_array)) {
+                        $action = '<div class="pl-2"><input class="" type="checkbox" checked value=' . $id['id'] . ' name="options[]" ></div>';
+                    } else {
                         $action = '<div class="pl-2"><input class="" type="checkbox" value=' . $id['id'] . ' name="options[]" ></div>';
+                    }
                     return $action;
                 })
                 ->rawColumns(['region', 'action'])
@@ -99,21 +107,17 @@ class OrdersListController extends Controller
     {
         $selected_store = explode('-', $request->selected_store);
         OrderSellerCredentials::query()->update(['dump_order' => 0]);
-        
+
         foreach ($selected_store as $id) {
 
             $aws_cred = Aws_credential::with(['mws_region'])->where('id', $id)->get();
             $aws_cred_array = [
                 'seller_id' => $aws_cred[0]->seller_id,
-                'mws_region_id' => $aws_cred[0]->mws_region_id,
                 'country_code' => $aws_cred[0]['mws_region']->region_code,
                 'store_name' => $aws_cred[0]->store_name,
-                'merchant_id' => $aws_cred[0]->merchant_id,
-                'auth_code' => $aws_cred[0]->auth_code,
                 'dump_order' => 1
-            
-        ];
-            OrderSellerCredentials::upsert([$aws_cred_array], ['seller_id'], ['seller_id','mws_region_id','store_name','country_code' , 'merchant_id', 'auth_code','dump_order']);
+            ];
+            OrderSellerCredentials::upsert([$aws_cred_array], ['seller_id'], ['seller_id', 'store_name', 'country_code', 'dump_order']);
         }
         return response()->json(['success' => 'Store Selected']);
     }

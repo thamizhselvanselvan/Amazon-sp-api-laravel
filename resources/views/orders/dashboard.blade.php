@@ -21,7 +21,7 @@
     </div>
 </div>
 
-<div class="container-fluid">
+<!-- <div class="container-fluid">
     <h3 style="font-weight: bold;">Last 3 Days Details</h3>
     <div class="row">
         @foreach ($order_status_count as $key => $value)
@@ -30,15 +30,37 @@
                     <div class="info-box-content">
                         <h4>{{$key}}</h4>
                         @foreach ($value as $key1 => $data)
-                        <h5>{{$key1}}: {{$data}}</h5>
-                            
+                        @if($data != NULL)
+                            <h5>{{$key1}}: {{$data}}</h5>
+                        @endif
                         @endforeach
                     </div>
                 </div>
             </div>
         @endforeach
     </div>
-</div>
+</div> -->
+<table class="table table-bordered yajra-datatable table-striped">
+    <thead>
+        <tr>
+            <th>Store Name</th>
+            <th>Unshipped</th>
+            <th>Pending</th>
+            <th>Canceled</th>
+            <th>Shipped</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach ($order_status_count as $key => $value)
+            <tr><td>{{$key}}</td>
+            @foreach ($value as $data )
+                <td>{{$data}}</td>
+            @endforeach    
+            </tr>
+        @endforeach
+    </tbody>
+</table>
 
 @stop
 

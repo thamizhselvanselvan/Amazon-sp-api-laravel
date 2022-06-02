@@ -11,25 +11,39 @@ class OrdersDashboardController extends Controller
 {
     public function Dashboard()
     {
-        $order_sql = DB::select('select order_status, seller_identifier,COUNT(order_status) as count, os.store_name, os.country_code from orders join sp_order_seller_credentials as os where os.seller_id = orders.seller_identifier GROUP BY seller_identifier,order_status;');
+       
+        $order_sql = DB::connection('order')->select('select order_status, our_seller_identifier,COUNT(order_status) as count, os.store_name, os.country_code from orders join ord_order_seller_credentials as os where os.seller_id = orders.our_seller_identifier GROUP BY our_seller_identifier,order_status;');
+
         $order_collect = collect($order_sql);
         $order_groupby = $order_collect->groupBy('store_name');
-
+        // dd($order_groupby);
         $order_status_count = [];
         foreach ($order_groupby as $key => $value) {
-
+            $order_status = [
+                'Unshipped' => 0,
+                'Pending' => 0,
+                'Canceled' => 0,
+                'Shipped' => 0,
+                'Total' => 0
+            ];
             $total = 0;
+
             foreach ((array)$value as $value1) {
 
                 foreach ((array)$value1 as $key1 => $data) {
                     if ($data) {
-                        $order_status_count[$key][$data->order_status] = $data->count;
+                        // $order_status_count[$key][$data->order_status] = $data->count;
+                        $order_status[$data->order_status] = $data->count;
                         $total += $data->count;
+                        $country_name = $data->country_code;
                     }
                 }
             }
-            $order_status_count[$key]['Total'] = $total;
+            $country = $key.' ['. $country_name.']';
+            $order_status['Total'] = $total;
+            $order_status_count[$country] = $order_status;
         }
+
         // dd($order_status_count);
         return view('orders.dashboard', compact(['order_status_count']));
     }

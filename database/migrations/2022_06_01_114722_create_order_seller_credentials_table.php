@@ -13,7 +13,7 @@ class CreateOrderSellerCredentialsTable extends Migration
      */
     public function up()
     {
-        Schema::create('order_seller_credentials', function (Blueprint $table) {
+        Schema::connection('order')->create('order_seller_credentials', function (Blueprint $table) {
             $table->id();
             $table->string('seller_id')->unique();
             $table->string('mws_region_id');
@@ -32,6 +32,6 @@ class CreateOrderSellerCredentialsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('order_seller_credentials');
+        Schema::connection('order')->dropIfExists('order_seller_credentials');
     }
 }

@@ -13,7 +13,7 @@ class AddColumnCountryCodeInOrderSellerCredentialsTable extends Migration
      */
     public function up()
     {
-        Schema::table('order_seller_credentials', function (Blueprint $table) {
+        Schema::connection('order')->table('order_seller_credentials', function (Blueprint $table) {
             
             $table->string('country_code')->after('mws_region_id');
         });
@@ -26,7 +26,7 @@ class AddColumnCountryCodeInOrderSellerCredentialsTable extends Migration
      */
     public function down()
     {
-        Schema::table('order_seller_credentials', function (Blueprint $table) {
+        Schema::connection('order')->table('order_seller_credentials', function (Blueprint $table) {
             
             $table->dropColumn('country_code');
         });
