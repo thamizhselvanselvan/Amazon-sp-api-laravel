@@ -108,7 +108,7 @@
     <div class="col text-right">
         <div style="margin-top: 1.8rem;">
             <!-- //<a href="/shipment/storeshipment"> -->
-            <x-adminlte-button label="Create Shipment" theme="primary" onclick="getBack()" icon="fas fa-plus" id="create" class="btn-sm create_shipmtn_btn" />
+            <x-adminlte-button label="Create Shipment" theme="primary" icon="fas fa-plus" id="create" class="btn-sm create_shipmtn_btn" />
             <!-- </a> -->
 
         </div>
@@ -183,6 +183,10 @@
 
                 console.log(response);
                 //alert('success');
+
+                if(response.success) {
+                    getBack();
+                }
             },
             error: function(response) {
                 console.log(response);
