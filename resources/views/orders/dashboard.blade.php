@@ -44,6 +44,7 @@
     <thead>
         <tr>
             <th>Store Name</th>
+            <th>Last Update</th>
             <th>Unshipped</th>
             <th>Pending</th>
             <th>Canceled</th>
