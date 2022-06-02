@@ -79,20 +79,56 @@
                     </div>
                     <div class="col-6">
                         <x-adminlte-select label="Country" id="country" name="country" type="text">
-                            <option >Select Country</option>
-                            @foreach ($country as $countries)
-                            <option value="{{($countries->id) }}">{{$countries->name }}</option>
-                            @endforeach
+                            <option value=" ">Select Country</option>
+                           @foreach ($state as $states)
+                         
+                            @if ($states->country_id == $selected_country)
+                         
+                                @if (($states->id == $selected_state))
+                                    <option value="{{$states->id}}" selected>{{$states->name}}</option>
+                                @else
+                                    <option value="{{$states->id}}">{{$states->name}}</option>
+                                @endif
+
+                            @endif
+
+                        @endforeach
                         </x-adminlte-select>
                     </div>
                     <div class="col-6">
                         <x-adminlte-select label="State" id="state" name="state" type="text">
-                            <option >Select State</option>
+                            <option value=" ">Select State</option>
+                            @foreach ($state as $states)
+                         
+                         @if ($states->country_id == $selected_country)
+                      
+                             @if (($states->id == $selected_state))
+                                 <option value="{{$states->id}}" selected>{{$states->name}}</option>
+                             @else
+                                 <option value="{{$states->id}}">{{$states->name}}</option>
+                             @endif
+
+                         @endif
+
+                     @endforeach
                         </x-adminlte-select>
                     </div>
                     <div class="col-6">
                         <x-adminlte-select label="city" name="city" type="text"> 
-                            <option >Select City</option>
+                            <option value=" "  >Select City</option>
+                            @foreach ($city as $cities)
+                         
+                         @if ($cities->state_id == $selected_state)
+                      
+                             @if (($cities->id == $selected_city))
+                                 <option value="{{$cities->id}}" selected>{{$cities->name}}</option>
+                             @else
+                                 <option value="{{$cities->id}}">{{$cities->name}}</option>
+                             @endif
+
+                         @endif
+
+                     @endforeach
                         </x-adminlte-select>
                     </div>
                 </div>

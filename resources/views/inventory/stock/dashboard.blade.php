@@ -9,7 +9,36 @@
 @stop
 
 @section('content_header')
-<h1 class="m-0 text-dark"> Stocks</h1>
+<div class="row ">
+<div style="margin-top: 1.3rem;">
+    <div class="col">
+        <h2 class="">
+            <h1 class="m-0 text-dark"> Stocks :</h1>
+        </h2>
+    </div>
+    </div>
+    <div class="col-2">
+
+        <x-adminlte-select name="ware_id" id="warehouse" label="Select Warehouse">
+            <option value=" ">Select Warehouse</option>
+            @foreach ($ware_lists as $ware_list)
+            <option value="{{ $ware_list->warehouse_id }}">{{ (isset($ware_list->warehouses)) ? $ware_list->warehouses->name : '' }}</option>
+            @endforeach
+        </x-adminlte-select>
+
+    </div>
+    <h2>
+        <div style="margin-top: 1.8rem;">
+            <a href="{{ route('shipments.create') }}">
+                <x-adminlte-button label="Inward" theme="primary" id="inward" icon="fas fa-plus" />
+            </a>
+            <a href="{{ route('outwardings.create') }}">
+                <x-adminlte-button label="Outward" theme="primary" id="outward" icon="fas fa-minus" />
+            </a>
+        </div>
+    </h2>
+
+</div>
 @stop
 @section('content')
 
@@ -26,45 +55,20 @@
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-2">
 
-        <x-adminlte-select name="ware_id" id="warehouse" label="Select Warehouse">
-            <option value=" ">Select Warehouse</option>
-            @foreach ($ware_lists as $ware_list)
-            <option value="{{ $ware_list->id }}">{{ (isset($ware_list->warehouses)) ? $ware_list->warehouses->name : '' }}</option>
-            @endforeach
-        </x-adminlte-select>
-
-    </div>
-    <h2>
-        <div style="margin-top: 1.8rem;">
-            <a href="{{ route('shipments.create') }}">
-                <x-adminlte-button label="Inward" theme="primary" id="inward" icon="fas fa-plus" />
-            </a>
-            <a href="{{ route('outwardings.create') }}">
-                <x-adminlte-button label="Outward" theme="primary" id="outward" icon="fas fa-minus" />
-            </a>
-    </h2>
-</div>
-</div>
 <table class="table table-bordered yajra-datatable table-striped" id="detail_table">
     <thead>
         <tr>
-            <td>id </td>
-            <td>warehouse Name</td>
+            <!-- <td>id </td> -->
+            <td>Warehouse Name</td>
             <td>ASIN</td>
-            <td>item name</td>
-            <td>Inwarding price</td>
-            <td>quantity</td>
+            <td>Item Name</td>
+            <td>Inwarding Price</td>
+            <td>Quantity</td>
             <td>Inwarding Date</td>
         </tr>
     </thead>
     <tbody id="data_display">
-
-
-
-
 
     </tbody>
 </table>
@@ -83,7 +87,7 @@
     $('#warehouse').change(function(e) {
         e.preventDefault();
         var id = $(this).val();
-// alert(id);
+
         $.ajax({
             method: 'GET',
             url: '/inventory/list',
@@ -94,20 +98,20 @@
             'dataType': 'json',
             success: function(response) {
                 console.log(response);
-                let html = '';    
+                let html = '';
                 $.each(response, function(index, value) {
-                     html += "<tr>";
-                     html += "<td>"+value.id+"</td>" ;  
-                     html += "<td>"+value.name+"</td>" ;  
-                     html += "<td>"+value.asin+"</td>" ;  
-                     html += "<td>"+value.item_name+"</td>" ;  
-                     html += "<td>"+value.price+"</td>" ;  
-                     html += "<td>"+value.quantity+"</td>" ;  
-                     html += "<td>"+value.created_at+"</td>" ;  
-                     html += "</tr>";
+                    html += "<tr>";
+                    //  html += "<td>"+value.id+"</td>" ;  
+                    html += "<td>" + value.name + "</td>";
+                    html += "<td>" + value.asin + "</td>";
+                    html += "<td>" + value.item_name + "</td>";
+                    html += "<td>" + value.price + "</td>";
+                    html += "<td>" + value.quantity + "</td>";
+                    html += "<td>" + value.created_at + "</td>";
+                    html += "</tr>";
 
                 });
-                
+
 
                 $("#data_display").html(html);
 

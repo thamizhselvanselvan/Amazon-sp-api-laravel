@@ -68,9 +68,9 @@ class InventoryWarehouseController extends Controller
             'name' =>'required|min:3|max:100',
             'address_1'=>'required|min:3|max:100',
             'address_2'=>'required|min:3|max:100',
-            'city'=>'required',
-            'state'=>'required',
-            'country'=>'required',
+            'country' => 'required',
+            'state' => 'required',
+            'city' => 'required',
             'pin_code'=>'required|min:3|max:100',
             'contact_person_name'=>'required|min:3|max:100',
             'phone_number' =>'required|min:3|max:100',
@@ -96,10 +96,18 @@ class InventoryWarehouseController extends Controller
     public function edit($id)
     {
         $country =Country::select('id','name')->get();
-
         $name = Warehouse::where('id', $id)->first();
 
-        return view('inventory.warehouse.edit', compact('name','country'));
+        $country = Country::get();
+        $state = State::get();
+        $city = City::get();
+       
+        $selected_country = $name->country;
+        $selected_state = $name->state;
+        $selected_city = $name->city;
+       
+        
+        return view('inventory.warehouse.edit', compact('name','country','state','city','selected_country','selected_state','selected_city'));
     }
 
     public function update(Request $request, $id)

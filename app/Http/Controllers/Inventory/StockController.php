@@ -34,8 +34,8 @@ class StockController extends Controller
 
     public function dashboard()
     {
-        $ware_lists = Inventory::with(['warehouses'])->get();
-
+        $ware_lists = Inventory::with(['warehouses'])->get()->unique('warehouse_id');
+        // dd($ware_lists);exit;
         return view('inventory.stock.dashboard', compact('ware_lists'));
     }
 

@@ -51,3 +51,4 @@ Route::post('vendor/{id}','Inventory\InventoryVendorController@getState');
 Route::post('vendorstate/{id}','Inventory\InventoryVendorController@getCity');
 Route::post('rack/{id}','Inventory\Master\Rack\InventoryShelveController@getRack');
 
+Route::resource('inventory/reports', 'Inventory\ReportController');

@@ -69,7 +69,7 @@
                     <div class="col-6">
                         
                         <x-adminlte-select name="country" label="Select Country:" id="country">
-                            <option >Select Country</option>
+                            <option value="">Select Country</option>
                             @foreach ($country as $countries)
                             <option value="{{ ($countries->id) }}">{{$countries->name}}</option>
                             @endforeach
@@ -78,14 +78,14 @@
                         
                     </div>
                     <div class="col-6">
-                        <x-adminlte-select label="State" id="state" name="state" type="text" placeholder="State">
-                            <option > Select State</option>
+                        <x-adminlte-select label=" Select State" id="state" name="state" type="text" placeholder="State">
+                            <option value="" > Select State</option>
                         </x-adminlte-select>
                             
                     </div>
                     <div class="col-6">
-                        <x-adminlte-select label="City" id="city" name="city" type="text" placeholder="City">
-                            <option > Select City</option>
+                        <x-adminlte-select label=" Select City" id="city" name="city" type="text" placeholder="City">
+                            <option value=""> Select City</option>
                         </x-adminlte-select>
                     </div>
                 </div>

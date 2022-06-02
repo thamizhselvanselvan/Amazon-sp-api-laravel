@@ -68,8 +68,8 @@
 <div class="row">
     <div class="col-2">
         <div class="form-group">
-            <x-adminlte-select name="warehouse" label="Select warehouse:" id="warehouse">
-                <option>Select warehouse</option>
+            <x-adminlte-select name="warehouse" label="Select Warehouse:" id="warehouse">
+                <option value=" ">Select Warehouse</option>
                 @foreach ($ware_lists as $ware_list)
                 <option value="{{ $ware_list->id }}">{{$ware_list->name }}</option>
                 @endforeach
@@ -79,7 +79,7 @@
     <div class="col-2">
         <div class="form-group">
             <x-adminlte-select name="source" label="Select Source:" id="source">
-                <option>Select source</option>
+                <option value=" ">Select source</option>
                 @foreach ($source_lists as $source_list)
                 <option value="{{ $source_list->id }}">{{$source_list->name }}</option>
                 @endforeach
@@ -97,7 +97,7 @@
     <div class="col-2">
         <div id="currency">
         <x-adminlte-select name="currency" id="currency_input" label="Currency:" >
-                <option> </option>
+                <option value=" ">Select Currency </option>
                 @foreach ($currency_lists as $currency_list)
                 <option value="{{ $currency_list->id }}">{{$currency_list->code }}</option>
                 @endforeach
