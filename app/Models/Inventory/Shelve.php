@@ -36,6 +36,6 @@ class Shelve extends Model
 
     public function racks()
     {
-        return $this->hasOne(Rack::class, 'id', 'rack_id');
+        return $this->hasOne(Rack::class, 'rack_id', 'rack_id');
     }
 }
