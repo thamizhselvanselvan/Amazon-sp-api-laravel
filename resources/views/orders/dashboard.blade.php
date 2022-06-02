@@ -49,6 +49,7 @@
             <th>Canceled</th>
             <th>Shipped</th>
             <th>Total</th>
+            <th>Last  Update</th>
         </tr>
     </thead>
     <tbody>

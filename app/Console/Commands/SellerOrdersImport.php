@@ -52,7 +52,6 @@ class SellerOrdersImport extends Command
     public function handle()
     {
         Log::info('seller order import working every 30 mins.');
-
         $host = config('database.connections.order.host');
         $dbname = config('database.connections.order.database');
         $port = config('database.connections.order.port');
@@ -60,21 +59,18 @@ class SellerOrdersImport extends Command
         $password = config('database.connections.order.password');
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-        // $aws_data = Aws_credential::with('mws_region')->where('dump_order', 1)->where('verified', 1)->get();
         $aws_data = OrderSellerCredentials::where('dump_order', 1)->get();
 
         foreach ($aws_data as $aws_value) {
 
             $awsId  = $aws_value['id'];
-            // $awsAuth_code = $aws_value['auth_code'];
             $awsCountryCode = $aws_value['country_code'];
             $this->seller_id = $aws_value['seller_id'];
             $bb_aws_cred = Aws_credential::where('seller_id', $this->seller_id)->get();
             $awsAuth_code = $bb_aws_cred[0]->auth_code;
-            // po($this->seller_id);
             $this->SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code);
+
         }
-        exit;
     }
 
     public function SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code)
@@ -85,12 +81,12 @@ class SellerOrdersImport extends Command
         $marketplace_ids = [$marketplace_ids];
 
         $apiInstance = new OrdersApi($config);
-        $startTime = Carbon::today()->subDays(2)->toISOString();
-        // $startTime = Carbon::today()->toISOString();
+        $startTime = Carbon::now()->subMinute(30)->toISOString();
         $createdAfter = $startTime;
         $lastUpdatedBefore = now()->toISOString();
         $max_results_per_page = 100;
         $next_token = NULL;
+
         try {
 
             next_token_exist:
@@ -107,6 +103,12 @@ class SellerOrdersImport extends Command
 
             Log::warning('Exception when calling OrdersApi->getOrders: ', $e->getMessage(), PHP_EOL);
         }
+    }
+
+    public function UpdateOrderStatus()
+    {
+
+        
     }
 
     public function OrderDataFormating($results)
