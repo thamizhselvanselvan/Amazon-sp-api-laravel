@@ -27,6 +27,7 @@ class OrdersDashboardController extends Controller
                 'Total' => 0
             ];
             $total = 0;
+
             foreach ((array)$value as $value1) {
 
                 foreach ((array)$value1 as $key1 => $data) {
@@ -34,11 +35,13 @@ class OrdersDashboardController extends Controller
                         // $order_status_count[$key][$data->order_status] = $data->count;
                         $order_status[$data->order_status] = $data->count;
                         $total += $data->count;
+                        $country_name = $data->country_code;
                     }
                 }
             }
+            $country = $key.' ['. $country_name.']';
             $order_status['Total'] = $total;
-            $order_status_count[$key] = $order_status;
+            $order_status_count[$country] = $order_status;
         }
 
         // dd($order_status_count);

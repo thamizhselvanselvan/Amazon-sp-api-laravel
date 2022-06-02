@@ -4,8 +4,13 @@
 @section('content_header')
 <div class='row'>
     <h1 class="m-0 text-dark col">Select Store</h1>
+
     <h2 class="mb-4 text-right col">
+        <a href="">
+            <x-adminlte-button label="Back" theme="primary" icon="fas fa-file-back" />
+        </a>
         <x-adminlte-button label="Select Store" id='select_store' theme="primary" icon="fas fa-check-circle" />
+
     </h2>
 
 </div>
@@ -113,7 +118,7 @@
                 'selected_store': selected_store,
             },
             success: function(response) {
-                
+
                 alert(response.success);
                 window.location = '/orders/list';
             }
