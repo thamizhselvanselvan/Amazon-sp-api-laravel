@@ -25,9 +25,9 @@ class OrdersDashboardController extends Controller
 
         $store_latest = [];
         foreach ($latest_update_collect as $key => $value) {
-            $updateat = $value[0]->updatedat;
-            if ($updateat != '') {
-                $store_latest[$key] = $updateat;
+            $updatedat = $value[0]->updatedat;
+            if ($updatedat != '') {
+                $store_latest[$key] = $updatedat;
             } else {
                 $store_latest[$key] = $value[0]->createdat;
             }
@@ -36,6 +36,7 @@ class OrdersDashboardController extends Controller
         $order_status_count = [];
         foreach ($order_groupby as $key => $value) {
             $order_status = [
+                'LastUpdate' => 0,
                 'Unshipped' => 0,
                 'Pending' => 0,
                 'Canceled' => 0,
@@ -55,12 +56,12 @@ class OrdersDashboardController extends Controller
             }
             $country = $key . ' [' . $country_name . ']';
             $order_status['Total'] = $total;
-            $time = str_replace(' ','.',$store_latest[$key]);
-            $date = $this->CarbonGetDateDiff($time);
-            $order_status['last_updated'] = $date;
+            $time = $store_latest[$key];
+            $date = $this->CarbonGetDateDiff($time . '.000');
+            $order_status['LastUpdate'] = $date;
+            // $time = str_replace(' ','.',$store_latest[$key]);
             $order_status_count[$country] = $order_status;
         }
-
         // dd($order_status_count);
         return view('orders.dashboard', compact(['order_status_count']));
     }
@@ -73,6 +74,7 @@ class OrdersDashboardController extends Controller
         $created = new Carbon($date);
         $now = Carbon::now();
         $differnce = $created->diff($now);
+        // po($differnce);
         $final_date = '';
         $count = 0;
         foreach ((array)$differnce as $key => $value) {
@@ -83,6 +85,6 @@ class OrdersDashboardController extends Controller
         }
         $time = rtrim($final_date, ' ,') . ' Before';
         $date =  $differnce->days > 1 ? $differnce->days . ' Days' : 'Today';
-        return $date. ', '.$time;
+        return $date . ', ' . $time;
     }
 }
