@@ -64,7 +64,7 @@ class InventoryRackController extends Controller
         return view('inventory.master.racks.rack.add', compact('warehouse_lists'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request)     
     {
 
         // $request->validate([
@@ -72,7 +72,6 @@ class InventoryRackController extends Controller
         //     'rack_id' => 'required|min:1|max:100'
         // ]);
 
-        // dd($request->all());
         $warehouse_exists = Warehouse::where('id', $request->warehouse_id)->exists();
       
         if (!$warehouse_exists) {

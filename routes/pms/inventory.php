@@ -9,7 +9,8 @@ Route::resource('inventory/shelves', 'Inventory\Master\Rack\InventoryShelveContr
 
 Route::get('inventory/bins/create/rack/{id?}','Inventory\Master\Rack\InventoryBinController@create')->name('inventory.bin.create');
 Route::get('inventory/bins/create/rack/{rack_id?}/shelve/{shelve_id?}','Inventory\Master\Rack\InventoryBinController@create')->name('inventory.bin.create');
-
+Route::post('Binrack/{id}','Inventory\Master\Rack\InventoryBinController@getBinRack');
+Route::post('BinShelves/{id}','Inventory\Master\Rack\InventoryBinController@getBinRackShelve');
 
 Route::resource('inventory/bins', 'Inventory\Master\Rack\InventoryBinController');
 Route::resource('inventory/sources', 'Inventory\Master\InventorySourceController');
@@ -18,7 +19,9 @@ Route::resource('inventory/sources', 'Inventory\Master\InventorySourceController
 Route::resource('inventory/destinations','Inventory\Master\InventoryDestinationController');
 Route::resource('inventory/disposes','Inventory\Master\InventoryDisposeController');
 
-Route::get('inventory/stocks','Inventory\StockController@stokes')->name('inventory.stocks');
+// Route::get('inventory/stocks','Inventory\StockController@stokes')->name('inventory.stocks');
+Route::get('inventory/stocks','Inventory\StockController@dashboard')->name('inventory.stocks');
+Route::get('inventory/list', 'Inventory\StockController@getlist');
 
 Route::resource('inventory/warehouses','Inventory\InventoryWarehouseController');
 Route::resource('inventory/features','Inventory\InventoryFeaturesController');
@@ -46,3 +49,6 @@ Route::post('json/{id}','Inventory\InventoryWarehouseController@CountryStateCity
 Route::post('stateId/{id}','Inventory\InventoryWarehouseController@getState');
 Route::post('vendor/{id}','Inventory\InventoryVendorController@getState');
 Route::post('vendorstate/{id}','Inventory\InventoryVendorController@getCity');
+Route::post('rack/{id}','Inventory\Master\Rack\InventoryShelveController@getRack');
+
+Route::resource('inventory/reports', 'Inventory\ReportController');

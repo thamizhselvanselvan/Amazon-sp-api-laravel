@@ -21,7 +21,7 @@ class InventoryBinController extends Controller
 
     public function index(Request $request)
     {
-
+     
         if ($request->ajax()) {
 
             $data = Bin::query()->withCount('shelves');
@@ -49,7 +49,7 @@ class InventoryBinController extends Controller
     {
         $rack_lists = Rack::get();
         $shelves = Shelve::query();
-        $ware_lists = Warehouse::query();
+        $ware_lists = Warehouse::get();
         $shelve_lists = ($rack_id) ? $shelves->where('rack_id', $rack_id)->get() : [];
 
         $rack_id = $rack_id ? $rack_id : '';
@@ -71,27 +71,40 @@ class InventoryBinController extends Controller
     {
 
         $request->validate([
-            'name' => 'required|min:2|max:50',
-            'depth' => 'required|min:1|max:50',
-            'width' => 'required|min:1|max:50',
-            'height' => 'required|min:1|max:50',
+            'ware_id' => 'required',
+            'rack_id' => 'required',
+            'shelve_id' =>'required',
+            'name' => 'required',
+            'depth' => 'required',
+            'width' => 'required',
+            'height' => 'required',
 
         ]);
 
-        $shelve_exists = Shelve::where('id', $request->shelve_id)->exists();
+        $shelve_exists = Shelve::where('rack_id', $request->shelve_id)->exists();
 
         if (!$shelve_exists) {
             return redirect()->route('bins.create')->with('error', 'Selected shelve id invalid');
         }
 
-        Bin::create([
-            'shelve_id' => $request->shelve_id,
-            'name' => $request->name,
-            'depth' => $request->depth,
-            'width' => $request->width,
-            'height' => $request->height,
+        $bin_lists = [];
 
-        ]);
+        foreach ($request->name as $key => $name) {
+
+           $bin_lists[] = [
+               'name' =>  $name,
+               'width' =>  $request->width[$key],
+               'height' =>  $request->height[$key],
+               'depth' =>  $request-> depth[$key],
+               'warehouse' => $request->ware_id,
+               'shelve_id' => $request->shelve_id,
+               'rack_id' => $request->rack_id,
+               'created_at' => now(),
+               'updated_at' => now()
+           ];
+       
+        }
+        Bin::insert($bin_lists);
 
         return redirect()->route('bins.index')->with('success', 'Bin  has been created successfully');
     }
@@ -109,10 +122,13 @@ class InventoryBinController extends Controller
     {
 
         $validated = $request->validate([
-            'name' => 'required|min:2|max:50',
-            'depth' => 'required|min:2|max:50',
-            'width' => 'required|min:2|max:50',
-            'height' => 'required|min:2|max:50',
+            'ware_id' => 'required',
+            'rack_id' => 'required',
+            'shelve_id' =>'required',
+            'name' => 'required',
+            'depth' => 'required',
+            'width' => 'required',
+            'height' => 'required',
 
         ]);
 
@@ -126,5 +142,17 @@ class InventoryBinController extends Controller
         Bin::where('id', $id)->delete();
 
         return redirect()->route('bins.index')->with('success', 'Bin has been Deleted successfully');
+    }
+
+    public function getBinRack($id)
+    {
+        $binRack = Rack::where('warehouse_id', $id)->get();
+        return response()->json($binRack);
+    }
+    
+    public function getBinRackShelve($id)
+    {
+        $binShelve = Shelve::where('rack_id', $id)->get();
+        return response()->json($binShelve);
     }
 }

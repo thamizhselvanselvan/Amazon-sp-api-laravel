@@ -135,7 +135,18 @@
                     </x-adminlte-select>
                 </div>
                 <div class="col-6">
-                    <x-adminlte-input label="Currency" name="currency" type="text" value="{{  $name->currency }}" />
+                    <x-adminlte-select label="Currency" name="currency_id" type="text" value="{{  $name->currency }}" >
+                        <option value="">Select Currency</option>
+                        @foreach ($currencies as $currency)
+
+                            @if ($currency->id == $selected_currency)
+                                <option value="{{$currency->id}}" selected> {{$currency->code}} </option>
+                            @else
+                                <option value="{{$currency->id}}"> {{$currency->code}} </option>
+                            @endif
+                            
+                        @endforeach
+                    </x-adminlte-select>
                 </div>
             </div>
             <div class="col-3"></div>

@@ -84,6 +84,7 @@ class InventoryVendorController extends Controller
 
         $name = Vendor::where('id', $id)->first();
         // $country = Country::select('id','name')->get();
+        $currencies = Currency::get();
         $country = Country::get();
         $state = State::get();
         $city = City::get();
@@ -92,8 +93,10 @@ class InventoryVendorController extends Controller
         $selected_country = $name->country;
         $selected_state = $name->state;
         $selected_city = $name->city;
+        $selected_currency = $name->currency_id;
+        
 
-        return view('inventory.vendor.edit', compact('name','country','state','city','selected_country','selected_state','selected_city','selected_type'));
+        return view('inventory.vendor.edit', compact('name','country','state','city','selected_country','selected_state','selected_city','selected_type','currencies','selected_currency'));
     }
 
 
@@ -106,7 +109,7 @@ class InventoryVendorController extends Controller
             'country' => 'required',
             'state' => 'required',
             'city' => 'required',
-            'currency_id' => 'required|min:1|max:10',
+            'currency_id' => 'required',
         ]);
 
         Vendor::where('id', $id)->update($validated);

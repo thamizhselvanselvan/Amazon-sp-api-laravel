@@ -74,7 +74,7 @@
     <div class="col-2">
         <div class="form-group">
             <x-adminlte-select name="warehouse" label="Select warehouse:" id="warehouse">
-                <option>Select warehouse</option>
+                <option Value="">Select warehouse</option>
                 @foreach ($ware_lists as $ware_list)
                 <option value="{{ $ware_list->id }}">{{$ware_list->name }}</option>
                 @endforeach
@@ -125,7 +125,7 @@
     <div class="col-2" id="currency">
 
         <x-adminlte-select name="currency" id="currency_output" label="Currency:" >
-                <option> </option>
+                <option value="">Select Currency </option>
                 @foreach ($currency_lists as $currency_list)
                 <option value="{{ $currency_list->id }}">{{$currency_list->code }}</option>
                 @endforeach
@@ -136,7 +136,7 @@
     <div class="col text-right" id="create">
         <div style="margin-top: 1.8rem;">
             <!-- //<a href="/shipment/storeshipment"> -->
-            <x-adminlte-button label="Create Shipment" theme="primary" onclick="getBack()" icon="fas fa-plus" class="btn-sm create_outshipmtn_btn" />
+            <x-adminlte-button label="Create Shipment" theme="primary" icon="fas fa-plus" class="btn-sm create_outshipmtn_btn" />
             <!-- </a> -->
 
         </div>
@@ -177,6 +177,20 @@
 
 
     $(".create_outshipmtn_btn").on("click", function() {
+
+        let ware_valid = $('#warehouse').val();
+        let currency_valid = $('#currency_output').val();
+        if(ware_valid == 0)
+        {
+            alert('warehouse field is required');
+            return false;
+        }else if(currency_valid == 0) {
+            alert('currency field is required');
+            return false;
+        }
+        
+
+
         let self = $(this);
         let table = $("#outward_table tbody tr");
         //let data = {};
@@ -217,8 +231,8 @@
             success: function(response) {
 
                 console.log(response);
-                //alert('success');
-                // location.reload()
+                
+                getBack();
 
             },
             error: function(response) {

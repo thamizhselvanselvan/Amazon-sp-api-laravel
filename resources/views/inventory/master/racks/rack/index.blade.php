@@ -5,7 +5,16 @@
 @section('css')
 
     <link rel="stylesheet" href="/css/styles.css">
-
+    <style>
+.table td {
+        padding: 0;
+        padding-left: 6px;
+    }
+    .table th {
+        padding: 2;
+        padding-left: 5px;
+    }
+    </style>
 @stop
 
 @section('content_header')

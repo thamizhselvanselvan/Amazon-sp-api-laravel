@@ -125,10 +125,16 @@ class InventoryShipmentController extends Controller
             'warehouse' => 'required',
            
         ]);
-
+       
         $ship_id = random_int(1000, 9999);
         $items = [];
 
+        $request->validate([
+            'warehouse' => 'required',
+            'currency' => 'required', 
+
+        ]);
+        
         foreach ($request->asin as $key => $asin) {
 
             $items[] = [

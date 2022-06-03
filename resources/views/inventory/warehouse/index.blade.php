@@ -3,13 +3,31 @@
 @section('title', 'Warehouses')
 
 @section('css')
-
     <link rel="stylesheet" href="/css/styles.css">
-
+    <style>
+.table td {
+        padding: 0;
+        padding-left: 5px;
+    }
+    .table th {
+        padding: 2;
+        padding-left: 5px;
+    }
+    </style>
 @stop
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Inventory  Warehouses</h1>
+    <div class="row ">
+        <div class="col">
+        <h2 class="">
+                <a href="{{ Route('warehouses.create') }}">
+                    <x-adminlte-button label="Add Warehouse" theme="primary" icon="fas fa-plus" />
+                </a>
+            </h2>
+        </div>
+        <div class="col"><h1 class="m-0 text-dark">Inventory  Warehouses</h1></div>
+        <div class="col"></div>
+    </div>
 
 @stop
 
@@ -27,11 +45,7 @@
                 @endif
             </div>
 
-            <h2 class="mb-4">
-                <a href="{{ Route('warehouses.create') }}">
-                    <x-adminlte-button label="Add Warehouse" theme="primary" icon="fas fa-plus" />
-                </a>
-            </h2>
+            
 
             <table class="table table-bordered yajra-datatable table-striped">
                 <thead>
@@ -39,9 +53,9 @@
                         <th>id</th>
                         <th>Name</th>
                         <th>Address 1</th>
-                        <th>Address 2</th>
-                        <th>Country</th>
-                        <th>State</th>
+                        <!-- <th>Address 2</th> -->
+                        <!-- <th>Country</th>
+                        <th>State</th> -->
                         <th>City</th>
                         <th>Pin Code</th>
                         <th>Contact Person Name</th>
@@ -79,18 +93,18 @@
                         data: 'address_1',
                         name: 'adress_1'
                     },
-                    {
-                        data: 'address_2',
-                        name: 'address_2'
-                    },
-                    {
-                        data: 'country_name',
-                        name: 'country_name'
-                    },
-                    {
-                        data: 'state_name',
-                        name: 'state_name'
-                    },
+                    // {
+                    //     data: 'address_2',
+                    //     name: 'address_2'
+                    // },
+                    // {
+                    //     data: 'country_name',
+                    //     name: 'country_name'
+                    // },
+                    // {
+                    //     data: 'state_name',
+                    //     name: 'state_name'
+                    // },
                     {
                         data: 'city_name',
                         name: 'city_name'

@@ -59,7 +59,7 @@
 
                 <div class="col-6">
 
-                    <x-adminlte-select name="ware_id" label="Select Warehouse">
+                    <x-adminlte-select label="Select Warehouse" name="ware_id" id="warehouse">
                         <option>Select Warehouse</option>
                         @foreach ($ware_lists as $ware_list)
 
@@ -70,14 +70,8 @@
                     </x-adminlte-select>
                 </div>
                 <div class="col-6">
-                    <x-adminlte-select name="rack_id" label="Select Rack">
-                        <option>Select Rack</option>
-                        @foreach ($rack_lists as $rack_list)
-
-                        <option value="{{ $rack_list->id }}">{{ $rack_list->rack_id .'/'. $rack_list->name  }}</option>
-
-                        @endforeach
-
+                    <x-adminlte-select label="Select Rack" name="rack_id" id="rack">
+                        <option value="">Select Rack</option>
                     </x-adminlte-select>
 
 
@@ -125,7 +119,12 @@
 <script type="text/javascript">
     /*hide untill data is filled*/
     $("#rack_table").hide();
-    $("#add").on('click', function(e) {
+    $("#create").on('click', function(e) {
+        let shelveid = $('#shelve_name').val();
+        if (shelveid == '') {
+            alert('Shelve Name Requirerd');
+            return false;
+        }
         $("#rack_table").show();
 
         let shelve_name;
@@ -144,6 +143,34 @@
         });
 
         shelve_name = $('#shelve_name').val('');
+    });
+
+    $(document).ready(function(){
+
+        $('#warehouse').change(function(){
+            var id=$(this).val();
+            $.ajax({
+                url :'/rack/'+id,
+                method : 'POST',
+                data:{ 
+                        'id':id,
+                        "_token": "{{ csrf_token() }}",
+                    },
+                success:function(result){
+                    // alert('success');
+                    $('#rack').empty();
+                    let rack_data ='<option> Select Rack </option>';
+                    $.each(result, function(i, result){
+                     rack_data += "<option value='"+result.rack_id+"'>"+result.rack_id+"/"+result.name+"</option>";
+                    });
+                    $('#rack').append(rack_data);
+                    console.log(result);
+                },
+                error:function(){
+                    alert('ERROR');
+                }  
+            });
+        });
     });
 </script>
 @stop

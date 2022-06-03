@@ -56,8 +56,8 @@
             <div class="row justify-content-center">
                 <div class="col-6">
 
-                    <x-adminlte-select name="ware_id" label="Select Warehouse">
-                        <option>Select Warehouse</option>
+                    <x-adminlte-select label="Select Warehouse" name="ware_id" id="warehouse">
+                        <option value="">Select Warehouse</option>
                         @foreach ($ware_lists as $ware_list)
 
                         <option value="{{ $ware_list->id }}">{{ $ware_list->name  }}</option>
@@ -69,17 +69,9 @@
                 </div>
                 <div class="col-6">
 
-                    <x-adminlte-select name="rack_id" id='rack_id' label="Select Rack">
-                        <option>Select Rack</option>
-                        @foreach ($rack_lists as $rack_list)
+                    <x-adminlte-select label="Select Rack" name="rack_id" id='rack_id'>
+                        <option value="">Select Rack</option>
 
-                        @if ($rack_list->id == $rack_id)
-                        <option value="{{ $rack_list->id }}" selected>{{$rack_list->id.'/'. $rack_list->name }}</option>
-                        @else
-                        <option value="{{ $rack_list->id }}">{{$rack_list->id.'/'. $rack_list->name }}</option>
-                        @endif
-
-                        @endforeach
                     </x-adminlte-select>
                 </div>
             </div>
@@ -87,18 +79,7 @@
                 <div class="col-6">
 
                     <x-adminlte-select name="shelve_id" id='shelve_id' label="Select Shelve">
-
-                        @forelse ($shelve_lists as $shelve_list)
-
-                        @if ($shelve_list->id == $shelve_id)
-                        <option value="{{ $shelve_list->id }}" selected>{{ $shelve_list->name }}</option>
-                        @else
-                        <option value="{{ $shelve_list->id }}">{{ $shelve_list->name }}</option>
-                        @endif
-
-                        @empty
-                        <option>Select Shelves</option>
-                        @endforelse
+                        <option value=""> Select Shelve </option>
 
                     </x-adminlte-select>
 
@@ -107,19 +88,19 @@
 
 
                 <div class="col-6">
-                    <x-adminlte-input label="Name" name="name" id="" type="text" placeholder="Name " value="{{ old('ID') }}" />
+                    <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name " />
                 </div>
             </div>
 
             <div class="row justify-content-center">
                 <div class="col-3">
-                    <x-adminlte-input label="Width" name="width" id="" type="text" placeholder="Width" value="{{ old('ID') }}" />
+                    <x-adminlte-input label="Width" name="width" id="width" type="text" placeholder="Width" />
                 </div>
                 <div class="col-3">
-                    <x-adminlte-input label="Height" name="height" id="" type="text" placeholder="Height" value="{{ old('ID') }}" />
+                    <x-adminlte-input label="Height" name="height" id="height" type="text" placeholder="Height" />
                 </div>
                 <div class="col-3">
-                    <x-adminlte-input label="Depth" name="depth" id="" type="text" placeholder="Depth " value="{{ old('ID') }}" />
+                    <x-adminlte-input label="Depth" name="depth" id="depth" type="text" placeholder="Depth " />
                 </div>
                 <div class="col-3" id="add">
                     <div style="margin-top: 2.3rem;">
@@ -135,7 +116,7 @@
                         <td>Bin Name</td>
                         <td>Width</td>
                         <td>Height</td>
-                        <td></td>
+                        <td>Depth</td>
                         <td>Action</td>
                     </tr>
                 </thead>
@@ -146,7 +127,7 @@
                 <x-adminlte-button label=" Submit" theme="primary" icon="fas fa-plus" type="submit" />
             </div>
 
-           
+
         </form>
     </div>
     <div class="col"></div>
@@ -156,49 +137,116 @@
 
 @section('js')
 <script>
-    $('#rack_id').on('change', function() {
+    /*hide untill data is filled*/
+    $("#bin_table").hide();
+    $("#add").on('click', function(e) {
 
-        let self = $(this);
 
-        if (self.val()) {
-            window.location = "/inventory/bins/create/rack/" + self.val();
+        let binname = $('#name').val();
+        let wid = $('#width').val();
+        let hei = $('#height').val();
+        let dep = $('#depth').val();
+        if (binname == '') {
+            alert('Bin Name  Requirerd');
+            return false;
+        } else if (wid == '') {
+            alert('Width is Required');
+            return false;
+
+        } else if (hei == '') {
+            alert('Height is Required');
+            return false;
+        } else if (dep == '') {
+            alert('Depth is Required');
+            return false;
         }
+
+
+
+        $("#bin_table").show();
+
+        let bin_name;
+        let width;
+        let height;
+        let depth;
+
+        bin_name = $('#name').val();
+        width = $('#width').val();
+        height = $('#height').val();
+        depth = $('#depth').val();
+
+        let html = "<tr class='table_row'>";
+        html += "<td> <input type='hidden'  name='name[]' value='" + bin_name + "' /> " + bin_name + "</td>";
+        html += "<td> <input type='hidden'  name='width[]' value='" + width + "' /> " + width + "</td>";
+        html += "<td> <input type='hidden'  name='height[]' value='" + height + "' /> " + height + "</td>";
+        html += "<td> <input type='hidden'  name='depth[]' value='" + depth + "' /> " + depth + "</td>";
+        html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
+
+        $("#bin_table").append(html);
+
+
+        $('#bin_table').on('click', ".remove1", function() {
+            $(this).closest("tr").remove();
+        });
+
+        bin_name = $('#name').val('');
+        width = $('#width').val('');
+        height = $('#height').val('');
+        depth = $('#depth').val('');
 
     });
 
-    $('#shelve_id').on('change', function() {
+    $(document).ready(function() {
 
-        let self = $(this);
-        let rack_id = $("#rack_id").val();
+        $('#warehouse').change(function() {
+            var id = $(this).val();
+            $.ajax({
+                url: '/Binrack/' + id,
+                method: 'POST',
+                data: {
+                    'id': id,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(result) {
+                    // alert('success');
+                    $('#rack_id').empty();
+                    let rack_data = '<option> Select Rack </option>';
+                    $.each(result, function(i, result) {
+                        rack_data += "<option value='" + result.rack_id + "'>" + result.rack_id + "/" + result.name + "</option>";
+                    });
+                    $('#rack_id').append(rack_data);
+                },
+                error: function() {
+                    alert('ERROR');
+                }
+            });
+        });
 
-        if (self.val()) {
-            window.location = "/inventory/bins/create/rack/" + rack_id + "/shelve/" + self.val();
-        }
+        $('#rack_id').change(function() {
+            var id = $(this).val();
 
+            $.ajax({
+                url: '/BinShelves/' + id,
+                method: 'POST',
+                data: {
+                    'id': id,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(result) {
+                    // alert('success');
+                    $('#shelve_id').empty();
+                    let shelve_data = '<option> Select Shelve </option>';
+                    $.each(result, function(i, result) {
+                        shelve_data += "<option value='" + result.rack_id + "'>" + result.rack_id + "/" + result.name + "</option>";
+                    });
+                    $('#shelve_id').append(shelve_data);
+                },
+                error: function() {
+                    alert('ERROR');
+                }
+            });
+        });
     });
-
-
- /*hide untill data is filled*/
-//  $("#bin_table").hide();
-//     $("#add").on('click', function(e) {
-//         $("#bin_table").show();
-
-//         let shelve_name;
-
-//         bin_name = $('#bin_name').val();
-
-//         let html = "<tr class='table_row'>";
-//         html += "<td> <input type='hidden'  name='name[]' value='" + bin_name + "' /> " + bin_name + "</td>";
-//         html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
-
-//         $("#bin_table").append(html);
-
-
-      
-
-//         shelve_name = $('#shelve_name').val('');
-//     });
-
 </script>
 
 @stop

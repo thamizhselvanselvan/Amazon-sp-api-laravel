@@ -68,8 +68,8 @@
 <div class="row">
     <div class="col-2">
         <div class="form-group">
-            <x-adminlte-select name="warehouse" label="Select warehouse:" id="warehouse">
-                <option>Select warehouse</option>
+            <x-adminlte-select name="warehouse" label="Select Warehouse:" id="warehouse">
+                <option value="0">Select Warehouse</option>
                 @foreach ($ware_lists as $ware_list)
                 <option value="{{ $ware_list->id }}">{{$ware_list->name }}</option>
                 @endforeach
@@ -79,7 +79,7 @@
     <div class="col-2">
         <div class="form-group">
             <x-adminlte-select name="source" label="Select Source:" id="source">
-                <option>Select source</option>
+                <option value=" ">Select source</option>
                 @foreach ($source_lists as $source_list)
                 <option value="{{ $source_list->id }}">{{$source_list->name }}</option>
                 @endforeach
@@ -97,7 +97,7 @@
     <div class="col-2">
         <div id="currency">
         <x-adminlte-select name="currency" id="currency_input" label="Currency:" >
-                <option> </option>
+                <option value="0">Select Currency </option>
                 @foreach ($currency_lists as $currency_list)
                 <option value="{{ $currency_list->id }}">{{$currency_list->code }}</option>
                 @endforeach
@@ -108,7 +108,7 @@
     <div class="col text-right">
         <div style="margin-top: 1.8rem;">
             <!-- //<a href="/shipment/storeshipment"> -->
-            <x-adminlte-button label="Create Shipment" theme="primary" onclick="getBack()" icon="fas fa-plus" id="create" class="btn-sm create_shipmtn_btn" />
+            <x-adminlte-button label="Create Shipment" theme="primary" icon="fas fa-plus" id="create" class="btn-sm create_shipmtn_btn" />
             <!-- </a> -->
 
         </div>
@@ -144,6 +144,17 @@
     });
 
     $(".create_shipmtn_btn").on("click", function() {
+        let ware_valid = $('#warehouse').val();
+        let currency_valid = $('#currency_input').val();
+        if(ware_valid == 0)
+        {
+            alert('warehouse field is required');
+            return false;
+        }else if(currency_valid == 0) {
+            alert('currency field is required');
+            return false;
+        }
+        
         let self = $(this);
         let table = $("#report_table tbody tr");
         //let data = {};
@@ -183,6 +194,11 @@
 
                 console.log(response);
                 //alert('success');
+
+                if(response.success) {
+    
+                    getBack();
+                }
             },
             error: function(response) {
                 console.log(response);
