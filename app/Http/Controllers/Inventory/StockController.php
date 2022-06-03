@@ -34,7 +34,7 @@ class StockController extends Controller
 
     public function dashboard()
     {
-        $ware_lists = Inventory::with(['warehouses'])->get()->unique('warehouse_id');
+        $ware_lists = Inventory::with(['shipment.warehouses'])->get()->unique('shipment.warehouses');
         // dd($ware_lists);exit;
         return view('inventory.stock.dashboard', compact('ware_lists'));
     }
@@ -44,9 +44,12 @@ class StockController extends Controller
         if ($request->ajax()) {
             $ware = Inventory::query()
             ->select('inventory.*', 'warehouses.name')
+            ->join('shipments', function($query) {
+                $query->on("shipments.ship_id", "=", "inventory.ship_id");
+            })
             ->join('warehouses', function($query) {
-                $query->on("warehouses.id", "=", "inventory.warehouse_id");
-            })->where('warehouse_id', $request->id)->get();
+                $query->on("warehouses.id", "=", "shipments.warehouse");
+            })->where('warehouses.id', $request->id)->get();
 
             return response()->json($ware);
         }

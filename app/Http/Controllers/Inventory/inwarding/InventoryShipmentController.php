@@ -146,7 +146,7 @@ class InventoryShipmentController extends Controller
         }
 
         Shipment::insert([
-            "Ship_id" => $ship_id,
+            "ship_id" => $ship_id,
             "warehouse" => $request->warehouse,
             "currency" => $request->currency,
             "source_id" => $request->source,
@@ -156,17 +156,9 @@ class InventoryShipmentController extends Controller
         ]);
 
         foreach ($request->asin as $key1 => $asin1) {
-            if ($inventory = Inventory::where('asin', $asin1)->first()) {
-              
-                Inventory::where('asin', $asin1)->update([
-                    'warehouse_id' => $request->warehouse,
-                    'item_name' => $request->name[$key1],
-                    "price" => $request->price[$key1],
-                    'quantity' => $inventory->quantity + $request->quantity[$key1],
-                ]);
-            } else {
+        
                 Inventory::create([
-                    "warehouse_id" => $request->warehouse,
+                    "ship_id" => $ship_id,
                     "asin" => $asin1,
                     "price" => $request->price[$key1],
                     "item_name" => $request->name[$key1],
@@ -174,7 +166,7 @@ class InventoryShipmentController extends Controller
                     "created_at" => now(),
                     "updated_at" => now()
                 ]);
-            }
+            
         }
 
         foreach ($request->asin as $key => $asin) {
