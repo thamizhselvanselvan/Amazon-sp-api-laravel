@@ -69,7 +69,7 @@
     <div class="col-2">
         <div class="form-group">
             <x-adminlte-select name="warehouse" label="Select Warehouse:" id="warehouse">
-                <option value=" ">Select Warehouse</option>
+                <option value="0">Select Warehouse</option>
                 @foreach ($ware_lists as $ware_list)
                 <option value="{{ $ware_list->id }}">{{$ware_list->name }}</option>
                 @endforeach
@@ -97,7 +97,7 @@
     <div class="col-2">
         <div id="currency">
         <x-adminlte-select name="currency" id="currency_input" label="Currency:" >
-                <option value=" ">Select Currency </option>
+                <option value="0">Select Currency </option>
                 @foreach ($currency_lists as $currency_list)
                 <option value="{{ $currency_list->id }}">{{$currency_list->code }}</option>
                 @endforeach
@@ -144,6 +144,17 @@
     });
 
     $(".create_shipmtn_btn").on("click", function() {
+        let ware_valid = $('#warehouse').val();
+        let currency_valid = $('#currency_input').val();
+        if(ware_valid == 0)
+        {
+            alert('warehouse field is required');
+            return false;
+        }else if(currency_valid == 0) {
+            alert('currency field is required');
+            return false;
+        }
+        
         let self = $(this);
         let table = $("#report_table tbody tr");
         //let data = {};
@@ -185,6 +196,7 @@
                 //alert('success');
 
                 if(response.success) {
+    
                     getBack();
                 }
             },

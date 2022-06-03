@@ -71,7 +71,7 @@
 
                     <x-adminlte-select label="Select Rack" name="rack_id" id='rack_id'>
                         <option value="">Select Rack</option>
-                       
+
                     </x-adminlte-select>
                 </div>
             </div>
@@ -80,7 +80,7 @@
 
                     <x-adminlte-select name="shelve_id" id='shelve_id' label="Select Shelve">
                         <option value=""> Select Shelve </option>
-                        
+
                     </x-adminlte-select>
 
                 </div>
@@ -88,19 +88,19 @@
 
 
                 <div class="col-6">
-                    <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name "  />
+                    <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name " />
                 </div>
             </div>
 
             <div class="row justify-content-center">
                 <div class="col-3">
-                    <x-adminlte-input label="Width" name="width" id="width" type="text" placeholder="Width"  />
+                    <x-adminlte-input label="Width" name="width" id="width" type="text" placeholder="Width" />
                 </div>
                 <div class="col-3">
-                    <x-adminlte-input label="Height" name="height" id="height" type="text" placeholder="Height"  />
+                    <x-adminlte-input label="Height" name="height" id="height" type="text" placeholder="Height" />
                 </div>
                 <div class="col-3">
-                    <x-adminlte-input label="Depth" name="depth" id="depth" type="text" placeholder="Depth "  />
+                    <x-adminlte-input label="Depth" name="depth" id="depth" type="text" placeholder="Depth " />
                 </div>
                 <div class="col-3" id="add">
                     <div style="margin-top: 2.3rem;">
@@ -137,10 +137,32 @@
 
 @section('js')
 <script>
-    
     /*hide untill data is filled*/
     $("#bin_table").hide();
     $("#add").on('click', function(e) {
+
+
+        let binname = $('#name').val();
+        let wid = $('#width').val();
+        let hei = $('#height').val();
+        let dep = $('#depth').val();
+        if (binname == '') {
+            alert('Bin Name  Requirerd');
+            return false;
+        } else if (wid == '') {
+            alert('Width is Required');
+            return false;
+
+        } else if (hei == '') {
+            alert('Height is Required');
+            return false;
+        } else if (dep == '') {
+            alert('Depth is Required');
+            return false;
+        }
+
+
+
         $("#bin_table").show();
 
         let bin_name;
@@ -149,9 +171,9 @@
         let depth;
 
         bin_name = $('#name').val();
-        width=$('#width').val();
-        height=$('#height').val();
-        depth=$('#depth').val();
+        width = $('#width').val();
+        height = $('#height').val();
+        depth = $('#depth').val();
 
         let html = "<tr class='table_row'>";
         html += "<td> <input type='hidden'  name='name[]' value='" + bin_name + "' /> " + bin_name + "</td>";
@@ -168,60 +190,60 @@
         });
 
         bin_name = $('#name').val('');
-        width=$('#width').val('');
-        height=$('#height').val('');
-        depth=$('#depth').val('');
-        
+        width = $('#width').val('');
+        height = $('#height').val('');
+        depth = $('#depth').val('');
+
     });
 
-    $(document).ready(function(){
+    $(document).ready(function() {
 
-        $('#warehouse').change(function(){
-            var id=$(this).val();
+        $('#warehouse').change(function() {
+            var id = $(this).val();
             $.ajax({
-                url :'/Binrack/'+id,
-                method : 'POST',
-                data:{ 
-                        'id':id,
-                        "_token": "{{ csrf_token() }}",
-                    },
-                success:function(result){
+                url: '/Binrack/' + id,
+                method: 'POST',
+                data: {
+                    'id': id,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(result) {
                     // alert('success');
                     $('#rack_id').empty();
-                    let rack_data ='<option> Select Rack </option>';
-                    $.each(result, function(i, result){
-                    rack_data += "<option value='"+result.rack_id+"'>"+result.rack_id+"/"+result.name+"</option>";
+                    let rack_data = '<option> Select Rack </option>';
+                    $.each(result, function(i, result) {
+                        rack_data += "<option value='" + result.rack_id + "'>" + result.rack_id + "/" + result.name + "</option>";
                     });
                     $('#rack_id').append(rack_data);
                 },
-                error:function(){
+                error: function() {
                     alert('ERROR');
-                }  
+                }
             });
         });
 
-        $('#rack_id').change(function(){
-            var id=$(this).val();
-            
+        $('#rack_id').change(function() {
+            var id = $(this).val();
+
             $.ajax({
-                url :'/BinShelves/'+id,
-                method : 'POST',
-                data:{ 
-                        'id':id,
-                        "_token": "{{ csrf_token() }}",
-                    },
-                success:function(result){
+                url: '/BinShelves/' + id,
+                method: 'POST',
+                data: {
+                    'id': id,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(result) {
                     // alert('success');
                     $('#shelve_id').empty();
-                    let shelve_data ='<option> Select Shelve </option>';
-                    $.each(result, function(i, result){
-                        shelve_data += "<option value='"+result.rack_id+"'>"+result.rack_id+"/"+result.name+"</option>";
+                    let shelve_data = '<option> Select Shelve </option>';
+                    $.each(result, function(i, result) {
+                        shelve_data += "<option value='" + result.rack_id + "'>" + result.rack_id + "/" + result.name + "</option>";
                     });
                     $('#shelve_id').append(shelve_data);
                 },
-                error:function(){
+                error: function() {
                     alert('ERROR');
-                }  
+                }
             });
         });
     });

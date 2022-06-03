@@ -72,6 +72,7 @@
 
                 <div class="col-4">
                     <x-adminlte-input label="Rack ID" name="rid" type="text" placeholder="ID" />
+                    
                 </div>
 
                 <div class="col-4">
@@ -117,8 +118,24 @@
 
 <script type="text/javascript">
     /*hide untill data is filled*/
+
+    // $("#add").on("click", function() {
+       
+    // });
     $("#rack_table").hide();
     $("#add").on('click', function(e) {
+
+        let rackid = $('#rid').val();
+        let rval = $('#rack').val();
+        if (rackid == '') {
+            alert('Rack ID Requirerd');
+            return false;
+        } else if(rval==''){
+            alert('Rack Name is Required');
+            return false;
+
+        }
+
         $("#rack_table").show();
         let rack_id;
         let rack_name;
@@ -127,7 +144,7 @@
 
 
         let html = "<tr class='table_row'>";
-        html += "<td> <input type='hidden' name='rack_id[]' value='"+ rack_id +"' />" + rack_id + "</td>";
+        html += "<td> <input type='hidden' name='rack_id[]' value='" + rack_id + "' />" + rack_id + "</td>";
         html += "<td> <input type='hidden'  name='name[]' value='" + rack_name + "' /> " + rack_name + "</td>";
         html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
 

@@ -119,7 +119,12 @@
 <script type="text/javascript">
     /*hide untill data is filled*/
     $("#rack_table").hide();
-    $("#add").on('click', function(e) {
+    $("#create").on('click', function(e) {
+        let shelveid = $('#shelve_name').val();
+        if (shelveid == '') {
+            alert('Shelve Name Requirerd');
+            return false;
+        }
         $("#rack_table").show();
 
         let shelve_name;
