@@ -52,13 +52,13 @@ class InventoryOutwardShipmentController extends Controller
         $currency_lists = Currency::get();
         //  dd($destination_lists);
         $ware_lists = Warehouse::get();
-        return view('inventory.outward.shipment.create', compact('destination_lists', 'ware_lists','currency_lists'));
+        return view('inventory.outward.shipment.create', compact('destination_lists', 'ware_lists', 'currency_lists'));
     }
 
 
     public function show($id)
     {
-        
+
         $outview = Outshipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
 
         return view('inventory.outward.shipment.view', compact('outview'));
@@ -66,8 +66,9 @@ class InventoryOutwardShipmentController extends Controller
     public function autofinish(Request $request)
     {
 
-        $data = Inventory::select("asin")->distinct()
+        $data = Inventory::select("asin", "id", "created_at")->distinct()
             ->where("asin", "LIKE", "%{$request->asin}%")
+            ->orderBy('created_at')
             ->limit(50)
             ->get();
 
@@ -98,7 +99,7 @@ class InventoryOutwardShipmentController extends Controller
         }
 
 
-        Outshipment::insert( [
+        Outshipment::insert([
             "Ship_id" => $shipment_id,
             "warehouse" => $request->warehouse,
             "currency" => $request->currency,
@@ -109,17 +110,18 @@ class InventoryOutwardShipmentController extends Controller
         ]);
 
 
-        foreach ($request->asin as $key1 => $asin1) {
-            if ($inventory = Inventory::where('asin', $asin1)->first()) {
-              
-                Inventory::where('asin', $asin1)->update([
-                    'warehouse_id' => $request->warehouse,
+        foreach ($request->id as $key1 => $id) {
+            
+            if ($inventory = Inventory::where('id', $id)->first()) {
+
+                Inventory::where('id', $id)->update([
+
                     'item_name' => $request->name[$key1],
                     'quantity' => $inventory->quantity - $request->quantity[$key1],
                 ]);
-
             }
         }
+    
         return response()->json(['success' => 'Shipment has Created successfully']);
     }
     public function outwardingview(Request $request)

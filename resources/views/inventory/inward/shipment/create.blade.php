@@ -153,7 +153,7 @@
         }else if(currency_valid == 0) {
             alert('currency field is required');
             return false;
-        }
+        } else{
         
         let self = $(this);
         let table = $("#report_table tbody tr");
@@ -196,7 +196,6 @@
                 //alert('success');
 
                 if(response.success) {
-    
                     getBack();
                 }
             },
@@ -204,6 +203,7 @@
                 console.log(response);
             }
         });
+    }
     });
     /*Redirect to Index:*/
     function getBack() {
