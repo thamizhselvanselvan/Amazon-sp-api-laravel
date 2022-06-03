@@ -2,7 +2,15 @@
 @section('title', 'Orders Details Dashboard')
 
 @section('content_header')
-<h1 class="m-0 text-dark">Order Details Dashboard</h1>
+<div class= 'row'>
+
+    <h1 class="m-0 text-dark">Order Details Dashboard</h1>
+    <h2 class = 'text-right col'>
+        <a href="{{route('getOrder.list')}}">
+            <x-adminlte-button label="Refresh" theme="primary" icon="fas fa-sync" />
+        </a>
+    </h2>
+</div>
 @stop
 
 @section('content')
@@ -54,11 +62,12 @@
     </thead>
     <tbody>
         @foreach ($order_status_count as $key => $value)
-            <tr><td>{{$key}}</td>
+        <tr>
+            <td>{{$key}}</td>
             @foreach ($value as $data )
-                <td>{{$data}}</td>
-            @endforeach    
-            </tr>
+            <td>{{$data}}</td>
+            @endforeach
+        </tr>
         @endforeach
     </tbody>
 </table>

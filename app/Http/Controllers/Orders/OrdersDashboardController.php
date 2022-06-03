@@ -74,7 +74,7 @@ class OrdersDashboardController extends Controller
         $created = new Carbon($date);
         $now = Carbon::now();
         $differnce = $created->diff($now);
-        // po($differnce);
+    
         $final_date = '';
         $count = 0;
         foreach ((array)$differnce as $key => $value) {

@@ -5,15 +5,20 @@ namespace App\Http\Controllers;
 use Exception;
 use App\Models\BOE;
 use Illuminate\Http\Request;
-use SellingPartnerApi\Endpoint;
 use Smalot\PdfParser\Parser;
+use App\Models\Aws_credential;
+use Illuminate\Support\Carbon;
+use SellingPartnerApi\Endpoint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Services\Config\ConfigTrait;
-use App\Services\SP_API\CatalogImport;
 use Illuminate\Support\Facades\Auth;
+use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\CatalogApi;
+use App\Services\SP_API\CatalogImport;
 use Illuminate\Support\Facades\Storage;
+use App\Models\order\OrderSellerCredentials;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use SellingPartnerApi\Api\ProductPricingApi;
 
@@ -98,6 +103,44 @@ class TestController extends Controller
     }
   }
 
+  public function SellerTest()
+  {
+
+    $aws_data = OrderSellerCredentials::where('dump_order', 1)->get();
+
+    foreach ($aws_data as $aws_value) {
+
+      $awsId  = $aws_value['id'];
+      $awsCountryCode = $aws_value['country_code'];
+      $this->seller_id = $aws_value['seller_id'];
+      $bb_aws_cred = Aws_credential::where('seller_id', $this->seller_id)->get();
+      $awsAuth_code = $bb_aws_cred[0]->auth_code;
+
+      $config = $this->config($awsId, $awsCountryCode, $awsAuth_code);
+      $marketplace_ids = $this->marketplace_id($awsCountryCode);
+      $marketplace_ids = [$marketplace_ids];
+
+      $apiInstance = new OrdersApi($config);
+      $startTime = Carbon::now()->subMinute(30)->toISOString();
+      $createdAfter = $startTime;
+      $lastUpdatedBefore = now()->toISOString();
+      $max_results_per_page = 100;
+      $next_token = NULL;
+
+      try {
+        $results = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses = null, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, $next_token, $amazon_order_ids = null, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
+        po($results);
+    
+        // $next_token = $results['next_token'];
+        $orders = '';
+        $amazon_order_id = '';
+      } catch (Exception $e) {
+
+        Log::warning('Exception when calling OrdersApi->getOrders: ', $e->getMessage(), PHP_EOL);
+      }
+    }
+  }
+
   public function getASIN($asin, $country_code)
   {
 
@@ -174,7 +217,7 @@ class TestController extends Controller
     echo 'Product Pricing Api / getCompetitivePricing';
     echo "<hr>";
 
-exit;
+    exit;
     $apiInstance = new ProductPricingApi($config);
     try {
       $result = $apiInstance->getCompetitivePricing($marketplace, $item_type, $asins)->getPayload();

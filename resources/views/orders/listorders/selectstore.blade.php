@@ -4,15 +4,13 @@
 @section('content_header')
 <div class='row'>
     <h1 class="m-0 text-dark col">Select Store</h1>
-
     <h2 class="mb-4 text-right col">
-        <a href="">
-            <x-adminlte-button label="Back" theme="primary" icon="fas fa-file-back" />
+        <a href="/orders/list">
+            <x-adminlte-button label="Back" theme="primary" icon="fas fa-arrow-alt-circle-left" />
         </a>
-        <x-adminlte-button label="Select Store" id='select_store' theme="primary" icon="fas fa-check-circle" />
+        <x-adminlte-button label="Save Store" id='select_store' theme="primary" icon="fas fa-check-circle" />
 
     </h2>
-
 </div>
 @stop
 
