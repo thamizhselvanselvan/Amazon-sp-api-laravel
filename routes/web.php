@@ -3,7 +3,9 @@
 use RedBeanPHP\R;
 use Carbon\Carbon;
 use App\Models\User;
+use League\Csv\Reader;
 use App\Events\testEvent;
+use App\Http\Controllers\TestController;
 use AWS\CRT\HTTP\Request;
 use App\Models\Mws_region;
 use Maatwebsite\Excel\Row;
@@ -33,6 +35,53 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('excel',function(){
+     
+     $host = config('database.connections.web.host');
+        $dbname = config('database.connections.web.database');
+        $port = config('database.connections.web.port');
+        $username = config('database.connections.web.username');
+        $password = config('database.connections.web.password');
+     
+
+     R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+       
+     $data = Excel::toArray([],'D:\invoice.xlsx');
+
+     $header = [];
+     $result = [];
+     $check = ['.', '(', ')'];
+     
+     foreach($data[0][0] as $key => $value)
+     {
+          // $header = $invoice[$key];
+         $testing = str_replace(' ', '_', trim($value));
+          $header[$key] = str_replace($check,'',strtolower($testing));
+     } 
+     // po($header);
+     foreach($data as $result)
+     {    
+          foreach($result as $key2 => $record)
+          {
+               if($key2 != 0 )
+               {
+                    $invoice = R::dispense('invoices');
+                    foreach($record as $key3 => $value)
+                    {
+                         $name = $header[$key3];
+                         echo $name;
+                         if($name != '')
+                         {
+                               $invoice->$name = $value;  
+                         }
+                    }     
+                    R::store($invoice);
+               }
+          }
+     }
+   
+});
+
 Route::get('command',function(){
 
      Artisan::call('pms:country-state-city');
@@ -99,32 +148,7 @@ Route::get('home', [App\Http\Controllers\Admin\HomeController::class, 'dashboard
 // Route::get('dashboard', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('admin.dashboard');
 // });
 Route::resource('/tests', 'TestController');
-// $pdfParser = new Parser();
-// $pdf = $pdfParser->parseFile('D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000433.pdf');
-// $content = $pdf->getText();
-// $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
-// $unsetKey = array_search('Page 1 of 2', $content);
-// unset($content[$unsetKey]);
-// $content = array_values($content);
-// dd($content);
-// Bj69UT4UWy
-// DB::table('Users')
-// User::where('email', 'mudassir@moshecom.com')
-//  ->update(['password' =>Hash::make('Bj69UT4UWy')]);
-// $tables = DB::select('SHOW TABLES');
-//    $tableCheck = 0;
-//    // $testcount =0;
-// //   dd($tables);4k
-//        foreach ($tables as $table) {
-//            $table = (array)($table);
-//         $key = array_keys($table);
-//            if ($table[$key[0]] == 'cargoclearance') {
-//                $tableCheck = 1;
-//                echo $key[0];
-//                // $testcount++;
-//            }
-//        }
-//      exit;
+Route::get('test/seller', 'TestController@SellerTest');
 Route::get('/asin/{asin}/{code}', 'TestController@getASIN');
 Route::get("b2cship", function () {
 

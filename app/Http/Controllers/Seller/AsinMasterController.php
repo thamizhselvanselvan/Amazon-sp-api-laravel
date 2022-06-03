@@ -146,4 +146,8 @@ class AsinMasterController extends Controller
             return redirect('/seller/import-bulk-asin')->with('success', 'All Asins uploaded successfully');
         }
 
+    public function deleteAsinView()
+    {
+        return view('AsinMaster.deleteAsin');
+    }
 }

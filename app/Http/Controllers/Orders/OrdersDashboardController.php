@@ -12,10 +12,18 @@ class OrdersDashboardController extends Controller
 {
     public function Dashboard()
     {
+        $startTime = Carbon::now();
+        $endTime = Carbon::now()->subDays(30);
+        
+        $order_sql = DB::connection('order')->select("select order_status, our_seller_identifier,COUNT(order_status) as count, os.store_name, os.country_code from orders 
+        join ord_order_seller_credentials as os 
+        where os.seller_id = orders.our_seller_identifier 
+        AND orders.updatedat BETWEEN '$endTime' AND '$startTime' 
+        GROUP BY our_seller_identifier, order_status");
 
-        $order_sql = DB::connection('order')->select('select order_status, our_seller_identifier,COUNT(order_status) as count, os.store_name, os.country_code from orders join ord_order_seller_credentials as os where os.seller_id = orders.our_seller_identifier GROUP BY our_seller_identifier,order_status');
+        // dd($order_sql);
 
-        $latest_update = DB::connection('order')->select('select createdat, updatedat, our_seller_identifier, os.store_name from orders join ord_order_seller_credentials as os where os.seller_id = orders.our_seller_identifier group by createdat, updatedat, our_seller_identifier order by updatedat DESC');
+        $latest_update = DB::connection('order')->select('select updatedat, our_seller_identifier, os.store_name from orders join ord_order_seller_credentials as os where os.seller_id = orders.our_seller_identifier group by updatedat, our_seller_identifier order by updatedat DESC');
 
         $order_collect = collect($order_sql);
         $order_groupby = $order_collect->groupBy('store_name');
@@ -25,12 +33,9 @@ class OrdersDashboardController extends Controller
 
         $store_latest = [];
         foreach ($latest_update_collect as $key => $value) {
+            
             $updatedat = $value[0]->updatedat;
-            if ($updatedat != '') {
-                $store_latest[$key] = $updatedat;
-            } else {
-                $store_latest[$key] = $value[0]->createdat;
-            }
+            $store_latest[$key] = $updatedat;
         }
 
         $order_status_count = [];
@@ -74,7 +79,7 @@ class OrdersDashboardController extends Controller
         $created = new Carbon($date);
         $now = Carbon::now();
         $differnce = $created->diff($now);
-        // po($differnce);
+
         $final_date = '';
         $count = 0;
         foreach ((array)$differnce as $key => $value) {
