@@ -3,6 +3,7 @@
 use RedBeanPHP\R;
 use Carbon\Carbon;
 use App\Models\User;
+use League\Csv\Reader;
 use App\Events\testEvent;
 use AWS\CRT\HTTP\Request;
 use App\Models\Mws_region;
@@ -33,6 +34,53 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('excel',function(){
+     
+     $host = config('database.connections.web.host');
+        $dbname = config('database.connections.web.database');
+        $port = config('database.connections.web.port');
+        $username = config('database.connections.web.username');
+        $password = config('database.connections.web.password');
+     
+
+     R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+       
+     $data = Excel::toArray([],'D:\invoice.xlsx');
+
+     $header = [];
+     $result = [];
+     $check = ['.', '(', ')'];
+     
+     foreach($data[0][0] as $key => $value)
+     {
+          // $header = $invoice[$key];
+         $testing = str_replace(' ', '_', trim($value));
+          $header[$key] = str_replace($check,'',strtolower($testing));
+     } 
+     // po($header);
+     foreach($data as $result)
+     {    
+          foreach($result as $key2 => $record)
+          {
+               if($key2 != 0 )
+               {
+                    $invoice = R::dispense('invoices');
+                    foreach($record as $key3 => $value)
+                    {
+                         $name = $header[$key3];
+                         echo $name;
+                         if($name != '')
+                         {
+                               $invoice->$name = $value;  
+                         }
+                    }     
+                    R::store($invoice);
+               }
+          }
+     }
+   
+});
+
 Route::get('command',function(){
 
      Artisan::call('pms:country-state-city');
