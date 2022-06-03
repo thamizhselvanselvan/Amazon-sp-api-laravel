@@ -123,18 +123,21 @@
         contentType: false,
         processData: false,
         dataType: 'json',
-        success: (data) => {
-        //   this.reset();
-          alert('Files has been uploaded');
-          $("#upload_excel").removeAttr('disabled');
-          $("body").css("cursor", "default");
-        //   window.location.href = '/invoice/manage';
+        success: function(response) {
+            console.log(response);
+            if(response.success) {
+                getBack();
+            }
         },
-        // error: function(data) {
-        //     alert(data.responseJSON.errors.files[0]);
-        //     console.log(data.responseJSON.errors);
-        // }
+        error: function(response) {
+          console.log(response)
+          alert('error');
+        }
       });
+
+      function getBack() {
+        window.location.href = '/invoice/manage'
+      }
     });
   });
 </script>
