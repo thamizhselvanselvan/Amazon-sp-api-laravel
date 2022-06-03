@@ -9,7 +9,6 @@
             <x-adminlte-button label="Back" theme="primary" icon="fas fa-arrow-alt-circle-left" />
         </a>
         <x-adminlte-button label="Save Store" id='select_store' theme="primary" icon="fas fa-check-circle" />
-
     </h2>
 </div>
 @stop

@@ -185,6 +185,7 @@ class SellerOrdersImport extends Command
                 // dd($update_orders, 'update');
                 R::store($update_orders);
             } else {
+                $orders->updatedat = now();
                 $orders->createdat = now();
                 // dd($orders);
                 R::store($orders);

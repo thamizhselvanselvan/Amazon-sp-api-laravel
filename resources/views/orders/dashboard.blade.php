@@ -11,8 +11,8 @@
         </a>
     </h2>
 </div>
+<h5 class="m-0 text-dark">Last 30 days statistics</h5>
 @stop
-
 @section('content')
 
 <div class="row">
