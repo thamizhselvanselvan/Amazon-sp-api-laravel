@@ -150,4 +150,43 @@ class AsinMasterController extends Controller
     {
         return view('AsinMaster.deleteAsin');
     }
+
+    public function SellerAsinRemove(Request $request)
+    {
+        $request->validate([
+            'asin' => 'required|mimes:csv,txt,xls,xlsx'
+        ]);
+        if (!$request->hasFile('asin')) {
+            return back()->with('error', "Please upload file to import it to the database");
+        }
+
+        // $msg = "Asin import has been completed!";
+
+        $source = file_get_contents($request->asin);
+        $path = 'Seller/Remove/AsinMaster/remove_asin.csv';
+        Storage::put($path, $source);
+        $user = Auth::user();
+        $seller_id = $user->bb_seller_id;
+        if(!$seller_id)
+        {
+            $seller_id = $user->id;
+        }
+
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+
+            Log::warning("asin production executed");
+
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan pms:seller-asin-remove $seller_id > /dev/null &";
+            exec($command);
+            Log::warning("asin production command executed");
+        } else {
+
+            Log::warning("Export coma executed local !");
+            Artisan::call('pms:seller-asin-remove '.$seller_id);
+        }
+
+        return redirect('/seller/import-bulk-asin')->with('success', 'Asin Deleted Successfully');
+    
+    }
 }

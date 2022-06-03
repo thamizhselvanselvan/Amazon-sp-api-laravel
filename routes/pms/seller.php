@@ -17,7 +17,7 @@ Route::prefix('seller/')->group(function () {
     Route::get('asin/trash-view', 'Seller\AsinMasterController@trashView')->name('trash.view');
     Route::post('asin/restore/{id}', 'Seller\AsinMasterController@restore')->name('restore.view');
     Route::get('asin/delete', 'Seller\AsinMasterController@deleteAsinView');
-    Route::get('asin/remove', 'Seller\AsinMasterController@deleteAsinView');
+    Route::get('asin/remove', 'Seller\AsinMasterController@SellerAsinRemove');
 
 
     //catalog
