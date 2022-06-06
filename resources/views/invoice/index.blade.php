@@ -8,14 +8,14 @@
         <a href="upload">
             <x-adminlte-button label="Upload Invoice Excel" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
         </a>
-        <a href="Export/view">
+        <!-- <a href="Export/view">
             <x-adminlte-button label="Download Invoice PDF" theme="primary" icon="fas fa-file-download" class="btn-sm" />
-        </a>
-        <a href="Download">
-            <!-- <x-adminlte-button label="Download CSV file" theme="primary" icon="fas fa-file-download" /> -->
-        </a>
+        </a> -->
+        <!-- <a href="Download">
+            <x-adminlte-button label="Download CSV file" theme="primary" icon="fas fa-file-download" />
+        </a> -->
         <!-- <a href=""> -->
-            <x-adminlte-button label="Convert pdf" id='convert_pdf' theme="primary" icon="fas fa-check-circle" />
+            <x-adminlte-button label="Convert pdf" id='convert_pdf' theme="primary" icon="fas fa-check-circle" class="btn-sm" />
         <!-- </a> -->
     </h2>
 </div>
@@ -39,15 +39,15 @@
 
 <table class="table table-bordered yajra-datatable table-striped">
     <thead>
-        <tr>
-        <td>S/N</td> 
-            <td>invoice_no.</td>
-            <td>invoice_date</td>
-            <td>order_no</td>
-            <td>order_date</td>
-            <td>channel</td>
-            <td>shipped_by</td>
-            <td>awb_no</td>
+        <tr class="text-bold bg-info">
+            <td>S/N</td> 
+            <td>Invoice No.</td>
+            <td>Invoice Date</td>
+            <td>Order No</td>
+            <td>Order Date</td>
+            <td>Channel</td>
+            <td>Shipped By</td>
+            <td>Awb No</td>
             <!-- <td>arn</td>
             <td>store_name_add</td>
             <td>bill_to_add</td>
@@ -55,9 +55,9 @@
             <td>sr_no</td>
             <td>item_description</td>
             <td>hsn_code</td> -->
-            <td>qty</td>
-            <td>currency</td>
-            <td>product_price</td>
+            <td>Quantity</td>
+            <td>Currency</td>
+            <td>Product Price</td>
             <td>Action</td>
             <!-- <td>taxable_value</td>
             <td>total_including_taxes</td>
