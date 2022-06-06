@@ -6,6 +6,9 @@
     <div class="row">
         <h1 class="m-0 text-dark">ASIN</h1>
         <h2 class="mb-4 col text-right">
+            <a href='/seller/csv/template'> 
+                <x-adminlte-button label="Download CSV Template" theme="primary" icon="fas fa-file-download" />
+            </a>
             <a>
                 <x-adminlte-button label="Get Price & Catalog" theme="primary" icon="fas fa-file-import" id='catalog_details' />
             </a>

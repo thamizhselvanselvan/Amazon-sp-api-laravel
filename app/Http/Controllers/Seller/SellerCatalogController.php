@@ -18,7 +18,10 @@ class SellerCatalogController extends Controller
   {
      $login_user = Auth::user();
     $seller_id = $login_user->bb_seller_id;
-    $email = $login_user->email;
+    if($seller_id == "")
+    {
+      $seller_id = $login_user->id;
+    }
 
       if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 

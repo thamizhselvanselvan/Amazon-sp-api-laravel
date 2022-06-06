@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\seller\AsinMasterSeller;
+use Illuminate\Contracts\Cache\Store;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
@@ -17,6 +18,7 @@ class AsinMasterController extends Controller
 {        //
     public function index(Request $request)
     {
+        $path = public_path() . '/storage/SellerCsvTemplate.csv';
         if ($request->ajax()) {
             $user = Auth::user();
             $seller_id = $user->bb_seller_id;
@@ -33,7 +35,7 @@ class AsinMasterController extends Controller
                 })
                 ->make(true);
         }
-        return view('seller.asin_master.index');
+        return view('seller.asin_master.index',compact('path'));
     }
 
     public function addAsin()
@@ -89,6 +91,7 @@ class AsinMasterController extends Controller
     public function trashView(Request $request)
     {
         // dd($asins);
+        
         if ($request->ajax()) {
             $asins = AsinMasterSeller::onlyTrashed()->get();
 
@@ -196,5 +199,15 @@ class AsinMasterController extends Controller
         }
 
         return redirect('/seller/import-bulk-asin')->with('success', 'Asin Deleted Successfully');
+    }
+
+    public function DownloadCSVTemplate()
+    {
+
+        $path = public_path() . '/storage/SellerCsvTemplate.csv';
+        return response()->download($path);
+        // Storage::download($path);
+
+        
     }
 }

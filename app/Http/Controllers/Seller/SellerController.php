@@ -28,4 +28,10 @@ class SellerController extends Controller
         return view("seller.credentials.index", compact('awsCredentials', 'mws_regions', 'currency_lists','seller_email','seller_storename'));
         // return view('seller.credentials.index');
     }
+
+    public function sellerInvoice()
+    {   
+        return view('seller.invoice.index');
+    }
+    
 }
