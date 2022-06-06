@@ -153,7 +153,7 @@ class AsinMasterController extends Controller
             Artisan::call('pms:seller-asin-import ' . $seller_id);
         }
 
-        return redirect('/seller/import-bulk-asin')->with('success', 'All Asins uploaded successfully');
+        return redirect('/seller/asin-master')->with('success', 'All Asins uploaded successfully');
     }
 
     public function deleteAsinView()
