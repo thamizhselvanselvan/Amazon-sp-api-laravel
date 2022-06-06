@@ -62,15 +62,19 @@ class Catalog
 
                 foreach ($result as $key => $data) {
                     $key = lcfirst($key);
-                    if (is_object($data)) {
-
-                        $productcatalogs->{$key} = json_encode($data);
-                    } elseif (is_string($data)) {
-                        $productcatalogs->{$key} = ($data);
-                    } else {
-                        $productcatalogs->{$key} = json_encode($data);
-                        // $value [][$key] = ($data);
+                    if($key == 'title')
+                    {
+                        $productcatalogs->{$key} = $data;
                     }
+                    // if (is_object($data)) {
+
+                    //     $productcatalogs->{$key} = json_encode($data);
+                    // } elseif (is_string($data)) {
+                    //     $productcatalogs->{$key} = ($data);
+                    // } else {
+                    //     $productcatalogs->{$key} = json_encode($data);
+                    //     // $value [][$key] = ($data);
+                    // }
                 }
                 R::store($productcatalogs);
             } else {

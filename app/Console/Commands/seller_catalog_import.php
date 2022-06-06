@@ -44,14 +44,16 @@ class seller_catalog_import extends Command
         $seller_id = $this->argument('seller_id');
 
         $chunk = 10;
-        $datas = AsinMasterSeller::limit(10)->offset(0)->where('status', 0)->where('seller_id', $seller_id)->get();
-        // $datas = AsinMasterSeller::chunk($chunk)->where('status', 0)->where('seller_id', $login_id)->get();
-        Seller_catalog_import_job::dispatch(
-            [
-                'seller_id' => $seller_id,
-                'datas' => $datas,
-            ]
-        );
+        // $datas = AsinMasterSeller::limit(10)->offset(0)->where('status', 0)->where('seller_id', $seller_id)->get();
+        $datas = AsinMasterSeller::where('status', 0)->where('seller_id', $seller_id)->chunk($chunk, function($datas) use($seller_id){
+
+            Seller_catalog_import_job::dispatch(
+                [
+                    'seller_id' => $seller_id,
+                    'datas' => $datas,
+                ]
+            );
+        });
         // $catalog =   new Catalog();
         // $catalogApi = $catalog->index($datas, $email);
 
