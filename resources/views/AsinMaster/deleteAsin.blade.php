@@ -45,7 +45,7 @@
             </x-adminlte-alert>
         @endif
      
-        <form class="row" action="asin/remove" method="POST" enctype="multipart/form-data">
+        <form class="row" action="remove" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="col-3"></div>

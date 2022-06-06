@@ -19,8 +19,8 @@ class AsinMasterController extends Controller
             if ($request->ajax()) {
                 $user = Auth::user();
                 $seller_id = $user->bb_seller_id;
-
-                $data = AsinMasterSeller::query()->where('seller_id', $seller_id);
+    
+                $data = AsinMasterSeller::query()->where('seller_id', $seller_id)->get();
     
                 return DataTables::of($data)
                     ->addIndexColumn()
