@@ -56,63 +56,46 @@ class sellerAsinRemove extends Command
             ->where(function (array $record) {
                 return $record;
             })
-            ->offset(0)
-            ;
-           
+            ->offset(0);
+
         $records = $stmt->process($csv);
 
         $asin_masters = [];
         $product = [];
         $product_lowest_price = [];
-          
-
-            $count = 1;
-            $tagger = 1;
-            foreach($records as $key => $record)
-            {
-                $asin = $record['ASIN'];
-                $country_code = $record['Source'];
-
-                $asin_masters[$tagger][$seller_id][] = [
-                    'asin' => $asin
-                ];
-                
-                $product [] = [
-                    'seller_id' => $seller_id,
-                    'asin1' => $asin,
-                    'country_code'=> $country_code,
-                ];
-
-                if($count == 3000) {
-                    $tagger++;
-                    $count = 0;
-                }
-
-                $count++;
-                // if($count == 1000) {
-
-                //     AsinMasterSeller::query()->whereIn(['asin','seller_id'], $asin)->delete();
-                //     BB_Product::query()->whereIn(['asin','seller_id'], $product)->delete();
-
-                //     $count = 0;
-                //     $asin_master = [];
-                //     $product = [];
-                // }
-                
-            }	
 
 
-            foreach($asin_masters as $key => $asin_master) {
+        $count = 1;
+        $tagger = 1;
+        foreach ($records as $key => $record) {
+            $asin = $record['ASIN'];
+            $country_code = $record['Source'];
 
-                foreach($asin_master as $seller_id => $asins) {
+            $asin_masters[$tagger][$seller_id][] = [
+                'asin' => $asin
+            ];
 
-                    AsinMasterSeller::whereIn('asin', $asins)->where('seller_id', $seller_id)->delete();
-                    BB_Product::whereIn('asin1', $asins)->where('seller_id', $seller_id)->delete();
+            $product[] = [
+                'seller_id' => $seller_id,
+                'asin1' => $asin,
+                'country_code' => $country_code,
+            ];
 
-                }
-
+            if ($count == 3000) {
+                $tagger++;
+                $count = 0;
             }
-        
-            Log::warning(" asin delete successfully");
+            $count++;
+        }
+
+        foreach ($asin_masters as $key => $asin_master) {
+
+            foreach ($asin_master as $seller_id => $asins) {
+
+                AsinMasterSeller::whereIn('asin', $asins)->where('sseller_id', $seller_id)->delete();
+                BB_Product::whereIn('asin1', $asins)->where('seller_id', $seller_id)->delete();
+            }
+        }
+        Log::warning(" asin delete successfully");
     }
 }
