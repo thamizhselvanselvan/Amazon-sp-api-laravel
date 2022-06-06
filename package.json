@@ -23,6 +23,7 @@
         "sass-loader": "^11.0.1"
     },
     "dependencies": {
-        "blueimp-file-upload": "^10.32.0"
+        "blueimp-file-upload": "^10.32.0",
+        "puppeteer": "^14.2.1"
     }
 }

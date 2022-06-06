@@ -6,6 +6,7 @@ use RedBeanPHP\R;
 use League\Csv\Reader;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
+use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
@@ -42,9 +43,7 @@ class InvoiceManagementController extends Controller
 
     public function showpdf(Request $request )
     {
-        
         return view('invoice.template');
-
     }
 
     public function showTemplate(Request $request)
@@ -121,5 +120,22 @@ class InvoiceManagementController extends Controller
      }
         
      return response()->json(["success" => "all file uploaded successfully"]);
+    }
+
+    public function ExportPdf(Request $request)
+    {
+        $inc = str_replace('https://amazon-sp-api-laravel.app/invoice/convert-pdf/','', $request->id);
+
+        $path = 'invoice'.$inc;
+        $exportToPdf = $path. '.pdf';
+        Browsershot::url($request->id)
+       ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+       ->noSandbox()
+       ->showBackground()
+       ->save($exportToPdf);
+       
+
+       return response()->json(["success" => "Export to PDF Successfully"]);
+       
     }
 }

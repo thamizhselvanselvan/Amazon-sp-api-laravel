@@ -1,9 +1,11 @@
 @extends('adminlte::page')
-@section('title', 'template')
+
+@section('title', 'Invoice')
 
 @section('css')
 
     <link rel="stylesheet" href="/css/styles.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 @stop
 @section('content_header')
 
@@ -12,50 +14,57 @@
 
 @section('content')
 
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
 <div class="container">
    <div class="col-md-12">
       <div class="invoice">
          <!-- begin invoice-company -->
          <div class="invoice-company text-inverse f-w-600">
             <span class="pull-right hidden-print">
-            <a href="javascript:;" class="btn btn-sm btn-white m-b-10 p-l-5"><i class="fa fa-file t-plus-1 text-danger fa-fw fa-lg"></i> Export as PDF</a>
+            <a href="javascript:void(0);" class="btn btn-sm btn-white m-b-10 p-l-5" id="Export_to_pdf"><i class="fa fa-file t-plus-1 text-danger fa-fw fa-lg"></i> Export as PDF</a>
             <a href="javascript:;" onclick="window.print()" class="btn btn-sm btn-white m-b-10 p-l-5"><i class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
             </span>
             Company Name, Inc
          </div>
          <!-- end invoice-company -->
          <!-- begin invoice-header -->
+         @foreach ($data as $key => $value )
+             
+         
          <div class="invoice-header">
             <div class="invoice-from">
                <small>from</small>
                <address class="m-t-5 m-b-5">
                   <strong class="text-inverse">Twitter, Inc.</strong><br>
-                  Street Address<br>
+                  <!-- Street Address<br>
                   City, Zip Code<br>
                   Phone: (123) 456-7890<br>
-                  Fax: (123) 456-7890
+                  Fax: (123) 456-7890 -->
+                  {{ $value->store_name_add }}
                </address>
             </div>
+            
             <div class="invoice-to">
                <small>to</small>
                <address class="m-t-5 m-b-5">
                   <strong class="text-inverse">Company Name</strong><br>
-                  Street Address<br>
+                  <!-- Street Address<br>
                   City, Zip Code<br>
                   Phone: (123) 456-7890<br>
-                  Fax: (123) 456-7890
+                  Fax: (123) 456-7890 -->
+                  {{ $value->ship_to_add }}
                </address>
             </div>
             <div class="invoice-date">
                <small>Invoice / July period</small>
-               <div class="date text-inverse m-t-5">August 3,2012</div>
+               <div class="date text-inverse m-t-5">{{$value->invoice_date}}</div>
                <div class="invoice-detail">
-                  #0000123DSS<br>
+                  {{ $value->invoice_no }}<br>
                   Services Product
                </div>
             </div>
          </div>
+         
          <!-- end invoice-header -->
          <!-- begin invoice-content -->
          <div class="invoice-content">
@@ -64,23 +73,24 @@
                <table class="table table-invoice">
                   <thead>
                      <tr>
-                        <th>TASK DESCRIPTION</th>
-                        <th class="text-center" width="10%">RATE</th>
-                        <th class="text-center" width="10%">HOURS</th>
-                        <th class="text-right" width="20%">LINE TOTAL</th>
+                        <th>ITEM DESCRIPTION</th>
+                        <th class="text-center" width="10%">Price</th>
+                        <th class="text-center" width="10%">Quantity</th>
+                        <th class="text-right" width="20%">TOTAL</th>
                      </tr>
                   </thead>
                   <tbody>
                      <tr>
                         <td>
-                           <span class="text-inverse">Website design &amp; development</span><br>
-                           <small>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed id sagittis arcu.</small>
+                           <!-- <span class="text-inverse">Website design &amp; development</span><br>
+                           <small>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed id sagittis arcu.</small> -->
+                           {{ $value->item_description }}
                         </td>
-                        <td class="text-center">$50.00</td>
-                        <td class="text-center">50</td>
-                        <td class="text-right">$2,500.00</td>
+                        <td class="text-center">{{ $value->currency." " . $value->product_price}}</td>
+                        <td class="text-center">{{ ($value->qty) }}</td>
+                        <td class="text-right">{{$value->currency." " .($value->grand_total) }}</td>
                      </tr>
-                     <tr>
+                     <!-- <tr>
                         <td>
                            <span class="text-inverse">Branding</span><br>
                            <small>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed id sagittis arcu.</small>
@@ -97,7 +107,7 @@
                         <td class="text-center">$50.00</td>
                         <td class="text-center">50</td>
                         <td class="text-right">$2,500.00</td>
-                     </tr>
+                     </tr> -->
                   </tbody>
                </table>
             </div>
@@ -108,23 +118,24 @@
                   <div class="invoice-price-row">
                      <div class="sub-price">
                         <small>SUBTOTAL</small>
-                        <span class="text-inverse">$4,500.00</span>
+                        <span class="text-inverse">{{$value->currency." " . $value->grand_total }}</span>
                      </div>
                      <div class="sub-price">
                         <i class="fa fa-plus text-muted"></i>
                      </div>
                      <div class="sub-price">
-                        <small>PAYPAL FEE (5.4%)</small>
-                        <span class="text-inverse">$108.00</span>
+                        <small>Tax ({{ $value->taxable_value }})</small>
+                        <span class="text-inverse">{{$value->currency." " . $value->taxable_value }}</span>
                      </div>
                   </div>
                </div>
                <div class="invoice-price-right">
-                  <small>TOTAL</small> <span class="f-w-600">$4508.00</span>
+                  <small>GRAND TOTAL</small> <span class="f-w-600">{{$value->currency." " .($value->grand_total) }}</span>
                </div>
             </div>
             <!-- end invoice-price -->
          </div>
+         @endforeach
          <!-- end invoice-content -->
          <!-- begin invoice-note -->
          <div class="invoice-note">
@@ -149,4 +160,34 @@
    </div>
 </div>
 
+@stop
+
+@section('js')
+<script>
+   $(document).ready(function(){
+      $('#Export_to_pdf').click(function(e){
+         e.preventDefault();
+         var url = $(location).attr('href');
+         alert(url);
+
+         $.ajax({
+            method: 'POST',
+            url: "{{ url('/invoice/export-pdf')}}",
+            data:{ 
+               'id':url,
+               "_token": "{{ csrf_token() }}",
+               },
+            // cache: false,
+            // contentType: false,
+            // processData: false,
+            // dataType: 'json',
+            success: function(response) {
+               console.log(response);
+               alert('Export Pdf Successfully');
+               
+            }
+         });
+      });
+   });
+</script>
 @stop
