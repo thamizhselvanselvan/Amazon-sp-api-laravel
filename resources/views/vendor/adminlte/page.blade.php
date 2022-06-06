@@ -35,7 +35,9 @@
 
         {{-- Footer --}}
         @if('footer')
-            @include('adminlte::partials.footer.footer')
+             @if (!str_contains(URL::current(), '/invoice/convert-pdf'))
+                @include('adminlte::partials.footer.footer')
+            @endif
         @endif
 
         {{-- Right Control Sidebar --}}
