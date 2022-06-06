@@ -133,6 +133,7 @@ class InvoiceManagementController extends Controller
         $exportToPdf = $path. '.pdf';
         Browsershot::url($request->id)
        ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+       ->showBackground()
        ->savePdf($exportToPdf);
        return response()->json(["success" => "Export to PDF Successfully"]);
        
@@ -141,7 +142,7 @@ class InvoiceManagementController extends Controller
     public function DownloadPdf(Request $request, $id)
     {
         $inc = str_replace('https://amazon-sp-api-laravel.app/invoice/convert-pdf/','', $id);
-        
+
         return Storage::download('invoice/invoice'.$inc.'.pdf');
     }
 }
