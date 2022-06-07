@@ -48,13 +48,17 @@ class InvoiceManagementController extends Controller
 
     public function showTemplate(Request $request)
     {
-        $data = explode('-', $request->id);
-        foreach($data as $id)
-        {
+        $urlId []= explode('-', $request->id);
+        
+        foreach($urlId as $key => $id)
+        {  
             $data = Invoice::where('id', $id)->get();
+            $uid = $data[$key]->id;
+            // po($uid);
+            // exit;
         }
-
-        return view('invoice.template', compact(['data']));
+        
+        return view('invoice.template', compact(['data'],'uid'));
     }
 
     public function UploadExcel(Request $request)
@@ -124,18 +128,27 @@ class InvoiceManagementController extends Controller
 
     public function ExportPdf(Request $request)
     {
+        dd($request->id);
+        exit;
         $inc = str_replace('https://amazon-sp-api-laravel.app/invoice/convert-pdf/','', $request->id);
 
-        $path = 'invoice'.$inc;
+        $path = storage::path('invoice/invoice'.$inc);
         $exportToPdf = $path. '.pdf';
         Browsershot::url($request->id)
        ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-       ->noSandbox()
        ->showBackground()
-       ->save($exportToPdf);
-       
-
+       ->savePdf($exportToPdf);
        return response()->json(["success" => "Export to PDF Successfully"]);
        
+    }
+
+    public function DownloadPdf(Request $request, $id)
+    {
+        $uid = explode('-', $id);
+        // dd($uid);
+        // exit;
+        $inc = str_replace('https://amazon-sp-api-laravel.app/invoice/convert-pdf/','', $id);
+
+        return Storage::download('invoice/invoice'.$inc.'.pdf');
     }
 }

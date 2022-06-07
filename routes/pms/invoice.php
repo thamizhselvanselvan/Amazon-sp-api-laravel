@@ -8,3 +8,4 @@ Route::post('invoice/upload/excel', 'invoice\InvoiceManagementController@UploadE
 Route::get('invoice/template', 'invoice\InvoiceManagementController@showpdf');
 Route::get('invoice/convert-pdf/{id}', 'invoice\InvoiceManagementController@showTemplate');
 Route::post('invoice/export-pdf','invoice\InvoiceManagementController@ExportPdf');
+Route::get('invoice/download/{id}', 'invoice\InvoiceManagementController@DownloadPdf');
