@@ -188,8 +188,7 @@
             alert('currency field is required');
             return false;
         }
-        
-
+        else {
 
         let self = $(this);
         let table = $("#outward_table tbody tr");
@@ -200,8 +199,9 @@
 
             let cnt = 0;
             let td = $(this).find('td');
-            //  console.log(td);
-
+             console.log(td);
+     
+            data.append('id[]', $(td[0]).attr("data-id"));
             data.append('asin[]', td[0].innerText);
             data.append('name[]', td[1].innerText);
             data.append('price[]', td[2].innerText);
@@ -231,9 +231,11 @@
             success: function(response) {
 
                 console.log(response);
-                
-                getBack();
 
+                if(response.success) {
+                    getBack();
+                }
+             
             },
             error: function(response) {
                 console.log(response);
@@ -241,11 +243,11 @@
 
 
         });
+    }
 
     });
 
     function getBack() {
-        // window.location.assign('/inventory/shipments')
          window.location.href = '/inventory/outwardings'
 
     }
@@ -299,6 +301,7 @@
                 url: '/shipment/autofinish',
                 data: {
                     'asin': val
+                    
                 },
                 //response: 'json',
                 success: function(arr) {
@@ -396,19 +399,20 @@
         });
     }
 
-    function getData(asin) {
+    function getData(asin,id ) {
 
         $.ajax({
             method: 'GET',
             url: '/shipment/select/View',
             data: {
-                'asin': asin
+                'asin': asin,
+                'id': id
             },
             success: function(arr) {
-                // console.log(arr);
+                //   console.log(arr);
 
                 let html = "<tr class='table_row'>";
-                html += "<td name='asin[]'>" + arr.asin + "</td>";
+                html += "<td name='asin[]' data-id='"+ arr.id +"'>" + arr.asin + "</td>";
                 html += "<td name='name[]'>" + arr.item_name + "</td>";
                 html += "<td name='price[]'>" + arr.price + "</td>";
                 html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
