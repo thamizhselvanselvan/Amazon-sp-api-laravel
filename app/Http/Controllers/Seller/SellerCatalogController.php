@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Seller;
 use RedBeanPHP\R;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Services\SP_API\API\Catalog;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +18,10 @@ class SellerCatalogController extends Controller
   {
      $login_user = Auth::user();
     $seller_id = $login_user->bb_seller_id;
-    $email = $login_user->email;
+    if($seller_id == "")
+    {
+      $seller_id = $login_user->id;
+    }
 
       if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
@@ -26,9 +30,10 @@ class SellerCatalogController extends Controller
         exec($command);
     } else {
 
+      Log::info($seller_id);
         Artisan::call('pms:seller-catalog-import ' .$seller_id);
     }
-
+    Log::alert("working on click");
    
     // // Log::warning($datas[0]->asin);
     //   $chunk = 10;
@@ -40,4 +45,5 @@ class SellerCatalogController extends Controller
     // $catalogApi = $catalog->index($datas, $login_user);
 
   }
+  
 }

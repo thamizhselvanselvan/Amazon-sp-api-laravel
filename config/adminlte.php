@@ -736,6 +736,13 @@ return [
                 //     'icon' => 'far fa-fw fa-user', 
 
                 // ],
+                [
+                    'text' => 'Seller Invoice', 
+                    'url' => 'seller/invoice', 
+                    'can' => ['Admin'], 
+                    'icon' => 'far fa-fw fa-user', 
+                ],
+
 
             ]
         ],

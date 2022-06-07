@@ -24,6 +24,7 @@
     },
     "dependencies": {
         "blueimp-file-upload": "^10.32.0",
+        "chromium": "^3.0.3",
         "puppeteer": "^14.2.1"
     }
 }

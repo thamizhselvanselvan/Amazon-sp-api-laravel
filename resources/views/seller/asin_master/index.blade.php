@@ -6,6 +6,12 @@
     <div class="row">
         <h1 class="m-0 text-dark">ASIN</h1>
         <h2 class="mb-4 col text-right">
+            <a href='/seller/csv/template'> 
+                <x-adminlte-button label="Download CSV Template" theme="primary" icon="fas fa-file-download" />
+            </a>
+            <a>
+                <x-adminlte-button label="Get Price & Catalog" theme="primary" icon="fas fa-file-import" id='catalog_details' />
+            </a>
             <a href="/seller/import-bulk-asin">
                 <x-adminlte-button label="Upload Asin" theme="primary" icon="fas fa-file-import" />
             </a>
@@ -137,6 +143,19 @@
                     // alert_message.html('Oops something went wrong. Contct Admin');
 
                 }
+            });
+
+        });
+
+        $('#catalog_details').on('click', function()
+        {
+            $.ajax({
+                method: 'get',
+                url: '/seller/catalog-details',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "_method": 'GET'
+                },
             });
 
         });

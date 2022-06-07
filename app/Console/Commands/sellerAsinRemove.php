@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Admin\BB\BB_Product;
+use App\Models\seller\AsinMasterSeller;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use Illuminate\Console\Command;
@@ -54,58 +56,46 @@ class sellerAsinRemove extends Command
             ->where(function (array $record) {
                 return $record;
             })
-            ->offset(0)
-            ;
-           
+            ->offset(0);
+
         $records = $stmt->process($csv);
 
-        $asin_master = [];
+        $asin_masters = [];
         $product = [];
         $product_lowest_price = [];
-          
 
-            $count = 0;
-            foreach($records as $key => $record)
-            {
-                $asin = $record['ASIN'];
-                $country_code = $record['Source'];
 
-                $asin_master[] = [
-                    'seller_id' => $seller_id,
-                    'asin' => $asin,
-                ];
-                
-                $product [] = [
-                    'seller_id' => $seller_id,
-                    'asin1' => $asin,
-                    'country_code'=> $country_code,
-                ];
+        $count = 1;
+        $tagger = 1;
+        foreach ($records as $key => $record) {
+            $asin = $record['ASIN'];
+            $country_code = $record['Source'];
 
-                $product_lowest_price [] = [
+            $asin_masters[$tagger][$seller_id][] = [
+                'asin' => $asin
+            ];
 
-                    'asin' => $asin,
-                    'import_type' => 'Seller',
-                    'country_code' => $country_code,
-                ];
+            $product[] = [
+                'seller_id' => $seller_id,
+                'asin1' => $asin,
+                'country_code' => $country_code,
+            ];
 
-                if($count == 1000) {
+            if ($count == 3000) {
+                $tagger++;
+                $count = 0;
+            }
+            $count++;
+        }
 
-                    // AsinMasterSeller::insert($asin_master);
-                    // BB_Product::insert($product);
-                    // BB_Product_lowest_price_offer::upsert($product_lowest_price, ['asin','country_code'],['asin','country_code']);
-                    // $count = 0;
-                    // $asin_master = [];
-                    // $product = [];
-                    // $product_lowest_price = [];
-                }
-                $count++;
-                
-            }	
-            
-            // AsinMasterSeller::insert($asin_master); 
-            // BB_Product::insert($product);
-            // BB_Product_lowest_price_offer::upsert($product_lowest_price, ['asin', 'country_code'], ['asin', 'country_code']);
+        foreach ($asin_masters as $key => $asin_master) {
 
-            Log::warning(" asin import successfully");
+            foreach ($asin_master as $seller_id => $asins) {
+
+                AsinMasterSeller::whereIn('asin', $asins)->where('sseller_id', $seller_id)->delete();
+                BB_Product::whereIn('asin1', $asins)->where('seller_id', $seller_id)->delete();
+            }
+        }
+        Log::warning(" asin delete successfully");
     }
 }

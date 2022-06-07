@@ -51,11 +51,6 @@
                         <th>S/N</th>
                         <th>ASIN</th>
                         <th>Source</th>
-                        <th>Destination 1</th>
-                        <th>Destination 2</th>
-                        <th>Destination 3</th>
-                        <th>Destination 4</th>
-                        <th>Destination 5</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -91,26 +86,6 @@
                     {
                         data: 'source',
                         name: 'source'
-                    },
-                    {
-                        data: 'destination_1',
-                        name: 'destination_1'
-                    },
-                    {
-                        data: 'destination_2',
-                        name: 'destination_2'
-                    },
-                    {
-                        data: 'destination_3',
-                        name: 'destination_3'
-                    },
-                    {
-                        data: 'destination_4',
-                        name: 'destination_4'
-                    },
-                    {
-                        data: 'destination_5',
-                        name: 'destination_5'
                     },
                     {
                         data: 'action',
