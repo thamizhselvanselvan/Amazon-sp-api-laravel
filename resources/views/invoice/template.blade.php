@@ -21,7 +21,7 @@
 
 @section('content')
   
-<input type="hidden" id="pid" value="{{$id}}" >
+<input type="hidden" id="pid" value="{{$uid}}" >
 <div class="container">
    <div class="col-md-12">
       <div class="invoice">
@@ -91,8 +91,8 @@
                   <thead>
                      <tr>
                         <th>ITEM DESCRIPTION</th>
-                        <th class="text-center" width="10%">Price</th>
-                        <th class="text-center" width="10%">Quantity</th>
+                        <th class="text-center" width="10%">PRICE</th>
+                        <th class="text-center" width="10%">QUANTITY</th>
                         <th class="text-right" width="20%">TOTAL</th>
                      </tr>
                   </thead>
@@ -126,7 +126,7 @@
                      <div class="sub-price">
                         @if ($value->taxable_value == '')
                            
-                           <small>Tax ( 0 )</small>
+                           <small>TAX ( 0 )</small>
                            <span class="text-inverse">{{$value->currency." " . 0 }}</span>
                         @else
                            <small>Tax ({{ $value->taxable_value }})</small>

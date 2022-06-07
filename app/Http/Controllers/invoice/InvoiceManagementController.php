@@ -48,16 +48,17 @@ class InvoiceManagementController extends Controller
 
     public function showTemplate(Request $request)
     {
-        $data = explode('-', $request->id);
-        foreach($data as $key => $id)
-        {
+        $urlId []= explode('-', $request->id);
+        
+        foreach($urlId as $key => $id)
+        {  
             $data = Invoice::where('id', $id)->get();
-           $id = $data[$key]->id;
-            // dd($test);
+            $uid = $data[$key]->id;
+            // po($uid);
             // exit;
         }
-
-        return view('invoice.template', compact(['data'],'id'));
+        
+        return view('invoice.template', compact(['data'],'uid'));
     }
 
     public function UploadExcel(Request $request)
@@ -127,6 +128,8 @@ class InvoiceManagementController extends Controller
 
     public function ExportPdf(Request $request)
     {
+        dd($request->id);
+        exit;
         $inc = str_replace('https://amazon-sp-api-laravel.app/invoice/convert-pdf/','', $request->id);
 
         $path = storage::path('invoice/invoice'.$inc);
@@ -141,6 +144,9 @@ class InvoiceManagementController extends Controller
 
     public function DownloadPdf(Request $request, $id)
     {
+        $uid = explode('-', $id);
+        // dd($uid);
+        // exit;
         $inc = str_replace('https://amazon-sp-api-laravel.app/invoice/convert-pdf/','', $id);
 
         return Storage::download('invoice/invoice'.$inc.'.pdf');
