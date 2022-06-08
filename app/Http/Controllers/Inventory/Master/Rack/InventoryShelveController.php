@@ -22,9 +22,7 @@ class InventoryShelveController extends Controller
 
         //$rt = Shelve::query()->with(['bins', 'racks'])->get();
 
-        // $data = Shelve::query()->with(['bins', 'racks', 'warehouses'])->get();
-
-        // dd($data);
+        $data = Shelve::query()->with(['bins', 'racks', 'warehouses'])->get();
 
         if ($request->ajax()) {
 
