@@ -747,7 +747,7 @@ return [
             ]
         ],
         [
-            'text' => 'Invoice Manage',
+            'text' => 'Invoice',
             'url' => 'invoice',
             'icon' => 'far fa-fw fa-file',
             'can' => ['Admin', 'BOE'],

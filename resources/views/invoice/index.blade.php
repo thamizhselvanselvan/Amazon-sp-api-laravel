@@ -15,7 +15,7 @@
             <x-adminlte-button label="Download CSV file" theme="primary" icon="fas fa-file-download" />
         </a> -->
         <!-- <a href=""> -->
-            <x-adminlte-button label="Convert pdf" id='convert_pdf' theme="primary" icon="fas fa-check-circle" class="btn-sm" />
+            <!-- <x-adminlte-button label="Convert pdf" id='convert_pdf' theme="primary" icon="fas fa-check-circle" class="btn-sm" /> -->
         <!-- </a> -->
     </h2>
 </div>
@@ -74,96 +74,116 @@
 
 @section('js')
 <script>
+
     let yajra_table = $('.yajra-datatable').DataTable({
 
-processing: true,
-serverSide: true,
-ajax: "{{ url('/invoice/manage') }}",
-columns: [{
+    processing: true,
+    serverSide: true,
+    ajax: "{{ url('/invoice/manage') }}",
+    columns: [{
         data: 'DT_RowIndex',
         name: 'DT_RowIndex',
         orderable: false,
         searchable: false
-    },
-    {
-        data: 'invoice_no',
-        name: 'invoice_no'
-    },
-    {
-        data: 'invoice_date',
-        name: 'invoice_date',
-        orderable: false,
-    },
-    {
-        data: 'order_no',
-        name: 'order_no',
-        orderable: false,
-    },
-    {
-        data: 'order_date',
-        name: 'order_date',
-    },
-    {
-        data: 'channel',
-        name: 'channel'
-    },
-    {
-        data: 'shipped_by',
-        name: 'shipped_by',
-    },
+        },
+        {
+            data: 'invoice_no',
+            name: 'invoice_no'
+        },
+        {
+            data: 'invoice_date',
+            name: 'invoice_date',
+            orderable: false,
+        },
+        {
+            data: 'order_no',
+            name: 'order_no',
+            orderable: false,
+        },
+        {
+            data: 'order_date',
+            name: 'order_date',
+        },
+        {
+            data: 'channel',
+            name: 'channel'
+        },
+        {
+            data: 'shipped_by',
+            name: 'shipped_by',
+        },
 
-    {
-        data: 'awb_no',
-        name: 'awb_no',
-    },
-    {
-        data: 'qty',
-        name: 'qty'
-    },
-    {
-        data: 'currency',
-        name: 'currency'
-    },
-    {
-        data: 'product_price',
-        name: 'product_price'
-    },
-    
-    {
-        data: 'action',
-        name: 'action'
-    },
+        {
+            data: 'awb_no',
+            name: 'awb_no',
+        },
+        {
+            data: 'qty',
+            name: 'qty'
+        },
+        {
+            data: 'currency',
+            name: 'currency'
+        },
+        {
+            data: 'product_price',
+            name: 'product_price'
+        },
+        
+        {
+            data: 'action',
+            name: 'action'
+        },
 
-],
+    ],
 
-});
-
-$('#convert_pdf').on('click', function() {
-
-    let id = '';
-    let count = 0;
-    $("input[name='options[]']:checked").each(function() {
-        if (count == 0) {
-            id += $(this).val();
-        } else {
-            id += '-' + $(this).val();
-        }
-        count++;
-       
     });
-    window.location.href = '/invoice/convert-pdf/'+id;
 
-    // alert(id);
-    // $.ajax({
-    //         method: 'POST',
-    //         url: '/invoice/convert-pdf',
-    //         data: {
-    //             "_token": "{{ csrf_token() }}",
-    //             "_method": 'post',
-    //             'id': id,
+    // $('').on('click', function() {
+
+    //     let id = '';
+    //     let count = 0;
+    //     $("input[name='options[]']:checked").each(function() {
+    //         if (count == 0) {
+    //             id += $(this).val();
+    //         } else {
+    //             id += '-' + $(this).val();
     //         }
-    //     })
-    
-});
+    //         count++;
+        
+    //     });
+    //     // window.location.href = '/invoice/convert-pdf/'+id;
+
+    // });
+
+    $(document).ready(function(){
+      $('#Export_to_pdf').click(function(e){
+         e.preventDefault();
+         var url = $(location).attr('href');
+         var id = $('#pid').val();
+         var all = $('#all').val();
+
+         alert(working);
+         // alert(alert);
+         // alert(url);
+
+            $.ajax({
+                method: 'POST',
+                url: "{{ url('/invoice/export-pdf')}}",
+                data:{ 
+                'url':url,
+                'id':id,
+                'total' : all,
+                "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
+
+                window.location.href = '/invoice/download/'+id;
+                alert('Export pdf successfully');
+                }
+            });
+        });
+    });
+
 </script>
 @stop
