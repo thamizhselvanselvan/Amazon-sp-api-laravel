@@ -684,26 +684,7 @@ return [
                 ],
             ],
         ],
-        [
-            'text' => 'BOE Manage',
-            'can' =>  ['Admin', 'BOE'],
-            'submenu' => [
-                [
-                    'text' => 'Manage',
-                    'url' => 'BOE/index',
-                    'can' => ['Admin', 'BOE'],
-                    'icon' => 'far fa-fw fa-file',
 
-                ],
-                [
-                    'text' => 'Report',
-                    'url' => 'BOE/report',
-                    'can' => ['Admin', 'BOE'],
-                    'icon' => 'far fa-fw fa-file',
-
-                ],
-            ],
-        ],
         [
             'text' => 'Seller Central',
             'can' =>  ['Admin', 'Seller'],
@@ -746,7 +727,7 @@ return [
         ],
 
         [
-            'text' => 'Tool',
+            'text' => 'Tools',
             'can' => ['Admin', 'Inventory'],
             'submenu' =>
             [
@@ -755,11 +736,33 @@ return [
                     'url' => 'invoice/manage',
                     'can' => ['Admin', 'BOE'],
                 ],
+
                 [
-                    'text' => 'Label Print',
+                    'text' => 'BOE',
+                    'can' =>  ['Admin', 'BOE'],
+                    'submenu' => [
+                        [
+                            'text' => 'Manage',
+                            'url' => 'BOE/index',
+                            'can' => ['Admin', 'BOE'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ],
+                        [
+                            'text' => 'Report',
+                            'url' => 'BOE/report',
+                            'can' => ['Admin', 'BOE'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ],
+                    ],
+                ],
+                [
+                    'text' => 'Label',
                     'url' => '',
                     'can' => ['Admin', 'BOE'],
                 ],
+
             ],
         ]
         // [
