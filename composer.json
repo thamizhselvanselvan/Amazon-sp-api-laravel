@@ -34,6 +34,7 @@
         "spatie/browsershot": "^3.54",
         "spatie/laravel-failed-job-monitor": "^3.4",
         "spatie/laravel-permission": "^5.5",
+        "symfony/symfony": "5.4.x",
         "yajra/laravel-datatables-oracle": "^9.19"
     },
     "require-dev": {
