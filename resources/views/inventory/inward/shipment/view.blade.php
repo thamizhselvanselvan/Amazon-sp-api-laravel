@@ -48,9 +48,9 @@
 
         <div>
             <h4 style="font-family:Times New Roman ;">Shipment ID : {{ $view->ship_id }}</h4>
-            <h4 style="font-family:Times New Roman;">Warehouse : {{ $view->warehouses->name }} </h4>
+            <h4 style="font-family:Times New Roman;"> Warehouse : {{ $view->warehouses->name }} </h4>
             <h4 style="font-family:Times New Roman;"> Source : {{ $view->vendors->name }} </h4>
-            <h4 style="font-family:Times New Roman ;">Currency : {{ $view->currency }} </h4>
+            <h4 style="font-family:Times New Roman ;">Currency : {{ $currency_array[$view->currency]}} </h4>
             <h6></h6>
         </div>
 

@@ -429,25 +429,25 @@ return [
                             ],
                         ],
                         [
-                            'text' => 'Dispose',
+                            'text' => 'Dispose Reason',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin'],
-                            'submenu' => [
-
-                                [
-                                    'text' => ' Dispose reason',
-                                    'url'  => 'inventory/disposes',
-                                    'icon' => 'far fa-fw fa-file',
-                                    'can' =>  ['Admin'],
-                                ],
-                            ],
+                            'url'  => 'inventory/features',
+                            'can' =>  ['Admin', 'Inventory']
+                            
                         ],
+                        // [
+                        //     'text' => 'Dispose Reason',
+                        //     'icon' => 'far fa-fw fa-file',
+                        //     'url'  => 'inventory/disposes',
+                        //     'can' =>  ['Admin', 'Inventory']
+                            
+                        // ],
 
                     ],
                 ],
 
                 [
-                    'text' => 'Vendor',
+                    'text' => 'Vendor (Source & Desitinaion)',
                     'url'  => 'inventory/vendors',
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin', 'Inventory'],
@@ -461,7 +461,7 @@ return [
                     'can' =>  ['Admin', 'Inventory'],
                     'submenu' => [
                         [
-                            'text' => 'Stocks',
+                            'text' => 'Inventory Stocks',
                             'url'  => 'inventory/stocks',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory'],

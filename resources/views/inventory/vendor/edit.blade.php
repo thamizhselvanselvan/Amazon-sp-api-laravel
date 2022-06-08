@@ -4,75 +4,72 @@
 
 @section('css')
 
-    <link rel="stylesheet" href="/css/styles.css">
+<link rel="stylesheet" href="/css/styles.css">
 
 @stop
 
 @section('content_header')
 
-    <div class="row">
-        <div class="col">
-            <a href="{{ route('vendors.index') }}" class="btn btn-primary">
+<div class="row">
+    <div class="col">
+        <a href="{{ route('vendors.index') }}" class="btn btn-primary">
 
-                <i class="fas fa-long-arrow-alt-left"></i> Back
-            </a>
-        </div>
+            <i class="fas fa-long-arrow-alt-left"></i> Back
+        </a>
     </div>
+</div>
 
-    <div class="row mt-3">
-        <div class="col">
-            <h1 class="m-0 text-dark text-center ">Edit vendor</h1>
-        </div>
+<div class="row mt-3">
+    <div class="col">
+        <h1 class="m-0 text-dark text-center ">Edit vendor</h1>
     </div>
+</div>
 
 @stop
 
 @section('content')
 
-    <div class="loader d-none">
-        <div class="sub-loader position-relative ">
-            <div class="lds-hourglass"></div>
-            <p>Loading...</p>
-        </div>
+<div class="loader d-none">
+    <div class="sub-loader position-relative ">
+        <div class="lds-hourglass"></div>
+        <p>Loading...</p>
     </div>
+</div>
 
-    <div class="row">
-        <div class="col"></div>
-        <div class="col-8">
+<div class="row">
+    <div class="col"></div>
+    <div class="col-8">
 
-            @if (session()->has('success'))
-                <div class="alert alert-success">
-                    {{ session()->get('success') }}
-                </div>
-            @endif
+        @if (session()->has('success'))
+        <div class="alert alert-success">
+            {{ session()->get('success') }}
+        </div>
+        @endif
 
-            @if(session()->has('error'))
-            <div class="alert alert-danger">
-                {{ session()->get('error') }}
-            </div>
+        @if(session()->has('error'))
+        <div class="alert alert-danger">
+            {{ session()->get('error') }}
+        </div>
         @endif
 
         @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
         @endif
 
-        <form  action="{{ route('vendors.update', $name->id) }}" method="POST">
+        <form action="{{ route('vendors.update', $name->id) }}" method="POST">
             @csrf
             @method('PUT')
 
             <div class="row justify-content-center">
                 <div class="col-6">
-                        <x-adminlte-input label="Name" name="name" value="{{ $name->name }}" type="text"  />
-                </div>
-                <div class="col-6">
                     <x-adminlte-select name="type" label="Select type" value="{{ $name->type  }}">
-                        <option>Select Type</option> 
+                        <option>Select Type</option>
                         @if ($name->type == "Source")
                         <option value="{{$name->type}}" selected>{{$name->type}}</option>
                         <option value="Destination">Destination</option>
@@ -82,69 +79,73 @@
                         @endif
                     </x-adminlte-select>
                 </div>
+                <div class="col-6">
+                    <x-adminlte-input label="Name" name="name" value="{{ $name->name }}" type="text" />
+                </div>
+
             </div>
             <div class="row justify-content-center">
                 <div class="col-6">
-                    <x-adminlte-select label="Country" name="country" id="country" type="text" placeholder="" value="{{ $name->country  }}" >
-                         <option value="">Select Country</option>
-                            @foreach ($country as $countries)
-                              @if ($countries->id == $selected_country)
-                                <option value="{{$countries->id}}" selected>{{$countries->name}}</option>
-                              @else
-                                <option value="{{$countries->id}}">{{$countries->name}}</option>
-                              @endif
-                                
-                            @endforeach
-                        
+                    <x-adminlte-select label="Country" name="country" id="country" type="text" placeholder="" value="{{ $name->country  }}">
+                        <option value="">Select Country</option>
+                        @foreach ($country as $countries)
+                        @if ($countries->id == $selected_country)
+                        <option value="{{$countries->id}}" selected>{{$countries->name}}</option>
+                        @else
+                        <option value="{{$countries->id}}">{{$countries->name}}</option>
+                        @endif
+
+                        @endforeach
+
                     </x-adminlte-select>
                 </div>
                 <div class="col-6">
-                    <x-adminlte-select label="State" name="state" id="state" type="text" placeholder="" value="{{ old('ID') }}" >
-                         <option value="">Select Country</option>
+                    <x-adminlte-select label="State" name="state" id="state" type="text" placeholder="" value="{{ old('ID') }}">
+                        <option value="">Select Country</option>
                         @foreach ($state as $states)
-                         
-                            @if ($states->country_id == $selected_country)
-                         
-                                @if (($states->id == $selected_state))
-                                    <option value="{{$states->id}}" selected>{{$states->name}}</option>
-                                @else
-                                    <option value="{{$states->id}}">{{$states->name}}</option>
-                                @endif
 
-                            @endif
+                        @if ($states->country_id == $selected_country)
+
+                        @if (($states->id == $selected_state))
+                        <option value="{{$states->id}}" selected>{{$states->name}}</option>
+                        @else
+                        <option value="{{$states->id}}">{{$states->name}}</option>
+                        @endif
+
+                        @endif
 
                         @endforeach
                     </x-adminlte-select>
                 </div>
                 <div class="col-6">
-                    <x-adminlte-select label="City" name="city" id="city" type="text" placeholder="" value="{{ old('ID') }}" >
+                    <x-adminlte-select label="City" name="city" id="city" type="text" placeholder="" value="{{ old('ID') }}">
                         <option value="">Select Country</option>
                         @foreach ($city as $cities)
-                         
-                            @if ($cities->state_id == $selected_state)
-                         
-                                @if (($cities->id == $selected_city))
-                                    <option value="{{$cities->id}}" selected>{{$cities->name}}</option>
-                                @else
-                                    <option value="{{$cities->id}}">{{$cities->name}}</option>
-                                @endif
 
-                            @endif
+                        @if ($cities->state_id == $selected_state)
+
+                        @if (($cities->id == $selected_city))
+                        <option value="{{$cities->id}}" selected>{{$cities->name}}</option>
+                        @else
+                        <option value="{{$cities->id}}">{{$cities->name}}</option>
+                        @endif
+
+                        @endif
 
                         @endforeach
                     </x-adminlte-select>
                 </div>
                 <div class="col-6">
-                    <x-adminlte-select label="Currency" name="currency_id" type="text" value="{{  $name->currency }}" >
+                    <x-adminlte-select label="Currency" name="currency_id" type="text" value="{{  $name->currency }}">
                         <option value="">Select Currency</option>
                         @foreach ($currencies as $currency)
 
-                            @if ($currency->id == $selected_currency)
-                                <option value="{{$currency->id}}" selected> {{$currency->code}} </option>
-                            @else
-                                <option value="{{$currency->id}}"> {{$currency->code}} </option>
-                            @endif
-                            
+                        @if ($currency->id == $selected_currency)
+                        <option value="{{$currency->id}}" selected> {{$currency->code}} </option>
+                        @else
+                        <option value="{{$currency->id}}"> {{$currency->code}} </option>
+                        @endif
+
                         @endforeach
                     </x-adminlte-select>
                 </div>
@@ -156,7 +157,7 @@
         </form>
     </div>
     <div class="col"></div>
-    </div>
+</div>
 
 @stop
 
