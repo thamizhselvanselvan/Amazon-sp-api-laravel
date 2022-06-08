@@ -8,10 +8,12 @@
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 @stop
 @section('content_header')
+   <!-- <a href="/invoice/manage" class="btn btn-sm btn-primary m-b-10 p-l-5"><i class="fa fa-arrow-left t-plus-1 fa-fw fa-sm"></i> Back</a> -->
    <div class="invoice-company text-inverse f-w-600">
       <span class="pull-right hidden-print">
          <a href="javascript:void(0);" class="btn btn-sm btn-white m-b-10 p-l-5" id="Export_to_pdf"><i class="fa fa-file t-plus-1 text-danger fa-fw fa-lg"></i> Export as PDF</a>
          <a href="javascript:;" onclick="window.print()" class="btn btn-sm btn-white m-b-10 p-l-5"><i class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
+         
       </span>
       <br>
    </div>
@@ -21,7 +23,7 @@
 
 @section('content')
   
-<input type="hidden" id="pid" value="{{$uid}}" >
+<input type="hidden" id="pid" value="{{$invoice_no}}" >
 <div class="container">
    <div class="col-md-12">
       <div class="invoice">
@@ -155,7 +157,9 @@
       $('#Export_to_pdf').click(function(e){
          e.preventDefault();
          var url = $(location).attr('href');
-         var id = $('#pid').val();
+         var invoice_no = $('#pid').val();
+         // var all = $('#all').val();
+         // alert(all);
          // alert(id);
          // alert(url);
 
@@ -163,13 +167,14 @@
             method: 'POST',
             url: "{{ url('/invoice/export-pdf')}}",
             data:{ 
-               'id':url,
+               'url':url,
+               'invoice_no':invoice_no,
                "_token": "{{ csrf_token() }}",
                },
             success: function(response) {
 
-               window.location.href = '/invoice/download/'+id;
-               alert('Export pdf successfully');
+               window.location.href = '/invoice/download/'+invoice_no;
+               alert('Download pdf successfully');
             }
          });
       });

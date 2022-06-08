@@ -6,6 +6,7 @@ use RedBeanPHP\R;
 use League\Csv\Reader;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
@@ -18,7 +19,7 @@ class InvoiceManagementController extends Controller
     {   
         
         if ($request->ajax()) {
-            $data = Invoice::get();
+            $data = Invoice::orderBy('id', 'DESC')->get();
             foreach($data as $key => $value){
                 $result[$key]['id'] = $value;
             }
@@ -27,7 +28,9 @@ class InvoiceManagementController extends Controller
                 
                 ->addColumn('action', function ($id) use ($result) {
 
-                    $action = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
+                    // $action = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
+                    $action = '<div class="d-flex"><a href="/invoice/convert-pdf/' . $id->id .' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
+                    $action .= '<div class="d-flex pl-2"><a href="/invoice/download-direct/' . $id->id .' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
                     return $action;
                 })
                 ->rawColumns(['action'])
@@ -43,22 +46,22 @@ class InvoiceManagementController extends Controller
 
     public function showpdf(Request $request )
     {
-        return view('invoice.template');
+        return view('invoice.invoice');
     }
 
     public function showTemplate(Request $request)
     {
-        $urlId []= explode('-', $request->id);
+        $id = $request->id;
         
-        foreach($urlId as $key => $id)
-        {  
+        // foreach($allid as $key => $id)
+        // {  
             $data = Invoice::where('id', $id)->get();
-            $uid = $data[$key]->id;
+            $invoice_no = $data[0]->invoice_no;
             // po($uid);
             // exit;
-        }
+        // }
         
-        return view('invoice.template', compact(['data'],'uid'));
+        return view('invoice.invoice', compact(['data'],'invoice_no'));
     }
 
     public function UploadExcel(Request $request)
@@ -106,7 +109,6 @@ class InvoiceManagementController extends Controller
      {    
           foreach($result as $key2 => $record)
           {
-           
                if($key2 != 0 )
                {
                     $invoice = R::dispense('invoices');
@@ -126,29 +128,41 @@ class InvoiceManagementController extends Controller
      return response()->json(["success" => "all file uploaded successfully"]);
     }
 
+    public function DirectDownloadPdf(Request $request, $id)
+    {
+        $url1 =  URL::current();
+        $url = str_replace('download-direct', 'convert-pdf', $url1);
+         $path = storage::path('invoice/invoice'.$id);
+        $exportToPdf = $path. '.pdf';
+        Browsershot::url($url)
+        // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+        ->showBackground()
+        ->savePdf($exportToPdf);
+        // $this->DownloadPdf($id);
+    }
+
     public function ExportPdf(Request $request)
     {
-        dd($request->id);
-        exit;
-        $inc = str_replace('https://amazon-sp-api-laravel.app/invoice/convert-pdf/','', $request->id);
+        $id = $request->invoice_no;
+        $url = $request->url;
+        $file_path =  'invoice/invoice'.$id.'.pdf';
+        if(!Storage::exists($file_path)) {
+            Storage::put($file_path, '');
+        }
+        // $path = storage::path('invoice/invoice'.$id);
+        $exportToPdf = storage::path($file_path);
+        Browsershot::url($url)
+        // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+        ->showBackground()
+        ->savePdf($exportToPdf);
 
-        $path = storage::path('invoice/invoice'.$inc);
-        $exportToPdf = $path. '.pdf';
-        Browsershot::url($request->id)
-       ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-       ->showBackground()
-       ->savePdf($exportToPdf);
-       return response()->json(["success" => "Export to PDF Successfully"]);
-       
+        return response()->json(["success" => "Export to PDF Successfully"]);
+
     }
 
     public function DownloadPdf(Request $request, $id)
     {
-        $uid = explode('-', $id);
-        // dd($uid);
-        // exit;
-        $inc = str_replace('https://amazon-sp-api-laravel.app/invoice/convert-pdf/','', $id);
-
-        return Storage::download('invoice/invoice'.$inc.'.pdf');
+        return Storage::download('invoice/invoice'.$id.'.pdf');
     }
+
 }

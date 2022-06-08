@@ -52,7 +52,7 @@
     </x-adminlte-alert>
     @endif
 
-    <x-adminlte-alert theme="danger" title="Error" dismissable id="alert">
+    <x-adminlte-alert theme="danger" title="Error" dismissable id="alert" style="display:none">
      Please Select Invoice Excel.
     </x-adminlte-alert>
 
