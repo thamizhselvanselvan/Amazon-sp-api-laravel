@@ -52,15 +52,9 @@ class InvoiceManagementController extends Controller
     public function showTemplate(Request $request)
     {
         $id = $request->id;
-        
-        // foreach($allid as $key => $id)
-        // {  
-            $data = Invoice::where('id', $id)->get();
-            $invoice_no = $data[0]->invoice_no;
-            // po($uid);
-            // exit;
-        // }
-        
+        $data = Invoice::where('id', $id)->get();
+        $invoice_no = $data[0]->invoice_no;
+           
         return view('invoice.invoice', compact(['data'],'invoice_no'));
     }
 
@@ -70,19 +64,13 @@ class InvoiceManagementController extends Controller
         foreach ($request->files as $key => $files) {
 
             foreach ($files as $keys => $file) {
-                // $file_extension = $file->getClientOriginalExtension();
-                // if ($file_extension == '') 
-                {
+                
+                $fileName = $file->getClientOriginalName();
+                $fileName = uniqid() . ($fileName);
 
-                    $fileName = $file->getClientOriginalName();
-                    $fileName = uniqid() . ($fileName);
-                    // $desinationPath = 'BOE/' . $company_id . '/' . $year . '/' . $month . '/' . $fileName;
-                    // Storage::put($desinationPath,  file_get_contents($file));
-                }
             }
         }
-        // $data = file_get_contents($file);
-
+        
         $host = config('database.connections.web.host');
         $dbname = config('database.connections.web.database');
         $port = config('database.connections.web.port');
@@ -107,22 +95,26 @@ class InvoiceManagementController extends Controller
      // po($header);
      foreach($data as $result)
      {    
-          foreach($result as $key2 => $record)
-          {
-               if($key2 != 0 )
-               {
+        foreach($result as $key2 => $record)
+        {
+            if($key2 != 0 )
+            {
+                if(!Invoice::where('invoice_no',$record[0])->exists())
+                { 
                     $invoice = R::dispense('invoices');
                     foreach($record as $key3 => $value)
-                    {
-                         $name = (isset($header[$key3])) ? $header[$key3] : null;
-                         if($name)
-                         {
-                               $invoice->$name = $value;  
-                         }
-                    }   
-                    R::store($invoice);
-               }
-          }
+                    { 
+                        $name = (isset($header[$key3])) ? $header[$key3] : null;
+                        if($name)
+                        {
+                            $invoice->$name = $value;  
+                        }
+                        
+                    } 
+                    R::store($invoice);  
+                } 
+            }
+        }
      }
         
      return response()->json(["success" => "all file uploaded successfully"]);
@@ -130,15 +122,21 @@ class InvoiceManagementController extends Controller
 
     public function DirectDownloadPdf(Request $request, $id)
     {
-        $url1 =  URL::current();
-        $url = str_replace('download-direct', 'convert-pdf', $url1);
-         $path = storage::path('invoice/invoice'.$id);
+        $data = Invoice::where('id', $id)->get();
+        $invoice_no = $data[0]->invoice_no;
+
+        $currenturl =  URL::current();
+        $url = str_replace('download-direct', 'convert-pdf', $currenturl);
+         $path = storage::path('invoice/invoice'.$invoice_no);
         $exportToPdf = $path. '.pdf';
         Browsershot::url($url)
-        // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+        ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
         ->showBackground()
         ->savePdf($exportToPdf);
-        // $this->DownloadPdf($id);
+        
+        return  $this->DownloadPdf($invoice_no);
+        
+        // return redirect()->back();
     }
 
     public function ExportPdf(Request $request)
@@ -152,7 +150,7 @@ class InvoiceManagementController extends Controller
         // $path = storage::path('invoice/invoice'.$id);
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-        // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+        ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
         ->showBackground()
         ->savePdf($exportToPdf);
 
@@ -160,9 +158,9 @@ class InvoiceManagementController extends Controller
 
     }
 
-    public function DownloadPdf(Request $request, $id)
+    public function DownloadPdf($invoice_no)
     {
-        return Storage::download('invoice/invoice'.$id.'.pdf');
+        return Storage::download('invoice/invoice'.$invoice_no.'.pdf');
     }
 
 }
