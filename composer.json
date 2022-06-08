@@ -28,6 +28,7 @@
         "league/flysystem-aws-s3-v3": "^1.0",
         "maatwebsite/excel": "^3.1",
         "mailgun/mailgun-php": "^3.5",
+        "picqer/php-barcode-generator": "^2.2",
         "pragmarx/health": "^1.1",
         "pusher/pusher-php-server": "^7.0",
         "smalot/pdfparser": "^2.1",
