@@ -11,16 +11,27 @@ class Shelve extends Model
 
     protected $connection = 'inventory';
 
-    protected $fillable = ['rack_id', 'name','warehouse'];
+    // public function __construct(array $attributes = [])
+    // {
+    //     parent::__construct($attributes);
+    //     $this->getConnection()->setTablePrefix('in_');
+    // }
 
+    // public function __destruct()
+    // {
+    //     $this->getConnection()->setTablePrefix('sp_');
+    // }
 
-      
-    public function warehouses() {
+    protected $fillable = ['rack_id', 'name', 'warehouse'];
+
+    public function warehouses()
+    {
         return $this->hasOne(Warehouse::class, 'id', 'warehouse');
     }
+
     public function bins()
     {
-        return $this->hasMany(Bin::class);
+        return $this->hasMany(Bin::class, 'shelve_id', 'id');
     }
 
     public function racks()
