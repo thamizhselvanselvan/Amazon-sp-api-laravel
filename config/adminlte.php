@@ -759,19 +759,19 @@ return [
                 ]
             ]
         ],
-        [
-            'text' => 'BuyBox',
-            'url' => 'buybox',
-            'can' => ['Admin'],
-            'submenu' => [
-                [
-                    'text' => 'Asin Master',
-                    'url' => 'buybox/asin',
-                    'icon' => 'far fa-fw fa-file',
-                    'can' => ['Admin'],
-                ]
-            ]
-        ]
+        // [
+        //     'text' => 'BuyBox',
+        //     'url' => 'buybox',
+        //     'can' => ['Admin'],
+        //     'submenu' => [
+        //         [
+        //             'text' => 'Asin Master',
+        //             'url' => 'buybox/asin',
+        //             'icon' => 'far fa-fw fa-file',
+        //             'can' => ['Admin'],
+        //         ]
+        //     ]
+        // ]
 
         // [
         //     'text' => 'Download Files',
