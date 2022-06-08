@@ -74,6 +74,7 @@
         <tr>
             <!-- <td>id </td> -->
             <td id="detail">Warehouse Name</td>
+            <td id="detail"> Shipment ID</td>
             <td id="detail">ASIN</td>
             <td id="detail">Item Name</td>
             <td id="detail">Inwarding Price</td>
@@ -119,12 +120,13 @@
                     html += "<tr>";
                     //  html += "<td>"+value.id+"</td>" ;  
                     html += "<td>" + value.name + "</td>";
+                    html += "<td>" + value.ship_id + "</td>";
                     html += "<td>" + value.asin + "</td>";
                     html += "<td>" + value.item_name + "</td>";
                     html += "<td>" + value.price + "</td>";
                     html += "<td>" + value.quantity + "</td>";
                     html += "<td>" + d.toDateString() + "</td>";
-                    html += "<td>" + value.bin_id + "</td>";
+                    html += "<td>" + value.bin + "</td>";
                     html += "</tr>";
 
                 });
