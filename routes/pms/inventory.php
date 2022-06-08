@@ -11,6 +11,7 @@ Route::get('inventory/bins/create/rack/{id?}','Inventory\Master\Rack\InventoryBi
 Route::get('inventory/bins/create/rack/{rack_id?}/shelve/{shelve_id?}','Inventory\Master\Rack\InventoryBinController@create')->name('inventory.bin.create');
 Route::post('Binrack/{id}','Inventory\Master\Rack\InventoryBinController@getBinRack');
 Route::post('BinShelves/{id}','Inventory\Master\Rack\InventoryBinController@getBinRackShelve');
+Route::post('Bins/{id}','Inventory\Master\Rack\InventoryBinController@getBinRackShelve');
 
 Route::resource('inventory/bins', 'Inventory\Master\Rack\InventoryBinController');
 Route::resource('inventory/sources', 'Inventory\Master\InventorySourceController');
@@ -34,6 +35,13 @@ Route::post('shipment/storeshipment', 'Inventory\inwarding\InventoryShipmentCont
 Route::get('shipment/select/region', 'Inventory\inwarding\InventoryShipmentController@selectregion');
 Route::get('shipment/inward/view', 'Inventory\inwarding\InventoryShipmentController@inwardingdata')->name('shipments.view');
 Route::get('shipment/single/view', 'Inventory\inwarding\InventoryShipmentController@singleview')->name('shipments.single_view');
+Route::get('inventory/shipments/{id}/place','Inventory\inwarding\InventoryShipmentController@store');
+Route::get('shipment/autoplace', 'Inventory\inwarding\InventoryShipmentController@autoselect');
+Route::post('shipment/place', 'Inventory\inwarding\InventoryShipmentController@placeship');
+
+Route::post('racks/{id}','Inventory\inwarding\InventoryShipmentController@getRack');
+Route::post('Shelves/{id}','Inventory\inwarding\InventoryShipmentController@getShelve');
+Route::post('Bins/{id}','Inventory\inwarding\InventoryShipmentController@getbin');
 Route::resource('inventory/shipments','Inventory\inwarding\InventoryShipmentController');
 
 

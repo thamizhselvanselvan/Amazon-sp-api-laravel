@@ -128,3 +128,7 @@
     background: #fff;
     border-color: #d9dfe3;
 }
+
+.dropdown-submenu>a::after{
+    position: absolute;
+}

@@ -18,7 +18,7 @@
 
 <div class="row mt-3">
     <div class="col">
-        <h3 class="m-0 text-dark text-center">Add Source/Destination</h3>
+        <h3 class="m-0 text-dark text-center">Add Vendor</h3>
     </div>
 </div>
 
@@ -54,16 +54,17 @@
             @csrf
 
             <div class="row justify-content-center">
-                <div class="col-6">
-                    <x-adminlte-input label="Name" name="name" id="" type="text" placeholder="Name " />
-                </div>
-                <div class="col-6">
+            <div class="col-6">
                     <x-adminlte-select name="type" label="Select type">
                             <option>Select Type</option>
                             <option>Source</option>
                             <option>Destination</option>
                         </x-adminlte-select>
                 </div>
+                <div class="col-6">
+                    <x-adminlte-input label="Name" name="name" id="" type="text" placeholder="Name " />
+                </div>
+               
             </div>
             <div class="row justify-content-center">
                 <div class="col-6">

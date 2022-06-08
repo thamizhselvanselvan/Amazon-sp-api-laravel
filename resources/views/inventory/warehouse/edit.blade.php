@@ -80,19 +80,16 @@
                     <div class="col-6">
                         <x-adminlte-select label="Country" id="country" name="country" type="text">
                             <option value=" ">Select Country</option>
-                           @foreach ($state as $states)
-                         
-                            @if ($states->country_id == $selected_country)
-                         
-                                @if (($states->id == $selected_state))
-                                    <option value="{{$states->id}}" selected>{{$states->name}}</option>
-                                @else
-                                    <option value="{{$states->id}}">{{$states->name}}</option>
-                                @endif
-
-                            @endif
-
-                        @endforeach
+                            <option value="">Select Country</option>
+                            @foreach ($country as $countries)
+                              @if ($countries->id == $selected_country)
+                                <option value="{{$countries->id}}" selected>{{$countries->name}}</option>
+                              @else
+                                <option value="{{$countries->id}}">{{$countries->name}}</option>
+                              @endif
+                                
+                            @endforeach
+                        
                         </x-adminlte-select>
                     </div>
                     <div class="col-6">
