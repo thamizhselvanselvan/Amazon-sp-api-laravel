@@ -138,16 +138,19 @@ class InvoiceManagementController extends Controller
         // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
         ->showBackground()
         ->savePdf($exportToPdf);
-        $this->DownloadPdf($id);
+        // $this->DownloadPdf($id);
     }
 
     public function ExportPdf(Request $request)
     {
         $id = $request->invoice_no;
         $url = $request->url;
-
-        $path = storage::path('invoice/invoice'.$id);
-        $exportToPdf = $path. '.pdf';
+        $file_path =  'invoice/invoice'.$id.'.pdf';
+        if(!Storage::exists($file_path)) {
+            Storage::put($file_path, '');
+        }
+        // $path = storage::path('invoice/invoice'.$id);
+        $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
         // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
         ->showBackground()
