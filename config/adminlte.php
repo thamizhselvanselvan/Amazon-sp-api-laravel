@@ -433,14 +433,14 @@ return [
                             'icon' => 'far fa-fw fa-file',
                             'url'  => 'inventory/features',
                             'can' =>  ['Admin', 'Inventory']
-                            
+
                         ],
                         // [
                         //     'text' => 'Dispose Reason',
                         //     'icon' => 'far fa-fw fa-file',
                         //     'url'  => 'inventory/disposes',
                         //     'can' =>  ['Admin', 'Inventory']
-                            
+
                         // ],
 
                     ],
@@ -742,23 +742,26 @@ return [
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-user',
                 ],
-
-
             ]
         ],
+
         [
-            'text' => 'Invoice',
-            'url' => 'invoice',
-            'can' => ['Admin', 'BOE'],
-            'submenu' => [
+            'text' => 'Tool',
+            'can' => ['Admin', 'Inventory'],
+            'submenu' =>
+            [
                 [
-                    'text' => 'Manage',
+                    'text' => 'Invoice',
                     'url' => 'invoice/manage',
-                    'icon' => 'far fa-fw fa-file',
                     'can' => ['Admin', 'BOE'],
-                ]
-            ]
-        ],
+                ],
+                [
+                    'text' => 'Label Print',
+                    'url' => '',
+                    'can' => ['Admin', 'BOE'],
+                ],
+            ],
+        ]
         // [
         //     'text' => 'BuyBox',
         //     'url' => 'buybox',
