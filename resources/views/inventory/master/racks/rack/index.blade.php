@@ -49,7 +49,7 @@
                         <th>Rack ID</th>
                         <th>Rack Name</th>
                         <th>Number of Shelves</th>
-                        <th>Shelves Name</th>
+                        <!-- <th>Shelves Name</th> -->
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -87,10 +87,10 @@
                         data: 'shelves_no',
                         name: 'shelves_no'
                     },
-                    {
-                        data: 'shelve_name',
-                        name: 'shelve_name'
-                    },
+                    // {
+                    //     data: 'shelve_name',
+                    //     name: 'shelve_name'
+                    // },
                     {
                         data: 'action',
                         orderable: false,

@@ -14,11 +14,7 @@
 @stop
 
 @section('content')
-@php
-require 'vendor/autoload.php';
-$generator = new Picqer\Barcode\BarcodeGeneratorPNG();
-$generator->getBarcode('081231723897', $generator::TYPE_CODE_128);
-@endphp
+
 <div class="row">
     <div class="col">
 

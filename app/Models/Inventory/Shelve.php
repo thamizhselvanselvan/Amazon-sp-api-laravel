@@ -11,17 +11,6 @@ class Shelve extends Model
 
     protected $connection = 'inventory';
 
-    // public function __construct(array $attributes = [])
-    // {
-    //     parent::__construct($attributes);
-    //     $this->getConnection()->setTablePrefix('in_');
-    // }
-
-    // public function __destruct()
-    // {
-    //     $this->getConnection()->setTablePrefix('sp_');
-    // }
-
     protected $fillable = ['rack_id', 'name','warehouse'];
 
 

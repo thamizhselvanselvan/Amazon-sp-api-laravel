@@ -19,6 +19,8 @@ use App\Models\Inventory\Warehouse;
 use App\Services\SP_API\CatalogAPI;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Picqer\Barcode\BarcodeGeneratorPNG;
+use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Current;
 
@@ -64,16 +66,21 @@ class InventoryShipmentController extends Controller
     }
 
     public function show($id)
-    {   $currency = Currency::get();
-        $currency_array =[];
-        foreach($currency as $key => $cur)
-        {
+    {
+
+        $view = Shipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
+        $generator = new BarcodeGeneratorHTML();
+        $bar_code = $generator->getBarcode($view->ship_id, $generator::TYPE_CODE_39);
+ 
+
+        $currency = Currency::get();
+        $currency_array = [];
+        foreach ($currency as $key => $cur) {
             $currency_array[$cur->id] = $cur->name;
         }
         // dd($currency);
-        $view = Shipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
 
-        return view('inventory.inward.shipment.view', compact('view', 'currency_array'));
+        return view('inventory.inward.shipment.view', compact('view', 'currency_array','bar_code'));
     }
 
 
@@ -247,16 +254,16 @@ class InventoryShipmentController extends Controller
     // }
 
 
-    
+
     public function placeship(Request $request)
     {
         foreach ($request->asin as $key1 => $asin) {
 
             $ship_id = $request->ship_id[$key1];
-            Inventory::where('ship_id',$ship_id)->where('asin', $asin)
-            ->update([
-                'bin' => $request->bin[$key1],
-            ]);
+            Inventory::where('ship_id', $ship_id)->where('asin', $asin)
+                ->update([
+                    'bin' => $request->bin[$key1],
+                ]);
         }
         return response()->json(['success' => 'Shipment has stored successfully']);
     }
