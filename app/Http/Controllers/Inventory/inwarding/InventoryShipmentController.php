@@ -246,6 +246,8 @@ class InventoryShipmentController extends Controller
     //     return response()->json($data);
     // }
 
+
+    
     public function placeship(Request $request)
     {
         foreach ($request->asin as $key1 => $asin) {
