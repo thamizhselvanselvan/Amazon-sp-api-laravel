@@ -737,10 +737,10 @@ return [
 
                 // ],
                 [
-                    'text' => 'Seller Invoice', 
-                    'url' => 'seller/invoice', 
-                    'can' => ['Admin'], 
-                    'icon' => 'far fa-fw fa-user', 
+                    'text' => 'Seller Invoice',
+                    'url' => 'seller/invoice',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-user',
                 ],
 
 
@@ -749,7 +749,6 @@ return [
         [
             'text' => 'Invoice',
             'url' => 'invoice',
-            'icon' => 'far fa-fw fa-file',
             'can' => ['Admin', 'BOE'],
             'submenu' => [
                 [
@@ -757,6 +756,19 @@ return [
                     'url' => 'invoice/manage',
                     'icon' => 'far fa-fw fa-file',
                     'can' => ['Admin', 'BOE'],
+                ]
+            ]
+        ],
+        [
+            'text' => 'BuyBox',
+            'url' => 'buybox',
+            'can' => ['Admin'],
+            'submenu' => [
+                [
+                    'text' => 'Asin Master',
+                    'url' => 'buybox/asin',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' => ['Admin'],
                 ]
             ]
         ]
