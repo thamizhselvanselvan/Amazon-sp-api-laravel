@@ -237,7 +237,7 @@
                     $('#shelve_id').empty();
                     let shelve_data = '<option> Select Shelve </option>';
                     $.each(result, function(i, result) {
-                        shelve_data += "<option value='" + result.rack_id + "'>" + result.rack_id + "/" + result.name + "</option>";
+                        shelve_data += "<option value='" + result.id + "'>" + result.id + "/" + result.name + "</option>";
                     });
                     $('#shelve_id').append(shelve_data);
                 },

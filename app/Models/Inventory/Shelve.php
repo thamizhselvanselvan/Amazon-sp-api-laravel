@@ -22,16 +22,16 @@ class Shelve extends Model
     //     $this->getConnection()->setTablePrefix('sp_');
     // }
 
-    protected $fillable = ['rack_id', 'name','warehouse'];
+    protected $fillable = ['rack_id', 'name', 'warehouse'];
 
-
-      
-    public function warehouses() {
+    public function warehouses()
+    {
         return $this->hasOne(Warehouse::class, 'id', 'warehouse');
     }
+
     public function bins()
     {
-        return $this->hasMany(Bin::class);
+        return $this->hasMany(Bin::class, 'shelve_id', 'id');
     }
 
     public function racks()
