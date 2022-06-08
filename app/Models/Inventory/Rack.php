@@ -27,7 +27,7 @@ class Rack extends Model
 
     public function shelves()
     {
-        return $this->hasMany(Shelve::class);
+        return $this->hasMany(Shelve::class,'rack_id','rack_id');
     }
     
     public function warehouse() {
