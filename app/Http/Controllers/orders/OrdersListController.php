@@ -234,26 +234,39 @@ class OrdersListController extends Controller
 
     public function GetOrderitems()
     {
-        $token = 'Atzr|IwEBIG3zt3kKghE3Bl56OEGAxxeodmEzfaMAnMl0PivBlfumR8224Adu9lb33DKLEvHD6OBwdIBkaVlIZ5L2axypPm-LLuKPabvUCmRZ6F6C8KZKBJYS2u1sJVqzMxxoFSs6DTFLMxx8WBVXY395aKUzK3plz3-ttDN-YUGjiKR9-kFhLek1ZdjxwTQkvUdWdfpuDtcnW0veAPS0JUHVwTN39hpwJtPXm98XwD-wEe16n9qoWoak-UvtuML8irbdUdATSA4FLSX08H2V7SFAjdktXEW13v6gBs3xfCYn_w9Y4H29K5i5_vkQyiqj0j1FMK0nmtU';
-        $config = new Configuration([
-            "lwaClientId" => config('app.aws_sp_api_client_id'),
-            "lwaClientSecret" => config('app.aws_sp_api_client_secret'),
-            "awsAccessKeyId" => config('app.aws_sp_api_access_key_id'),
-            "awsSecretAccessKey" => config('app.aws_sp_api_access_secret_id'),
-            "lwaRefreshToken" => $token,
-            "roleArn" => config('app.aws_sp_api_role_arn'),
-            "endpoint" => Endpoint::EU,
-        ]);
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
-        $apiInstance = new OrdersApi($config);
-        $order_id = '407-6605984-0453141'; // string | An Amazon-defined order identifier, in 3-7-7 format.
+            Log::warning("Export asin command executed local !");
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan pms:seller-order-item-import > /dev/null &";
+            exec($command);
+        } else {
 
-        try {
-            $result = $apiInstance->getOrderItems($order_id)->getPayload();
-
-            po($result);
-        } catch (Exception $e) {
-            echo 'Exception when calling OrdersApi->getOrder: ', $e->getMessage(), PHP_EOL;
+            Artisan::call('pms:seller-order-item-import ');
         }
+
+        return redirect()->back();
+
+        // $token = 'Atzr|IwEBIG3zt3kKghE3Bl56OEGAxxeodmEzfaMAnMl0PivBlfumR8224Adu9lb33DKLEvHD6OBwdIBkaVlIZ5L2axypPm-LLuKPabvUCmRZ6F6C8KZKBJYS2u1sJVqzMxxoFSs6DTFLMxx8WBVXY395aKUzK3plz3-ttDN-YUGjiKR9-kFhLek1ZdjxwTQkvUdWdfpuDtcnW0veAPS0JUHVwTN39hpwJtPXm98XwD-wEe16n9qoWoak-UvtuML8irbdUdATSA4FLSX08H2V7SFAjdktXEW13v6gBs3xfCYn_w9Y4H29K5i5_vkQyiqj0j1FMK0nmtU';
+        // $config = new Configuration([
+        //     "lwaClientId" => config('app.aws_sp_api_client_id'),
+        //     "lwaClientSecret" => config('app.aws_sp_api_client_secret'),
+        //     "awsAccessKeyId" => config('app.aws_sp_api_access_key_id'),
+        //     "awsSecretAccessKey" => config('app.aws_sp_api_access_secret_id'),
+        //     "lwaRefreshToken" => $token,
+        //     "roleArn" => config('app.aws_sp_api_role_arn'),
+        //     "endpoint" => Endpoint::EU,
+        // ]);
+
+        // $apiInstance = new OrdersApi($config);
+        // $order_id = '407-6605984-0453141'; // string | An Amazon-defined order identifier, in 3-7-7 format.
+
+        // try {
+        //     $result = $apiInstance->getOrderItems($order_id)->getPayload();
+
+        //     po($result);
+        // } catch (Exception $e) {
+        //     echo 'Exception when calling OrdersApi->getOrder: ', $e->getMessage(), PHP_EOL;
+        // }
     }
 }

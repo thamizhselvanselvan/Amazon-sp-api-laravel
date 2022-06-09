@@ -23,6 +23,9 @@
             <a href="{{route('getOrder.list')}}">
                 <x-adminlte-button label="Selected Store Orders List" theme="primary" icon="fas fa-file-import" />
             </a>
+            <a href="{{route('getOrderitem.list')}}">
+                <x-adminlte-button label="Orders Item List" theme="primary" icon="fas fa-file-import" />
+            </a>
             <a href="{{route('select.store')}}">
             <!-- <i class="fa-solid fa-circle-check"></i> -->
                 <x-adminlte-button label="Select Store" theme="primary" icon="fas fa-check-circle" />
