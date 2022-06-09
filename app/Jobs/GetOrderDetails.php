@@ -69,7 +69,7 @@ class GetOrderDetails implements ShouldQueue
 
         $this->getOrderapi($config, $order_id, $seller_id);
 
-        $this->getOrderItemsApi($config, $order_id, $seller_id);
+        $this->getOrderItemsApi($config, $order_id, $seller_id); 
     }
 
     public function getOrderapi($config, $order_id, $seller_id)

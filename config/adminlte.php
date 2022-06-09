@@ -734,7 +734,7 @@ return [
                 [
                     'text' => 'Invoice',
                     'url' => 'invoice/manage',
-                    'can' => ['Admin', 'BOE'],
+                    'can' => ['Admin', 'Inventory'],
                 ],
 
                 [
@@ -760,7 +760,7 @@ return [
                 [
                     'text' => 'Label',
                     'url' => '',
-                    'can' => ['Admin', 'BOE'],
+                    'can' => ['Admin', 'Inventory'],
                 ],
 
             ],

@@ -48,7 +48,8 @@
                     <th>S/N</th>
                     <th>Store Name</th>
                     <th>Region</th>
-                    <th>Action</th>
+                    <th>Order</th>
+                    <th>Order Item</th>
                 </tr>
             </thead>
             <tbody>
@@ -82,8 +83,14 @@
                 name: 'region'
             },
             {
-                data: 'action',
-                name: 'action',
+                data: 'order',
+                name: 'order',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'order_item',
+                name: 'order_item',
                 orderable: false,
                 searchable: false
             }
@@ -95,6 +102,8 @@
     $('#select_store').on('click', function() {
 
         let selected_store = '';
+        let order_item = '';
+        let order_count = 0;
         let count = 0;
         $("input[name='options[]']:checked").each(function() {
             if (count == 0) {
@@ -106,6 +115,17 @@
             count++;
         });
 
+        $("input[name='orderItem[]']:checked").each(function() {
+
+            if (order_count == 0) {
+
+                order_item += $(this).val();
+            } else {
+                order_item += '-' + $(this).val();
+            }
+            order_count++;
+        });
+
         $.ajax({
             method: 'post',
             url: '/orders/update-store',
@@ -113,6 +133,7 @@
                 "_token": "{{ csrf_token() }}",
                 "_method": 'post',
                 'selected_store': selected_store,
+                'order_item': order_item,
             },
             success: function(response) {
 
@@ -120,6 +141,24 @@
                 window.location = '/orders/list';
             }
         })
+    });
+    let val;
+    $(document).ready(function() {
+        let count = 0;
+        $("input[name='options[]']:checked").each(function() {
+            val = $(this).val();
+            $('#orderitem' + val).prop('disabled', false);
+        });
+
+        $('.order').change(function() {
+            $val = $(this).val();
+            if ($('#order' + $val).is(':checked')) {
+                $('#orderitem' + $val).prop('disabled', false);
+            } else {
+                $('#orderitem' + $val).prop('checked', false);
+                $('#orderitem' + $val).prop('disabled', true);
+            }
+        });
     });
 </script>
 

@@ -76,10 +76,17 @@ class OrdersListController extends Controller
     public function selectStore(Request $request)
     {
         if ($request->ajax()) {
+
             $store_status_array = [];
+            $store_order_item = [];
             $store_status = OrderSellerCredentials::where('dump_order', 1)->get();
             foreach ($store_status as $key => $value) {
-                $store_status_array[$value['seller_id']] = 1;
+                $seller = $value['seller_id'];
+                $store_status_array[$seller] = 1;
+                if($value['get_order_item'] == 1)
+                {
+                    $store_order_item[$seller] = 1;
+                }
             }
             $aws_credential = Aws_Credential::with('mws_region')->where('api_type', 1)->get();
             return DataTables::of($aws_credential)
@@ -88,15 +95,23 @@ class OrdersListController extends Controller
 
                     return $mws_region['mws_region']['region'] . ' [' . $mws_region['mws_region']['region_code'] . ']';
                 })
-                ->addColumn('action', function ($id) use ($store_status_array) {
+                ->addColumn('order', function ($id) use ($store_status_array) {
                     if (array_key_exists($id['seller_id'], $store_status_array)) {
-                        $action = '<div class="pl-2"><input class="" type="checkbox" checked value=' . $id['id'] . ' name="options[]" ></div>';
+                        $action = '<div class="pl-2"><input class="order" type="checkbox" checked value=' . $id['id'] .' id="order'.$id['id'].'"  name="options[]" ></div>';
                     } else {
-                        $action = '<div class="pl-2"><input class="" type="checkbox" value=' . $id['id'] . ' name="options[]" ></div>';
+                        $action = '<div class="pl-2"><input class="order" type="checkbox" value=' . $id['id'] .' id="order'.$id['id'].'" name="options[]" ></div>';
                     }
                     return $action;
                 })
-                ->rawColumns(['region', 'action'])
+                ->addColumn('order_item', function ($id) use ($store_order_item) {
+                    if (array_key_exists($id['seller_id'], $store_order_item)) {
+                        $action = '<div class="pl-2"><input class="order_item" type="checkbox" checked value=' . $id['id'] .' id="orderitem'.$id['id'].'" name="orderItem[]" ></div>';
+                    } else {
+                        $action = '<div class="pl-2"><input class="order_item" type="checkbox" disabled value=' . $id['id'] .' id="orderitem'.$id['id'].'" name="orderItem[]" ></div>';
+                    }
+                    return $action;
+                })
+                ->rawColumns(['region', 'order','order_item'])
                 ->make(true);;
         }
 
@@ -105,6 +120,7 @@ class OrdersListController extends Controller
 
     public function updateStore(Request $request)
     {
+        return $request->all();
         $selected_store = explode('-', $request->selected_store);
         OrderSellerCredentials::query()->update(['dump_order' => 0]);
 
@@ -119,6 +135,9 @@ class OrdersListController extends Controller
             ];
             OrderSellerCredentials::upsert([$aws_cred_array], ['seller_id'], ['seller_id', 'store_name', 'country_code', 'dump_order']);
         }
+
+
+
         return response()->json(['success' => 'Store Selected']);
     }
 
