@@ -130,11 +130,11 @@ class InvoiceManagementController extends Controller
          $path = storage::path('invoice/invoice'.$invoice_no);
         $exportToPdf = $path. '.pdf';
         Browsershot::url($url)
-        ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+        // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
         ->showBackground()
         ->savePdf($exportToPdf);
         
-        return  $this->DownloadPdf($invoice_no);
+        return $this->DownloadPdf($invoice_no);
         
         // return redirect()->back();
     }
@@ -150,7 +150,7 @@ class InvoiceManagementController extends Controller
         // $path = storage::path('invoice/invoice'.$id);
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-        ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+        // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
         ->showBackground()
         ->savePdf($exportToPdf);
 

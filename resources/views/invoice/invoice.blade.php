@@ -39,37 +39,35 @@
                <!-- <small>Invoice / July period</small> -->
                <div class="date text-inverse m-t-5">INVOICE DATE: {{ $value->invoice_date }}</div>
                <div class="date text-inverse m-t-5">INVOICE NO: {{ $value->invoice_no }}</div>
-               <div class="date text-inverse m-t-5">ORDER NO: {{ $value->order_no }}</div>
-               <div class="date text-inverse m-t-5">ORDER DATE: {{ $value->order_date }}</div>
                <div class="date text-inverse m-t-5">CHANNEL: {{ $value->channel }}</div>
                <div class="date text-inverse m-t-5">SHIPPED BY: {{ $value->shipped_by }}</div>
                <div class="date text-inverse m-t-5">AWB NO: {{ $value->awb_no }}</div>
-               
+               <div class="date text-inverse m-t-5">HSN CODE: {{ $value->hsn_code }}</div>
                <div class="invoice-detail">
                   <br>
                   <!-- Services Product -->
                </div>
-               @endforeach
+              
             </div>
          
          <!-- end invoice-company -->
          <!-- begin invoice-header -->
-         @foreach ($data as $key => $value )
+         
              
          
          <div class="invoice-header">
             <div class="invoice-from">
                <address class="m-t-5 m-b-5">
-                  <strong class="text-inverse">STORE</strong><hr><br>
+                  <strong class="text-inverse"><h4>STORE</h4></strong><hr><br>
                   
-                  {{ $value->store_name_add }}
+                  {{ $value->store_name }}
                </address>
             </div>
             
             <div class="invoice-to">
                
                <address class="m-t-5 m-b-5">
-                  <strong class="text-inverse">BILL TO</strong><hr><br>
+                  <strong class="text-inverse"><h4>BILL TO</h4></strong><hr><br>
                   
                   {{ $value->ship_to_add }}
                </address>
@@ -77,7 +75,7 @@
             <div class="invoice-to">
                
                <address class="m-t-5 m-b-5">
-                  <strong class="text-inverse">SHIP TO</strong><hr><br>
+                  <strong class="text-inverse"><h4>SHIP TO</h4></strong><hr><br>
                   
                   {{ $value->ship_to_add }}
                </address>
@@ -89,25 +87,29 @@
          <div class="invoice-content">
             <!-- begin table-responsive -->
             <div class="table-responsive">
-               <table class="table table-invoice">
+               <table class="table table-invoice table-bordered table-bordered-dark">
                   <thead>
                      <tr>
-                        <th>ITEM DESCRIPTION</th>
+                        <th class="text-left">SR. NO.</th>
+                        <th class="text-center">ITEM DESCRIPTION</th>
+                        <th class="text-center">HSN CODE</th>
+                        <th class="text-center" width="10%">QTY</th>
                         <th class="text-center" width="10%">PRICE</th>
-                        <th class="text-center" width="10%">QUANTITY</th>
                         <th class="text-right" width="20%">TOTAL</th>
                      </tr>
                   </thead>
                   <tbody>
                      <tr>
-                        <td>
-                           <!-- <span class="text-inverse">Website design &amp; development</span><br>
-                           <small>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed id sagittis arcu.</small> -->
-                           {{ $value->item_description }}
-                        </td>
-                        <td class="text-center">{{ $value->currency." " . $value->product_price}}</td>
-                        <td class="text-center">{{ ($value->qty) }}</td>
-                        <td class="text-right">{{$value->currency." " .($value->grand_total) }}</td>
+                        <td> {{ $value->sr_no }} </td>
+                        <td> {{ $value->item_description }} </td>
+                        @if (( $value->product_price == '' || $value->qty =='' || $value->grand_total ==''))
+                           
+                        <td class="text-center">{{ $value->hsn_code }}</td>
+                        <td class="text-center">{{ $value->qty }}</td>
+                        <td class="text-center">{{ $value->product_price}}</td>
+                        <td class="text-right">{{ $value->grand_total }}</td>
+                        
+                        @endif
                      </tr>
                     
                   </tbody>

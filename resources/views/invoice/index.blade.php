@@ -43,26 +43,14 @@
             <td>S/N</td> 
             <td>Invoice No.</td>
             <td>Invoice Date</td>
-            <td>Order No</td>
-            <td>Order Date</td>
             <td>Channel</td>
             <td>Shipped By</td>
             <td>Awb No</td>
-            <!-- <td>arn</td>
-            <td>store_name_add</td>
-            <td>bill_to_add</td>
-            <td>ship_to_add</td>
-            <td>sr_no</td>
-            <td>item_description</td>
-            <td>hsn_code</td> -->
+            <td>Arn NO.</td>
+            <td>Hsn Code</td>
             <td>Quantity</td>
-            <td>Currency</td>
             <td>Product Price</td>
             <td>Action</td>
-            <!-- <td>taxable_value</td>
-            <td>total_including_taxes</td>
-            <td>grand_total</td> -->
-
         </tr>
     </thead>
     <tbody>
@@ -96,15 +84,6 @@
             orderable: false,
         },
         {
-            data: 'order_no',
-            name: 'order_no',
-            orderable: false,
-        },
-        {
-            data: 'order_date',
-            name: 'order_date',
-        },
-        {
             data: 'channel',
             name: 'channel'
         },
@@ -118,12 +97,16 @@
             name: 'awb_no',
         },
         {
-            data: 'qty',
-            name: 'qty'
+            data: 'arn_no',
+            name: 'arn_no'
         },
         {
-            data: 'currency',
-            name: 'currency'
+            data: 'hsn_code',
+            name: 'hsn_code'
+        },
+        {
+            data: 'qty',
+            name: 'qty'
         },
         {
             data: 'product_price',
