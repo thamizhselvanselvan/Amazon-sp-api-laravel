@@ -84,7 +84,7 @@
                     <div class=" col-6">
                         <x-adminlte-input label="Depth" name="depth" id="" value="{{ $name->depth }}" type="text"
                             placeholder="Depth" />
-                    </div>
+                    </div>asd
 
 
                 </div>

@@ -154,8 +154,8 @@
             <td>asin</td>
             <td>Item Name</td>
             <td>Inwarding Price</td>
-            <td>Quantity</td>
             <td>Outwarding Price</td>
+            <td>Quantity</td>
             <td>Action</td>
         </tr>
     </thead>
@@ -205,8 +205,9 @@
             data.append('asin[]', td[0].innerText);
             data.append('name[]', td[1].innerText);
             data.append('price[]', td[2].innerText);
-            data.append('quantity[]', td[3].children[0].value);
-            data.append('price[]', td[4].children[0].value);
+            data.append('price[]', td[3].innerText);
+            data.append('quantity[]', td[4].children[0].value);
+           
 
         });
 
@@ -414,9 +415,10 @@
                 let html = "<tr class='table_row'>";
                 html += "<td name='asin[]' data-id='"+ arr.id +"'>" + arr.asin + "</td>";
                 html += "<td name='name[]'>" + arr.item_name + "</td>";
-                html += "<td name='price[]'>" + arr.price + "</td>";
+                html += "<td>" + arr.price + "</td>";
+                html += "<td name='priceo[]'>" + arr.price + "</td>";
+                // html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
                 html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
-                html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
                 html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
                 html += "</tr>";
 

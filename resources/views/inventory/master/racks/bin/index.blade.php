@@ -81,10 +81,8 @@
                 },
 
                 {
-                    data: 'DT_RowIndex',
-                    name: 'DT_RowIndex',
-                    orderable: false,
-                    searchable: false
+                    data: 'bin_id',
+                    name: 'bin_id'
                 },
                 {
                     data: 'name',

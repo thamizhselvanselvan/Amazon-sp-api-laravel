@@ -21,7 +21,7 @@
 
 <div class="row mt-3">
     <div class="col">
-        <h1 class="m-0 text-dark text-center">Add Rack Shelves</h1>
+        <h1 class="m-0 text-dark text-center">Add  Shelves</h1>
     </div>
 </div>
 
@@ -57,7 +57,7 @@
 
             <div class="row justify-content-center">
 
-                <div class="col-6">
+                <div class="col-5">
 
                     <x-adminlte-select label="Select Warehouse" name="ware_id" id="warehouse">
                         <option>Select Warehouse</option>
@@ -69,7 +69,7 @@
 
                     </x-adminlte-select>
                 </div>
-                <div class="col-6">
+                <div class="col-5">
                     <x-adminlte-select label="Select Rack" name="rack_id" id="rack">
                         <option value="">Select Rack</option>
                     </x-adminlte-select>
@@ -78,12 +78,18 @@
                 </div>
             </div>
 
-            <div class="row ">
-                <div class="col-6">
+            <div class="row justify-content-center">
+            <div class="col-1">
+                  
+                </div>
+                <div class="col-5">
+                    <x-adminlte-input label="Shelve ID" name="sid" type="text" placeholder="ID" id="shelve_id" />
+                </div>
+                <div class="col-4">
                     <x-adminlte-input label="Shelve Name" name="name" type="text" placeholder="Name" id="shelve_name" />
                 </div>
 
-                <div class="col-4" id="add">
+                <div class="col-2" id="add">
                     <div style="margin-top: 2.3rem;">
                         <x-adminlte-button label="Add" theme="primary" icon="fas fa-plus" id="create" class="btn-sm " />
                     </div>
@@ -93,7 +99,7 @@
             <table class="table table-bordered yajra-datatable table-striped" id="rack_table">
                 <thead>
                     <tr>
-
+                        <td>Shelve ID</td>
                         <td>Shelve Name</td>
                         <td>Action</td>
                     </tr>
@@ -120,18 +126,24 @@
     /*hide untill data is filled*/
     $("#rack_table").hide();
     $("#create").on('click', function(e) {
-        let shelveid = $('#shelve_name').val();
+        let shelveid = $('#shelve_id').val();
+        let shelvename = $('#shelve_name').val();
         if (shelveid == '') {
+            alert('Shelve ID Requirerd');
+            return false;
+        } else
+        if (shelvename == '') {
             alert('Shelve Name Requirerd');
             return false;
         }
         $("#rack_table").show();
-
+       
+        let shelve_id;
         let shelve_name;
-
+        shelve_id = $('#shelve_id').val();
         shelve_name = $('#shelve_name').val();
-
         let html = "<tr class='table_row'>";
+        html += "<td> <input type='hidden' name='shelve_id[]' value='" + shelve_id + "' />" + shelve_id + "</td>";
         html += "<td> <input type='hidden'  name='name[]' value='" + shelve_name + "' /> " + shelve_name + "</td>";
         html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
 
@@ -141,34 +153,34 @@
         $('#rack_table').on('click', ".remove1", function() {
             $(this).closest("tr").remove();
         });
-
+        shelve_id = $('#shelve_id').val('');
         shelve_name = $('#shelve_name').val('');
     });
 
-    $(document).ready(function(){
+    $(document).ready(function() {
 
-        $('#warehouse').change(function(){
-            var id=$(this).val();
+        $('#warehouse').change(function() {
+            var id = $(this).val();
             $.ajax({
-                url :'/rack/'+id,
-                method : 'POST',
-                data:{ 
-                        'id':id,
-                        "_token": "{{ csrf_token() }}",
-                    },
-                success:function(result){
+                url: '/rack/' + id,
+                method: 'POST',
+                data: {
+                    'id': id,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(result) {
                     // alert('success');
                     $('#rack').empty();
-                    let rack_data ='<option> Select Rack </option>';
-                    $.each(result, function(i, result){
-                     rack_data += "<option value='"+result.rack_id+"'>"+result.rack_id+"/"+result.name+"</option>";
+                    let rack_data = '<option> Select Rack </option>';
+                    $.each(result, function(i, result) {
+                        rack_data += "<option value='" + result.rack_id + "'>" + result.rack_id + "/" + result.name + "</option>";
                     });
                     $('#rack').append(rack_data);
                     console.log(result);
                 },
-                error:function(){
+                error: function() {
                     alert('ERROR');
-                }  
+                }
             });
         });
     });

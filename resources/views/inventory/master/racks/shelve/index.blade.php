@@ -47,7 +47,8 @@
                     <tr>
                         <th>id</th>
                         <th>Warheouse Name</th>
-                        <th>Rack Name</th>
+                        <th>Rack ID</th>
+                        <th>Shelve ID</th>
                         <th>Shelves Name</th>
                         <th>Number of Bins</th>
                         <th>Action</th>
@@ -80,8 +81,12 @@
                         name: 'warehouse_name'
                     },
                     {
-                        data: 'rack_name',
-                        name: 'rack_name'
+                        data: 'rack_id',
+                        name: 'rack_id'
+                    },
+                    {
+                        data: 'shelve_id',
+                        name: 'shelve_id'
                     },
                     {
                         data: 'name',

@@ -22,7 +22,7 @@ class Shelve extends Model
     //     $this->getConnection()->setTablePrefix('sp_');
     // }
 
-    protected $fillable = ['rack_id', 'name', 'warehouse'];
+    protected $fillable = ['rack_id', 'name', 'warehouse','shelve_id'];
 
     public function warehouses()
     {
