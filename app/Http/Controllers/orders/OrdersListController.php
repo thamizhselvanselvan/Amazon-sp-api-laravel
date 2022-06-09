@@ -120,12 +120,17 @@ class OrdersListController extends Controller
 
     public function updateStore(Request $request)
     {
-        return $request->all();
+        // return $request->all();
+        $order_items =explode('-', $request->order_item);
+        foreach($order_items as $key => $value)
+        {
+            $order_item[$value] = 1;
+        }
         $selected_store = explode('-', $request->selected_store);
-        OrderSellerCredentials::query()->update(['dump_order' => 0]);
+        OrderSellerCredentials::query()->update(['dump_order' => 0, 'get_order_item' => 0]);
 
-        foreach ($selected_store as $id) {
-
+        foreach ($selected_store as $key => $id) {
+           
             $aws_cred = Aws_credential::with(['mws_region'])->where('id', $id)->get();
             $aws_cred_array = [
                 'seller_id' => $aws_cred[0]->seller_id,
@@ -133,7 +138,14 @@ class OrdersListController extends Controller
                 'store_name' => $aws_cred[0]->store_name,
                 'dump_order' => 1
             ];
-            OrderSellerCredentials::upsert([$aws_cred_array], ['seller_id'], ['seller_id', 'store_name', 'country_code', 'dump_order']);
+
+            if(array_key_exists($id, $order_item))
+            {
+                $aws_cred_array['get_order_item'] = 1;
+            }
+            
+            // return $aws_cred_array;
+            OrderSellerCredentials::upsert([$aws_cred_array], ['seller_id'], ['seller_id', 'store_name', 'country_code', 'dump_order', 'get_order_item']);
         }
 
 
