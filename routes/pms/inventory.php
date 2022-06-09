@@ -36,8 +36,6 @@ Route::get('shipment/select/region', 'Inventory\inwarding\InventoryShipmentContr
 Route::get('shipment/inward/view', 'Inventory\inwarding\InventoryShipmentController@inwardingdata')->name('shipments.view');
 Route::get('shipment/single/view', 'Inventory\inwarding\InventoryShipmentController@singleview')->name('shipments.single_view');
 Route::get('inventory/shipments/{id}/place','Inventory\inwarding\InventoryShipmentController@store');
-Route::get('shipment/autoplace', 'Inventory\inwarding\InventoryShipmentController@autoselect');
-Route::post('shipment/place', 'Inventory\inwarding\InventoryShipmentController@placeship');
 
 Route::post('racks/{id}','Inventory\inwarding\InventoryShipmentController@getRack');
 Route::post('Shelves/{id}','Inventory\inwarding\InventoryShipmentController@getShelve');
@@ -49,6 +47,8 @@ Route::get('shipment/autofinish', 'Inventory\Outwarding\InventoryOutwardShipment
  Route::post('shipment/storeoutshipment', 'Inventory\Outwarding\InventoryOutwardShipmentController@storeoutshipment');
  Route::get('shipment/select/View', 'Inventory\Outwarding\InventoryOutwardShipmentController@selectview');
  Route::get('shipment/outwarding/view', 'Inventory\Outwarding\InventoryOutwardShipmentController@outwardingview')->name('outwarding.view');
+Route::get('inventory/outwardings/{id}/outship','Inventory\Outwarding\InventoryOutwardShipmentController@outstore');
+
  Route::resource('inventory/outwardings','Inventory\Outwarding\InventoryOutwardShipmentController');
  
 

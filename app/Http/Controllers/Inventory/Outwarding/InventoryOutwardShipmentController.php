@@ -3,15 +3,18 @@
 namespace App\Http\Controllers\Inventory\Outwarding;
 
 use Carbon\Carbon;
+use App\Models\Currency;
 use Illuminate\Http\Request;
+use App\Models\Inventory\Rack;
 use App\Models\Inventory\Vendor;
 use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory\Destination;
-use App\Models\Currency;
 use App\Models\Inventory\Outshipment;
 use Yajra\DataTables\Facades\DataTables;
+
+use function React\Promise\reduce;
 
 class InventoryOutwardShipmentController extends Controller
 {
@@ -33,7 +36,8 @@ class InventoryOutwardShipmentController extends Controller
                     return ($data->vendors) ? $data->vendors->name : " NA";
                 })
                 ->addColumn('action', function ($row) {
-                    $actionBtn = '<div class="d-flex"><a href="/inventory/outwardings/' . $row->ship_id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i>  View Shipment</a>';
+                    $actionBtn = '<div class="d-flex"><a href="/inventory/outwardings/' . $row->ship_id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> View</a>';
+                    $actionBtn .= '<div class="d-flex"><a href="/inventory/outwardings/' . $row->ship_id . '/outship" class="store btn btn-primary btn-sm ml-2"><i class="fas fa-box"></i> Bin storage </a>';
                     return $actionBtn;
                 })
                 ->rawColumns(['destinations_name', 'action'])
@@ -58,11 +62,21 @@ class InventoryOutwardShipmentController extends Controller
 
     public function show($id)
     {
-
         $outview = Outshipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
 
         return view('inventory.outward.shipment.view', compact('outview'));
     }
+
+    public function outstore($id)
+    {
+        $reduce = Outshipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
+
+        $warehouse_id = ($reduce->warehouse);
+        $rack = Rack::where('warehouse_id', $warehouse_id)->get();
+
+        return view('inventory.outward.shipment.store', compact('reduce', 'rack'));
+    }
+
     public function autofinish(Request $request)
     {
 
@@ -111,7 +125,7 @@ class InventoryOutwardShipmentController extends Controller
 
 
         foreach ($request->id as $key1 => $id) {
-            
+
             if ($inventory = Inventory::where('id', $id)->first()) {
 
                 Inventory::where('id', $id)->update([
@@ -121,7 +135,7 @@ class InventoryOutwardShipmentController extends Controller
                 ]);
             }
         }
-    
+
         return response()->json(['success' => 'Shipment has Created successfully']);
     }
     public function outwardingview(Request $request)
