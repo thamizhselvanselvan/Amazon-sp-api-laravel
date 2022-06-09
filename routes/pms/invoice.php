@@ -10,3 +10,4 @@ Route::get('invoice/convert-pdf/{id}', 'invoice\InvoiceManagementController@show
 Route::post('invoice/export-pdf','invoice\InvoiceManagementController@ExportPdf');
 Route::get('invoice/download/{invoice_no}', 'invoice\InvoiceManagementController@DownloadPdf');
 Route::get('invoice/download-direct/{id}', 'invoice\InvoiceManagementController@DirectDownloadPdf');
+Route::get('invoice/download-all', 'invoice\InvoiceManagementController@DownloadAll');

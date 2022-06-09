@@ -11,12 +11,12 @@
         <!-- <a href="Export/view">
             <x-adminlte-button label="Download Invoice PDF" theme="primary" icon="fas fa-file-download" class="btn-sm" />
         </a> -->
-        <!-- <a href="Download">
-            <x-adminlte-button label="Download CSV file" theme="primary" icon="fas fa-file-download" />
+        <!-- <a href="">
+            <x-adminlte-button label="Download All file" id="checkall" theme="primary" icon="fas fa-file-download" />
         </a> -->
-        <!-- <a href=""> -->
-            <!-- <x-adminlte-button label="Convert pdf" id='convert_pdf' theme="primary" icon="fas fa-check-circle" class="btn-sm" /> -->
-        <!-- </a> -->
+        <a href="download-all"> 
+            <x-adminlte-button label="Download All" id='download_pdf' theme="primary" icon="fas fa-check-circle" class="btn-sm" />
+        </a>
     </h2>
 </div>
 @stop
@@ -112,7 +112,6 @@
             data: 'product_price',
             name: 'product_price'
         },
-        
         {
             data: 'action',
             name: 'action'
@@ -122,7 +121,7 @@
 
     });
 
-    // $('').on('click', function() {
+    // $('#download_pdf').click( function() {
 
     //     let id = '';
     //     let count = 0;
@@ -131,11 +130,12 @@
     //             id += $(this).val();
     //         } else {
     //             id += '-' + $(this).val();
+    //             alert(id);
     //         }
     //         count++;
         
     //     });
-    //     // window.location.href = '/invoice/convert-pdf/'+id;
+    //     window.location.href = '/invoice/download-all/'+id;
 
     // });
 
