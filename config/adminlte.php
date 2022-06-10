@@ -310,6 +310,12 @@ return [
                     //     ]
                     // ],
                 ],
+                [
+                    'text' => 'Geo',
+                    'url' => 'admin/geo',
+                    'icon' => 'fas fa-user',
+                    'can' =>  ['Admin']
+                ],
 
             ],
         ],

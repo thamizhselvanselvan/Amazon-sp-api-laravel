@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\invoice;
 
+use File;
+use DateTime;
+use ZipArchive;
 use RedBeanPHP\R;
 use League\Csv\Reader;
 use App\Models\Invoice;
@@ -25,7 +28,6 @@ class InvoiceManagementController extends Controller
             }
             return DataTables::of($data)
                 ->addIndexColumn()
-                
                 ->addColumn('action', function ($id) use ($result) {
 
                     // $action = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
@@ -33,6 +35,7 @@ class InvoiceManagementController extends Controller
                     $action .= '<div class="d-flex pl-2"><a href="/invoice/download-direct/' . $id->id .' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
                     return $action;
                 })
+
                 ->rawColumns(['action'])
                 ->make(true);
         }
@@ -52,15 +55,9 @@ class InvoiceManagementController extends Controller
     public function showTemplate(Request $request)
     {
         $id = $request->id;
-        
-        // foreach($allid as $key => $id)
-        // {  
-            $data = Invoice::where('id', $id)->get();
-            $invoice_no = $data[0]->invoice_no;
-            // po($uid);
-            // exit;
-        // }
-        
+        $data = Invoice::where('id', $id)->get();
+        $invoice_no = $data[0]->invoice_no;
+           
         return view('invoice.invoice', compact(['data'],'invoice_no'));
     }
 
@@ -70,19 +67,13 @@ class InvoiceManagementController extends Controller
         foreach ($request->files as $key => $files) {
 
             foreach ($files as $keys => $file) {
-                // $file_extension = $file->getClientOriginalExtension();
-                // if ($file_extension == '') 
-                {
+                
+                $fileName = $file->getClientOriginalName();
+                $fileName = uniqid() . ($fileName);
 
-                    $fileName = $file->getClientOriginalName();
-                    $fileName = uniqid() . ($fileName);
-                    // $desinationPath = 'BOE/' . $company_id . '/' . $year . '/' . $month . '/' . $fileName;
-                    // Storage::put($desinationPath,  file_get_contents($file));
-                }
             }
         }
-        // $data = file_get_contents($file);
-
+        
         $host = config('database.connections.web.host');
         $dbname = config('database.connections.web.database');
         $port = config('database.connections.web.port');
@@ -107,22 +98,34 @@ class InvoiceManagementController extends Controller
      // po($header);
      foreach($data as $result)
      {    
-          foreach($result as $key2 => $record)
-          {
-               if($key2 != 0 )
-               {
-                    $invoice = R::dispense('invoices');
+        foreach($result as $key2 => $record)
+        {
+            if($key2 != 0 )
+            {
+                $invoice = R::dispense('invoices');
+                
+                if(!Invoice::where('invoice_no',$record[0])->exists())
+                { 
                     foreach($record as $key3 => $value)
-                    {
-                         $name = (isset($header[$key3])) ? $header[$key3] : null;
-                         if($name)
-                         {
-                               $invoice->$name = $value;  
-                         }
-                    }   
-                    R::store($invoice);
-               }
-          }
+                    { 
+                        $name = (isset($header[$key3])) ? $header[$key3] : null;
+                        if($name)
+                        {
+                            $invoice->$name = $value;  
+                            // if($name == 'invoice_date')
+                            // {
+                            //     $date = Date(str_replace('/','-',$name));
+                            //     $challan_date_formate =$date->format('Y-m-d');
+                            //     $invoice->$name = $challan_date_formate;
+
+                            // }
+                        }
+                        
+                    } 
+                    R::store($invoice);  
+                } 
+            }
+        }
      }
         
      return response()->json(["success" => "all file uploaded successfully"]);
@@ -130,15 +133,21 @@ class InvoiceManagementController extends Controller
 
     public function DirectDownloadPdf(Request $request, $id)
     {
-        $url1 =  URL::current();
-        $url = str_replace('download-direct', 'convert-pdf', $url1);
-         $path = storage::path('invoice/invoice'.$id);
+        $data = Invoice::where('id', $id)->get();
+        $invoice_no = $data[0]->invoice_no;
+
+        $currenturl =  URL::current();
+        $url = str_replace('download-direct', 'convert-pdf', $currenturl);
+         $path = storage::path('invoice/invoice'.$invoice_no);
         $exportToPdf = $path. '.pdf';
         Browsershot::url($url)
         // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
         ->showBackground()
         ->savePdf($exportToPdf);
-        // $this->DownloadPdf($id);
+        
+        return $this->DownloadPdf($invoice_no);
+       
+        // return redirect()->back();
     }
 
     public function ExportPdf(Request $request)
@@ -160,9 +169,48 @@ class InvoiceManagementController extends Controller
 
     }
 
-    public function DownloadPdf(Request $request, $id)
+    public function DownloadPdf($invoice_no)
     {
-        return Storage::download('invoice/invoice'.$id.'.pdf');
+        return Storage::download('invoice/invoice'.$invoice_no.'.pdf');
+    }
+
+    public function DownloadAll()
+    {
+        $totalid = Invoice::all();
+        foreach($totalid as $total)
+        {
+            $id = $total->id;
+            $invoice_no = $total->invoice_no;
+            $currenturl =  URL::current();
+            $url = str_replace('download-all', 'convert-pdf', $currenturl. '/'.$id);
+            $path = storage::path('invoice/invoice'.$invoice_no);
+            $exportToPdf = $path. '.pdf';
+            Browsershot::url($url)
+            ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            ->showBackground()
+            ->savePdf($exportToPdf); 
+            // $this->DownloadPdf($invoice_no);
+        }
+
+        // begin create zip folder for pdf
+
+        $zip = new ZipArchive;
+        $fileName = 'invoice.zip';
+
+        if($zip->open($fileName, ZipArchive::CREATE) === TRUE)
+        {
+            $files = storage::files(Storage::path('invoice'));
+            foreach($files as $key => $value)
+            {
+                $relativeNameInZipFile = basename($value);
+                $zip->addFile($value, $relativeNameInZipFile);
+            }
+            $zip->close();
+        }
+        return Storage::download($fileName);
+
+
+        // end create zip folder for pdf
     }
 
 }

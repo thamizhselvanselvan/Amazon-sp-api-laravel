@@ -39,37 +39,35 @@
                <!-- <small>Invoice / July period</small> -->
                <div class="date text-inverse m-t-5">INVOICE DATE: {{ $value->invoice_date }}</div>
                <div class="date text-inverse m-t-5">INVOICE NO: {{ $value->invoice_no }}</div>
-               <div class="date text-inverse m-t-5">ORDER NO: {{ $value->order_no }}</div>
-               <div class="date text-inverse m-t-5">ORDER DATE: {{ $value->order_date }}</div>
                <div class="date text-inverse m-t-5">CHANNEL: {{ $value->channel }}</div>
                <div class="date text-inverse m-t-5">SHIPPED BY: {{ $value->shipped_by }}</div>
                <div class="date text-inverse m-t-5">AWB NO: {{ $value->awb_no }}</div>
-               
+               <div class="date text-inverse m-t-5">HSN CODE: {{ $value->hsn_code }}</div>
                <div class="invoice-detail">
                   <br>
                   <!-- Services Product -->
                </div>
-               @endforeach
+              
             </div>
          
          <!-- end invoice-company -->
          <!-- begin invoice-header -->
-         @foreach ($data as $key => $value )
+         
              
          
          <div class="invoice-header">
             <div class="invoice-from">
                <address class="m-t-5 m-b-5">
-                  <strong class="text-inverse">STORE</strong><hr><br>
+                  <strong class="text-inverse"><h6><b>STORE</b></h6></strong><hr><br>
                   
-                  {{ $value->store_name_add }}
+                  {{ $value->store_name }}
                </address>
             </div>
             
             <div class="invoice-to">
                
                <address class="m-t-5 m-b-5">
-                  <strong class="text-inverse">BILL TO</strong><hr><br>
+                  <strong class="text-inverse"><h6><b>BILL TO</b></h6></strong><hr><br>
                   
                   {{ $value->ship_to_add }}
                </address>
@@ -77,7 +75,7 @@
             <div class="invoice-to">
                
                <address class="m-t-5 m-b-5">
-                  <strong class="text-inverse">SHIP TO</strong><hr><br>
+                  <strong class="text-inverse"><h6><b>SHIP TO</b></h6></strong><hr><br>
                   
                   {{ $value->ship_to_add }}
                </address>
@@ -89,25 +87,46 @@
          <div class="invoice-content">
             <!-- begin table-responsive -->
             <div class="table-responsive">
-               <table class="table table-invoice">
+               <table class="table table-invoice table-bordered table-bordered-dark">
                   <thead>
                      <tr>
-                        <th>ITEM DESCRIPTION</th>
+                        <th class="text-center">SR. NO.</th>
+                        <th class="text-center">ITEM DESCRIPTION</th>
+                        <th class="text-center">HSN CODE</th>
+                        <th class="text-center" width="10%">QTY</th>
                         <th class="text-center" width="10%">PRICE</th>
-                        <th class="text-center" width="10%">QUANTITY</th>
                         <th class="text-right" width="20%">TOTAL</th>
                      </tr>
                   </thead>
                   <tbody>
                      <tr>
-                        <td>
-                           <!-- <span class="text-inverse">Website design &amp; development</span><br>
-                           <small>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed id sagittis arcu.</small> -->
-                           {{ $value->item_description }}
-                        </td>
-                        <td class="text-center">{{ $value->currency." " . $value->product_price}}</td>
-                        <td class="text-center">{{ ($value->qty) }}</td>
-                        <td class="text-right">{{$value->currency." " .($value->grand_total) }}</td>
+                        <td class="text-center"> {{ $value->sr_no }} </td>
+                        <td class="text-center"> {{ $value->item_description }} </td>
+                        
+                        @if ( $value->hsn_code == '')
+                        <td class="text-center">{{ $value->hsn_code }}</td>
+                        @else
+                        <td class="text-center">{{ $value->hsn_code }}</td>
+                        @endif
+
+                        @if ( $value->qty =='')
+                        <td class="text-center">{{ 0 }}</td>
+                        @else
+                        <td class="text-center">{{ $value->qty }}</td>
+                        @endif
+                        
+                        @if ( $value->product_price =='')
+                        <td class="text-center">{{ 0 }}</td>
+                        @else
+                        <td class="text-center">{{ $value->product_price}}</td>
+                        @endif
+                        
+                         @if( $value->grand_total =='' )
+                         <td class="text-right">{{ 0 }}</td>
+                         @else
+                         <td class="text-right">{{ $value->grand_total }}</td>
+                         @endif
+                       
                      </tr>
                     
                   </tbody>
@@ -120,7 +139,12 @@
                   <div class="invoice-price-row">
                      <div class="sub-price">
                         <small>SUBTOTAL</small>
-                        <span class="text-inverse">{{$value->currency." " . $value->grand_total }}</span>
+                        @if ( $value->grand_total =='')
+                        <span class="text-inverse">{{ 0 }}</span>
+                        @else
+                        <span class="text-inverse">{{ $value->grand_total }}</span>
+                        @endif
+                        
                      </div>
                      <div class="sub-price">
                         <i class="fa fa-plus text-muted"></i>
@@ -129,22 +153,27 @@
                         @if ($value->taxable_value == '')
                            
                            <small>TAX ( 0 )</small>
-                           <span class="text-inverse">{{$value->currency." " . 0 }}</span>
+                           <span class="text-inverse">{{ 0 }}</span>
                         @else
                            <small>Tax ({{ $value->taxable_value }})</small>
-                           <span class="text-inverse">{{$value->currency." " . $value->taxable_value }}</span>
+                           <span class="text-inverse">{{ $value->taxable_value }}</span>
                         @endif
                      </div>
                   </div>
                </div>
                <div class="invoice-price-right">
-                  <small>GRAND TOTAL</small> <span class="f-w-600">{{$value->currency." " .($value->grand_total) }}</span>
+                  @if ($value->grand_total == '')
+                  <small>GRAND TOTAL</small> <span class="f-w-600">{{ 0 }}</span>
+                  @else
+                  <small>GRAND TOTAL</small> <span class="f-w-600">{{ $value->grand_total }}</span>
+                  @endif
+                  
                </div>
             </div>
             <!-- end invoice-price -->
          </div>
          @endforeach
-         
+         <p class=" mb-0 text-center">This is system generated invoice, it may contain only digital signature</p>
       </div>
    </div>
 </div>

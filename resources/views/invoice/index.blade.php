@@ -11,12 +11,12 @@
         <!-- <a href="Export/view">
             <x-adminlte-button label="Download Invoice PDF" theme="primary" icon="fas fa-file-download" class="btn-sm" />
         </a> -->
-        <!-- <a href="Download">
-            <x-adminlte-button label="Download CSV file" theme="primary" icon="fas fa-file-download" />
+        <!-- <a href="">
+            <x-adminlte-button label="Download All file" id="checkall" theme="primary" icon="fas fa-file-download" />
         </a> -->
-        <!-- <a href=""> -->
-            <!-- <x-adminlte-button label="Convert pdf" id='convert_pdf' theme="primary" icon="fas fa-check-circle" class="btn-sm" /> -->
-        <!-- </a> -->
+        <a href="download-all"> 
+            <x-adminlte-button label="Download All" id='download_pdf' theme="primary" icon="fas fa-check-circle" class="btn-sm" />
+        </a>
     </h2>
 </div>
 @stop
@@ -43,26 +43,14 @@
             <td>S/N</td> 
             <td>Invoice No.</td>
             <td>Invoice Date</td>
-            <td>Order No</td>
-            <td>Order Date</td>
             <td>Channel</td>
             <td>Shipped By</td>
             <td>Awb No</td>
-            <!-- <td>arn</td>
-            <td>store_name_add</td>
-            <td>bill_to_add</td>
-            <td>ship_to_add</td>
-            <td>sr_no</td>
-            <td>item_description</td>
-            <td>hsn_code</td> -->
+            <td>Arn NO.</td>
+            <td>Hsn Code</td>
             <td>Quantity</td>
-            <td>Currency</td>
             <td>Product Price</td>
             <td>Action</td>
-            <!-- <td>taxable_value</td>
-            <td>total_including_taxes</td>
-            <td>grand_total</td> -->
-
         </tr>
     </thead>
     <tbody>
@@ -96,15 +84,6 @@
             orderable: false,
         },
         {
-            data: 'order_no',
-            name: 'order_no',
-            orderable: false,
-        },
-        {
-            data: 'order_date',
-            name: 'order_date',
-        },
-        {
             data: 'channel',
             name: 'channel'
         },
@@ -118,18 +97,21 @@
             name: 'awb_no',
         },
         {
-            data: 'qty',
-            name: 'qty'
+            data: 'arn_no',
+            name: 'arn_no'
         },
         {
-            data: 'currency',
-            name: 'currency'
+            data: 'hsn_code',
+            name: 'hsn_code'
+        },
+        {
+            data: 'qty',
+            name: 'qty'
         },
         {
             data: 'product_price',
             name: 'product_price'
         },
-        
         {
             data: 'action',
             name: 'action'
@@ -139,7 +121,7 @@
 
     });
 
-    // $('').on('click', function() {
+    // $('#download_pdf').click( function() {
 
     //     let id = '';
     //     let count = 0;
@@ -148,11 +130,12 @@
     //             id += $(this).val();
     //         } else {
     //             id += '-' + $(this).val();
+    //             alert(id);
     //         }
     //         count++;
         
     //     });
-    //     // window.location.href = '/invoice/convert-pdf/'+id;
+    //     window.location.href = '/invoice/download-all/'+id;
 
     // });
 
