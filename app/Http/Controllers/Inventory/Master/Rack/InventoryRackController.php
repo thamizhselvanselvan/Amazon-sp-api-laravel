@@ -16,21 +16,21 @@ class InventoryRackController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     public function index(Request $request)
     {
         // $data = Shelve::query()->with(['racks']);
         // dd($data);
         if ($request->ajax()) {
 
-        //     $data = Shelve::query()->rightJoin('racks as r', function($join) {
-        //         $join->on("shelves.rack_id", "=", "r.id");
-        //    })->orderBy('r.id')
-        //    ->select('r.rack_id','r.id', 'r.name as rack_name', 'shelves.name')
-        //    ;
+            //     $data = Shelve::query()->rightJoin('racks as r', function($join) {
+            //         $join->on("shelves.rack_id", "=", "r.id");
+            //    })->orderBy('r.id')
+            //    ->select('r.rack_id','r.id', 'r.name as rack_name', 'shelves.name')
+            //    ;
 
             $data = Rack::with(['shelves']);
-       
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('shelves_no', function ($data) use (&$cnt, &$rack_id) {
@@ -60,27 +60,21 @@ class InventoryRackController extends Controller
     public function create()
     {
         $warehouse_lists = Warehouse::get();
-        
+
         return view('inventory.master.racks.rack.add', compact('warehouse_lists'));
     }
 
-    public function store(Request $request)     
+    public function store(Request $request)
     {
-
-        // $request->validate([
-        //     'name' => 'required|min:3|max:100',
-        //     'rack_id' => 'required|min:1|max:100'
-        // ]);
-
         $warehouse_exists = Warehouse::where('id', $request->warehouse_id)->exists();
-      
+
         if (!$warehouse_exists) {
             return redirect()->route('racks.create')->with('error', 'Selected  Warehouse is invalid');
         }
 
         $rack_lists = [];
 
-         foreach ($request->rack_id as $key => $rack_id) {
+        foreach ($request->rack_id as $key => $rack_id) {
 
             $rack_lists[] = [
                 'name' =>  $request->name[$key],
@@ -89,20 +83,19 @@ class InventoryRackController extends Controller
                 'created_at' => now(),
                 'updated_at' => now()
             ];
-        
         }
 
         Rack::insert($rack_lists);
-        
+
         return redirect()->route('racks.index')->with('success', 'Racks  has been created successfully');
     }
 
     public function edit($id)
     {
-
+        $warehouse_lists = Warehouse::get();
         $name = Rack::where('id', $id)->first();
-
-        return view('inventory.master.racks.rack.edit', compact('name'));
+        $selected_warehouse = $name->warehouse_id;
+        return view('inventory.master.racks.rack.edit', compact('name','warehouse_lists','selected_warehouse'));
     }
 
 

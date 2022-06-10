@@ -81,7 +81,7 @@ class InventoryBinController extends Controller
 
         ]);
 
-        $shelve_exists = Shelve::where('id', $request->shelve_id)->exists();
+        $shelve_exists = Shelve::where('shelve_id', $request->shelve_id)->exists();
 
         if (!$shelve_exists) {
             return redirect()->route('bins.create')->with('error', 'Selected shelve id invalid');
