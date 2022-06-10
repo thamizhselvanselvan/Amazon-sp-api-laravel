@@ -20,8 +20,7 @@ class InventoryShelveController extends Controller
     public function index(Request $request)
     {
 
-        //$rt = Shelve::query()->with(['bins', 'racks'])->get();
-
+    
         $data = Shelve::query()->with(['bins', 'racks', 'warehouses'])->get();
 
         if ($request->ajax()) {
@@ -30,9 +29,9 @@ class InventoryShelveController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('rack_name', function ($data) {
-                    return ($data->racks) ? $data->racks->name : "NA";
-                })
+                // ->addColumn('rack_name', function ($data) {
+                //     return ($data->racks) ? $data->racks->name : "NA";
+                // })
                 ->addColumn('bins_count', function ($data) {
                     return ($data->bins) ? $data->bins->count() : 0;
                 })
@@ -80,10 +79,11 @@ class InventoryShelveController extends Controller
 
         $shelve_lists = [];
 
-        foreach ($request->name as $key => $name) {
+        foreach ($request->shelve_id as $key => $shelve_id) {
             
             $shelve_lists[] = [
-                'name' => $name,
+                'name' =>  $request->name[$key],
+                'shelve_id' =>  $shelve_id,
                 'rack_id' => $request->rack_id,
                 'warehouse' => $request->ware_id,
                 'created_at' => now(),
@@ -110,24 +110,32 @@ class InventoryShelveController extends Controller
     {
 
         $validated = $request->validate([
-            'name' => 'required|min:3|max:100'
+            // 'warehouse' => 'required',
+            // 'rack_id' => 'required',
+            'name' => 'required|min:3|max:100',
+            'shelve_id' => 'required|min:1|max:100'
+
+           
         ]);
+       
+         Shelve::where('id', $id)->update($validated);
 
-        $rack_exists = Rack::where('id', $request->rack_id)->exists();
+        // $rack_exists = Rack::where('id', $request->rack_id)->exists();
 
-        if (!$rack_exists) {
-            return redirect()->route('shelves.edit')->with('error', 'Selected Rack id invalid');
-        }
-        $warehouse_exists = Warehouse::where('name', $request->name)->exists();
+        // if (!$rack_exists) {
+        //     return redirect()->route('shelves.edit')->with('error', 'Selected Rack id invalid');
+        // }
+        // $warehouse_exists = Warehouse::where('name', $request->name)->exists();
 
-        if (!$warehouse_exists) {
-            return redirect()->route('shelves.create')->with('error', 'Selected Warehouse is invalid');
-        }
-        Shelve::where('id', $id)->update([
-            'name' => $request->name,
-            'warehouse' => $request->ware_id,
-            'rack_id' => $request->rack_id
-        ]);
+        // if (!$warehouse_exists) {
+        //     return redirect()->route('shelves.create')->with('error', 'Selected Warehouse is invalid');
+        // }
+        // Shelve::where('id', $id)->update([
+        //     'shelve_id' => $request->shelve_id,
+        //     'name' => $request->name,
+        //     'warehouse' => $request->ware_id,
+        //     'rack_id' => $request->rack_id
+        // ]);
 
         return redirect()->route('shelves.index')->with('success', 'Shlves has been updated successfully');
     }
