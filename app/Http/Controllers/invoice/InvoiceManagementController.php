@@ -63,7 +63,6 @@ class InvoiceManagementController extends Controller
 
     public function UploadExcel(Request $request)
     {
-      
         foreach ($request->files as $key => $files) {
 
             foreach ($files as $keys => $file) {
@@ -83,19 +82,19 @@ class InvoiceManagementController extends Controller
      R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
        
      $data = Excel::toArray([], $file);
-
+     
      $header = [];
      $result = [];
      $check = ['.', '(', ')'];
      foreach($data[0][0] as $key => $value)
      {  
-         if($value) {
-            $testing = str_replace(' ', '_', trim($value));
-             $header[$key] = str_replace($check,'',strtolower($testing));
-         }
+        if($value) {
+        $testing = str_replace(' ', '_', trim($value));
+        $header[$key] = str_replace($check,'',strtolower($testing));
+        }
          
      } 
-     // po($header);
+    //  po($header);
      foreach($data as $result)
      {    
         foreach($result as $key2 => $record)
@@ -103,22 +102,21 @@ class InvoiceManagementController extends Controller
             if($key2 != 0 )
             {
                 $invoice = R::dispense('invoices');
-                
                 if(!Invoice::where('invoice_no',$record[0])->exists())
                 { 
                     foreach($record as $key3 => $value)
-                    { 
+                    {   
                         $name = (isset($header[$key3])) ? $header[$key3] : null;
                         if($name)
                         {
-                            $invoice->$name = $value;  
-                            // if($name == 'invoice_date')
-                            // {
-                            //     $date = Date(str_replace('/','-',$name));
-                            //     $challan_date_formate =$date->format('Y-m-d');
-                            //     $invoice->$name = $challan_date_formate;
-
-                            // }
+                                $invoice->$name = $value;  
+                                
+                            if(isset($header[1]))
+                            {
+                                $dateset = $header[1];
+                                $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($record[1])->format("d/m/Y");
+                                $invoice->$dateset = $date;
+                            }
                         }
                         
                     } 
@@ -130,7 +128,6 @@ class InvoiceManagementController extends Controller
         
      return response()->json(["success" => "all file uploaded successfully"]);
     }
-
     public function DirectDownloadPdf(Request $request, $id)
     {
         $data = Invoice::where('id', $id)->get();
@@ -146,7 +143,6 @@ class InvoiceManagementController extends Controller
         ->savePdf($exportToPdf);
         
         return $this->DownloadPdf($invoice_no);
-       
         // return redirect()->back();
     }
 
@@ -166,7 +162,6 @@ class InvoiceManagementController extends Controller
         ->savePdf($exportToPdf);
 
         return response()->json(["success" => "Export to PDF Successfully"]);
-
     }
 
     public function DownloadPdf($invoice_no)
@@ -186,20 +181,17 @@ class InvoiceManagementController extends Controller
             $path = storage::path('invoice/invoice'.$invoice_no);
             $exportToPdf = $path. '.pdf';
             Browsershot::url($url)
-            ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf); 
-            // $this->DownloadPdf($invoice_no);
         }
-
         // begin create zip folder for pdf
 
         $zip = new ZipArchive;
         $fileName = 'invoice.zip';
-
         if($zip->open($fileName, ZipArchive::CREATE) === TRUE)
         {
-            $files = storage::files(Storage::path('invoice'));
+            $files = File::files(Storage::path('invoice'));
             foreach($files as $key => $value)
             {
                 $relativeNameInZipFile = basename($value);
@@ -207,9 +199,7 @@ class InvoiceManagementController extends Controller
             }
             $zip->close();
         }
-        return Storage::download($fileName);
-
-
+        return  response()->download($fileName);
         // end create zip folder for pdf
     }
 
