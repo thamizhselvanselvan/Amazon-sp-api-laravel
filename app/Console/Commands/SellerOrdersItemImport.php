@@ -76,25 +76,27 @@ class SellerOrdersItemImport extends Command
 
     public function SelectedSellerOrderItem($apiInstance, $seller_id)
     {
-        $amazonorder_ids = DB::connection('order')->select("select amazon_order_identifier from orders where our_seller_identifier = $seller_id limit 2");
+        $amazonorder_ids = DB::connection('order')->select("SELECT amazon_order_identifier from orders where our_seller_identifier = $seller_id AND order_item = 0");
+
         foreach ($amazonorder_ids as $amazonorder_id) {
             $order_id = ($amazonorder_id->amazon_order_identifier);
             $data_element = array('buyerInfo');
             $next_token = NULL;
+
             try {
 
                 $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
                 $result_order_address = $apiInstance->getOrderAddress($order_id);
 
-                $this->OrderItemDataFormating($result_orderItems, $result_order_address);
+                $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id);
             } catch (Exception $e) {
 
-                Log::warning($e->getMessage(), PHP_EOL);
+                Log::warning($e->getMessage());
             }
         }
     }
 
-    public function OrderItemDataFormating($result_orderItems, $result_order_address)
+    public function OrderItemDataFormating($result_orderItems, $result_order_address, $order_id)
     {
         foreach ($result_orderItems['payload']['order_items'] as $result_order) {
             foreach ((array)$result_order as $result) {
@@ -147,5 +149,8 @@ class SellerOrdersItemImport extends Command
                 R::store($order_detials);
             }
         }
+        
+        DB::connection('order')
+            ->update("UPDATE orders SET order_item = '1' where amazon_order_identifier = '$order_id'");
     }
 }

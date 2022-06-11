@@ -172,9 +172,7 @@ class SellerOrdersImport extends Command
         //   $data = [];
             if (array_key_exists(0, $data)) 
             {
-
                 $count++;
-
                 $dataCheck = 1;
                 $id = $data[0]->id;
                 $update_orders = R::load('orders', $id);
@@ -183,9 +181,11 @@ class SellerOrdersImport extends Command
                     $update_orders->{$key} = $value;
                 }
                 $update_orders->updatedat = now();
-                // dd($update_orders, 'update');
                 R::store($update_orders);
+
             } else {
+
+                $orders->order_item = '0';
                 $orders->updatedat = now();
                 $orders->createdat = now();
                 // dd($orders);
