@@ -31,7 +31,7 @@ class Shelve extends Model
 
     public function bins()
     {
-        return $this->hasMany(Bin::class, 'shelve_id', 'id');
+        return $this->hasMany(Bin::class, 'shelve_id', 'shelve_id');
     }
 
     public function racks()

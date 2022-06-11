@@ -53,8 +53,8 @@
 
             @csrf
 
-            <div class="row justify-content-center">
-                <div class="col-6">
+            <div class="row">
+                <div class="col-4">
 
                     <x-adminlte-select label="Select Warehouse" name="ware_id" id="warehouse">
                         <option value="">Select Warehouse</option>
@@ -67,16 +67,14 @@
 
                     </x-adminlte-select>
                 </div>
-                <div class="col-6">
+                <div class="col-4">
 
                     <x-adminlte-select label="Select Rack" name="rack_id" id='rack_id'>
                         <option value="">Select Rack</option>
 
                     </x-adminlte-select>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
+                <div class="col-4">
 
                     <x-adminlte-select name="shelve_id" id='shelve_id' label="Select Shelve">
                         <option value=""> Select Shelve </option>
@@ -85,24 +83,31 @@
 
                 </div>
 
+            </div>
+            <div class="row">
+                
+                <div class="col-4">
+                    <x-adminlte-input label="Bin ID" name="bid" type="text" placeholder="ID" id="bin_id" />
+                </div>
 
-
-                <div class="col-6">
+                <div class="col-4">
                     <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name " />
+                </div>
+                <div class="col-4">
+                    <x-adminlte-input label="Width" name="width" id="width" type="text" placeholder="Width" />
                 </div>
             </div>
 
-            <div class="row justify-content-center">
-                <div class="col-3">
-                    <x-adminlte-input label="Width" name="width" id="width" type="text" placeholder="Width" />
-                </div>
-                <div class="col-3">
+            <div class="row">
+
+                
+                <div class="col-4">
                     <x-adminlte-input label="Height" name="height" id="height" type="text" placeholder="Height" />
                 </div>
-                <div class="col-3">
+                <div class="col-4">
                     <x-adminlte-input label="Depth" name="depth" id="depth" type="text" placeholder="Depth " />
                 </div>
-                <div class="col-3" id="add">
+                <div class="col-4" id="add">
                     <div style="margin-top: 2.3rem;">
                         <x-adminlte-button label="Add" theme="primary" icon="fas fa-plus" id="create" class="btn-sm " />
                     </div>
@@ -112,7 +117,7 @@
             <table class="table table-bordered yajra-datatable table-striped" id="bin_table">
                 <thead>
                     <tr>
-
+                        <td>Bin ID</td>
                         <td>Bin Name</td>
                         <td>Width</td>
                         <td>Height</td>
@@ -141,12 +146,15 @@
     $("#bin_table").hide();
     $("#add").on('click', function(e) {
 
-
+        let binid = $('#bin_id').val();
         let binname = $('#name').val();
         let wid = $('#width').val();
         let hei = $('#height').val();
         let dep = $('#depth').val();
-        if (binname == '') {
+        if (binid == '') {
+            alert('Bin ID Requirerd')
+            return false;
+        } else if (binname == '') {
             alert('Bin Name  Requirerd');
             return false;
         } else if (wid == '') {
@@ -164,18 +172,20 @@
 
 
         $("#bin_table").show();
-
+        let bin_id;
         let bin_name;
         let width;
         let height;
         let depth;
 
+        bin_id = $('#bin_id').val();
         bin_name = $('#name').val();
         width = $('#width').val();
         height = $('#height').val();
         depth = $('#depth').val();
 
         let html = "<tr class='table_row'>";
+        html += "<td> <input type='hidden' name='bin_id[]' value='" + bin_id + "' />" + bin_id + "</td>";
         html += "<td> <input type='hidden'  name='name[]' value='" + bin_name + "' /> " + bin_name + "</td>";
         html += "<td> <input type='hidden'  name='width[]' value='" + width + "' /> " + width + "</td>";
         html += "<td> <input type='hidden'  name='height[]' value='" + height + "' /> " + height + "</td>";
@@ -188,7 +198,7 @@
         $('#bin_table').on('click', ".remove1", function() {
             $(this).closest("tr").remove();
         });
-
+        bin_id = $('#bin_id').val('');
         bin_name = $('#name').val('');
         width = $('#width').val('');
         height = $('#height').val('');
@@ -237,7 +247,7 @@
                     $('#shelve_id').empty();
                     let shelve_data = '<option> Select Shelve </option>';
                     $.each(result, function(i, result) {
-                        shelve_data += "<option value='" + result.id + "'>" + result.id + "/" + result.name + "</option>";
+                        shelve_data += "<option value='" + result.shelve_id + "'>" + result.shelve_id+ "/" + result.name + "</option>";
                     });
                     $('#shelve_id').append(shelve_data);
                 },
