@@ -163,8 +163,8 @@ class TrackingStatusController extends Controller
         if (!Storage::exists($exportFilePath)) {
             Storage::put($exportFilePath, '');
         }
-        $this->writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
-        $this->writer->insertOne($headers);
+        $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
+        $writer->insertOne($headers);
         $csv_value = [];
         $count = 0;
         foreach ($records as $record) {
@@ -176,7 +176,7 @@ class TrackingStatusController extends Controller
             }
             $count ++;
         }
-        $this->writer->insertAll($csv_value);
+        $writer->insertAll($csv_value);
 
         return Storage::download($exportFilePath);
     }
