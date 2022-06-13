@@ -6,51 +6,50 @@
 
 <link rel="stylesheet" href="/css/styles.css">
 <style>
-.table td {
+    .table td {
         padding: 0;
         padding-left: 5px;
     }
+
     .table th {
         padding: 2;
         padding-left: 5px;
     }
-    
-        #detail {
-            font-weight: bold;
-        }
-    </style>
+
+    #detail {
+        font-weight: bold;
+    }
+</style>
 @stop
 
 @section('content_header')
-<div class="row ">
-<div style="margin-top: 1.3rem;">
-    <div class="col">
-        <h2 class="">
-            <h1 class="m-0 text-dark"> Stocks :</h1>
-        </h2>
-    </div>
-    </div>
-    <div class="col-2">
-
-        <x-adminlte-select name="ware_id" id="warehouse" label="Select Warehouse">
-            <option value=" ">Select Warehouse</option>
-            @foreach ($ware_lists as $ware_list)
-            <option value="{{ (isset($ware_list->shipment->warehouses)) ? $ware_list->shipment->warehouses->id : '' }}">{{ (isset($ware_list->shipment->warehouses)) ? $ware_list->shipment->warehouses->name : '' }}</option>
-            @endforeach
-        </x-adminlte-select>
-
-    </div>
-    <!-- <h2>
-        <div style="margin-top: 1.8rem;">
-            <a href="{{ route('shipments.create') }}">
-                <x-adminlte-button label="Inward" theme="primary" id="inward" icon="fas fa-plus" />
-            </a>
-            <a href="{{ route('outwardings.create') }}">
-                <x-adminlte-button label="Outward" theme="primary" id="outward" icon="fas fa-minus" />
-            </a>
+<div class="row">
+    <div class="col-1">
+        <div style="margin-top: 1.3rem;">
+            <h2 class="">
+                <h1 class="m-0 text-dark"> Stocks :</h1>
+            </h2>
         </div>
-    </h2> -->
-
+    </div>
+    <div class="col-11">
+        <form class="row" action="/inventory/export">
+            <div class="col-2">
+                <x-adminlte-select name="ware_id" id="warehouse" label="Select Warehouse">
+                    <option value=" ">Select Warehouse</option>
+                    @foreach ($ware_lists as $ware_list)
+                    <option value="{{ (isset($ware_list->shipment->warehouses)) ? $ware_list->shipment->warehouses->id : '' }}">{{ (isset($ware_list->shipment->warehouses)) ? $ware_list->shipment->warehouses->name : '' }}</option>
+                    @endforeach
+                </x-adminlte-select>
+            </div>
+            <div class="col-3">
+                <h2>
+                    <div style="margin-top: 1.8rem;">
+                        <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export" id="export" />
+                    </div>
+                </h2>
+            </div>
+        </form>
+    </div>
 </div>
 @stop
 @section('content')
@@ -93,11 +92,11 @@
 <script type="text/javascript">
     /*hide untill data is filled*/
     $("#inward").hide();
-    $("#outward,#detail_table").hide();
+    $("#outward,#detail_table,#export").hide();
     $("#warehouse").on('change', function(e) {
-        $("#inward,#outward,#detail_table").show();
+        $("#inward,#outward,#detail_table,#export").show();
     });
-    
+
     $('#warehouse').change(function(e) {
         e.preventDefault();
         var id = $(this).val();
@@ -114,7 +113,7 @@
                 console.log(response);
                 let html = '';
                 $.each(response, function(index, value) {
-               
+
                     const d = new Date(value.created_at);
 
                     html += "<tr>";

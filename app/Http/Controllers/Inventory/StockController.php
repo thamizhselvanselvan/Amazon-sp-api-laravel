@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Inventory;
 
+use League\Csv\Writer;
 use Illuminate\Http\Request;
+use App\Models\Inventory\Shipment;
 use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
 use App\Http\Controllers\Controller;
-use App\Models\Inventory\Shipment;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
 class StockController extends Controller
@@ -53,5 +55,41 @@ class StockController extends Controller
 
             return response()->json($ware);
         }
+    }
+
+    public function eportinv(Request $request)
+    {
+        $records = []; //Data from database
+        $records = Inventory::query()
+        ->select('warehouses.name', 'inventory.ship_id', 'inventory.asin', 'inventory.item_name', 'inventory.price', 'inventory.quantity', 'inventory.created_at', 'inventory.bin')
+        ->join('shipments', function($query) {
+            $query->on("shipments.ship_id", "=", "inventory.ship_id");
+        })
+        ->join('warehouses', function($query) {
+            $query->on("warehouses.id", "=", "shipments.warehouse");
+        })->where('warehouses.id', $request->ware_id)->get();
+
+
+        $headers = [
+            'Warehouse Name',
+            'Shipment ID',
+            'ASIN',
+            'Item Name',
+            'Inwarding Price',
+            'Quantity',
+            'Inwarding Date',
+            'Storage Bin'
+        ];
+        $exportFilePath = 'Inventory/WarehouseStocks.csv';// your file path, where u want to save
+        if (!Storage::exists($exportFilePath)) {
+            Storage::put($exportFilePath, '');
+        }
+        $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
+        $writer->insertOne($headers);
+        
+        $csv_value = [];
+        $count = 0;
+        $writer->insertAll($records->toArray());
+        return Storage::download($exportFilePath);
     }
 }

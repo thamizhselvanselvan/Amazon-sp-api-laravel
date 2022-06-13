@@ -23,6 +23,7 @@ Route::resource('inventory/disposes','Inventory\Master\InventoryDisposeControlle
 // Route::get('inventory/stocks','Inventory\StockController@stokes')->name('inventory.stocks');
 Route::get('inventory/stocks','Inventory\StockController@dashboard')->name('inventory.stocks');
 Route::get('inventory/list', 'Inventory\StockController@getlist');
+Route::get('inventory/export', 'Inventory\StockController@eportinv');
 
 Route::resource('inventory/warehouses','Inventory\InventoryWarehouseController');
 Route::resource('inventory/features','Inventory\InventoryFeaturesController');
@@ -60,3 +61,4 @@ Route::post('vendorstate/{id}','Inventory\InventoryVendorController@getCity');
 Route::post('rack/{id}','Inventory\Master\Rack\InventoryShelveController@getRack');
 
 Route::resource('inventory/reports', 'Inventory\ReportController');
+
