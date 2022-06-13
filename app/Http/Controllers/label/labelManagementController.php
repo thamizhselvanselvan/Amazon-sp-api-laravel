@@ -9,7 +9,6 @@ class labelManagementController extends Controller
 {
     public function manage()
     {
-       
         return view('label.manage');
     }
 }

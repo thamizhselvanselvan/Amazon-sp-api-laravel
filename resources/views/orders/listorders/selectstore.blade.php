@@ -142,8 +142,8 @@
             }
         })
     });
-    let val;
     $(document).ready(function() {
+        let val;
         let count = 0;
         $("input[name='options[]']:checked").each(function() {
             val = $(this).val();
