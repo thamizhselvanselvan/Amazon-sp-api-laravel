@@ -100,8 +100,9 @@ class InvoiceManagementController extends Controller
         foreach($result as $key2 => $record)
         {
             if($key2 != 0 )
-            {
+            { 
                 $invoice = R::dispense('invoices');
+
                 if(!Invoice::where('invoice_no',$record[0])->exists())
                 { 
                     foreach($record as $key3 => $value)
@@ -109,8 +110,8 @@ class InvoiceManagementController extends Controller
                         $name = (isset($header[$key3])) ? $header[$key3] : null;
                         if($name)
                         {
-                                $invoice->$name = $value;  
-                                
+                            $invoice->$name = $value;  
+                            
                             if(isset($header[1]))
                             {
                                 $dateset = $header[1];
@@ -121,7 +122,35 @@ class InvoiceManagementController extends Controller
                         
                     } 
                     R::store($invoice);  
+                    
                 } 
+                else
+                {   
+                    $data []= $record[0];
+                    $count =0;
+                    foreach($data as $id)
+                    {
+                        $update = R::load('invoices', $count);
+
+                        $count++;
+                    }
+                        foreach($record as $key3 => $value)
+                        { 
+                            $name = (isset($header[$key3])) ? $header[$key3] : null;
+                            if($name)
+                            { 
+                                $update->$name = $value ; 
+                                if(isset($header[1]))
+                                {
+                                    $dateset = $header[1];
+                                    $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($record[1])->format("d/m/Y");
+                                    $update->$dateset = $date;
+                                }
+                            } 
+                        } 
+                        R::store($update);  
+                }
+                
             }
         }
      }
