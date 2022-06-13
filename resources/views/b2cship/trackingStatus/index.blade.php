@@ -2,14 +2,22 @@
 @section('title', 'Status Details')
 
 @section('content_header')
-<h1 class="m-0 text-dark"> B2CShip Tracking Status Details</h1>
+<div class="row">
+    <h1 class="m-0 text-dark"> B2CShip Tracking Status Details</h1>
+    <div class="col text-right">
+        <a href="csv_export">
+            <x-adminlte-button label="Export To CSV" theme="primary" icon="fas fa-file-export" class="btn-sm" />
+        </a>
+    </div>
+</div>
+
 @stop
 
 @section('css')
 <style>
-.table td{
-    padding: 0.1rem;
-}
+    .table td {
+        padding: 0.1rem;
+    }
 </style>
 @stop
 
@@ -47,14 +55,27 @@
             ajax: "/b2cship/tracking_status/details",
             pageLength: 500,
             lengthMenu: [50, 100, 200, 500],
-            columns: [
-                { data: 'TrackingMsg' },
-                { data: 'TrackingMasterCode' },
-                { data: 'TrackingMasterEventDescription' },
-                { data: 'OurEventCode' },
-                { data: 'EventDescription' },
-                { data: 'TrackingAPIEvent' },
-                { data: 'MicroStatus' }
+            columns: [{
+                    data: 'TrackingMsg'
+                },
+                {
+                    data: 'TrackingMasterCode'
+                },
+                {
+                    data: 'TrackingMasterEventDescription'
+                },
+                {
+                    data: 'OurEventCode'
+                },
+                {
+                    data: 'EventDescription'
+                },
+                {
+                    data: 'TrackingAPIEvent'
+                },
+                {
+                    data: 'MicroStatus'
+                }
             ],
         });
     });

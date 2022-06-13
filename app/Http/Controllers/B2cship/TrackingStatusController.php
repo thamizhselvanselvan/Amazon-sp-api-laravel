@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\B2cship;
 
 use Carbon\Carbon;
+use League\Csv\Writer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
@@ -145,6 +146,40 @@ class TrackingStatusController extends Controller
         return $PODeventsArray;
     }
 
+    public function trackingStatusDetailsExportToCSV()
+    {
+        $records = $this->trackingStatusDetailsData();
+        $headers = [
+            'Tracking Message',
+            'Trackinig Master Code',
+            'Tracking Master Event Description',
+            'Our Event Code',
+            'Event Description',
+            'Tacking API Event',
+            'Micro Status'
+        ];
+
+        $exportFilePath = 'B2cship/TrackingStatusDetails.csv';
+        if (!Storage::exists($exportFilePath)) {
+            Storage::put($exportFilePath, '');
+        }
+        $this->writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
+        $this->writer->insertOne($headers);
+        $csv_value = [];
+        $count = 0;
+        foreach ($records as $record) {
+            foreach ($record as $key => $value) {
+                if ($key != 'StatusDetails') {
+                
+                    $csv_value[$count][$key]  = $value;
+                }
+            }
+            $count ++;
+        }
+        $this->writer->insertAll($csv_value);
+
+        return Storage::download($exportFilePath);
+    }
 
     public function microStatusMissingReport(Request $request)
     {
@@ -333,12 +368,11 @@ class TrackingStatusController extends Controller
     public function update_report()
     {
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-            
+
             // exec('nohup php artisan pms:textiles-import  > /dev/null &');
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:microstatus-report > /dev/null &";
             exec($command);
-            
         } else {
 
             Artisan::call('pms:microstatus-report');
