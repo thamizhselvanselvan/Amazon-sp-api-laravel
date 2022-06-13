@@ -200,7 +200,7 @@ class InvoiceManagementController extends Controller
 
     public function DownloadAll()
     {
-        $totalid = Invoice::all();
+        $totalid = Invoice::get();
         foreach($totalid as $total)
         {
             $id = $total->id;
@@ -217,7 +217,7 @@ class InvoiceManagementController extends Controller
         // begin create zip folder for pdf
 
         $zip = new ZipArchive;
-        $fileName = 'invoice.zip';
+        $fileName = Storage::path('zip/'.'invoice.zip');
         if($zip->open($fileName, ZipArchive::CREATE) === TRUE)
         {
             $files = File::files(Storage::path('invoice'));
@@ -228,7 +228,8 @@ class InvoiceManagementController extends Controller
             }
             $zip->close();
         }
-        return  response()->download($fileName);
+        return response()->download($fileName);
+
         // end create zip folder for pdf
     }
 
