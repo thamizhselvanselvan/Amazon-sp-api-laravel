@@ -66,9 +66,11 @@
             @csrf
             @method('PUT')
 
-            <!-- <div class="row justify-content-center">
+            <div class="row">
+                <div class="col-2">
 
-                <div class="col-5">
+                </div>
+                <div class="col-4">
 
 
                     <x-adminlte-select name="ware_id" label="Select Warehouse">
@@ -81,9 +83,9 @@
 
                     </x-adminlte-select>
                 </div>
-                <div class="col-5">
+                <div class="col-4">
                     <x-adminlte-select name="rack_id" label="Select Rack">
-
+                 
                         @foreach ($rack_lists as $rack_list)
 
                         @if ($rack_list->id == $shelve->rack_id)
@@ -98,19 +100,22 @@
 
                 </div>
 
-            </div> -->
+            </div>
 
-            <div class="row justify-content-center">
-                <div class="col-5">
+            <div class="row">
+                <div class="col-2">
+
+                </div>
+                <div class="col-4">
                     <x-adminlte-input label="Shelve ID" name="shelve_id" type="text" value="{{  $shelve->shelve_id }}" />
                 </div>
-                <div class=" col-5">
+                <div class=" col-4">
                     <x-adminlte-input label="Shelve Name" name="name" value="{{ $shelve->name }}" type="text" placeholder="name" />
                 </div>
 
             </div>
 
-            <div class="col-3"></div>
+        
 
             <div class="col-12 text-center">
                 <x-adminlte-button label="Submit" theme="primary" class="Shelves.update" icon="fas fa-save" type="submit" />

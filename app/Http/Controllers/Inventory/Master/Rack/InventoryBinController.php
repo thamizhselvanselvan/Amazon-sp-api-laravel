@@ -21,7 +21,7 @@ class InventoryBinController extends Controller
 
     public function index(Request $request)
     {
-     
+
         if ($request->ajax()) {
 
             $data = Bin::query()->withCount('shelves');
@@ -55,7 +55,7 @@ class InventoryBinController extends Controller
         $rack_id = $rack_id ? $rack_id : '';
         $shelve_id = $shelve_id ? $shelve_id : '';
 
-        return view('inventory.master.racks.bin.add', compact('rack_lists', 'shelve_lists', 'rack_id', 'shelve_id','ware_lists'));
+        return view('inventory.master.racks.bin.add', compact('rack_lists', 'shelve_lists', 'rack_id', 'shelve_id', 'ware_lists'));
     }
 
     public function rackselect($id)
@@ -73,7 +73,7 @@ class InventoryBinController extends Controller
         $request->validate([
             'ware_id' => 'required',
             'rack_id' => 'required',
-            'shelve_id' =>'required',
+            'shelve_id' => 'required',
             'name' => 'required',
             'depth' => 'required',
             'width' => 'required',
@@ -81,7 +81,7 @@ class InventoryBinController extends Controller
 
         ]);
 
-        $shelve_exists = Shelve::where('id', $request->shelve_id)->exists();
+        $shelve_exists = Shelve::where('shelve_id', $request->shelve_id)->exists();
 
         if (!$shelve_exists) {
             return redirect()->route('bins.create')->with('error', 'Selected shelve id invalid');
@@ -89,20 +89,20 @@ class InventoryBinController extends Controller
 
         $bin_lists = [];
 
-        foreach ($request->name as $key => $name) {
+        foreach ($request->bin_id as $key => $bin_id) {
 
-           $bin_lists[] = [
-               'name' =>  $name,
-               'width' =>  $request->width[$key],
-               'height' =>  $request->height[$key],
-               'depth' =>  $request-> depth[$key],
-               'warehouse' => $request->ware_id,
-               'shelve_id' => $request->shelve_id,
-               'rack_id' => $request->rack_id,
-               'created_at' => now(),
-               'updated_at' => now()
-           ];
-       
+            $bin_lists[] = [
+                'bin_id' => $bin_id,
+                'name' =>  $request->name[$key],
+                'width' =>  $request->width[$key],
+                'height' =>  $request->height[$key],
+                'depth' =>  $request->depth[$key],
+                'warehouse' => $request->ware_id,
+                'shelve_id' => $request->shelve_id,
+                'rack_id' => $request->rack_id,
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
         }
         Bin::insert($bin_lists);
 
@@ -122,9 +122,11 @@ class InventoryBinController extends Controller
     {
 
         $validated = $request->validate([
-            'ware_id' => 'required',
-            'rack_id' => 'required',
-            'shelve_id' =>'required',
+           
+            // 'ware_id' => 'required',
+            // 'rack_id' => 'required',
+            // 'shelve_id' => 'required',
+            'bin_id' =>'required',
             'name' => 'required',
             'depth' => 'required',
             'width' => 'required',
@@ -149,7 +151,7 @@ class InventoryBinController extends Controller
         $binRack = Rack::where('warehouse_id', $id)->get();
         return response()->json($binRack);
     }
-    
+
     public function getBinRackShelve($id)
     {
         $binShelve = Shelve::where('rack_id', $id)->get();
