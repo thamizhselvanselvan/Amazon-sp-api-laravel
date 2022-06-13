@@ -96,8 +96,32 @@
             }
 
 
-        ]
+        ],
+        "initComplete":function( settings, json){
+
+            $(".order").each(function() {
+                let self = $(this);
+
+                if(self.is(":checked")) {
+                    self.parent().parent().next().find('.order_item').prop('disabled', false);
+                }
+            });
+
+            $('.order').on("click", function() {
+                let self = $(this);
+                let bool = true;
+
+                if(self.is(":checked")) {
+                    bool = false;
+                }
+
+                self.parent().parent().next().find('.order_item').prop('disabled', bool);
+            });
+        }
     });
+
+
+    
 
     $('#select_store').on('click', function() {
 
@@ -142,24 +166,7 @@
             }
         })
     });
-    $(document).ready(function() {
-        let val;
-        let count = 0;
-        $("input[name='options[]']:checked").each(function() {
-            val = $(this).val();
-            $('#orderitem' + val).prop('disabled', false);
-        });
-
-        $('.order').change(function() {
-            $val = $(this).val();
-            if ($('#order' + $val).is(':checked')) {
-                $('#orderitem' + $val).prop('disabled', false);
-            } else {
-                $('#orderitem' + $val).prop('checked', false);
-                $('#orderitem' + $val).prop('disabled', true);
-            }
-        });
-    });
+    
 </script>
 
 @stop
