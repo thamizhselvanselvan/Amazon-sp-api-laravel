@@ -223,26 +223,27 @@ class InventoryShipmentController extends Controller
 
         $warehouse_id = ($store->warehouse);
         $rack = Rack::where('warehouse_id', $warehouse_id)->get();
+        //  dd($rack);
         return view('inventory.inward.shipment.store', compact('store', 'rack'));
     }
 
-    // public function getRack($id)
-    // {
-    //     $rack = Rack::where('warehouse_id', $id)->get();
-    //     return response()->json($rack);
-    // }
+    public function getRack($id)
+    {
+        $rack = Rack::where('warehouse_id', $id)->get();
+        return response()->json($rack);
+    }
 
-    // public function getShelve($id)
-    // {
-    //     $binShelve = Shelve::where('rack_id', $id)->get();
-    //     return response()->json($binShelve);
-    // }
+    public function getShelve($id)
+    {
+        $binShelve = Shelve::where('rack_id', $id)->get();
+        return response()->json($binShelve);
+    }
 
-    // public function getBin($id)
-    // {
-    //     $bin = Bin::where('shelve_id', $id)->get();
-    //     return response()->json($bin);
-    // }
+    public function getBin($id)
+    {
+        $bin = Bin::where('shelve_id', $id)->get();
+        return response()->json($bin);
+    }
 
     // public function autoselect(Request $request)
     // {

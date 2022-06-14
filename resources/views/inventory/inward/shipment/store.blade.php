@@ -40,6 +40,7 @@
             </div>
             @endif
 
+        
             <div class="row">
 
                 <div class="col-0">
@@ -65,7 +66,9 @@
                             <th>Item Name</th>
                             <th>Price</th>
                             <th>Quantity</th>
-                            <th>Bin</th>
+                            <th>Select Rack</th>
+                            <th>Select Shelve</th>
+                            <th>Select Bin</th>
 
 
                         </tr>
@@ -87,7 +90,29 @@
                             <td name="quantity[]" id="quantity">{{$val['quantity']}}</td>
                             <td name="price[]">{{$val['price']}}</td>
 
-                            <td> <input type="text" value="" name="bin[]"  placeholder="Enter Bin" class="form-control"> </td>
+                            <td>
+                                <x-adminlte-select name="rack_id" id='rack_id'>
+                                    <option value="0"> </option>
+                                    @foreach ($rack as $racks)
+                                    <option value="{{$racks->rack_id}}">{{$racks->rack_id . '/' .$racks->name}}</option>
+
+                                    @endforeach
+                                </x-adminlte-select>
+                            </td>
+                            <td>
+                                <x-adminlte-select name="shelve_id" id='shelve_id'>
+                                    <option value=""></option> 
+
+                                </x-adminlte-select>
+                            </td>
+                            <td>
+                                <x-adminlte-select  input type="text"  name="bin[]" id='bin_id' class="form-control">
+                                    <option value="">  </option>
+
+                                </x-adminlte-select>
+                            </td>
+                            <!-- <td> <input type="text" value="" name="shelve[]" placeholder="Enter shelve" class="form-control"> </td> -->
+                            <!-- <td> <input type="text" value="" name="bin[]" placeholder="Enter Bin" class="form-control"> </td> -->
                         </tr>
 
                         @endforeach
@@ -107,9 +132,67 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    $('#rack_id').change(function() {
+            var id = $(this).val();
+
+            $.ajax({
+                url: '/Shelves/' + id,
+                method: 'POST',
+                data: {
+                    'id': id,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(result) {
+                   
+                    $('#shelve_id').empty();
+                    let shelve_data = '<option>Select Shelve </option>';
+                    $.each(result, function(i, result) {
+                        shelve_data += "<option value='" + result.shelve_id + "'>" + result.shelve_id + "/" + result.name + "</option>";
+                    });
+                    //  alert(shelve_data);
+                    $('#shelve_id').append(shelve_data);
+                },
+                error: function() {
+                    alert('ERROR');
+                }
+            });
+        });
+
+        $('#shelve_id').change(function() {
+            var id = $(this).val();
+            // alert(id);
+            $.ajax({
+                url: '/Bins/' + id,
+                method: 'POST',
+                data: {
+                    'id': id,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(result) {
+            
+
+                    $('#bin_id').empty();
+                    let bin_data = '<option>Select Bin</option>';
+                    $.each(result, function(i, result) {
+                        bin_data += "<option value='" + result.bin_id + "'>" + result.bin_id + "/" + result.name + "</option>";
+                    });
+                //    alert(bin_data);
+                    $('#bin_id').append(bin_data);
+                },
+                error: function() {
+                    alert('ERROR');
+                }
+            });
+        });
+
+
+
+
+
     function pullback() {
-            window.location.href = '/inventory/shipments'
-        }
+        window.location.href = '/inventory/shipments'
+    }
     $("#store_shipments").on("click", function() {
         let self = $(this);
         let table = $("#store_table tbody tr");
