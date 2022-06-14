@@ -36,17 +36,39 @@ use Spatie\Browsershot\Browsershot;
 | contains the "web" middleware group. Now create something great!
 |
 */
-// route::get('pdf',function(){
+route::get('pdf',function(){
 
-//      $pathToImage = 'file.pdf';
-//        Browsershot::url('https://amazon-sp-api-laravel.app/invoice/convert-pdf/1')
-//        ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-//        ->noSandbox()
-//        ->showBackground()
-//        ->save($pathToImage);
-//        echo 'success';
+    // $pathToImage = 'test/file.pdf';
+     $file_path = 'product/label.pdf';
+
+     // if(!Storage::exists($file_path)) {
+     //      Storage::put($file_path, '');
+     // }   
+
+        $exportToPdf = Storage::path($file_path);
+
+       Browsershot::url('https://amazon-sp-api-laravel.test/admin/user_list')
+       ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+      // ->noSandbox()
+       ->showBackground()
+       ->savePdf($exportToPdf);
+       echo 'success';
+
+     //   $url = 'https://amazon-sp-api-laravel.test/shipment/print/lable';
+     //    $file_path = 'product/label.pdf';
+
+     //    if(!Storage::exists($file_path)) {
+     //        Storage::put($file_path, '');
+     //    }   
+
+     //    $exportToPdf = Storage::path($file_path);
+
+     //     Browsershot::url($url)
+     //    ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+     //    ->showBackground()
+     //    ->savePdf($exportToPdf);
      
-// });
+});
 
 // Route::get('excel',function(){
      

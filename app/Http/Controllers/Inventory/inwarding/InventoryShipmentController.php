@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
 use App\Services\SP_API\CatalogAPI;
+use Illuminate\Support\Facades\Log;
+use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
@@ -44,8 +46,8 @@ class InventoryShipmentController extends Controller
                     return ($data->vendors) ? $data->vendors->name : " NA";
                 })
                 ->addColumn('action', function ($row) {
-                    $actionBtn  = '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i>  View</a>';
-                    $actionBtn .= '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '/place" class="store btn btn-primary btn-sm ml-2"><i class="fas fa-box"></i> Bin storage </a>';
+                    $actionBtn  = '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '" class="edit btn btn-success btn-sm"><i class="fas fa-eye"></i> View</a>';
+                    $actionBtn .= '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '/place" class="store btn btn-primary btn-sm ml-2"><i class="fas fa-box"></i> Bin Placement </a>';
                     return $actionBtn;
                 })
 
@@ -71,7 +73,6 @@ class InventoryShipmentController extends Controller
         $view = Shipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
         $generator = new BarcodeGeneratorHTML();
         $bar_code = $generator->getBarcode($view->ship_id, $generator::TYPE_CODE_39);
- 
 
         $currency = Currency::get();
         $currency_array = [];
@@ -80,7 +81,7 @@ class InventoryShipmentController extends Controller
         }
         // dd($currency);
 
-        return view('inventory.inward.shipment.view', compact('view', 'currency_array','bar_code'));
+        return view('inventory.inward.shipment.view', compact('view', 'currency_array', 'bar_code'));
     }
 
 
@@ -223,7 +224,6 @@ class InventoryShipmentController extends Controller
 
         $warehouse_id = ($store->warehouse);
         $rack = Rack::where('warehouse_id', $warehouse_id)->get();
-        //  dd($rack);
         return view('inventory.inward.shipment.store', compact('store', 'rack'));
     }
 
@@ -267,5 +267,53 @@ class InventoryShipmentController extends Controller
                 ]);
         }
         return response()->json(['success' => 'Shipment has stored successfully']);
+    }
+
+
+    public function printlable()
+    {
+        $view = Shipment::get()->first();
+
+        $data = json_decode($view['items'], true);
+
+        foreach ($data as $key => $val)  {
+            $generator = new BarcodeGeneratorHTML();
+            $bar_code = $generator->getBarcode($val['asin'], $generator::TYPE_CODE_39);
+        }
+        
+        return view('inventory.inward.shipment.lable', compact('view', 'bar_code'));
+    }
+
+    public function Exportlable(Request $request)
+    {
+        // $id = $request->invoice_no;
+        // $url = $request->url;
+        // $file_path = 'invoice/invoice'.$id.'.pdf';
+        // if(!Storage::exists($file_path)) {
+        //     Storage::put($file_path, '');
+        // }
+        // // $path = storage::path('invoice/invoice'.$id);
+        // $exportToPdf = storage::path($file_path);
+        // Browsershot::url($url)
+        // // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+        // ->showBackground()
+        // ->savePdf($exportToPdf);
+
+
+        $url = 'https://amazon-sp-api-laravel.test/shipment/print/lable';
+        $file_path = 'product/label.pdf';
+
+        if(!Storage::exists($file_path)) {
+            Storage::put($file_path, '');
+        }   
+
+        $exportToPdf = Storage::path($file_path);
+
+         Browsershot::url($url)
+        ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+        ->showBackground()
+        ->savePdf('product/label.pdf');
+        
+        return response()->json(['success' => true]);
     }
 }

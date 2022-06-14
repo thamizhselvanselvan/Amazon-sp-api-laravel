@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Store Shipments')
+@section('title', 'Inwardings')
 
 @section('css')
 
@@ -14,15 +14,15 @@
     .table th {
         padding: 2;
         padding-left: 5px;
-    }
-</style> -->
+    } -->
+<!-- </style> -->
 
 @stop
 
 @section('content_header')
 <div class="row">
     <div class="col-3">
-        <h3>Store Shipment</h3>
+        <h3>Store Inwarding Shipment's</h3>
     </div>
 </div>
 @stop
@@ -185,10 +185,6 @@
                 }
             });
         });
-
-
-
-
 
     function pullback() {
         window.location.href = '/inventory/shipments'

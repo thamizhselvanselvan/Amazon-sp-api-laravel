@@ -23,7 +23,7 @@ Route::resource('inventory/disposes','Inventory\Master\InventoryDisposeControlle
 // Route::get('inventory/stocks','Inventory\StockController@stokes')->name('inventory.stocks');
 Route::get('inventory/stocks','Inventory\StockController@dashboard')->name('inventory.stocks');
 Route::get('inventory/list', 'Inventory\StockController@getlist');
-Route::get('inventory/export', 'Inventory\StockController@eportinv');
+Route::get('inventory/export', 'Inventory\StockController@eportinv')->name('inventory.export');
 
 Route::resource('inventory/warehouses','Inventory\InventoryWarehouseController');
 Route::resource('inventory/features','Inventory\InventoryFeaturesController');
@@ -37,6 +37,8 @@ Route::get('shipment/select/region', 'Inventory\inwarding\InventoryShipmentContr
 Route::get('shipment/inward/view', 'Inventory\inwarding\InventoryShipmentController@inwardingdata')->name('shipments.view');
 Route::get('shipment/single/view', 'Inventory\inwarding\InventoryShipmentController@singleview')->name('shipments.single_view');
 Route::get('inventory/shipments/{id}/place','Inventory\inwarding\InventoryShipmentController@store');
+Route::get('shipment/print/lable', 'Inventory\inwarding\InventoryShipmentController@printlable');
+Route::post('shipment/lable/export-pdf', 'Inventory\inwarding\InventoryShipmentController@Exportlable');
 
 Route::post('racks/{id}','Inventory\inwarding\InventoryShipmentController@getRack');
 Route::post('Shelves/{id}','Inventory\inwarding\InventoryShipmentController@getShelve');

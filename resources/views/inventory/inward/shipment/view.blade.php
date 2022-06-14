@@ -27,8 +27,12 @@
         <i class="fas fa-long-arrow-alt-left"></i> Back
     </a>
     <a href="#" class="btn btn-primary btn-sm" id="printinv">
-        <i class="fa-solid fa-print"></i> Print
+        <i class="fas fa-print"></i> Print
     </a>
+    <a href="/shipment/print/lable" class="btn btn-primary btn-sm" id="printinv">
+        <i class="fas fa-print"></i> Print Lable
+    </a>
+
 
 </div>
 @stop
@@ -58,15 +62,14 @@
                 <h4 style="font-family:Times New Roman ;">Shipment ID : {{ $view->ship_id }} </h4>
             </div>
             <div class="col-5">
-            <h4></h4>
+                <h4></h4>
             </div>
             <div class="col-2">
-            <h4>{!! $bar_code !!}</h4>
+                <h4>{!! $bar_code !!}</h4>
             </div>
         </div>
-     
-        <h4 style="font-family:Times New Roman;"> Warehouse : {{ $view->warehouses->name }} </h4>
 
+        <h4 style="font-family:Times New Roman;"> Warehouse : {{ $view->warehouses->name }} </h4>
         <h4 style="font-family:Times New Roman;"> Source : {{ $view->vendors->name }} </h4>
         <h4 style="font-family:Times New Roman ;">Currency : {{ $currency_array[$view->currency]}} </h4>
         <h6></h6>
