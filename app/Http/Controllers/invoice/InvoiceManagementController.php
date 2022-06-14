@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -79,61 +80,56 @@ class InvoiceManagementController extends Controller
         $username = config('database.connections.web.username');
         $password = config('database.connections.web.password');
      
-     R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-       
-     $data = Excel::toArray([], $file);
-     
-     $header = [];
-     $result = [];
-     $check = ['.', '(', ')'];
-     foreach($data[0][0] as $key => $value)
-     {  
-        if($value) {
-        $testing = str_replace(' ', '_', trim($value));
-        $header[$key] = str_replace($check,'',strtolower($testing));
-        }
-         
-     } 
-    //  po($header);
-     foreach($data as $result)
-     {    
-        foreach($result as $key2 => $record)
-        {
-            if($key2 != 0 )
-            { 
-                $invoice = R::dispense('invoices');
-
-                if(!Invoice::where('invoice_no',$record[0])->exists())
+        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password); 
+        $data = Excel::toArray([], $file);
+        
+        $header = [];
+        $result = [];
+        $check = ['.', '(', ')'];
+        foreach($data[0][0] as $key => $value)
+        {  
+            if($value) {
+            $testing = str_replace(' ', '_', trim($value));
+            $header[$key] = str_replace($check,'',strtolower($testing));
+            }
+            
+        } 
+        //  po($header);
+        foreach($data as $result)
+        {    
+            foreach($result as $key2 => $record)
+            {
+                if($key2 != 0 )
                 { 
-                    foreach($record as $key3 => $value)
-                    {   
-                        $name = (isset($header[$key3])) ? $header[$key3] : null;
-                        if($name)
-                        {
-                            $invoice->$name = $value;  
-                            
-                            if(isset($header[1]))
+                    $Totaldata = Invoice::where('invoice_no', $record[0])->get();
+                    $id = $Totaldata[0]['id'];
+                
+                    $invoice = R::dispense('invoices');
+                    $excelInvoice_no = $record[0];
+                    $invoice_no = Invoice::where('invoice_no',$excelInvoice_no);
+                
+                    if(!$invoice_no->exists())
+                    { 
+                        foreach($record as $key3 => $value)
+                        {   
+                            $name = (isset($header[$key3])) ? $header[$key3] : null;
+                            if($name)
                             {
-                                $dateset = $header[1];
-                                $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($record[1])->format("d/m/Y");
-                                $invoice->$dateset = $date;
-                            }
-                        }
-                        
+                                $invoice->$name = $value;  
+                                
+                                if(isset($header[1]))
+                                {
+                                    $dateset = $header[1];
+                                    $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($record[1])->format("d/m/Y");
+                                    $invoice->$dateset = $date;
+                                }
+                            }  
+                        } 
+                        R::store($invoice);  
                     } 
-                    R::store($invoice);  
-                    
-                } 
-                else
-                {   
-                    $data []= $record[0];
-                    $count =0;
-                    foreach($data as $id)
-                    {
-                        $update = R::load('invoices', $count);
-
-                        $count++;
-                    }
+                    else
+                    {   
+                        $update = R::load('invoices', $id);
                         foreach($record as $key3 => $value)
                         { 
                             $name = (isset($header[$key3])) ? $header[$key3] : null;
@@ -149,13 +145,11 @@ class InvoiceManagementController extends Controller
                             } 
                         } 
                         R::store($update);  
+                    }  
                 }
-                
             }
-        }
-     }
-        
-     return response()->json(["success" => "all file uploaded successfully"]);
+        }  
+        return response()->json(["success" => "all file uploaded successfully"]);
     }
     public function DirectDownloadPdf(Request $request, $id)
     {
@@ -167,7 +161,7 @@ class InvoiceManagementController extends Controller
          $path = storage::path('invoice/invoice'.$invoice_no);
         $exportToPdf = $path. '.pdf';
         Browsershot::url($url)
-        // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+        ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
         ->showBackground()
         ->savePdf($exportToPdf);
         
@@ -186,7 +180,7 @@ class InvoiceManagementController extends Controller
         // $path = storage::path('invoice/invoice'.$id);
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-        // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+        ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
         ->showBackground()
         ->savePdf($exportToPdf);
 
@@ -200,37 +194,10 @@ class InvoiceManagementController extends Controller
 
     public function DownloadAll()
     {
-        $totalid = Invoice::get();
-        foreach($totalid as $total)
-        {
-            $id = $total->id;
-            $invoice_no = $total->invoice_no;
-            $currenturl =  URL::current();
-            $url = str_replace('download-all', 'convert-pdf', $currenturl. '/'.$id);
-            $path = storage::path('invoice/invoice'.$invoice_no);
-            $exportToPdf = $path. '.pdf';
-            Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-            ->showBackground()
-            ->savePdf($exportToPdf); 
-        }
-        // begin create zip folder for pdf
+        Artisan::call(' pms:excel-bulkpdf-download ');
 
-        $zip = new ZipArchive;
         $fileName = Storage::path('zip/'.'invoice.zip');
-        if($zip->open($fileName, ZipArchive::CREATE) === TRUE)
-        {
-            $files = File::files(Storage::path('invoice'));
-            foreach($files as $key => $value)
-            {
-                $relativeNameInZipFile = basename($value);
-                $zip->addFile($value, $relativeNameInZipFile);
-            }
-            $zip->close();
-        }
         return response()->download($fileName);
-
-        // end create zip folder for pdf
     }
 
 }
