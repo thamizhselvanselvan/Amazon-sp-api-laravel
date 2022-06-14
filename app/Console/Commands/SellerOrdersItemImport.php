@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use SellingPartnerApi\Api\OrdersApi;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
+use App\Services\SP_API\API\Catalog;
 
 class SellerOrdersItemImport extends Command
 {
@@ -70,8 +71,22 @@ class SellerOrdersItemImport extends Command
             $apiInstance = new OrdersApi($config);
             $this->SelectedSellerOrderItem($apiInstance, $seller_id);
         }
-        echo 'success';
-        exit;
+
+        //After importing order item detials of particult order id, get detials of asin if asin is not avaliable in mosh_catalog.catlaog
+
+        $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, from orderitemdetails where status = 0");
+        
+        foreach ($order_item_details as $key => $value) {
+
+            // DB::connection('catalog')->select('SELECT ');
+        }
+
+        $data = [];
+        $seller_id = [];
+        $type = 2;
+        //$type = 1 for seller, 2 for Order, 3 for inventory
+        $catalog = new Catalog();
+        $catalog->index($data, $seller_id, $type);
     }
 
     public function SelectedSellerOrderItem($apiInstance, $seller_id)
@@ -88,7 +103,7 @@ class SellerOrdersItemImport extends Command
                 $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
                 $result_order_address = $apiInstance->getOrderAddress($order_id);
 
-                $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id);
+                $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $seller_id);
             } catch (Exception $e) {
 
                 Log::warning($e->getMessage());
@@ -96,11 +111,13 @@ class SellerOrdersItemImport extends Command
         }
     }
 
-    public function OrderItemDataFormating($result_orderItems, $result_order_address, $order_id)
+    public function OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $seller_id)
     {
         foreach ($result_orderItems['payload']['order_items'] as $result_order) {
             foreach ((array)$result_order as $result) {
                 $order_detials = R::dispense('orderitemdetails');
+                $order_detials->seller_identifier = $seller_id;
+                $order_detials->status = '0';
 
                 foreach ($result as $key => $value) {
                     $detailsKey = lcfirst($key);
@@ -149,7 +166,7 @@ class SellerOrdersItemImport extends Command
                 R::store($order_detials);
             }
         }
-        
+
         DB::connection('order')
             ->update("UPDATE orders SET order_item = '1' where amazon_order_identifier = '$order_id'");
     }

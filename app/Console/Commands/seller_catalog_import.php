@@ -42,6 +42,7 @@ class seller_catalog_import extends Command
      */
     public function handle()
     {
+        Log::warning('working');
         $seller_id = $this->argument('seller_id');
         $chunk = 10;
         // $datas = AsinMasterSeller::limit(10)->offset(0)->where('status', 0)->where('seller_id', $seller_id)->get();

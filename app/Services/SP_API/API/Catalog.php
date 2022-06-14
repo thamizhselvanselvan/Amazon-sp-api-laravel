@@ -20,13 +20,14 @@ class Catalog
 {
 
     use ConfigTrait;
-    public function index($datas, $seller_id)
+    public function index($datas, $seller_id, $type)
     {
-        $host = config('database.connections.seller.host');
-        $dbname = config('database.connections.seller.database');
-        $port = config('database.connections.seller.port');
-        $username = config('database.connections.seller.username');
-        $password = config('database.connections.seller.password');
+        //$type = 1 for seller, 2 for Order, 3 for inventory
+        $host = config('database.connections.catalog.host');
+        $dbname = config('database.connections.catalog.database');
+        $port = config('database.connections.catalog.port');
+        $username = config('database.connections.catalog.username');
+        $password = config('database.connections.catalog.password');
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
         foreach ($datas as $value) {
@@ -35,13 +36,13 @@ class Catalog
             $seller_id = $value->seller_id;
 
             $seller_detilas = Aws_credential::where('seller_id', $seller_id)->get();
-            $auth_code = ($seller_detilas[0]->auth_code);
+            // $token = ($seller_detilas[0]->auth_code);
             $token = "Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg";
-            $this->getCatalog($country_code, $token, $asin, $seller_id);
+            $this->getCatalog($country_code, $token, $asin, $seller_id, $type);
         }
     }
 
-    public function getCatalog($country_code, $auth_code, $asin, $seller_id)
+    public function getCatalog($country_code, $auth_code, $asin, $seller_id, $type)
     {
         $config = $this->config(Null, $country_code, $auth_code);
         $apiInstance = new CatalogItemsV0Api($config);
@@ -54,7 +55,7 @@ class Catalog
             if (isset(($result->payload->AttributeSets[0]))) {
 
                 $result = (array)($result->payload->AttributeSets[0]);
-                $productcatalogs = R::dispense('amazonseller');
+                $productcatalogs = R::dispense('catalog');
 
                 $productcatalogs->seller_id = $seller_id;
                 $productcatalogs->asin = $asin;
@@ -62,29 +63,37 @@ class Catalog
 
                 foreach ($result as $key => $data) {
                     $key = lcfirst($key);
-                    if($key == 'title')
-                    {
-                        $productcatalogs->{$key} = $data;
-                    }
-                    // if (is_object($data)) {
-
-                    //     $productcatalogs->{$key} = json_encode($data);
-                    // } elseif (is_string($data)) {
-                    //     $productcatalogs->{$key} = ($data);
-                    // } else {
-                    //     $productcatalogs->{$key} = json_encode($data);
-                    //     // $value [][$key] = ($data);
+                    // if($key == 'title')
+                    // {
+                    //     $productcatalogs->{$key} = $data;
                     // }
+                    if (is_object($data)) {
+
+                        $productcatalogs->{$key} = json_encode($data);
+                    } elseif (is_string($data)) {
+                        $productcatalogs->{$key} = ($data);
+                    } else {
+                        $productcatalogs->{$key} = json_encode($data);
+                        // $value [][$key] = ($data);
+                    }
                 }
                 R::store($productcatalogs);
             } else {
                 Log::info($asin);
             }
-            
-            AsinMasterSeller::where('status', 0)
-                ->where('asin', $asin)
-                ->update(['status' => 1]);
-
+            if ($type == 1) {
+                AsinMasterSeller::where('status', 0)
+                    ->where('asin', $asin)
+                    ->update(['status' => 1]);
+            }
+            elseif($type == 2){
+                
+                //order
+            }
+            elseif($type == 3)
+            {
+                //inventory
+            }
         } catch (Exception $e) {
             Log::alert($e);
         }

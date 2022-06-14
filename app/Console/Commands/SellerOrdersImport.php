@@ -9,9 +9,11 @@ use App\Models\Aws_credential;
 use Illuminate\Console\Command;
 use SellingPartnerApi\Endpoint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
+use Illuminate\Support\Facades\Artisan;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
 use AmazonPHP\SellingPartner\Exception\Exception;
@@ -71,6 +73,18 @@ class SellerOrdersImport extends Command
             $this->SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code);
 
         }
+        
+        //After importing seller orders, import order item detials according to order id
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+
+            Log::warning("Export asin command executed local !");
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan pms:seller-order-item-import > /dev/null &";
+            exec($command);
+        } else {
+
+            Artisan::call('pms:seller-order-item-import ');
+        }
     }
 
     public function SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code)
@@ -118,8 +132,6 @@ class SellerOrdersImport extends Command
         $count = 0;
         foreach ($result_data as $resultkey => $result) {
 
-            // po($result);
-            // exit;
             $orders = R::dispense('orders');
             $amazon_order_details = [];
             $orders->our_seller_identifier = $this->seller_id;
@@ -192,10 +204,6 @@ class SellerOrdersImport extends Command
                 R::store($orders);
             }
         }
-        echo $count;
-        echo "<hr>";
-        
-
         return true;
     }
 }
