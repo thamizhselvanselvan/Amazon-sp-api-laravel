@@ -2,17 +2,18 @@
 
 namespace App\Services\SP_API\API;
 
-use App\Models\Admin\BB\BB_User;
-use App\Models\Aws_credential;
 use Exception;
 use RedBeanPHP\R;
+use App\Models\Aws_credential;
 use SellingPartnerApi\Endpoint;
+use App\Models\Admin\BB\BB_User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
 use App\Models\seller\AsinMasterSeller;
 use App\Services\SP_API\Config\ConfigTrait;
-use Illuminate\Support\Facades\Auth;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 
 
@@ -29,16 +30,33 @@ class Catalog
         $username = config('database.connections.catalog.username');
         $password = config('database.connections.catalog.password');
 
-        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-        foreach ($datas as $value) {
-            $asin = $value->asin;
-            $country_code = $value->source;
-            $seller_id = $value->seller_id;
+        // R::addDatabase($dbname, 'sqlite:/tmp/d1.sqlite', $username, $password, true);
+        // R::selectDatabase($dbname);
+        // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
 
-            $seller_detilas = Aws_credential::where('seller_id', $seller_id)->get();
-            // $token = ($seller_detilas[0]->auth_code);
-            $token = "Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg";
-            $this->getCatalog($country_code, $token, $asin, $seller_id, $type);
+        if ($type == 1) {
+            foreach ($datas as $value) {
+                $asin = $value->asin;
+                $country_code = $value->source;
+                $seller_id = $value->seller_id;
+
+                $seller_detilas = Aws_credential::where('seller_id', $seller_id)->get();
+                // $token = ($seller_detilas[0]->auth_code);
+                $token = "Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg";
+                $this->getCatalog($country_code, $token, $asin, $seller_id, $type);
+            }
+        } elseif ($type == 2) {
+            foreach ($datas as $value) {
+                // Log::alert('working');
+                $asin = $value->asin;
+                $country_code = $value->country;
+                $seller_id = $value->seller_identifier;
+
+                $seller_detilas = Aws_credential::where('seller_id', $seller_id)->get();
+                $token = ($seller_detilas[0]->auth_code);
+                // $token = "Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg";
+                $this->getCatalog($country_code, $token, $asin, $seller_id, $type);
+            }
         }
     }
 
@@ -82,15 +100,17 @@ class Catalog
                 Log::info($asin);
             }
             if ($type == 1) {
+                //seller
                 AsinMasterSeller::where('status', 0)
                     ->where('asin', $asin)
                     ->update(['status' => 1]);
             } elseif ($type == 2) {
                 //order
-
+                DB::connection('order')
+                    ->update("UPDATE orderitemdetails SET status = '1' where asin = '$asin'");
             } elseif ($type == 3) {
                 //inventory
-                
+
             }
         } catch (Exception $e) {
             Log::alert($e);
