@@ -104,8 +104,10 @@ class InvoiceManagementController extends Controller
                 if($key2 != 0 )
                 { 
                     $Totaldata = Invoice::where('invoice_no', $record[0])->get();
-                    $id = $Totaldata[0]['id'];
-                
+                    if(isset($Totaldata[0]['id']))
+                    {
+                        $id = $Totaldata[0]['id'];
+                    }
                     $invoice = R::dispense('invoices');
                     $excelInvoice_no = $record[0];
                     $invoice_no = Invoice::where('invoice_no',$excelInvoice_no);

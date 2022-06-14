@@ -85,14 +85,12 @@ class Catalog
                 AsinMasterSeller::where('status', 0)
                     ->where('asin', $asin)
                     ->update(['status' => 1]);
-            }
-            elseif($type == 2){
-                
+            } elseif ($type == 2) {
                 //order
-            }
-            elseif($type == 3)
-            {
+
+            } elseif ($type == 3) {
                 //inventory
+                
             }
         } catch (Exception $e) {
             Log::alert($e);

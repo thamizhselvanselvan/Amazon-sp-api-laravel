@@ -74,7 +74,7 @@ class SellerOrdersItemImport extends Command
 
         //After importing order item detials of particult order id, get detials of asin if asin is not avaliable in mosh_catalog.catlaog
 
-        $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, from orderitemdetails where status = 0");
+        $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, from orderitemdetails where status = '0'");
         
         foreach ($order_item_details as $key => $value) {
 
