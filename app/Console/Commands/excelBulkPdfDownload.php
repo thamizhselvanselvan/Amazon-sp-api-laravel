@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use File;
 use ZipArchive;
 use App\Models\Invoice;
+// use Illuminate\Http\File;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
@@ -55,7 +55,7 @@ class excelBulkPdfDownload extends Command
             $path = storage::path('invoice/invoice'.$invoice_no);
             $exportToPdf = $path. '.pdf';
             Browsershot::url($url)
-            ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            //->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf); 
         }
