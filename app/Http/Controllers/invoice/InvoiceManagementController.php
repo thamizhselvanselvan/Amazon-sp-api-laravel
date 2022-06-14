@@ -9,6 +9,8 @@ use RedBeanPHP\R;
 use League\Csv\Reader;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
@@ -194,9 +196,23 @@ class InvoiceManagementController extends Controller
 
     public function DownloadAll()
     {
-        Artisan::call(' pms:excel-bulkpdf-download ');
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
-        $fileName = Storage::path('zip/'.'invoice.zip');
+            Log::warning("Export zip command executed local !");
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan pms:excel-bulkpdf-download > /dev/null &";
+            exec($command);
+        } else {
+            
+            Artisan::call('pms:excel-bulkpdf-download ');
+        }
+
+        $file_path = 'zip/'.'invoice.zip';
+        if(!Storage::exists($file_path)) {
+            Storage::put($file_path, '');
+        }
+
+        $fileName = Storage::path($file_path);
         return response()->download($fileName);
     }
 

@@ -44,7 +44,7 @@ class excelBulkPdfDownload extends Command
      */
     public function handle()
     {
-        
+        Log::warning("Export zip command executed handle !");
         $totalid = Invoice::get();
         foreach($totalid as $total)
         {
