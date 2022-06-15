@@ -38,21 +38,20 @@ use Spatie\Browsershot\Browsershot;
 */
 route::get('pdf',function(){
 
-    // $pathToImage = 'test/file.pdf';
+     $url = 'https://amazon-sp-api-laravel.test/admin/rolespermissions';
      $file_path = 'product/label.pdf';
 
-     // if(!Storage::exists($file_path)) {
-     //      Storage::put($file_path, '');
-     // }   
+     if (!Storage::exists($file_path)) {
+         Storage::put($file_path, '');
+     }
 
-        $exportToPdf = Storage::path($file_path);
+     $exportToPdf = Storage::path($file_path);
+         Browsershot::url($url)
+         ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+         ->showBackground()
+         ->savePdf($exportToPdf);
 
-       Browsershot::url('https://amazon-sp-api-laravel.test/admin/user_list')
-       ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-      // ->noSandbox()
-       ->showBackground()
-       ->savePdf($exportToPdf);
-       echo 'success';
+         return Storage::download($exportToPdf);
 
      //   $url = 'https://amazon-sp-api-laravel.test/shipment/print/lable';
      //    $file_path = 'product/label.pdf';

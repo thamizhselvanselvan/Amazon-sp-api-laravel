@@ -287,21 +287,7 @@ class InventoryShipmentController extends Controller
 
     public function Exportlable(Request $request)
     {
-        // $id = $request->invoice_no;
-        // $url = $request->url;
-        // $file_path = 'invoice/invoice'.$id.'.pdf';
-        // if(!Storage::exists($file_path)) {
-        //     Storage::put($file_path, '');
-        // }
-        // // $path = storage::path('invoice/invoice'.$id);
-        // $exportToPdf = storage::path($file_path);
-        // Browsershot::url($url)
-        // // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-        // ->showBackground()
-        // ->savePdf($exportToPdf);
-
-
-        $url = 'https://amazon-sp-api-laravel.test/shipment/print/lable';
+        $url = 'url';
         $file_path = 'product/label.pdf';
 
         if (!Storage::exists($file_path)) {
@@ -309,12 +295,12 @@ class InventoryShipmentController extends Controller
         }
 
         $exportToPdf = Storage::path($file_path);
-
-        Browsershot::url($url)
-            ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-            ->showBackground()
-            ->savePdf('product/label.pdf');
-
+         Browsershot::url($url)
+         ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+         ->showBackground()
+         ->savePdf($exportToPdf);
+         return Storage::download($exportToPdf);
         return response()->json(['success' => true]);
     }
 }
+
