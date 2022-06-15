@@ -48,6 +48,7 @@ class InventoryShipmentController extends Controller
                 ->addColumn('action', function ($row) {
                     $actionBtn  = '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '" class="edit btn btn-success btn-sm"><i class="fas fa-eye"></i> View</a>';
                     $actionBtn .= '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '/place" class="store btn btn-primary btn-sm ml-2"><i class="fas fa-box"></i> Bin Placement </a>';
+                    $actionBtn .= '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '/lable" class="lable btn btn-primary btn-sm ml-2"><i class="fas fa-print"></i>Print Lable </a>';
                     return $actionBtn;
                 })
 
@@ -270,17 +271,17 @@ class InventoryShipmentController extends Controller
     }
 
 
-    public function printlable()
+    public function printlable(Request $request, $id)
     {
-        $view = Shipment::get()->first();
+        $view = Shipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
 
         $data = json_decode($view['items'], true);
 
-        foreach ($data as $key => $val)  {
+        foreach ($data as $key => $val) {
             $generator = new BarcodeGeneratorHTML();
             $bar_code = $generator->getBarcode($val['asin'], $generator::TYPE_CODE_39);
         }
-        
+
         return view('inventory.inward.shipment.lable', compact('view', 'bar_code'));
     }
 
@@ -303,17 +304,17 @@ class InventoryShipmentController extends Controller
         $url = 'https://amazon-sp-api-laravel.test/shipment/print/lable';
         $file_path = 'product/label.pdf';
 
-        if(!Storage::exists($file_path)) {
+        if (!Storage::exists($file_path)) {
             Storage::put($file_path, '');
-        }   
+        }
 
         $exportToPdf = Storage::path($file_path);
 
-         Browsershot::url($url)
-        ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-        ->showBackground()
-        ->savePdf('product/label.pdf');
-        
+        Browsershot::url($url)
+            ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            ->showBackground()
+            ->savePdf('product/label.pdf');
+
         return response()->json(['success' => true]);
     }
 }

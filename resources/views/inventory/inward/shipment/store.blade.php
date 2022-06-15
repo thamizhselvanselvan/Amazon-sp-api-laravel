@@ -92,15 +92,15 @@
 
                             <td>
                                 <x-adminlte-select name="rack_id" id='rack_id'>
-                                    <option value="0"> </option>
+                                    <option value="0">--Select--</option>
                                     @foreach ($rack as $racks)
                                     <option value="{{$racks->rack_id}}">{{$racks->rack_id . '/' .$racks->name}}</option>
 
                                     @endforeach
                                 </x-adminlte-select>
                             </td>
-                            <td>
-                                <x-adminlte-select name="shelve_id" id='shelve_id'>
+                            <td class="shelve">
+                                <x-adminlte-select name="shelve[]" id='shelve_id{{$key}}'>
                                     <option value=""></option> 
 
                                 </x-adminlte-select>
@@ -175,7 +175,7 @@
                     $('#bin_id').empty();
                     let bin_data = '<option>Select Bin</option>';
                     $.each(result, function(i, result) {
-                        bin_data += "<option value='" + result.bin_id + "'>" + result.bin_id + "/" + result.name + "</option>";
+                        bin_data += "<option value='" + result.bin_id + "'>"   + result.name + "</option>";
                     });
                 //    alert(bin_data);
                     $('#bin_id').append(bin_data);
@@ -204,7 +204,7 @@
             data.append('asin[]', td[1].innerText);
             // data.append('name[]', td[2].innerText);
             // data.append('quantity[]', td[3].innerText);
-            data.append('bin[]', td[5].children[0].value);
+            data.append('bin[]', td[7].innerText);
         });
 
         // let bin = $('#enter_bin').val();
