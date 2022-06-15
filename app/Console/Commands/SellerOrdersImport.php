@@ -69,12 +69,12 @@ class SellerOrdersImport extends Command
             $awsCountryCode = $aws_value['country_code'];
             $this->seller_id = $aws_value['seller_id'];
             $bb_aws_cred = Aws_credential::where('seller_id', $this->seller_id)->get();
-            $awsAuth_code = $bb_aws_cred[0]->auth_code;
+            $awsAuth_code = $bb_aws_cred[0]->auth_code;          
             $this->SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code);
-
+            
         }
-        
-        //After importing seller orders, import order item detials according to order id
+        // R::close();
+        // After importing seller orders, import order item detials according to order id
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
             Log::warning("Export asin command executed local !");
@@ -95,7 +95,8 @@ class SellerOrdersImport extends Command
         $marketplace_ids = [$marketplace_ids];
 
         $apiInstance = new OrdersApi($config);
-        $startTime = Carbon::now()->subMinute(30)->toISOString();
+        $startTime = Carbon::now()->subMinute(20)->toISOString();
+        // echo $startTime;
         $createdAfter = $startTime;
         $lastUpdatedBefore = now()->toISOString();
         $max_results_per_page = 100;
@@ -106,7 +107,7 @@ class SellerOrdersImport extends Command
             next_token_exist:
             $results = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses = null, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, $next_token, $amazon_order_ids = null, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
             $next_token = $results['next_token'];
-            $this->OrderDataFormating($results);
+            $this->OrderDataFormating($results, $awsCountryCode);
 
             if (isset($next_token)) {
                 goto next_token_exist;
@@ -125,7 +126,7 @@ class SellerOrdersImport extends Command
         
     }
 
-    public function OrderDataFormating($results)
+    public function OrderDataFormating($results, $awsCountryCode)
     {
         $result_data = $results->getOrders();
         $result_data = json_decode(json_encode($result_data));
@@ -135,6 +136,7 @@ class SellerOrdersImport extends Command
             $orders = R::dispense('orders');
             $amazon_order_details = [];
             $orders->our_seller_identifier = $this->seller_id;
+            $orders->country = $awsCountryCode;
             $amazon_order_id = '';
             foreach ((array)$result as $detailsKey => $details) {
 

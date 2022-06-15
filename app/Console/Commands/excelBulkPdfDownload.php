@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use ZipArchive;
 use App\Models\Invoice;
-// use Illuminate\Http\File;
+use File;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
@@ -44,7 +44,7 @@ class excelBulkPdfDownload extends Command
      */
     public function handle()
     {
-        
+        Log::warning("Export zip command executed handle !");
         $totalid = Invoice::get();
         foreach($totalid as $total)
         {
