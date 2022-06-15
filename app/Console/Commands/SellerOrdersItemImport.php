@@ -73,9 +73,11 @@ class SellerOrdersItemImport extends Command
             $this->SelectedSellerOrderItem($apiInstance, $seller_id, $awsCountryCode);
         }
         R::close();
+
         //After importing order item detials of particult order id, get detials of asin if asin is not avaliable in mosh_catalog.catlaog
         $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails where status = 0 ");
         $count = 0;
+        $batch = 0;
         $asinList = [];
         foreach ($order_item_details as $key => $value) {
             $asin = $value->asin;
@@ -83,14 +85,16 @@ class SellerOrdersItemImport extends Command
             if (!array_key_exists('0', $check)) {
                 // $asinList[$count]->asin = $asin;
                 $count++;
+                $batch++;
                 $data[] = $value;
             }
             
+            //$type = 1 for seller, 2 for Order, 3 for inventory
             if ($count == 10) {
+                $count = 0;
                 $type = 2;
-                //$type = 1 for seller, 2 for Order, 3 for inventory
                 $catalog = new Catalog();
-                $catalog->index($data, $seller_id, $type);
+                $catalog->index($data, $seller_id, $type, $batch);
                 Log::alert('10 asin imported');
             }
         }

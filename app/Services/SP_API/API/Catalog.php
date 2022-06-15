@@ -21,18 +21,21 @@ class Catalog
 {
 
     use ConfigTrait;
-    public function index($datas, $seller_id, $type)
+    public function index($datas, $seller_id, $type, $batch = NULL)
     {
         //$type = 1 for seller, 2 for Order, 3 for inventory
+        
         $host = config('database.connections.catalog.host');
         $dbname = config('database.connections.catalog.database');
         $port = config('database.connections.catalog.port');
         $username = config('database.connections.catalog.username');
         $password = config('database.connections.catalog.password');
-
-        // R::addDatabase($dbname, 'sqlite:/tmp/d1.sqlite', $username, $password, true);
-        // R::selectDatabase($dbname);
-        // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+        if($batch <= 10 || $batch == NULL)
+        {
+            R::addDatabase('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+            R::selectDatabase('catalog');
+            Log::info($batch);
+        }
 
         if ($type == 1) {
             foreach ($datas as $value) {
@@ -46,6 +49,7 @@ class Catalog
                 $this->getCatalog($country_code, $token, $asin, $seller_id, $type);
             }
         } elseif ($type == 2) {
+
             foreach ($datas as $value) {
                 // Log::alert('working');
                 $asin = $value->asin;
@@ -57,6 +61,7 @@ class Catalog
                 // $token = "Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg";
                 $this->getCatalog($country_code, $token, $asin, $seller_id, $type);
             }
+            return true;
         }
     }
 
