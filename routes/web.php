@@ -37,19 +37,6 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 | contains the "web" middleware group. Now create something great!
 |
 */
-<<<<<<< HEAD
-// route::get('pdf',function(){
-
-//      $pathToImage = 'file.pdf';
-//        Browsershot::url('https://amazon-sp-api-laravel.app/invoice/convert-pdf/1')
-//        ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-//        ->noSandbox()
-//        ->showBackground()
-//        ->save($pathToImage);
-//        echo 'success';
-
-// });
-=======
 Route::get('pdf',function(){
 
      $url = 'https://amazon-sp-api-laravel.test/admin/rolespermissions';
@@ -82,7 +69,6 @@ Route::get('pdf',function(){
      //    ->savePdf($exportToPdf);
      
 });
->>>>>>> c2f2c7fdf2d02b7eb7ef7baa6abfca7b4c0a4fee
 
 // Route::get('excel',function(){
 
