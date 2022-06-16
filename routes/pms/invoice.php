@@ -11,3 +11,6 @@ Route::post('invoice/export-pdf','invoice\InvoiceManagementController@ExportPdf'
 Route::get('invoice/download/{invoice_no}', 'invoice\InvoiceManagementController@DownloadPdf');
 Route::get('invoice/download-direct/{id}', 'invoice\InvoiceManagementController@DirectDownloadPdf');
 Route::get('invoice/download-all', 'invoice\InvoiceManagementController@DownloadAll');
+Route::post('invoice/select-download', 'invoice\InvoiceManagementController@SelectedDownload');
+Route::get('invoice/zip-download/{arr}', 'invoice\InvoiceManagementController@zipDownload');
+Route::get('invoice/selected-print/{id}', 'invoice\InvoiceManagementController@selectPrint');

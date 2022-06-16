@@ -9,7 +9,6 @@ use RedBeanPHP\R;
 use League\Csv\Reader;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
@@ -33,13 +32,18 @@ class InvoiceManagementController extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function ($id) use ($result) {
 
-                    // $action = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
+                    // $action1 = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
                     $action = '<div class="d-flex"><a href="/invoice/convert-pdf/' . $id->id .' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
                     $action .= '<div class="d-flex pl-2"><a href="/invoice/download-direct/' . $id->id .' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
                     return $action;
                 })
+                ->addColumn('check_box', function ($id) use ($result) {
 
-                ->rawColumns(['action'])
+                    $check_box = '<div class="pl-2"><input class="check_options" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
+                    return $check_box;
+                })
+                ->rawColumns(['action','check_box'])
+                // ->fullNumbers()
                 ->make(true);
         }
         return view('invoice.index');
@@ -86,7 +90,7 @@ class InvoiceManagementController extends Controller
         $data = Excel::toArray([], $file);
         
         $header = [];
-        // $result = [];
+        $result = [];
         $check = ['.', '(', ')'];
         foreach($data[0][0] as $key => $value)
         {  
@@ -103,16 +107,15 @@ class InvoiceManagementController extends Controller
             {
                 if($key2 != 0 )
                 { 
+                    $id = NULL;
                     $Totaldata = Invoice::where('invoice_no', $record[0])->get();
                     if(isset($Totaldata[0]['id']))
                     {
                         $id = $Totaldata[0]['id'];
                     }
                     $invoice = R::dispense('invoices');
-                    $excelInvoice_no = $record[0];
-                    $invoice_no = Invoice::where('invoice_no',$excelInvoice_no);
                 
-                    if(!$invoice_no->exists())
+                    if($id == NULL)
                     { 
                         foreach($record as $key3 => $value)
                         {   
@@ -127,18 +130,18 @@ class InvoiceManagementController extends Controller
                                     $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($record[1])->format("d/m/Y");
                                     $invoice->$dateset = $date;
                                 }
-                            }  
+                            } 
                         } 
                         R::store($invoice);  
                     } 
                     else
-                    {   
+                    {
                         $update = R::load('invoices', $id);
                         foreach($record as $key3 => $value)
-                        { 
+                        {
                             $name = (isset($header[$key3])) ? $header[$key3] : null;
                             if($name)
-                            { 
+                            {
                                 $update->$name = $value ; 
                                 if(isset($header[1]))
                                 {
@@ -146,15 +149,87 @@ class InvoiceManagementController extends Controller
                                     $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($record[1])->format("d/m/Y");
                                     $update->$dateset = $date;
                                 }
-                            } 
-                        } 
+                            }
+                        }
                         R::store($update);  
-                    }  
+                    } 
                 }
             }
         }  
         return response()->json(["success" => "all file uploaded successfully"]);
     }
+    // Begin download all selected rows 
+        public function SelectedDownload(Request $request)
+        {
+            // echo 'working file';
+            $passid = $request->id;
+            $currenturl = $request->url;
+            $excelid = explode('-', $passid);
+            
+            foreach($excelid as $getId)
+            {
+                
+                
+                // exit;
+                $id = Invoice::where('id', $getId)->get();
+                
+                foreach($id as $key => $value)
+                {
+                    $invoice_no = $value->invoice_no;
+                    $url = str_replace('manage', 'convert-pdf', $currenturl. '/'. $getId);
+                    $path = 'invoice/invoice'.$invoice_no.'.pdf';
+                    if(!Storage::exists($path)) {
+                        Storage::put($path, '');
+                    }
+                    $exportToPdf = storage::path($path);
+                    Browsershot::url($url)
+                    // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+                    ->showBackground()
+                    ->savePdf($exportToPdf);
+    
+                    $saveAsPdf [] = 'invoice'.$invoice_no .'.pdf';
+                }
+            }
+
+            return response()->json($saveAsPdf);
+        }
+
+        public function selectPrint($id)
+        {
+            $eachid = explode('-', $id);
+            foreach($eachid as $id){
+                $data []= Invoice::where('id', $id)->get();
+            }
+            return view('invoice.multipleInvoice', compact(['data']));
+        }
+
+        public function zipDownload( $arr)
+        { 
+            $replace = explode(',', $arr);
+            $zip = new ZipArchive;
+            $path = 'zip/'.'invoice.zip';
+            $fileName = Storage::path('zip/'.'invoice.zip');
+            Storage::delete($path);
+            if(!Storage::exists($path))
+            {
+                Storage::put($path, '');
+            }
+            if($zip->open($fileName, ZipArchive::CREATE) === TRUE)
+            {
+                foreach($replace as $key => $value)
+                {
+                    $path = Storage::path('invoice/'.$value);
+                    $relativeNameInZipFile = basename($path);
+                    $zip->addFile($path, $relativeNameInZipFile);
+                    
+                }
+                $zip->close();
+            }
+            return response()->download($fileName);
+        }
+
+    // end download all selected rows
+
     public function DirectDownloadPdf(Request $request, $id)
     {
         $data = Invoice::where('id', $id)->get();
@@ -200,21 +275,15 @@ class InvoiceManagementController extends Controller
     {
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
-            Log::warning("Export zip command executed local !");
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:excel-bulkpdf-download > /dev/null &";
             exec($command);
+
+            Log::warning("Zip Download command executed production  !!!");
         } else {
-            
-            Artisan::call('pms:excel-bulkpdf-download ');
+            Artisan::call('pms:excel-bulkpdf-download');
         }
-
-        $file_path = 'zip/'.'invoice.zip';
-        if(!Storage::exists($file_path)) {
-            Storage::put($file_path, '');
-        }
-
-        $fileName = Storage::path($file_path);
+        $fileName = Storage::path('zip/'.'invoice.zip');
         return response()->download($fileName);
     }
 
