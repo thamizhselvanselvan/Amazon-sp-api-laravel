@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\otherCatalog\OtherCatalogAsin;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use R;
 
 class anotherAmazonProductController extends Controller
 {
@@ -104,16 +106,52 @@ class anotherAmazonProductController extends Controller
 
     public function download_other_product($id)
     {
-        //Other Amazon file download
-        // $file_path = "excel/downloads/otheramazon/otherProductDetails".$id.'.csv';
         $user = Auth::user()->email;
         $file_path = "excel/downloads/otheramazon/".$user.'/' . $id;
-        //$path = Storage::path($file_path);
         if (Storage::exists($file_path)) {
             return Storage::download($file_path);
         }
         return 'file not exist';
     }
 
+    public function asinUpload()
+    {
+        return view('amazonOtherProduct.asin_upload');
+    }
+
+    public function asinSave(Request $request)
+    {
+        $user = Auth::user()->id;
+        
+        OtherCatalogAsin::where('user_id', $user)->delete();
+        $data = $request->textarea;
+        $datas = preg_split('/[\r\n| |:|,]/', $data, -1, PREG_SPLIT_NO_EMPTY);
+        $insert_data =[];
+        foreach($datas as $data)
+        {
+            $insert_data[] = [
+                'user_id' => $user,
+                'asin' => $data,
+                'status' => 0
+            ];
+        }
+
+        OtherCatalogAsin::insert($insert_data);
+        return redirect()->intended('/other-product/amazon_com')->with('success', 'Asin Updated Successfully');
     
+    }
+
+    public function asinTxtSave(Request $request)
+    {
+        $request->validate([
+            'asin' => 'required|mimes:txt,xlsx'
+        ]);
+        if (!$request->hasFile('asin')) {
+            return back()->with('error', "Please upload file to import it to the database");
+        }
+
+        $source = $request->file('asin')->getClientOriginalName();
+
+        return $source;
+    }
 }
