@@ -46,6 +46,7 @@ class excelBulkPdfDownload extends Command
     {
         Log::warning("Export zip command executed handle !");
         $totalid = Invoice::get();
+        
         foreach($totalid as $total)
         {
             $id = $total->id;
@@ -55,27 +56,28 @@ class excelBulkPdfDownload extends Command
             $path = storage::path('invoice/invoice'.$invoice_no);
             $exportToPdf = $path. '.pdf';
             Browsershot::url($url)
-            //->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf); 
-        }
-        // begin create zip folder for pdf
 
+            $totalSavePdf []= 'invoice'.$invoice_no.'.pdf';
+        }
+       
+        $zip_path = 'invoice/';
         $zip = new ZipArchive;
         $fileName = Storage::path('zip/'.'invoice.zip');
+
         if($zip->open($fileName, ZipArchive::CREATE) === TRUE)
         {
-            $files = File::files(Storage::path('invoice'));
-            foreach($files as $key => $value)
+            foreach($totalSavePdf as $key => $value)
             {
-                $relativeNameInZipFile = basename($value);
-                $zip->addFile($value, $relativeNameInZipFile);
+                $path = Storage::path('invoice/'.$value);
+                $relativeNameInZipFile = basename($path);
+                $zip->addFile($path, $relativeNameInZipFile);
             }
             $zip->close();
         }
-        
         Log::warning(" Pdf Download Successfully ");
 
-        // end create zip folder for pdf
     }
 }
