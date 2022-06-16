@@ -24,14 +24,13 @@ class Catalog
     public function index($datas, $seller_id, $type, $batch = NULL)
     {
         //$type = 1 for seller, 2 for Order, 3 for inventory
-        
+
         $host = config('database.connections.catalog.host');
         $dbname = config('database.connections.catalog.database');
         $port = config('database.connections.catalog.port');
         $username = config('database.connections.catalog.username');
         $password = config('database.connections.catalog.password');
-        if($batch <= 10 || $batch == NULL)
-        {
+        if ($batch <= 10 || $batch == NULL) {
             R::addDatabase('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
             R::selectDatabase('catalog');
             Log::info($batch);
