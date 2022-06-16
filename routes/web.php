@@ -185,8 +185,6 @@ Route::resource('/tests', 'TestController');
 Route::get('test/seller', 'TestController@SellerTest');
 Route::get('/asin/{asin}/{code}', 'TestController@getASIN');
 Route::get("b2cship", function () {
-     
-        exit;
 
      $data = DB::connection('b2cship')->select("SELECT DISTINCT Status from MicroStatusMapping where MicroStatusCode = 'ITOFD'");
 

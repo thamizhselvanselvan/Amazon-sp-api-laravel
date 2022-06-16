@@ -5,7 +5,7 @@
 @section('css')
 
 <link rel="stylesheet" href="/css/styles.css">
-<!-- <style>
+<style>
     .table td {
         padding: 0;
         padding-left: 5px;
@@ -14,8 +14,8 @@
     .table th {
         padding: 2;
         padding-left: 5px;
-    } -->
-<!-- </style> -->
+    }
+</style>
 
 @stop
 
@@ -145,7 +145,7 @@
                 },
                 success: function(result) {
                     self.parent().parent().parent().next().find('.shelve_id').empty();
-                    let shelve_data = '<option>Select Shelve </option>';
+                    let shelve_data = '<option>--Select--</option>';
                     $.each(result, function(i, result) {
                         shelve_data += "<option value='" + result.shelve_id + "'>" + result.shelve_id + "/" + result.name + "</option>";
                     });
@@ -171,7 +171,7 @@
                 success: function(result) {
             
                     self.parent().parent().parent().next().find('.bin_id').empty();
-                    let bin_data = '<option>Select Bin</option>';
+                    let bin_data = '<option>--Select--</option>';
                     $.each(result, function(i, result) {
                         bin_data += "<option value='" + result.bin_id + "'>"   + result.name + "</option>";
                     });
