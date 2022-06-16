@@ -8,10 +8,11 @@ use App\Models\Aws_credential;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Services\SP_API\API\Catalog;
 use SellingPartnerApi\Api\OrdersApi;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
-use App\Services\SP_API\API\Catalog;
+use App\Jobs\Seller\Seller_catalog_import_job;
 
 class SellerOrdersItemImport extends Command
 {
@@ -46,14 +47,14 @@ class SellerOrdersItemImport extends Command
      * @return int
      */
     public function handle()
-    {
-        $host = config('database.connections.order.host');
-        $dbname = config('database.connections.order.database');
-        $port = config('database.connections.order.port');
-        $username = config('database.connections.order.username');
-        $password = config('database.connections.order.password');
+    {  
+        // $host = config('database.connections.order.host');
+        // $dbname = config('database.connections.order.database');
+        // $port = config('database.connections.order.port');
+        // $username = config('database.connections.order.username');
+        // $password = config('database.connections.order.password');
 
-        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+        // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
         $aws_data = OrderSellerCredentials::where('get_order_item', 1)->get();
 
         foreach ($aws_data as $aws_value) {
@@ -69,27 +70,41 @@ class SellerOrdersItemImport extends Command
             $marketplace_ids = [$marketplace_ids];
 
             $apiInstance = new OrdersApi($config);
-            $this->SelectedSellerOrderItem($apiInstance, $seller_id);
+            $this->SelectedSellerOrderItem($apiInstance, $seller_id, $awsCountryCode);
         }
+        R::close();
 
         //After importing order item detials of particult order id, get detials of asin if asin is not avaliable in mosh_catalog.catlaog
-
-        $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, from orderitemdetails where status = 0");
-        
+        $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails where status = 0 ");
+        $count = 0;
+        $batch = 0;
+        $asinList = [];
         foreach ($order_item_details as $key => $value) {
-
-            // DB::connection('catalog')->select('SELECT ');
+            $asin = $value->asin;
+            $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
+            if (!array_key_exists('0', $check)) {
+                // $asinList[$count]->asin = $asin;
+                $count++;
+                $batch++;
+                $data[] = $value;
+            }
+            
+            //$type = 1 for seller, 2 for Order, 3 for inventory
+            if ($count == 10) {
+                $count = 0;
+                $type = 2;
+                $catalog = new Catalog();
+                $catalog->index($data, $seller_id, $type, $batch);
+                Log::alert('10 asin imported');
+            }
         }
 
         $data = [];
         $seller_id = [];
-        $type = 2;
-        //$type = 1 for seller, 2 for Order, 3 for inventory
-        $catalog = new Catalog();
-        $catalog->index($data, $seller_id, $type);
+       
     }
 
-    public function SelectedSellerOrderItem($apiInstance, $seller_id)
+    public function SelectedSellerOrderItem($apiInstance, $seller_id, $awsCountryCode)
     {
         $amazonorder_ids = DB::connection('order')->select("SELECT amazon_order_identifier from orders where our_seller_identifier = $seller_id AND order_item = 0");
 
@@ -103,7 +118,7 @@ class SellerOrdersItemImport extends Command
                 $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
                 $result_order_address = $apiInstance->getOrderAddress($order_id);
 
-                $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $seller_id);
+                $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $seller_id, $awsCountryCode);
             } catch (Exception $e) {
 
                 Log::warning($e->getMessage());
@@ -111,13 +126,14 @@ class SellerOrdersItemImport extends Command
         }
     }
 
-    public function OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $seller_id)
+    public function OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $seller_id, $awsCountryCode)
     {
         foreach ($result_orderItems['payload']['order_items'] as $result_order) {
             foreach ((array)$result_order as $result) {
                 $order_detials = R::dispense('orderitemdetails');
                 $order_detials->seller_identifier = $seller_id;
                 $order_detials->status = '0';
+                $order_detials->country = $awsCountryCode;
 
                 foreach ($result as $key => $value) {
                     $detailsKey = lcfirst($key);

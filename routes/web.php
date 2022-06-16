@@ -5,7 +5,6 @@ use Carbon\Carbon;
 use App\Models\User;
 use League\Csv\Reader;
 use App\Events\testEvent;
-use App\Http\Controllers\TestController;
 use AWS\CRT\HTTP\Request;
 use App\Models\Mws_region;
 use Maatwebsite\Excel\Row;
@@ -17,15 +16,17 @@ use App\Models\Inventory\Shelve;
 use App\Models\Universal_textile;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
 use SellingPartnerApi\Configuration;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\TestController;
 use SellingPartnerApi\Api\ProductPricingApi;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
-use Spatie\Browsershot\Browsershot;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -45,26 +46,26 @@ use Spatie\Browsershot\Browsershot;
 //        ->showBackground()
 //        ->save($pathToImage);
 //        echo 'success';
-     
+
 // });
 
 // Route::get('excel',function(){
-     
+
 //      $host = config('database.connections.web.host');
 //         $dbname = config('database.connections.web.database');
 //         $port = config('database.connections.web.port');
 //         $username = config('database.connections.web.username');
 //         $password = config('database.connections.web.password');
-     
+
 
 //      R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-       
+
 //      $data = Excel::toArray([],'D:\invoice.xlsx');
 
 //      $header = [];
 //      $result = [];
 //      $check = ['.', '(', ')'];
-     
+
 //      foreach($data[0][0] as $key => $value)
 //      {
 //           // $header = $invoice[$key];
@@ -92,10 +93,10 @@ use Spatie\Browsershot\Browsershot;
 //                }
 //           }
 //      }
-   
+
 // });
 
-Route::get('command',function(){
+Route::get('command', function () {
 
      Artisan::call('pms:country-state-city');
 });
@@ -165,6 +166,9 @@ Route::get('test/seller', 'TestController@SellerTest');
 Route::get('/asin/{asin}/{code}', 'TestController@getASIN');
 Route::get("b2cship", function () {
 
+     $path = 'D:\Label_Excel_Template.xlsx';
+     
+     exit;
      $data = DB::connection('b2cship')->select("SELECT DISTINCT Status from MicroStatusMapping where MicroStatusCode = 'ITOFD'");
 
      foreach ($data as $totalBooking) {
