@@ -26,7 +26,7 @@
         <i class="fas fa-long-arrow-alt-left"></i> Back
     </a>
     <a href="#" class="btn btn-primary btn-sm" id="print">
-        <i class="fa-solid fa-print"></i> Print
+    <i class="fas fa-print"></i> Print
     </a>
 
 </div>
@@ -46,11 +46,22 @@
             @endif
         </div>
 
-        <div>
-            <h4 style="font-family:Times New Roman;">Shipment ID  : {{ $outview->ship_id }} </h4>
+        <div class="row">
+        <div class="col-5">
+                <h4 style="font-family:Times New Roman ;">Shipment ID : {{ $outview->ship_id }} </h4>
+            </div>
+            <div class="col-5">
+            <h4></h4>
+            </div>
+            <div class="col-2">
+            <h4>{!! $bar_code !!}</h4>
+            </div>
+        </div>
+     
+            <!-- <h4 style="font-family:Times New Roman;">Shipment ID  : {{ $outview->ship_id }} </h4> -->
             <h4 style="font-family:Times New Roman;">Warehouse : {{ $outview->warehouses->name }} </h4>
             <h4 style="font-family:Times New Roman;">Destination : {{ $outview->vendors->name }} </warehouse>
-                <h4 style="font-family:Times New Roman;">Currency : {{ $outview->currency }} </h4>
+                <h4 style="font-family:Times New Roman;">Currency : {{ $currency_array[$outview->currency] }} </h4>
         </div>
 
         <table class="table table-bordered yajra-datatable table-striped">

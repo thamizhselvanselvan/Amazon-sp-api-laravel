@@ -7,14 +7,15 @@ use App\Models\Currency;
 use Illuminate\Http\Request;
 use App\Models\Inventory\Rack;
 use App\Models\Inventory\Vendor;
+use function React\Promise\reduce;
 use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory\Destination;
 use App\Models\Inventory\Outshipment;
-use Yajra\DataTables\Facades\DataTables;
 
-use function React\Promise\reduce;
+use Picqer\Barcode\BarcodeGeneratorHTML;
+use Yajra\DataTables\Facades\DataTables;
 
 class InventoryOutwardShipmentController extends Controller
 {
@@ -36,8 +37,8 @@ class InventoryOutwardShipmentController extends Controller
                     return ($data->vendors) ? $data->vendors->name : " NA";
                 })
                 ->addColumn('action', function ($row) {
-                    $actionBtn = '<div class="d-flex"><a href="/inventory/outwardings/' . $row->ship_id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> View</a>';
-                    $actionBtn .= '<div class="d-flex"><a href="/inventory/outwardings/' . $row->ship_id . '/outship" class="store btn btn-primary btn-sm ml-2"><i class="fas fa-box"></i> Bin storage </a>';
+                    $actionBtn = '<div class="d-flex"><a href="/inventory/outwardings/' . $row->ship_id . '" class="edit btn btn-success btn-sm"><i class="fas fa-eye"></i> View</a>';
+                    $actionBtn .= '<div class="d-flex"><a href="/inventory/outwardings/' . $row->ship_id . '/outship" class="store btn btn-primary btn-sm ml-2"><i class="fas fa-box"></i> Bin Placement </a>';
                     return $actionBtn;
                 })
                 ->rawColumns(['destinations_name', 'action'])
@@ -54,17 +55,24 @@ class InventoryOutwardShipmentController extends Controller
     {
         $destination_lists = Vendor::where('type', 'Destination')->get();
         $currency_lists = Currency::get();
-        //  dd($destination_lists);
         $ware_lists = Warehouse::get();
         return view('inventory.outward.shipment.create', compact('destination_lists', 'ware_lists', 'currency_lists'));
     }
-
 
     public function show($id)
     {
         $outview = Outshipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
 
-        return view('inventory.outward.shipment.view', compact('outview'));
+        $generator = new BarcodeGeneratorHTML();
+        $bar_code = $generator->getBarcode($outview->ship_id, $generator::TYPE_CODE_39);
+ 
+
+        $currency = Currency::get();
+        $currency_array = [];
+        foreach ($currency as $key => $cur) {
+            $currency_array[$cur->id] = $cur->name;
+        }
+        return view('inventory.outward.shipment.view', compact('outview','currency_array','bar_code'));
     }
 
     public function outstore($id)
