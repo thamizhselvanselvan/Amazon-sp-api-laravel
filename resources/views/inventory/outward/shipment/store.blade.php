@@ -1,23 +1,23 @@
 @extends('adminlte::page')
 
-@section('title','Outward Shipment Store')
+@section('title','Outward Shipment')
 
 @section('css')
 <link rel="stylesheet" href="/css/styles.css">
-<style>
+<!-- <style>
     .table td {
         padding: 0;
         padding-left: 5px;
     }
 
     .table th {
-
-        padding: 2px;
+        padding: 2;
         padding-left: 5px;
     }
-</style>
-@stop
+</style> -->
 
+@stop
+ 
 @section('content_header')
 <div class="row">
     <div class="col-3">
@@ -65,6 +65,8 @@
                             <th>Item Name</th>
                             <th>Price</th>
                             <th>Quantity</th>
+                            <th>Select Rack</th>
+                            <th>Select Shelve</th>
                             <th>Bin</th>
 
                         </tr>
@@ -76,15 +78,35 @@
                         @endphp
 
                         @foreach($value as $key => $val)
+
                         <tr class='table_row'>
                             <td name='ship_id[]' id="ship">{{$reduce['ship_id']}}</td>
-
                             <td name="asin[]" id="quantity">{{$val['asin']}}</td>
                             <td name="name[]">{{$val['item_name']}}</td>
                             <td name="quantity[]" id="quantity">{{$val['quantity']}}</td>
                             <td name="price[]">{{$val['price']}}</td>
+                            <td>
+                                <x-adminlte-select name="rack_id" id='rack_id'>
+                                    <option value="0"> </option>
+                                    @foreach ($rack as $racks)
+                                    <option value="{{$racks->rack_id}}">{{$racks->rack_id . '/' .$racks->name}}</option>
 
-                            <td> <input type="text" value="" name="bin[]" placeholder="Enter Bin" class="form-control"> </td>
+                                    @endforeach
+                                </x-adminlte-select>
+                            </td>
+                            <td>
+                                <x-adminlte-select name="shelve_id" id='shelve_id'>
+                                    <option value=""></option> 
+
+                                </x-adminlte-select>
+                            </td>
+                            <td>
+                                <x-adminlte-select  input type="text"  name="bin[]" id='bin_id' class="form-control">
+                                    <option value="">  </option>
+
+                                </x-adminlte-select>
+                            </td>
+                            <!-- <td> <input type="text" value="" name="bin[]" placeholder="Enter Bin" class="form-control"> </td> -->
                         </tr>
 
                         @endforeach
@@ -98,56 +120,74 @@
 @stop
 
 
-<!-- @section('js')
+ @section('js')
 <script type="text/javascript">
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+
+    $('#rack_id').change(function() {
+            var id = $(this).val();
+
+            $.ajax({
+                url: '/Shelves/' + id,
+                method: 'POST',
+                data: {
+                    'id': id,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(result) {
+                   
+                    $('#shelve_id').empty();
+                    let shelve_data = '<option>Select Shelve </option>';
+                    $.each(result, function(i, result) {
+                        shelve_data += "<option value='" + result.shelve_id + "'>" + result.shelve_id + "/" + result.name + "</option>";
+                    });
+                    //  alert(shelve_data);
+                    $('#shelve_id').append(shelve_data);
+                },
+                error: function() {
+                    alert('ERROR');
+                }
+            });
+        });
+
+        $('#shelve_id').change(function() {
+            var id = $(this).val();
+            // alert(id);
+            $.ajax({
+                url: '/Bins/' + id,
+                method: 'POST',
+                data: {
+                    'id': id,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(result) {
+            
+
+                    $('#bin_id').empty();
+                    let bin_data = '<option>Select Bin</option>';
+                    $.each(result, function(i, result) {
+                        bin_data += "<option value='" + result.bin_id + "'>" + result.bin_id + "/" + result.name + "</option>";
+                    });
+                //    alert(bin_data);
+                    $('#bin_id').append(bin_data);
+                },
+                error: function() {
+                    alert('ERROR');
+                }
+            });
+        });
+        
     function pullback() {
             window.location.href = '/inventory/shipments'
         }
-    $("#store_shipments").on("click", function() {
-        let self = $(this);
-        let table = $("#store_table tbody tr");
 
-        let data = new FormData();
-
-        table.each(function(index, elm) {
-
-            let cnt = 0;
-            let td = $(this).find('td');
-
-            data.append('ship_id[]', td[0].innerText);
-            data.append('asin[]', td[1].innerText);
-            // data.append('name[]', td[2].innerText);
-            // data.append('quantity[]', td[3].innerText);
-            data.append('bin[]', td[5].children[0].value);
-        });
-
-        // let bin = $('#enter_bin').val();
-        // data.append('bin', bin);
-        console.log(data);
-        $.ajax({
-            method: 'POST',
-            url: '/shipment/place',
-            data: data,
-            processData: false,
-            contentType: false,
-            response: 'json',
-            success: function(response) {
-
-                console.log(response);
-
-                if (response.success) {
-                    pullback();
-                }
-            },
-            error: function(response) {
-                console.log(response);
-            }
-        });
-    });
+    
+   
+   
 </script>
-@stop -->
+@stop 

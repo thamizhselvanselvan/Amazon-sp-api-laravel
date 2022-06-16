@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Store Shipments')
+@section('title', 'Inwardings')
 
 @section('css')
 
@@ -14,15 +14,15 @@
     .table th {
         padding: 2;
         padding-left: 5px;
-    }
-</style> -->
+    } -->
+<!-- </style> -->
 
 @stop
 
 @section('content_header')
 <div class="row">
     <div class="col-3">
-        <h3>Store Shipment</h3>
+        <h3>Store Inwarding Shipment's</h3>
     </div>
 </div>
 @stop
@@ -91,22 +91,22 @@
                             <td name="price[]">{{$val['price']}}</td>
 
                             <td>
-                                <x-adminlte-select name="rack_id" id='rack_id'>
-                                    <option value="0"> </option>
+                                <x-adminlte-select name="rack_id" class='rack_id'>
+                                    <option value="0">--Select--</option>
                                     @foreach ($rack as $racks)
                                     <option value="{{$racks->rack_id}}">{{$racks->rack_id . '/' .$racks->name}}</option>
-
+                                    
                                     @endforeach
                                 </x-adminlte-select>
                             </td>
-                            <td>
-                                <x-adminlte-select name="shelve_id" id='shelve_id'>
+                            <td class="shelve">
+                                <x-adminlte-select name="shelve[]" class='shelve_id'>
                                     <option value=""></option> 
 
                                 </x-adminlte-select>
                             </td>
                             <td>
-                                <x-adminlte-select  input type="text"  name="bin[]" id='bin_id' class="form-control">
+                                <x-adminlte-select  input type="text"  name="bin[]" class='bin_id'>
                                     <option value="">  </option>
 
                                 </x-adminlte-select>
@@ -133,9 +133,9 @@
         }
     });
 
-    $('#rack_id').change(function() {
+    $('.rack_id').change(function() {
             var id = $(this).val();
-
+            let self = $(this);
             $.ajax({
                 url: '/Shelves/' + id,
                 method: 'POST',
@@ -144,14 +144,12 @@
                     "_token": "{{ csrf_token() }}",
                 },
                 success: function(result) {
-                   
-                    $('#shelve_id').empty();
+                    self.parent().parent().parent().next().find('.shelve_id').empty();
                     let shelve_data = '<option>Select Shelve </option>';
                     $.each(result, function(i, result) {
                         shelve_data += "<option value='" + result.shelve_id + "'>" + result.shelve_id + "/" + result.name + "</option>";
                     });
-                    //  alert(shelve_data);
-                    $('#shelve_id').append(shelve_data);
+                    self.parent().parent().parent().next().find('.shelve_id').append(shelve_data);
                 },
                 error: function() {
                     alert('ERROR');
@@ -159,8 +157,9 @@
             });
         });
 
-        $('#shelve_id').change(function() {
+        $('.shelve_id').change(function() {
             var id = $(this).val();
+            let self = $(this);
             // alert(id);
             $.ajax({
                 url: '/Bins/' + id,
@@ -171,14 +170,13 @@
                 },
                 success: function(result) {
             
-
-                    $('#bin_id').empty();
+                    self.parent().parent().parent().next().find('.bin_id').empty();
                     let bin_data = '<option>Select Bin</option>';
                     $.each(result, function(i, result) {
-                        bin_data += "<option value='" + result.bin_id + "'>" + result.bin_id + "/" + result.name + "</option>";
+                        bin_data += "<option value='" + result.bin_id + "'>"   + result.name + "</option>";
                     });
-                //    alert(bin_data);
-                    $('#bin_id').append(bin_data);
+               
+                    self.parent().parent().parent().next().find('.bin_id').append(bin_data);
                 },
                 error: function() {
                     alert('ERROR');
@@ -186,17 +184,12 @@
             });
         });
 
-
-
-
-
     function pullback() {
         window.location.href = '/inventory/shipments'
     }
     $("#store_shipments").on("click", function() {
         let self = $(this);
         let table = $("#store_table tbody tr");
-
         let data = new FormData();
 
         table.each(function(index, elm) {
@@ -208,12 +201,11 @@
             data.append('asin[]', td[1].innerText);
             // data.append('name[]', td[2].innerText);
             // data.append('quantity[]', td[3].innerText);
-            data.append('bin[]', td[5].children[0].value);
-        });
+            // console.log($(td[7]).find('.bin_id').val());
 
-        // let bin = $('#enter_bin').val();
-        // data.append('bin', bin);
-        console.log(data);
+            data.append('bin[]', $(td[7]).find('.bin_id').val());
+           
+        });
         $.ajax({
             method: 'POST',
             url: '/shipment/place',
