@@ -89,10 +89,11 @@
                         </x-adminlte-select>
                     </div>
                 </div>
+                <div class="row justify-content-left">
                     <div class="col-6">
                         <x-adminlte-input label="Pin Code" name="pin_code" type="text" placeholder="Pin Code"
                             value="{{ old('name') }}" />
-                    
+                    </div>
                 </div>
     
                 <div class="row justify-content-center">
@@ -105,11 +106,12 @@
                             value="{{ old('name') }}" />
                     </div>
                 </div>
+                <div class="row justify-content-left">
                     <div class="col-6">
                         <x-adminlte-input label="Email" name="email" type="text" placeholder="Email"
                             value="{{ old('name') }}" />
                     </div>
-                
+                </div>
 
                 <div class="text-center">
                     <x-adminlte-button label=" Submit" theme="primary" icon="fas fa-plus" type="submit" />

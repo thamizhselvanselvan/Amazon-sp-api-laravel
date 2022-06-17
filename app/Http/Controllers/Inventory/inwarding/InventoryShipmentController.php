@@ -28,11 +28,6 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Current;
 
 class InventoryShipmentController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function index(Request $request)
     {
 
@@ -48,7 +43,7 @@ class InventoryShipmentController extends Controller
                 ->addColumn('action', function ($row) {
                     $actionBtn  = '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '" class="edit btn btn-success btn-sm"><i class="fas fa-eye"></i> View</a>';
                     $actionBtn .= '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '/place" class="store btn btn-primary btn-sm ml-2"><i class="fas fa-box"></i> Bin Placement </a>';
-                    $actionBtn .= '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '/lable" class="lable btn btn-primary btn-sm ml-2"><i class="fas fa-print"></i>Print Lable </a>';
+                    $actionBtn .= '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '/lable" class="lable btn btn-info btn-sm ml-2"><i class="fas fa-print"></i>Print label </a>';
                     return $actionBtn;
                 })
 
@@ -246,17 +241,6 @@ class InventoryShipmentController extends Controller
         return response()->json($bin);
     }
 
-    // public function autoselect(Request $request)
-    // {
-    //     $data = Bin::select("name")
-    //         ->where("name", "LIKE", "%{$request->name}%")
-    //         ->limit(10)
-    //         ->get();
-    //     return response()->json($data);
-    // }
-
-
-
     public function placeship(Request $request)
     {
         foreach ($request->asin as $key1 => $asin) {
@@ -287,20 +271,25 @@ class InventoryShipmentController extends Controller
 
     public function Exportlable(Request $request)
     {
-        $url = 'url';
-        $file_path = 'product/label.pdf';
-
-        if (!Storage::exists($file_path)) {
+        $id = $request->id;
+        $url = $request->url;
+        $file_path =  'product/label'.$id.'.pdf';
+        if(!Storage::exists($file_path)) {
             Storage::put($file_path, '');
         }
 
-        $exportToPdf = Storage::path($file_path);
-         Browsershot::url($url)
-         ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
-         ->showBackground()
-         ->savePdf($exportToPdf);
-         return Storage::download($exportToPdf);
-        return response()->json(['success' => true]);
+        $exportToPdf = storage::path($file_path);
+        Browsershot::url($url)
+        //  ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+        ->showBackground()
+        ->savePdf($exportToPdf);
+
+        return response()->json(["success" => "Export to PDF Successfully"]);
+      
+    }
+
+    public function DownloadPdf($ship_id)
+    {
+        return Storage::download('/product/label'.$ship_id.'.pdf');
     }
 }
-

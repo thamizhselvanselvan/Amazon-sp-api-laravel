@@ -71,7 +71,7 @@
 <table class="table table-bordered yajra-datatable table-striped " id="detail_table">
     <thead>
         <tr>
-            <!-- <td>id </td> -->
+            <td>S/L </td>
             <td id="detail">Warehouse Name</td>
             <td id="detail"> Shipment ID</td>
             <td id="detail">ASIN</td>
@@ -117,7 +117,7 @@
                     const d = new Date(value.created_at);
 
                     html += "<tr>";
-                    //  html += "<td>"+value.id+"</td>" ;  
+                    html += "<td>"+value.id+"</td>" ;  
                     html += "<td>" + value.name + "</td>";
                     html += "<td>" + value.ship_id + "</td>";
                     html += "<td>" + value.asin + "</td>";
