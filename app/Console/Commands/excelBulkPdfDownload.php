@@ -57,7 +57,7 @@ class excelBulkPdfDownload extends Command
             $exportToPdf = $path. '.pdf';
             Browsershot::url($url)
             // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-            ->showBackground()
+            // ->showBackground()
             ->savePdf($exportToPdf); 
 
             $totalSavePdf []= 'invoice'.$invoice_no.'.pdf';
