@@ -171,7 +171,7 @@
                   @if ($value->grand_total == '')
                   <small>GRAND TOTAL</small> <span class="f-w-600">{{ 0 }}</span>
                   @else
-                  <small>GRAND TOTAL</small> <span class="f-w-600">{{ $value->grand_total }}</span>
+                  <small><strong> GRAND TOTAL </strong> </small> <span class="f-w-600">{{ $value->grand_total }}</span>
                   @endif
                   
                </div>

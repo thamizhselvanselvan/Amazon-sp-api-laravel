@@ -74,6 +74,7 @@
     serverSide: true,
     ajax: "{{ url('/invoice/manage') }}",
     pageLength: 1000,
+    searching: false,
     columns: [{
         data: 'DT_RowIndex',
         name: 'DT_RowIndex',

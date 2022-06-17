@@ -35,7 +35,7 @@
 
         {{-- Footer --}}
         @if('footer')
-             @if (!(str_contains(URL::current(), '/invoice/convert-pdf') || str_contains(URL::current(), '/invoice/selected-print')))
+             @if (!(str_contains(URL::current(), '/invoice/convert-pdf') || str_contains(URL::current(), '/invoice/selected-print') || str_contains(URL::current(), '/label/pdf-template')))
                 @include('adminlte::partials.footer.footer')
             @endif
         @endif

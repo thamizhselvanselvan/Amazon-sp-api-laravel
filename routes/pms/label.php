@@ -9,5 +9,8 @@ Route::prefix('label/')->group(function () {
     Route::get('upload', 'label\labelManagementController@upload');
     Route::post('upload/excel', 'label\labelManagementController@uploadExcel');
     Route::get('template', 'label\labelManagementController@labelTemplate');
+
     
 });
+
+Route::get('label/pdf-template/{id}', 'label\labelManagementController@showTemplate');

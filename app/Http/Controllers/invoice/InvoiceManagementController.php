@@ -168,9 +168,6 @@ class InvoiceManagementController extends Controller
             
             foreach($excelid as $getId)
             {
-                
-                
-                // exit;
                 $id = Invoice::where('id', $getId)->get();
                 
                 foreach($id as $key => $value)
@@ -184,7 +181,7 @@ class InvoiceManagementController extends Controller
                     $exportToPdf = storage::path($path);
                     Browsershot::url($url)
                     // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-                    ->showBackground()
+                    // ->showBackground()
                     ->savePdf($exportToPdf);
     
                     $saveAsPdf [] = 'invoice'.$invoice_no .'.pdf';
@@ -221,7 +218,6 @@ class InvoiceManagementController extends Controller
                     $path = Storage::path('invoice/'.$value);
                     $relativeNameInZipFile = basename($path);
                     $zip->addFile($path, $relativeNameInZipFile);
-                    
                 }
                 $zip->close();
             }
@@ -241,7 +237,7 @@ class InvoiceManagementController extends Controller
         $exportToPdf = $path. '.pdf';
         Browsershot::url($url)
         // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-        ->showBackground()
+        // ->showBackground()
         ->savePdf($exportToPdf);
         
         return $this->DownloadPdf($invoice_no);
@@ -260,7 +256,7 @@ class InvoiceManagementController extends Controller
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
         // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-        ->showBackground()
+        // ->showBackground()
         ->savePdf($exportToPdf);
 
         return response()->json(["success" => "Export to PDF Successfully"]);
