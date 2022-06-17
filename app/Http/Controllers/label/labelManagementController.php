@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\label;
 
 use RedBeanPHP\R;
+use App\Models\Label;
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use Picqer\Barcode\BarcodeGeneratorHTML;
@@ -14,9 +16,38 @@ class labelManagementController extends Controller
     {
         if($request->ajax())
         {
+            $data = Label::orderBy('id', 'DESC')->get();
+            // echo $data;
+            foreach($data as $key => $value){
+                $result[$key]['id'] = $value;
+            }
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function ($id) use ($result) {
 
+                    // $action1 = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
+                    $action = '<div class="d-flex"><a href="/label/pdf-template/' . $id->id .' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
+                    $action .= '<div class="d-flex pl-2"><a href="#' . $id->id .' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
+                    return $action;
+                })
+                ->addColumn('check_box', function ($id) use ($result) {
+
+                    $check_box = '<div class="pl-2"><input class="check_options" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
+                    return $check_box;
+                })
+                ->rawColumns(['action','check_box'])
+                ->make(true);
+            
         }
         return view('label.manage');
+    }
+
+    public function showTemplate($id)
+    {
+        $results = Label::where('id', $id)->get();
+        $generator = new BarcodeGeneratorHTML();
+        $bar_code = $generator->getBarcode('290306639908', $generator::TYPE_CODE_39);
+        return view('label.labelTemplate', compact('results','bar_code'));
     }
 
     public function downloadExcelTemplate()
@@ -72,7 +103,7 @@ class labelManagementController extends Controller
 
         foreach ($excel_data as $data) {
 
-            $label = R::dispense('label');
+            $label = R::dispense('labels');
             $label->status = 0;
             foreach ($data as $key => $value) {
                 if (isset($header_value[$key])) {
