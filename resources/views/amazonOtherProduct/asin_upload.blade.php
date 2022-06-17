@@ -12,8 +12,8 @@
 @stop
 
 @section('content')
-<div class="row">
-    <div class="col-5 p-2">
+<div class="row m-5">
+    <div class="col-5">
         <form class="row" action="asin_save" method="POST" enctype="multipart/form-data">
         @csrf
             <label>Enter ASIN</label>
@@ -38,7 +38,7 @@
 
             <div class="col-12">
                 <div class="text-center">
-                    <x-adminlte-button label="Upload Asin" theme="primary" class="add_asin btn-sm" icon="fas fa-plus" type="submit" />
+                    <x-adminlte-button label="Upload Asin" theme="primary" class="add_asin btn-sm" icon="fas fa-file-upload" type="submit" />
                 </div>
             </div>
         </form>
