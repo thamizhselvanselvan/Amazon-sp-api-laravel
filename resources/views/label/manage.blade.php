@@ -11,9 +11,12 @@
         <a href="upload">
             <x-adminlte-button label="Upload Excel Sheet" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
         </a>
-        <a href="download-all">
-            <x-adminlte-button label="Download Label" id='download_pdf' theme="primary" icon="fas fa-check-circle" class="btn-sm" />
-        </a>
+        <!-- <a href="download-all"> -->
+            <x-adminlte-button label="Download Selected" id='download_selected' theme="primary" icon="fas fa-download" class="btn-sm" />
+        <!-- </a> -->
+        <!-- <a  href=""> -->
+            <x-adminlte-button label="Print Selected" id='print_selected' theme="primary" icon="fas fa-print" class="btn-sm" />
+        <!-- </a> -->
     </h2>
 </div>
 @stop
@@ -81,6 +84,8 @@ columns: [{
     {
         data: 'check_box',
         name: 'check_box',
+        orderable: false,
+        searchable: false,
     },
     {
         data: 'action',
@@ -89,6 +94,61 @@ columns: [{
    
 
 ],
+});
+
+$(document).ready(function(){
+    $('.check_all').change(function(){
+        
+        if($('.check_all').is(':checked'))
+        {
+            $('.check_options').prop('checked', true);
+        }else{
+            $('.check_options').prop('checked', false);
+        }
+    });
+
+    $('#print_selected').click(function(){
+        // alert('working');
+        let id = '';
+        let count = '';
+        $("input[name='options[]']:checked").each(function(){
+            if(count == 0){
+                id += $(this).val();
+            }else{
+                id += '-'+ $(this).val();
+            }
+            count++;
+            window.location.href = '/label/print-selected/'+id;
+        });
+        // alert(id);
+    });
+
+    $('#download_selected').click(function(){
+        let id = '';
+        let count = '';
+        let arr = '';
+        $("input[name='options[]']:checked").each(function(){
+            if(count == 0){
+                id += $(this).val();
+            }else{
+                id += '-'+ $(this).val();
+            }
+            count++;
+        });
+        $.ajax({
+            method: 'POST',
+            url: "{{ url('/label/select-download')}}",
+            data:{ 
+            'id':id,
+            "_token": "{{ csrf_token() }}",
+            },
+            success: function(response) {
+                arr += response;
+                window.location.href = '/label/zip-download/'+arr;
+            // alert('Export pdf successfully');
+            }
+        });
+    });
 });
 
 </script>
