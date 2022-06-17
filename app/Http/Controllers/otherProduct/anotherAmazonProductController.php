@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Console\Input\Input;
 use App\Models\otherCatalog\OtherCatalogAsin;
 
 class anotherAmazonProductController extends Controller
@@ -67,21 +68,18 @@ class anotherAmazonProductController extends Controller
         $selected_header = $request->input('selected');
 
         $selected_header =  $selected_header;
-        // Log::alert($selected_header);
-        $user = Auth::user()->email;
+         Log::alert($selected_header);
+        $user = Auth::user();
+        $id = $user->id;
+        $email = $user->email;
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
-            // exec('nohup php artisan pms:textiles-import  > /dev/null &');
-
             $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:export-other-amazon $selected_header $user > /dev/null &";
+            $command = "cd $base_path && php artisan pms:export-other-amazon $selected_header $email $id > /dev/null &";
             exec($command);
-
-            // Log::warning("Export asin command executed production  !!!");
         } else {
 
-            // Log::warning("Export asin command executed local !");
-            Artisan::call('pms:export-other-amazon ' . $selected_header . ' ' . $user);
+            Artisan::call('pms:export-other-amazon ' . $selected_header . ' ' . $email . ' ' . $id);
         }
     }
 
@@ -121,7 +119,14 @@ class anotherAmazonProductController extends Controller
     public function asinSave(Request $request)
     {
         $data = $request->textarea;
-        $this->insertCatalogAsin($data);  
+
+        $path = 'OtherAmazon/amazomdotcom/Asin.txt';
+        if (!Storage::exists($path)) {
+            Storage::put($path, '');
+        }
+
+        storage::put($path, $data);
+        $this->insertCatalogAsin();
         return redirect()->intended('/other-product/amazon_com')->with('success', 'Asin Updated Successfully');
     }
 
@@ -130,31 +135,40 @@ class anotherAmazonProductController extends Controller
         $request->validate([
             'asin' => 'required|mimes:txt'
         ]);
+
         if (!$request->hasFile('asin')) {
             return back()->with('error', "Please upload file to import it to the database");
         }
-        $file = $request->file('asin');
-        $csv = Reader::createFromPath($file, 'r');
-        $this->insertCatalogAsin($csv);
-        
+
+        $source = file_get_contents($request->asin);
+
+        $path = 'OtherAmazon/amazomdotcom/Asin.txt';
+        if (!Storage::exists($path)) {
+            Storage::put($path, '');
+        }
+
+        storage::put($path, $source);
+        $this->insertCatalogAsin();
+
         return redirect()->intended('/other-product/amazon_com')->with('success', 'Asin Updated Successfully');
     }
 
-    public function insertCatalogAsin($data)
+    public function insertCatalogAsin()
     {
         $user = Auth::user()->id;
-        OtherCatalogAsin::where('user_id', $user)->delete();
-        $datas = preg_split('/[\r\n| |:|,]/', $data, -1, PREG_SPLIT_NO_EMPTY);
-        $insert_data = [];
-        foreach ($datas as $data) {
-            $insert_data[] = [
-                'user_id' => $user,
-                'asin' => $data,
-                'status' => 0
-            ];
+        $type = 'com';
+        $data = '';
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan pms:other-catalog-asin-import $user $type > /dev/null &";
+            exec($command);
+        } else {
+
+            Artisan::call('pms:other-catalog-asin-import ' . $user . ' ' . $type);
         }
-        OtherCatalogAsin::insert($insert_data);
+
+        // OtherCatalogAsin::where('user_id', $user)->delete();
         return true;
     }
-
 }
