@@ -48,12 +48,14 @@ class SellerOrdersItemImport extends Command
      */
     public function handle()
     {  
-        // $host = config('database.connections.order.host');
-        // $dbname = config('database.connections.order.database');
-        // $port = config('database.connections.order.port');
-        // $username = config('database.connections.order.username');
-        // $password = config('database.connections.order.password');
-
+        $host = config('database.connections.order.host');
+        $dbname = config('database.connections.order.database');
+        $port = config('database.connections.order.port');
+        $username = config('database.connections.order.username');
+        $password = config('database.connections.order.password');
+        
+        R::addDatabase('order', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+        R::selectDatabase('order');
         // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
         $aws_data = OrderSellerCredentials::where('get_order_item', 1)->get();
         foreach ($aws_data as $aws_value) {
