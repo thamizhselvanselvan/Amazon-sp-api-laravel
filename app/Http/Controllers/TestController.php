@@ -32,7 +32,20 @@ class TestController extends Controller
    */
   public function index()
   {
+    $order = config('database.connections.order.database');
+    $catalog = config('database.connections.catalog.database');
+    $web = config('database.connections.web.database');
+echo $web;
+    $label = DB::select("SELECT * from $web.labels as web 
+      INNER JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no 
+      INNER JOIN $order.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
+      INNER JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin
+    ");
+    dd($label);
 
+
+
+    exit;
     $catalogImport = new CatalogImport();
     $catalogData = $catalogImport->amazonCatalogImport();
 
