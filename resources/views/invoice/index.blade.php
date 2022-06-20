@@ -153,7 +153,6 @@
                     method: 'POST',
                     url: "{{ url('/invoice/select-download')}}",
                     data:{ 
-                    'url':url,
                     'id':id,
                     "_token": "{{ csrf_token() }}",
                     },
