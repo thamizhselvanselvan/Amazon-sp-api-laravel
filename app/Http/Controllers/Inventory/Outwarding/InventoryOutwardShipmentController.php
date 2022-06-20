@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Inventory\Outwarding;
 use Carbon\Carbon;
 use App\Models\Currency;
 use Illuminate\Http\Request;
+use App\Models\Inventory\Bin;
 use App\Models\Inventory\Rack;
 use App\Models\Inventory\Vendor;
 use function React\Promise\reduce;
@@ -12,8 +13,8 @@ use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory\Destination;
-use App\Models\Inventory\Outshipment;
 
+use App\Models\Inventory\Outshipment;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -38,7 +39,7 @@ class InventoryOutwardShipmentController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $actionBtn = '<div class="d-flex"><a href="/inventory/outwardings/' . $row->ship_id . '" class="edit btn btn-success btn-sm"><i class="fas fa-eye"></i> View</a>';
-                    $actionBtn .= '<div class="d-flex"><a href="/inventory/outwardings/' . $row->ship_id . '/outship" class="store btn btn-primary btn-sm ml-2"><i class="fas fa-box"></i> Bin Placement </a>';
+                    // $actionBtn .= '<div class="d-flex"><a href="/inventory/outwardings/' . $row->ship_id . '/outship" class="store btn btn-primary btn-sm ml-2"><i class="fas fa-box"></i> Storage </a>';
                     return $actionBtn;
                 })
                 ->rawColumns(['destinations_name', 'action'])
@@ -62,17 +63,31 @@ class InventoryOutwardShipmentController extends Controller
     public function show($id)
     {
         $outview = Outshipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
-
+        $data = json_decode($outview['items'], true);
+        foreach ($data as $key => $val) {
+            $items[] = [
+                'asin' => $val['asin']
+            ];
+        }
+        
         $generator = new BarcodeGeneratorHTML();
         $bar_code = $generator->getBarcode($outview->ship_id, $generator::TYPE_CODE_39);
- 
-
         $currency = Currency::get();
         $currency_array = [];
         foreach ($currency as $key => $cur) {
             $currency_array[$cur->id] = $cur->name;
         }
-        return view('inventory.outward.shipment.view', compact('outview','currency_array','bar_code'));
+        
+        $place = Inventory::whereIn('asin', $items)->get();
+        
+        foreach ($place as $plc) {
+            $bin_rs[] = [
+                'bin_id' => $plc['bin']
+            ];
+        }
+        $loc = Bin::whereIn('bin_id', $bin_rs)->get();
+        //  dd($bin_rs,$loc);
+        return view('inventory.outward.shipment.view', compact('outview', 'currency_array', 'bar_code', 'loc'));
     }
 
     public function outstore($id)

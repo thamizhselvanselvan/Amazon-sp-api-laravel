@@ -20,6 +20,9 @@ Route::get('other-product/amazon_com', 'otherProduct\anotherAmazonProductControl
 Route::post('other-product/export', 'otherProduct\anotherAmazonProductController@exportOtherProduct')->name('export.other-product');
 Route::get('other_file_download', 'otherProduct\anotherAmazonProductController@other_file_download')->name('file.other_file_download');
 Route::get('other-product/download/{id}', 'otherProduct\anotherAmazonProductController@download_other_product')->name('download.other-product');
+Route::get('other-product/asin_upload', 'otherProduct\anotherAmazonProductController@asinUpload');
+Route::post('other-product/asin_save', 'otherProduct\anotherAmazonProductController@asinSave');
+Route::post('other-product/add-bulk-asin', 'otherProduct\anotherAmazonProductController@asinTxtSave');
 
 Route::get('other-product/amazon_in', 'otherProduct\OtherAmazonInProductController@index')->name('product.amazon_in');
 Route::post('other-product/export_in', 'otherProduct\OtherAmazonInProductController@exportOtherProductIn')->name('export.other-product-in');

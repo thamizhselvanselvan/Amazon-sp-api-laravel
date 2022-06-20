@@ -90,21 +90,21 @@
 
 .invoice-price .invoice-price-right {
     width: 25%;
-    background: #2d353c;
-    color: #fff;
+    /* background: #2d353c; */
+    color: rgb(12, 11, 11);
     font-size: 28px;
     text-align: right;
     vertical-align: bottom;
-    font-weight: 300
+    /* font-weight: 300; */
 }
 
 .invoice-price .invoice-price-right small {
     display: block;
-    opacity: .6;
+    opacity: .9;
     position: absolute;
     top: 10px;
     left: 10px;
-    font-size: 12px
+    font-size: 20px
 }
 
 .invoice-footer {

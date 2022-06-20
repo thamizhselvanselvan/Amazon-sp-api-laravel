@@ -33,6 +33,9 @@
             <div class="col">
                 <x-adminlte-button label='Product Export' class="product_export_modal_open" theme="primary" icon="fas fa-file-export" />
                 <x-adminlte-button label='Download' class="file_download_modal_btn" theme="success" icon="fas fa-download" />
+                <a href='asin_upload'>
+                    <x-adminlte-button label='Asin Upload' class="" theme="primary" icon="fas fa-file-import" />
+                </a>
             </div>
             <div class="col"></div>
             <div class="col-3 align-self-end progress_bar">
