@@ -164,7 +164,8 @@ class InvoiceManagementController extends Controller
         {
             // echo 'working file';
             $passid = $request->id;
-            $currenturl = $request->url;
+            $currenturl =  URL::current();
+            
             $excelid = explode('-', $passid);
             
             foreach($excelid as $getId)
@@ -174,7 +175,7 @@ class InvoiceManagementController extends Controller
                 foreach($id as $key => $value)
                 {
                     $invoice_no = $value->invoice_no;
-                    $url = str_replace('manage', 'convert-pdf', $currenturl. '/'. $getId);
+                    $url = str_replace('select-download', 'convert-pdf', $currenturl. '/'. $getId);
                     $path = 'invoice/invoice'.$invoice_no.'.pdf';
                     if(!Storage::exists($path)) {
                         Storage::put($path, '');
