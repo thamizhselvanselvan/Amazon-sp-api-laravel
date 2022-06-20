@@ -6,13 +6,22 @@
 
 <link rel="stylesheet" href="/css/styles.css">
 <style>
-   h5{
-    font-weight: bold;
-   }
+    h5 {
+        font-weight: bold;
+    }
 </style>
 @stop
 @section('content_header')
-<button type="button"  class="btn btn-primary btn-sm" id="Export_to_pdf"><i class="fas fa-print"></i>Print as PDF</button>
+<div class="row">
+    <div style="margin-top:0.0rem;">
+        <a href="{{ route('shipments.index') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-long-arrow-alt-left"></i> Back
+        </a>
+    </div>
+    <div class="col-3">
+        <button type="button" class="btn btn-primary btn-sm" id="Export_to_pdf"><i class="fas fa-print"></i> Print PDF</button>
+    </div>
+</div>
 @stop
 @section('content')
 <h3>Shipment ID : {{ $view->ship_id }} </h3><br>
@@ -38,19 +47,19 @@ $data = (count($data) > 0) ? $data : [];
         $('#Export_to_pdf').click(function(e) {
             e.preventDefault();
             var url = $(location).attr('href');
-            var ship_id= $.trim($('#ship').val());
+            var ship_id = $.trim($('#ship').val());
 
             $.ajax({
                 method: 'POST',
                 url: "{{ url('shipment/lable/export-pdf')}}",
                 data: {
-                    'id' :ship_id,
+                    'id': ship_id,
                     'url': url,
                     "_token": "{{ csrf_token() }}",
                 },
                 success: function(response) {
 
-                    window.location.href = '/Shipment/download/'+ship_id;
+                    window.location.href = '/Shipment/download/' + ship_id;
                     alert(' pdf Downloaded  successfully');
                 }
             });

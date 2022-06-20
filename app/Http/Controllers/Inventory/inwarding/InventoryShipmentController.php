@@ -43,7 +43,7 @@ class InventoryShipmentController extends Controller
                 ->addColumn('action', function ($row) {
                     $actionBtn  = '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '" class="edit btn btn-success btn-sm"><i class="fas fa-eye"></i> View</a>';
                     $actionBtn .= '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '/place" class="store btn btn-primary btn-sm ml-2"><i class="fas fa-box"></i> Bin Placement </a>';
-                    $actionBtn .= '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '/lable" class="lable btn btn-info btn-sm ml-2"><i class="fas fa-print"></i>Print label </a>';
+                    $actionBtn .= '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '/lable" class="lable btn btn-info btn-sm ml-2"><i class="fas fa-print"></i> Print label </a>';
                     return $actionBtn;
                 })
 
@@ -280,7 +280,7 @@ class InventoryShipmentController extends Controller
 
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-        //  ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+        //   ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
         ->showBackground()
         ->savePdf($exportToPdf);
 

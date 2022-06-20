@@ -76,7 +76,7 @@
             <x-adminlte-select name="warehouse" label="Select warehouse:" id="warehouse">
                 <option Value="">Select warehouse</option>
                 @foreach ($ware_lists as $ware_list)
-                <option value="{{ $ware_list->id }}">{{$ware_list->name }}</option>
+                <option value="{{ $ware_list->warehouse }}">{{$ware_list->warehouses->name }}</option>
                 @endforeach
             </x-adminlte-select>
 
@@ -94,7 +94,7 @@
 
         </div>
     </div>
-    <div class="col-2"  id="asin">
+    <div class="col-2" id="asin">
         <div class="form-group">
             <label>Enter ASIN:</label>
             <div class="autocomplete" style="width:200px;">
@@ -124,13 +124,13 @@
 
     <div class="col-2" id="currency">
 
-        <x-adminlte-select name="currency" id="currency_output" label="Currency:" >
-                <option value="">Select Currency </option>
-                @foreach ($currency_lists as $currency_list)
-                <option value="{{ $currency_list->id }}">{{$currency_list->code }}</option>
-                @endforeach
-            </x-adminlte-select>
-         <!-- <x-adminlte-input label="Currency:"  id="currency_output"   name="currency" type="text" placeholder="Currency" /> -->
+        <x-adminlte-select name="currency" id="currency_output" label="Currency:">
+            <option value="">Select Currency </option>
+            @foreach ($currency_lists as $currency_list)
+            <option value="{{ $currency_list->id }}">{{$currency_list->code }}</option>
+            @endforeach
+        </x-adminlte-select>
+        <!-- <x-adminlte-input label="Currency:"  id="currency_output"   name="currency" type="text" placeholder="Currency" /> -->
 
     </div>
     <div class="col text-right" id="create">
@@ -155,6 +155,7 @@
             <td>Item Name</td>
             <td>Inwarding Price</td>
             <td>Outwarding Price</td>
+            <td>Quantity Left</td>
             <td>Quantity</td>
             <td>Action</td>
         </tr>
@@ -175,81 +176,102 @@
     });
 
 
+    // $(document).ready(function() {
+
+    //     $('#warehouse').change(function() {
+    //         var id = $(this).val();
+    //         $.ajax({
+    //             url: '/shipment/warehouseg/' + id,
+    //             method: 'POST',
+    //             data: {
+    //                 'id': id,
+    //                 "_token": "{{ csrf_token() }}",
+    //             },
+    //             success: function(response) {
+    //                 alert('Succes');
+    //                 console.log(response);
+
+    //             },
+    //             error: function(response) {
+    //                 alert('ERROR');
+    //                 console.log(response);
+    //             }
+    //         });
+    //     });
+    // });
 
     $(".create_outshipmtn_btn").on("click", function() {
 
         let ware_valid = $('#warehouse').val();
         let currency_valid = $('#currency_output').val();
-        if(ware_valid == 0)
-        {
+        if (ware_valid == 0) {
             alert('warehouse field is required');
             return false;
-        }else if(currency_valid == 0) {
+        } else if (currency_valid == 0) {
             alert('currency field is required');
             return false;
-        }
-        else {
+        } else {
 
-        let self = $(this);
-        let table = $("#outward_table tbody tr");
-        //let data = {};
-        let data = new FormData();
+            let self = $(this);
+            let table = $("#outward_table tbody tr");
+            //let data = {};
+            let data = new FormData();
 
-        table.each(function(index, elm) {
+            table.each(function(index, elm) {
 
-            let cnt = 0;
-            let td = $(this).find('td');
-             console.log(td);
-     
-            data.append('id[]', $(td[0]).attr("data-id"));
-            data.append('asin[]', td[0].innerText);
-            data.append('name[]', td[1].innerText);
-            data.append('price[]', td[2].innerText);
-            data.append('price[]', td[3].innerText);
-            data.append('quantity[]', td[4].children[0].value);
-           
+                let cnt = 0;
+                let td = $(this).find('td');
+                console.log(td);
 
-        });
-
-        let warehouse = $('#warehouse').val();
-        data.append('warehouse', warehouse);
+                data.append('id[]', $(td[0]).attr("data-id"));
+                data.append('asin[]', td[0].innerText);
+                data.append('name[]', td[1].innerText);
+                data.append('price[]', td[2].innerText);
+                data.append('price[]', td[3].innerText);
+                data.append('quantity[]', td[4].children[0].value);
 
 
-        let currency = $('#currency_output').val();
-        data.append('currency', currency);
+            });
 
-        let destination = $('#destination').val();
-        data.append('destination', destination);
+            let warehouse = $('#warehouse').val();
+            data.append('warehouse', warehouse);
 
 
-        $.ajax({
-            method: 'POST',
-            url: '/shipment/storeoutshipment',
-            data: data,
-            processData: false,
-            contentType: false,
-            response: 'json',
-            success: function(response) {
+            let currency = $('#currency_output').val();
+            data.append('currency', currency);
 
-                console.log(response);
+            let destination = $('#destination').val();
+            data.append('destination', destination);
 
-                if(response.success) {
-                    getBack();
+
+            $.ajax({
+                method: 'POST',
+                url: '/shipment/storeoutshipment',
+                data: data,
+                processData: false,
+                contentType: false,
+                response: 'json',
+                success: function(response) {
+
+                    console.log(response);
+
+                    if (response.success) {
+                        getBack();
+                    }
+
+                },
+                error: function(response) {
+                    console.log(response);
                 }
-             
-            },
-            error: function(response) {
-                console.log(response);
-            }
 
 
-        });
-    }
+            });
+        }
 
     });
 
     function getBack() {
-         window.location.href = '/inventory/outwardings'
+        window.location.href = '/inventory/outwardings'
 
     }
 
@@ -297,12 +319,15 @@
                 return false;
             }
 
+            let warehouse_id = $("#warehouse").val();
+
             $.ajax({
-                method: 'GET',
-                url: '/shipment/autofinish',
+                method: 'POST',
+                url: '/shipment/warehouseg/'+ warehouse_id,
                 data: {
-                    'asin': val
-                    
+                    'asin': val,
+                    "_token": "{{ csrf_token() }}",
+
                 },
                 //response: 'json',
                 success: function(arr) {
@@ -400,7 +425,7 @@
         });
     }
 
-    function getData(asin,id ) {
+    function getData(asin, id) {
 
         $.ajax({
             method: 'GET',
@@ -413,16 +438,24 @@
                 //   console.log(arr);
 
                 let html = "<tr class='table_row'>";
-                html += "<td name='asin[]' data-id='"+ arr.id +"'>" + arr.asin + "</td>";
+                html += "<td name='asin[]' data-id='" + arr.id + "'>" + arr.asin + "</td>";
                 html += "<td name='name[]'>" + arr.item_name + "</td>";
                 html += "<td>" + arr.price + "</td>";
                 html += "<td name='priceo[]'>" + arr.price + "</td>";
-                // html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
+                html += "<td name='quantityl[]'>" + arr.quantity + "</td>";
                 html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
                 html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
                 html += "</tr>";
 
                 $("#outward_table").append(html);
+
+                $("#quantity").on("change", function() {
+                    let out_qty =  $('#quantity').val();
+                    let exist_qty = arr.quantity;
+                   if(out_qty > exist_qty){
+                    alert('Product quantity Exceeds');
+                   }
+                });
             },
             error: function(response) {
                 // console.log(response);
