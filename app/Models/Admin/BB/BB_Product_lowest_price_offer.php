@@ -10,6 +10,7 @@ class BB_Product_lowest_price_offer extends Model
     use HasFactory;
     protected $connection = 'buybox';
     protected $table = 'product_lowest_priced_offers';
+    
     protected $fillable = [
         'asin',
         'country_code',

@@ -111,17 +111,18 @@ class AdminManagementController extends Controller
            if($role == 'Seller')
            {
                BB_User::create([
-                'internal_seller' => 0,
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'status' => 1
+                    'internal_seller' => 2,
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'status' => 1
                ]);
 
                $user_details = BB_User::where('email', $request->email)->get('id');
                $seller_id = $user_details->first()->id;
            }
         }
+
         $am = User::create([
             'name' => $request->name,
             'bb_seller_id' => $seller_id,
@@ -140,8 +141,7 @@ class AdminManagementController extends Controller
     {
         $user = User::where('id', $request->id)->first();
         $user_id = $request->id;
-        // dd($user->email);
-        // dd($user);
+   
         $user_email = $user->email;
         $user_name = $user->name;
         $selected_roles = $user->roles->first()->name;

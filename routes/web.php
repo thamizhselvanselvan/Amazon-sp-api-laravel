@@ -39,6 +39,10 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 */
 Route::get('pdf',function(){
 
+     dd(User::get());
+
+     exit;
+
      $url = 'https://amazon-sp-api-laravel.test/admin/rolespermissions';
      $file_path = 'product/label.pdf';
 
