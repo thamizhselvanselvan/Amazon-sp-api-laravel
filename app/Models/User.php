@@ -16,11 +16,6 @@ class User extends Authenticatable
     protected $table = 'users'; 
     protected $connection = 'web'; 
     
-    // public function __construct(array $attributes = [])
-    // {
-    //     parent::__construct($attributes);
-    //     $this->getConnection()->setTablePrefix('sa_');
-    // } 
 
     /**
      * The attributes that are mass assignable.
