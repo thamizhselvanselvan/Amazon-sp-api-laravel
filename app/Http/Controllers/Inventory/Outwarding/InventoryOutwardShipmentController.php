@@ -79,14 +79,12 @@ class InventoryOutwardShipmentController extends Controller
         }
         
         $place = Inventory::whereIn('asin', $items)->get();
-        
+        $loc = [];
         foreach ($place as $plc) {
-            $bin_rs[] = [
-                'bin_id' => $plc['bin']
-            ];
+
+            $loc[] = Bin::where('bin_id', $plc['bin'])->first();
         }
-        $loc = Bin::whereIn('bin_id', $bin_rs)->get();
-        //  dd($bin_rs,$loc);
+        
         return view('inventory.outward.shipment.view', compact('outview', 'currency_array', 'bar_code', 'loc'));
     }
 
