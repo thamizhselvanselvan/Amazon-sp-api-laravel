@@ -150,18 +150,18 @@
             });
             // alert(id);
             $.ajax({
-                    method: 'POST',
-                    url: "{{ url('/invoice/select-download')}}",
-                    data:{ 
-                    'id':id,
-                    "_token": "{{ csrf_token() }}",
-                    },
-                    success: function(response) {
-                        arr += response;
-                        window.location.href = '/invoice/zip-download/'+arr;
-                    // alert('Export pdf successfully');
-                    }
-                });
+                method: 'POST',
+                url: "{{ url('/invoice/select-download')}}",
+                data:{ 
+                'id':id,
+                "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
+                    arr += response;
+                    window.location.href = '/invoice/zip-download/'+arr;
+                // alert('Export pdf successfully');
+                }
+            });
                 
         });
 
