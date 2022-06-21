@@ -79,25 +79,33 @@
                 <div class="row">
                     <div class="col-6">
 
-                        <x-adminlte-select name="Role[]" id="status" label="Role" multiple>
+                        <x-adminlte-select name="Role[]" id="status" class='role' label="Role" multiple>
                             @foreach ($roles as $role)
                                 <option value="{{ $role->name }}"> {{ $role->name }}</option>
                             @endforeach
                         </x-adminlte-select>
                     </div>
-                    <div class="col-6">
+                    <div class="col-6 d-none company" >
 
                         <x-adminlte-select name="company" id="company" label="Company">
+                            <option value="0" > --Select-- </option>
                             @foreach ($companys as $company)
                                 <option value="{{ $company->id }}"> {{ $company->company_name }}</option>
                             @endforeach
                         </x-adminlte-select>
                     </div>
+                    <div class="col-6 d-none bb_user" >
+
+                        <x-adminlte-select name="bb_user"  label="Buy Box User">
+                            <option value="0" > --Select-- </option>
+                            @foreach ($bb_user as $user)
+                                <option value="{{ $user->id }}"> {{ $user->name }}</option>
+                            @endforeach
+                        </x-adminlte-select>
+                    </div>
 
                 </div>
-
-
-
+                
                 <div class="text-center">
                     <x-adminlte-button label="Add User" theme="primary" icon="fas fa-plus" type="submit" />
                 </div>
@@ -106,4 +114,23 @@
         <div class="col"></div>
     </div>
 
+@stop
+
+@section('js')
+    <script type="text/javascript">
+       
+       $('.role').on('change', function(){
+        let val = this.value;
+        if(val == 'Seller')
+        {
+            $('.company').addClass('d-none')
+            $('.bb_user').removeClass('d-none');
+        }
+        else{
+            $('.bb_user').addClass('d-none')
+            $('.company').removeClass('d-none');
+        }
+        
+       });
+    </script>
 @stop
