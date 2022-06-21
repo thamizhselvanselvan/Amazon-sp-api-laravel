@@ -19,16 +19,19 @@ class labelManagementController extends Controller
 {
     public function manage(Request $request)
     {
-        if ($request->ajax()) {
-            $data = Label::orderBy('id', 'DESC')->get();
-            // echo $data;
-            foreach ($data as $key => $value) {
+        if($request->ajax())
+        {
+            // $data = Label::orderBy('id', 'DESC')->get();
+            $data = DB::connection('web')->select("select * from labels order by id DESC");
+            
+            foreach($data as $key => $value){
                 $result[$key]['id'] = $value;
+                
             }
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($id) use ($result) {
-
+                   
                     // $action1 = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
                     $action = '<div class="d-flex"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
                     $action .= '<div class="d-flex pl-2"><a href="/label/download-direct/' . $id->id . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
@@ -36,7 +39,7 @@ class labelManagementController extends Controller
                 })
                 ->addColumn('check_box', function ($id) use ($result) {
 
-                    $check_box = '<div class="pl-2"><input class="check_options" type="checkbox" value=' . $id['id'] . ' name="options[]" ></div>';
+                    $check_box = '<div class="pl-2"><input class="check_options" type="checkbox" value='. $id->id .' name="options[]" ></div>';
                     return $check_box;
                 })
                 ->rawColumns(['action', 'check_box'])
@@ -47,20 +50,15 @@ class labelManagementController extends Controller
 
     public function showTemplate($id)
     {
-        $results = $this->labelDataFormating($id);
-        
-        
-        $awb_no = '';
-        if (isset($results['awb_no'])) {
-            $awb_no = $results['awb_no'];
-            // echo $awb_no;
-        }
-        $generator = new BarcodeGeneratorHTML();
-        $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_39);
-
-        $result = (object)$results;
+        // $results = Label::where('id', $id)->get();
+        $result = $this->labelDataFormating($id);
+        $awb_no = $result['awb_no'];
+        $result = (object)$result;
         // dd($result);
-        return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no'));
+
+        $generator = new BarcodeGeneratorHTML();
+        $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_93);
+        return view('label.labelTemplate', compact('result','bar_code', 'awb_no'));
     }
     public function ExportLabel(Request $request)
     {
@@ -74,10 +72,10 @@ class labelManagementController extends Controller
         }
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
-            ->format('A6')
-            ->showBackground()
-            ->savePdf($exportToPdf);
+        ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+        ->format('A6')
+        ->showBackground()
+        ->savePdf($exportToPdf);
 
         return response()->json(['Save pdf sucessfully']);
     }
@@ -89,9 +87,10 @@ class labelManagementController extends Controller
 
     public function DownloadDirect($id)
     {
-        $result = Label::where('id', $id)->get();
-        $awb_no = $result[0]['awb_no'];
-        $file_path = 'label/label' . $awb_no . '.pdf';
+        // $result = Label::where('id', $id)->get();
+        $result = DB::connection('web')->select("select * from labels where id = '$id' ");
+        $awb_no = $result[0]->awb_no;
+        $file_path = 'label/label'. $awb_no. '.pdf';
 
         if (!Storage::exists($file_path)) {
             Storage::put($file_path, '');
@@ -101,9 +100,10 @@ class labelManagementController extends Controller
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
 
         Browsershot::url($url)
-            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
-            // ->showBackground()
-            ->savePdf($exportToPdf);
+        ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+        ->format('A6')
+        ->showBackground()
+        ->savePdf($exportToPdf);
 
         return $this->downloadLabel($awb_no);
     }
@@ -111,8 +111,10 @@ class labelManagementController extends Controller
     public function PrintSelected($id)
     {
         $allid = explode('-', $id);
-        foreach ($allid as $id) {
-            $results[] = Label::where('id', $id)->get();
+        foreach($allid as $id)
+        {
+            // $results []= Label::where('id', $id)->get();
+            $results [] = DB::connection('web')->select("select * from labels where id ='$id' ");
         }
         // po($results);
         $generator = new BarcodeGeneratorHTML();
@@ -127,11 +129,14 @@ class labelManagementController extends Controller
         $currenturl =  URL::current();
 
         $excelid = explode('-', $passid);
-
-        foreach ($excelid as $getId) {
-            $id = Label::where('id', $getId)->get();
-
-            foreach ($id as $key => $value) {
+        
+        foreach($excelid as $getId)
+        {
+            // $id = Label::where('id', $getId)->get();
+            $id = DB::connection('web')->select("select * from labels where id = '$getId' ");
+            
+            foreach($id as $key => $value)
+            {
                 $awb_no = $value->awb_no;
                 $url = str_replace('select-download', 'pdf-template', $currenturl . '/' . $getId);
                 $path = 'label/label' . $awb_no . '.pdf';
@@ -140,9 +145,10 @@ class labelManagementController extends Controller
                 }
                 $exportToPdf = storage::path($path);
                 Browsershot::url($url)
-                    ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
-                    // ->showBackground()
-                    ->savePdf($exportToPdf);
+                ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+                ->format('A6')
+                ->showBackground()
+                ->savePdf($exportToPdf);
 
                 $saveAsPdf[] = 'label' . $awb_no . '.pdf';
             }

@@ -31,23 +31,23 @@
                                     <tbody >
                                         <tr>
                                             <td>
-                                                <div class="container" >
+                                                <!-- <div class="container" > -->
                                                     <div class="row">
                                                         <div class="col-md-4"></div>
                                                         <div class="col-md-4">{!! $bar_code !!} <b> {{ $value->awb_no }} </b></div>
                                                         <div class="col-md-4"></div>
                                                     </div>
-                                                </div>
+                                                <!-- </div> -->
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
-                                                <div class="container">
+                                                <!-- <div class="container"> -->
                                                     <div class="row">
                                                         <div class="col-md-6"><h4><strong> Tracking Details : </strong></h4></div>
                                                         <div class="col-md-6"> <h4 class="text-center"><strong>SMSA/{{ $value->awb_no }}</strong></h4></div>
                                                     </div>
-                                                </div>
+                                                <!-- </div> -->
                                             </td> 
                                         </tr>
                                         <tr>
@@ -57,7 +57,7 @@
                                         </tr> 
                                         <tr>
                                             <td>
-                                                <div class="container">
+                                                <!-- <div class="container"> -->
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <h6><b>SHIP TO </b></h6>Shang Liang JLT Cluster V Jumeirah Business Centre5 2007 Jumeirah Dubai / United Arab Emirates M:+971529131966 <br>
@@ -72,7 +72,7 @@
                                                             <div class=" text-inverse m-b-5 text-left"><strong> Dimensions: </strong> 90 X 39 X 41 cm </div> 
                                                         </div>
                                                     </div>
-                                                </div>
+                                                <!-- </div> -->
                                             </td>
                                         </tr>
                                     </tbody>
