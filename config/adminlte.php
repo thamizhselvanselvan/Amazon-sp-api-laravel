@@ -537,7 +537,7 @@ return [
                     'submenu' => [
                         [
                             'text' => 'Daily',
-                            'url'  => 'inventory/features',
+                            'url'  => 'inventory/reports',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory']
                         ],

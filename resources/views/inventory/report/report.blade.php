@@ -6,7 +6,7 @@
 @stop
 
 @section('content_header')
-<h1 class="m-0 text-dark"> Stocks</h1>
+<h1 class="m-0 text-dark"> Inventory Reports</h1>
 @stop
 @section('content')
 <div class="row">
@@ -22,193 +22,88 @@
         </div>
     </div>
 </div>
-
 <div class="row">
     <div class="col-2">
-        <x-adminlte-select name="ware_id" id="warehouse" label="Select Warehouse">
+        <input type="radio" name="size" id="entire">
+        <label for=" entire"> Entire Warehouse Report</label>
+    </div>
+    <div class="col-9">
+        <input type="radio" name="size" id="ware">
+        <label for="ware"> Warehouse Wise Report</label>
+    </div>
+    <div class="col-1 justify-content-right">
+        <h2>
+            <div style="margin-top: -1rem;">
+                <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export " id="export" />
+            </div>
+        </h2>
+    </div>
+</div>
+<div class="row" id="warehouse">
+    <div class="col-2">
+        <x-adminlte-select name="ware_id" label="Select Warehouse">
             <option value=" ">Select Warehouse</option>
             @foreach ($ware_lists as $ware_list)
-            <option value="{{ $ware_list->warehouse_id }}">{{ (isset($ware_list->warehouses)) ? $ware_list->warehouses->name : '' }}</option>
+            <option value="{{ $ware_list->id }}">{{ $ware_list->name }}</option>
             @endforeach
         </x-adminlte-select>
 
     </div>
 </div>
 
-<div class="container-fluid">
+<table class="table table-bordered yajra-datatable table-striped " id="report_table">
+    <thead>
+        <tr>
+            <td>S/L </td>
+            <td id="detail">Date</td>
+            <td id="detail">Opening Stock</td>
+            <td id="detail">Open Stock Amount</td>
+            <td id="detail">Inwarded</td>
+            <td id="detail">Inv.Inwarded Amt</td>
+            <td id="detail"> Outwarded</td>
+            <td id="detail">Inv.Outwarding Amt</td>
+            <td id="detail">Closing Stock</td>
+            <td id="detail">Closing Stock Amount</td>
+        </tr>
+    </thead>
+    <tbody id="data_display">
 
-<div class="row">
-    <div class="col-3 ">
-        <h4 style="font-weight: bold; text-align: center;">Today </h4>
-        <div class="info-box bg-info text-center">
-            <div class="info-box-content">
-                
-                <h5>Total Inwarding</h5>
-            </div>
-        </div>
-    </div>
-    <div class="col-3 ">
-        <h4 style="font-weight: bold; text-align: center;">Yesterday </h4>
-        <div class="info-box bg-info text-center">
-            <div class="info-box-content">
-              
-                <h5>Total Inwarding</h5>
-            </div>
-        </div>
-    </div>
-    <div class="col-3 ">
-        <h4 style="font-weight: bold; text-align: center;">Last 7 Days </h4>
-        <div class="info-box bg-info text-center">
-            <div class="info-box-content">
-             
-                <h5> Total Inwarding</h5>
-            </div>
-        </div>
-    </div>
-    <div class="col-3 ">
-        <h4 style="font-weight: bold; text-align: center;">Last 30 Days </h4>
-        <div class="info-box bg-info  text-center">
-            <div class="info-box-content">
-               
-                <h5>Total Inwarding</h5>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <div class="info-box bg-success text-center">
-            <div class="info-box-content">
-                
-                <h5>Total Outwarding</h5>
-            </div>
-        </div>
-    </div>
-
-    <div class="col">
-        <div class="info-box bg-success text-center">
-            <div class="info-box-content">
-               
-                <h5>Total Outwarding </h5>
-            </div>
-        </div>
-    </div>
-
-    <div class="col">
-        <div class="info-box bg-success text-center">
-            <div class="info-box-content">
-               
-                <h5> Total Outwarding</h5>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-
-        <div class="info-box bg-success text-center">
-            <div class="info-box-content">
-         
-                <h5>Total Outwarding</h5>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col">
-        <div class="info-box bg-warning text-center">
-            <div class="info-box-content">
-             
-                <h5>Total Stocks</h5>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="info-box bg-warning text-center">
-            <div class="info-box-content">
-              
-                <h5>Total Stocks</<h5>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="info-box bg-warning text-center">
-            <div class="info-box-content">
-               
-                <h5>Total Stocks </<h5>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="info-box bg-warning text-center">
-            <div class="info-box-content">
-               
-                <h5>Total Stocks</<h5>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- 
-<div class="row">
-    <div class="col">
-        <div class="info-box bg-danger text-center">
-            <div class="info-box-content">
-                
-                <h5>5</h5>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="info-box bg-danger text-center">
-            <div class="info-box-content">
-              
-                <h5>5</5>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="info-box bg-danger text-center">
-            <div class="info-box-content">
-                
-                <h5>5</h5>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="info-box bg-danger text-center">
-            <div class="info-box-content">
-                
-                <h5>5</5>
-            </div>
-        </div>
-    </div>
-</div>-->
-</div> 
-
+    </tbody>
+</table>
 @stop
 
+
+
 @section('js')
+
 <script type="text/javascript">
-
-    $('#warehouse').change(function(e) {
-        e.preventDefault();
-        var id = $(this).val();
-// alert(id);
-        $.ajax({
-            method: 'GET',
-            url: '/inventory/list',
-            data: {
-                'id': id,
-                "_token": "{{ csrf_token() }}",
-            },
-            'dataType': 'json',
-            success: function(response) {
-                console.log(response);
-            },
-            error: function(response) {
-                console.log(response);
-            }
-        });
-
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
     });
+    $("#warehouse").hide();
+    $("#report_table").hide();
+    $("#export").hide();
+
+    $("#ware ").on('click', function(e) {
+        $("#warehouse").show();
+    });
+    $("#warehouse ").on('change', function(e) {
+        $("#report_table").show();
+    });
+    $("#entire ").on('click', function(e) {
+        $("#report_table").hide();
+    });
+    $("#entire ").on('click', function(e) {
+        $("#report_table").show();
+    });
+    $("#entire,#warehouse ").on('change', function(e) {
+        $("#export").show();
+    });
+
+
+
+
 </script>
 @stop
