@@ -55,6 +55,16 @@ class InvoiceManagementController extends Controller
         return view('invoice.upload_excel');
     }
 
+    public function SearchInvoice()
+    {
+        return view('invoice.search_invoice');
+    }
+
+    public function GetInvoice(Request $request)
+    {
+        
+    }
+
     public function showpdf(Request $request )
     {
         return view('invoice.invoice');

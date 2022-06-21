@@ -132,3 +132,7 @@
 .dropdown-submenu>a::after{
     position: absolute;
 }
+
+.label-container {
+    max-width: 500px;
+}
