@@ -80,7 +80,7 @@ class InventoryOutwardShipmentController extends Controller
         }
 
         $generator = new BarcodeGeneratorHTML();
-        $bar_code = $generator->getBarcode($outview->ship_id, $generator::TYPE_CODE_39);
+        $bar_code = $generator->getBarcode($outview->ship_id, $generator::TYPE_CODE_93);
         $currency = Currency::get();
         $currency_array = [];
         foreach ($currency as $key => $cur) {

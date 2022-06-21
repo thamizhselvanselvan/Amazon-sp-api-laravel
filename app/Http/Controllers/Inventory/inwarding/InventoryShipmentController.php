@@ -68,7 +68,7 @@ class InventoryShipmentController extends Controller
 
         $view = Shipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
         $generator = new BarcodeGeneratorHTML();
-        $bar_code = $generator->getBarcode($view->ship_id, $generator::TYPE_CODE_39);
+        $bar_code = $generator->getBarcode($view->ship_id, $generator::TYPE_CODE_93);
 
         $currency = Currency::get();
         $currency_array = [];
@@ -257,39 +257,39 @@ class InventoryShipmentController extends Controller
 
     public function printlable(Request $request, $id)
     {
-        $view = Shipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
+        $viewlable = Shipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
 
-        $data = json_decode($view['items'], true);
-
+        $data = json_decode($viewlable['items'], true);
+        $bar_code = [];
         foreach ($data as $key => $val) {
             $generator = new BarcodeGeneratorHTML();
-            $bar_code = $generator->getBarcode($val['asin'], $generator::TYPE_CODE_39);
+            $bar_code[]  = $generator->getBarcode($val['asin'], $generator::TYPE_CODE_93);
+             
         }
 
-        return view('inventory.inward.shipment.lable', compact('view', 'bar_code'));
+        return view('inventory.inward.shipment.lable', compact('viewlable', 'bar_code'));
     }
 
     public function Exportlable(Request $request)
     {
         $id = $request->id;
         $url = $request->url;
-        $file_path =  'product/label'.$id.'.pdf';
-        if(!Storage::exists($file_path)) {
+        $file_path =  'product/label' . $id . '.pdf';
+        if (!Storage::exists($file_path)) {
             Storage::put($file_path, '');
         }
 
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-        //   ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
-        ->showBackground()
-        ->savePdf($exportToPdf);
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            ->showBackground()
+            ->savePdf($exportToPdf);
 
         return response()->json(["success" => "Export to PDF Successfully"]);
-      
     }
 
     public function DownloadPdf($ship_id)
     {
-        return Storage::download('/product/label'.$ship_id.'.pdf');
+        return Storage::download('/product/label' . $ship_id . '.pdf');
     }
 }
