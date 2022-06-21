@@ -32,88 +32,44 @@ class TestController extends Controller
    */
   public function index()
   {
+   $token = 'Atzr|IwEBIPB-bwH72vziBxC_yS2L95g1g5YHzk2uFK5XVfDN81DNCWqZ_P7tB_AZnW_sTbc4ksR2j9qag1v4lBByY_ujE3gulLdRhNRQ37ztoLaIAGkthEE2GP16y4QQPNdJ0teD0HGZQ8gjX62XWBFPMDZNMuErOLxu3s3pB_GmaGS54TSljnLmNdxAvmVOW63c3N79QdO_Bg91UqaTVUGiSgbAO8P5ebDlQON1OlXZzQzR-yMcApXmhn8mVuN5U9aCKeXa8bg8pH0FSvK6LE17Vig-_Tg5AFa-7dOTe9CO3uoLWBZyaqy0aRinqFc1XBMKQAs0uII';
+   //AE
+    $marketplace = 'A2VIGQ35RCS4UG';
+    $endpoint = Endpoint::EU;
+
+    $config = new Configuration([
+      "lwaClientId" => "amzn1.application-oa2-client.0167f1a848ae4cf0aabeeb1abbeaf8cf",
+      "lwaClientSecret" => "5bf9add9576f83d33293b0e9e2ed5e671000a909f161214a77b93d26e7082765",
+      "lwaRefreshToken" => $token,
+      "awsAccessKeyId" => "AKIAZTIHMXYBD5SRG5IZ",
+      "awsSecretAccessKey" => "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",
+      "endpoint" => $endpoint,  // or another endpoint from lib/Endpoints.php
+      "roleArn" => 'arn:aws:iam::659829865986:role/Mosh-E-Com-SP-API-Role'
+    ]);
+
+    $apiInstance = new OrdersApi($config);
+    $order_id = '406-2019809-3971536';
+  
+    $next_token = NULL;
+    $data_element = array('buyerInfo');
+    $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
+    $result_order_address = $apiInstance->getOrderAddress($order_id);
+po($result_order_address);
+echo "<hr>";
+po($result_orderItems);
+exit;
+    dd($result_order_address, $result_orderItems);
+    exit;
     $order = config('database.connections.order.database');
     $catalog = config('database.connections.catalog.database');
     $web = config('database.connections.web.database');
-echo $web;
+
     $label = DB::select("SELECT * from $web.labels as web 
       INNER JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no 
       INNER JOIN $order.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
       INNER JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin
     ");
     dd($label);
-
-
-
-    exit;
-    $catalogImport = new CatalogImport();
-    $catalogData = $catalogImport->amazonCatalogImport();
-
-
-    exit;
-    $year = date('Y');
-    $month = date('F');
-
-    echo date('d/m/Y');
-    exit;
-    $pdfParser = new Parser();
-    $BOEPDFMaster = [];
-    $pdf = $pdfParser->parseFile('D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000433.pdf');
-    $content = $pdf->getText();
-    $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
-    dd($content);
-    exit;
-    //   $file_path = BOE::first();
-    //   $file_path_array = explode('/', $file_path->download_file_path);
-    //   // dd($file_path_array);
-    //   $file_name = $file_path_array[count($file_path_array) - 1];
-
-    //   $file = storage_path('app/' . $file_path->download_file_path);
-
-    //   if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv')) {
-
-    //      Storage::disk('do')->put("BOE/$file_path->download_file_path", '');
-    // }
-
-    //   Storage::disk('do')->put("BOE/$file_path->download_file_path", file_get_contents($file));
-
-    //   // dd($file_name);
-    //   dd($file_path->download_file_path);
-
-
-
-    BOE::where('do', 0)->chunk(5, function ($files_path) use ($year, $month) {
-
-      foreach ($files_path as $file_path) {
-
-        $file_path_array = explode('/', $file_path->download_file_path);
-        $file_name = $file_path_array[count($file_path_array) - 1];
-
-        $file = storage_path('app/' . $file_path->download_file_path);
-        Storage::disk('do')->put("BOE/boe/$year/$month/$file_name", file_get_contents($file));
-        BOE::where('id', $file_path->id)->update(['do' => 1]);
-      }
-    });
-
-    exit;
-
-
-    $file_path = BOE::first();
-    $file_path = ($file_path['file_path']);
-    if (Storage::exists($file_path)) {
-      return Storage::download($file_path);
-    }
-
-    exit;
-    $amazonCoutn = DB::select('select count(*) from amazon ');
-    print_r($amazonCoutn);
-    echo "<hr>";
-    $amazonData = DB::select('select * from amazon');
-    foreach ($amazonData as $data) {
-
-      print_r(json_decode(json_encode($data)));
-      echo "<hr>";
-    }
   }
 
   public function SellerTest()
@@ -143,7 +99,7 @@ echo $web;
       try {
         $results = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses = null, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, $next_token, $amazon_order_ids = null, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
         po($results);
-    
+
         // $next_token = $results['next_token'];
         $orders = '';
         $amazon_order_id = '';
