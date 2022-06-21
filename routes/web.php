@@ -16,6 +16,8 @@ use App\Models\Inventory\Shelve;
 use App\Models\Universal_textile;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -60,8 +62,17 @@ Route::get('pdf',function(){
 });
 
 Route::get('command', function () {
+    
+    if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
-     Artisan::call('pms:country-state-city');
+        Log::warning("Export asin command executed local !");
+        $base_path = base_path();
+        $command = "cd $base_path && php artisan pms:seller-order-item-import > /dev/null &";
+        exec($command);
+    } else {
+
+        Artisan::call('pms:seller-order-item-import ');
+    }
 });
 
 Route::get('/', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('/');

@@ -126,7 +126,7 @@ class SellerOrdersItemImport extends Command
 
                 Log::warning($e->getMessage());
             }
-            sleep(10);
+            sleep(30);
         }
     }
 
