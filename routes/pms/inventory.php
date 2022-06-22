@@ -53,14 +53,13 @@ Route::get('inventory/shipments/{id}/place', 'Inventory\inwarding\InventoryShipm
 Route::post('shipment/place', 'Inventory\inwarding\InventoryShipmentController@placeship');
 Route::get('inventory/shipments/{id}/lable', 'Inventory\inwarding\InventoryShipmentController@printlable');
 Route::post('shipment/lable/export-pdf', 'Inventory\inwarding\InventoryShipmentController@Exportlable');
-
 Route::get('Shipment/download/{ship_id}', 'Inventory\inwarding\InventoryShipmentController@DownloadPdf');
 Route::post('racks/{id}', 'Inventory\inwarding\InventoryShipmentController@getRack');
 Route::post('Shelves/{id}', 'Inventory\inwarding\InventoryShipmentController@getShelve');
 Route::post('Bins/{id}', 'Inventory\inwarding\InventoryShipmentController@getbin');
 Route::resource('inventory/shipments', 'Inventory\inwarding\InventoryShipmentController');
 
-
+Route::post('shipment/warehouseg/{id}', 'Inventory\Outwarding\InventoryOutwardShipmentController@autofinish');
 Route::get('shipment/autofinish', 'Inventory\Outwarding\InventoryOutwardShipmentController@autofinish');
 Route::post('shipment/storeoutshipment', 'Inventory\Outwarding\InventoryOutwardShipmentController@storeoutshipment');
 Route::get('shipment/select/View', 'Inventory\Outwarding\InventoryOutwardShipmentController@selectview');
