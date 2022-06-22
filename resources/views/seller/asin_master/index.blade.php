@@ -9,7 +9,7 @@
             <a href='/seller/csv/template'> 
                 <x-adminlte-button label="Download CSV Template" theme="primary" icon="fas fa-file-download" />
             </a>
-            <a>
+            <a href="/seller/catalog-details">
                 <x-adminlte-button label="Get Price & Catalog" theme="primary" icon="fas fa-file-import" id='catalog_details' />
             </a>
             <a href="/seller/import-bulk-asin">

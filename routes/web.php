@@ -19,6 +19,7 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
+use App\Services\SP_API\API\Catalog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
@@ -75,16 +76,41 @@ Route::get('command', function () {
     }
 });
 
-// Route::get('/', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('/');
+Route::get('order/catalog', function()
+{
+    
+    $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails where status = 0 ");
+        $count = 0;
+        $batch = 0;
+        $asinList = [];
+        foreach ($order_item_details as $key => $value) {
+            $asin = $value->asin;
+            // $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
+            $check = [];
+            if (!array_key_exists('0', $check)) {
+                // $asinList[$count]->asin = $asin;
+                $count++;
+                $batch++;
+                $data[] = $value;
+            }
+            
+            //$type = 1 for seller, 2 for Order, 3 for inventory
+            if ($count == 10) {
+                $count = 0;
+                $type = 2;
+                $catalog = new Catalog();
+                $catalog->index($data, NULL, $type, $batch);
+                Log::alert('10 asin imported');
+                $data = [];
+                exit;
+            }
+        }
+});
+
 Route::get('/', 'Auth\LoginController@showLoginForm')->name('/');
 Auth::routes();
-// Route::get('login', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('login');
 Route::get('login', 'Admin\HomeController@dashboard')->name('login');
-// Route::get('home', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('home');
 Route::get('home', 'Admin\HomeController@dashboard')->name('home');
-// Route::group(['middleware' => ['role:Admin', 'auth'], 'prefix' => 'admin'],function(){
-// Route::get('dashboard', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('admin.dashboard');
-// });
 Route::resource('/tests', 'TestController');
 Route::get('test/seller', 'TestController@SellerTest');
 Route::get('/asin/{asin}/{code}', 'TestController@getASIN');

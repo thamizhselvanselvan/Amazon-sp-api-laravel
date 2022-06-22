@@ -96,7 +96,7 @@ class SellerOrdersImport extends Command
 
         $apiInstance = new OrdersApi($config);
         // $startTime = Carbon::now()->subMinute(20)->toISOString();
-        $startTime = Carbon::now()->subDays(25)->toISOString();
+        $startTime = Carbon::now()->subHours(4)->toISOString();
 
         // echo $startTime;
         $createdAfter = $startTime;
@@ -184,8 +184,8 @@ class SellerOrdersImport extends Command
             
             //$amazon_order_id = '407-0297568-739477566';
 
-            // $data = DB::connection('order')->select("select id, amazon_order_identifier from orders where amazon_order_identifier = '$amazon_order_id'");
-          $data = [];
+            $data = DB::connection('order')->select("select id, amazon_order_identifier from orders where amazon_order_identifier = '$amazon_order_id'");
+        //   $data = [];
             if (array_key_exists(0, $data)) 
             {
                 $count++;
