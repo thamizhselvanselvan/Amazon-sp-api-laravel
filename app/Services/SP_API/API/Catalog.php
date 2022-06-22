@@ -21,10 +21,9 @@ class Catalog
 {
 
     use ConfigTrait;
-    public function index($datas, $seller_id, $type, $batch = NULL)
+    public function index($datas, $seller_id = NULL, $type, $batch = NULL)
     {
         //$type = 1 for seller, 2 for Order, 3 for inventory
-
         $host = config('database.connections.catalog.host');
         $dbname = config('database.connections.catalog.database');
         $port = config('database.connections.catalog.port');
@@ -40,12 +39,12 @@ class Catalog
             foreach ($datas as $value) {
                 $asin = $value->asin;
                 $country_code = $value->source;
-                $seller_id = $value->seller_id;
+                $seller = $value->seller_id;
 
-                $seller_detilas = Aws_credential::where('seller_id', $seller_id)->get();
+                $seller_detilas = Aws_credential::where('seller_id', $seller)->get();
                 // $token = ($seller_detilas[0]->auth_code);
                 $token = "Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg";
-                $this->getCatalog($country_code, $token, $asin, $seller_id, $type);
+                $this->getCatalog($country_code, $token, $asin, $seller, $type);
             }
         } elseif ($type == 2) {
 
@@ -53,12 +52,12 @@ class Catalog
                 // Log::alert('working');
                 $asin = $value->asin;
                 $country_code = $value->country;
-                $seller_id = $value->seller_identifier;
+                $seller = $value->seller_identifier;
 
-                $seller_detilas = Aws_credential::where('seller_id', $seller_id)->get();
+                $seller_detilas = Aws_credential::where('seller_id', $seller)->get();
                 $token = ($seller_detilas[0]->auth_code);
                 // $token = "Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg";
-                $this->getCatalog($country_code, $token, $asin, $seller_id, $type);
+                $this->getCatalog($country_code, $token, $asin, $seller, $type);
             }
             return true;
         }

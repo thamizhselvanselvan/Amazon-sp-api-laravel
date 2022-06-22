@@ -120,8 +120,8 @@ return [
 
     'metrics' => [
         'trim_snapshots' => [
-            'job' => 24,
-            'queue' => 24,
+            'job' => 50,
+            'queue' => 50,
         ],
     ],
 
@@ -169,29 +169,24 @@ return [
             'connection' => 'redis',
             'queue' => ['default'],
             'balance' => 'auto',
+            'minProcesses' => 1,
             'maxProcesses' => 1,
-            'maxTime' => 0,
-            'maxJobs' => 0,
-            'memory' => 128,
             'tries' => 1,
-            'timeout' => 60,
-            'nice' => 0,
         ],
     ],
 
     'environments' => [
         'production' => [
-            'supervisor-1' => [
-                'maxProcesses' => 10,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
-            ],
+            'ca-supervisor-11' => ['connection' => 'redis', 'queue' => ['CA_Order_1'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 0, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
+            'ca-supervisor-12' => ['connection' => 'redis', 'queue' => ['CA_Order_2'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 10, 'tries' => 0, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
+            'ca-supervisor-13' => ['connection' => 'redis', 'queue' => ['CA_Order_3'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 0, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
+            'ca-supervisor-14' => ['connection' => 'redis', 'queue' => ['CA_Order_4'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 0, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
         ],
-
-        'local' => [
-            'supervisor-1' => [
-                'maxProcesses' => 3,
-            ],
+        'staging' => [
+            'ca-supervisor-11' => ['connection' => 'redis', 'queue' => ['CA_Order_1'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 0, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
+            'ca-supervisor-12' => ['connection' => 'redis', 'queue' => ['CA_Order_2'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 10, 'tries' => 0, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
+            'ca-supervisor-13' => ['connection' => 'redis', 'queue' => ['CA_Order_3'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 0, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
+            'ca-supervisor-14' => ['connection' => 'redis', 'queue' => ['CA_Order_4'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 0, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
         ],
     ],
 ];

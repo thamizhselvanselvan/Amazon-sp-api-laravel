@@ -15,7 +15,7 @@
 <div class="row m-5">
     <div class="col-5">
         <form class="row" action="asin_save" method="POST" enctype="multipart/form-data">
-        @csrf
+            @csrf
             <label>Enter ASIN</label>
             <textarea class="form-control" rows="3" placeholder="Enter ASIN ..." name="textarea"></textarea>
             <div class="text-right m-2">

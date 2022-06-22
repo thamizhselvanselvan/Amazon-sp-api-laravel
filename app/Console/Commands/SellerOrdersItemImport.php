@@ -48,15 +48,16 @@ class SellerOrdersItemImport extends Command
      */
     public function handle()
     {  
-        // $host = config('database.connections.order.host');
-        // $dbname = config('database.connections.order.database');
-        // $port = config('database.connections.order.port');
-        // $username = config('database.connections.order.username');
-        // $password = config('database.connections.order.password');
-
+        $host = config('database.connections.order.host');
+        $dbname = config('database.connections.order.database');
+        $port = config('database.connections.order.port');
+        $username = config('database.connections.order.username');
+        $password = config('database.connections.order.password');
+        
+        R::addDatabase('order', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+        R::selectDatabase('order');
         // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
         $aws_data = OrderSellerCredentials::where('get_order_item', 1)->get();
-
         foreach ($aws_data as $aws_value) {
 
             $awsId  = $aws_value['id'];
@@ -72,6 +73,8 @@ class SellerOrdersItemImport extends Command
             $apiInstance = new OrdersApi($config);
             $this->SelectedSellerOrderItem($apiInstance, $seller_id, $awsCountryCode);
         }
+        Log::info('order item saved');
+        // exit;
         R::close();
 
         //After importing order item detials of particult order id, get detials of asin if asin is not avaliable in mosh_catalog.catlaog
@@ -82,20 +85,22 @@ class SellerOrdersItemImport extends Command
         foreach ($order_item_details as $key => $value) {
             $asin = $value->asin;
             $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
+            // $check = [];
             if (!array_key_exists('0', $check)) {
                 // $asinList[$count]->asin = $asin;
                 $count++;
                 $batch++;
                 $data[] = $value;
             }
-            
+
             //$type = 1 for seller, 2 for Order, 3 for inventory
             if ($count == 10) {
                 $count = 0;
                 $type = 2;
                 $catalog = new Catalog();
-                $catalog->index($data, $seller_id, $type, $batch);
+                $catalog->index($data, NULL, $type, $batch);
                 Log::alert('10 asin imported');
+                $data = [];
             }
         }
 
@@ -107,7 +112,7 @@ class SellerOrdersItemImport extends Command
     public function SelectedSellerOrderItem($apiInstance, $seller_id, $awsCountryCode)
     {
         $amazonorder_ids = DB::connection('order')->select("SELECT amazon_order_identifier from orders where our_seller_identifier = $seller_id AND order_item = 0");
-
+        
         foreach ($amazonorder_ids as $amazonorder_id) {
             $order_id = ($amazonorder_id->amazon_order_identifier);
             $data_element = array('buyerInfo');
@@ -123,6 +128,7 @@ class SellerOrdersItemImport extends Command
 
                 Log::warning($e->getMessage());
             }
+            sleep(30);
         }
     }
 

@@ -16,7 +16,10 @@ use App\Models\Inventory\Shelve;
 use App\Models\Universal_textile;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
+use App\Services\SP_API\API\Catalog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
@@ -26,6 +29,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\TestController;
 use SellingPartnerApi\Api\ProductPricingApi;
+use App\Jobs\Seller\Seller_catalog_import_job;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 /*
 |--------------------------------------------------------------------------
@@ -37,225 +41,130 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('pdf',function(){
 
-     $url = 'https://amazon-sp-api-laravel.test/admin/rolespermissions';
-     $file_path = 'product/label.pdf';
+Route::get('pdf', function () {
 
-     if (!Storage::exists($file_path)) {
-         Storage::put($file_path, '');
-     }
+    dd(User::get());
 
-     $exportToPdf = Storage::path($file_path);
-         Browsershot::url($url)
-         ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
-         ->showBackground()
-         ->savePdf($exportToPdf);
+    exit;
 
-         return Storage::download($exportToPdf);
+    $url = 'https://amazon-sp-api-laravel.test/admin/rolespermissions';
+    $file_path = 'product/label.pdf';
 
-     //   $url = 'https://amazon-sp-api-laravel.test/shipment/print/lable';
-     //    $file_path = 'product/label.pdf';
+    if (!Storage::exists($file_path)) {
+        Storage::put($file_path, '');
+    }
 
-     //    if(!Storage::exists($file_path)) {
-     //        Storage::put($file_path, '');
-     //    }   
+    $exportToPdf = Storage::path($file_path);
+    Browsershot::url($url)
+        ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+        ->showBackground()
+        ->savePdf($exportToPdf);
 
-     //    $exportToPdf = Storage::path($file_path);
-
-     //     Browsershot::url($url)
-     //    ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-     //    ->showBackground()
-     //    ->savePdf($exportToPdf);
-     
+    return Storage::download($exportToPdf);
 });
-
-// Route::get('excel',function(){
-
-//      $host = config('database.connections.web.host');
-//         $dbname = config('database.connections.web.database');
-//         $port = config('database.connections.web.port');
-//         $username = config('database.connections.web.username');
-//         $password = config('database.connections.web.password');
-
-
-//      R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-
-//      $data = Excel::toArray([],'D:\invoice.xlsx');
-
-//      $header = [];
-//      $result = [];
-//      $check = ['.', '(', ')'];
-
-//      foreach($data[0][0] as $key => $value)
-//      {
-//           // $header = $invoice[$key];
-//          $testing = str_replace(' ', '_', trim($value));
-//           $header[$key] = str_replace($check,'',strtolower($testing));
-//      } 
-//      // po($header);
-//      foreach($data as $result)
-//      {    
-//           foreach($result as $key2 => $record)
-//           {
-//                if($key2 != 0 )
-//                {
-//                     $invoice = R::dispense('invoices');
-//                     foreach($record as $key3 => $value)
-//                     {
-//                          $name = $header[$key3];
-//                          echo $name;
-//                          if($name != '')
-//                          {
-//                                $invoice->$name = $value;  
-//                          }
-//                     }     
-//                     R::store($invoice);
-//                }
-//           }
-//      }
-
-// });
 
 Route::get('command', function () {
 
-     Artisan::call('pms:country-state-city');
-});
+    if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
-Route::get('test', function () {
+        Log::warning("Export asin command executed local !");
+        $base_path = base_path();
+        $command = "cd $base_path && php artisan pms:seller-order-item-import > /dev/null &";
+        exec($command);
+    } else {
 
-     $today_sd = Carbon::today();
-     $today_ed = Carbon::now();
-
-     // $packet_detials = DB::connection('b2cship')->select("SELECT 
-     //      DISTINCT TOP 1000 AwbNo,
-     //      packetstatus = STUFF((
-     //           SELECT distinct  ',' + POD1.StatusDetails
-     //           FROM PODTrans POD1
-     //           WHERE POD.AwbNo = POD1.AwbNo AND FPCode = 'BOMBINO'
-     //           FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 1, ''),
-     //      packetlocation = STUFF((
-     //           SELECT  ',' + POD2.PODLocation
-     //           FROM PODTrans POD2
-     //           WHERE POD.AwbNo = POD2.AwbNo AND FPCode = 'BOMBINO'
-     //           FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 1, '')
-     //      from PODTrans POD
-     //      WHERE FPCode ='BOMBINO' 
-     //      Group By AwbNo, PODLocation
-     //      ORDER BY AwbNo DESC
-     // ");
-     // $pd_final = [];
-     // $offset = 0;
-     // foreach ($packet_detials as $value) {
-
-     //      $packet_status = $value->packetstatus;
-     //      $packet_location = $value->packetlocation;
-     //      $packet_array = explode(',', $packet_status);
-     //      $pl_array = explode(',', $packet_location);
-
-     //      foreach ($packet_array as $key => $status) {
-     //           $pd_final[$offset][0] = $value->AwbNo;
-     //           $pd_final[$offset][$key + 1] = $status . ' [' . $pl_array[$key] . ']';
-     //      }
-     //      $offset++;
-     // }
-
-     // po($pd_final);
-     // exit;
-
-
-     $array = "'BOMBINO', 'BLUEDART', 'DELIVERY'";
-     $test = DB::connection('b2cship')->select("
-          SELECT TOP 4 FPCode, packetstatus = STUFF((
-               SELECT ',' + POD.CreatedDate FROM PODTrans POD WHERE POD.FPCode = PODS.FPCode WHERE FPCode IN ($array) FOR XML PATH('')), 1, 1, '') 
-          FROM PODTrans PODS WHERE FPCode IN ($array) GROUP BY FPCode ORDER BY FPCode");
-     dd($test);
-
-     return view('b2cship.trackingStatus.micro_status_report');
+        Artisan::call('pms:seller-order-item-import ');
+    }
 });
 
 
-Route::get('/', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('/');
+Route::get('test-queue-redis', function () {
+
+    $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails where status = 0 ");
+    $count = 0;
+    $batch = 0;
+    $asinList = [];
+    foreach ($order_item_details as $key => $value) {
+        $asin = $value->asin;
+        // $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
+        // $check = [];
+        // if (!array_key_exists('0', $check)) {
+            $count++;
+            // $batch++;
+            $data[] = $value;
+        // }
+        //$type = 1 for seller, 2 for Order, 3 for inventory
+        if ($count == 10) {
+
+            if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+                Seller_catalog_import_job::dispatch(
+                    [
+                        'seller_id' => NULL,
+                        'datas' => $data,
+                        'type' => 1
+                    ]
+                )->onConnection('redis')->onQueue('default');
+            } else {
+
+                Seller_catalog_import_job::dispatch(
+                    [
+                        'seller_id' => NULL,
+                        'datas' => $data,
+                        'type' => 1
+                    ]
+                );
+            }
+            // $count = 0;
+            // $type = 2;
+            // $catalog = new Catalog();
+            // $catalog->index($data, NULL, $type, $batch);
+            // Log::alert('10 asin imported');
+            // $data = [];
+        }
+    }
+
+    if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+    } else {
+    }
+});
+
+Route::get('order/catalog', function () {
+
+    $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails where status = 0 ");
+    $count = 0;
+    $batch = 0;
+    $asinList = [];
+    foreach ($order_item_details as $key => $value) {
+        $asin = $value->asin;
+        $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
+        // $check = [];
+        if (!array_key_exists('0', $check)) {
+            // $asinList[$count]->asin = $asin;
+            $count++;
+            $batch++;
+            $data[] = $value;
+        }
+
+        //$type = 1 for seller, 2 for Order, 3 for inventory
+        if ($count == 10) {
+            $count = 0;
+            $type = 2;
+            $catalog = new Catalog();
+            $catalog->index($data, NULL, $type, $batch);
+            Log::alert('10 asin imported');
+            $data = [];
+            // exit;
+        }
+    }
+});
+
+Route::get('/', 'Auth\LoginController@showLoginForm')->name('/');
 Auth::routes();
-Route::get('login', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('login');
-Route::get('home', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('home');
-// Route::group(['middleware' => ['role:Admin', 'auth'], 'prefix' => 'admin'],function(){
-// Route::get('dashboard', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('admin.dashboard');
-// });
+Route::get('login', 'Admin\HomeController@dashboard')->name('login');
+Route::get('home', 'Admin\HomeController@dashboard')->name('home');
 Route::resource('/tests', 'TestController');
 Route::get('test/seller', 'TestController@SellerTest');
 Route::get('/asin/{asin}/{code}', 'TestController@getASIN');
-Route::get("b2cship", function () {
 
-     $path = 'D:\Label_Excel_Template.xlsx';
-     
-     exit;
-     $data = DB::connection('b2cship')->select("SELECT DISTINCT Status from MicroStatusMapping where MicroStatusCode = 'ITOFD'");
-
-     foreach ($data as $totalBooking) {
-          foreach ($totalBooking as $totalBookingAWB) {
-               if (str_contains($totalBookingAWB, "'")) {
-
-                    $totalBookingAWB = str_replace("'", "/''", $totalBookingAWB);
-                    // echo $totalBookingAWB;
-
-               }
-               $totalBookingArray[] = "'$totalBookingAWB'";
-          }
-     }
-     $awb = implode(',', $totalBookingArray);
-     $awb = ltrim($awb);
-     // dd($awb);
-     $kycStatus = DB::connection('b2cship')->select("SELECT AwbNo FROM PODTrans WHERE StatusDetails IN ($awb) and CreatedDate BETWEEN '2022-04-10 00:00:00' and '2022-05-09 23:59:00' ");
-
-     po(count($kycStatus));
-     exit;
-
-
-     $totalBookings = DB::connection('b2cship')->select("SELECT TOP 10 AwbNo FROM Packet ");
-     dd($totalBookings);
-     $starTime = Carbon::today();
-     echo $starTime;
-     $endTime = Carbon::now();
-     echo $endTime;
-     $date = $starTime->toDateString();
-     exit;
-     // $ans = DB::connection('b2cship')->select("SELECT Top 5 * FROM KYCStatus ");
-     // po($ans);
-     // exit;
-     echo ' yesterday Total KYC pending :- ';
-     $and = DB::connection('b2cship')->select("SELECT DISTINCT Packet.AwbNo, Packet.CreatedDate FROM Packet Left JOIN KYCStatus on Packet.AwbNo = KYCStatus.AwbNo  where Packet.CreatedDate between '$starTime' and '$date 23:59:59' AND KYCStatus.AwbNo IS NULL");
-     echo count($and);
-     exit;
-     $and = DB::connection('b2cship')->select("SELECT DISTINCT Packet.AwbNo, Packet.CreatedDate FROM Packet INNER JOIN KYCStatus on Packet.AwbNo = KYCStatus.AwbNo  where Packet.CreatedDate between '$date 00:00:00' and '$date 23:59:59' ");
-     //     echo count($and);
-     echo '<br>';
-     echo 'yesterday total packet booked :- ';
-     $ans = DB::connection('b2cship')->select("SELECT AwbNo FROM Packet where CreatedDate between '$date 00:00:00' and '$date 23:59:59'");
-     echo count($ans);
-     echo '<br>';
-     // exit;
-     // echo 'total kyc status ' ;
-     // $ans = DB::connection('b2cship')->select("SELECT count(DISTINCT AwbNo) FROM KYCStatus where CreatedDate between '$date 00:00:00' and '$date 23:59:59'");
-     // po($ans);
-     echo 'kyc rejected ';
-     $ans = DB::connection('b2cship')->select("SELECT count(DISTINCT AwbNo) FROM KYCStatus where IsRejected = '1' AND (CreatedDate between '$date 00:00:00' and '$date 23:59:59')");
-     po($ans);
-     echo 'kyc Approved ';
-     $ans = DB::connection('b2cship')->select("SELECT count(DISTINCT AwbNo) FROM KYCStatus where IsRejected = '0' AND (CreatedDate between '$date 00:00:00' and '$date 23:59:59')");
-     po($ans);
-     exit;
-});
-Route::get('upload', function () {
-     $file = 'D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000135.pdf';
-     // return file_get_contents($file);
-     //     $fileName = (string) Str::uuid();
-     $folder = config('filesystems.disks.do.folder');
-     Storage::disk('do')->put(
-          "/{$folder}/boe.pdf",
-          file_get_contents($file)
-     );
-     // Storage::disk('do')->put('/boe.pdf', file_get_contents($file));
-     echo 'success';
-});
 include_route_files(__DIR__ . '/pms/');

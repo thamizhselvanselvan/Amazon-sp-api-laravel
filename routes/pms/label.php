@@ -14,3 +14,9 @@ Route::prefix('label/')->group(function () {
 });
 
 Route::get('label/pdf-template/{id}', 'label\labelManagementController@showTemplate');
+Route::post('label/export-pdf', 'label\labelManagementController@ExportLabel');
+Route::get('label/download/{awb_no}', 'label\labelManagementController@downloadLabel');
+Route::get('label/download-direct/{id}', 'label\labelManagementController@DownloadDirect');
+Route::get('label/print-selected/{id}', 'label\labelManagementController@PrintSelected');
+Route::POST('label/select-download', 'label\labelManagementController@DownloadSelected');
+Route::get('label/zip-download/{arr}', 'label\labelManagementController@zipDownload');

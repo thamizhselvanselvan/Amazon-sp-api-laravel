@@ -53,6 +53,7 @@ class seller_catalog_import extends Command
                 [
                     'seller_id' => $seller_id,
                     'datas' => $datas,
+                    'type' => 1
                 ]
             );
         });

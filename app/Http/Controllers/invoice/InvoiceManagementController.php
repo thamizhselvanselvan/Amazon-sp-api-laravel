@@ -9,6 +9,7 @@ use RedBeanPHP\R;
 use League\Csv\Reader;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
@@ -44,7 +45,6 @@ class InvoiceManagementController extends Controller
                     return $check_box;
                 })
                 ->rawColumns(['action','check_box'])
-                // ->fullNumbers()
                 ->make(true);
         }
         return view('invoice.index');
@@ -55,6 +55,24 @@ class InvoiceManagementController extends Controller
         return view('invoice.upload_excel');
     }
 
+    public function SearchInvoice()
+    {
+        return view('invoice.search_invoice');
+    }
+
+    public function GetInvoice(Request $request)
+    {
+        if($request->ajax())
+        {
+            $date = $request->invoice_date;
+            $newdate = explode( ' - ' ,$date);
+            $date1 = $newdate[0];
+            $date2 = $newdate[1];
+            $results = DB::connection('web')->select("SELECT id, invoice_no, invoice_date, channel, shipped_by, awb_no, arn_no, hsn_code, qty, product_price FROM invoices WHERE invoice_date BETWEEN '$date1' AND '$date2' ");
+            
+        }
+        return response()->json($results);
+    }
     public function showpdf(Request $request )
     {
         return view('invoice.invoice');
@@ -128,7 +146,7 @@ class InvoiceManagementController extends Controller
                                 if(isset($header[1]))
                                 {
                                     $dateset = $header[1];
-                                    $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($record[1])->format("d/m/Y");
+                                    $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($record[1])->format("Y-m-d");
                                     $invoice->$dateset = $date;
                                 }
                             } 

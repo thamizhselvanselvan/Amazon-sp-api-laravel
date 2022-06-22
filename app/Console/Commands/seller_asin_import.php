@@ -76,24 +76,19 @@ class seller_asin_import extends Command
                 $asin_master[] = [
                     'seller_id' => $seller_id,
                     'asin' => $asin,
-                    'source' => $country_code,
-                    'destination_1' => $record['Destination 1'],
-                    'destination_2' => $record['Destination 2'],
-                    'destination_3' => $record['Destination 3'],
-                    'destination_4' => $record['Destination 4'],
-                    'destination_5' => $record['Destination 5'],         
+                    'source' => $country_code, 
                     'created_at' => now(),
                     'updated_at' => now()
                 ];
                 
-                $product [] = [
+                $product[] = [
                     'seller_id' => $seller_id,
                     'asin1' => $asin,
+                    'priority' => 1,
                     'country_code'=> $country_code,
                 ];
 
-                $product_lowest_price [] = [
-
+                $product_lowest_price[] = [
                     'asin' => $asin,
                     'import_type' => 'Seller',
                     'country_code' => $country_code,
@@ -103,14 +98,15 @@ class seller_asin_import extends Command
 
                     AsinMasterSeller::insert($asin_master);
                     BB_Product::insert($product);
-                    BB_Product_lowest_price_offer::upsert($product_lowest_price, ['asin','country_code'],['asin','country_code']);
+                    BB_Product_lowest_price_offer::upsert($product_lowest_price, ['asin','country_code'], ['asin', 'country_code']);
+
                     $count = 0;
                     $asin_master = [];
                     $product = [];
                     $product_lowest_price = [];
                 }
+
                 $count++;
-                
             }	
             
             AsinMasterSeller::insert($asin_master); 

@@ -711,7 +711,7 @@ return [
                 ],
                 [
                     'text' => 'Catalog Details',
-                    'url' => 'seller/catalog-details',
+                    'url' => '',
                     'can' => ['Admin', 'Seller'],
                     'icon' => 'far fa-fw fa-file',
 
@@ -721,7 +721,6 @@ return [
                 //     'url' => 'seller/credentials', 
                 //     'can' => ['Admin', 'Seller'], 
                 //     'icon' => 'far fa-fw fa-user', 
-
                 // ],
                 [
                     'text' => 'Seller Invoice',

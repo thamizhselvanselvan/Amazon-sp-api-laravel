@@ -5,6 +5,10 @@
 <div class="row">
     <h1 class="m-0 text-dark col">Invoice Management</h1>
     <h2 class="mb-4 text-right col">
+        <a href="search-invoice">
+            <x-adminlte-button label="Search Invoice" theme="primary" icon="fas fa-search" class="btn-sm" />
+        </a>
+
         <a href="upload">
             <x-adminlte-button label="Upload Invoice Excel" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
         </a>
@@ -17,9 +21,9 @@
         <!-- <a href="download-all">  -->
             <x-adminlte-button label="Selected Print" id='select_print' theme="primary" icon="fas fa-print" class="btn-sm" />
         <!-- </a> -->
-        <a href="download-all"> 
+        <!-- <a href="download-all"> 
             <x-adminlte-button label="Download All" id='download_pdf' theme="primary" icon="fas fa-check-circle" class="btn-sm" />
-        </a>
+        </a> -->
     </h2>
 </div>
 
@@ -150,18 +154,18 @@
             });
             // alert(id);
             $.ajax({
-                    method: 'POST',
-                    url: "{{ url('/invoice/select-download')}}",
-                    data:{ 
-                    'id':id,
-                    "_token": "{{ csrf_token() }}",
-                    },
-                    success: function(response) {
-                        arr += response;
-                        window.location.href = '/invoice/zip-download/'+arr;
-                    // alert('Export pdf successfully');
-                    }
-                });
+                method: 'POST',
+                url: "{{ url('/invoice/select-download')}}",
+                data:{ 
+                'id':id,
+                "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
+                    arr += response;
+                    window.location.href = '/invoice/zip-download/'+arr;
+                // alert('Export pdf successfully');
+                }
+            });
                 
         });
 
