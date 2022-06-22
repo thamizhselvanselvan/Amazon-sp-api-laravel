@@ -97,7 +97,8 @@ class AdminManagementController extends Controller
     {
         $roles = Roles::get('name');
         $companys = CompanyMaster::get();
-        return view('admin.adminManagement.add', compact(['roles', 'companys']));
+        $bb_user = BB_User::get(['name','id']);
+        return view('admin.adminManagement.add', compact(['roles', 'companys','bb_user']));
     }
 
     public function save_user(Request $request)
@@ -105,23 +106,17 @@ class AdminManagementController extends Controller
         $request->validate([
             'password' => 'required|confirmed|min:3|max:18'
         ]);
+        // return $request->all();
         $seller_id = NULL;
         foreach($request->Role as $role)
         {
            if($role == 'Seller')
            {
-               BB_User::create([
-                'internal_seller' => 0,
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'status' => 1
-               ]);
-
-               $user_details = BB_User::where('email', $request->email)->get('id');
-               $seller_id = $user_details->first()->id;
+               $seller_id = $request->bb_user ;
            }
+     
         }
+        
         $am = User::create([
             'name' => $request->name,
             'bb_seller_id' => $seller_id,
@@ -140,8 +135,7 @@ class AdminManagementController extends Controller
     {
         $user = User::where('id', $request->id)->first();
         $user_id = $request->id;
-        // dd($user->email);
-        // dd($user);
+   
         $user_email = $user->email;
         $user_name = $user->name;
         $selected_roles = $user->roles->first()->name;

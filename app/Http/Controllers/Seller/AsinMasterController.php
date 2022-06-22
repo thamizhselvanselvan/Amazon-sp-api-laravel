@@ -19,7 +19,9 @@ class AsinMasterController extends Controller
     public function index(Request $request)
     {
         $path = public_path() . '/storage/SellerCsvTemplate.csv';
+
         if ($request->ajax()) {
+
             $user = Auth::user();
             $seller_id = $user->bb_seller_id;
 
@@ -35,7 +37,8 @@ class AsinMasterController extends Controller
                 })
                 ->make(true);
         }
-        return view('seller.asin_master.index',compact('path'));
+
+        return view('seller.asin_master.index', compact('path'));
     }
 
     public function addAsin()
@@ -43,23 +46,20 @@ class AsinMasterController extends Controller
 
         return view('AsinMaster.addAsin');
     }
+
     public function editasin($id)
     {
 
         $asin = AsinMasterSeller::where('id', $id)->first();
         return view('AsinMaster.edit', compact('asin'));
     }
+
     public function update(Request $request, $id)
     {
 
         $validated = $request->validate([
             'asin' => 'required|min:4|max:25',
-            'source' => 'required|min:2|max:15',
-            'destination_1' => 'nullable|min:2|max:15',
-            'destination_2' => 'nullable|min:2|max:15',
-            'destination_3' => 'nullable|min:2|max:15',
-            'destination_4' => 'nullable|min:2|max:15',
-            'destination_5' => 'nullable|min:2|max:15'
+            'source' => 'required|min:2|max:15'
         ]);
 
         $validated['source'] = strtoupper($validated['source']);
@@ -74,6 +74,7 @@ class AsinMasterController extends Controller
     {
         $user = Auth::user();
         $seller_id = $user->bb_seller_id;
+
         if (!$seller_id) {
             $seller_id = $user->id;
         }
@@ -90,8 +91,7 @@ class AsinMasterController extends Controller
 
     public function trashView(Request $request)
     {
-        // dd($asins);
-        
+
         if ($request->ajax()) {
             $asins = AsinMasterSeller::onlyTrashed()->get();
 
@@ -135,24 +135,23 @@ class AsinMasterController extends Controller
 
         $source = file_get_contents($request->asin);
         $path = 'Seller/AsinMaster/asin.csv';
+
         Storage::put($path, $source);
+
         $user = Auth::user();
         $seller_id = $user->bb_seller_id;
+
         if (!$seller_id) {
             $seller_id = $user->id;
         }
 
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
-            Log::warning("asin production executed");
-
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:seller-asin-import $seller_id > /dev/null &";
             exec($command);
-            Log::warning("asin production command executed");
         } else {
 
-            Log::warning("Export coma executed local !");
             Artisan::call('pms:seller-asin-import ' . $seller_id);
         }
 
@@ -169,32 +168,31 @@ class AsinMasterController extends Controller
         $request->validate([
             'asin' => 'required|mimes:csv,txt,xls,xlsx'
         ]);
+
         if (!$request->hasFile('asin')) {
             return back()->with('error', "Please upload file to import it to the database");
         }
-
-        // $msg = "Asin import has been completed!";
-
+        
         $source = file_get_contents($request->asin);
         $path = 'Seller/Remove/AsinMaster/remove_asin.csv';
+
         Storage::put($path, $source);
+
         $user = Auth::user();
         $seller_id = $user->bb_seller_id;
+
         if (!$seller_id) {
             $seller_id = $user->id;
         }
 
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
-            Log::warning("asin production executed");
-
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:seller-asin-remove $seller_id > /dev/null &";
             exec($command);
-            Log::warning("asin production command executed");
+
         } else {
 
-            Log::warning("Export coma executed local !");
             Artisan::call('pms:seller-asin-remove ' . $seller_id);
         }
 
@@ -203,11 +201,6 @@ class AsinMasterController extends Controller
 
     public function DownloadCSVTemplate()
     {
-
-        $path = public_path() . '/storage/SellerCsvTemplate.csv';
-        return response()->download($path);
-        // Storage::download($path);
-
-        
+        return Storage::download('SellerCsvTemplate.csv');
     }
 }

@@ -21,9 +21,8 @@ class labelManagementController extends Controller
     {
         if($request->ajax())
         {
-            // $data = Label::orderBy('id', 'DESC')->get();
             $data = DB::connection('web')->select("select * from labels order by id DESC");
-            
+
             foreach($data as $key => $value){
                 $result[$key]['id'] = $value;
                 
@@ -33,8 +32,8 @@ class labelManagementController extends Controller
                 ->addColumn('action', function ($id) use ($result) {
                    
                     // $action1 = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
-                    $action = '<div class="d-flex"><a href="/label/pdf-template/' . $id->id .' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
-                    $action .= '<div class="d-flex pl-2"><a href="/label/download-direct/' . $id->id .' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
+                    $action = '<div class="d-flex"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
+                    $action .= '<div class="d-flex pl-2"><a href="/label/download-direct/' . $id->id . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
                     return $action;
                 })
                 ->addColumn('check_box', function ($id) use ($result) {
@@ -42,36 +41,36 @@ class labelManagementController extends Controller
                     $check_box = '<div class="pl-2"><input class="check_options" type="checkbox" value='. $id->id .' name="options[]" ></div>';
                     return $check_box;
                 })
-                ->rawColumns(['action','check_box'])
+                ->rawColumns(['action', 'check_box'])
                 ->make(true);
-            
         }
         return view('label.manage');
     }
 
     public function showTemplate($id)
     {
-        // $results = Label::where('id', $id)->get();
-        $results = DB::connection('web')->select("select * from labels where id = '$id' ");
-        $awb_no = $results[0]->awb_no;
-       
+        //Single view
+        $result = $this->labelDataFormating($id);
+        $awb_no = $result['awb_no'];
+        $result = (object)$result;
+
         $generator = new BarcodeGeneratorHTML();
-        $bar_code = $generator->getBarcode('290306639908', $generator::TYPE_CODE_93);
-        return view('label.labelTemplate', compact('results','bar_code', 'awb_no'));
+        $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_93);
+        return view('label.labelTemplate', compact('result','bar_code', 'awb_no'));
     }
     public function ExportLabel(Request $request)
-    {
+    { 
+        //Single Download
         $url = $request->url;
         $awb_no = $request->awb_no;
-        $file_path = 'label/label'. $awb_no. '.pdf';
-        // po($file_path);
-        // exit;
-        if(!Storage::exists($file_path)){
+        $file_path = 'label/label' . $awb_no . '.pdf';
+        
+        if (!Storage::exists($file_path)) {
             Storage::put($file_path, '');
         }
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-        ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+        ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
         ->format('A6')
         ->showBackground()
         ->savePdf($exportToPdf);
@@ -81,26 +80,25 @@ class labelManagementController extends Controller
 
     public function downloadLabel($awb_no)
     {
-        return Storage::download('label/label'. $awb_no. '.pdf');
+        return Storage::download('label/label' . $awb_no . '.pdf');
     }
 
     public function DownloadDirect($id)
     {
-        // $result = Label::where('id', $id)->get();
+       
         $result = DB::connection('web')->select("select * from labels where id = '$id' ");
         $awb_no = $result[0]->awb_no;
         $file_path = 'label/label'. $awb_no. '.pdf';
 
-        if(!Storage::exists($file_path))
-        {
+        if (!Storage::exists($file_path)) {
             Storage::put($file_path, '');
         }
         $exportToPdf = storage::path($file_path);
         $currentUrl = URL::current();
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
-        
+
         Browsershot::url($url)
-        ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+        ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
         ->format('A6')
         ->showBackground()
         ->savePdf($exportToPdf);
@@ -113,21 +111,21 @@ class labelManagementController extends Controller
         $allid = explode('-', $id);
         foreach($allid as $id)
         {
-            // $results []= Label::where('id', $id)->get();
-            $results [] = DB::connection('web')->select("select * from labels where id ='$id' ");
+            $results = $this->labelDataFormating($id);
+            $result[] = (object)$results;
+          
+            $generator = new BarcodeGeneratorHTML();
+            $bar_code[] = $generator->getBarcode($results['awb_no'], $generator::TYPE_CODE_93);
         }
-        // po($results);
-        $generator = new BarcodeGeneratorHTML();
-        $bar_code = $generator->getBarcode('290306639908', $generator::TYPE_CODE_39);
-
-       return view('label.multipleLabel', compact('results', 'bar_code'));
+        
+        return view('label.multipleLabel', compact('result', 'bar_code'));
     }
-    
+
     public function DownloadSelected(Request $request)
     {
         $passid = $request->id;
         $currenturl =  URL::current();
-        
+
         $excelid = explode('-', $passid);
         
         foreach($excelid as $getId)
@@ -138,42 +136,39 @@ class labelManagementController extends Controller
             foreach($id as $key => $value)
             {
                 $awb_no = $value->awb_no;
-                $url = str_replace('select-download', 'pdf-template', $currenturl. '/'. $getId);
-                $path = 'label/label'.$awb_no.'.pdf';
-                if(!Storage::exists($path)) {
+                $url = str_replace('select-download', 'pdf-template', $currenturl . '/' . $getId);
+                $path = 'label/label' . $awb_no . '.pdf';
+                if (!Storage::exists($path)) {
                     Storage::put($path, '');
                 }
                 $exportToPdf = storage::path($path);
                 Browsershot::url($url)
-                ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+                ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
                 ->format('A6')
                 ->showBackground()
                 ->savePdf($exportToPdf);
 
-                $saveAsPdf [] = 'label'.$awb_no .'.pdf';
+                $saveAsPdf[] = 'label' . $awb_no . '.pdf';
             }
         }
 
         return response()->json($saveAsPdf);
     }
 
-    public function zipDownload( $arr)
-    { 
+    public function zipDownload($arr)
+    {
         // po($arr);
         $replace = explode(',', $arr);
         $zip = new ZipArchive;
-        $path = 'label/zip/'.'label.zip';
-        $fileName = Storage::path('label/zip/'.'label.zip');
+        $path = 'label/zip/' . 'label.zip';
+        $fileName = Storage::path('label/zip/' . 'label.zip');
         Storage::delete($path);
-        if(!Storage::exists($path))
-        {
+        if (!Storage::exists($path)) {
             Storage::put($path, '');
         }
-        if($zip->open($fileName, ZipArchive::CREATE) === TRUE)
-        {
-            foreach($replace as $key => $value)
-            {
-                $path = Storage::path('label/'.$value);
+        if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
+            foreach ($replace as $key => $value) {
+                $path = Storage::path('label/' . $value);
                 $relativeNameInZipFile = basename($path);
                 $zip->addFile($path, $relativeNameInZipFile);
             }
@@ -239,7 +234,7 @@ class labelManagementController extends Controller
             $label->status = 0;
             foreach ($data as $key => $value) {
                 if (isset($header_value[$key])) {
-                    
+
                     $column = lcfirst($header_value[$key]);
                     $label->$column = $value;
                 }
@@ -257,4 +252,81 @@ class labelManagementController extends Controller
 
         return view('label.template', compact('bar_code'));
     }
+
+    public function labelDataFormating($id)
+    {
+        $order = config('database.connections.order.database');
+        $catalog = config('database.connections.catalog.database');
+        $web = config('database.connections.web.database');
+
+        $label = DB::select("SELECT cat.asin, 
+        GROUP_CONCAT(DISTINCT web.order_no)as order_no, 
+        GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
+        GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
+        GROUP_CONCAT(DISTINCT ord.order_item) as order_item,
+        GROUP_CONCAT(DISTINCT ordetail.shipping_address) as shipping_address,
+        -- GROUP_CONCAT(DISTINCT cat.item_dimensions) as item_dimensions,
+        GROUP_CONCAT(DISTINCT cat.package_dimensions) as package_dimensions,
+        GROUP_CONCAT(DISTINCT cat.title) as title,
+        GROUP_CONCAT(DISTINCT ordetail.seller_sku) as sku,
+        GROUP_CONCAT(DISTINCT ordetail.quantity_ordered) as qty
+        from $web.labels as web     
+        JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no 
+        JOIN $order.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
+        JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin 
+        WHERE web.id = $id
+        GROUP BY cat.asin
+    ");
+
+        $label_data = [];
+        $order_no = '';
+        $product[] = [
+            'title' => NULL,
+            'sku' => NULL,
+            'qty' => NULL
+        ];
+        foreach ($label as $key => $label_value) {
+            foreach ($label_value as $key1 => $label_detials) {
+                
+                if ($key1 == 'shipping_address') {
+                    $buyer_address = [];
+                    $shipping_address = json_decode($label_detials);
+                    foreach ((array)$shipping_address as $add_key => $add_details) {
+                        $buyer_address[$add_key] =  $add_details;
+                    }
+                    $label_data[$key1] = $buyer_address;
+                } elseif ($key1 == 'package_dimensions') {
+                    $dimensions = [];
+                    $shipping_address = json_decode($label_detials);
+                    foreach ((array)$shipping_address as $add_key => $add_details) {
+                        $dimensions[$add_key] =  $add_details;
+                    }
+                    $label_data[$key1] = $dimensions;
+                } elseif ($key1 == 'title') {
+
+                    $product[$key][$key1] = $label_detials;
+
+                } elseif ($key1 == 'sku') {
+
+                    $product[$key][$key1] = $label_detials;
+
+                } elseif ($key1 == 'qty') {
+                    
+                    $product[$key][$key1] = $label_detials;
+
+                } 
+                elseif($key1 == 'asin')
+                {}
+                else {
+
+                    $label_data[$key1] = $label_detials;
+                }
+            }
+        }
+        $label_data['product'] = $product;
+        // dd($label_data);
+        return $label_data;
+    }
+
+    // INNER JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no 
 }

@@ -95,7 +95,9 @@ class SellerOrdersImport extends Command
         $marketplace_ids = [$marketplace_ids];
 
         $apiInstance = new OrdersApi($config);
-        $startTime = Carbon::now()->subMinute(20)->toISOString();
+        // $startTime = Carbon::now()->subMinute(20)->toISOString();
+        $startTime = Carbon::now()->subHours(4)->toISOString();
+
         // echo $startTime;
         $createdAfter = $startTime;
         $lastUpdatedBefore = now()->toISOString();

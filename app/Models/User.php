@@ -14,11 +14,8 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     protected $table = 'users'; 
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-        $this->getConnection()->setTablePrefix('sp_');
-    } 
+    protected $connection = 'web'; 
+    
 
     /**
      * The attributes that are mass assignable.

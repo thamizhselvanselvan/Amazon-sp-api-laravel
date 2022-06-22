@@ -10,6 +10,7 @@ class BB_Product extends Model
     use HasFactory;
     protected $connection = 'buybox';
     protected $table = 'products';
+    
     protected $fillable = [
         'seller_id',
         'sync_status',
