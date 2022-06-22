@@ -39,12 +39,12 @@ class InvoiceManagementController extends Controller
                     $action .= '<div class="d-flex pl-2"><a href="/invoice/download-direct/' . $id->id .' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
                     return $action;
                 })
-                ->addColumn('check_box', function ($id) use ($result) {
+                // ->addColumn('check_box', function ($id) use ($result) {
 
-                    $check_box = '<div class="pl-2"><input class="check_options" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
-                    return $check_box;
-                })
-                ->rawColumns(['action','check_box'])
+                //     $check_box = '<div class="pl-2"><input class="check_options" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
+                //     return $check_box;
+                // })
+                ->rawColumns(['action'])
                 ->make(true);
         }
         return view('invoice.index');
