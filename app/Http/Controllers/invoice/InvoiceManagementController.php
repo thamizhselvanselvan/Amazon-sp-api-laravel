@@ -68,12 +68,8 @@ class InvoiceManagementController extends Controller
             $newdate = explode( ' - ' ,$date);
             $date1 = $newdate[0];
             $date2 = $newdate[1];
+            $results = DB::connection('web')->select("SELECT id, invoice_no, invoice_date, channel, shipped_by, awb_no, arn_no, hsn_code, qty, product_price FROM invoices WHERE invoice_date BETWEEN '$date1' AND '$date2' ");
             
-            $newDate1 = date('d/m/Y',strtotime($date1));
-            $newDate2 = date('d/m/Y',strtotime($date2));
-            // po($newDate1);po($newDate2);
-            $results = DB::connection('web')->select("select id, invoice_no, invoice_date, channel, shipped_by, awb_no, arn_no, hsn_code, qty, product_price from invoices where invoice_date between '$newDate1' and '$newDate2' ");
-            // po($results);
         }
         return response()->json($results);
     }
@@ -150,7 +146,7 @@ class InvoiceManagementController extends Controller
                                 if(isset($header[1]))
                                 {
                                     $dateset = $header[1];
-                                    $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($record[1])->format("d/m/Y");
+                                    $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($record[1])->format("Y-m-d");
                                     $invoice->$dateset = $date;
                                 }
                             } 
