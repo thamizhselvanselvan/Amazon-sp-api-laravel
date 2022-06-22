@@ -75,9 +75,12 @@ Route::get('command', function () {
     }
 });
 
-Route::get('/', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('/');
+// Route::get('/', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('/');
+Route::get('/', 'Auth\LoginController@showLoginForm')->name('/');
 Auth::routes();
-Route::get('login', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('login');
+// Route::get('login', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('login');
+Route::get('login', 'Admin\HomeController@dashboard')->name('login');
+// Route::get('home', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('home');
 Route::get('home', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('home');
 // Route::group(['middleware' => ['role:Admin', 'auth'], 'prefix' => 'admin'],function(){
 // Route::get('dashboard', [App\Http\Controllers\Admin\HomeController::class, 'dashboard'])->name('admin.dashboard');

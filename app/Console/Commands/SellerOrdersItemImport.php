@@ -84,7 +84,8 @@ class SellerOrdersItemImport extends Command
         $asinList = [];
         foreach ($order_item_details as $key => $value) {
             $asin = $value->asin;
-            $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
+            // $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
+            $check = [];
             if (!array_key_exists('0', $check)) {
                 // $asinList[$count]->asin = $asin;
                 $count++;
