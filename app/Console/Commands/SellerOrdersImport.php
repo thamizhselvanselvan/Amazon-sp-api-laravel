@@ -184,8 +184,8 @@ class SellerOrdersImport extends Command
             
             //$amazon_order_id = '407-0297568-739477566';
 
-            $data = DB::connection('order')->select("select id, amazon_order_identifier from orders where amazon_order_identifier = '$amazon_order_id'");
-        //   $data = [];
+            // $data = DB::connection('order')->select("select id, amazon_order_identifier from orders where amazon_order_identifier = '$amazon_order_id'");
+          $data = [];
             if (array_key_exists(0, $data)) 
             {
                 $count++;
