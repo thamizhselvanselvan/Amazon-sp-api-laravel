@@ -21,9 +21,9 @@
         <!-- <a href="download-all">  -->
             <x-adminlte-button label="Selected Print" id='select_print' theme="primary" icon="fas fa-print" class="btn-sm" />
         <!-- </a> -->
-        <a href="download-all"> 
+        <!-- <a href="download-all"> 
             <x-adminlte-button label="Download All" id='download_pdf' theme="primary" icon="fas fa-check-circle" class="btn-sm" />
-        </a>
+        </a> -->
     </h2>
 </div>
 
