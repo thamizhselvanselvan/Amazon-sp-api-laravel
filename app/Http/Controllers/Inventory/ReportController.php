@@ -110,6 +110,6 @@ class ReportController extends Controller
 
 
 
-        return view('inventory.report.report', compact('ware_lists', 'data'));
+        return view('inventory.report.daily', compact('ware_lists', 'data'));
     }
 }
