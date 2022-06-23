@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Seller;
 
+use invoice;
+use ZipArchive;
 use RedBeanPHP\R;
 use League\Csv\Writer;
 use Illuminate\Http\Request;
@@ -65,5 +67,39 @@ class SellerCatalogController extends Controller
       // Log::info($seller_id);
       Artisan::call('pms:seller-catalog-csv-export ' . $user_name . ' ' . $id);
     }
+  }
+
+  public function catalogDownload()
+  {
+    $user = Auth::user();
+    $id = $user->bb_seller_id;
+    if ($id == NULL) {
+      $id = $user->id;
+    }
+    $id = 20;
+    $user_name = $user->email;
+    $zip = new ZipArchive;
+
+    $exportFilePath = "excel/downloads/seller/" . $user_name . "/catalog";
+    $fileName = Storage::path($exportFilePath . '/catalog.zip');
+    if (!Storage::exists($exportFilePath . '/catalog.zip')) {
+      Storage::put($exportFilePath.'.catalog.zip', '');
+    }
+    if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
+      $path = Storage::path($exportFilePath);
+      $files = (scandir($path));
+      foreach ($files as $key => $file) {
+        if ($key > 1) {
+
+          $path_csv = $path.'/'.$file;
+          $relativeNameInZipFile = basename($path_csv);
+          $zip->addFile($path_csv, $relativeNameInZipFile);
+
+        }
+      }
+     
+      $zip->close();
+    }
+    return response()->download($fileName);
   }
 }

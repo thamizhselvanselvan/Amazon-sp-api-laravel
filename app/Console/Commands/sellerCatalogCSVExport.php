@@ -42,6 +42,19 @@ class sellerCatalogCSVExport extends Command
     {
         $user_name = $this->argument('user');
         $id = $this->argument('id');
+
+        $exportFilePath = "excel/downloads/seller/" . $user_name . "/catalog/catalog";
+        $deleteFilePath = "app/excel/downloads/seller/" . $user_name.'/catalog';
+        if (file_exists(storage_path($deleteFilePath))) {
+            $path = storage_path($deleteFilePath);
+            $files = (scandir($path));
+            foreach ($files as $key => $file) {
+                if ($key > 1) {
+                    unlink($path . '/' . $file);
+                }
+            }
+        }
+
         $column_details = DB::connection('catalog')->select('DESCRIBE catalog');
         $column_name = [];
         foreach ($column_details as $key => $column_value) {
@@ -51,13 +64,13 @@ class sellerCatalogCSVExport extends Command
         $count = DB::connection('catalog')->select("SELECT count(asin) as count from catalog where seller_id = $id");
         $total_count = ($count[0]->count);
         $current_chunk = 0;
-        $record_per_csv = 100000; //10 L
-        $chunk = 10000; // 1 L
+        $record_per_csv = 1000000; //10 L
+        $chunk = 100000; // 1 L
         $offset = 0;
         $count = 1;
         $fileNameOffset = 1;
         $user = '';
-        $exportFilePath = "excel/downloads/seller/" . $user_name . "/catalog/catalog";
+       
         $headers = [];
         $check = $record_per_csv / $chunk;
 

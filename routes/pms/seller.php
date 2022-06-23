@@ -24,6 +24,7 @@ Route::prefix('seller/')->group(function () {
     Route::get('catalog-details', 'Seller\SellerCatalogController@ImportCatalogDetails');
     Route::get('catalog', 'Seller\SellerCatalogController@index');
     Route::get('catalog/export', 'Seller\SellerCatalogController@catalogExport');
+    Route::get('catalog/download', 'Seller\SellerCatalogController@catalogDownload');
 
     //credentials
     Route::get('credentials', 'Seller\SellerController@index');
