@@ -126,15 +126,16 @@ class InvoiceManagementController extends Controller
         {    
             foreach($result as $key2 => $record)
             {
+                $invoice_number = $record[0];
                 if($key2 != 0 )
                 { 
-                    $invoice_no = $record[0];
                     $id = NULL;
                     // $Totaldata = Invoice::where('invoice_no', $record[0])->get();
-                    $Totaldata = DB::connection('web')->select("SELECT * from invoices where invoice_no ='$invoice_no' ");
-                    if(isset($Totaldata[0]['id']))
+                    $Totaldata = DB::connection('web')->select("SELECT * from invoices where invoice_no ='$invoice_number' ");
+                    
+                    if(isset($Totaldata[0]))
                     {
-                        $id = $Totaldata[0]['id'];
+                        $id = $Totaldata[0]->id;
                     }
                     $invoice = R::dispense('invoices');
                 
