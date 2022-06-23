@@ -16,10 +16,10 @@
             <x-adminlte-button label="Download Invoice PDF" theme="primary" icon="fas fa-file-download" class="btn-sm" />
         </a> -->
         <!-- <a href=""> -->
-            <x-adminlte-button label="Selected Download" id="selected-download" theme="primary" icon="fas fa-file-download" class="btn-sm"/>
+            <!-- <x-adminlte-button label="Selected Download" id="selected-download" theme="primary" icon="fas fa-file-download" class="btn-sm"/> -->
         <!-- </a> -->
         <!-- <a href="download-all">  -->
-            <x-adminlte-button label="Selected Print" id='select_print' theme="primary" icon="fas fa-print" class="btn-sm" />
+            <!-- <x-adminlte-button label="Selected Print" id='select_print' theme="primary" icon="fas fa-print" class="btn-sm" /> -->
         <!-- </a> -->
         <!-- <a href="download-all"> 
             <x-adminlte-button label="Download All" id='download_pdf' theme="primary" icon="fas fa-check-circle" class="btn-sm" />
@@ -58,7 +58,7 @@
             <td>Hsn Code</td>
             <td>Quantity</td>
             <td>Product Price</td>
-            <td>Select All <br><input class="check_all" type="checkbox" value='' name="options[]" id="check_all" ></div> </td>
+            <!-- <td>Select All <br><input class="check_all" type="checkbox" value='' name="options[]" id="check_all" ></div> </td> -->
             <td>Action</td>
         </tr>
     </thead>
@@ -123,12 +123,12 @@
             data: 'product_price',
             name: 'product_price'
         },
-        {
-            data: 'check_box',
-            name: 'check_box',
-            orderable: false,
-            searchable: false
-        },
+        // {
+        //     data: 'check_box',
+        //     name: 'check_box',
+        //     orderable: false,
+        //     searchable: false
+        // },
         {
             data: 'action',
             name: 'action'

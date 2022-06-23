@@ -17,6 +17,25 @@ use Picqer\Barcode\BarcodeGeneratorHTML;
 
 class labelManagementController extends Controller
 {
+    public function SearchLabel()
+    {
+        return view('label.search_label');
+    }
+
+    public function GetLabel(Request $request)
+    {
+        if($request->ajax())
+        {
+            $date = $request->invoice_date;
+            $newdate = explode( ' - ' ,$date);
+            $date1 = $newdate[0];
+            $date2 = $newdate[1];
+            $results = DB::connection('web')->select("SELECT id, invoice_date, channel, shipped_by, awb_no, arn_no, hsn_code, qty, product_price FROM labels WHERE invoice_date BETWEEN '$date1' AND '$date2' ");
+            
+        }
+        return response()->json($results);
+    }
+
     public function manage(Request $request)
     {
         if($request->ajax())
@@ -70,7 +89,7 @@ class labelManagementController extends Controller
         }
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-        ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+        // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
         ->format('A6')
         ->showBackground()
         ->savePdf($exportToPdf);
@@ -98,7 +117,7 @@ class labelManagementController extends Controller
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
 
         Browsershot::url($url)
-        ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+        // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
         ->format('A6')
         ->showBackground()
         ->savePdf($exportToPdf);
@@ -143,7 +162,7 @@ class labelManagementController extends Controller
                 }
                 $exportToPdf = storage::path($path);
                 Browsershot::url($url)
-                ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+                // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
                 ->format('A6')
                 ->showBackground()
                 ->savePdf($exportToPdf);
