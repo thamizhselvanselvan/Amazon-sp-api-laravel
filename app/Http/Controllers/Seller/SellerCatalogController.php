@@ -55,60 +55,15 @@ class SellerCatalogController extends Controller
     }
     $id = 20;
     $user_name = $user->email;
-    $column_details = DB::connection('catalog')->select('DESCRIBE catalog');
-    $column_name = [];
-    foreach ($column_details as $key => $column_value) {
-      if ($column_value->Field != 'seller_id' && $column_value->Field != 'id')
-        $column_name[] = $column_value->Field;
-    }
-    $count = DB::connection('catalog')->select("SELECT count(asin) as count from catalog where seller_id = $id");
-    $total_count = ($count[0]->count);
-    $current_chunk = 0;
-    $record_per_csv = 100000; //10 L
-    $chunk = 10000; // 1 L
-    $offset = 0;
-    $count = 1;
-    $fileNameOffset = 1;
-    $user = '';
-    $exportFilePath = "excel/downloads/seller/" . $user_name . "/catalog/catalog";
-    $headers = [];
-    $check = $record_per_csv / $chunk;
-  
-    while ($current_chunk <= $total_count) {
 
-      $records = DB::connection('catalog')->select("SELECT *, NULL AS seller_id from catalog where seller_id = $id limit $offset, $chunk");
+    if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
-      if($count == 1) {
-        if (!Storage::exists($exportFilePath . $fileNameOffset . '.csv')) {
-          Storage::put($exportFilePath . $fileNameOffset . '.csv', '');
-        }
-        $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $fileNameOffset . '.csv'), "w");
-        $this->writer->insertOne($column_name);
-      }
-
-      $record = array_map(function ($datas) {
-        $dat = [];
-        foreach ($datas as $key => $data) {
-
-          if ($key != 'id' && $key != 'seller_id') {
-            $dat[] = $data;
-          }
-        }
-        return (array) $dat;
-      }, $records);
-
-      $this->writer->insertall((array)$record);
-
-      if ($check == $count) {
-        $fileNameOffset++;
-        $count = 1;
-      } else {
-        ++$count;
-      }
-
-      //pusher part
-      $offset += $chunk;
-      $current_chunk = $offset;
+      $base_path = base_path();
+      $command = "cd $base_path && php artisan pms:seller-catalog-csv-export $user_name $id > /dev/null &";
+      exec($command);
+    } else {
+      // Log::info($seller_id);
+      Artisan::call('pms:seller-catalog-csv-export ' . $user_name . ' ' . $id);
     }
   }
 }
