@@ -68,5 +68,6 @@ Route::get('inventory/outwardings/{id}/outship', 'Inventory\Outwarding\Inventory
 Route::resource('inventory/outwardings', 'Inventory\Outwarding\InventoryOutwardShipmentController');
 
 
-
+Route::get('reports/daily', 'Inventory\ReportController@daily');
+Route::get('reports/weekly', 'Inventory\ReportController@weekly');
 Route::resource('inventory/reports', 'Inventory\ReportController');

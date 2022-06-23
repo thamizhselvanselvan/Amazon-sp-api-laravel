@@ -537,13 +537,13 @@ return [
                     'submenu' => [
                         [
                             'text' => 'Daily',
-                            'url'  => 'inventory/reports',
+                            'url'  => 'reports/daily',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory']
                         ],
                         [
                             'text' => 'Weekly',
-                            'url'  => 'inventory/features',
+                            'url'  => 'reports/weekly',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory']
                         ],
