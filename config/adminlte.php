@@ -711,7 +711,7 @@ return [
                 ],
                 [
                     'text' => 'Catalog Details',
-                    'url' => '',
+                    'url' => 'seller/catalog',
                     'can' => ['Admin', 'Seller'],
                     'icon' => 'far fa-fw fa-file',
 

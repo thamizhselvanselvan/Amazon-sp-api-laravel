@@ -45,7 +45,7 @@ class seller_catalog_import extends Command
         // Log::warning('working');
         $seller_id = $this->argument('seller_id');
         $chunk = 10;
-        $seller_id = 20;
+        // $seller_id = 20;
         // $datas = AsinMasterSeller::limit(10)->offset(0)->where('status', 0)->where('seller_id', $seller_id)->get();
         AsinMasterSeller::where('status', 0)->where('seller_id', $seller_id)->chunk($chunk, function ($datas) use ($seller_id) {
             //$type = 1 for seller, 2 for Order, 3 for inventory

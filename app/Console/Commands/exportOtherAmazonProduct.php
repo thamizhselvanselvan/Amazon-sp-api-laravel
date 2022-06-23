@@ -59,7 +59,6 @@ class exportOtherAmazonProduct extends Command
         $user = $this->argument('email');
         $id = $this->argument('id');
         
-        Log::alert('working');
         $headerSelection = explode('-', $selected);
         $headers = $headerSelection;
 
@@ -75,8 +74,6 @@ class exportOtherAmazonProduct extends Command
                 }
             }
         }
-
-        Log::alert('working 1');
 
         $record_per_csv = 1000000;
         $chunk = 5000;

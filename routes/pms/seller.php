@@ -21,7 +21,9 @@ Route::prefix('seller/')->group(function () {
     Route::get('csv/template', 'Seller\AsinMasterController@DownloadCSVTemplate');
     
     //catalog
-    Route::get('catalog-details', 'Seller\SellerCatalogController@index');
+    Route::get('catalog-details', 'Seller\SellerCatalogController@ImportCatalogDetails');
+    Route::get('catalog', 'Seller\SellerCatalogController@index');
+    Route::get('catalog/export', 'Seller\SellerCatalogController@catalogExport');
 
     //credentials
     Route::get('credentials', 'Seller\SellerController@index');
