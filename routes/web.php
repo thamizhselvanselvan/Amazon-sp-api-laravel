@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\TestController;
 use SellingPartnerApi\Api\ProductPricingApi;
+use App\Jobs\Seller\Seller_catalog_import_job;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 /*
 |--------------------------------------------------------------------------
@@ -40,30 +41,31 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('pdf',function(){
 
-     dd(User::get());
+Route::get('pdf', function () {
 
-     exit;
+    dd(User::get());
 
-     $url = 'https://amazon-sp-api-laravel.test/admin/rolespermissions';
-     $file_path = 'product/label.pdf';
+    exit;
 
-     if (!Storage::exists($file_path)) {
-         Storage::put($file_path, '');
-     }
+    $url = 'https://amazon-sp-api-laravel.test/admin/rolespermissions';
+    $file_path = 'product/label.pdf';
 
-     $exportToPdf = Storage::path($file_path);
-         Browsershot::url($url)
-         ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
-         ->showBackground()
-         ->savePdf($exportToPdf);
+    if (!Storage::exists($file_path)) {
+        Storage::put($file_path, '');
+    }
 
-         return Storage::download($exportToPdf);
+    $exportToPdf = Storage::path($file_path);
+    Browsershot::url($url)
+        ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+        ->showBackground()
+        ->savePdf($exportToPdf);
+
+    return Storage::download($exportToPdf);
 });
 
 Route::get('command', function () {
-    
+
     if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
         Log::warning("Export asin command executed local !");
@@ -76,35 +78,85 @@ Route::get('command', function () {
     }
 });
 
-Route::get('order/catalog', function()
-{
-    
+
+Route::get('test-queue-redis', function () {
+
     $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails where status = 0 ");
-        $count = 0;
-        $batch = 0;
-        $asinList = [];
-        foreach ($order_item_details as $key => $value) {
-            $asin = $value->asin;
-            $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
-            $check = [];
-            if (!array_key_exists('0', $check)) {
-                // $asinList[$count]->asin = $asin;
-                $count++;
-                $batch++;
-                $data[] = $value;
+    $count = 0;
+    $batch = 0;
+    $asinList = [];
+    foreach ($order_item_details as $key => $value) {
+        $asin = $value->asin;
+        // $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
+        // $check = [];
+        // if (!array_key_exists('0', $check)) {
+            $count++;
+            // $batch++;
+            $data[] = $value;
+        // }
+        //$type = 1 for seller, 2 for Order, 3 for inventory
+        if ($count == 10) {
+
+            if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+                Seller_catalog_import_job::dispatch(
+                    [
+                        'seller_id' => NULL,
+                        'datas' => $data,
+                        'type' => 1
+                    ]
+                )->onConnection('redis')->onQueue('default');
+            } else {
+
+                Seller_catalog_import_job::dispatch(
+                    [
+                        'seller_id' => NULL,
+                        'datas' => $data,
+                        'type' => 1
+                    ]
+                );
             }
-            
-            //$type = 1 for seller, 2 for Order, 3 for inventory
-            if ($count == 10) {
-                $count = 0;
-                $type = 2;
-                $catalog = new Catalog();
-                $catalog->index($data, NULL, $type, $batch);
-                Log::alert('10 asin imported');
-                $data = [];
-                // exit;
-            }
+            // $count = 0;
+            // $type = 2;
+            // $catalog = new Catalog();
+            // $catalog->index($data, NULL, $type, $batch);
+            // Log::alert('10 asin imported');
+            // $data = [];
         }
+    }
+
+    if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+    } else {
+    }
+});
+
+Route::get('order/catalog', function () {
+
+    $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails where status = 0 ");
+    $count = 0;
+    $batch = 0;
+    $asinList = [];
+    foreach ($order_item_details as $key => $value) {
+        $asin = $value->asin;
+        $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
+        // $check = [];
+        if (!array_key_exists('0', $check)) {
+            // $asinList[$count]->asin = $asin;
+            $count++;
+            $batch++;
+            $data[] = $value;
+        }
+
+        //$type = 1 for seller, 2 for Order, 3 for inventory
+        if ($count == 10) {
+            $count = 0;
+            $type = 2;
+            $catalog = new Catalog();
+            $catalog->index($data, NULL, $type, $batch);
+            Log::alert('10 asin imported');
+            $data = [];
+            // exit;
+        }
+    }
 });
 
 Route::get('/', 'Auth\LoginController@showLoginForm')->name('/');

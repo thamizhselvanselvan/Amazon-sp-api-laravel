@@ -33,10 +33,11 @@ class Seller_catalog_import_job implements ShouldQueue
     {
         $datas = $this->payload['datas'];
         $seller_id = $this->payload['seller_id'];
+        $type = $this->payload['type'];
         
         $catalog =   new Catalog();
         //$type = 1 for seller, 2 for Order, 3 for inventory
-        $type = 1;
+        // $type = 1;
         $catalogApi = $catalog->index($datas, $seller_id, $type);
     }
 }
