@@ -125,7 +125,7 @@
             <td>asin</td>
             <td>Item Name</td>
             <td>Quantity</td>
-            <td>Price</td>
+            <td>Price/Unit</td>
             <td>Action</td>
         </tr>
     </thead>

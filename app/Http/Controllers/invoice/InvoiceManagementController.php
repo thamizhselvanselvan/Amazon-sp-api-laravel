@@ -26,7 +26,8 @@ class InvoiceManagementController extends Controller
     {   
         
         if ($request->ajax()) {
-            $data = Invoice::orderBy('id', 'DESC')->get();
+            // $data = Invoice::orderBy('id', 'DESC')->get();
+            $data = DB::connection('web')->select("select * from invoices order by id DESC");
             foreach($data as $key => $value){
                 $result[$key]['id'] = $value;
             }
@@ -39,12 +40,12 @@ class InvoiceManagementController extends Controller
                     $action .= '<div class="d-flex pl-2"><a href="/invoice/download-direct/' . $id->id .' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
                     return $action;
                 })
-                ->addColumn('check_box', function ($id) use ($result) {
+                // ->addColumn('check_box', function ($id) use ($result) {
 
-                    $check_box = '<div class="pl-2"><input class="check_options" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
-                    return $check_box;
-                })
-                ->rawColumns(['action','check_box'])
+                //     $check_box = '<div class="pl-2"><input class="check_options" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
+                //     return $check_box;
+                // })
+                ->rawColumns(['action'])
                 ->make(true);
         }
         return view('invoice.index');
@@ -81,7 +82,8 @@ class InvoiceManagementController extends Controller
     public function showTemplate(Request $request)
     {
         $id = $request->id;
-        $data = Invoice::where('id', $id)->get();
+        // $data = Invoice::where('id', $id)->get();
+        $data = DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
         $invoice_no = $data[0]->invoice_no;
            
         return view('invoice.invoice', compact(['data'],'invoice_no'));
@@ -124,13 +126,16 @@ class InvoiceManagementController extends Controller
         {    
             foreach($result as $key2 => $record)
             {
+                $invoice_number = $record[0];
                 if($key2 != 0 )
                 { 
                     $id = NULL;
-                    $Totaldata = Invoice::where('invoice_no', $record[0])->get();
-                    if(isset($Totaldata[0]['id']))
+                    // $Totaldata = Invoice::where('invoice_no', $record[0])->get();
+                    $Totaldata = DB::connection('web')->select("SELECT * from invoices where invoice_no ='$invoice_number' ");
+                    
+                    if(isset($Totaldata[0]))
                     {
-                        $id = $Totaldata[0]['id'];
+                        $id = $Totaldata[0]->id;
                     }
                     $invoice = R::dispense('invoices');
                 
@@ -188,8 +193,8 @@ class InvoiceManagementController extends Controller
             
             foreach($excelid as $getId)
             {
-                $id = Invoice::where('id', $getId)->get();
-                
+                // $id = Invoice::where('id', $getId)->get();
+                $id = DB::connection('web')->select("SELECT * from invoices where id ='$getId' ");
                 foreach($id as $key => $value)
                 {
                     $invoice_no = $value->invoice_no;
@@ -215,7 +220,8 @@ class InvoiceManagementController extends Controller
         {
             $eachid = explode('-', $id);
             foreach($eachid as $id){
-                $data []= Invoice::where('id', $id)->get();
+                // $data []= Invoice::where('id', $id)->get();
+                $data []= DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
             }
             return view('invoice.multipleInvoice', compact(['data']));
         }
@@ -248,7 +254,8 @@ class InvoiceManagementController extends Controller
 
     public function DirectDownloadPdf(Request $request, $id)
     {
-        $data = Invoice::where('id', $id)->get();
+        // $data = Invoice::where('id', $id)->get();
+        $data = DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
         $invoice_no = $data[0]->invoice_no;
 
         $currenturl =  URL::current();

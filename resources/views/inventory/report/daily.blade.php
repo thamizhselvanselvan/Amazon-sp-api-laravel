@@ -6,7 +6,7 @@
 @stop
 
 @section('content_header')
-<h1 class="m-0 text-dark"> Inventory Reports</h1>
+<h1 class="m-0 text-dark"> Daily Inventory  Reports</h1>
 @stop
 @section('content')
 <div class="row">
@@ -54,7 +54,6 @@
 <table class="table table-bordered yajra-datatable table-striped " id="report_table">
     <thead>
         <tr>
-            <td>S/L </td>
             <td id="detail">Date</td>
             <td id="detail">Opening Stock</td>
             <td id="detail">Open Stock Amount</td>
@@ -67,13 +66,21 @@
         </tr>
     </thead>
     <tbody id="data_display">
-
+        <tr>
+            <td>{{ $data['date'] }}</td>
+            <td>{{ $data['open_stock'] }}</td>
+            <td>{{ $data['open_stock_amt'] }}</td>
+            <td>{{ $data['inwarded'] }}</td>
+            <td>{{ $data['tdy_inv_amt'] }}</td>
+            <td>{{ $data['outwarded'] }}</td>
+            <td>{{ $data['tdy_out_amt'] }}</td>
+            <td>{{ $data['closing_stock'] }}</td>
+            <td>{{ $data['closing_amt'] }}</td>
+         
+            
     </tbody>
 </table>
 @stop
-
-
-
 @section('js')
 
 <script type="text/javascript">
@@ -82,28 +89,32 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-    $("#warehouse").hide();
-    $("#report_table").hide();
-    $("#export").hide();
+    $(function() {
 
-    $("#ware ").on('click', function(e) {
-        $("#warehouse").show();
-    });
-    $("#warehouse ").on('change', function(e) {
-        $("#report_table").show();
-    });
-    $("#entire ").on('click', function(e) {
-        $("#report_table").hide();
-    });
-    $("#entire ").on('click', function(e) {
-        $("#report_table").show();
-    });
-    $("#entire,#warehouse ").on('change', function(e) {
-        $("#export").show();
-    });
+                $("#warehouse").hide();
+                $("#report_table").hide();
+                $("#export").hide();
 
+                $("#ware ").on('click', function(e) {
+                    $("#warehouse").show();
+                });
+                $("#warehouse ").on('change', function(e) {
+                    $("#report_table").show();
+                });
+                $("#entire ").on('click', function(e) {
+                    $("#warehouse").hide();
+                });
+                $("#ware ").on('click', function(e) {
+                    $("#report_table").hide();
+                });
+                $("#entire ").on('click', function(e) {
+                    $("#report_table").show();
+                });
+                $("#entire,#warehouse ").on('change', function(e) {
+                    $("#export").show();
+                });
 
-
-
+                });
+    
 </script>
 @stop

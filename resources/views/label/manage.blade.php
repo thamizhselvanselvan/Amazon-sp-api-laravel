@@ -5,6 +5,9 @@
 <div class="row">
     <h1 class="m-0 text-dark col">Label Management</h1>
     <h2 class="mb-4 text-right col">
+        <a href="search-label">
+            <x-adminlte-button label="Search Label" theme="primary" icon="fas fa-search" class="btn-sm" />
+        </a>
         <a href="excel/template">
             <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-file-download" class="btn-sm" />
         </a>
