@@ -26,7 +26,8 @@ class InvoiceManagementController extends Controller
     {   
         
         if ($request->ajax()) {
-            $data = Invoice::orderBy('id', 'DESC')->get();
+            // $data = Invoice::orderBy('id', 'DESC')->get();
+            $data = DB::connection('web')->select("select * from invoices order by id DESC");
             foreach($data as $key => $value){
                 $result[$key]['id'] = $value;
             }
@@ -81,7 +82,8 @@ class InvoiceManagementController extends Controller
     public function showTemplate(Request $request)
     {
         $id = $request->id;
-        $data = Invoice::where('id', $id)->get();
+        // $data = Invoice::where('id', $id)->get();
+        $data = DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
         $invoice_no = $data[0]->invoice_no;
            
         return view('invoice.invoice', compact(['data'],'invoice_no'));
@@ -126,8 +128,10 @@ class InvoiceManagementController extends Controller
             {
                 if($key2 != 0 )
                 { 
+                    $invoice_no = $record[0];
                     $id = NULL;
-                    $Totaldata = Invoice::where('invoice_no', $record[0])->get();
+                    // $Totaldata = Invoice::where('invoice_no', $record[0])->get();
+                    $Totaldata = DB::connection('web')->select("SELECT * from invoices where invoice_no ='$invoice_no' ");
                     if(isset($Totaldata[0]['id']))
                     {
                         $id = $Totaldata[0]['id'];
@@ -188,8 +192,8 @@ class InvoiceManagementController extends Controller
             
             foreach($excelid as $getId)
             {
-                $id = Invoice::where('id', $getId)->get();
-                
+                // $id = Invoice::where('id', $getId)->get();
+                $id = DB::connection('web')->select("SELECT * from invoices where id ='$getId' ");
                 foreach($id as $key => $value)
                 {
                     $invoice_no = $value->invoice_no;
@@ -215,7 +219,8 @@ class InvoiceManagementController extends Controller
         {
             $eachid = explode('-', $id);
             foreach($eachid as $id){
-                $data []= Invoice::where('id', $id)->get();
+                // $data []= Invoice::where('id', $id)->get();
+                $data []= DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
             }
             return view('invoice.multipleInvoice', compact(['data']));
         }
@@ -248,7 +253,8 @@ class InvoiceManagementController extends Controller
 
     public function DirectDownloadPdf(Request $request, $id)
     {
-        $data = Invoice::where('id', $id)->get();
+        // $data = Invoice::where('id', $id)->get();
+        $data = DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
         $invoice_no = $data[0]->invoice_no;
 
         $currenturl =  URL::current();
