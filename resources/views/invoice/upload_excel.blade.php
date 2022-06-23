@@ -124,15 +124,16 @@
         processData: false,
         dataType: 'json',
         success: function(response) {
-            console.log(response);
+            // console.log(response);
+            alert(response.success);
             if(response.success) {
                 getBack();
             }
         },
-        error: function(response) {
-          console.log(response)
-          alert('error');
-        }
+        // error: function(response) {
+        //   console.log(response)
+        //   alert('error');
+        // }
       });
 
       function getBack() {
