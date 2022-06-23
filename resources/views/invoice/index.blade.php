@@ -12,9 +12,9 @@
         <a href="upload">
             <x-adminlte-button label="Upload Invoice Excel" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
         </a>
-        <!-- <a href="Export/view">
-            <x-adminlte-button label="Download Invoice PDF" theme="primary" icon="fas fa-file-download" class="btn-sm" />
-        </a> -->
+        <a href="template/download">
+            <x-adminlte-button label="Download Invoice Template" theme="primary" icon="fas fa-file-download" class="btn-sm" />
+        </a>
         <!-- <a href=""> -->
             <!-- <x-adminlte-button label="Selected Download" id="selected-download" theme="primary" icon="fas fa-file-download" class="btn-sm"/> -->
         <!-- </a> -->

@@ -310,4 +310,9 @@ class InvoiceManagementController extends Controller
         return response()->download($fileName);
     }
 
+    public function downloadTemplate()
+    {
+        return Storage::download('Invoice_Excel_Template.xlsx');
+    }
+
 }
