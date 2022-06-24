@@ -66,20 +66,20 @@ class anotherAmazonProductController extends Controller
     public function exportOtherProduct(Request $request)
     {
         $selected_header = $request->input('selected');
-
+        $type = $request->input('type');
         $selected_header =  $selected_header;
-         Log::alert($selected_header);
+        Log::alert($selected_header);
         $user = Auth::user();
         $id = $user->id;
         $email = $user->email;
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
             $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:export-other-amazon $selected_header $email $id > /dev/null &";
+            $command = "cd $base_path && php artisan pms:export-other-amazon $selected_header $email $id $type> /dev/null &";
             exec($command);
         } else {
 
-            Artisan::call('pms:export-other-amazon ' . $selected_header . ' ' . $email . ' ' . $id);
+            Artisan::call('pms:export-other-amazon ' . $selected_header . ' ' . $email . ' ' . $id . ' ' . $type);
         }
     }
 
