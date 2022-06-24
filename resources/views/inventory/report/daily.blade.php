@@ -54,15 +54,15 @@
 <table class="table table-bordered yajra-datatable table-striped " id="report_table">
     <thead>
         <tr>
-            <td id="detail">Date</td>
-            <td id="detail">Opening Stock</td>
-            <td id="detail">Open Stock Amount</td>
-            <td id="detail">Inwarded</td>
-            <td id="detail">Inv.Inwarded Amt</td>
-            <td id="detail"> Outwarded</td>
-            <td id="detail">Inv.Outwarding Amt</td>
-            <td id="detail">Closing Stock</td>
-            <td id="detail">Closing Stock Amount</td>
+            <th id="detail">Date</th>
+            <th id="detail">Opening Stock</th>
+            <th id="detail">Open Stock Amount</th>
+            <th id="detail">Inwarded</th>
+            <th id="detail">Inv.Inwarded Amt</th>
+            <th id="detail"> Outwarded</th>
+            <th id="detail">Inv.Outwarding Amt</th>
+            <th id="detail">Closing Stock</th>
+            <th id="detail">Closing Stock Amount</th>
         </tr>
     </thead>
     <tbody id="data_display">
