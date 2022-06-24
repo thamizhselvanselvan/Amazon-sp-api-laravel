@@ -382,6 +382,7 @@
         let v = pBar.setValue(0);
         p_channel.listen(".test-broadcast1", function(data) {
 
+            console.log(data.message);
             if (data.message == 100) {
                 setTimeout(function() {
 
