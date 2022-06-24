@@ -74,16 +74,16 @@ class SellerOrdersImport extends Command
             
         }
       
-        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+        // if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
-            Log::warning("Export asin command executed local !");
-            $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:seller-order-item-import > /dev/null &";
-            exec($command);
-        } else {
+        //     Log::warning("Export asin command executed local !");
+        //     $base_path = base_path();
+        //     $command = "cd $base_path && php artisan pms:seller-order-item-import > /dev/null &";
+        //     exec($command);
+        // } else {
 
-            Artisan::call('pms:seller-order-item-import ');
-        }
+        //     Artisan::call('pms:seller-order-item-import ');
+        // }
     }
 
     public function SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code)
