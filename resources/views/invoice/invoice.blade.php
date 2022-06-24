@@ -57,7 +57,7 @@
          <div class="invoice-header">
             <div class="invoice-from">
                <address class="m-t-5 m-b-5">
-                  <strong class="text-inverse"><h6><b>STORE NAME</b></h6></strong><hr>
+                  <strong class="text-inverse"><h6><b>COMPANY NAME</b></h6></strong><hr>
                   <b> {{ $value->store_name }} </b><br>
                   {{ $value->store__add }}
                </address>
@@ -118,7 +118,7 @@
                         @if ( $value->product_price =='')
                         <td class="text-center">{{ 0 }}</td>
                         @else
-                        <td class="text-center">{{ $value->product_price}}</td>
+                        <td class="text-center">{{$value->currency}} {{ $value->product_price}}</td>
                         @endif
 
                         @if ( $value->taxable_value =='')
@@ -130,7 +130,7 @@
                          @if( $value->grand_total =='' )
                          <td class="text-right">{{ 0 }}</td>
                          @else
-                         <td class="text-right">{{ $value->grand_total }}</td>
+                         <td class="text-right">{{$value->currency}} {{ $value->grand_total }}</td>
                          @endif
                        
                      </tr>
@@ -142,36 +142,13 @@
             <!-- begin invoice-price -->
             <div class="invoice-price">
                <div class="invoice-price-left">
-                  <!-- <div class="invoice-price-row">
-                     <div class="sub-price">
-                        <small>SUBTOTAL</small>
-                        @if ( $value->grand_total =='')
-                        <span class="text-inverse">{{ 0 }}</span>
-                        @else
-                        <span class="text-inverse">{{ $value->grand_total }}</span>
-                        @endif
-                        
-                     </div>
-                     <div class="sub-price">
-                        <i class="fa fa-plus text-muted"></i>
-                     </div>
-                     <div class="sub-price">
-                        @if ($value->taxable_value == '')
-                           
-                           <small>TAX ( 0 )</small>
-                           <span class="text-inverse">{{ 0 }}</span>
-                        @else
-                           <small>Tax ({{ $value->taxable_value }})</small>
-                           <span class="text-inverse">{{ $value->taxable_value }}</span>
-                        @endif
-                     </div>
-                  </div> -->
+                 
                </div>
                <div class="invoice-price-right">
                   @if ($value->grand_total == '')
                   <small>GRAND TOTAL</small> <span class="f-w-600">{{ 0 }}</span>
                   @else
-                  <small><strong> GRAND TOTAL </strong> </small> <span class="f-w-600">{{ $value->grand_total }}</span>
+                  <small><strong> GRAND TOTAL </strong> </small> <span class="f-w-600">{{$value->currency}} {{ $value->grand_total }}</span>
                   @endif
                   
                </div>
