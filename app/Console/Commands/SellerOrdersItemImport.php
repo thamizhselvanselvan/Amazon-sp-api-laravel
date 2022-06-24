@@ -103,10 +103,8 @@ class SellerOrdersItemImport extends Command
                 $data = [];
             }
         }
-
         $data = [];
         $seller_id = [];
-       
     }
 
     public function SelectedSellerOrderItem($apiInstance, $seller_id, $awsCountryCode)
@@ -128,7 +126,7 @@ class SellerOrdersItemImport extends Command
 
                 Log::warning($e->getMessage());
             }
-            sleep(30);
+            sleep(45);
         }
     }
 
@@ -165,8 +163,7 @@ class SellerOrdersItemImport extends Command
         $result_order_address = (array)$result_order_address;
         foreach ($result_order_address as $result_address) {
             foreach ((array)$result_address['payload'] as $result) {
-                // $order_detials = NULL;
-                // $order_detial = R::dispense('orderitemdetails');
+                
                 $count = 0;
                 foreach ($result as $key => $value) {
 
