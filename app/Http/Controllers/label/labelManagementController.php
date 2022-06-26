@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\label;
 
+use DateTime;
 use ZipArchive;
 use RedBeanPHP\R;
 use App\Models\Label;
@@ -17,6 +18,7 @@ use Picqer\Barcode\BarcodeGeneratorHTML;
 
 class labelManagementController extends Controller
 {
+    private $order_details;
     public function SearchLabel()
     {
         return view('label.search_label');
@@ -24,43 +26,63 @@ class labelManagementController extends Controller
 
     public function GetLabel(Request $request)
     {
-        if($request->ajax())
-        {
+        if ($request->ajax()) {
             $date = $request->invoice_date;
-            $newdate = explode( ' - ' ,$date);
+            $newdate = explode(' - ', $date);
             $date1 = $newdate[0];
             $date2 = $newdate[1];
-            $results = DB::connection('web')->select("SELECT id, invoice_date, channel, shipped_by, awb_no, arn_no, hsn_code, qty, product_price FROM labels WHERE invoice_date BETWEEN '$date1' AND '$date2' ");
-            
+
+            $order = config('database.connections.order.database');
+            $catalog = config('database.connections.catalog.database');
+            $web = config('database.connections.web.database');
+    
+            $label = DB::select("SELECT 
+            DISTINCT web.id, web.awb_no, web.order_no
+            from $web.labels as web     
+            JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no 
+            JOIN $order.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
+            JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin 
+            WHERE created_at BETWEEN '$date1' AND '$date2'
+        ");
+            // $results = DB::connection('web')->select("SELECT id, order_no, awb_no FROM labels WHERE created_at BETWEEN '$date1' AND '$date2' ");
         }
-        return response()->json($results);
+        return response()->json($label);
     }
 
     public function manage(Request $request)
     {
-        if($request->ajax())
-        {
+        if ($request->ajax()) {
             $data = DB::connection('web')->select("select * from labels order by id DESC");
 
-            foreach($data as $key => $value){
+            foreach ($data as $key => $value) {
                 $result[$key]['id'] = $value;
-                
             }
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($id) use ($result) {
-                   
+
+                    $this->order_details = $this->labelDataFormating($id->id);
+                    if ($this->order_details) {
+                        $action = '<div class="d-flex"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
+                        $action .= '<div class="d-flex pl-2"><a href="/label/download-direct/' . $id->id . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
+                        return $action;
+                    }
                     // $action1 = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
-                    $action = '<div class="d-flex"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
-                    $action .= '<div class="d-flex pl-2"><a href="/label/download-direct/' . $id->id . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
-                    return $action;
+                    return 'Details Not Avaliable';
                 })
                 ->addColumn('check_box', function ($id) use ($result) {
-
-                    $check_box = '<div class="pl-2"><input class="check_options" type="checkbox" value='. $id->id .' name="options[]" ></div>';
-                    return $check_box;
+                    if ($this->order_details) {
+                        $check_box = '<div class="pl-2"><input class="check_options" type="checkbox" value=' . $id->id . ' name="options[]" ></div>';
+                        return $check_box;
+                    }
                 })
-                ->rawColumns(['action', 'check_box'])
+                ->editColumn('status', function () {
+                    if ($this->order_details) {
+                        return 'Avaliable';
+                    }
+                    return 'Not Avaliable';
+                })
+                ->rawColumns(['action', 'check_box', 'status'])
                 ->make(true);
         }
         return view('label.manage');
@@ -75,24 +97,24 @@ class labelManagementController extends Controller
 
         $generator = new BarcodeGeneratorHTML();
         $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_93);
-        return view('label.labelTemplate', compact('result','bar_code', 'awb_no'));
+        return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no'));
     }
     public function ExportLabel(Request $request)
-    { 
+    {
         //Single Download
         $url = $request->url;
         $awb_no = $request->awb_no;
         $file_path = 'label/label' . $awb_no . '.pdf';
-        
+
         if (!Storage::exists($file_path)) {
             Storage::put($file_path, '');
         }
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-        // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
-        ->format('A6')
-        ->showBackground()
-        ->savePdf($exportToPdf);
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            ->format('A6')
+            ->showBackground()
+            ->savePdf($exportToPdf);
 
         return response()->json(['Save pdf sucessfully']);
     }
@@ -104,10 +126,10 @@ class labelManagementController extends Controller
 
     public function DownloadDirect($id)
     {
-       
+
         $result = DB::connection('web')->select("select * from labels where id = '$id' ");
         $awb_no = $result[0]->awb_no;
-        $file_path = 'label/label'. $awb_no. '.pdf';
+        $file_path = 'label/label' . $awb_no . '.pdf';
 
         if (!Storage::exists($file_path)) {
             Storage::put($file_path, '');
@@ -117,10 +139,10 @@ class labelManagementController extends Controller
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
 
         Browsershot::url($url)
-        // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
-        ->format('A6')
-        ->showBackground()
-        ->savePdf($exportToPdf);
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            ->format('A6')
+            ->showBackground()
+            ->savePdf($exportToPdf);
 
         return $this->downloadLabel($awb_no);
     }
@@ -128,15 +150,14 @@ class labelManagementController extends Controller
     public function PrintSelected($id)
     {
         $allid = explode('-', $id);
-        foreach($allid as $id)
-        {
+        foreach ($allid as $id) {
             $results = $this->labelDataFormating($id);
             $result[] = (object)$results;
-          
+
             $generator = new BarcodeGeneratorHTML();
             $bar_code[] = $generator->getBarcode($results['awb_no'], $generator::TYPE_CODE_93);
         }
-        
+
         return view('label.multipleLabel', compact('result', 'bar_code'));
     }
 
@@ -146,14 +167,12 @@ class labelManagementController extends Controller
         $currenturl =  URL::current();
 
         $excelid = explode('-', $passid);
-        
-        foreach($excelid as $getId)
-        {
+
+        foreach ($excelid as $getId) {
             // $id = Label::where('id', $getId)->get();
             $id = DB::connection('web')->select("select * from labels where id = '$getId' ");
-            
-            foreach($id as $key => $value)
-            {
+
+            foreach ($id as $key => $value) {
                 $awb_no = $value->awb_no;
                 $url = str_replace('select-download', 'pdf-template', $currenturl . '/' . $getId);
                 $path = 'label/label' . $awb_no . '.pdf';
@@ -162,10 +181,10 @@ class labelManagementController extends Controller
                 }
                 $exportToPdf = storage::path($path);
                 Browsershot::url($url)
-                // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
-                ->format('A6')
-                ->showBackground()
-                ->savePdf($exportToPdf);
+                    // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+                    ->format('A6')
+                    ->showBackground()
+                    ->savePdf($exportToPdf);
 
                 $saveAsPdf[] = 'label' . $awb_no . '.pdf';
             }
@@ -258,6 +277,9 @@ class labelManagementController extends Controller
                     $label->$column = $value;
                 }
             }
+            $date = new DateTime(date('Y-m-d'));
+            $created_at = $date->format('Y-m-d');
+            $label->created_at = $created_at;
             R::store($label);
         }
 
@@ -304,9 +326,13 @@ class labelManagementController extends Controller
             'sku' => NULL,
             'qty' => NULL
         ];
+
+        if (!$label) {
+            return NULL;
+        }
         foreach ($label as $key => $label_value) {
             foreach ($label_value as $key1 => $label_detials) {
-                
+
                 if ($key1 == 'shipping_address') {
                     $buyer_address = [];
                     $shipping_address = json_decode($label_detials);
@@ -324,19 +350,14 @@ class labelManagementController extends Controller
                 } elseif ($key1 == 'title') {
 
                     $product[$key][$key1] = $label_detials;
-
                 } elseif ($key1 == 'sku') {
 
                     $product[$key][$key1] = $label_detials;
-
                 } elseif ($key1 == 'qty') {
-                    
-                    $product[$key][$key1] = $label_detials;
 
-                } 
-                elseif($key1 == 'asin')
-                {}
-                else {
+                    $product[$key][$key1] = $label_detials;
+                } elseif ($key1 == 'asin') {
+                } else {
 
                     $label_data[$key1] = $label_detials;
                 }

@@ -9,11 +9,9 @@ Route::prefix('label/')->group(function () {
     Route::get('upload', 'label\labelManagementController@upload');
     Route::post('upload/excel', 'label\labelManagementController@uploadExcel');
     Route::get('template', 'label\labelManagementController@labelTemplate');
-
-    
 });
 Route::get('label/search-label', 'label\labelManagementController@SearchLabel');
-Route::get('label/select-label', 'label\labelManagementController@GetLabel');
+Route::post('label/select-label', 'label\labelManagementController@GetLabel');
 Route::get('label/pdf-template/{id}', 'label\labelManagementController@showTemplate');
 Route::post('label/export-pdf', 'label\labelManagementController@ExportLabel');
 Route::get('label/download/{awb_no}', 'label\labelManagementController@downloadLabel');
