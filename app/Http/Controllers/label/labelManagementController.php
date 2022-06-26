@@ -9,6 +9,7 @@ use App\Models\Label;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
@@ -31,7 +32,7 @@ class labelManagementController extends Controller
             $newdate = explode(' - ', $date);
             $date1 = $newdate[0];
             $date2 = $newdate[1];
-
+            // po($newdate);
             $order = config('database.connections.order.database');
             $catalog = config('database.connections.catalog.database');
             $web = config('database.connections.web.database');
@@ -44,6 +45,7 @@ class labelManagementController extends Controller
             JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin 
             WHERE created_at BETWEEN '$date1' AND '$date2'
         ");
+        
             // $results = DB::connection('web')->select("SELECT id, order_no, awb_no FROM labels WHERE created_at BETWEEN '$date1' AND '$date2' ");
         }
         return response()->json($label);
@@ -111,7 +113,7 @@ class labelManagementController extends Controller
         }
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->format('A6')
             ->showBackground()
             ->savePdf($exportToPdf);
@@ -139,7 +141,7 @@ class labelManagementController extends Controller
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
 
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->format('A6')
             ->showBackground()
             ->savePdf($exportToPdf);
@@ -181,7 +183,7 @@ class labelManagementController extends Controller
                 }
                 $exportToPdf = storage::path($path);
                 Browsershot::url($url)
-                    // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+                    // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
                     ->format('A6')
                     ->showBackground()
                     ->savePdf($exportToPdf);

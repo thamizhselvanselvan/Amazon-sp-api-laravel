@@ -15,10 +15,10 @@
             <x-adminlte-button label="Upload Excel Sheet" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
         </a>
         <!-- <a href="download-all"> -->
-            <x-adminlte-button label="Download Selected" id='download_selected' theme="primary" icon="fas fa-download" class="btn-sm" />
+            <!-- <x-adminlte-button label="Download Selected" id='download_selected' theme="primary" icon="fas fa-download" class="btn-sm" /> -->
         <!-- </a> -->
         <!-- <a  href=""> -->
-            <x-adminlte-button label="Print Selected" id='print_selected' theme="primary" icon="fas fa-print" class="btn-sm" />
+            <!-- <x-adminlte-button label="Print Selected" id='print_selected' theme="primary" icon="fas fa-print" class="btn-sm" /> -->
         <!-- </a> -->
     </h2>
 </div>
@@ -46,7 +46,7 @@
             <td>Status.</td>
             <td>Order No.</td>
             <td>Awb No.</td>
-            <td>Select All <br><input class="check_all" type="checkbox" value='' name="options[]" id="check_all" ></div> </td>
+            <!-- <td>Select All <br><input class="check_all" type="checkbox" value='' name="options[]" id="check_all" ></div> </td> -->
             <td>Action</td>
         </tr>
     </thead>
@@ -66,6 +66,7 @@ processing: true,
 serverSide: true,
 ajax: "{{ url('/label/manage') }}",
 pageLength: 1000,
+searching: false,
 columns: [{
     data: 'DT_RowIndex',
     name: 'DT_RowIndex',
@@ -84,12 +85,12 @@ columns: [{
         data: 'awb_no',
         name: 'awb_no',
     },
-    {
-        data: 'check_box',
-        name: 'check_box',
-        orderable: false,
-        searchable: false,
-    },
+    // {
+    //     data: 'check_box',
+    //     name: 'check_box',
+    //     orderable: false,
+    //     searchable: false,
+    // },
     {
         data: 'action',
         name: 'action',
