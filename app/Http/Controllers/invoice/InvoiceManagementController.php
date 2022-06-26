@@ -137,8 +137,6 @@ class InvoiceManagementController extends Controller
                     {
                         $id = $Totaldata[0]->id;
                     }
-                   
-                
                     if($id == NULL)
                     { 
                         $invoice = R::dispense('invoices');
