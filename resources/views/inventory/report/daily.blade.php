@@ -31,13 +31,13 @@
         <input type="radio" name="size" id="ware">
         <label for="ware"> Warehouse Wise Report</label>
     </div>
-    <div class="col-1 justify-content-right">
+    <!-- <div class="col-1 justify-content-right">
         <h2>
             <div style="margin-top: -1rem;">
                 <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export " id="export" />
             </div>
         </h2>
-    </div>
+    </div> -->
 </div>
 <div class="row" id="warehouse">
     <div class="col-2">
