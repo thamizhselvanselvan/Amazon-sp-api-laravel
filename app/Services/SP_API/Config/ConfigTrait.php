@@ -15,7 +15,7 @@ trait ConfigTrait
     {
         $token = '';
         $region = $this->region_code($country_code);
-        if (isset($auth_code)) {
+        if ($auth_code) {
 
             $token = $auth_code;
         } else {
