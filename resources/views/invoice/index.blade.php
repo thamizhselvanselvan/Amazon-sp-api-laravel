@@ -10,7 +10,7 @@
         padding-left: 5px;
     }
 
-    .btn-group-sm>.btn,
+    .btn-group-sm .btn,
     .btn-sm {
         padding: 0.2rem 0.2rem;
     }
@@ -69,7 +69,7 @@
                 <th>Channel</th>
                 <th>Shipped By</th>
                 <th>Awb No</th>
-                <th>Arn NO.</th>
+                <th>Arn No.</th>
                 <th>Hsn Code</th>
                 <th>Quantity</th>
                 <th>Product Price</th>
@@ -79,7 +79,6 @@
         </thead>
         <tbody>
         </tbody>
-
 
     </table>
     @stop

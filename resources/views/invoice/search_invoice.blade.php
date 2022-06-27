@@ -106,7 +106,7 @@
                     "_token": "{{ csrf_token() }}",
                     },
                     success: function(response) {
-                        console.log(response);
+                        // console.log(response);
                         let table ="<table id='checkTable' class=table table-bordered table-striped text-center >";
                         table += "<thead><tr class='text-bold bg-info'><th>Selected</th> <th>Invoice No.</th><th>Invoice Date</th><th>Channel</th><th>Shipped By</th><th>Awb No</th><th>Arn NO.</th><th>Hsn Code</th><th>Quantity</th><th>Product Price</th><th class='text-center'>Action</th></tr></thead><tbody> ";
     
