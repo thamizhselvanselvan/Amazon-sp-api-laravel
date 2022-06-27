@@ -19,46 +19,41 @@
 
 @section('content')
 @foreach ($result as $key => $value)
-<div class="container">
+<div class="container label-container">
     <div class="col-md-12">
         <div class="invoice">
             <div class="invoice-content">
-                <div class="table-responsive">
+                <!-- <div class="table-responsive"> -->
                     <table class="table table-invoice table-bordered table-bordered-dark">
                         <tbody>
                             <tr>
                                 <td>
-                                    <!-- <div class="container" > -->
                                     <div class="row">
-                                        <div class="col-md-4"></div>
-                                        <div class="col-md-4">{!! $bar_code[$key] !!} <b> {{ $value->awb_no }} </b></div>
-                                        <div class="col-md-4"></div>
+                                        <div class="col"></div>
+                                        <div class="col">{!! $bar_code[$key] !!} <b> {{ $value->awb_no }} </b></div>
+                                        <div class="col"></div>
                                     </div>
-                                    <!-- </div> -->
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <!-- <div class="container"> -->
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <h4><strong> Tracking Details : </strong></h4>
+                                            <h5><strong> Tracking Details : </strong></h5>
                                         </div>
                                         <div class="col-md-6">
-                                            <h4 class="text-center"><strong>{{ $value->awb_no }}</strong></h4>
+                                            <h5 class="text-center"><strong>{{ $value->awb_no }}</strong></h5>
                                         </div>
                                     </div>
-                                    <!-- </div> -->
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <h4><strong> PREPAID : </strong></h4>
+                                    <h5><strong> Prepaid : </strong></h5>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <!-- <div class="container"> -->
                                     <div class="row">
                                         <div class="col-md-6">
                                             <h6><b>SHIP TO </b></h6>Shang Liang JLT Cluster V Jumeirah Business Centre5 2007 Jumeirah Dubai / United Arab Emirates M:+971529131966 <br>
@@ -75,17 +70,11 @@
                                             {{$value->package_dimensions['Length']->Units}} </div>
                                         </div>
                                     </div>
-                                    <!-- </div> -->
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-                </div>
-            </div>
-
-            <div class="invoice-content">
-                <div class="table-responsive">
-                    <table class="table table-invoice table-bordered table-bordered-dark">
+                    <table class="table table-bordered table-bordered-dark">
                         <thead>
                             <tr>
                                 <th class="text-left">SR. NO.</th>
@@ -95,26 +84,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                        @foreach ($value->product as $key => $details)
-                            <tr>
-                                <td class="text-center">{{$key+1}}</td>
-                                <td class="">{{$details['title']}}</td>
-                                <td class="text-center">{{$details['sku']}}</td>
-                                <td class="text-center">{{$details['qty']}}</td>
-                            </tr>
+                            @foreach ($value->product as $key => $details)
+                                <tr>
+                                    <td class="text-center">{{$key+1}}</td>
+                                    <td class="">{{$details['title']}}</td>
+                                    <td class="text-center">{{$details['sku']}}</td>
+                                    <td class="text-center">{{$details['qty']}}</td>
+                                </tr>
                             @endforeach
-                            <!-- <tr>
-                                <td class="text-center">1</td>
-                                <td class="text-center">HyperX Cloud II Gaming Headset for PC & PS4 &Xbox One, Nintendo Switch - Red (KHX-HSCP-RD),17 x 12 x 7 cm</td>
-                                <td class="text-center">MZ_B07CZN</td>
-                                <td class="text-center">1</td>
-                            </tr> -->
-                            <tr>
-                                <!-- <td colspan="4"><strong>Return Address :</strong> Mahzuz, Al Habtoor Warehouse No.27 ,Al QusaisIndustrial Area 3 mumbai, MH, IN, 400025</td> -->
-                            </tr>
                         </tbody>
                     </table>
-                </div>
+                <!-- </div> -->
             </div>
         </div>
     </div>
@@ -124,29 +104,4 @@
 @stop
 
 @section('js')
-<script>
-    // $(document).ready(function(){
-    //     $('#Export_to_pdf').click(function(e){
-    //         e.preventDefault();
-    //         var url = $(location).attr('href');
-    //         var awb_no = $('#awb_no').val();
-    //         alert(url);
-
-    //         $.ajax({
-    //             method: 'POST',
-    //             url: "{{ url('/label/export-pdf')}}",
-    //             data:{
-    //                 'url':url,
-    //                 'awb_no':awb_no,
-    //                 "_token": "{{ csrf_token() }}",
-    //                 },
-    //             success: function(response) {
-
-    //                window.location.href = '/label/download/'+awb_no;
-    //                alert('Download pdf successfully');
-    //             }
-    //         });
-    //     });
-    // });
-</script>
 @stop
