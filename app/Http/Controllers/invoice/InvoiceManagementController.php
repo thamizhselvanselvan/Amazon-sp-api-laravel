@@ -137,23 +137,28 @@ class InvoiceManagementController extends Controller
                     {
                         $id = $Totaldata[0]->id;
                     }
-                    $invoice = R::dispense('invoices');
+                   
                 
                     if($id == NULL)
                     { 
+                        $invoice = R::dispense('invoices');
                         foreach($record as $key3 => $value)
                         {   
                             $name = (isset($header[$key3])) ? $header[$key3] : null;
-                            if($name)
-                            {
-                                $invoice->$name = $value;  
-                                
-                                if(isset($header[1]))
+                            if($name && $record[0] != '')
+                            {  
+                                if(isset($header[1]) && $key3 == 1)
                                 {
+                                    Log::alert($key3);
                                     $dateset = $header[1];
-                                    $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($record[1])->format("Y-m-d");
+                                    $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($record[$key3])->format("Y-m-d");
                                     $invoice->$dateset = $date;
                                 }
+                                elseif($key3 != 1)
+                                {
+                                    $invoice->$name = $value;
+                                }
+                    
                             } 
                         } 
                         R::store($invoice);  
@@ -164,14 +169,17 @@ class InvoiceManagementController extends Controller
                         foreach($record as $key3 => $value)
                         {
                             $name = (isset($header[$key3])) ? $header[$key3] : null;
-                            if($name)
+                            if($name && $record[0] != '')
                             {
-                                $update->$name = $value ; 
-                                if(isset($header[1]))
+                                if(isset($header[1]) && $key3 == 1)
                                 {
                                     $dateset = $header[1];
-                                    $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($record[1])->format("d/m/Y");
+                                    $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($record[1])->format("Y-m-d");
                                     $update->$dateset = $date;
+                                }
+                                elseif($key3 != 1){
+
+                                    $update->$name = $value;  
                                 }
                             }
                         }
@@ -308,6 +316,11 @@ class InvoiceManagementController extends Controller
         }
         $fileName = Storage::path('zip/'.'invoice.zip');
         return response()->download($fileName);
+    }
+
+    public function downloadTemplate()
+    {
+        return Storage::download('Invoice_Excel_Template.xlsx');
     }
 
 }

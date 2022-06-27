@@ -73,18 +73,17 @@ class SellerOrdersImport extends Command
             $this->SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code);
             
         }
-        // R::close();
-        // After importing seller orders, import order item detials according to order id
-        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+      
+        // if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
-            Log::warning("Export asin command executed local !");
-            $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:seller-order-item-import > /dev/null &";
-            exec($command);
-        } else {
+        //     Log::warning("Export asin command executed local !");
+        //     $base_path = base_path();
+        //     $command = "cd $base_path && php artisan pms:seller-order-item-import > /dev/null &";
+        //     exec($command);
+        // } else {
 
-            Artisan::call('pms:seller-order-item-import ');
-        }
+        //     Artisan::call('pms:seller-order-item-import ');
+        // }
     }
 
     public function SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code)
@@ -96,7 +95,8 @@ class SellerOrdersImport extends Command
 
         $apiInstance = new OrdersApi($config);
         // $startTime = Carbon::now()->subMinute(20)->toISOString();
-        $startTime = Carbon::now()->subHours(4)->toISOString();
+        // $startTime = Carbon::now()->subHours(4)->toISOString();
+        $startTime = Carbon::now()->subDays(25)->toISOString();
 
         // echo $startTime;
         $createdAfter = $startTime;
@@ -164,16 +164,7 @@ class SellerOrdersImport extends Command
                         $amazon_order_details['amazon_order_identifier'] = $details;
                         $orders->amazon_order_identifier = $details;
                     }
-                    // else if ($detailsKey == 'marketplaceId') {
-
-                    //     $amazon_order_details['marketplace'] = $details;
-                    //     $orders->marketplace = $details;
-
-                    // }else if($detailsKey == 'sellerOrderId')
-                    // {
-                    //     $amazon_order_details['seller_order_identifier'] = $details;
-                    //     $orders->seller_order_identifier = $details;
-                    // }
+                   
                     else {
 
                         $amazon_order_details[$detailsKey] = (string)$details;

@@ -31,11 +31,11 @@
         </div>
         <h2 class="row mb-4 ">
             <div class="col">
-                <x-adminlte-button label='Product Export' class="product_export_modal_open" theme="primary" icon="fas fa-file-export" />
-                <x-adminlte-button label='Download' class="file_download_modal_btn" theme="success" icon="fas fa-download" />
+                <x-adminlte-button label='Catalog Export' class="product_export_modal_open" theme="primary" icon="fas fa-file-export" />
                 <a href='asin_upload'>
-                    <x-adminlte-button label='Asin Upload' class="" theme="primary" icon="fas fa-file-import" />
+                    <x-adminlte-button label='Import ASIN' class="" theme="primary" icon="fas fa-file-import" />
                 </a>
+                <x-adminlte-button label='Download' class="file_download_modal_btn" theme="success" icon="fas fa-download" />
             </div>
             <div class="col"></div>
             <div class="col-3 align-self-end progress_bar">
@@ -255,7 +255,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary modal_close" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id='exportToCsv'>Export to CSV</button>
+                        <button type="button" class="btn btn-primary" id='exportToCsv'>Export All Catalog</button>
+                        <button type="button" class="btn btn-primary" id='exportbyAsin'>Export By Asin</button>
                     </div>
                 </div>
             </div>
@@ -381,6 +382,7 @@
         let v = pBar.setValue(0);
         p_channel.listen(".test-broadcast1", function(data) {
 
+            console.log(data.message);
             if (data.message == 100) {
                 setTimeout(function() {
 
@@ -638,6 +640,17 @@
     });
 
     $('#exportToCsv').on('click', function() {
+
+        exportCatalog('All');
+    });
+
+    $('#exportbyAsin').on('click', function() {
+        
+        exportCatalog('Asin');
+    });
+
+    function exportCatalog(type)
+    {
         $('#productExport').modal('hide');
         $('.progress_bar').show();
 
@@ -664,6 +677,7 @@
                     "_token": "{{ csrf_token() }}",
                     "_method": 'post',
                     'selected': select_header,
+                    'type': type
                 },
                 success: function(response) {
                     // $('.progress_bar').hide();
@@ -671,8 +685,7 @@
                 }
             })
         }
-
-    }).get();
+    }
 
     $('a.toggle-vis').on('click', function(e) {
         e.preventDefault();

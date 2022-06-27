@@ -129,6 +129,12 @@ Route::get('test-queue-redis', function () {
     }
 });
 
+Route::get('order/item', function (){
+
+    $order_id = '403-6898279-3539565';
+    
+});
+
 Route::get('order/catalog', function () {
 
     $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails where status = 0 ");

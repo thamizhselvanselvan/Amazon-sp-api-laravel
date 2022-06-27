@@ -3,7 +3,11 @@
 
 @section('css')
 <link rel="stylesheet" href="/css/styles.css">
-
+<style>
+.table td {
+  padding: 0;
+}
+</style>
 @stop
 
 @section('content_header')
@@ -104,7 +108,7 @@
                     success: function(response) {
                         console.log(response);
                         let table ="<table id='checkTable' class=table table-bordered table-striped text-center >";
-                        table += "<thead><tr class='text-bold bg-info'><td>Selected</td> <td>Invoice No.</td><td>Invoice Date</td><td>Channel</td><td>Shipped By</td><td>Awb No</td><td>Arn NO.</td><td>Hsn Code</td><td>Quantity</td><td>Product Price</td><td class='text-center'>Action</td></tr></thead><tbody> ";
+                        table += "<thead><tr class='text-bold bg-info'><th>Selected</th> <th>Invoice No.</th><th>Invoice Date</th><th>Channel</th><th>Shipped By</th><th>Awb No</th><th>Arn NO.</th><th>Hsn Code</th><th>Quantity</th><th>Product Price</th><th class='text-center'>Action</th></tr></thead><tbody> ";
     
                         $.each(response, function(i, response){
                             let invoice_id = response.invoice_no.replaceAll(/-/g, '_');

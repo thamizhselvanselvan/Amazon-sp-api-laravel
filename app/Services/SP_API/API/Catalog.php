@@ -7,6 +7,7 @@ use RedBeanPHP\R;
 use App\Models\Aws_credential;
 use SellingPartnerApi\Endpoint;
 use App\Models\Admin\BB\BB_User;
+use App\Models\Mws_region;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -29,27 +30,36 @@ class Catalog
         $port = config('database.connections.catalog.port');
         $username = config('database.connections.catalog.username');
         $password = config('database.connections.catalog.password');
-        if ($batch <= 10 || $batch == NULL) {
+
+        if(!R::testConnection('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password))
+        {
             R::addDatabase('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
             R::selectDatabase('catalog');
-            Log::info($batch);
         }
 
         if ($type == 1) {
             foreach ($datas as $value) {
+                $asin = NULL;    
                 $asin = $value->asin;
                 $country_code = $value->source;
-                $seller = $value->seller_id;
 
-                $seller_detilas = Aws_credential::where('seller_id', $seller)->get();
-                // $token = ($seller_detilas[0]->auth_code);
-                $token = "Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg";
-                $this->getCatalog($country_code, $token, $asin, $seller, $type);
+                $mws_region = Mws_region::with('aws_verified')->where('region_code', $country_code)->get()->first();
+                $token = ($mws_region['aws_verified']['auth_code']);
+
+                $seller = $value->seller_id;
+                $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
+
+                if(count($check) <=0) {
+                    
+                    // $seller_detilas = Aws_credential::where('seller_id', $seller)->get();
+                    // // $token = ($seller_detilas[0]->auth_code);
+                    // $token = "Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg";
+                    $this->getCatalog($country_code, $token, $asin, $seller, $type);
+                }
             }
         } elseif ($type == 2) {
 
             foreach ($datas as $value) {
-                // Log::alert('working');
                 $asin = $value->asin;
                 $country_code = $value->country;
                 $seller = $value->seller_identifier;

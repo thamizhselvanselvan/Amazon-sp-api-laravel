@@ -2,9 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::get('invoice/manage', 'invoice\InvoiceManagementController@Index');
 Route::get('invoice/search-invoice', 'invoice\InvoiceManagementController@SearchInvoice');
 Route::post('invoice/select-invoice', 'invoice\InvoiceManagementController@GetInvoice');
-Route::get('invoice/manage', 'invoice\InvoiceManagementController@Index');
 Route::get('invoice/upload', 'invoice\InvoiceManagementController@Upload');
 Route::post('invoice/upload/excel', 'invoice\InvoiceManagementController@UploadExcel');
 Route::get('invoice/template', 'invoice\InvoiceManagementController@showpdf');
@@ -16,3 +16,4 @@ Route::get('invoice/download-all', 'invoice\InvoiceManagementController@Download
 Route::post('invoice/select-download', 'invoice\InvoiceManagementController@SelectedDownload');
 Route::get('invoice/zip-download/{arr}', 'invoice\InvoiceManagementController@zipDownload');
 Route::get('invoice/selected-print/{id}', 'invoice\InvoiceManagementController@selectPrint');
+Route::get('invoice/template/download', 'invoice\InvoiceManagementController@downloadTemplate');

@@ -57,6 +57,7 @@ class SellerOrdersItemImport extends Command
         R::addDatabase('order', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
         R::selectDatabase('order');
         // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+        // $aws_data = OrderSellerCredentials::where('get_order_item', 1)->get();
         $aws_data = OrderSellerCredentials::where('get_order_item', 1)->get();
         foreach ($aws_data as $aws_value) {
 
@@ -103,10 +104,8 @@ class SellerOrdersItemImport extends Command
                 $data = [];
             }
         }
-
         $data = [];
         $seller_id = [];
-       
     }
 
     public function SelectedSellerOrderItem($apiInstance, $seller_id, $awsCountryCode)
@@ -128,68 +127,70 @@ class SellerOrdersItemImport extends Command
 
                 Log::warning($e->getMessage());
             }
-            sleep(30);
+            sleep(45);
         }
     }
 
     public function OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $seller_id, $awsCountryCode)
     {
-        foreach ($result_orderItems['payload']['order_items'] as $result_order) {
-            foreach ((array)$result_order as $result) {
-                $order_detials = R::dispense('orderitemdetails');
-                $order_detials->seller_identifier = $seller_id;
-                $order_detials->status = '0';
-                $order_detials->country = $awsCountryCode;
-
-                foreach ($result as $key => $value) {
-                    $detailsKey = lcfirst($key);
-                    $id = substr($detailsKey, -2);
-                    $ids = substr($detailsKey, -3);
-                    // echo $id;
-                    if ($id == 'id' || $id == 'Id' || $ids == 'ids') {
-                        $detailsKey = str_replace(["id", 'Id', 'ids'], "identifier", $detailsKey);
-                    }
-
-                    if (is_array($value)) {
-
-                        $order_detials->{$detailsKey} = json_encode($value);
-                    } elseif (is_object(($value))) {
-                        $order_detials->{$detailsKey} = json_encode($value);
-                    } else {
-                        $order_detials->{$detailsKey} = ($value);
-                    }
-                }
-                R::store($order_detials);
+      $result_order_address = (array)$result_order_address;
+      foreach ($result_order_address as $result_address) {
+        foreach ((array)$result_address['payload'] as $result) {
+          $count = 0;
+          foreach ($result as $key => $value) {
+  
+            $detailsKey = lcfirst($key);
+            $id = substr($detailsKey, -2);
+            $ids = substr($detailsKey, -3);
+            // echo $id;
+            if ($id == 'id' || $id == 'Id' || $ids == 'ids') {
+              $detailsKey = str_replace(["id", 'Id', 'ids'], "identifier", $detailsKey);
             }
-        }
-        $result_order_address = (array)$result_order_address;
-        foreach ($result_order_address as $result_address) {
-            foreach ((array)$result_address['payload'] as $result) {
-                // $order_detials = NULL;
-                // $order_detial = R::dispense('orderitemdetails');
-                $count = 0;
-                foreach ($result as $key => $value) {
-
-                    $detailsKey = lcfirst($key);
-                    $id = substr($detailsKey, -2);
-                    $ids = substr($detailsKey, -3);
-                    // echo $id;
-                    if ($id == 'id' || $id == 'Id' || $ids == 'ids') {
-                        $detailsKey = str_replace(["id", 'Id', 'ids'], "identifier", $detailsKey);
-                    }
-
-                    if (is_array($value) || is_object($value)) {
-                        $order_detials->$detailsKey = json_encode($value);
-                    } else {
-                        $count = 1;
-                        $order_detials->$detailsKey = $value;
-                    }
-                }
-                R::store($order_detials);
+  
+            if (is_array($value) || is_object($value)) {
+              // $order_detials->$detailsKey = json_encode($value);
+              $order_address = json_encode($value);
+            } else {
+              $count = 1;
+              // $order_detials->$detailsKey = $value;
+              $amazon_order = $value;
             }
+          }
         }
-
-        DB::connection('order')
-            ->update("UPDATE orders SET order_item = '1' where amazon_order_identifier = '$order_id'");
+      }
+  
+      foreach ($result_orderItems['payload']['order_items'] as $result_order) {
+        foreach ((array)$result_order as $result) {
+          $order_detials = R::dispense('orderitemdetailstest');
+          $order_detials->seller_identifier = $seller_id;
+          $order_detials->status = '0';
+          $order_detials->country = $awsCountryCode;
+  
+          foreach ($result as $key => $value) {
+            $detailsKey = lcfirst($key);
+            $id = substr($detailsKey, -2);
+            $ids = substr($detailsKey, -3);
+            // echo $id;
+            if ($id == 'id' || $id == 'Id' || $ids == 'ids') {
+              $detailsKey = str_replace(["id", 'Id', 'ids'], "identifier", $detailsKey);
+            }
+  
+            if (is_array($value)) {
+  
+              $order_detials->{$detailsKey} = json_encode($value);
+            } elseif (is_object(($value))) {
+              $order_detials->{$detailsKey} = json_encode($value);
+            } else {
+              $order_detials->{$detailsKey} = ($value);
+            }
+          }
+          $order_detials->amazon_order_identifier = $amazon_order;
+          $order_detials->shipping_address = $order_address;
+          R::store($order_detials);
+        }
+      }
+      DB::connection('order')
+      ->update("UPDATE orders SET order_item = '1' where amazon_order_identifier = '$order_id'");
     }
+
 }

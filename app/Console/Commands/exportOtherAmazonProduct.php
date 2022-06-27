@@ -27,7 +27,7 @@ class exportOtherAmazonProduct extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:export-other-amazon {selected} {email} {id}';
+    protected $signature = 'pms:export-other-amazon {selected} {email} {id} {type}';
 
     /**
      * The console command description.
@@ -54,15 +54,78 @@ class exportOtherAmazonProduct extends Command
     public function handle()
     {
         $headerSelection = '';
-        
+
         $selected = $this->argument('selected');
         $user = $this->argument('email');
         $id = $this->argument('id');
-        
-        Log::alert('working');
+        $type = $this->argument('type');
+
         $headerSelection = explode('-', $selected);
         $headers = $headerSelection;
 
+        if ($type == 'Asin') {
+
+            $this->catalogExportByAsin($id, $user, $headers);
+
+        } else {
+
+            $exportFilePath = "excel/downloads/otheramazon/" . $user . "/otherProductDetails";
+            $deleteFilePath = "app/excel/downloads/otheramazon/" . $user;
+
+            if (file_exists(storage_path($deleteFilePath))) {
+                $path = storage_path($deleteFilePath);
+                $files = (scandir($path));
+                foreach ($files as $key => $file) {
+                    if ($key > 1) {
+                        unlink($path . '/' . $file);
+                    }
+                }
+            }
+
+            $record_per_csv = 1000000;
+            $chunk = 100000;
+
+            $this->check = $record_per_csv / $chunk;
+
+            $this->totalProductCount = OthercatDetails::count();
+
+            OthercatDetails::select($headers)->chunk($chunk, function ($records) use ($exportFilePath, $headers, $chunk) {
+
+                if ($this->count == 1) {
+                    if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv')) {
+                        Storage::put($exportFilePath . $this->fileNameOffset . '.csv', '');
+                    }
+                    $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv'), "w");
+                    $this->writer->insertOne($headers);
+                }
+
+                $records = $records->toArray();
+                $records = array_map(function ($datas) {
+                    return (array) $datas;
+                }, $records);
+
+                $this->writer->insertall($records);
+
+                if ($this->check == $this->count) {
+                    $this->fileNameOffset++;
+                    $this->count = 1;
+                } else {
+                    ++$this->count;
+                }
+
+                $this->currentCount += $chunk;
+                $percentage = ceil(round($this->currentCount * 100) / $this->totalProductCount);
+
+                if ($percentage > 100) {
+                    $percentage = 100;
+                }
+                event(new testEvent($percentage));
+            });
+        }
+    }
+
+    public function catalogExportByAsin($id, $user, $headers)
+    {
         $exportFilePath = "excel/downloads/otheramazon/" . $user . "/otherProductDetails";
         $deleteFilePath = "app/excel/downloads/otheramazon/" . $user;
 
@@ -76,8 +139,6 @@ class exportOtherAmazonProduct extends Command
             }
         }
 
-        Log::alert('working 1');
-
         $record_per_csv = 1000000;
         $chunk = 5000;
 
@@ -85,6 +146,7 @@ class exportOtherAmazonProduct extends Command
         $selected_asin = OtherCatalogAsin::select('asin')->where('user_id', $id)->get();
       
         $this->totalProductCount = count($selected_asin);
+        // $this->totalProductCount = OthercatDetails::count();
         Log::alert('count' . $this->totalProductCount);
         
         $selected_count = 0;
@@ -98,7 +160,9 @@ class exportOtherAmazonProduct extends Command
                 $selected_count = 0;
                 $chunk_asin = NULL;
             }
-            $selected_count++;
+            else{
+                $selected_count++;
+            }
         }
         $this->chunkAsinDetails($headers, $chunk_asin, $chunk, $exportFilePath);
     }
