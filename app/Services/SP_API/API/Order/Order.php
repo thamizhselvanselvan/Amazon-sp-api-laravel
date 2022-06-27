@@ -74,6 +74,10 @@ class Order
         $result_data = $results->getOrders();
         $result_data = json_decode(json_encode($result_data));
         $count = 0;
+
+        $delay = 0;
+        $delay_count = 15;
+
         foreach ($result_data as $resultkey => $result) {
 
             $orders = R::dispense('orders');
@@ -143,7 +147,9 @@ class Order
                             'country_code' => $awsCountryCode,
                            
                         ]
-                    )->onConnection('redis')->onQueue('CA_Order_2')->delay(30);
+                    )->onConnection('redis')->onQueue('CA_Order_2')->delay($delay);
+
+                    $delay += $delay_count;
                 } else {
 
                     GetOrderItem::dispatch(
