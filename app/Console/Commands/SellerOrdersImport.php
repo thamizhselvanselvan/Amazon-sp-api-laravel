@@ -7,6 +7,7 @@ use App\Jobs\Orders\GetOrder;
 use App\Models\Aws_credential;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
 
@@ -46,20 +47,17 @@ class SellerOrdersImport extends Command
     public function handle()
     {
         $aws_data = OrderSellerCredentials::where('dump_order', 1)->get();
-
         foreach ($aws_data as $aws_value) {
-
-            $awsId  = $aws_value['id'];
+            
+            // $awsId  = $aws_value['id'];
             $awsCountryCode = $aws_value['country_code'];
             $seller_id = $aws_value['seller_id'];
             $auth_code = NULL;
-            // $this->SelectedSellerOrder($awsId, $awsCountryCode, $auth_code, $seller_id);
-
+            
             if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
     
                 GetOrder::dispatch(
                     [
-                        'aws_id' => $awsId,
                         'country_code' => $awsCountryCode,
                         'seller_id' =>$seller_id
                      ]
@@ -67,9 +65,8 @@ class SellerOrdersImport extends Command
             } else {
                 GetOrder::dispatch(
                     [
-                        'aws_id' => $awsId,
                         'country_code' => $awsCountryCode,
-                        'seller_id' =>$seller_id
+                        'seller_id' => $seller_id
                     ]
                 );
             }

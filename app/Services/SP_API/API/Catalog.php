@@ -58,19 +58,18 @@ class Catalog
             foreach ($datas as $value) {
                 $asin = $value['asin'];
                 $country_code = $value['country_code'];
-                $seller = $value['seller_id'];
                 $aws_id = $value['aws_id'];
                 $auth_code = NULL;
                 // $seller_detilas = Aws_credential::where('seller_id', $seller)->get();
                 // $token = ($seller_detilas[0]->auth_code);
                 // $token = "Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg";
-                $this->getCatalog($country_code, $auth_code, $asin, $seller, $type, $aws_id);
+                $this->getCatalog($country_code, $auth_code, $asin, $type, $aws_id);
             }
             // return true;
         }
     }
 
-    public function getCatalog($country_code, $auth_code, $asin, $seller_id, $type, $aws_id)
+    public function getCatalog($country_code, $auth_code, $asin, $type, $aws_id)
     {
         $config = $this->config($aws_id, $country_code, $auth_code);
         $apiInstance = new CatalogItemsV0Api($config);
@@ -85,7 +84,7 @@ class Catalog
                 $result = (array)($result->payload->AttributeSets[0]);
                 $productcatalogs = R::dispense('catalog');
 
-                $productcatalogs->seller_id = $seller_id;
+                $productcatalogs->seller_id = $aws_id;
                 $productcatalogs->asin = $asin;
                 $productcatalogs->source = $country_code;
 

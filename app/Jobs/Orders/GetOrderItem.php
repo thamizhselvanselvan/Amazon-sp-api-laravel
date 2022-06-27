@@ -34,9 +34,9 @@ class GetOrderItem implements ShouldQueue
         $order_id = $this->payload['order_id'];
         $aws_id = $this->payload['aws_id'];
         $country_code = $this->payload['country_code'];
-        $seller_id = $this->payload['seller_id'];
+       
 
         $order_item = new OrderItem();
-        $order_item->OrderItemDetails($order_id, $aws_id, $country_code, $seller_id);
+        $order_item->OrderItemDetails($order_id, $aws_id, $country_code);
     }
 }

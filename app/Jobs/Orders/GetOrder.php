@@ -2,13 +2,14 @@
 
 namespace App\Jobs\Orders;
 
-use App\Services\SP_API\API\Order\Order;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Queue\SerializesModels;
+use App\Services\SP_API\API\Order\Order;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 
 class GetOrder implements ShouldQueue
 {
@@ -31,11 +32,10 @@ class GetOrder implements ShouldQueue
      */
     public function handle()
     {
-        $awsId = $this->payload['aws_id'];
         $awsCountryCode = $this->payload['country_code'];
         $seller_id = $this->payload['seller_id'];
         $auth_code = NULL;
         $order = new Order();
-        $order->SelectedSellerOrder($awsId, $awsCountryCode, $auth_code, $seller_id);
+        $order->SelectedSellerOrder($seller_id, $awsCountryCode, $auth_code);
     }
 }

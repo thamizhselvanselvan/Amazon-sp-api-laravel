@@ -21,8 +21,10 @@ class Order
 {
     use ConfigTrait;
 
-    public function SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code, $seller_id)
+    public function SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code)
     {
+        $seller_id = $awsId;
+
         $host = config('database.connections.order.host');
         $dbname = config('database.connections.order.database');
         $port = config('database.connections.order.port');
@@ -53,7 +55,7 @@ class Order
             next_token_exist:
             $results = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses = null, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, $next_token, $amazon_order_ids = null, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
             $next_token = $results['next_token'];
-            $this->OrderDataFormating($results, $awsCountryCode, $awsId, $seller_id);
+            $this->OrderDataFormating($results, $awsCountryCode, $awsId);
 
             if (isset($next_token)) {
                 goto next_token_exist;
@@ -67,7 +69,7 @@ class Order
     }
 
 
-    public function OrderDataFormating($results, $awsCountryCode, $awsId, $seller_id)
+    public function OrderDataFormating($results, $awsCountryCode, $awsId)
     {
         $result_data = $results->getOrders();
         $result_data = json_decode(json_encode($result_data));
@@ -76,7 +78,7 @@ class Order
 
             $orders = R::dispense('orders');
             $amazon_order_details = [];
-            $orders->our_seller_identifier = $this->seller_id;
+            $orders->our_seller_identifier = $awsId;
             $orders->country = $awsCountryCode;
             $amazon_order_id = '';
             foreach ((array)$result as $detailsKey => $details) {
@@ -119,7 +121,7 @@ class Order
                 $dataCheck = 1;
                 $id = $data[0]->id;
                 $update_orders = R::load('orders', $id);
-                $update_orders->our_seller_identifier = $seller_id;
+                $update_orders->our_seller_identifier = $awsId;
                 foreach ($amazon_order_details as $key => $value) {
                     $update_orders->{$key} = $value;
                 }
@@ -139,7 +141,7 @@ class Order
                             'order_id' => $amazon_order_id,
                             'aws_id' => $awsId,
                             'country_code' => $awsCountryCode,
-                            'seller_id' =>$seller_id
+                           
                         ]
                     )->onConnection('redis')->onQueue('CA_Order_2')->delay(30);
                 } else {
@@ -149,7 +151,7 @@ class Order
                             'order_id' => $amazon_order_id,
                             'aws_id' => $awsId,
                             'country_code' => $awsCountryCode,
-                            'seller_id' => $seller_id
+                         
                         ]
                     );
                 }

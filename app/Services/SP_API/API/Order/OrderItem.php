@@ -21,7 +21,7 @@ class OrderItem
 {
     use ConfigTrait;
 
-    public function OrderItemDetails($order_id, $aws_id, $country_code, $seller_id)
+    public function OrderItemDetails($order_id, $aws_id, $country_code)
     {
 
         $host = config('database.connections.order.host');
@@ -39,10 +39,10 @@ class OrderItem
         $marketplace_ids = [$marketplace_ids];
 
         $apiInstance = new OrdersApi($config);
-        $this->SelectedSellerOrderItem($apiInstance, $seller_id, $country_code, $order_id, $aws_id);
+        $this->SelectedSellerOrderItem($apiInstance, $country_code, $order_id, $aws_id);
     }
 
-    public function SelectedSellerOrderItem($apiInstance, $seller_id, $awsCountryCode, $order_id, $aws_id)
+    public function SelectedSellerOrderItem($apiInstance, $awsCountryCode, $order_id, $aws_id)
     {
         $data_element = array('buyerInfo');
         $next_token = NULL;
@@ -52,7 +52,7 @@ class OrderItem
             $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
             $result_order_address = $apiInstance->getOrderAddress($order_id);
 
-            $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $seller_id, $awsCountryCode, $aws_id);
+            $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id);
         } catch (Exception $e) {
 
             Log::warning($e->getMessage());
@@ -61,7 +61,7 @@ class OrderItem
         // }
     }
 
-    public function OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $seller_id, $awsCountryCode, $aws_id)
+    public function OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id)
     {
         $order_address = '';
         $amazon_order = '';
@@ -91,11 +91,11 @@ class OrderItem
                 }
             }
         }
-
+        $data = [];
         foreach ($result_orderItems['payload']['order_items'] as $result_order) {
             foreach ((array)$result_order as $result) {
                 $order_detials = R::dispense('orderitemdetails');
-                $order_detials->seller_identifier = $seller_id;
+                $order_detials->seller_identifier = $aws_id;
                 $order_detials->status = '0';
                 $order_detials->country = $awsCountryCode;
 
@@ -132,7 +132,6 @@ class OrderItem
                     $data[] = [
                         'asin' => $asin,
                         'country_code' => $awsCountryCode,
-                        'seller_id' => $seller_id,
                         'aws_id' => $aws_id,
                     ];
                 }
@@ -157,10 +156,29 @@ class OrderItem
                             ]
                         );
                     }
+                    $data = [];
                 }
             }
         }
-        DB::connection('order')
-            ->update("UPDATE orders SET order_item = '1' where amazon_order_identifier = '$order_id'");
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+            Seller_catalog_import_job::dispatch(
+                [
+                    'datas' => $data,
+                    'type' => 2,
+                    'seller_id' => NULL
+                ]
+            )->onConnection('redis')->onQueue('CA_Order_3');
+        } else {
+
+            Seller_catalog_import_job::dispatch(
+                [
+                    'datas' => $data,
+                    'type' => 2,
+                    'seller_id' => NULL
+                ]
+            );
+        }
+        // DB::connection('order')
+        //     ->update("UPDATE orders SET order_item = '1' where amazon_order_identifier = '$order_id'");
     }
 }
