@@ -44,10 +44,6 @@ class OrderItem
 
     public function SelectedSellerOrderItem($apiInstance, $seller_id, $awsCountryCode, $order_id, $aws_id)
     {
-        $amazonorder_ids = DB::connection('order')->select("SELECT amazon_order_identifier from orders where our_seller_identifier = $seller_id AND order_item = 0");
-
-        // foreach ($amazonorder_ids as $amazonorder_id) {
-        // $order_id = ($amazonorder_id->amazon_order_identifier);
         $data_element = array('buyerInfo');
         $next_token = NULL;
 
@@ -61,7 +57,7 @@ class OrderItem
 
             Log::warning($e->getMessage());
         }
-        sleep(45);
+        // sleep(45);
         // }
     }
 
@@ -150,7 +146,7 @@ class OrderItem
                                 'type' => 2,
                                 'seller_id' => NULL
                             ]
-                        )->onConnection('redis')->onQueue('default');
+                        )->onConnection('redis')->onQueue('CA_Order_3');
                     } else {
 
                         Seller_catalog_import_job::dispatch(

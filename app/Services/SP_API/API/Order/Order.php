@@ -141,7 +141,7 @@ class Order
                             'country_code' => $awsCountryCode,
                             'seller_id' =>$seller_id
                         ]
-                    )->onConnection('redis')->onQueue('default');
+                    )->onConnection('redis')->onQueue('CA_Order_2')->delay(30);
                 } else {
 
                     GetOrderItem::dispatch(
