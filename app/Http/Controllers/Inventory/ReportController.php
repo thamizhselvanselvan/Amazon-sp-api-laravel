@@ -23,24 +23,32 @@ class ReportController extends Controller
 {
     public function daily()
     {
+        /* Wareouse */
         $ware_lists = Warehouse::get();
 
+        /* Date */
         $date = Carbon::now()->format('d M Y');
 
+        /* Inwarding count */
         $dayin =   Inventory::whereDate('created_at',  Carbon::today()->toDateString())->get();
         $todayinward = count($dayin);
 
+        /* Outwarding count */
         $dayout =   Outshipment::whereDate('created_at',  Carbon::today()->toDateString())->get();
         $todayoutward = count($dayout);
 
+        /* Opeaning Stock */
         $startTime = Carbon::today()->subDays(365);
         $endTimeYesterday = Carbon::yesterday()->endOfDay();
         $open = Inventory::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
         $todayopeningstock = count($open);
 
+
+        /* Closing Stock count */
         $close =   Inventory::get();
         $todayclosingstock = count($close);
 
+        /* Opeaning Amount */
         $amt = [];
         $openstockamt =   Inventory::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
         foreach ($openstockamt as $amt) {
@@ -55,44 +63,37 @@ class ReportController extends Controller
         }
         $totalopenamt =  array_sum($totalprice);
 
+        /* Day Inwarding Amount */
 
+        $dayinamt =   Shipment::whereDate('created_at',  Carbon::today()->toDateString())->get();
+        $totaldayinvamt = 0;
+        foreach ($dayinamt as $key => $amtday) {
+          
+                $item_lists = json_decode($amtday->items);
+              
+                foreach ($item_lists as $item) {
 
-        $dayinamt =   Inventory::whereDate('created_at',  Carbon::today()->toDateString())->get();
-        $daysingleprice = [];
-        foreach ($dayinamt as $amtday) {
-            $daysingleprice[] = [
-                'price' => $amtday['price'],
-                'qty' => $amtday['quantity'],
-                'total' => $amtday['price'] * $amtday['quantity'],
-            ];
-        }
-
-        $daytotalprice = [];
-        foreach ($daysingleprice as $daysum) {
-            $daytotalprice[] = $daysum['total'];
-        }
-        $totaldayinvamt =  array_sum($daytotalprice);
-
-
-        $daysingleoutprice = [];
+                    $totaldayinvamt += $item->quantity * $item->price;
+                }
+                
+            }
+    
+        /* Outwarding Amount */
+       
         $dayoutamt =   Outshipment::whereDate('created_at',  Carbon::today()->toDateString())->get();
-        foreach ($dayoutamt as $amtdayout) {
-            $daysingleoutprice[] = [
-                'price' => $amtdayout['price'],
-                'qty' => $amtdayout['quantity'],
-                'total' => $amtdayout['price'] * $amtdayout['quantity'],
-            ];
-        }
-        $dayouttotprice = [];
-        foreach ($daysingleoutprice as $dayoutsum) {
-            $dayouttotprice[] = $dayoutsum['total'];
-        }
-        $totaldayoutamt =  array_sum($dayouttotprice);
+        $totaldayoutamt = 0;
+        foreach ($dayoutamt as $key => $amtdayout) {
+          
+                $item_lists = json_decode($amtdayout->items);
+              
+                foreach ($item_lists as $item) {
 
+                    $totaldayoutamt += $item->quantity * $item->price;
+                }
+            }
 
-
+        /* Cloasing Amount */
         $closeamt =   Inventory::get();
-        //  dd( $closeamt);
         $closeprice = [];
         foreach ($closeamt as $close) {
             $closeprice[] = [
@@ -119,10 +120,7 @@ class ReportController extends Controller
             "closing_stock" => $todayclosingstock,
             "closing_amt" => $dayclosingamt
         ];
-
-
-
-
+        // dd($data);
         return view('inventory.report.daily', compact('ware_lists', 'data'));
     }
 
@@ -205,7 +203,7 @@ class ReportController extends Controller
         foreach ($openShipmentData as $key => $datewiseData) {
 
             foreach ($datewiseData as $items) {
-
+dd($items);
                 $item_lists = json_decode($items->items);
 
                 foreach ($item_lists as $item) {
@@ -335,8 +333,8 @@ class ReportController extends Controller
 
     public function eportinvweekly(Request $request)
     {
-      $week_data= $this->getweekly();
-           
+        $week_data = $this->getweekly();
+
 
         $headers = [
             'Date',
@@ -358,7 +356,7 @@ class ReportController extends Controller
 
         $csv_value = [];
         $count = 0;
-        $writer->insertAll( $week_data);
+        $writer->insertAll($week_data);
         return Storage::download($exportFilePath);
     }
 

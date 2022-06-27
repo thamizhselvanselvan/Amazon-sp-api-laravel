@@ -49,14 +49,7 @@
 <h1 class="m-0 text-dark">Outward Shipment</h1>
 @stop
 @section('content')
-<!-- 
-<div class="row">
-    <div class="col">
-        <a href="{{ route('outwardings.index') }}" class="btn btn-primary">
-            <i class="fas fa-long-arrow-alt-left btn-sm"></i> Back
-        </a>
-    </div>
-</div> -->
+
 <div class="row">
     <div class="col">
 
@@ -102,25 +95,7 @@
             </div>
         </div>
     </div>
-    <!-- <div class="col-2">
-        <div class="form-group">
-            <x-adminlte-select name="country" label="Select Country:" id="country">
-                <option>Select Country</option>
-                @foreach ($destination_lists as $destination_list)
-                <option value="{{ $destination_list->id }}">{{$destination_list->country }}</option>
-                @endforeach
-            </x-adminlte-select>
-
-        </div>
-    </div> -->
-    <!-- <div class="col-2">
-        <div class="form-group">
-            <label>Enter Shipment ID:</label>
-            <div class="Shipment" style="width:200px;">
-                <input id="Shipment" type="text" name="Shipment" placeholder="enter Shipment ID" class="form-control">
-            </div>
-        </div>
-    </div> -->
+    
 
     <div class="col-2" id="currency">
 
@@ -130,22 +105,15 @@
             <option value="{{ $currency_list->id }}">{{$currency_list->code }}</option>
             @endforeach
         </x-adminlte-select>
-        <!-- <x-adminlte-input label="Currency:"  id="currency_output"   name="currency" type="text" placeholder="Currency" /> -->
-
     </div>
     <div class="col text-right" id="create">
         <div style="margin-top: 1.8rem;">
-            <!-- //<a href="/shipment/storeshipment"> -->
             <x-adminlte-button label="Create Shipment" theme="primary" icon="fas fa-plus" class="btn-sm create_outshipmtn_btn" />
-            <!-- </a> -->
-
         </div>
     </div>
-
 </div>
 
 <div class="row">
-
 </div>
 <br>
 <table class="table table-bordered yajra-datatable table-striped" id="outward_table">
@@ -175,31 +143,6 @@
         }
     });
 
-
-    // $(document).ready(function() {
-
-    //     $('#warehouse').change(function() {
-    //         var id = $(this).val();
-    //         $.ajax({
-    //             url: '/shipment/warehouseg/' + id,
-    //             method: 'POST',
-    //             data: {
-    //                 'id': id,
-    //                 "_token": "{{ csrf_token() }}",
-    //             },
-    //             success: function(response) {
-    //                 alert('Succes');
-    //                 console.log(response);
-
-    //             },
-    //             error: function(response) {
-    //                 alert('ERROR');
-    //                 console.log(response);
-    //             }
-    //         });
-    //     });
-    // });
-
     $(".create_outshipmtn_btn").on("click", function() {
 
         let ware_valid = $('#warehouse').val();
@@ -226,9 +169,8 @@
                 data.append('id[]', $(td[0]).attr("data-id"));
                 data.append('asin[]', td[0].innerText);
                 data.append('name[]', td[1].innerText);
-                data.append('price[]', td[2].innerText);
                 data.append('price[]', td[3].innerText);
-                data.append('quantity[]', td[4].children[0].value);
+                data.append('quantity[]', td[5].children[0].value);
 
 
             });
