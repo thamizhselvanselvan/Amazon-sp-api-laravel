@@ -37,7 +37,7 @@ Log::alert($aws_key.'<-aws id '.$token);
 
     public function token($aws_key)
     {
-        $aws = Aws_credential::where('id', $aws_key)->first();
+        $aws = Aws_credential::where('seller_id', $aws_key)->first();
 
         if (!$aws) {
             return '';
