@@ -126,11 +126,16 @@ class ReportController extends Controller
         return view('inventory.report.daily', compact('ware_lists', 'data'));
     }
 
-
-    public function weekly()
+    public function  weekly()
+    {
+        $ware_lists = Warehouse::get();
+        $week_data = $this->getweekly();
+        return view('inventory.report.weekly', compact('ware_lists', 'week_data'));
+    }
+    public function getweekly()
     {
 
-        $ware_lists = Warehouse::get();
+
 
         //Week date //
         $date_array = [];
@@ -325,21 +330,13 @@ class ReportController extends Controller
         //     "closing_stock" => $week_closing_count,
         //     "closing_amt" => $week_closing_amt
         // ];
-        return view('inventory.report.weekly', compact('ware_lists', 'week_data'));
+        return $week_data;
     }
 
     public function eportinvweekly(Request $request)
     {
-        $records = []; //Data from database
-        $records = Inventory::query()
-        ->select('warehouses.name', 'inventory.ship_id', 'inventory.asin', 'inventory.item_name', 'inventory.price', 'inventory.quantity', 'inventory.created_at', 'inventory.bin')
-        ->join('shipments', function($query) {
-            $query->on("shipments.ship_id", "=", "inventory.ship_id");
-        })
-        ->join('warehouses', function($query) {
-            $query->on("warehouses.id", "=", "shipments.warehouse");
-        })->where('warehouses.id', $request->ware_id)->get();
-
+      $week_data= $this->getweekly();
+           
 
         $headers = [
             'Date',
@@ -352,26 +349,28 @@ class ReportController extends Controller
             'Closing Stock',
             'closing Stock Amount'
         ];
-        $exportFilePath = 'Inventory/MonthlyReport.csv';// your file path, where u want to save
+        $exportFilePath = 'Inventory/weeklyReport.csv'; // your file path, where u want to save
         if (!Storage::exists($exportFilePath)) {
             Storage::put($exportFilePath, '');
         }
         $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
         $writer->insertOne($headers);
-        
+
         $csv_value = [];
         $count = 0;
-        $writer->insertAll($records->toArray());
+        $writer->insertAll( $week_data);
         return Storage::download($exportFilePath);
     }
 
-    
-
     public function Monthly()
     {
-
         $ware_lists = Warehouse::get();
+        $month_data = $this->getMonthly();
+        return view('inventory.report.monthly', compact('ware_lists', 'month_data'));
+    }
 
+    public function getMonthly()
+    {
         //Monthly date //
         $date_array = [];
         $i = 0;
@@ -406,7 +405,7 @@ class ReportController extends Controller
         }, iterator_to_array($period));
         $month_inv_count = array_reverse($weeklyin);
 
-       
+
         /* Monthly closing Amount*/
         $month_close_amount = DB::connection('inventory')->table('inventory')->where('created_at', '>=', Carbon::now()->subdays(6))->get()->groupBy('created_at');
         $shipment_closing = [];
@@ -426,12 +425,12 @@ class ReportController extends Controller
                     $date = $datePeriod->format('d-m-Y');
                     return (isset($shipment_closing[$date])) ? $shipment_closing[$date] : 0;
                 }, iterator_to_array($period));
-              
+
 
                 $month_closing_amt = array_reverse($weeklycloseamt);
             }
         }
-     
+
 
         /* month Inwarding Amount*/
         $openShipmentData = DB::connection('inventory')->table('shipments')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
@@ -455,7 +454,7 @@ class ReportController extends Controller
                         $date = $datePeriod->format('d-m-Y');
                         return (isset($shipment_lists_date_wise[$date])) ? $shipment_lists_date_wise[$date] : 0;
                     }, iterator_to_array($period));
-                  
+
 
 
                     $month_inv_amt = array_reverse($monthlyin);
@@ -463,7 +462,7 @@ class ReportController extends Controller
             }
         }
 
-     
+
         /* monthly Inwarding Count*/
         $openShipmentcount = DB::connection('inventory')->table('shipments')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
 
@@ -489,7 +488,7 @@ class ReportController extends Controller
             }
         };
 
-      
+
 
         /* monthly Outwarding  Amount*/
         $outShipmentData = DB::connection('inventory')->table('outshipments')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
@@ -516,7 +515,7 @@ class ReportController extends Controller
                 }
             }
         }
-      
+
         /* monthly Outwarding  Count*/
         $outShipmentcount = DB::connection('inventory')->table('outshipments')->where('created_at', '>=', Carbon::now()->subdays(31))->get()->groupBy('created_at');
 
@@ -557,21 +556,12 @@ class ReportController extends Controller
                 $month_closing_amt[$k]
             ];
         }
-        return view('inventory.report.monthly', compact('ware_lists', 'month_data'));
+        return $month_data;
     }
 
     public function eportinvmonthly(Request $request)
     {
-        $records = []; //Data from database
-        $records = Inventory::query()
-        ->select('warehouses.name', 'inventory.ship_id', 'inventory.asin', 'inventory.item_name', 'inventory.price', 'inventory.quantity', 'inventory.created_at', 'inventory.bin')
-        ->join('shipments', function($query) {
-            $query->on("shipments.ship_id", "=", "inventory.ship_id");
-        })
-        ->join('warehouses', function($query) {
-            $query->on("warehouses.id", "=", "shipments.warehouse");
-        })->where('warehouses.id', $request->ware_id)->get();
-
+        $month_data = $this->getMonthly();
 
         $headers = [
             'Date',
@@ -584,17 +574,16 @@ class ReportController extends Controller
             'Closing Stock',
             'closing Stock  Amount'
         ];
-        $exportFilePath = 'Inventory/MonthlyReport.csv';// your file path, where u want to save
+        $exportFilePath = 'Inventory/MonthlyReport.csv'; // your file path, where u want to save
         if (!Storage::exists($exportFilePath)) {
             Storage::put($exportFilePath, '');
         }
         $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
         $writer->insertOne($headers);
-        
+
         $csv_value = [];
         $count = 0;
-        $writer->insertAll($records->toArray());
+        $writer->insertAll($month_data);
         return Storage::download($exportFilePath);
     }
-
 }
