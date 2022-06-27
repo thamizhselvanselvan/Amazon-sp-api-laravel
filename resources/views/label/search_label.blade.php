@@ -10,7 +10,7 @@
     <h1 class="m-0 text-dark col">Label management</h1>
     <h2 class="mb-4 text-right col"></h2>
     <label>
-        Search:<input type="text" id="Searchbox" placeholder="search invoice">
+        Search:<input type="text" id="Searchbox" placeholder="Search label">
     </label>
         <!-- <a href=""> -->
             <!-- <x-adminlte-button label="Selected Download" id="selected-download" theme="primary" icon="fas fa-file-download" class="btn-sm"/> -->
@@ -80,7 +80,7 @@
             }
                 $('#showTable').show();
                 let label_date = $('#label_date').val();
-                alert(label_date);
+                // alert(label_date);
                 $.ajax({
                     method: 'POST',
                     url: "{{ url('/label/select-label')}}",
@@ -90,19 +90,19 @@
                     },
                     success: function(response) {
                         console.log(response);
-                        // let table ="<table id='checkTable' class=table table-bordered table-striped text-center >";
-                        // table += "<thead><tr class='text-bold bg-info'><td>Selected</td> <td>Invoice No.</td><td>Invoice Date</td><td>Channel</td><td>Shipped By</td><td>Awb No</td><td>Arn NO.</td><td>Hsn Code</td><td>Quantity</td><td>Product Price</td><td class='text-center'>Action</td></tr></thead><tbody> ";
+                        let table ="<table id='checkTable' class=table table-bordered table-striped text-center>";
+                        table += "<thead><tr class='text-bold bg-info'><th>Selected</th> <th>Order No</th><th>Awb No.</th></tr><thead>";
     
-                        // $.each(response, function(i, response){
-                        //     let invoice_id = response.invoice_no.replaceAll(/-/g, '_');
+                        $.each(response, function(i, response){
+                            let invoice_id = response.order_no.replaceAll(/-/g, '_');
             
-                        //     table +="<tr class='"+invoice_id+"'><td><input class='check_options' type='checkbox' value="+ response.id +" name='options[]' id='checkid"+response.id+"'></td><td>"+response.invoice_no+"</td><td>"+response.invoice_date+"</td><td>"+response.channel+"</td><td>"+response.shipped_by+"</td><td>"+response.awb_no+"</td><td>"+response.arn_no+"</td><td>"+response.hsn_code+"</td><td>"+response.qty+"</td><td>"+response.product_price+"</td><td><div class='d-flex'><a href=/invoice/convert-pdf/"+ response.id +" class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/invoice/download-direct/"+ response.id +" class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a></td> </tr>";
-                        // });
-                        // $('#showTable').html(table);
+                            table +="<tr class='"+invoice_id+"'><td><input class='check_options' type='checkbox' value="+ response.id +" name='options[]' id='checkid"+response.id+"'></td><td>"+response.order_no+"</td><td>"+response.awb_no+"</td></tr>";
+                        });
+                        $('#showTable').html(table);
                     // alert('Export pdf successfully');
                     }
                 });
-            
+                // <td>Invoice No.</td><td>Invoice Date</td><td>Channel</td><td>Shipped By</td><td>Awb No</td><td>Arn NO.</td><td>Hsn Code</td><td>Quantity</td><td>Product Price</td><td class='text-center'>Action</td></tr></thead><tbody>
         });
     });
 </script>

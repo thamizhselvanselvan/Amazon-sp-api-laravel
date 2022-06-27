@@ -47,13 +47,13 @@ class SellerOrdersItemImport extends Command
      * @return int
      */
     public function handle()
-    {  
+    {
         $host = config('database.connections.order.host');
         $dbname = config('database.connections.order.database');
         $port = config('database.connections.order.port');
         $username = config('database.connections.order.username');
         $password = config('database.connections.order.password');
-        
+
         R::addDatabase('order', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
         R::selectDatabase('order');
         // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
@@ -111,7 +111,7 @@ class SellerOrdersItemImport extends Command
     public function SelectedSellerOrderItem($apiInstance, $seller_id, $awsCountryCode)
     {
         $amazonorder_ids = DB::connection('order')->select("SELECT amazon_order_identifier from orders where our_seller_identifier = $seller_id AND order_item = 0");
-        
+
         foreach ($amazonorder_ids as $amazonorder_id) {
             $order_id = ($amazonorder_id->amazon_order_identifier);
             $data_element = array('buyerInfo');
@@ -133,64 +133,65 @@ class SellerOrdersItemImport extends Command
 
     public function OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $seller_id, $awsCountryCode)
     {
-      $result_order_address = (array)$result_order_address;
-      foreach ($result_order_address as $result_address) {
-        foreach ((array)$result_address['payload'] as $result) {
-          $count = 0;
-          foreach ($result as $key => $value) {
-  
-            $detailsKey = lcfirst($key);
-            $id = substr($detailsKey, -2);
-            $ids = substr($detailsKey, -3);
-            // echo $id;
-            if ($id == 'id' || $id == 'Id' || $ids == 'ids') {
-              $detailsKey = str_replace(["id", 'Id', 'ids'], "identifier", $detailsKey);
-            }
-  
-            if (is_array($value) || is_object($value)) {
-              // $order_detials->$detailsKey = json_encode($value);
-              $order_address = json_encode($value);
-            } else {
-              $count = 1;
-              // $order_detials->$detailsKey = $value;
-              $amazon_order = $value;
-            }
-          }
-        }
-      }
-  
-      foreach ($result_orderItems['payload']['order_items'] as $result_order) {
-        foreach ((array)$result_order as $result) {
-          $order_detials = R::dispense('orderitemdetailstest');
-          $order_detials->seller_identifier = $seller_id;
-          $order_detials->status = '0';
-          $order_detials->country = $awsCountryCode;
-  
-          foreach ($result as $key => $value) {
-            $detailsKey = lcfirst($key);
-            $id = substr($detailsKey, -2);
-            $ids = substr($detailsKey, -3);
-            // echo $id;
-            if ($id == 'id' || $id == 'Id' || $ids == 'ids') {
-              $detailsKey = str_replace(["id", 'Id', 'ids'], "identifier", $detailsKey);
-            }
-  
-            if (is_array($value)) {
-  
-              $order_detials->{$detailsKey} = json_encode($value);
-            } elseif (is_object(($value))) {
-              $order_detials->{$detailsKey} = json_encode($value);
-            } else {
-              $order_detials->{$detailsKey} = ($value);
-            }
-          }
-          $order_detials->amazon_order_identifier = $amazon_order;
-          $order_detials->shipping_address = $order_address;
-          R::store($order_detials);
-        }
-      }
-      DB::connection('order')
-      ->update("UPDATE orders SET order_item = '1' where amazon_order_identifier = '$order_id'");
-    }
+        $order_address = '';
+        $amazon_order = '';
+        $result_order_address = (array)$result_order_address;
+        foreach ($result_order_address as $result_address) {
+            foreach ((array)$result_address['payload'] as $result) {
+                $count = 0;
+                foreach ($result as $key => $value) {
 
+                    $detailsKey = lcfirst($key);
+                    $id = substr($detailsKey, -2);
+                    $ids = substr($detailsKey, -3);
+                    // echo $id;
+                    if ($id == 'id' || $id == 'Id' || $ids == 'ids') {
+                        $detailsKey = str_replace(["id", 'Id', 'ids'], "identifier", $detailsKey);
+                    }
+
+                    if (is_array($value) || is_object($value)) {
+                        // $order_detials->$detailsKey = json_encode($value);
+                        $order_address = json_encode($value);
+                    } else {
+                        $count = 1;
+                        // $order_detials->$detailsKey = $value;
+                        $amazon_order = $value;
+                    }
+                }
+            }
+        }
+
+        foreach ($result_orderItems['payload']['order_items'] as $result_order) {
+            foreach ((array)$result_order as $result) {
+                $order_detials = R::dispense('orderitemdetailstest');
+                $order_detials->seller_identifier = $seller_id;
+                $order_detials->status = '0';
+                $order_detials->country = $awsCountryCode;
+
+                foreach ($result as $key => $value) {
+                    $detailsKey = lcfirst($key);
+                    $id = substr($detailsKey, -2);
+                    $ids = substr($detailsKey, -3);
+                    // echo $id;
+                    if ($id == 'id' || $id == 'Id' || $ids == 'ids') {
+                        $detailsKey = str_replace(["id", 'Id', 'ids'], "identifier", $detailsKey);
+                    }
+
+                    if (is_array($value)) {
+
+                        $order_detials->{$detailsKey} = json_encode($value);
+                    } elseif (is_object(($value))) {
+                        $order_detials->{$detailsKey} = json_encode($value);
+                    } else {
+                        $order_detials->{$detailsKey} = ($value);
+                    }
+                }
+                $order_detials->amazon_order_identifier = $amazon_order;
+                $order_detials->shipping_address = $order_address;
+                R::store($order_detials);
+            }
+        }
+        DB::connection('order')
+            ->update("UPDATE orders SET order_item = '1' where amazon_order_identifier = '$order_id'");
+    }
 }
