@@ -109,15 +109,25 @@ class InventoryOutwardShipmentController extends Controller
 
     public function autofinish(Request $request)
     {
-        $data = Inventory::select("asin", "id", "created_at")->distinct()
-            ->where("asin", "LIKE", "%{$request->asin}%")
-        
-            ->orderBy('created_at')
-            ->limit(50)
-            ->get();
-
-        return response()->json($data);
+        if ($request->ajax()) {
+            $data = Inventory::query()
+                ->select('inventory.*', 'warehouses.name')
+                ->join('shipments', function ($query) {
+                    $query->on("shipments.ship_id", "=", "inventory.ship_id");
+                })
+                ->join('warehouses', function ($query) {
+                    $query->on("warehouses.id", "=", "shipments.warehouse");
+                })
+                ->where('warehouses.id', $request->id)
+                ->where("asin", "LIKE", "%{$request->asin}%")
+                ->orderBy('created_at')
+                ->limit(50)
+                ->get();
+            return response()->json($data);
+        }
     }
+
+
     public function selectview(Request $request)
     {
 
