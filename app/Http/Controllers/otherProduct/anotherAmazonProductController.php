@@ -158,7 +158,7 @@ class anotherAmazonProductController extends Controller
         $user = Auth::user()->id;
         $type = 'com';
         $data = '';
-        OtherCatalogAsin::where('user_id', $user)->delete();
+        OtherCatalogAsin::where('user_id', $user)->where('status', 'com')->delete();
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
             $base_path = base_path();
