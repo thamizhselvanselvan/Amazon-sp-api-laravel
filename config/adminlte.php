@@ -549,7 +549,7 @@ return [
                         ],
                         [
                             'text' => 'Monthly',
-                            'url'  => 'inventory/features',
+                            'url'  => 'reports/monthly',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory']
                         ],

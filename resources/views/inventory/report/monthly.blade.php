@@ -3,10 +3,22 @@
 @section('title','Inventory Reports')
 @section('css')
 <link rel="stylesheet" href="/css/style.css">
+
+<style>
+    .table td {
+        padding: 0;
+        padding-left: 5px;
+    }
+
+    .table th {
+        padding: 2;
+        padding-left: 5px;
+    }
+</style>
 @stop
 
 @section('content_header')
-<h1 class="m-0 text-dark"> Weekly Inventory  Reports</h1>
+<h1 class="m-0 text-dark"> Monthly Inventory Reports</h1>
 @stop
 @section('content')
 <div class="row">
@@ -32,11 +44,13 @@
         <label for="ware"> Warehouse Wise Report</label>
     </div>
     <div class="col-1 justify-content-right">
-        <h2>
-            <div style="margin-top: -1rem;">
-                <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export " id="export" />
-            </div>
-        </h2>
+        <form class="row" action="/export/monthly">
+            <h2>
+                <div style="margin-top: -1rem;">
+                    <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export " id="export" />
+                </div>
+            </h2>
+        </form>
     </div>
 </div>
 <div class="row" id="warehouse">
@@ -65,26 +79,26 @@
             <th id="detail">Closing Stock Amount</th>
         </tr>
     </thead>
-    <tbody >
+
     <tbody id="data_display">
-        @foreach ($week_data as $key => $value)
-           
-            <tr>
-            
-                <td>{{ $value[0] }}</td>
-                <td>{{ $value[1] }}</td>
-                <td>{{ $value[2] }}</td>
-                <td>{{ $value[3] }}</td>
-                <td>{{ $value[4] }}</td>
-                <td>{{ $value[5] }}</td>
-                <td>{{ $value[6] }}</td>
-                <td>{{ $value[7] }}</td>
-                <td>{{ $value[8] }}</td>
-           
-            </tr>
+        @foreach ($month_data as $key => $value)
+
+        <tr>
+
+            <td>{{ $value[0] }}</td>
+            <td>{{ $value[1] }}</td>
+            <td>{{ $value[2] }}</td>
+            <td>{{ $value[3] }}</td>
+            <td>{{ $value[4] }}</td>
+            <td>{{ $value[5] }}</td>
+            <td>{{ $value[6] }}</td>
+            <td>{{ $value[7] }}</td>
+            <td>{{ $value[8] }}</td>
+
+        </tr>
         @endforeach
     </tbody>
-    </tbody>
+
 </table>
 @stop
 @section('js')
@@ -97,30 +111,29 @@
     });
     $(function() {
 
-                $("#warehouse").hide();
-                $("#report_table").hide();
-                $("#export").hide();
+        $("#warehouse").hide();
+        $("#report_table").hide();
+        $("#export").hide();
 
-                $("#ware ").on('click', function(e) {
-                    $("#warehouse").show();
-                });
-                $("#warehouse ").on('change', function(e) {
-                    $("#report_table").show();
-                });
-                $("#entire ").on('click', function(e) {
-                    $("#warehouse").hide();
-                });
-                $("#ware ").on('click', function(e) {
-                    $("#report_table").hide();
-                });
-                $("#entire ").on('click', function(e) {
-                    $("#report_table").show();
-                });
-                $("#entire,#warehouse ").on('change', function(e) {
-                    $("#export").show();
-                });
+        $("#ware ").on('click', function(e) {
+            $("#warehouse").show();
+        });
+        $("#warehouse ").on('change', function(e) {
+            $("#report_table").show();
+        });
+        $("#entire ").on('click', function(e) {
+            $("#warehouse").hide();
+        });
+        $("#ware ").on('click', function(e) {
+            $("#report_table").hide();
+        });
+        $("#entire ").on('click', function(e) {
+            $("#report_table").show();
+        });
+        $("#entire,#warehouse ").on('change', function(e) {
+            $("#export").show();
+        });
 
-                });
-    
+    });
 </script>
 @stop
