@@ -2,7 +2,7 @@
 
 namespace App\Jobs\Orders;
 
-use App\Services\SP_API\API\Order\OrderItem;
+use App\Services\SP_API\API\Order\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -10,7 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class GetOrderItem implements ShouldQueue
+class GetOrder implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     private $payload;
@@ -31,12 +31,11 @@ class GetOrderItem implements ShouldQueue
      */
     public function handle()
     {
-        $order_id = $this->payload['order_id'];
-        $aws_id = $this->payload['aws_id'];
-        $country_code = $this->payload['country_code'];
+        $awsId = $this->payload['aws_id'];
+        $awsCountryCode = $this->payload['country_code'];
         $seller_id = $this->payload['seller_id'];
-
-        $order_item = new OrderItem();
-        $order_item->OrderItemDetails($order_id, $aws_id, $country_code, $seller_id);
+        $auth_code = NULL;
+        $order = new Order();
+        $order->SelectedSellerOrder($awsId, $awsCountryCode, $auth_code, $seller_id);
     }
 }
