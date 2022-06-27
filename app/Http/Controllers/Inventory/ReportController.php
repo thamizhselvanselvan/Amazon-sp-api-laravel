@@ -68,29 +68,28 @@ class ReportController extends Controller
         $dayinamt =   Shipment::whereDate('created_at',  Carbon::today()->toDateString())->get();
         $totaldayinvamt = 0;
         foreach ($dayinamt as $key => $amtday) {
-          
-                $item_lists = json_decode($amtday->items);
-              
-                foreach ($item_lists as $item) {
 
-                    $totaldayinvamt += $item->quantity * $item->price;
-                }
-                
+            $item_lists = json_decode($amtday->items);
+
+            foreach ($item_lists as $item) {
+
+                $totaldayinvamt += $item->quantity * $item->price;
             }
-    
+        }
+
         /* Outwarding Amount */
-       
+
         $dayoutamt =   Outshipment::whereDate('created_at',  Carbon::today()->toDateString())->get();
         $totaldayoutamt = 0;
         foreach ($dayoutamt as $key => $amtdayout) {
-          
-                $item_lists = json_decode($amtdayout->items);
-              
-                foreach ($item_lists as $item) {
 
-                    $totaldayoutamt += $item->quantity * $item->price;
-                }
+            $item_lists = json_decode($amtdayout->items);
+
+            foreach ($item_lists as $item) {
+
+                $totaldayoutamt += $item->quantity * $item->price;
             }
+        }
 
         /* Cloasing Amount */
         $closeamt =   Inventory::get();
@@ -132,9 +131,6 @@ class ReportController extends Controller
     }
     public function getweekly()
     {
-
-
-
         //Week date //
         $date_array = [];
         $i = 0;
@@ -143,57 +139,6 @@ class ReportController extends Controller
             array_push($date_array, $today->subDays($i)->format('Y-m-d'));
             $i++;
         }
-        /* weekly closing count*/
-
-        $weekclose = Inventory::whereBetween('created_at', [Carbon::now()->subDays(6)->format('Y-m-d') . " 00:00:00", Carbon::now()->format('Y-m-d') . " 23:59:59"])
-            ->groupBy('created_at')
-            ->orderBy('created_at')
-            ->get([
-                DB::raw('DATE_FORMAT(created_at, "%Y-%m-%d") as date'),
-                DB::raw('count(*) as total')
-            ])
-            ->keyBy('date')
-            ->map(function ($item) {
-                $item->date = Carbon::parse($item->date);
-                return $item;
-            });
-
-
-
-        $period = new DatePeriod(Carbon::now()->subDays(6), CarbonInterval::day(), Carbon::today()->endOfDay());
-
-        $weeklyin = array_map(function ($datePeriod) use ($weekclose) {
-            $date = $datePeriod->format('Y-m-d');
-            return $weekclose->has($date) ? $weekclose->get($date)->total : 0;
-        }, iterator_to_array($period));
-        $week_inv_count = array_reverse($weeklyin);
-
-
-        /* weekly closing Amount*/
-        $week_close_amount = DB::connection('inventory')->table('inventory')->where('created_at', '>=', Carbon::now()->subdays(6))->get()->groupBy('created_at');
-        $shipment_closing = [];
-
-        foreach ($week_close_amount as $key => $closingData) {
-
-            foreach ($closingData as $items) {
-
-
-                $shipment_closing[date('d-m-Y', strtotime($key))] = $items->quantity * $items->price;
-
-
-
-                $period = new DatePeriod(Carbon::now()->subDays(6), CarbonInterval::day(), Carbon::today()->endOfDay());
-
-                $weeklycloseamt = array_map(function ($datePeriod) use ($shipment_closing) {
-                    $date = $datePeriod->format('d-m-Y');
-                    return (isset($shipment_closing[$date])) ? $shipment_closing[$date] : 0;
-                }, iterator_to_array($period));
-                $week_inv_amt = array_reverse($weeklyin);
-
-                $week_closing_amt = array_reverse($weeklycloseamt);
-            }
-        }
-
 
         /* weekly Inwarding Amount*/
         $openShipmentData = DB::connection('inventory')->table('shipments')->where('created_at', '>=', Carbon::now()->subdays(6))->get()->groupBy('created_at');
@@ -203,7 +148,7 @@ class ReportController extends Controller
         foreach ($openShipmentData as $key => $datewiseData) {
 
             foreach ($datewiseData as $items) {
-dd($items);
+
                 $item_lists = json_decode($items->items);
 
                 foreach ($item_lists as $item) {
@@ -302,13 +247,65 @@ dd($items);
             }
         }
 
+        /* weekly closing count*/
+
+        $weekclose = Inventory::whereBetween('created_at', [Carbon::now()->subDays(6)->format('Y-m-d') . " 00:00:00", Carbon::now()->format('Y-m-d') . " 23:59:59"])
+            ->groupBy('created_at')
+            ->orderBy('created_at')
+            ->get([
+                DB::raw('DATE_FORMAT(created_at, "%Y-%m-%d") as date'),
+                DB::raw('count(*) as total')
+            ])
+            ->keyBy('date')
+            ->map(function ($item) {
+                $item->date = Carbon::parse($item->date);
+                return $item;
+            });
+
+
+
+        $period = new DatePeriod(Carbon::now()->subDays(6), CarbonInterval::day(), Carbon::today()->endOfDay());
+
+        $weeklyin = array_map(function ($datePeriod) use ($weekclose) {
+            $date = $datePeriod->format('Y-m-d');
+            return $weekclose->has($date) ? $weekclose->get($date)->total : 0;
+        }, iterator_to_array($period));
+        $week_cls_count = array_reverse($weeklyin);
+
+
+        /* weekly closing Amount*/
+        $week_close_amount = DB::connection('inventory')->table('inventory')->where('created_at', '>=', Carbon::now()->subdays(6))->get()->groupBy('created_at');
+        $shipment_closing = [];
+
+        foreach ($week_close_amount as $key => $closingData) {
+
+            foreach ($closingData as $items) {
+
+
+                $shipment_closing[date('d-m-Y', strtotime($key))] = $items->quantity * $items->price;
+
+
+
+                $period = new DatePeriod(Carbon::now()->subDays(6), CarbonInterval::day(), Carbon::today()->endOfDay());
+
+                $weeklycloseamt = array_map(function ($datePeriod) use ($shipment_closing) {
+                    $date = $datePeriod->format('d-m-Y');
+                    return (isset($shipment_closing[$date])) ? $shipment_closing[$date] : 0;
+                }, iterator_to_array($period));
+                $week_inv_amt = array_reverse($weeklyin);
+
+                $week_closing_amt = array_reverse($weeklycloseamt);
+            }
+        }
+
+
         $week_data = [];
         foreach ($date_array as $k => $val) {
             $week_data[] = [
                 $val,
                 $week_closing_count[$k],
                 $week_closing_amt[$k],
-                $week_inv_count[$k],
+                $week_cls_count[$k],
                 $week_inv_amt[$k],
                 $week_out_count[$k],
                 $week_out_closing_amt[$k],
@@ -316,18 +313,6 @@ dd($items);
                 $week_closing_amt[$k]
             ];
         }
-
-        // $week_data = [
-        //     "date" => $date_array,
-        //     "open_stock" => $week_closing_count,
-        //     "open_stock_amt" => $week_closing_amt,
-        //     "inwarded" => $week_inv_count,
-        //     "tdy_inv_amt" => $week_inv_amt,
-        //     "outwarded" => $week_out_count,
-        //     "tdy_out_amt" => $week_out_closing_amt,
-        //     "closing_stock" => $week_closing_count,
-        //     "closing_amt" => $week_closing_amt
-        // ];
         return $week_data;
     }
 

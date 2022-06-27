@@ -72,9 +72,19 @@
     <tbody id="data_display">
             @foreach ($week_data as $key => $value)
         <tr>
-            @foreach ($value as $data )
+            <!-- @foreach ($value as $data )
             <td>{{$data}}</td>
-            @endforeach
+            @endforeach -->
+            
+            <td>{{ $value[0] }}</td>
+            <td>working</td>
+            <td>working</td>
+            <td>{{ $value[3] }}</td>
+            <td>{{ $value[4] }}</td>
+            <td>{{ $value[5] }}</td>
+            <td>{{ $value[6] }}</td>
+            <td>{{ $value[7] }}</td>
+            <td>{{ $value[8] }}</td>
         </tr>
         @endforeach
     </tbody>
