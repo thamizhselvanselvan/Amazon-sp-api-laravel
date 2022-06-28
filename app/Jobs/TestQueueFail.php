@@ -3,11 +3,12 @@
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 
 class TestQueueFail implements ShouldQueue
 {
@@ -31,5 +32,9 @@ class TestQueueFail implements ShouldQueue
     public function handle()
     {
         $this->fail();
+    }
+
+    public function failed() {
+        Log::info('TYest');
     }
 }
