@@ -2,23 +2,28 @@
 
 namespace App\Http\Controllers\invoice;
 
-use File;
-use DateTime;
-use ZipArchive;
-use RedBeanPHP\R;
-use League\Csv\Reader;
 use App\Models\Invoice;
+use App\Http\Controllers\Controller;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
-use Spatie\Browsershot\Browsershot;
-use App\Http\Controllers\Controller;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+
+use Spatie\Browsershot\Browsershot;
+use Maatwebsite\Excel\Facades\Excel;
+use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
+
+use File;
+use DateTime;
+use ZipArchive;
+use RedBeanPHP\R;
+use League\Csv\Reader;
+
 
 class InvoiceManagementController extends Controller
 {
@@ -40,11 +45,6 @@ class InvoiceManagementController extends Controller
                     $action .= '<div class="d-flex pl-2"><a href="/invoice/download-direct/' . $id->id .' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
                     return $action;
                 })
-                // ->addColumn('check_box', function ($id) use ($result) {
-
-                //     $check_box = '<div class="pl-2"><input class="check_options" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
-                //     return $check_box;
-                // })
                 ->rawColumns(['action'])
                 ->make(true);
         }
@@ -61,7 +61,7 @@ class InvoiceManagementController extends Controller
         return view('invoice.search_invoice');
     }
 
-    public function GetInvoice(Request $request)
+    public function SearchDateWiseInvoice(Request $request)
     {
         if($request->ajax())
         {
@@ -74,6 +74,7 @@ class InvoiceManagementController extends Controller
         }
         return response()->json($results);
     }
+
     public function showpdf(Request $request )
     {
         return view('invoice.invoice');
@@ -85,8 +86,46 @@ class InvoiceManagementController extends Controller
         // $data = Invoice::where('id', $id)->get();
         $data = DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
         $invoice_no = $data[0]->invoice_no;
-           
-        return view('invoice.invoice', compact(['data'],'invoice_no'));
+        $awb_no = $data[0]->awb_no;
+        $invoice_mode = $data[0]->mode;
+        
+        $generator = new BarcodeGeneratorHTML();
+        $invoice_bar_code = $generator->getBarcode($invoice_no, $generator::TYPE_CODE_128);
+        $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_128);
+
+        if($invoice_mode!= ''){
+            return view('invoice.'.$invoice_mode , compact(['data'],'invoice_no', 'invoice_bar_code', 'bar_code'));
+        }
+        else{
+            return view('invoice.invoice' , compact(['data'],'invoice_no', 'invoice_bar_code', 'bar_code'));
+        }
+    }
+
+    public function selectedPrint($id)
+    {
+        $eachid = explode('-', $id);
+        foreach($eachid as $id){
+            // $data []= Invoice::where('id', $id)->get();
+            $data = DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
+            $invoice_no = $data[0]->invoice_no;
+            $invoice_mode_multi = $data[0]->mode;
+            
+            po($invoice_no);
+            // exit;
+            
+            // $generator = new BarcodeGeneratorHTML();
+            // $invoice_bar_code = $generator->getBarcode($invoice_no, $generator::TYPE_CODE_128);
+            // $bar_code = $generator->getBarcode($invoice_no, $generator::TYPE_CODE_128);
+            
+        }
+        // po($data);
+        // exit;
+        // if($invoice_mode_multi!= ''){
+        //     return view('invoice.multiple'.$invoice_mode_multi , compact(['data'], 'invoice_bar_code', 'bar_code'));
+        // }
+        // else{
+        //     return view('invoice.invoice' , compact(['data'],'invoice_no', 'invoice_bar_code', 'bar_code'));
+        // }
     }
 
     public function UploadExcel(Request $request)
@@ -147,7 +186,6 @@ class InvoiceManagementController extends Controller
                             {  
                                 if(isset($header[1]) && $key3 == 1)
                                 {
-                                    Log::alert($key3);
                                     $dateset = $header[1];
                                     $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($record[$key3])->format("Y-m-d");
                                     $invoice->$dateset = $date;
@@ -157,9 +195,9 @@ class InvoiceManagementController extends Controller
                                     $invoice->$name = $value;
                                 }
                     
+                                R::store($invoice);  
                             } 
                         } 
-                        R::store($invoice);  
                     } 
                     else
                     {
@@ -179,17 +217,18 @@ class InvoiceManagementController extends Controller
 
                                     $update->$name = $value;  
                                 }
+                                R::store($update);  
                             }
                         }
-                        R::store($update);  
                     } 
                 }
             }
         }  
         return response()->json(["success" => "all file uploaded successfully"]);
     }
+    
     // Begin download all selected rows 
-        public function SelectedDownload(Request $request)
+    public function SelectedDownload(Request $request)
         {
             // echo 'working file';
             $passid = $request->id;
@@ -220,16 +259,6 @@ class InvoiceManagementController extends Controller
             }
 
             return response()->json($saveAsPdf);
-        }
-
-        public function selectPrint($id)
-        {
-            $eachid = explode('-', $id);
-            foreach($eachid as $id){
-                // $data []= Invoice::where('id', $id)->get();
-                $data []= DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
-            }
-            return view('invoice.multipleInvoice', compact(['data']));
         }
 
         public function zipDownload( $arr)

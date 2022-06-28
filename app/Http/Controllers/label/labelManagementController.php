@@ -291,7 +291,7 @@ class labelManagementController extends Controller
     public function labelTemplate()
     {
         $generator = new BarcodeGeneratorHTML();
-        $bar_code = $generator->getBarcode('290306639908', $generator::TYPE_CODE_39);
+        $bar_code = $generator->getBarcode('290306639908', $generator::TYPE_CODE_93);
 
         return view('label.template', compact('bar_code'));
     }

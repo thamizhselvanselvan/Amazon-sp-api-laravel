@@ -12,19 +12,11 @@
 
 @section('content_header')
 <div class="row">
-    <h1 class="m-0 text-dark col">Invoice management</h1>
+    <h1 class="m-0 text-dark col">Invoice Management</h1>
     <h2 class="mb-4 text-right col"></h2>
     <label>
         Search:<input type="text" id="Searchbox" placeholder="search invoice">
-    </label>
-        <!-- <a href=""> -->
-            <!-- <x-adminlte-button label="Selected Download" id="selected-download" theme="primary" icon="fas fa-file-download" class="btn-sm"/> -->
-        <!-- </a> -->
-        <!-- <a href="download-all">  -->
-            <!-- <x-adminlte-button label="Selected Print" id='select_print' theme="primary" icon="fas fa-print" class="btn-sm" /> -->
-        <!-- </a> -->
-        
-    
+    </label> 
 </div>
 @stop
 @section('content')
