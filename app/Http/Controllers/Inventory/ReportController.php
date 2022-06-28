@@ -149,14 +149,14 @@ class ReportController extends Controller
         foreach ($openShipmentcount as $key => $datewiseDataCount) {
 
             foreach ($datewiseDataCount as $items) {
-                $item_list = json_decode($items->items);
-        
+                $item_list = json_decode($items->items, true);
+                
                 $days = date('d-m-Y', strtotime($key));
 
                 if(array_key_exists($days, $shipment_count_date_wise)) {
                     $shipment_count_date_wise[$days] += count($item_list);
                 } else {
-                    $shipment_count_date_wise[$days] = count($item_list);
+                    $shipment_count_date_wise[$days] = count((array)$item_list);
                 }
 
             }
@@ -174,21 +174,25 @@ class ReportController extends Controller
 
             foreach ($datewiseData as $items) {
 
-                $item_lists = json_decode($items->items);
+                $item_lists = json_decode($items->items, true);
 
-                foreach ($item_lists as $item) {
+                foreach ((array)$item_lists as $item) {
+
+                    po($item);
 
                     $days = date('d-m-Y', strtotime($key));
 
-                    if(array_key_exists($days, $shipment_lists_date_wise)) {
-                        $shipment_lists_date_wise[$days] += $item->quantity * $item->price;
-                    } else {
-                        $shipment_lists_date_wise[$days] = $item->quantity * $item->price;
-                    }
+                    // if(array_key_exists($days, $shipment_lists_date_wise)) {
+                    //     $shipment_lists_date_wise[$days] += $item['quantity'] * $item['price'];
+                    // } else {
+                    //     $shipment_lists_date_wise[$days] = $item['quantity'] * $item['price'];
+                    // }
 
                 }
             }
         }
+
+        exit;
 
         $week_inv_amt  = $this->dateTimeFilter(6, $shipment_lists_date_wise);
 
@@ -201,7 +205,7 @@ class ReportController extends Controller
         foreach ($outShipmentcount as $key => $datewiseDataCount) {
 
             foreach ($datewiseDataCount as $items) {
-                $item_list = json_decode($items->items);
+                $item_list = json_decode($items->items, true);
         
                 $days = date('d-m-Y', strtotime($key));
 
@@ -228,7 +232,7 @@ class ReportController extends Controller
 
             foreach ($datewisecount as $items) {
 
-                $item_list = json_decode($items->items);
+                $item_list = json_decode($items->items, true);
 
                 foreach ($item_list as $item) {
 
@@ -248,27 +252,35 @@ class ReportController extends Controller
 
         /* weekly closing count*/
 
-        $week_close_cnt = DB::connection('inventory')->table('inventory')->where('created_at', '>=', Carbon::now()->subdays(6))->get()->groupBy('created_at');
-        $shipment_closing = [];
+        $week_close_cnt = DB::connection('inventory')->table('inventory')
+                    ->where('created_at', '>=', Carbon::now()->subdays(6))
+                    ->get()
+                    ->groupBy('created_at');
 
-        foreach ($week_close_cnt as $key => $closingData) {
+        $shipment_closing_cnt = [];
 
+        foreach ($week_close_cnt as $key => $closingData) {           
+
+            dd($closingData);
             foreach ($closingData as $items) {
-                
-                $days = date('d-m-Y', strtotime($key));
 
-                    if(array_key_exists($days, $shipment_closing)) {
-                        $shipment_closing[$days] += count($item_list);
-                    } else {
-                        $shipment_closing[$days] = count($item_list);
-                    }
+                dd((array)$items);
+
+                po($key. " - ".count((array)$items));
+     
+                $days = date('d-m-Y', strtotime($key));
+                
+                if(array_key_exists($days, $shipment_closing_cnt)) {
+                    $shipment_closing_cnt[$days] += count((array)$items);
+                } else {
+                    $shipment_closing_cnt[$days] =  count((array)$items);
+                }
+               
             }
         }
+       
+        $week_closing_count = $this->dateTimeFilter(6, $shipment_closing_cnt);
 
-        $week_closing_count = $this->dateTimeFilter(6, $shipment_closing);
-
-
-        
 
 
         /* weekly closing Amount*/
@@ -288,6 +300,7 @@ class ReportController extends Controller
                     }
             }
         }
+      
 
         $week_closing_amt = $this->dateTimeFilter(6, $shipment_closing);
 
