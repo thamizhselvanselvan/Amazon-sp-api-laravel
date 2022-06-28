@@ -60,7 +60,7 @@ class B2cshipDashboardController extends Controller
       {
         $date = $value->CreatedDate;
         $date_time = $this->CarbonGetDateDiff($date);
-        $status_detials_array[$key] = [
+        $tracking_inactive_status[$key] = [
 
           'StatusDetials' => $value->StatusDetails . ' [' . $value->AwbNo . ']',
           'FPCode' => $value->FPCode,
@@ -70,19 +70,21 @@ class B2cshipDashboardController extends Controller
         ];
        }
     }
-    return response()->json($status_detials_array);
+    // return response()->json($status_detials_array);
+    return $tracking_inactive_status;
   }
 
   public function Dashboard()
   {
-    // $kyc_booking_status = $this->BookingAndKycStatusDetails();
-      $status_detials_array = $this->TrackingApiDetials();
-    
-    // $bombino_status = $this->BombinoStatus();
-    // $bombino_inactive =$this->BombinoInactive();
-    // $delivery_status = $this->BlueDartAndDeliveryStatus();
-    // return view('b2cship.dashboard', compact(['status_detials_array', 'bombino_status', 'delivery_status','kyc_booking_status','bombino_inactive']));
-    return view('b2cship.dashboard', compact(['status_detials_array']));
+    $kyc_booking_status = $this->BookingAndKycStatusDetails();
+    $status_detials_array = $this->TrackingApiDetials();
+    $tracking_inactive_status = $this->TrackingApiDetailsInactive();
+    $bombino_status = $this->BombinoStatus();
+    $bombino_inactive =$this->BombinoInactive();
+    $delivery_status = $this->BlueDartAndDeliveryStatus();
+    $delivery_inactive_status = $this->DeliveryStatusInactive();
+    return view('b2cship.dashboard', compact(['status_detials_array', 'tracking_inactive_status', 'bombino_status', 'delivery_status','kyc_booking_status','bombino_inactive', 'delivery_inactive_status']));
+    // return view('b2cship.dashboard', compact(['status_detials_array']));
     
   }
 
@@ -164,7 +166,8 @@ class B2cshipDashboardController extends Controller
       ];
     }
 
-    return response()->json(array_merge($b2c_booking_array, $kyc_status_array, $kyc_received_array));
+    // return response()->json(array_merge($b2c_booking_array, $kyc_status_array, $kyc_received_array));
+    return array_merge($b2c_booking_array, $kyc_status_array, $kyc_received_array);
   }
 
   public function BombinoStatus()
@@ -196,7 +199,8 @@ class B2cshipDashboardController extends Controller
         $offset++;
       }
     }
-    return response()->json($bombino_each_staus_detials);
+    // return response()->json($bombino_each_staus_detials);
+    return $bombino_each_staus_detials;
   }
 
   public function BombinoInactive()
@@ -227,7 +231,8 @@ class B2cshipDashboardController extends Controller
         $offset++;
       }
     }
-    return response()->json($bombino_inactive);
+    // return response()->json($bombino_inactive);
+    return $bombino_inactive;
   }
 
   public function BlueDartAndDeliveryStatus()
@@ -256,7 +261,8 @@ class B2cshipDashboardController extends Controller
         ];
       }
     }
-    return response()->json( $delivery_status);
+    // return response()->json( $delivery_status);
+    return $delivery_status;
   }
 
   public function DeliveryStatusInactive()
@@ -276,7 +282,7 @@ class B2cshipDashboardController extends Controller
       {
         $date = $value->CreatedDate;
         $final_date = $this->CarbonGetDateDiff($date);
-        $delivery_status[$key] = [
+        $delivery_inactive_status[$key] = [
 
           'StatusDetails' => $value->PacketStatus . ' [ ' . $value->AwbNo . ' ] ',
           'FPCode' => $value->FPCode,
@@ -285,6 +291,7 @@ class B2cshipDashboardController extends Controller
         ];
       }
     }
-    return response()->json( $delivery_status);
+    // return response()->json( $delivery_status);
+    return $delivery_inactive_status;
   }
 }

@@ -16,12 +16,13 @@ Route::get('bombion/packet-activities','B2cship\BombinoPacketActivitiesControlle
 Route::get('bombion/update-packet-details','B2cship\BombinoPacketActivitiesController@UpdatePacketDetails');
 Route::get('bombion/csv-export','B2cship\BombinoPacketActivitiesController@ExportToCSV');
 
-Route::get('b2cship/Trackingtab','B2cship\B2cshipDashboardController@showDashboard');
-Route::get('b2cship/TrackingAPInActive','B2cship\B2cshipDashboardController@TrackingApiDetailsInactive');
-Route::get('b2cship/Bombinotab','B2cship\B2cshipDashboardController@BombinoStatus');
-Route::get('b2cship/Deliverytab','B2cship\B2cshipDashboardController@BlueDartAndDeliveryStatus');
-Route::get('b2cship/DeliveryStatusInactive','B2cship\B2cshipDashboardController@DeliveryStatusInactive');
-Route::get('b2cship/Misctab','B2cship\B2cshipDashboardController@BookingAndKycStatusDetails');
-Route::get('b2cship/BombinoStatusInactive','B2cship\B2cshipDashboardController@BombinoInactive');
+// Route::get('b2cship/Trackingtab','B2cship\B2cshipDashboardController@showDashboard');
+// Route::get('b2cship/TrackingAPInActive','B2cship\B2cshipDashboardController@TrackingApiDetailsInactive');
+// Route::get('b2cship/Bombinotab','B2cship\B2cshipDashboardController@BombinoStatus');
+// Route::get('b2cship/Deliverytab','B2cship\B2cshipDashboardController@BlueDartAndDeliveryStatus');
+// Route::get('b2cship/DeliveryStatusInactive','B2cship\B2cshipDashboardController@DeliveryStatusInactive');
+// Route::get('b2cship/Misctab','B2cship\B2cshipDashboardController@BookingAndKycStatusDetails');
+// Route::get('b2cship/BombinoStatusInactive','B2cship\B2cshipDashboardController@BombinoInactive');
+
 
 
