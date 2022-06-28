@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 use SellingPartnerApi\Configuration;
 use Illuminate\Support\Facades\Route;
+use App\Services\Inventory\ReportWeekly;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\TestController;
@@ -42,7 +43,10 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 |
 */
 
-Route::get('pdf', function () {
+Route::get('pdf', function (ReportWeekly $report_weekly) {
+
+
+  dd($report_weekly->OpeningShipmentCount());
 
     dd(User::get());
 
@@ -132,7 +136,7 @@ Route::get('test-queue-redis', function () {
 Route::get('order/item', function (){
 
     $order_id = '403-6898279-3539565';
-    
+
 });
 
 Route::get('order/catalog', function () {
