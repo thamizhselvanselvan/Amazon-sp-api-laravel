@@ -4,10 +4,11 @@ namespace App\Console\Commands;
 
 use League\Csv\Writer;
 use App\Events\testEvent;
-use App\Models\OthercatDetailsIndia;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use App\Models\OthercatDetailsIndia;
 use Illuminate\Support\Facades\Storage;
+use App\Models\otherCatalog\OtherCatalogAsin;
 
 class exportOtherAmazonInProduct extends Command
 {
@@ -17,12 +18,13 @@ class exportOtherAmazonInProduct extends Command
     private $writer;
     private $totalProductCount;
     private $currentCount;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'pms:export-other-amazon-in {selected} {user}';
+    protected $signature = 'pms:export-other-amazon-in {selected} {email} {id} {type}';
 
     /**
      * The console command description.
@@ -49,34 +51,119 @@ class exportOtherAmazonInProduct extends Command
     public function handle()
     {
         $headerSelection = '';
-        
+
         $selected = $this->argument('selected');
-        $user = $this->argument('user');
+        $user = $this->argument('email');
+        $id = $this->argument('id');
+        $type = $this->argument('type');
 
         $headerSelection = explode('-', $selected);
         $headers = $headerSelection;
-        
-        $exportFilePath = "excel/downloads/otheramazonIN/".$user."/otherProductDetails";
-        $deleteFilePath = "app/excel/downloads/otheramazonIN/".$user;
 
-         if(file_exists(storage_path($deleteFilePath))){
-             $path = storage_path($deleteFilePath);
-             $files = (scandir($path));
+        if ($type == 'Asin') {
+            $this->catalogExportByAsin($id, $user, $headers);
+        } else {
+
+            $exportFilePath = "excel/downloads/otheramazonIN/" . $user . "/otherProductDetails";
+            $deleteFilePath = "app/excel/downloads/otheramazonIN/" . $user;
+
+            if (file_exists(storage_path($deleteFilePath))) {
+                $path = storage_path($deleteFilePath);
+                $files = (scandir($path));
+                foreach ($files as $key => $file) {
+                    if ($key > 1) {
+                        unlink($path . '/' . $file);
+                    }
+                }
+            }
+
+            $record_per_csv = 1000000;
+            $chunk = 100000;
+
+            $this->check = $record_per_csv / $chunk;
+
+            $this->totalProductCount = OthercatDetailsIndia::count();
+
+            OthercatDetailsIndia::select($headers)->chunk($chunk, function ($records) use ($exportFilePath, $headers, $chunk) {
+
+                if ($this->count == 1) {
+                    if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv')) {
+                        Storage::put($exportFilePath . $this->fileNameOffset . '.csv', '');
+                    }
+                    $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv'), "w");
+                    $this->writer->insertOne($headers);
+                }
+
+                $records = $records->toArray();
+                $records = array_map(function ($datas) {
+                    return (array) $datas;
+                }, $records);
+
+                $this->writer->insertall($records);
+
+                if ($this->check == $this->count) {
+                    $this->fileNameOffset++;
+                    $this->count = 1;
+                } else {
+                    ++$this->count;
+                }
+
+                $this->currentCount += $chunk;
+                $percentage = ceil(round($this->currentCount * 100) / $this->totalProductCount);
+
+                if ($percentage > 100) {
+                    $percentage = 100;
+                }
+                event(new testEvent($percentage));
+            });
+        }
+    }
+
+    public function catalogExportByAsin($id, $user, $headers)
+    {
+        $exportFilePath = "excel/downloads/otheramazonIN/" . $user . "/otherProductDetails";
+        $deleteFilePath = "app/excel/downloads/otheramazonIN/" . $user;
+
+        if (file_exists(storage_path($deleteFilePath))) {
+            $path = storage_path($deleteFilePath);
+            $files = (scandir($path));
             foreach ($files as $key => $file) {
                 if ($key > 1) {
-                    unlink($path.'/'.$file);
+                    unlink($path . '/' . $file);
                 }
             }
         }
 
         $record_per_csv = 1000000;
-        $chunk = 100000;
-        
+        $chunk = 5000;
+
         $this->check = $record_per_csv / $chunk;
+        $selected_asin = OtherCatalogAsin::select('asin')->where('user_id', $id)->where('source', 'in')->get();
 
-        $this->totalProductCount = OthercatDetailsIndia::count();
+        $this->totalProductCount = count($selected_asin);
+        // $this->totalProductCount = OthercatDetails::count();
+        Log::alert('count' . $this->totalProductCount);
 
-        OthercatDetailsIndia::select($headers)->chunk($chunk, function ($records) use ($exportFilePath, $headers, $chunk) {
+        $selected_count = 0;
+        $chunk_asin = [];
+        foreach ($selected_asin as $asin) {
+
+            $chunk_asin[] = $asin->asin;
+
+            if ($selected_count == 5000) {
+                $this->chunkAsinDetails($headers, $chunk_asin, $chunk, $exportFilePath);
+                $selected_count = 0;
+                $chunk_asin = NULL;
+            } else {
+                $selected_count++;
+            }
+        }
+        $this->chunkAsinDetails($headers, $chunk_asin, $chunk, $exportFilePath);
+    }
+
+    public function chunkAsinDetails($headers, $selected_asin, $chunk, $exportFilePath)
+    {
+        OthercatDetailsIndia::select($headers)->whereIn('asin', $selected_asin)->chunk($chunk, function ($records) use ($exportFilePath, $headers, $chunk, $selected_asin) {
 
             if ($this->count == 1) {
                 if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv')) {
@@ -85,6 +172,11 @@ class exportOtherAmazonInProduct extends Command
                 $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv'), "w");
                 $this->writer->insertOne($headers);
             }
+
+            $records1 = $records->toArray();
+            $records1 = array_map(function ($datas) {
+                return $datas['asin'];
+            }, $records1);
 
             $records = $records->toArray();
             $records = array_map(function ($datas) {
@@ -101,12 +193,14 @@ class exportOtherAmazonInProduct extends Command
             }
 
             $this->currentCount += $chunk;
-            $percentage = ceil(round($this->currentCount *100) / $this->totalProductCount);
+            $percentage = ceil(round($this->currentCount * 100) / $this->totalProductCount);
 
-            if($percentage > 100) {
+            if ($percentage > 100) {
                 $percentage = 100;
             }
             event(new testEvent($percentage));
         });
+
+        return true;
     }
 }
