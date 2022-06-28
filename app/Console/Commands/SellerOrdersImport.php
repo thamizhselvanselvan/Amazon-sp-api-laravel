@@ -62,7 +62,7 @@ class SellerOrdersImport extends Command
                         'country_code' => $awsCountryCode,
                         'seller_id' =>$seller_id
                      ]
-                )->onConnection('redis')->onQueue('default');
+                )->onConnection('redis')->onQueue('order');
             } else {
                 GetOrder::dispatch(
                     [
