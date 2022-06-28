@@ -23,7 +23,7 @@ trait ConfigTrait
             $token = $this->token($aws_key);
         }
         $endpoints = ['EU' => Endpoint::EU, 'NA' => Endpoint::NA, 'FE' => Endpoint::FE];
-Log::alert($aws_key.'<-aws id '.$token);
+
         return new Configuration([
             "lwaClientId" => config('app.aws_sp_api_client_id'),
             "lwaClientSecret" => config('app.aws_sp_api_client_secret'),

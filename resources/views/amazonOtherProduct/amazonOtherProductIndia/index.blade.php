@@ -31,7 +31,10 @@
         </div>
         <h2 class="row mb-4 ">
             <div class="col">
-                <x-adminlte-button label='Product Export' class="product_export_modal_open" theme="primary" icon="fas fa-file-export" />
+                <x-adminlte-button label='Catalog Export' class="product_export_modal_open" theme="primary" icon="fas fa-file-export" />
+                <a href='asin_upload_in'>
+                    <x-adminlte-button label='Import ASIN' class="" theme="primary" icon="fas fa-file-import" />
+                </a>
                 <x-adminlte-button label='Download' class="file_download_modal_btn" theme="success" icon="fas fa-download" />
             </div>
             <div class="col"></div>

@@ -12,6 +12,7 @@ class OtherCatalogAsin extends Model
 
         'user_id',
         'asin',
-        'status'
+        'status',
+        'source'
     ];
 }

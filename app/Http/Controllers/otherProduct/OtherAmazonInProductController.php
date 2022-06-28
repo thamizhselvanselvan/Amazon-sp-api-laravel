@@ -11,6 +11,7 @@ use App\Models\OthercatDetailsIndia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use App\Models\otherCatalog\OtherCatalogAsin;
 
 class OtherAmazonInProductController extends Controller
 {
@@ -110,6 +111,70 @@ class OtherAmazonInProductController extends Controller
             return Storage::download($file_path);
         }
         return 'file not exist';
+    }
+
+
+
+
+    public function asinUpload()
+    {
+        return view('amazonOtherProduct.amazonOtherProductIndia.asin_upload');
+    }
+
+    public function asinSave(Request $request)
+    {
+        $data = $request->textarea;
+
+        $path = 'OtherAmazon/amazomdotin/Asin.txt';
+        if (!Storage::exists($path)) {
+            Storage::put($path, '');
+        }
+
+        storage::put($path, $data);
+        $this->insertCatalogAsin();
+        return redirect()->intended('/other-product/amazon_in')->with('success', 'Asin Updated Successfully');
+    }
+
+    public function asinTxtSave(Request $request)
+    {
+        $request->validate([
+            'asin' => 'required|mimes:txt'
+        ]);
+
+        if (!$request->hasFile('asin')) {
+            return back()->with('error', "Please upload file to import it to the database");
+        }
+
+        $source = file_get_contents($request->asin);
+
+        $path = 'OtherAmazon/amazomdotin/Asin.txt';
+        if (!Storage::exists($path)) {
+            Storage::put($path, '');
+        }
+
+        storage::put($path, $source);
+        $this->insertCatalogAsin();
+
+        return redirect()->intended('/other-product/amazon_in')->with('success', 'Asin Updated Successfully');
+    }
+
+    public function insertCatalogAsin()
+    {
+        $user = Auth::user()->id;
+        $type = 'in';
+        $data = '';
+        OtherCatalogAsin::where('user_id', $user)->where('status', 'in')->delete();
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan pms:other-catalog-asin-import $user $type > /dev/null &";
+            exec($command);
+        } else {
+
+            Artisan::call('pms:other-catalog-asin-import ' . $user . ' ' . $type);
+        }
+
+        return true;
     }
     
 }

@@ -44,7 +44,13 @@ class OtherCatalogAsinImport extends Command
         $type = $this->argument('type');
         
         Log::alert("working");
-        $path = 'OtherAmazon/amazomdotcom/Asin.txt';
+        if($type == 'com')
+        {
+            $path = 'OtherAmazon/amazomdotcom/Asin.txt';
+        }
+
+        $path = 'OtherAmazon/amazomdotin/Asin.txt';
+
         $data = file_get_contents(Storage::path($path));
        $count = 0;
        $datas = preg_split('/[\r\n| |:|,]/', $data, -1, PREG_SPLIT_NO_EMPTY);
@@ -55,7 +61,8 @@ class OtherCatalogAsinImport extends Command
            $insert_data[] = [
                'user_id' => $user,
                'asin' => $data,
-               'status' => 0
+               'status' => 0,
+               'source' => $type
            ];
 
            if ($count == 10000) {
