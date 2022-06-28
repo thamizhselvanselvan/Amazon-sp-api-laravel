@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\TestController;
 use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
+use App\Jobs\TestQueueFail;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 /*
 |--------------------------------------------------------------------------
@@ -80,6 +81,11 @@ Route::get('command', function () {
 
         Artisan::call('pms:seller-order-item-import ');
     }
+});
+
+Route::get('job', function()
+{
+    TestQueueFail::dispatch();
 });
 
 
