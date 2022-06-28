@@ -45,7 +45,8 @@ class OtherCatalogAsinImport extends Command
 
         Log::alert("working");
 
-        
+        OtherCatalogAsin::where('user_id', $user)->where('source', $type)->delete();
+
         if ($type == 'com') {
             $path = 'OtherAmazon/amazomdotcom/Asin.txt';
         }
