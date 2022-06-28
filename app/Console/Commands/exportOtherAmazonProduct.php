@@ -6,10 +6,7 @@ use League\Csv\Writer;
 use App\Events\testEvent;
 use App\Models\OthercatDetails;
 use Illuminate\Console\Command;
-use function PHPUnit\Framework\at;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Support\Facades\Storage;
 use App\Models\otherCatalog\OtherCatalogAsin;
 
@@ -66,7 +63,6 @@ class exportOtherAmazonProduct extends Command
         if ($type == 'Asin') {
 
             $this->catalogExportByAsin($id, $user, $headers);
-
         } else {
 
             $exportFilePath = "excel/downloads/otheramazon/" . $user . "/otherProductDetails";
@@ -143,24 +139,23 @@ class exportOtherAmazonProduct extends Command
         $chunk = 5000;
 
         $this->check = $record_per_csv / $chunk;
-        $selected_asin = OtherCatalogAsin::select('asin')->where('user_id', $id)->get();
-      
+        $selected_asin = OtherCatalogAsin::select('asin')->where('user_id', $id)->where('source', 'com')->get();
+
         $this->totalProductCount = count($selected_asin);
         // $this->totalProductCount = OthercatDetails::count();
         Log::alert('count' . $this->totalProductCount);
-        
+
         $selected_count = 0;
         $chunk_asin = [];
         foreach ($selected_asin as $asin) {
 
             $chunk_asin[] = $asin->asin;
-            
+
             if ($selected_count == 5000) {
                 $this->chunkAsinDetails($headers, $chunk_asin, $chunk, $exportFilePath);
                 $selected_count = 0;
                 $chunk_asin = NULL;
-            }
-            else{
+            } else {
                 $selected_count++;
             }
         }
@@ -178,7 +173,7 @@ class exportOtherAmazonProduct extends Command
                 $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv'), "w");
                 $this->writer->insertOne($headers);
             }
-            
+
             $records1 = $records->toArray();
             $records1 = array_map(function ($datas) {
                 return $datas['asin'];

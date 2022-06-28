@@ -11,7 +11,7 @@
     .hide_show a {
         margin: 8px;
         cursor: pointer;
-        
+
     }
 </style>
 @endsection
@@ -211,7 +211,7 @@
                                 <h6>UAE Latency</h6>
                             </div>
                             <div class="col-2">
-                                <input class="form-check-input header_options" type="checkbox" value="b2c_latency" name='options[]' id="b2c_latency">
+                                <input class="form-check-input header_options" type="checkbox" value=""  id="b2c_latency" disabled>
                                 <h6>B2C Latency</h6>
                             </div>
                             <div class="col-2">
@@ -255,7 +255,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary modal_close" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id='exportToCsv'>Export to CSV</button>
+                        <button type="button" class="btn btn-primary" id='exportToCsv'>Export All Catalog</button>
+                        <button type="button" class="btn btn-primary" id='exportbyAsin'>Export By Asin</button>
                     </div>
                 </div>
             </div>
@@ -297,8 +298,8 @@
             <a class="toggle-vis" data-column="9">Price1 & Price INR</a>
             <a class="toggle-vis" data-column="10">List Price INR</a>
             <a class="toggle-vis" data-column="11">Price AED</a>
-            <a class="toggle-vis" data-column="12">List Price AED</a> 
-            <a class="toggle-vis" data-column="13">Shipping Weight</a> 
+            <a class="toggle-vis" data-column="12">List Price AED</a>
+            <a class="toggle-vis" data-column="13">Shipping Weight</a>
             <a class="toggle-vis" data-column="14">Image URL</a>
             <a class="toggle-vis" data-column="15">ID</a>
             <a class="toggle-vis" data-column="16">Title</a>
@@ -346,7 +347,7 @@
                     <th>Category </th>
                     <th>All category </th>
                     <th>Description </th>
-                    <th>Height Length  width</th>
+                    <th>Height Length width</th>
                     <th>Weight</th>
                     <th>Flipkart/ Amazon</th>
                     <th>UPC</th>
@@ -637,7 +638,18 @@
         $('#file_download_modal').modal('hide');
     });
 
-     $('#exportToCsv').on('click', function() {
+
+    $('#exportToCsv').on('click', function() {
+
+        exportCatalog('All');
+    });
+
+    $('#exportbyAsin').on('click', function() {
+
+        exportCatalog('Asin');
+    });
+
+    function exportCatalog(type){
         $('#productExport').modal('hide');
         $('.progress_bar').show();
 
@@ -652,12 +664,12 @@
             }
             count++;
         });
-      
-        if(count == 0){
+
+        if (count == 0) {
             alert('Please Select Header');
             $('#productExport').modal('show');
             $('.progress_bar').hide();
-        }else{
+        } else {
             $.ajax({
                 method: 'post',
                 url: '/other-product/export_in',
@@ -665,6 +677,7 @@
                     "_token": "{{ csrf_token() }}",
                     "_method": 'post',
                     'selected': select_header,
+                    'type': type,
                 },
                 success: function(response) {
                     // $('.progress_bar').hide();
@@ -672,8 +685,7 @@
                 }
             })
         }
-
-    }).get();
+    };
 
     $('a.toggle-vis').on('click', function(e) {
         e.preventDefault();

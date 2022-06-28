@@ -18,43 +18,42 @@ class OtherAmazonInProductController extends Controller
     public function index(Request $request)
     {
 
-        if($request->ajax()){
+        if ($request->ajax()) {
             $data = OthercatDetailsIndia::query()->limit(1);
 
             return DataTables::of($data)
-            ->addIndexColumn()
-            ->editColumn('availability', function ($row) {
-                return $row ? 'Available' : 'NA';
-            })
-            ->editColumn('hs_code_gst', function ($row) {
-                return $row->hs_code ." / ". $row->gst ;
-            })
-            ->editColumn('price1_price_inr', function ($row) {
-                return $row->price1 ." / ". $row->price_inr ;
-            })
+                ->addIndexColumn()
+                ->editColumn('availability', function ($row) {
+                    return $row ? 'Available' : 'NA';
+                })
+                ->editColumn('hs_code_gst', function ($row) {
+                    return $row->hs_code . " / " . $row->gst;
+                })
+                ->editColumn('price1_price_inr', function ($row) {
+                    return $row->price1 . " / " . $row->price_inr;
+                })
 
-            ->editColumn('flipkart_amazon', function ($row) {
-                return $row->flipkart ." / ". $row->amazon;
-            })
+                ->editColumn('flipkart_amazon', function ($row) {
+                    return $row->flipkart . " / " . $row->amazon;
+                })
 
-            ->editColumn('uae_latency_b2c_latency', function ($row) {
-                return $row->uae_latency ." / ". $row->b2c_latency;
-            })
+                ->editColumn('uae_latency_b2c_latency', function ($row) {
+                    return $row->uae_latency . " / " . $row->b2c_latency;
+                })
 
-            ->editColumn('image_p_image_d', function ($row) {
-                return $row->image_p ." / ". $row->image_d;
-            })
-            
-            ->editColumn('height_length_width', function ($row) {
-                return $row->height ." / ". $row->length ." / ". $row->width;
-            })
-            ->editColumn('model_mpn', function ($row) {
-                return $row->model ." / ". $row->mpn;
-            })
+                ->editColumn('image_p_image_d', function ($row) {
+                    return $row->image_p . " / " . $row->image_d;
+                })
 
-            ->rawcolumns(['availability','image_p_image_d','hs_code_gst','price1_price_inr','uae_latency_b2c_latency','flipkart_amazon','height_length_width','model_mpn'])          
-            ->make(true);
+                ->editColumn('height_length_width', function ($row) {
+                    return $row->height . " / " . $row->length . " / " . $row->width;
+                })
+                ->editColumn('model_mpn', function ($row) {
+                    return $row->model . " / " . $row->mpn;
+                })
 
+                ->rawcolumns(['availability', 'image_p_image_d', 'hs_code_gst', 'price1_price_inr', 'uae_latency_b2c_latency', 'flipkart_amazon', 'height_length_width', 'model_mpn'])
+                ->make(true);
         }
         return view('amazonOtherProduct.amazonOtherProductIndia.index');
     }
@@ -62,30 +61,31 @@ class OtherAmazonInProductController extends Controller
     public  function exportOtherProductIn(Request $request)
     {
         $selected_header = $request->input('selected');
-        
-            $selected_header=  $selected_header;
-            $user = Auth::user()->email;
+        $type = $request->input('type');
+
+        $selected_header =  $selected_header;
+        $user = Auth::user();
+        $id = $user->id;
+        $email = $user->email;
 
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-            
-            // exec('nohup php artisan pms:textiles-import  > /dev/null &');
-           
+
             $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:export-other-amazon-in $selected_header $user > /dev/null &";
+            $command = "cd $base_path && php artisan pms:export-other-amazon-in $selected_header $email $id $type> /dev/null &";
             exec($command);
-            
+
             // Log::warning("Export asin command executed production  !!!");
         } else {
 
             // Log::warning("Export asin command executed local !");
-            Artisan::call('pms:export-other-amazon-in '.$selected_header.' '.$user);
+            Artisan::call('pms:export-other-amazon-in ' . $selected_header . ' ' . $email . ' ' . $id . ' ' . $type);
         }
     }
 
     public function other_file_download_in()
     {
         $user = Auth::user()->email;
-        $path = "app/excel/downloads/otheramazonIN/".$user;
+        $path = "app/excel/downloads/otheramazonIN/" . $user;
         $path = storage_path($path);
         $files = (scandir($path));
 
@@ -105,7 +105,7 @@ class OtherAmazonInProductController extends Controller
         //Other Amazon file download
         // $file_path = "excel/downloads/otheramazon/otherProductDetails".$id.'.csv';
         $user = Auth::user()->email;
-        $file_path = "excel/downloads/otheramazonIN/".$user.'/' . $id;
+        $file_path = "excel/downloads/otheramazonIN/" . $user . '/' . $id;
         //$path = Storage::path($file_path);
         if (Storage::exists($file_path)) {
             return Storage::download($file_path);
@@ -162,8 +162,6 @@ class OtherAmazonInProductController extends Controller
     {
         $user = Auth::user()->id;
         $type = 'in';
-        $data = '';
-        OtherCatalogAsin::where('user_id', $user)->where('status', 'in')->delete();
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
             $base_path = base_path();
@@ -176,5 +174,4 @@ class OtherAmazonInProductController extends Controller
 
         return true;
     }
-    
 }

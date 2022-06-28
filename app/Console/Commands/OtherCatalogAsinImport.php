@@ -42,37 +42,41 @@ class OtherCatalogAsinImport extends Command
     {
         $user = $this->argument('user');
         $type = $this->argument('type');
-        
+
         Log::alert("working");
-        if($type == 'com')
-        {
+
+        OtherCatalogAsin::where('user_id', $user)->where('source', $type)->delete();
+
+        if ($type == 'com') {
             $path = 'OtherAmazon/amazomdotcom/Asin.txt';
         }
+        else{
+            $path = 'OtherAmazon/amazomdotin/Asin.txt';
+        }
 
-        $path = 'OtherAmazon/amazomdotin/Asin.txt';
 
         $data = file_get_contents(Storage::path($path));
-       $count = 0;
-       $datas = preg_split('/[\r\n| |:|,]/', $data, -1, PREG_SPLIT_NO_EMPTY);
-       $insert_data = [];
+        $count = 0;
+        $datas = preg_split('/[\r\n| |:|,]/', $data, -1, PREG_SPLIT_NO_EMPTY);
+        $insert_data = [];
 
-       foreach ($datas as $data) {
+        foreach ($datas as $data) {
 
-           $insert_data[] = [
-               'user_id' => $user,
-               'asin' => $data,
-               'status' => 0,
-               'source' => $type
-           ];
+            $insert_data[] = [
+                'user_id' => $user,
+                'asin' => $data,
+                'status' => 0,
+                'source' => $type
+            ];
 
-           if ($count == 10000) {
-               $count = 0;
-               OtherCatalogAsin::insert($insert_data);
+            if ($count == 10000) {
+                $count = 0;
+                OtherCatalogAsin::insert($insert_data);
 
-               $insert_data = [];
-           }
-           $count ++;
-       }
-       OtherCatalogAsin::insert($insert_data);
+                $insert_data = [];
+            }
+            $count++;
+        }
+        OtherCatalogAsin::insert($insert_data);
     }
 }

@@ -68,7 +68,7 @@ class anotherAmazonProductController extends Controller
         $selected_header = $request->input('selected');
         $type = $request->input('type');
         $selected_header =  $selected_header;
-        Log::alert($selected_header);
+      
         $user = Auth::user();
         $id = $user->id;
         $email = $user->email;
@@ -157,8 +157,7 @@ class anotherAmazonProductController extends Controller
     {
         $user = Auth::user()->id;
         $type = 'com';
-        $data = '';
-        OtherCatalogAsin::where('user_id', $user)->where('status', 'com')->delete();
+       
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
             $base_path = base_path();
