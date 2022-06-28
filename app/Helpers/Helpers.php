@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use App\Models\Aws_credential;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -223,4 +225,16 @@ if (!function_exists('productLowestPricedOffer')) {
 
         return  $delay_seconds * 1000;
     }
+}
+
+if(!function_exists('dateTimeFilter')) {
+  function dateTimeFilter($data, $subDays = 6) {
+
+      $period = new DatePeriod(Carbon::now()->subDays($subDays), CarbonInterval::day(), Carbon::today()->endOfDay());
+
+      return array_reverse(array_map(function ($datePeriod) use ($data) {
+          $date = $datePeriod->format('d-m-Y');
+          return (isset($data[$date])) ? $data[$date] : 0;
+      }, iterator_to_array($period)));
+  }
 }
