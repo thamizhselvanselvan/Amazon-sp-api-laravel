@@ -43,12 +43,12 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 |
 */
 
-Route::get('pdf', function (ReportWeekly $report_weekly) {
+Route::get('test', function (ReportWeekly $report_weekly) {
 
 
-  dd($report_weekly->OpeningShipmentCount());
+  po($report_weekly->OpeningShipmentCount());
 
-    dd(User::get());
+   
 
     exit;
 

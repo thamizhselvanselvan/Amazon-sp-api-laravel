@@ -7,7 +7,7 @@ use Carbon\CarbonInterval;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\Exists;
 
-class ReportWeekly
+class ReportMonthly
 {
 
     private $connection = '';
@@ -18,41 +18,37 @@ class ReportWeekly
     }
 
 
-    /* weekly Inwarding Count*/
+    /* Monthly Inwarding Count*/
     public function OpeningShipmentCount(): array
     {
 
-        $items = $this->connection->table('shipments')->where('created_at', '>=', Carbon::now()->subdays(6))->get()->groupBy('created_at');
+        $items = $this->connection->table('shipments')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
 
         $collection = [];
-        
+
         foreach ($items as $date => $item) {
 
             foreach ($item as $data) {
 
                 $item_list = json_decode($data->items, true);
-                $days = date('d-m-Y', strtotime($date));
-                    foreach($item_list as $key => $value)
-                    {
-                        if (array_key_exists($days, $collection)) {
-                            
-                            $collection[$days] += $value['quantity'];
-                        } else {
-                            $collection[$days] = $value['quantity'];
-                        }
 
-                    }
-                
+                $days = date('d-m-Y', strtotime($date));
+
+                if (array_key_exists($days, $collection)) {
+                    $collection[$days] += count($item_list);
+                } else {
+                    $collection[$days] = count($item_list);
+                }
             }
         }
 
         return dateTimeFilter($collection);
     }
 
-    /* weekly Inwarding Amount*/
+    /* Monthly Inwarding Amount*/
     public function InwardingAmount(): array
     {
-        $openShipmentData = $this->connection->table('shipments')->where('created_at', '>=', Carbon::now()->subdays(6))->get()->groupBy('created_at');
+        $openShipmentData = $this->connection->table('shipments')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
 
         $shipment_lists_date_wise = [];
 
@@ -78,11 +74,11 @@ class ReportWeekly
         return dateTimeFilter($shipment_lists_date_wise);
     }
 
-    /* weekly Outwarding Count*/
+    /* Monthly Outwarding Count*/
     public function OutwardShipmentCount(): array
     {
 
-        $items = $this->connection->table('outshipments')->where('created_at', '>=', Carbon::now()->subdays(6))->get()->groupBy('created_at');
+        $items = $this->connection->table('outshipments')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
 
         $collection = [];
 
@@ -105,11 +101,11 @@ class ReportWeekly
         return dateTimeFilter($collection);
     }
 
-    /* weekly Outwarding Amount*/
+    /* Monthly Outwarding Amount*/
     public function OutwardShipmentAmount(): array
     {
 
-        $openShipmentData = $this->connection->table('outshipments')->where('created_at', '>=', Carbon::now()->subdays(6))->get()->groupBy('created_at');
+        $openShipmentData = $this->connection->table('outshipments')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
 
         $shipment_out_date_wise = [];
 
@@ -136,59 +132,29 @@ class ReportWeekly
     }
 
 
-    /* weekly closing stock */
-    public function ClosingCount(): array
-    {
-
-        $end_date =  Carbon::now()->subDay(1);
-        $end_date = $end_date->toDateString();
-        $end_date = $end_date . ' 23:59:59';
-
-        $week_close_count = $this->connection->table('inventory')->where('created_at', '<=', $end_date)->get();
-        $week_close_count = collect($week_close_count);
-        $week_close_count = $week_close_count->groupBy('updated_at');
-
+    /* Monthly closing stock */
+    public function ClosingCount(): array {
+        $week_close_count = $this->connection->table('inventory')->where('created_at', '>=', Carbon::now()->subDay(30))->get()->groupby('created_at');
         $close_count = [];
-        $days = 7;
-        
-        // foreach ($week_close_count as $key => $week_close_details) {
-
-        //     $start_date = Carbon::now()->subDay($days);
-        //     $start_date = $start_date->toDateString();
-        //     $start_date = $start_date . ' 00:00:01';
-
-        //     $end_date =  Carbon::now()->subDay($days);
-        //     $end_date = $end_date->toDateString();
-        //     $end_date = $end_date . ' 23:59:59';
-
-        //     echo 'Start Date' . $start_date . '<br>';
-        //     echo 'End Date ' . $end_date;
-        //     echo "<hr>";
-        //     $days--;
-
-        //     // echo $key;
-        //     // dd($week_close_details);
-        // }
-        // exit;
         foreach ($week_close_count as $key => $closingcount) {
             foreach ($closingcount as $items) {
+               
+            $days = date('d-m-Y', strtotime($key));
 
-                $days = date('d-m-Y', strtotime($key));
-
-                if (array_key_exists($days, $close_count)) {
-                    $close_count[$days] += count($items);
-                } else {
-                    // $close_count[$days] =  count($items);
-                }
+            if(array_key_exists($days, $close_count)) {
+                $close_count[$days] += count($items);
+            } else {
+                // $close_count[$days] =  count($items);
             }
+        }
         }
         return dateTimeFilter($close_count);
     }
 
-    /* weekly closing amount*/
+    /* Monthly closing amount*/
     public function ClosingAmount()
     {
-        $week_close_amount = $this->connection->table('inventory')->where('created_at', '>=', Carbon::now()->subdays(6))->get()->groupBy('created_at');
+        $week_close_amount = $this->connection->table('inventory')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
         $shipment_closing = [];
 
         foreach ($week_close_amount as $key => $closingData) {
