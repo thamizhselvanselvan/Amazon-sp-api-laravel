@@ -167,7 +167,7 @@ class OrderItem
                     'type' => 2,
                     'seller_id' => NULL
                 ]
-            )->onConnection('redis')->onQueue('CA_Order_3');
+            )->onConnection('redis')->onQueue('catalog');
         } else {
 
             Seller_catalog_import_job::dispatch(
