@@ -12,6 +12,7 @@ class OrderSellerCredentials extends Model
     protected $fillable = [
 
         'seller_id',
+        'country_code',
         'mws_region_id',
         'store_name',
         'merchan_id',
