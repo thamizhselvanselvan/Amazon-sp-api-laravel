@@ -143,7 +143,7 @@ class exportOtherAmazonProduct extends Command
 
         $this->totalProductCount = count($selected_asin);
         // $this->totalProductCount = OthercatDetails::count();
-        Log::alert('count' . $this->totalProductCount);
+        // Log::alert('count' . $this->totalProductCount);
 
         $selected_count = 0;
         $chunk_asin = [];

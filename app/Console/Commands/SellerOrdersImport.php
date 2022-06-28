@@ -47,7 +47,7 @@ class SellerOrdersImport extends Command
     public function handle()
     {
         $aws_data = OrderSellerCredentials::where('dump_order', 1)->get();
-        Log::alert(json_encode($aws_data));
+        // Log::alert(json_encode($aws_data));
         foreach ($aws_data as $aws_value) {
             
             // $awsId  = $aws_value['id'];
