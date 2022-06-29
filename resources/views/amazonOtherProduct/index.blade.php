@@ -31,9 +31,9 @@
         </div>
         <h2 class="row mb-4 ">
             <div class="col">
-                <x-adminlte-button label='Catalog Export' class="product_export_modal_open" theme="primary" icon="fas fa-file-export" />
+                <x-adminlte-button label='Export Catalog' class="product_export_modal_open" theme="primary" icon="fas fa-file-export" />
                 <a href='asin_upload'>
-                    <x-adminlte-button label='Import ASIN' class="" theme="primary" icon="fas fa-file-import" />
+                    <x-adminlte-button label='Export By ASIN' class="" theme="primary" icon="fas fa-file-import" />
                 </a>
                 <x-adminlte-button label='Download' class="file_download_modal_btn" theme="success" icon="fas fa-download" />
             </div>
@@ -256,7 +256,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary modal_close" data-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" id='exportToCsv'>Export All Catalog</button>
-                        <button type="button" class="btn btn-primary" id='exportbyAsin'>Export By Asin</button>
+                        <!-- <button type="button" class="btn btn-primary" id='exportbyAsin'>Export By Asin</button> -->
                     </div>
                 </div>
             </div>
