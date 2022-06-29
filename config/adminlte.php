@@ -769,13 +769,11 @@ return [
                         [
                             'text' => 'Manage',
                             'url' => 'label/manage',
-                            'can' => ['Admin', 'BOE'],
+                            'can' => ['Admin', 'Inventory'],
                             'icon' => 'far fa-fw fa-file',
-
                         ],
                     ]
                 ],
-
             ],
         ]
         // [
