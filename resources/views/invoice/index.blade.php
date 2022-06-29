@@ -30,15 +30,6 @@
         <a href="template/download">
             <x-adminlte-button label="Download Invoice Template" theme="primary" icon="fas fa-file-download" class="btn-sm" />
         </a>
-        <!-- <a href=""> -->
-        <!-- <x-adminlte-button label="Selected Download" id="selected-download" theme="primary" icon="fas fa-file-download" class="btn-sm"/> -->
-        <!-- </a> -->
-        <!-- <a href="download-all">  -->
-        <!-- <x-adminlte-button label="Selected Print" id='select_print' theme="primary" icon="fas fa-print" class="btn-sm" /> -->
-        <!-- </a> -->
-        <!-- <a href="download-all"> 
-            <x-adminlte-button label="Download All" id='download_pdf' theme="primary" icon="fas fa-check-circle" class="btn-sm" />
-        </a> -->
     </h2>
 </div>
 
@@ -73,7 +64,6 @@
                 <th>Hsn Code</th>
                 <th>Quantity</th>
                 <th>Product Price</th>
-                <!-- <th>Select All <br><input class="check_all" type="checkbox" value='' name="options[]" id="check_all" ></div> </th> -->
                 <th>Action</th>
             </tr>
         </thead>
@@ -136,12 +126,6 @@
                     data: 'product_price',
                     name: 'product_price'
                 },
-                // {
-                //     data: 'check_box',
-                //     name: 'check_box',
-                //     orderable: false,
-                //     searchable: false
-                // },
                 {
                     data: 'action',
                     name: 'action'
@@ -197,7 +181,6 @@
                     count++;
                     window.location.href = '/invoice/selected-print/' + id;
                 });
-                // alert(id);
             });
 
             $('.check_all').change(function() {
@@ -221,42 +204,5 @@
                 }
             });
         });
-        // $(document).ready(function(){
-        //     // alert('working');
-        //     $('.yajra-datatable').DataTables({
-        //         "pagingType": "full_numbers"
-        //     });
-        // });
-        // $(document).ready(function(){
-        //   $('#Export_to_pdf').click(function(e){
-        //      e.preventDefault();
-        //      var url = $(location).attr('href');
-        //      var id = $('#pid').val();
-        //      var all = $('#all').val();
-
-        //      alert(working);
-        //      // alert(alert);
-        //      // alert(url);
-
-        //         $.ajax({
-        //             method: 'POST',
-        //             url: "{{ url('/invoice/export-pdf')}}",
-        //             data:{ 
-        //             'url':url,
-        //             'id':id,
-        //             'total' : all,
-        //             "_token": "{{ csrf_token() }}",
-        //             },
-        //             success: function(response) {
-
-        //             window.location.href = '/invoice/download/'+id;
-        //             alert('Export pdf successfully');
-        //             }
-        //         });
-        //     });
-        // });
-        // $('.yajra-datatable').DataTable({
-
-        //     });
     </script>
     @stop

@@ -27,7 +27,7 @@
                             <h4 class="text-center"> <strong> TAX INVOICE </strong> </h4>
                         </div>   
                         
-                            <div class="col-md-12 invoice-date text-left" >
+                        <div class="col-md-12 invoice-date text-left" >
                         
                             <!-- <small>Invoice / July period</small> -->
                             <div class=" text-inverse m-t-5"><strong> INVOICE DATE: </strong> {{ $value->invoice_date }}</div>
@@ -37,15 +37,17 @@
                             <div class=" text-inverse m-t-5"><strong> AWB NO: </strong> {{ $value->awb_no }}</div>
                             <div class=" text-inverse m-t-5"><strong> HSN CODE: </strong> {{ $value->hsn_code }}</div>
                             <div class=" text-inverse m-t-5"><strong> ARN No: </strong> {{ $value->arn_no }}</div>
-                            <div class="invoice-detail">
-                                <br>
-                                <!-- Services Product -->
+                           
+                        </div>
+                        <div class="col-md-12 invoice-date text-right" >
+                            <div class=" text-inverse m-t-5">
+                                <div class="row">
+                                    <div class="col"></div>
+                                    <div class="col"></div>
+                                    <div class="col">{!! $invoice_bar_code !!}</div>
+                                </div>
                             </div>
-                    
-                            </div>
-                        
-                        <!-- end invoice-company -->
-                        <!-- begin invoice-header -->
+                        </div>
                         
                         <div class="invoice-header">
                             <div class="invoice-from">
@@ -147,8 +149,116 @@
                             </div>
                             </div>
                             <!-- end invoice-price -->
+                            <p class=" mb-0 text-center">This is system generated invoice, it may contain only digital signature</p>
+                            <!-- <div class="container"> -->
+                            <div class="row" class="border-dashed">
+                                <div class="col "><img src="{{URL::asset('/image/bombinoImage.jpg')}}" class="img-fluid rounded mx-auto d-block" alt="Bombino_express"></div>
+                                <div class="col border">
+                                    <!-- <div class="table-responsive"> -->
+                                        <table class="table-sm text-center table-size">
+                                        <thead>
+                                            <tr>
+                                                <th><strong> CONSIGNMENT NOTE NUMBER </strong></th>
+                                            </tr>
+                                            <tr>
+                                                <th> {!!$bar_code !!} </th>
+                                            </tr>
+                                            <tr>
+                                                <th>{{$value->invoice_no}}</th>
+                                            </tr>
+                                        </thead>
+                                        </table>
+                                    <!-- </div> -->
+                                </div>
+                                <div class="col">
+                                    <!-- <div class="row"><p class="text-center">SERVICE</p></div><hr>
+                                    <div class="row"><p class="text-center">SELF</p></div><hr> -->
+                                    <div class="table-responsive">
+                                        <table class="table table-invoice table-bordered table-bordered-dark table-sm text-center">
+                                        <thead>
+                                            <tr><td colspan="2" class="text-center">SERVICE</td></tr>
+                                            <tr><td colspan="2" class="text-center">SELF</td></tr>
+                                            <tr>
+                                                <td>ORIGIN</td>
+                                                <td>DESTINATION</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>USA</td>
+                                                <td>UAE</td>
+                                            </tr>
+                                            
+                                        </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <table class="table table-invoice table-bordered table-bordered-dark table-sm text-left">
+                                <thead>
+                                    <tr>
+                                        <th>SHIPPER A/C: </th>
+                                        <th>DATE:</th>     
+                                        <th >ONFD NO:</th>
+                                        
+                                    </tr>
+                                </thead>
+                            </table>
+                            <table class="table table-bordered border">
+                                <tbody>
+                                    <div class="row">
+                                        <div class="col ">
+                                            <b class="bg-dark text-white mt-4 ml-2"> CONSIGNOR</b><hr>
+                                            <p class=" ml-2 mt-2"><b> {{ $value->bill_to_name }} </b><br> {{ $value->bill_to_add }} </p>
+                                        </div>
+                                        <div class="col ">
+                                            <b class="bg-dark text-white mt-4 ml-2"> CONSIGNEE </b><hr>
+                                            <p class=" ml-2 mt-2"><b> {{ $value->bill_to_name }} </b><br> {{ $value->ship_to_add }} </p>
+                                        </div>
+                                    </div>
+                                </tbody>
+                            </table>
+                            <table class="table table-bordered table-bordered-dark alpha-table table-sm text-center">
+                                <thead>
+                                    <strong>
+                                        <tr>
+                                        <th>NO. OF PCS.</th>
+                                        <th>PACKING</th>
+                                        <th>CONTENTS-DESCRIPTION(SAID TO CONTAIN)</th>
+                                        <th>DIM(inches) L*W*H</th>
+                                        <th>ACTUAL WEIGHT (LBS)</th>
+                                        <th>CHARGED WEIGHT (LBS)</th>
+                                        </tr>
+                                    </strong>
+                                    <tbody>
+                                        <tr>
+                                        <td>1</td>
+                                        <td>SPX</td>
+                                        <td>{{ $value->item_description }}</td>
+                                        <td>7*3*3</td>
+                                        <td>1.000</td>
+                                        <td>1.000</td>
+                                        </tr>
+                                    </tbody>
+                                </thead>
+                            </table>
+                            <table class="table table-bordered table-bordered-dark alpha-table table-sm ">
+                                <tbody>
+                                    <tr>
+                                        <td><h6 class=" ml-2"><strong>TERMS AND CONDITIONS</strong></h6>
+                                        <p><table><tbody><tr><p class="ml-2">SIGNATURE...............................</p></tr></tbody></table></p></td>
+                                        <td class="text-center"><p><b> CONDITION & LIABILITY</b></p>
+                                        <p> I/We/ hereby Agree to Terms & Condition of B2CShip (Pacific Impex LLC) and I / We Certify That the Nature of goods Are as Indicated on this Airway Bill</p>
+                                        </td>
+                                        <td>
+                                        <table><tbody><tr><p class="ml-2">SIGNATURE..................................</p></tr><tr><p class="ml-2">DATE:................ TIME:.............. </p></tr></tbody></table>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <hr class="dashed">
                         </div>
-                        <p class=" mb-0 text-center">This is system generated invoice, it may contain only digital signature</p>
                     </div>
                 </div>
             </div>

@@ -63,7 +63,7 @@
 .invoice-price .invoice-price-left,
 .invoice-price .invoice-price-right {
     display: table-cell;
-    padding: 20px;
+    /* padding: 20px; */
     font-size: 20px;
     font-weight: 600;
     width: 75%;
@@ -92,9 +92,9 @@
     width: 25%;
     /* background: #2d353c; */
     color: rgb(12, 11, 11);
-    font-size: 28px;
+    font-size: 20px;
     text-align: right;
-    vertical-align: bottom;
+    vertical-align: middle;
     /* font-weight: 300; */
 }
 
@@ -102,7 +102,7 @@
     display: block;
     opacity: .9;
     position: absolute;
-    top: 10px;
+    /* top: 10px; */
     left: 10px;
     font-size: 20px
 }
@@ -144,6 +144,10 @@
     margin-right: unset;
 }
 .table td {
+    padding: 0;
+    vertical-align: middle !important;
+  }
+  #small-table{
     padding: 0;
     vertical-align: middle !important;
   }

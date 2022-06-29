@@ -50,7 +50,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <h5><strong> Prepaid : </strong></h5>
+                                    <h5><strong>Prepaid: </strong></h5>
                                 </td>
                             </tr>
                             <tr>
@@ -89,7 +89,7 @@
                     <table class="table table-bordered table-bordered-dark">
                         <thead>
                             <tr>
-                                <th class="text-left">S/N</th>
+                                <th class="text-left">Sr</th>
                                 <th class="text-center">Product Name</th>
                                 <th class="text-center">SKU</th>
                                 <th class="text-center" width="10%">QTY</th>
