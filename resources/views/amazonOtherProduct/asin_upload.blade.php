@@ -322,7 +322,7 @@
 
     function exportCatalog(type)
     {
-        alert('click');
+        // alert('click');
         $('#productExport').modal('hide');
         $('.progress_bar').show();
 
