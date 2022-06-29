@@ -115,7 +115,23 @@ class exportOtherAmazonInProduct extends Command
                     $percentage = 100;
                 }
                 event(new testEvent($percentage));
-            });
+            }); 
+        }
+
+        //remame file .mosh to .csv
+        $path = "app/excel/downloads/otheramazonIN/" . $user;
+        $path = storage_path($path);
+        $files = (scandir($path));
+
+        $filesArray = [];
+        foreach ($files as $key => $file) {
+            if ($key > 1) {
+                if(str_contains($file, '.mosh'))
+                {
+                    $new_file_name = str_replace('.csv.mosh', '.csv', $file);
+                    rename($path.'/'.$file, $path.'/'.$new_file_name);
+                }
+            }
         }
     }
 
@@ -166,10 +182,10 @@ class exportOtherAmazonInProduct extends Command
         OthercatDetailsIndia::select($headers)->whereIn('asin', $selected_asin)->chunk($chunk, function ($records) use ($exportFilePath, $headers, $chunk, $selected_asin) {
 
             if ($this->count == 1) {
-                if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv')) {
-                    Storage::put($exportFilePath . $this->fileNameOffset . '.csv', '');
+                if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv.mosh')) {
+                    Storage::put($exportFilePath . $this->fileNameOffset . '.csv.mosh', '');
                 }
-                $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv'), "w");
+                $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv.mosh'), "w");
                 $this->writer->insertOne($headers);
             }
 
@@ -186,9 +202,12 @@ class exportOtherAmazonInProduct extends Command
             $this->writer->insertall($records);
 
             if ($this->check == $this->count) {
+
                 $this->fileNameOffset++;
                 $this->count = 1;
+
             } else {
+
                 ++$this->count;
             }
 
@@ -196,6 +215,7 @@ class exportOtherAmazonInProduct extends Command
             $percentage = ceil(round($this->currentCount * 100) / $this->totalProductCount);
 
             if ($percentage > 100) {
+
                 $percentage = 100;
             }
             event(new testEvent($percentage));

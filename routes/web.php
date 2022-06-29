@@ -33,6 +33,8 @@ use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
 use App\Jobs\TestQueueFail;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
+use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -88,6 +90,24 @@ Route::get('job', function()
     TestQueueFail::dispatch();
 });
 
+Route::get('rename', function()
+{
+    $user = Auth::user()->email;
+        $path = "app/excel/downloads/otheramazonIN/" . $user;
+        $path = storage_path($path);
+        $files = (scandir($path));
+
+        $filesArray = [];
+        foreach ($files as $key => $file) {
+            if ($key > 1) {
+                if(str_contains($file, '.mosh'))
+                {
+                    $new_file_name = str_replace('.csv.mosh', '.csv', $file);
+                    rename($path.'/'.$file, $path.'/'.$new_file_name);
+                }
+            }
+        }
+});
 
 Route::get('test-queue-redis', function () {
 

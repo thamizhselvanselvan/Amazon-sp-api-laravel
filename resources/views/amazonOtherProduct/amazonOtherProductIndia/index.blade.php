@@ -422,18 +422,25 @@
                 if (response.success) {
                     file_modal.modal('show');
                     let html = '<ul>';
-                    $.each(response.files_lists, function(index, value) {
+                    if(response.files_lists == ''){
 
-                        let file_name = Object.keys(value)[0];
-                        let file_time = value[file_name];
+                        html += "<span class ='p-0 m-0'>File Is Downloading, Please Wait... </span>";
+                    }
+                    else{
 
-                        html += "<li class='p-0 m-0'>";
-                        html += "<a href='/other-product/file_download_in/" + file_name + "' class='p-0 m-0'> Part " + parseInt(index + 1) + "</a> ";
-                        html += file_time;
-                        html += "</li>";
-
-                    });
-                    html += '</ul>';
+                        $.each(response.files_lists, function(index, value) {
+    
+                            let file_name = Object.keys(value)[0];
+                            let file_time = value[file_name];
+    
+                            html += "<li class='p-0 m-0'>";
+                            html += "<a href='/other-product/file_download_in/" + file_name + "' class='p-0 m-0'> Part " + parseInt(index + 1) + "</a> ";
+                            html += file_time;
+                            html += "</li>";
+    
+                        });
+                        html += '</ul>';
+                    }
                     file_display.html(html);
                 }
             }
