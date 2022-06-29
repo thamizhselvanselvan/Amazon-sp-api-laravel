@@ -17,6 +17,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Inventory\Outshipment;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Inventory\ReportWeekly;
+use App\Services\Inventory\ReportMonthly
+;
 use App\Http\Controllers\Inventory\CampaignHistory;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
 
@@ -243,7 +245,7 @@ class ReportController extends Controller
         return Storage::download($exportFilePath);
     }
 
-    public function Monthly(ReportWeekly $report_monthly)
+    public function Monthly(ReportMonthly $report_monthly)
     {
         $ware_lists = Warehouse::get();
         $month_data = $this->getMonthly($report_monthly);
@@ -260,47 +262,47 @@ class ReportController extends Controller
             array_push($date_arraymonth, $today->subDays($i)->format('Y-m-d'));
             $i++;
         }
+
+        /* Monthly Inwarding Count*/
+        $month_inv_count = $report_monthly->MonthlyInCount();
+    
+
+        /* Monthly Inwarding  Amount*/
+        $month_inv_amt = $report_monthly->MonthlyInAmount();
+
+        /* Monthly Outwarding  Count*/
+        $month_out_count = $report_monthly->monthly_out_count();
+        
+        
+        
+        /* Monthly Outwarding  Amount*/
+        $month_out_amt = $report_monthly->monthly_out_amount();
+        
+        
         /* Monthly closing count*/
-
-        /* weekly Inwarding Count*/
-        $month_inv_count = $report_monthly->OpeningShipmentCount();
-
-
-        /* weekly Inwarding  Amount*/
-        $month_inv_amt = $report_monthly->InwardingAmount();
-
-
-        /* weekly Outwarding  Count*/
-        $month_out_count = $report_monthly->OutwardShipmentCount();
-
-
-
-        /* weekly Outwarding  Amount*/
-        $month_out_closing_amt = $report_monthly->OutwardShipmentAmount();
-
-
-        /* weekly closing count*/
-        $month_closing_count = $report_monthly->ClosingCount();
-
-        /* weekly closing Amount*/
-        $month_closing_amt = $report_monthly->ClosingAmount();
-
-
+        // $month_closing_count = $report_monthly->ClosingCount();
+        $month_closing_count = 0;
+        
+        /* Monthly closing Amount*/
+        // $month_closing_amt = $report_monthly->ClosingAmount();
+        $month_closing_amt =00;
+       
+        // dd($date_arraymonth, $month_inv_count,$month_inv_amt,$month_out_count,$month_out_amt,$month_closing_count,$month_closing_amt);
         $month_data = [];
         foreach ($date_arraymonth as $key => $val) {
-            $week_data[] = [
+            $month_data[] = [
                 $val,
-                 $month_closing_count[$key],
-                $month_closing_amt[$key],
-                $month_inv_count[$key],
-                $month_inv_amt[$key],
-                $month_out_count[$key],
-                $month_out_closing_amt[$key],
-                $month_closing_count[$key],
-                $month_closing_amt[$key]
+                $month_closing_count[$key] ?? "",
+                $month_closing_amt[$key] ?? "",
+                $month_inv_count[$key] ?? "",
+                $month_inv_amt[$key] ?? "",
+                $month_out_count[$key] ?? "",
+                $month_out_amt[$key] ?? "",
+                $month_closing_count[$key] ?? "",
+                $month_closing_amt[$key] ?? ""
             ];
         }
-
+//  dd($month_data);
         return $month_data;
     }
 

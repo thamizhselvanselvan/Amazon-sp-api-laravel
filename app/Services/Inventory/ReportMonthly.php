@@ -19,7 +19,7 @@ class ReportMonthly
 
 
     /* Monthly Inwarding Count*/
-    public function OpeningShipmentCount(): array
+    public function MonthlyInCount(): array
     {
 
         $items = $this->connection->table('shipments')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
@@ -34,80 +34,87 @@ class ReportMonthly
 
                 $days = date('d-m-Y', strtotime($date));
 
-                if (array_key_exists($days, $collection)) {
-                    $collection[$days] += count($item_list);
-                } else {
-                    $collection[$days] = count($item_list);
+                foreach($item_list as $key => $value)
+                {
+                    if (array_key_exists($days, $collection)) {
+                        
+                        $collection[$days] += $value['quantity'];
+                    } else {
+                        $collection[$days] = $value['quantity'];
+                    }
+
                 }
             }
         }
-
-        return dateTimeFilter($collection);
+        return dateTimeFiltermonthly($collection);
+        
     }
 
     /* Monthly Inwarding Amount*/
-    public function InwardingAmount(): array
+    public function MonthlyInAmount(): array
     {
         $openShipmentData = $this->connection->table('shipments')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
 
-        $shipment_lists_date_wise = [];
+        $inw_amount = [];
 
         foreach ($openShipmentData as $key => $datewiseData) {
 
             foreach ($datewiseData as $items) {
-
+                
                 $item_lists = json_decode($items->items);
-
+                
                 foreach ($item_lists as $item) {
-
+                    
                     $days = date('d-m-Y', strtotime($key));
-
-                    if (array_key_exists($days, $shipment_lists_date_wise)) {
-                        $shipment_lists_date_wise[$days] += $item->quantity * $item->price;
+                    
+                    if (array_key_exists($days, $inw_amount)) {
+                        $inw_amount[$days] += $item->quantity * $item->price;
                     } else {
-                        $shipment_lists_date_wise[$days] = $item->quantity * $item->price;
+                        $inw_amount[$days] = $item->quantity * $item->price;
                     }
                 }
             }
         }
 
-        return dateTimeFilter($shipment_lists_date_wise);
+     
+        return dateTimeFiltermonthly($inw_amount);
     }
 
     /* Monthly Outwarding Count*/
-    public function OutwardShipmentCount(): array
+    public function monthly_out_count(): array
     {
 
         $items = $this->connection->table('outshipments')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
-
-        $collection = [];
+        $out_count = [];
 
         foreach ($items as $date => $item) {
 
             foreach ($item as $data) {
 
                 $item_list = json_decode($data->items, true);
-
+                foreach($item_list as  $value)
+                {
                 $days = date('d-m-Y', strtotime($date));
 
-                if (array_key_exists($days, $collection)) {
-                    $collection[$days] += count($item_list);
+                if (array_key_exists($days, $out_count)) {
+                    $out_count[$days] +=  $value['quantity'];
                 } else {
-                    $collection[$days] = count($item_list);
+                    $out_count[$days] =  $value['quantity'];
                 }
+            }
             }
         }
 
-        return dateTimeFilter($collection);
+        return dateTimeFiltermonthly($out_count);
     }
 
     /* Monthly Outwarding Amount*/
-    public function OutwardShipmentAmount(): array
+    public function monthly_out_amount(): array
     {
 
         $openShipmentData = $this->connection->table('outshipments')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
 
-        $shipment_out_date_wise = [];
+        $shipment_out_amount = [];
 
         foreach ($openShipmentData as $key => $datewiseData) {
 
@@ -119,16 +126,16 @@ class ReportMonthly
 
                     $days = date('d-m-Y', strtotime($key));
 
-                    if (array_key_exists($days, $shipment_out_date_wise)) {
-                        $shipment_out_date_wise[$days] += $item->quantity * $item->price;
+                    if (array_key_exists($days, $shipment_out_amount)) {
+                        $shipment_out_amount[$days] += $item->quantity * $item->price;
                     } else {
-                        $shipment_out_date_wise[$days] = $item->quantity * $item->price;
+                        $shipment_out_amount[$days] = $item->quantity * $item->price;
                     }
                 }
             }
         }
 
-        return dateTimeFilter($shipment_out_date_wise);
+        return dateTimeFiltermonthly($shipment_out_amount);
     }
 
 
