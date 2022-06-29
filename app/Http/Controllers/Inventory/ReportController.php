@@ -31,24 +31,51 @@ class ReportController extends Controller
         $date = Carbon::now()->format('d M Y');
 
         /* Inwarding count */
-        $dayin =   Inventory::whereDate('created_at',  Carbon::today()->toDateString())->get();
-        $todayinward = count($dayin);
+        $todayinward=0;
+        $dayin =   Shipment::whereDate('created_at',  Carbon::today()->toDateString())->get();
 
+        foreach ($dayin as $key => $item) {
+            
+            $item_list = json_decode($item->items, true);
+
+            foreach($item_list as  $value)
+            {
+                $todayinward += $value['quantity'];
+            }
+            
+        }
         /* Outwarding count */
+        $todayoutward = 0;
         $dayout =   Outshipment::whereDate('created_at',  Carbon::today()->toDateString())->get();
-        $todayoutward = count($dayout);
+        foreach($dayout as $key => $value)
+            {
+            $item_list = json_decode($value->items, true);
 
+            foreach($item_list as  $data)
+            {
+               
+                $todayoutward += $data['quantity'];
+            }
+    
+        }
         /* Opeaning Stock */
+        $todayopeningstock = 0;
         $startTime = Carbon::today()->subDays(365);
         $endTimeYesterday = Carbon::yesterday()->endOfDay();
         $open = Inventory::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
-        $todayopeningstock = count($open);
-
-
+       foreach($open as  $data){  
+           $todayopeningstock +=  $data['quantity'];
+        }
+      
+    
         /* Closing Stock count */
+        $todayclosingstock =0;
         $close =   Inventory::get();
-        $todayclosingstock = count($close);
-
+        
+        foreach($close as  $data){  
+            $todayclosingstock +=  $data['quantity'];
+         }
+     
         /* Opeaning Amount */
         $amt = [];
         $openstockamt =   Inventory::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
@@ -95,6 +122,7 @@ class ReportController extends Controller
         /* Cloasing Amount */
         $closeamt =   Inventory::get();
         $closeprice = [];
+        $dayclosing = [];
         foreach ($closeamt as $close) {
             $closeprice[] = [
                 'price' => $close['price'],
@@ -102,12 +130,12 @@ class ReportController extends Controller
                 'total' => $close['price'] * $close['quantity'],
             ];
         }
-        $dayclosing = [];
         foreach ($closeprice as $dayclose) {
+           
             $dayclosing[] = $dayclose['total'];
         }
         $dayclosingamt =  array_sum($dayclosing);
-
+    
 
         $data = [
             "date" => $date,
@@ -120,7 +148,7 @@ class ReportController extends Controller
             "closing_stock" => $todayclosingstock,
             "closing_amt" => $dayclosingamt
         ];
-        // dd($data);
+        
         return view('inventory.report.daily', compact('ware_lists', 'data'));
     }
 

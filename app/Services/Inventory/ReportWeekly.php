@@ -91,14 +91,16 @@ class ReportWeekly
             foreach ($item as $data) {
 
                 $item_list = json_decode($data->items, true);
-
+                foreach($item_list as $key => $value)
+                {
                 $days = date('d-m-Y', strtotime($date));
 
                 if (array_key_exists($days, $collection)) {
-                    $collection[$days] += count($item_list);
+                    $collection[$days] +=  $value['quantity'];
                 } else {
-                    $collection[$days] = count($item_list);
+                    $collection[$days] =  $value['quantity'];
                 }
+            }
             }
         }
 
