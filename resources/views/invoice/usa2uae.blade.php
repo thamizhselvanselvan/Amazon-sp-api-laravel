@@ -43,22 +43,22 @@
                @foreach ($data as $key =>$value)
                   
                <div class=" text-inverse m-t-5"><strong> INVOICE DATE: </strong> {{ $value->invoice_date }}</div>
-               <div class=" text-inverse m-t-5"><strong> INVOICE NO: </strong> {{ $value->invoice_no }}</div>
+               <div class=" text-inverse m-t-5"><strong> INVOICE NO.: </strong> {{ $value->invoice_no }}</div>
                <div class=" text-inverse m-t-5"><strong> CHANNEL: </strong> {{ $value->channel }}</div>
                <div class=" text-inverse m-t-5"><strong> SHIPPED BY: </strong> {{ $value->shipped_by }}</div>
-               <div class=" text-inverse m-t-5"><strong> AWB : </strong> {{ $value->awb_no }}</div>
-               <div class=" text-inverse m-t-5"><strong> HSN : </strong> {{ $value->hsn_code }}</div>
-               <div class=" text-inverse m-t-5"><strong> ARN : </strong> {{ $value->arn_no }}</div>
+               <div class=" text-inverse m-t-5"><strong> AWB NO.: </strong> {{ $value->awb_no }}</div>
+               <div class=" text-inverse m-t-5"><strong> HSN CODE: </strong> {{ $value->hsn_code }}</div>
+               <div class=" text-inverse m-t-5"><strong> ARN NO.: </strong> {{ $value->arn_no }}</div>
                <div class="invoice-detail">
                   <!-- Services Product -->
                </div>
             </div>
-            <div class="col-md-12 invoice-date text-right" >
+            <div class="col-md-12 invoice-date text-left" >
                <div class=" text-inverse m-t-5">
                   <div class="row">
                      <div class="col"></div>
                      <div class="col"></div>
-                     <div class="col">{!! $invoice_bar_code !!}</div>
+                     <div class="col">{!! $invoice_bar_code !!} {{ $value->invoice_no }}</div>
                   </div>
                </div>
             </div>
@@ -217,9 +217,9 @@
                   <table class="table table-invoice table-bordered table-bordered-dark table-sm text-left">
                      <tbody>
                         <tr>
-                           <td ><strong class="ml-2">SHIPPER A/C:</strong></td>
-                           <td ><strong class="ml-2">DATE:</strong>{{$value->invoice_date}} </td>     
-                           <td ><strong class="ml-2">ONFD NO:</strong>{{$value->invoice_no}}</td>
+                           <td ><strong class="ml-2">SHIPPER A/C.:</strong></td>
+                           <td ><strong class="ml-2">DATE: </strong>&nbsp;{{$value->invoice_date}} </td>     
+                           <td ><strong class="ml-2">ONFD NO: </strong>&nbsp;{{$value->invoice_no}}</td>
                               
                         </tr>
                      </tbody>
@@ -272,7 +272,7 @@
                      </tr>
                   </tbody>
                </table>
-               <hr class="dashed">
+               <!-- <hr class="dashed"> -->
             <!-- </div> -->
          </div>
          @endforeach

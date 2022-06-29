@@ -55,7 +55,7 @@
 }
 
 .invoice-price {
-    background: #f0f3f4;
+    /* background: #f0f3f4; */
     display: table;
     width: 100%
 }
