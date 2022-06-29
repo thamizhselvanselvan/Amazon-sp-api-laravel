@@ -219,7 +219,7 @@
                         <tr>
                            <td ><strong class="ml-2">SHIPPER A/C.:</strong></td>
                            <td ><strong class="ml-2">DATE: </strong>&nbsp;{{$value->invoice_date}} </td>     
-                           <td ><strong class="ml-2">ONFD NO: </strong>&nbsp;{{$value->invoice_no}}</td>
+                           <td ><strong class="ml-2">ONFD NO.: </strong>&nbsp;{{$value->invoice_no}}</td>
                               
                         </tr>
                      </tbody>
@@ -262,12 +262,12 @@
                   <tbody>
                      <tr>
                         <td><h6 class=" ml-2"><strong>TERMS AND CONDITIONS</strong></h6>
-                        <p><table><tbody><tr><p class="ml-2">SIGNATURE...............................</p></tr></tbody></table></p></td>
+                        <p><table><tbody><tr><p class="ml-2">SIGNATURE............</p></tr></tbody></table></p></td>
                         <td class="text-center"><p><b> CONDITION & LIABILITY</b></p>
-                        <p> I/We/ hereby Agree to Terms & Condition of B2CShip (Pacific Impex LLC) and I / We Certify That the Nature of goods Are as Indicated on this Airway Bill</p>
+                        <p>I/We/hereby Agree to Terms & Condition of B2CShip (Pacific Impex LLC) and I / We Certify That the Nature of goods Are as Indicated on this Airway Bill</p>
                         </td>
                         <td>
-                        <table><tbody><tr><p class="ml-2">SIGNATURE..................................</p></tr><tr><p class="ml-2">DATE................ TIME.............. </p></tr></tbody></table>
+                        <table><tbody><tr><p class="ml-2">SIGNATURE................</p></tr><tr><p class="ml-2">DATE......... TIME....... </p></tr></tbody></table>
                         </td>
                      </tr>
                   </tbody>
