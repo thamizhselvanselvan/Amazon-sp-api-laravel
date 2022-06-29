@@ -94,7 +94,9 @@ class anotherAmazonProductController extends Controller
         foreach ($files as $key => $file) {
             if ($key > 1) {
 
-                $filesArray[][$file] =  date("F d Y H:i:s.", filemtime($path . '/' . $file));
+                if(!str_contains($file, '.mosh')){
+                    $filesArray[][$file] =  date("F d Y H:i:s.", filemtime($path . '/' . $file));
+                }
             }
         }
 

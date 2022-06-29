@@ -87,10 +87,10 @@ class exportOtherAmazonInProduct extends Command
             OthercatDetailsIndia::select($headers)->chunk($chunk, function ($records) use ($exportFilePath, $headers, $chunk) {
 
                 if ($this->count == 1) {
-                    if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv')) {
-                        Storage::put($exportFilePath . $this->fileNameOffset . '.csv', '');
+                    if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv.mosh')) {
+                        Storage::put($exportFilePath . $this->fileNameOffset . '.csv.mosh', '');
                     }
-                    $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv'), "w");
+                    $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv.mosh'), "w");
                     $this->writer->insertOne($headers);
                 }
 
