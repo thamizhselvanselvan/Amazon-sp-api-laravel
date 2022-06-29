@@ -93,12 +93,12 @@ class InvoiceManagementController extends Controller
         $invoice_bar_code = $generator->getBarcode($invoice_no, $generator::TYPE_CODE_128);
         $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_128);
 
-        if($invoice_mode!= ''){
-            return view('invoice.'.$invoice_mode , compact(['data'],'invoice_no', 'invoice_bar_code', 'bar_code'));
-        }
-        else{
-            return view('invoice.invoice' , compact(['data'],'invoice_no', 'invoice_bar_code', 'bar_code'));
-        }
+        // if($invoice_mode!= ''){
+            return view('invoice.usa2uae' , compact(['data'],'invoice_no', 'invoice_bar_code', 'bar_code'));
+        // }
+        // else{
+        //     return view('invoice.invoice' , compact(['data'],'invoice_no', 'invoice_bar_code', 'bar_code'));
+        // }
     }
 
     public function selectedPrint($id)
@@ -106,22 +106,23 @@ class InvoiceManagementController extends Controller
         $eachid = explode('-', $id);
         foreach($eachid as $id){
             // $data []= Invoice::where('id', $id)->get();
-            $data = DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
-            $invoice_no = $data[0]->invoice_no;
-            $invoice_mode_multi = $data[0]->mode;
+            $data []= DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
+            $invoice_no = $data[0][0]->invoice_no;
+            $invoice_mode_multi = $data[0][0]->mode;
+            $awb_no = $data[0][0]->awb_no;
             
-            po($invoice_no);
+            // po($awb_no);
             // exit;
             
-            // $generator = new BarcodeGeneratorHTML();
-            // $invoice_bar_code = $generator->getBarcode($invoice_no, $generator::TYPE_CODE_128);
-            // $bar_code = $generator->getBarcode($invoice_no, $generator::TYPE_CODE_128);
+            $generator = new BarcodeGeneratorHTML();
+            $invoice_bar_code = $generator->getBarcode($invoice_no, $generator::TYPE_CODE_128);
+            $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_128);
             
         }
         // po($data);
         // exit;
         // if($invoice_mode_multi!= ''){
-        //     return view('invoice.multiple'.$invoice_mode_multi , compact(['data'], 'invoice_bar_code', 'bar_code'));
+            return view('invoice.multipleusa2uae', compact(['data'], 'invoice_bar_code', 'bar_code'));
         // }
         // else{
         //     return view('invoice.invoice' , compact(['data'],'invoice_no', 'invoice_bar_code', 'bar_code'));

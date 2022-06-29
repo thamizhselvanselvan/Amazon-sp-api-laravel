@@ -5,6 +5,13 @@
 @section('css')
     <link rel="stylesheet" href="/css/styles.css">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+
+    <style>
+     .dashed{
+    border: 1px dashed black;
+   }
+    </style>
 @stop
 @section('content_header')
 <div class="invoice-company text-inverse f-w-600">
@@ -31,20 +38,20 @@
                         
                             <!-- <small>Invoice / July period</small> -->
                             <div class=" text-inverse m-t-5"><strong> INVOICE DATE: </strong> {{ $value->invoice_date }}</div>
-                            <div class=" text-inverse m-t-5"><strong> INVOICE NO: </strong> {{ $value->invoice_no }}</div>
+                            <div class=" text-inverse m-t-5"><strong> INVOICE NO.: </strong> {{ $value->invoice_no }}</div>
                             <div class=" text-inverse m-t-5"><strong> CHANNEL: </strong> {{ $value->channel }}</div>
                             <div class=" text-inverse m-t-5"><strong> SHIPPED BY: </strong> {{ $value->shipped_by }}</div>
-                            <div class=" text-inverse m-t-5"><strong> AWB NO: </strong> {{ $value->awb_no }}</div>
+                            <div class=" text-inverse m-t-5"><strong> AWB NO.: </strong> {{ $value->awb_no }}</div>
                             <div class=" text-inverse m-t-5"><strong> HSN CODE: </strong> {{ $value->hsn_code }}</div>
-                            <div class=" text-inverse m-t-5"><strong> ARN No: </strong> {{ $value->arn_no }}</div>
+                            <div class=" text-inverse m-t-5"><strong> ARN NO.: </strong> {{ $value->arn_no }}</div>
                            
                         </div>
-                        <div class="col-md-12 invoice-date text-right" >
+                        <div class="col-md-12 invoice-date text-left" >
                             <div class=" text-inverse m-t-5">
                                 <div class="row">
                                     <div class="col"></div>
                                     <div class="col"></div>
-                                    <div class="col">{!! $invoice_bar_code !!}</div>
+                                    <div class="col">{!! $invoice_bar_code !!} {{ $value->invoice_no }}</div>
                                 </div>
                             </div>
                         </div>
@@ -90,7 +97,7 @@
                                         <th class="text-center" width="10%">QTY</th>
                                         <th class="text-center" width="10%">PRODUCT PRICE</th>
                                         <th class="text-center" width="10%">TAXABLE VALUE</th>
-                                        <th class="text-right" width="20%">TOTAL</th>
+                                        <th class="text-center" width="20%">TOTAL</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -123,9 +130,9 @@
                                         @endif
                                         
                                         @if( $value->grand_total =='' )
-                                        <td class="text-right">{{ 0 }}</td>
+                                        <td class="text-center">{{ 0 }}</td>
                                         @else
-                                        <td class="text-right">{{$value->currency}} {{ $value->grand_total }}</td>
+                                        <td class="text-center">{{$value->currency}} {{ $value->grand_total }}</td>
                                         @endif
                                     
                                     </tr>
@@ -149,25 +156,30 @@
                             </div>
                             </div>
                             <!-- end invoice-price -->
-                            <p class=" mb-0 text-center">This is system generated invoice, it may contain only digital signature</p>
+                            <p class=" mb-0 text-center">This is system generated invoice, it may contain only digital signature</p><br><br>
+
                             <!-- <div class="container"> -->
-                            <div class="row" class="border-dashed">
+                            <hr class="dashed"><br><br>
+                            <div class="row">
                                 <div class="col "><img src="{{URL::asset('/image/bombinoImage.jpg')}}" class="img-fluid rounded mx-auto d-block" alt="Bombino_express"></div>
                                 <div class="col border">
                                     <!-- <div class="table-responsive"> -->
-                                        <table class="table-sm text-center table-size">
-                                        <thead>
-                                            <tr>
-                                                <th><strong> CONSIGNMENT NOTE NUMBER </strong></th>
-                                            </tr>
-                                            <tr>
-                                                <th> {!!$bar_code !!} </th>
-                                            </tr>
-                                            <tr>
-                                                <th>{{$value->invoice_no}}</th>
-                                            </tr>
-                                        </thead>
-                                        </table>
+                                    <div class="row">
+                                        <div class="col-1"></div>
+                                        <div class="col-10">
+                                            <table class="table-sm">
+                                                <thead>
+                                                    <tr>
+                                                    <th>CONSIGNMENT NOTE NUMBER</th>
+                                                    </tr>
+                                                    <tr>
+                                                    <th> {!!$bar_code !!} {{$value->awb_no}}</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                        <div class="col-1"></div>
+                                    </div>
                                     <!-- </div> -->
                                 </div>
                                 <div class="col">
@@ -198,10 +210,10 @@
                             <table class="table table-invoice table-bordered table-bordered-dark table-sm text-left">
                                 <thead>
                                     <tr>
-                                        <th>SHIPPER A/C: </th>
-                                        <th>DATE:</th>     
-                                        <th >ONFD NO:</th>
-                                        
+                                        <td ><strong class="ml-2">SHIPPER A/C.:</strong></td>
+                                        <td ><strong class="ml-2">DATE: </strong>&nbsp;{{$value->invoice_date}} </td>     
+                                        <td ><strong class="ml-2">ONFD NO.: </strong>&nbsp;{{$value->invoice_no}}</td>
+                              
                                     </tr>
                                 </thead>
                             </table>
@@ -209,11 +221,11 @@
                                 <tbody>
                                     <div class="row">
                                         <div class="col ">
-                                            <b class="bg-dark text-white mt-4 ml-2"> CONSIGNOR</b><hr>
+                                            <b class="bg-dark text-white mt-4 ml-2"> CONSIGNOR</b>
                                             <p class=" ml-2 mt-2"><b> {{ $value->bill_to_name }} </b><br> {{ $value->bill_to_add }} </p>
                                         </div>
                                         <div class="col ">
-                                            <b class="bg-dark text-white mt-4 ml-2"> CONSIGNEE </b><hr>
+                                            <b class="bg-dark text-white mt-4 ml-2"> CONSIGNEE </b>
                                             <p class=" ml-2 mt-2"><b> {{ $value->bill_to_name }} </b><br> {{ $value->ship_to_add }} </p>
                                         </div>
                                     </div>
@@ -233,12 +245,12 @@
                                     </strong>
                                     <tbody>
                                         <tr>
-                                        <td>1</td>
-                                        <td>SPX</td>
-                                        <td>{{ $value->item_description }}</td>
-                                        <td>7*3*3</td>
-                                        <td>1.000</td>
-                                        <td>1.000</td>
+                                            <td>{{$value->no_of_pcs}}</td>
+                                            <td>{{$value->packing}}</td>
+                                            <td>{{$value->item_description}}</td>
+                                            <td>{{$value->dimension}}</td>
+                                            <td>{{$value->actual_weight}}</td>
+                                            <td>{{$value->charged_weight}}</td>
                                         </tr>
                                     </tbody>
                                 </thead>
@@ -246,10 +258,10 @@
                             <table class="table table-bordered table-bordered-dark alpha-table table-sm ">
                                 <tbody>
                                     <tr>
-                                        <td><h6 class=" ml-2"><strong>TERMS AND CONDITIONS</strong></h6>
-                                        <p><table><tbody><tr><p class="ml-2">SIGNATURE...............................</p></tr></tbody></table></p></td>
+                                        <td><h6 class=" ml-1"><strong>TERMS AND CONDITIONS</strong></h6>
+                                        <p><table><tbody><tr><p class="ml-2">SIGNATURE............</p></tr></tbody></table></p></td>
                                         <td class="text-center"><p><b> CONDITION & LIABILITY</b></p>
-                                        <p> I/We/ hereby Agree to Terms & Condition of B2CShip (Pacific Impex LLC) and I / We Certify That the Nature of goods Are as Indicated on this Airway Bill</p>
+                                        <p>I/We/hereby Agree to Terms & Condition of B2CShip (Pacific Impex LLC) and I / We Certify That the Nature of goods Are as Indicated on this Airway Bill</p>
                                         </td>
                                         <td>
                                         <table><tbody><tr><p class="ml-2">SIGNATURE..................................</p></tr><tr><p class="ml-2">DATE:................ TIME:.............. </p></tr></tbody></table>
@@ -257,7 +269,6 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <hr class="dashed">
                         </div>
                     </div>
                 </div>
