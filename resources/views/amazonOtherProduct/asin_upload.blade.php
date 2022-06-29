@@ -315,6 +315,30 @@
         $('#productExport').modal('hide');
     });
 
+    $('.all').change(function() {
+        if ($('.all').is(':checked')) {
+            $(".header_options").prop("checked", true);
+            // $(".header_options").attr("disabled", true);
+        } else {
+            $(".header_options").prop("checked", false);
+            // $(".header_options").removeAttr("disabled");
+        }
+    });
+
+    $('.header_options').change(function() {
+        let select_header = [];
+        let count = 0;
+        $("input[name='options[]']:checked").each(function() {
+            count++;
+        });
+        // alert(count);
+        if (count === 41) {
+            $(".all").prop("checked", true);
+        } else {
+            $(".all").prop("checked", false);
+        }
+    });
+    
     $('#exportbyAsin').on('click', function() {
         
         exportCatalog('Asin');
