@@ -53,12 +53,6 @@
 <table class="table table-bordered yajra-datatable table-striped text-center">
     <thead>
         <tr class="text-bold bg-info">
-<<<<<<< HEAD
-            <th>S/N</th>
-            <th>Order Date</th>
-            <th>Order No.</th>
-            <th>Awb No.</th>
-=======
 
             <th>S/N</th> 
             <th>Status</th>
@@ -67,7 +61,6 @@
             <th>Awb No.</th>
             <th>Order Date</th>
             <!-- <td>Select All <br><input class="check_all" type="checkbox" value='' name="options[]" id="check_all" ></div> </td> -->
->>>>>>> 19c2fdd7b61776130ef271b49e2b5292c7df751c
             <th>Action</th>
         </tr>
     </thead>
@@ -90,12 +83,6 @@
             name: 'sn',
             orderable: false,
             searchable: false
-            },
-            {
-                data: 'order_date',
-                name: 'order_date',
-                orderable: false,
-                searchable: false
             },
             {
                 data: 'store_name',
