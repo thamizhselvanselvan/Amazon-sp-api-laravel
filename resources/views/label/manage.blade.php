@@ -59,10 +59,13 @@
 <table class="table table-bordered yajra-datatable table-striped text-center">
     <thead>
         <tr class="text-bold bg-info">
+
             <th>S/N</th> 
             <th>Status</th>
+            <th>Store Name </th>
             <th>Order No.</th>
             <th>Awb No.</th>
+            <th>Order Date</th>
             <!-- <td>Select All <br><input class="check_all" type="checkbox" value='' name="options[]" id="check_all" ></div> </td> -->
             <th>Action</th>
         </tr>
@@ -93,12 +96,20 @@
                 name: 'status'
             },
             {
+                data: 'store_name',
+                name: 'store_name'
+            },
+            {
                 data: 'order_no',
                 name: 'order_no'
             },
             {
                 data: 'awb_no',
                 name: 'awb_no',
+            },
+            {
+                data: 'purchase_date',
+                name: 'purchase_date',
             },
             // {
             //     data: 'check_box',

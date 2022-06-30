@@ -23,7 +23,7 @@ class labelManagementController extends Controller
 {
     private $order_details;
     public function SearchLabel()
-    {       
+    {
         return view('label.search_label');
     }
 
@@ -35,7 +35,7 @@ class labelManagementController extends Controller
             $order = config('database.connections.order.database');
             $catalog = config('database.connections.catalog.database');
             $web = config('database.connections.web.database');
-    
+
             $label = DB::select("SELECT 
             DISTINCT web.id, web.awb_no, web.order_no
             from $web.labels as web     
@@ -44,8 +44,8 @@ class labelManagementController extends Controller
             JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin 
             WHERE web.bag_no = $bag_no
         ");
-        
-        return response()->json($label);
+
+            return response()->json($label);
             // $results = DB::connection('web')->select("SELECT id, order_no, awb_no FROM labels WHERE created_at BETWEEN '$date1' AND '$date2' ");
         }
     }
@@ -53,14 +53,27 @@ class labelManagementController extends Controller
     public function manage(Request $request)
     {
         if ($request->ajax()) {
-            $data = DB::connection('web')->select("select * from labels order by id ASC");
+            $order = config('database.connections.order.database');
+            $catalog = config('database.connections.catalog.database');
+            $web = config('database.connections.web.database');
 
-            foreach ($data as $key => $value) {
-                $result[$key]['id'] = $value;
-            }
+            $data = DB::select("SELECT 
+        
+        DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name
+        from $web.labels as web     
+        JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no 
+        JOIN $order.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id 
+        -- JOIN ord ON ord.our_seller_identifier = $order.ord_order_seller_credentials.seller_id as 
+    ");
+
+            // $data = DB::connection('web')->select("select * from labels order by id ASC");
+
+            // foreach ($data as $key => $value) {
+            //     $result[$key]['id'] = $value;
+            // }
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('action', function ($id) use ($result) {
+                ->addColumn('action', function ($id) {
 
                     $this->order_details = $this->labelDataFormating($id->id);
                     if ($this->order_details) {
@@ -71,10 +84,10 @@ class labelManagementController extends Controller
                     // $action1 = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
                     return "<div class ='text-left'>Details Not Avaliable</div>";
                 })
-                ->addColumn('sn', function($id){
+                ->addColumn('sn', function ($id) {
                     return $id->id;
                 })
-                ->addColumn('check_box', function ($id) use ($result) {
+                ->addColumn('check_box', function ($id) {
                     if ($this->order_details) {
                         $check_box = '<div class="pl-2"><input class="check_options" type="checkbox" value=' . $id->id . ' name="options[]" ></div>';
                         return $check_box;
@@ -86,7 +99,7 @@ class labelManagementController extends Controller
                     }
                     return '<div class="text-center"><i class="fa fa-times" style="color:red" aria-hidden="true"></i>';
                 })
-                ->rawColumns(['sn','action', 'check_box', 'status'])
+                ->rawColumns(['sn', 'action', 'check_box', 'status'])
                 ->make(true);
         }
         return view('label.manage');
