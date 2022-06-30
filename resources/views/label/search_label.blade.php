@@ -12,14 +12,13 @@
     <label>
         Search:<input type="text" id="Searchbox" placeholder="Search label">
     </label>
-        <!-- <a href=""> -->
-            <!-- <x-adminlte-button label="Selected Download" id="selected-download" theme="primary" icon="fas fa-file-download" class="btn-sm"/> -->
-        <!-- </a> -->
-        <!-- <a href="download-all">  -->
-            <!-- <x-adminlte-button label="Selected Print" id='select_print' theme="primary" icon="fas fa-print" class="btn-sm" /> -->
-        <!-- </a> -->
-        
-    
+</div>
+<div class="row">
+    <div class="col">
+        <a href="{{ route('label.manage') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-long-arrow-alt-left"></i> Back
+        </a>
+    </div>
 </div>
 @stop
 
@@ -106,12 +105,12 @@
                 success: function(response) {
                     console.log(response);
                     let table ="<table id='checkTable' class=table table-bordered table-striped text-center>";
-                    table += "<thead><tr class='text-bold bg-info'><th>Selected</th> <th>Order No</th><th>Awb No.</th><th>Action</th> </tr><thead>";
+                    table += "<thead><tr class='text-bold bg-info'><th>SELECTED</th><th>ORDER DATE</th> <th>ORDER NO</th><th>AWB NO.</th><th>ACTION</th> </tr><thead>";
 
                     $.each(response, function(i, response){
                         let label_id = response.order_no.replaceAll(/-/g, '_');
         
-                        table +="<tr class='"+label_id+"'><td><input class='check_options' type='checkbox' value="+ response.id +" name='options[]' id='checkid"+response.id+"'></td><td>"+response.order_no+"</td><td>"+response.awb_no+"</td><td><div class='d-flex'><a href=/label/pdf-template/"+ response.id +" class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/label/download-direct/"+ response.id +"  class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a></td> </tr>";
+                        table +="<tr class='"+label_id+"'><td><input class='check_options' type='checkbox' value="+ response.id +" name='options[]' id='checkid"+response.id+"'></td><td>"+response.order_date+"</td><td>"+response.order_no+"</td><td>"+response.awb_no+"</td><td><div class='d-flex'><a href=/label/pdf-template/"+ response.id +" class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/label/download-direct/"+ response.id +"  class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a></td> </tr>";
                     });
                     $('#showTable').html(table);
                 // alert('Export pdf successfully');

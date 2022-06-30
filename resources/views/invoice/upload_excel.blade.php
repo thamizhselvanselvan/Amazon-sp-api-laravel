@@ -9,14 +9,13 @@
     <h1 class="m-0 text-dark text-center ">Invoice Excel Upload</h1>
   </div>
 </div>
-<!-- <div class="row">
-  <div class="col-6">
-    <a href="/BOE/index" class="btn btn-primary">
-      <i class="fas fa-long-arrow-alt-left"></i> Back
-    </a>
-  </div>
-</div> -->
-
+<div class="row">
+    <div class="col">
+        <a href="{{ route('invoice.index') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-long-arrow-alt-left"></i> Back
+        </a>
+    </div>
+</div>
 @stop
 
 @section('css')
@@ -53,7 +52,7 @@
     @endif
 
     <x-adminlte-alert theme="danger" title="Error" dismissable id="alert" style="display:none">
-     Please Select Invoice Excel.
+    Select invoice file to upload in excel format.
     </x-adminlte-alert>
 
     <form class="row" id="multi-file-upload" method="POST" action="javascript:void(0)" accept-charset="utf-8" enctype="multipart/form-data">

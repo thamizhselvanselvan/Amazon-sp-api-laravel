@@ -2,23 +2,16 @@
 
 namespace App\Http\Controllers\Inventory;
 
-use DatePeriod;
 use Carbon\Carbon;
-use Nette\Utils\Json;
 use League\Csv\Writer;
-use Carbon\CarbonInterval;
-use Illuminate\Http\Request;
-use Yajra\DataTables\DataTables;
 use App\Models\Inventory\Shipment;
-use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory\Outshipment;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Inventory\ReportWeekly;
-use App\Http\Controllers\Inventory\CampaignHistory;
-use Symfony\Component\Serializer\Encoder\JsonDecode;
+use App\Services\Inventory\ReportMonthly;
 
 class ReportController extends Controller
 {
@@ -31,23 +24,45 @@ class ReportController extends Controller
         $date = Carbon::now()->format('d M Y');
 
         /* Inwarding count */
-        $dayin =   Inventory::whereDate('created_at',  Carbon::today()->toDateString())->get();
-        $todayinward = count($dayin);
+        $todayinward = 0;
+        $dayin =   Shipment::whereDate('created_at',  Carbon::today()->toDateString())->get();
 
+        foreach ($dayin as $key => $item) {
+
+            $item_list = json_decode($item->items, true);
+
+            foreach ($item_list as  $value) {
+                $todayinward += $value['quantity'];
+            }
+        }
         /* Outwarding count */
+        $todayoutward = 0;
         $dayout =   Outshipment::whereDate('created_at',  Carbon::today()->toDateString())->get();
-        $todayoutward = count($dayout);
+        foreach ($dayout as $key => $value) {
+            $item_list = json_decode($value->items, true);
 
+            foreach ($item_list as  $data) {
+
+                $todayoutward += $data['quantity'];
+            }
+        }
         /* Opeaning Stock */
+        $todayopeningstock = 0;
         $startTime = Carbon::today()->subDays(365);
         $endTimeYesterday = Carbon::yesterday()->endOfDay();
         $open = Inventory::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
-        $todayopeningstock = count($open);
+        foreach ($open as  $data) {
+            $todayopeningstock +=  $data['quantity'];
+        }
 
 
         /* Closing Stock count */
+        $todayclosingstock = 0;
         $close =   Inventory::get();
-        $todayclosingstock = count($close);
+
+        foreach ($close as  $data) {
+            $todayclosingstock +=  $data['quantity'];
+        }
 
         /* Opeaning Amount */
         $amt = [];
@@ -95,6 +110,7 @@ class ReportController extends Controller
         /* Cloasing Amount */
         $closeamt =   Inventory::get();
         $closeprice = [];
+        $dayclosing = [];
         foreach ($closeamt as $close) {
             $closeprice[] = [
                 'price' => $close['price'],
@@ -102,8 +118,8 @@ class ReportController extends Controller
                 'total' => $close['price'] * $close['quantity'],
             ];
         }
-        $dayclosing = [];
         foreach ($closeprice as $dayclose) {
+
             $dayclosing[] = $dayclose['total'];
         }
         $dayclosingamt =  array_sum($dayclosing);
@@ -120,19 +136,19 @@ class ReportController extends Controller
             "closing_stock" => $todayclosingstock,
             "closing_amt" => $dayclosingamt
         ];
-        // dd($data);
+
         return view('inventory.report.daily', compact('ware_lists', 'data'));
     }
 
-    public function  weekly()
+    public function  weekly(ReportWeekly $report_weekly)
     {
         $ware_lists = Warehouse::get();
-        $week_data = $this->getweekly();
+        $week_data = $this->getweekly($report_weekly);
 
         return view('inventory.report.weekly', compact('ware_lists', 'week_data'));
     }
 
-    public function getweekly(ReportWeekly $report_weekly)
+    public function getweekly($report_weekly)
     {
         //Week date //
         $date_array = [];
@@ -143,22 +159,33 @@ class ReportController extends Controller
             $i++;
         }
 
+
+        /* weekly opeanig Count*/
+        $open_count = $report_weekly->OpeningStock();
+        //  dd($open_count);
         /* weekly Inwarding Count*/
         $inward_count = $report_weekly->OpeningShipmentCount();
 
 
+        /* weekly Inwarding  Amount*/
+        $week_inv_amt = $report_weekly->InwardingAmount();
+
+
         /* weekly Outwarding  Count*/
+        $week_out_count = $report_weekly->OutwardShipmentCount();
 
 
 
         /* weekly Outwarding  Amount*/
+        $week_out_amt = $report_weekly->OutwardShipmentAmount();
 
 
         /* weekly closing count*/
-
-
-
+       /* weekly opeanig Count*/
+       $week_closing_count = $report_weekly->ClosingCount();
+       
         /* weekly closing Amount*/
+        $week_closing_amt = $report_weekly->ClosingAmount();
 
 
 
@@ -168,7 +195,7 @@ class ReportController extends Controller
                 $val,
                 $week_closing_count[$k],
                 $week_closing_amt[$k],
-                $week_inv_count[$k],
+                $inward_count[$k],
                 $week_inv_amt[$k],
                 $week_out_count[$k],
                 $week_out_amt[$k],
@@ -180,10 +207,9 @@ class ReportController extends Controller
         return $week_data;
     }
 
-
-    public function eportinvweekly(Request $request)
+    public function eportinvweekly(ReportWeekly $report_weekly)
     {
-        $week_data = $this->getweekly();
+         $week_exp = $this->getweekly($report_weekly);
 
 
         $headers = [
@@ -206,210 +232,75 @@ class ReportController extends Controller
 
         $csv_value = [];
         $count = 0;
-        $writer->insertAll($week_data);
+        $writer->insertAll($week_exp);
         return Storage::download($exportFilePath);
     }
 
-    public function Monthly()
+    public function Monthly(ReportMonthly $report_monthly)
     {
         $ware_lists = Warehouse::get();
-        $month_data = $this->getMonthly();
+        $month_data = $this->getMonthly($report_monthly);
         return view('inventory.report.monthly', compact('ware_lists', 'month_data'));
     }
 
-    public function getMonthly()
+    public function getMonthly($report_monthly)
     {
         //Monthly date //
-        $date_array = [];
+        $date_arraymonth = [];
         $i = 0;
         while ($i < 31) {
             $today = Carbon::today();
-            array_push($date_array, $today->subDays($i)->format('Y-m-d'));
+            array_push($date_arraymonth, $today->subDays($i)->format('Y-m-d'));
             $i++;
         }
+
+        /* Monthly Inwarding Count*/
+        $month_inv_count = $report_monthly->MonthlyInCount();
+
+
+        /* Monthly Inwarding  Amount*/
+        $month_inv_amt = $report_monthly->MonthlyInAmount();
+
+        /* Monthly Outwarding  Count*/
+        $month_out_count = $report_monthly->monthly_out_count();
+
+
+
+        /* Monthly Outwarding  Amount*/
+        $month_out_amt = $report_monthly->monthly_out_amount();
+
+
         /* Monthly closing count*/
-
-
-        $Monthlyclose = Inventory::whereBetween('created_at', [Carbon::now()->subDays(30)->format('Y-m-d') . " 00:00:00", Carbon::now()->format('Y-m-d') . " 23:59:59"])
-            ->groupBy('created_at')
-            ->orderBy('created_at')
-            ->get([
-                DB::raw('DATE_FORMAT(created_at, "%Y-%m-%d") as date'),
-                DB::raw('count(*) as total')
-            ])
-            ->keyBy('date')
-            ->map(function ($item) {
-                $item->date = Carbon::parse($item->date);
-                return $item;
-            });
-
-
-
-        $period = new DatePeriod(Carbon::now()->subDays(30), CarbonInterval::day(), Carbon::today()->endOfDay());
-
-        $weeklyin = array_map(function ($datePeriod) use ($Monthlyclose) {
-            $date = $datePeriod->format('Y-m-d');
-            return $Monthlyclose->has($date) ? $Monthlyclose->get($date)->total : 0;
-        }, iterator_to_array($period));
-        $month_inv_count = array_reverse($weeklyin);
-
+        $month_closing_count = 0;
+         $month_closing_count = $report_monthly->ClosingCountmonth();
 
         /* Monthly closing Amount*/
-        $month_close_amount = DB::connection('inventory')->table('inventory')->where('created_at', '>=', Carbon::now()->subdays(6))->get()->groupBy('created_at');
-        $shipment_closing = [];
+        $month_closing_amt = 0;
+         $month_closing_amt = $report_monthly->ClosingAmountmonth();
 
-        foreach ($month_close_amount as $key => $closingData) {
-
-            foreach ($closingData as $items) {
-
-
-                $shipment_closing[date('d-m-Y', strtotime($key))] = $items->quantity * $items->price;
-
-
-
-                $period = new DatePeriod(Carbon::now()->subDays(30), CarbonInterval::day(), Carbon::today()->endOfDay());
-
-                $weeklycloseamt = array_map(function ($datePeriod) use ($shipment_closing) {
-                    $date = $datePeriod->format('d-m-Y');
-                    return (isset($shipment_closing[$date])) ? $shipment_closing[$date] : 0;
-                }, iterator_to_array($period));
-
-
-                $month_closing_amt = array_reverse($weeklycloseamt);
-            }
-        }
-
-
-        /* month Inwarding Amount*/
-        $openShipmentData = DB::connection('inventory')->table('shipments')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
-
-        $shipment_lists_date_wise = [];
-
-        foreach ($openShipmentData as $key => $datewiseData) {
-
-            foreach ($datewiseData as $items) {
-
-                $item_lists = json_decode($items->items);
-
-                foreach ($item_lists as $item) {
-
-                    $shipment_lists_date_wise[date('d-m-Y', strtotime($key))] = $item->quantity * $item->price;
-
-                    $period = new DatePeriod(Carbon::now()->subDays(30), CarbonInterval::day(), Carbon::today()->endOfDay());
-
-
-                    $monthlyin = array_map(function ($datePeriod) use ($shipment_lists_date_wise) {
-                        $date = $datePeriod->format('d-m-Y');
-                        return (isset($shipment_lists_date_wise[$date])) ? $shipment_lists_date_wise[$date] : 0;
-                    }, iterator_to_array($period));
-
-
-
-                    $month_inv_amt = array_reverse($monthlyin);
-                }
-            }
-        }
-
-
-        /* monthly Inwarding Count*/
-        $openShipmentcount = DB::connection('inventory')->table('shipments')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
-
-        $shipment_count_date_wise = [];
-
-        foreach ($openShipmentcount as $key => $datewiseDataCount) {
-
-            foreach ($datewiseDataCount as $items) {
-
-                $item_list = json_decode($items->items);
-
-                foreach ($item_list as $item) {
-
-                    $shipment_count_date_wise[date('d-m-Y', strtotime($key))] = $item->quantity;
-                    $period = new DatePeriod(Carbon::now()->subDays(30), CarbonInterval::day(), Carbon::today()->endOfDay());
-
-                    $weeklyincount = array_map(function ($datePeriod) use ($shipment_count_date_wise) {
-                        $date = $datePeriod->format('d-m-Y');
-                        return (isset($shipment_count_date_wise[$date])) ? $shipment_count_date_wise[$date] : 0;
-                    }, iterator_to_array($period));
-                    $month_closing_count = array_reverse($weeklyincount);
-                }
-            }
-        };
-
-
-
-        /* monthly Outwarding  Amount*/
-        $outShipmentData = DB::connection('inventory')->table('outshipments')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
-
-        $out_shipment_lists_date_wise = [];
-
-        foreach ($outShipmentData as $key => $datewisecount) {
-
-            foreach ($datewisecount as $items) {
-
-                $item_list = json_decode($items->items);
-
-                foreach ($item_list as $item) {
-
-                    $out_shipment_lists_date_wise[date('d-m-Y', strtotime($key))] = $item->quantity * $item->price;
-
-                    $period = new DatePeriod(Carbon::now()->subDays(30), CarbonInterval::day(), Carbon::today()->endOfDay());
-
-                    $weeklyout = array_map(function ($datePeriod) use ($out_shipment_lists_date_wise) {
-                        $date = $datePeriod->format('d-m-Y');
-                        return (isset($out_shipment_lists_date_wise[$date])) ? $out_shipment_lists_date_wise[$date] : 0;
-                    }, iterator_to_array($period));
-                    $month_out_closing_amt = array_reverse($weeklyout);
-                }
-            }
-        }
-
-        /* monthly Outwarding  Count*/
-        $outShipmentcount = DB::connection('inventory')->table('outshipments')->where('created_at', '>=', Carbon::now()->subdays(31))->get()->groupBy('created_at');
-
-        $outshipment_count_date_wise = [];
-
-        foreach ($outShipmentcount as $key => $outwiseDataCount) {
-
-            foreach ($outwiseDataCount as $items) {
-
-                $item_list = json_decode($items->items);
-
-                foreach ($item_list as $item) {
-
-                    $outshipment_count_date_wise[date('d-m-Y', strtotime($key))] = $item->quantity;
-
-                    $period = new DatePeriod(Carbon::now()->subDays(30), CarbonInterval::day(), Carbon::today()->endOfDay());
-
-                    $weeklyoutcount = array_map(function ($datePeriod) use ($outshipment_count_date_wise) {
-                        $date = $datePeriod->format('d-m-Y');
-                        return (isset($outshipment_count_date_wise[$date])) ? $outshipment_count_date_wise[$date] : 0;
-                    }, iterator_to_array($period));
-                    $month_out_count = array_reverse($weeklyoutcount);
-                }
-            }
-        }
-
+        // dd($date_arraymonth, $month_inv_count,$month_inv_amt,$month_out_count,$month_out_amt,$month_closing_count,$month_closing_amt);
         $month_data = [];
-        foreach ($date_array as $k => $val) {
+        foreach ($date_arraymonth as $key => $val) {
             $month_data[] = [
                 $val,
-                $month_closing_count[$k],
-                $month_closing_amt[$k],
-                $month_inv_count[$k],
-                $month_inv_amt[$k],
-                $month_out_count[$k],
-                $month_out_closing_amt[$k],
-                $month_closing_count[$k],
-                $month_closing_amt[$k]
+                $month_closing_count[$key] ,
+                $month_closing_amt[$key] ,
+                $month_inv_count[$key] ,
+                $month_inv_amt[$key] ,
+                $month_out_count[$key] ,
+                $month_out_amt[$key] ,
+                $month_closing_count[$key] ,
+                $month_closing_amt[$key]
             ];
         }
+        //  dd($month_data);
         return $month_data;
     }
 
-    public function eportinvmonthly(Request $request)
+    public function eportinvmonthly(ReportMonthly $report_monthly)
     {
-        $month_data = $this->getMonthly();
+       
+        $month_exp = $this->getMonthly($report_monthly);
 
         $headers = [
             'Date',
@@ -422,7 +313,7 @@ class ReportController extends Controller
             'Closing Stock',
             'closing Stock  Amount'
         ];
-        $exportFilePath = 'Inventory/MonthlyReport.csv'; // your file path, where u want to save
+        $exportFilePath = 'Inventory/MonthlyReport.csv'; 
         if (!Storage::exists($exportFilePath)) {
             Storage::put($exportFilePath, '');
         }
@@ -431,7 +322,7 @@ class ReportController extends Controller
 
         $csv_value = [];
         $count = 0;
-        $writer->insertAll($month_data);
+        $writer->insertAll($month_exp);
         return Storage::download($exportFilePath);
     }
 }

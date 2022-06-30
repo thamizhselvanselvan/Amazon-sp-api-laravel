@@ -1,32 +1,44 @@
 @extends('adminlte::page')
 @section('title', 'Search Invoice')
 
-@section('css')
-<link rel="stylesheet" href="/css/styles.css">
-<style>
-.table td {
-  padding: 0;
-}
-</style>
-@stop
-
 @section('content_header')
 <div class="row">
     <h1 class="m-0 text-dark col">Invoice Management</h1>
-    <h2 class="mb-4 text-right col"></h2>
+    <!-- <h2 class="mb-4 text-right col"></h2> -->
     <label>
-        Search:<input type="text" id="Searchbox" placeholder="search invoice">
+        Search:<input type="text" id="Searchbox" placeholder="search invoice" autocomplete="off" />
     </label> 
+</div>
+<div class="row">
+    <div class="col">
+        <a href="{{ route('invoice.index') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-long-arrow-alt-left"></i> Back
+        </a>
+    </div>
 </div>
 @stop
 @section('content')
 
-<div class="container search-box">
+<div class="container-fluid search-box">
     <div class="row">
         <div class="col"></div>
-        <div class="col-7">
+        <div class="col-2">
             <form action="">
                 @csrf
+                <div class="form-group">
+                    <x-adminlte-select label="Mode: " name="mode" id="mode" class="float-right">
+                        <option value="">select mode</option>
+                        @foreach ($mode as $value)
+                            <option value="{{$value->mode}} ">{{$value->mode}}</option>
+                        @endforeach
+                    </x-adminlte-select>
+                </div>
+            </form>
+        </div>
+        <div class="col">
+            <form action="">
+                @csrf
+               
                 <div class="form-group">
                     <label>Invoice Date:</label>
                     <div class="input-group">
@@ -37,8 +49,8 @@
                         </div>
                         <input type="text" class="form-control float-right datepicker" name='invoice_date' placeholder="Select Date Range" autocomplete="off" id="invoice_date">
                         <x-adminlte-button label="Search" theme="primary" icon="fas fa-search" id="search" class="btn-sm ml-2" />
-                        <x-adminlte-button label="Selected Download" id="selected-download" theme="primary" icon="fas fa-file-download" class="btn-sm ml-2"/>
-                        <x-adminlte-button label="Selected Print" id='select_print' theme="primary" icon="fas fa-print" class="btn-sm ml-2" />
+                        <x-adminlte-button label="Download Selected" id="selected-download" theme="primary" icon="fas fa-download" class="btn-sm ml-2"/>
+                        <x-adminlte-button label="Print Selected" id='select_print' theme="primary" icon="fas fa-print" class="btn-sm ml-2" />
                     </div>
                 </div>
             </form>
@@ -83,11 +95,17 @@
         });
         
         $('#search').click(function(){
-            if(($('.datepicker').val() == ''))
-            {
+
+            if($('#mode').val() == ''){
+                alert('Please Choose Mode');
+            }
+            else if(($('.datepicker').val() == '')){
                 alert('Please Choose Date');
             }
+            else{
+
                 $('#showTable').show();
+                let invoice_mode = $('#mode').val();
                 let invoice_date = $('#invoice_date').val();
                 // alert(invoice_date);
                 $.ajax({
@@ -95,22 +113,24 @@
                     url: "{{ url('/invoice/select-invoice')}}",
                     data:{ 
                     "invoice_date": invoice_date,
+                    "invoice_mode": invoice_mode,
                     "_token": "{{ csrf_token() }}",
                     },
                     success: function(response) {
                         // console.log(response);
-                        let table ="<table id='checkTable' class=table table-bordered table-striped text-center >";
-                        table += "<thead><tr class='text-bold bg-info'><th>Selected</th> <th>Invoice No.</th><th>Invoice Date</th><th>Channel</th><th>Shipped By</th><th>Awb No</th><th>Arn NO.</th><th>Hsn Code</th><th>Quantity</th><th>Product Price</th><th class='text-center'>Action</th></tr></thead><tbody> ";
+                        let table ="<table id='checkTable' class='table table-bordered table-striped text-center' >";
+                        table += "<thead><tr class='text-bold bg-info'><th>Selected</th> <th>INVOICE NO.</th><th>INVOICE DATE</th><th>MODE</th><th>CHANNEL</th><th>SHIPPED BY</th><th>AWB NO.</th><th>STORE NAME</th><th>BILL TO NAME</th><th>SHIP TO NAME</th><th>SKU</th><th>QTY</th><th>PRODUCT PRICE</th><th class='text-center'>ACTION</th></tr></thead><tbody> ";
     
                         $.each(response, function(i, response){
                             let invoice_id = response.invoice_no.replaceAll(/-/g, '_');
             
-                            table +="<tr class='"+invoice_id+"'><td><input class='check_options' type='checkbox' value="+ response.id +" name='options[]' id='checkid"+response.id+"'></td><td>"+response.invoice_no+"</td><td>"+response.invoice_date+"</td><td>"+response.channel+"</td><td>"+response.shipped_by+"</td><td>"+response.awb_no+"</td><td>"+response.arn_no+"</td><td>"+response.hsn_code+"</td><td>"+response.qty+"</td><td>"+response.product_price+"</td><td><div class='d-flex'><a href=/invoice/convert-pdf/"+ response.id +" class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/invoice/download-direct/"+ response.id +" class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a></td> </tr>";
+                            table +="<tr class='"+invoice_id+"'><td><input class='check_options' type='checkbox' value="+ response.id +" name='options[]' id='checkid"+response.id+"'></td><td>"+response.invoice_no+"</td><td>"+response.invoice_date+"</td><td>"+response.mode+"</td><td>"+response.channel+"</td><td>"+response.shipped_by+"</td><td>"+response.awb_no+"</td><td>"+response.store_name+"</td><td>"+response.bill_to_name+"</td><td>"+response.ship_to_name+"</td><td>"+response.sku+"</td><td>"+response.qty+"</td><td>"+response.currency +' '+ response.product_price+"</td><td><div class='d-flex'><a href=/invoice/convert-pdf/"+ response.id +" class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/invoice/download-direct/"+ response.id +" class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a></td> </tr>";
                         });
                         $('#showTable').html(table);
                     // alert('Export pdf successfully');
                     }
                 });
+            }
             
         });
 

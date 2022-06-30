@@ -238,3 +238,17 @@ if(!function_exists('dateTimeFilter')) {
       }, iterator_to_array($period)));
   }
 }
+
+
+if(!function_exists('dateTimeFiltermonthly')) {
+    function dateTimeFiltermonthly($data, $subDays = 30) {
+  
+        $period = new DatePeriod(Carbon::now()->subDays($subDays), CarbonInterval::day(), Carbon::today()->endOfDay());
+  
+        return array_reverse(array_map(function ($datePeriod) use ($data) {
+            $date = $datePeriod->format('d-m-Y');
+            return (isset($data[$date])) ? $data[$date] : 0;
+        }, iterator_to_array($period)));
+    }
+  }
+  

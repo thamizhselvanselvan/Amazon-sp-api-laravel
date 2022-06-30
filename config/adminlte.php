@@ -764,15 +764,8 @@ return [
                 ],
                 [
                     'text' => 'Label',
+                    'url' => 'label/manage',
                     'can' => ['Admin', 'Inventory'],
-                    'submenu' => [
-                        [
-                            'text' => 'Manage',
-                            'url' => 'label/manage',
-                            'can' => ['Admin', 'Inventory'],
-                            'icon' => 'far fa-fw fa-file',
-                        ],
-                    ]
                 ],
             ],
         ]

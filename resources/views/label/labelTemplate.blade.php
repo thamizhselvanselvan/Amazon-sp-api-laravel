@@ -1,11 +1,6 @@
 @extends('adminlte::page')
 @section('title', 'Label')
 
-@section('css')
-
-<link rel="stylesheet" href="/css/styles.css">
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-@stop
 @section('content_header')
 <div class="invoice-company text-inverse f-w-600">
     <span class="pull-right hidden-print">
@@ -20,7 +15,7 @@
 @section('content')
 <input type="hidden" id="awb_no" value="{{$awb_no}}">
 
-<div class="container label-container">
+<div class="container " id="label-container">
     <div class="col-md-12">
         <div class="invoice">
             <div class="invoice-content">

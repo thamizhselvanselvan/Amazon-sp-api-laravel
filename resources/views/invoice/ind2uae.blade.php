@@ -44,7 +44,7 @@
                <div class=" text-inverse m-t-5"><strong> SHIPPED BY: </strong> {{ $value->shipped_by }}</div>
                <div class=" text-inverse m-t-5"><strong> AWB NO.: </strong> {{ $value->awb_no }}</div>
                <div class=" text-inverse m-t-5"><strong> HSN NO.: </strong> {{ $value->hsn_code }}</div>
-               <div class=" text-inverse m-t-5"><strong> ARN NO.: </strong> {{ $value->arn_no }}</div>
+               <div class=" text-inverse m-t-5"><strong> ARN NO.: </strong> {{ $value->arn_no }}</div><br>
                <div class="invoice-detail">
                </div>
             </div>
@@ -100,7 +100,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="text-center"> {{ $value->sr_no }} </td>
+                            <td class="text-center"> {{ $value->sku }} </td>
                             <td class="text-center"> {{ $value->item_description }} </td>
                             
                             <td class="text-center">
@@ -155,7 +155,8 @@
                   
                </div>
             </div>
-            <p class=" mb-0 text-center">This is system generated invoice, it may contain only digital signature</p><br><br>
+            <p class=" mb-0 text-center">This is system generated invoice, it may contain only digital signature.</p>
+            
          </div>
          @endforeach
       </div>
@@ -167,6 +168,7 @@
 @section('js')
 <script>
    $(document).ready(function(){
+      // $('.ind2uae').hide();
       $('#Export_to_pdf').click(function(e){
          e.preventDefault();
          var url = $(location).attr('href');
@@ -181,7 +183,7 @@
                "_token": "{{ csrf_token() }}",
                },
             success: function(response) {
-
+               
                window.location.href = '/invoice/download/'+invoice_no;
                alert('Download pdf successfully');
             }

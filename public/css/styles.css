@@ -133,7 +133,7 @@
     position: absolute;
 }
 
-.label-container {
+#label-container {
     max-width: 500px;
 }
 
@@ -150,4 +150,19 @@
   #small-table{
     padding: 0;
     vertical-align: middle !important;
+  }
+
+  .dashed{
+    border: 1px dashed black;
+  }
+
+  .consignor{
+    padding: 2px 5px;
+  }
+  .consignee{
+    padding: 2px 5px;
+  }
+
+  #showTable td {
+    padding: 0;
   }
