@@ -49,7 +49,7 @@
                                 <td>
                                     <div class="row">
                                         <div class="col">
-                                            <span><strong>SHIP TO </strong>
+                                            <span><strong>SHIP TO </strong><br>
                                                 @foreach ($result->shipping_address as $key => $value )
                                                     {{$value}},
                                                 @endforeach
