@@ -31,7 +31,6 @@ class labelManagementController extends Controller
     {
         if ($request->ajax()) {
             $bag_no = $request->bag_no;
-
             $order = config('database.connections.order.database');
             $catalog = config('database.connections.catalog.database');
             $web = config('database.connections.web.database');
@@ -44,7 +43,7 @@ class labelManagementController extends Controller
             JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin 
             WHERE web.bag_no = $bag_no
         ");
-
+// return $label;
             return response()->json($label);
             // $results = DB::connection('web')->select("SELECT id, order_no, awb_no FROM labels WHERE created_at BETWEEN '$date1' AND '$date2' ");
         }

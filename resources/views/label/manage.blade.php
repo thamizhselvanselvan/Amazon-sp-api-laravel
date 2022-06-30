@@ -86,7 +86,7 @@
             },
             {
                 data: 'status',
-                name: 'status',
+                name: 'status'
             },
             {
                 data: 'store_name',
