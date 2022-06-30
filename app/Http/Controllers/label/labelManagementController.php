@@ -42,11 +42,7 @@ class labelManagementController extends Controller
             JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no 
             JOIN $order.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
             JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin 
-<<<<<<< HEAD
-            WHERE order_date BETWEEN '$date1' AND '$date2'
-=======
             WHERE web.bag_no = $bag_no
->>>>>>> 19c2fdd7b61776130ef271b49e2b5292c7df751c
         ");
 
             return response()->json($label);

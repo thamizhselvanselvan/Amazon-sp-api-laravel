@@ -86,13 +86,8 @@
         ajax: "{{ url('/label/manage') }}",
         pageLength: 50,
         columns: [{
-<<<<<<< HEAD
-            data: 'id',
-            name: 'id',
-=======
             data: 'sn',
             name: 'sn',
->>>>>>> 19c2fdd7b61776130ef271b49e2b5292c7df751c
             orderable: false,
             searchable: false
             },
@@ -118,8 +113,6 @@
                 orderable: false,
                 searchable: false
             },
-<<<<<<< HEAD
-=======
             {
                 data: 'purchase_date',
                 name: 'purchase_date',
@@ -130,7 +123,6 @@
             //     orderable: false,
             //     searchable: false,
             // },
->>>>>>> 19c2fdd7b61776130ef271b49e2b5292c7df751c
             {
                 data: 'action',
                 name: 'action',
