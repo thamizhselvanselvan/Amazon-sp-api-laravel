@@ -43,7 +43,7 @@ class labelManagementController extends Controller
             JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin 
             WHERE web.bag_no = $bag_no
         ");
-return $label;
+// return $label;
             return response()->json($label);
             // $results = DB::connection('web')->select("SELECT id, order_no, awb_no FROM labels WHERE created_at BETWEEN '$date1' AND '$date2' ");
         }
