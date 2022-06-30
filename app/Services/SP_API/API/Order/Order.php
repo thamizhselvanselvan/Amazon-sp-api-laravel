@@ -136,6 +136,7 @@ class Order
                 $orders->updatedat = now();
                 $orders->createdat = now();
                 // dd($orders);
+                
                 R::store($orders);
 
                 if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
