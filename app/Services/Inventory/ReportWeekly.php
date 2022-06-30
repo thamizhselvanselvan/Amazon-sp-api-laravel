@@ -16,8 +16,23 @@ class ReportWeekly
     {
         $this->connection = DB::connection('inventory');
     }
+    /* weekly opeaning count */
+    public function OpeningStock(): array
+    {
 
+        $items = $this->connection->table('stocks')->where('created_at', '>=', Carbon::now()->subdays(6))->get()->groupBy('created_at');
+        $closing = [];
 
+        foreach ($items as  $date => $item) {
+            $days = date('d-m-Y', strtotime($date));
+            foreach ($item as $val) {
+
+                $closing[$days]  = $val->closing_stock;
+            }
+        }
+
+        return dateTimeFilter($closing);
+    }
     /* weekly Inwarding Count*/
     public function OpeningShipmentCount(): array
     {
@@ -25,24 +40,21 @@ class ReportWeekly
         $items = $this->connection->table('shipments')->where('created_at', '>=', Carbon::now()->subdays(6))->get()->groupBy('created_at');
 
         $collection = [];
-        
+
         foreach ($items as $date => $item) {
 
-            foreach ($item as $data) {
+            foreach ($item as $datav) {
 
-                $item_list = json_decode($data->items, true);
+                $item_list = json_decode($datav->items, true);
                 $days = date('d-m-Y', strtotime($date));
-                    foreach($item_list as $key => $value)
-                    {
-                        if (array_key_exists($days, $collection)) {
-                            
-                            $collection[$days] += $value['quantity'];
-                        } else {
-                            $collection[$days] = $value['quantity'];
-                        }
+                foreach ($item_list as $key => $value) {
+                    if (array_key_exists($days, $collection)) {
 
+                        $collection[$days] += $value['quantity'];
+                    } else {
+                        $collection[$days] = $value['quantity'];
                     }
-                
+                }
             }
         }
 
@@ -91,16 +103,15 @@ class ReportWeekly
             foreach ($item as $data) {
 
                 $item_list = json_decode($data->items, true);
-                foreach($item_list as $key => $value)
-                {
-                $days = date('d-m-Y', strtotime($date));
+                foreach ($item_list as $key => $value) {
+                    $days = date('d-m-Y', strtotime($date));
 
-                if (array_key_exists($days, $collection)) {
-                    $collection[$days] +=  $value['quantity'];
-                } else {
-                    $collection[$days] =  $value['quantity'];
+                    if (array_key_exists($days, $collection)) {
+                        $collection[$days] +=  $value['quantity'];
+                    } else {
+                        $collection[$days] =  $value['quantity'];
+                    }
                 }
-            }
             }
         }
 
@@ -141,72 +152,37 @@ class ReportWeekly
     /* weekly closing stock */
     public function ClosingCount(): array
     {
+        $items = $this->connection->table('stocks')->where('created_at', '>=', Carbon::now()->subdays(6))->get()->groupBy('created_at');
+        $closing = [];
 
-        $end_date =  Carbon::now()->subDay(1);
-        $end_date = $end_date->toDateString();
-        $end_date = $end_date . ' 23:59:59';
+        foreach ($items as  $date => $item) {
+            $days = date('d-m-Y', strtotime($date));
+            foreach ($item as $val) {
 
-        $week_close_count = $this->connection->table('inventory')->where('created_at', '<=', $end_date)->get();
-        $week_close_count = collect($week_close_count);
-        $week_close_count = $week_close_count->groupBy('updated_at');
-
-        $close_count = [];
-        $days = 7;
-        
-        // foreach ($week_close_count as $key => $week_close_details) {
-
-        //     $start_date = Carbon::now()->subDay($days);
-        //     $start_date = $start_date->toDateString();
-        //     $start_date = $start_date . ' 00:00:01';
-
-        //     $end_date =  Carbon::now()->subDay($days);
-        //     $end_date = $end_date->toDateString();
-        //     $end_date = $end_date . ' 23:59:59';
-
-        //     echo 'Start Date' . $start_date . '<br>';
-        //     echo 'End Date ' . $end_date;
-        //     echo "<hr>";
-        //     $days--;
-
-        //     // echo $key;
-        //     // dd($week_close_details);
-        // }
-        // exit;
-        foreach ($week_close_count as $key => $closingcount) {
-            foreach ($closingcount as $items) {
-
-                $days = date('d-m-Y', strtotime($key));
-
-                if (array_key_exists($days, $close_count)) {
-                    $close_count[$days] += count($items);
-                } else {
-                    // $close_count[$days] =  count($items);
-                }
+                $closing[$days]  = $val->closing_stock;
             }
         }
-        return dateTimeFilter($close_count);
+        return dateTimeFilter($closing);
+        
     }
+
+     
 
     /* weekly closing amount*/
     public function ClosingAmount()
     {
-        $week_close_amount = $this->connection->table('inventory')->where('created_at', '>=', Carbon::now()->subdays(6))->get()->groupBy('created_at');
-        $shipment_closing = [];
+        $items = $this->connection->table('stocks')->where('created_at', '>=', Carbon::now()->subdays(6))->get()->groupBy('created_at');
+        $closing_amt = [];
 
-        foreach ($week_close_amount as $key => $closingData) {
+        foreach ($items as  $date => $item) {
+            $days = date('d-m-Y', strtotime($date));
+            foreach ($item as $val) {
 
-            foreach ($closingData as $items) {
-
-                $days = date('d-m-Y', strtotime($key));
-
-                if (array_key_exists($days, $shipment_closing)) {
-                    $shipment_closing[$days] += $items->quantity * $items->price;
-                } else {
-                    $shipment_closing[$days] = $items->quantity * $items->price;
-                }
+                $closing_amt[$days]  = $val->closing_amount;
             }
         }
+        
+        return dateTimeFilter($closing_amt);
 
-        return dateTimeFilter($shipment_closing);
     }
 }

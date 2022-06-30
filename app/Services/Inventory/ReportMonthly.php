@@ -139,45 +139,44 @@ class ReportMonthly
     }
 
 
-    /* Monthly closing stock */
-    public function ClosingCount(): array {
-        $week_close_count = $this->connection->table('inventory')->where('created_at', '>=', Carbon::now()->subDay(30))->get()->groupby('created_at');
-        $close_count = [];
-        foreach ($week_close_count as $key => $closingcount) {
-            foreach ($closingcount as $items) {
-               
-            $days = date('d-m-Y', strtotime($key));
+  
 
-            if(array_key_exists($days, $close_count)) {
-                $close_count[$days] += count($items);
-            } else {
-                // $close_count[$days] =  count($items);
+
+
+          /* weekly closing stock */
+    public function ClosingCountmonth(): array
+    {
+        $items = $this->connection->table('stocks')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
+        $closing_month = [];
+
+        foreach ($items as  $date => $item) {
+            $days = date('d-m-Y', strtotime($date));
+            foreach ($item as $val) {
+
+                $closing_month[$days]  = $val->closing_stock;
             }
         }
-        }
-        return dateTimeFilter($close_count);
+        return dateTimeFiltermonthly($closing_month);
+        
     }
 
+     
+
     /* Monthly closing amount*/
-    public function ClosingAmount()
+    public function ClosingAmountmonth()
     {
-        $week_close_amount = $this->connection->table('inventory')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
-        $shipment_closing = [];
+        $items = $this->connection->table('stocks')->where('created_at', '>=', Carbon::now()->subdays(30))->get()->groupBy('created_at');
+        $closing_amt_month = [];
 
-        foreach ($week_close_amount as $key => $closingData) {
+        foreach ($items as  $date => $item) {
+            $days = date('d-m-Y', strtotime($date));
+            foreach ($item as $val) {
 
-            foreach ($closingData as $items) {
-
-                $days = date('d-m-Y', strtotime($key));
-
-                if (array_key_exists($days, $shipment_closing)) {
-                    $shipment_closing[$days] += $items->quantity * $items->price;
-                } else {
-                    $shipment_closing[$days] = $items->quantity * $items->price;
-                }
+                $closing_amt_month[$days]  = $val->closing_amount;
             }
         }
+        
+        return dateTimeFiltermonthly($closing_amt_month);
 
-        return dateTimeFilter($shipment_closing);
     }
 }
