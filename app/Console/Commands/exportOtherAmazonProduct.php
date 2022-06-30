@@ -6,10 +6,7 @@ use League\Csv\Writer;
 use App\Events\testEvent;
 use App\Models\OthercatDetails;
 use Illuminate\Console\Command;
-use function PHPUnit\Framework\at;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Support\Facades\Storage;
 use App\Models\otherCatalog\OtherCatalogAsin;
 
@@ -54,7 +51,7 @@ class exportOtherAmazonProduct extends Command
     public function handle()
     {
         $headerSelection = '';
-
+        // Log::alert('working');
         $selected = $this->argument('selected');
         $user = $this->argument('email');
         $id = $this->argument('id');
@@ -66,7 +63,6 @@ class exportOtherAmazonProduct extends Command
         if ($type == 'Asin') {
 
             $this->catalogExportByAsin($id, $user, $headers);
-
         } else {
 
             $exportFilePath = "excel/downloads/otheramazon/" . $user . "/otherProductDetails";
@@ -92,10 +88,10 @@ class exportOtherAmazonProduct extends Command
             OthercatDetails::select($headers)->chunk($chunk, function ($records) use ($exportFilePath, $headers, $chunk) {
 
                 if ($this->count == 1) {
-                    if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv')) {
-                        Storage::put($exportFilePath . $this->fileNameOffset . '.csv', '');
+                    if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv.mosh')) {
+                        Storage::put($exportFilePath . $this->fileNameOffset . '.csv.mosh', '');
                     }
-                    $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv'), "w");
+                    $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv.mosh'), "w");
                     $this->writer->insertOne($headers);
                 }
 
@@ -122,6 +118,22 @@ class exportOtherAmazonProduct extends Command
                 event(new testEvent($percentage));
             });
         }
+
+         //remame file .mosh to .csv
+         $path = "app/excel/downloads/otheramazon/" . $user;
+         $path = storage_path($path);
+         $files = (scandir($path));
+ 
+         $filesArray = [];
+         foreach ($files as $key => $file) {
+             if ($key > 1) {
+                 if(str_contains($file, '.mosh'))
+                 {
+                     $new_file_name = str_replace('.csv.mosh', '.csv', $file);
+                     rename($path.'/'.$file, $path.'/'.$new_file_name);
+                 }
+             }
+         }
     }
 
     public function catalogExportByAsin($id, $user, $headers)
@@ -143,24 +155,23 @@ class exportOtherAmazonProduct extends Command
         $chunk = 5000;
 
         $this->check = $record_per_csv / $chunk;
-        $selected_asin = OtherCatalogAsin::select('asin')->where('user_id', $id)->get();
-      
+        $selected_asin = OtherCatalogAsin::select('asin')->where('user_id', $id)->where('source', 'com')->get();
+
         $this->totalProductCount = count($selected_asin);
         // $this->totalProductCount = OthercatDetails::count();
-        Log::alert('count' . $this->totalProductCount);
-        
+        // Log::alert('count' . $this->totalProductCount);
+
         $selected_count = 0;
         $chunk_asin = [];
         foreach ($selected_asin as $asin) {
 
             $chunk_asin[] = $asin->asin;
-            
+
             if ($selected_count == 5000) {
                 $this->chunkAsinDetails($headers, $chunk_asin, $chunk, $exportFilePath);
                 $selected_count = 0;
                 $chunk_asin = NULL;
-            }
-            else{
+            } else {
                 $selected_count++;
             }
         }
@@ -172,13 +183,13 @@ class exportOtherAmazonProduct extends Command
         OthercatDetails::select($headers)->whereIn('asin', $selected_asin)->chunk($chunk, function ($records) use ($exportFilePath, $headers, $chunk, $selected_asin) {
 
             if ($this->count == 1) {
-                if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv')) {
-                    Storage::put($exportFilePath . $this->fileNameOffset . '.csv', '');
+                if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv.mosh')) {
+                    Storage::put($exportFilePath . $this->fileNameOffset . '.csv.mosh', '');
                 }
-                $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv'), "w");
+                $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv.mosh'), "w");
                 $this->writer->insertOne($headers);
             }
-            
+
             $records1 = $records->toArray();
             $records1 = array_map(function ($datas) {
                 return $datas['asin'];

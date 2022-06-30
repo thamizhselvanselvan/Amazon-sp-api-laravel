@@ -549,7 +549,7 @@ return [
                         ],
                         [
                             'text' => 'Monthly',
-                            'url'  => 'inventory/features',
+                            'url'  => 'reports/monthly',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory']
                         ],
@@ -766,8 +766,18 @@ return [
                     'text' => 'Label',
                     'url' => 'label/manage',
                     'can' => ['Admin', 'Inventory'],
+<<<<<<< HEAD
+=======
+                    'submenu' => [
+                        [
+                            'text' => 'Manage',
+                            'url' => 'label/manage',
+                            'can' => ['Admin', 'Inventory'],
+                            'icon' => 'far fa-fw fa-file',
+                        ],
+                    ]
+>>>>>>> 19a5776646e65cf1064b51d1bbbefdf3904753aa
                 ],
-
             ],
         ]
         // [

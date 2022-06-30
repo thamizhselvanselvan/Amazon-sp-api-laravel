@@ -32,9 +32,8 @@ class Seller_catalog_import_job implements ShouldQueue
     public function handle()
     {
         $datas = $this->payload['datas'];
-        $seller_id = $this->payload['seller_id'];
         $type = $this->payload['type'];
-        
+        $seller_id = NULL;
         $catalog =   new Catalog();
         //$type = 1 for seller, 2 for Order, 3 for inventory
         // $type = 1;

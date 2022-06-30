@@ -31,12 +31,15 @@
         <input type="radio" name="size" id="ware">
         <label for="ware"> Warehouse Wise Report</label>
     </div>
+    
     <div class="col-1 justify-content-right">
+    <form class="row" action="/export/weekly">
         <h2>
             <div style="margin-top: -1rem;">
                 <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export " id="export" />
             </div>
         </h2>
+    </form>
     </div>
 </div>
 <div class="row" id="warehouse">
@@ -54,19 +57,37 @@
 <table class="table table-bordered yajra-datatable table-striped " id="report_table">
     <thead>
         <tr>
-            <td id="detail">Date</td>
-            <td id="detail">Opening Stock</td>
-            <td id="detail">Open Stock Amount</td>
-            <td id="detail">Inwarded</td>
-            <td id="detail">Inv.Inwarded Amt</td>
-            <td id="detail"> Outwarded</td>
-            <td id="detail">Inv.Outwarding Amt</td>
-            <td id="detail">Closing Stock</td>
-            <td id="detail">Closing Stock Amount</td>
+            <th id="detail">Date</th>
+            <th id="detail">Opening Stock</th>
+            <th id="detail">Open Stock Amount</th>
+            <th id="detail">Inwarded</th>
+            <th id="detail">Inv.Inwarded Amt</th>
+            <th id="detail"> Outwarded</th>
+            <th id="detail">Inv.Outwarding Amt</th>
+            <th id="detail">Closing Stock</th>
+            <th id="detail">Closing Stock Amount</th>
         </tr>
     </thead>
     <tbody >
+    <tbody id="data_display">
+            @foreach ($week_data as $key => $value)
+        <tr>
+            <!-- @foreach ($value as $data )
+            <td>{{$data}}</td>
+            @endforeach -->
             
+            <td>{{ $value[0] }}</td>
+            <td>working</td>
+            <td>working</td>
+            <td>{{ $value[3] }}</td>
+            <td>{{ $value[4] }}</td>
+            <td>{{ $value[5] }}</td>
+            <td>{{ $value[6] }}</td>
+            <td>{{ $value[7] }}</td>
+            <td>{{ $value[8] }}</td>
+        </tr>
+        @endforeach
+    </tbody>
     </tbody>
 </table>
 @stop

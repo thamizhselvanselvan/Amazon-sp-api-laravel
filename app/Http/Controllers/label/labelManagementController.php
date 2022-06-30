@@ -17,6 +17,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 
+use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
+
 class labelManagementController extends Controller
 {
     private $order_details;
@@ -70,7 +72,7 @@ class labelManagementController extends Controller
                         return $action;
                     }
                     // $action1 = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
-                    return 'Details Not Avaliable';
+                    return "<div class ='text-left'>Details Not Avaliable</div>";
                 })
                 ->addColumn('check_box', function ($id) use ($result) {
                     if ($this->order_details) {
@@ -219,8 +221,7 @@ class labelManagementController extends Controller
 
     public function downloadExcelTemplate()
     {
-        $path = public_path() . '/storage/LabelTemplate/Label_Excel_Template.xlsx';
-        return response()->download($path);
+        return Storage::download('Label_Excel_Template.xlsx');
     }
 
     public function upload()

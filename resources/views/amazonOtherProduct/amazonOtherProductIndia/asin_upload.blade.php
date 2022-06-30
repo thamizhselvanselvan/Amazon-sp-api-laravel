@@ -5,27 +5,28 @@
 @section('content_header')
 
 <div class="row">
-    <h1 class="m-0 text-dark">Upload ASIN</h1>
+    <h1 class="m-0 text-dark">Upload Amazon.in ASIN</h1>
     <h2 class="text-right col">
-        <a href="/other-product/amazon_com">
+        <a href="/other-product/amazon_in">
             <x-adminlte-button label='Back' class="" theme="primary" icon="fas fa-long-arrow-alt-left" />
         </a>
-
         <x-adminlte-button label='Export Catalog By Asin' class="product_export_modal_open" theme="primary" icon="fas fa-file-export" />
+
     </h2>
 </div>
 @stop
 
 @section('content')
-<div class="alert_display">
-            @if ($message = Session::get('success'))
-            <div class="alert alert-success alert-block">
-                <button type="button" class="close" data-dismiss="alert">×</button>
 
-                <strong>{{ $message }}</strong>
-            </div>
-            @endif
-        </div>
+<div class="alert_display">
+    @if ($message = Session::get('success'))
+    <div class="alert alert-success alert-block">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+
+        <strong>{{ $message }}</strong>
+    </div>
+    @endif
+</div>
 
 <div class="modal fade" id="productExport" tabindex="-1" role="dialog" aria-labelledby="productExportModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
@@ -240,7 +241,6 @@
     </div>
 </div>
 
-
 <div class="col-sm-6">
     <div class="form-group">
         <div class="custom-control custom-radio select-text" data-type="text-box">
@@ -256,12 +256,12 @@
 
 <div class="row m-3 ">
     <div class="col-12 text-box-input">
-        <form class="row" action="asin_save" method="POST" enctype="multipart/form-data">
+        <form class="row" action="asin_save_in" method="POST" enctype="multipart/form-data">
             @csrf
             <label>Enter ASIN</label>
             <textarea class="form-control" rows="3" placeholder="Enter ASIN ..." name="textarea"></textarea>
             <div class="text-right m-2">
-                <a href='asin_save'>
+                <a href='asin_save_in'>
                     <x-adminlte-button label='Submit' class="btn-sm" theme="primary" icon="fas fa-file-upload" type="submit" />
                 </a>
             </div>
@@ -270,7 +270,7 @@
 
     <div class="col-12 text-center txt-file-upload d-none">
         <!-- <strong>Upload .TXT File</strong> -->
-        <form class="row" action="add-bulk-asin" method="POST" enctype="multipart/form-data">
+        <form class="row" action="add_bulk_asin_in" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="col-3"></div>
             <div class="col-6 text-left">
@@ -305,7 +305,7 @@
             text_box.addClass("d-none");
             file_box.removeClass("d-none");
         }
-    })
+    });
 
     $(".product_export_modal_open").on('click', function() {
 
@@ -339,14 +339,13 @@
             $(".all").prop("checked", false);
         }
     });
-    
+
     $('#exportbyAsin').on('click', function() {
-        
+
         exportCatalog('Asin');
     });
 
-    function exportCatalog(type)
-    {
+    function exportCatalog(type) {
         // alert('click');
         $('#productExport').modal('hide');
         $('.progress_bar').show();
@@ -362,14 +361,14 @@
             }
             count++;
         });
-        if(count == 0){
+        if (count == 0) {
             alert('Please Select Header');
             $('#productExport').modal('show');
             $('.progress_bar').hide();
-        }else{
+        } else {
             $.ajax({
                 method: 'post',
-                url: '/other-product/export',
+                url: '/other-product/export_in',
                 data: {
                     "_token": "{{ csrf_token() }}",
                     "_method": 'post',

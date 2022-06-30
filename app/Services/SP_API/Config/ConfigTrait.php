@@ -15,7 +15,7 @@ trait ConfigTrait
     {
         $token = '';
         $region = $this->region_code($country_code);
-        if (isset($auth_code)) {
+        if ($auth_code) {
 
             $token = $auth_code;
         } else {
@@ -37,7 +37,7 @@ trait ConfigTrait
 
     public function token($aws_key)
     {
-        $aws = Aws_credential::where('id', $aws_key)->first();
+        $aws = Aws_credential::where('seller_id', $aws_key)->first();
 
         if (!$aws) {
             return '';

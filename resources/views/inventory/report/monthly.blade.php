@@ -3,10 +3,22 @@
 @section('title','Inventory Reports')
 @section('css')
 <link rel="stylesheet" href="/css/style.css">
+
+<style>
+    .table td {
+        padding: 0;
+        padding-left: 5px;
+    }
+
+    .table th {
+        padding: 2;
+        padding-left: 5px;
+    }
+</style>
 @stop
 
 @section('content_header')
-<h1 class="m-0 text-dark"> Daily Inventory  Reports</h1>
+<h1 class="m-0 text-dark"> Monthly Inventory Reports</h1>
 @stop
 @section('content')
 <div class="row">
@@ -25,19 +37,21 @@
 <div class="row">
     <div class="col-2">
         <input type="radio" name="size" id="entire">
-        <label for=" entire"> Entire Warehouse's Report</label>
+        <label for=" entire"> Entire Warehouse Report</label>
     </div>
     <div class="col-9">
         <input type="radio" name="size" id="ware">
         <label for="ware"> Warehouse Wise Report</label>
     </div>
-    <!-- <div class="col-1 justify-content-right">
-        <h2>
-            <div style="margin-top: -1rem;">
-                <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export " id="export" />
-            </div>
-        </h2>
-    </div> -->
+    <div class="col-1 justify-content-right">
+        <form class="row" action="/export/monthly">
+            <h2>
+                <div style="margin-top: -1rem;">
+                    <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export " id="export" />
+                </div>
+            </h2>
+        </form>
+    </div>
 </div>
 <div class="row" id="warehouse">
     <div class="col-2">
@@ -65,20 +79,26 @@
             <th id="detail">Closing Stock Amount</th>
         </tr>
     </thead>
+
     <tbody id="data_display">
+        @foreach ($month_data as $key => $value)
+
         <tr>
-            <td>{{ $data['date'] }}</td>
-            <td>{{ $data['open_stock'] }}</td>
-            <td>{{ $data['open_stock_amt'] }}</td>
-            <td>{{ $data['inwarded'] }}</td>
-            <td>{{ $data['tdy_inv_amt'] }}</td>
-            <td>{{ $data['outwarded'] }}</td>
-            <td>{{ $data['tdy_out_amt'] }}</td>
-            <td>{{ $data['closing_stock'] }}</td>
-            <td>{{ $data['closing_amt'] }}</td>
-         
-            
+
+            <td>{{ $value[0] }}</td>
+            <td>{{ $value[1] }}</td>
+            <td>{{ $value[2] }}</td>
+            <td>{{ $value[3] }}</td>
+            <td>{{ $value[4] }}</td>
+            <td>{{ $value[5] }}</td>
+            <td>{{ $value[6] }}</td>
+            <td>{{ $value[7] }}</td>
+            <td>{{ $value[8] }}</td>
+
+        </tr>
+        @endforeach
     </tbody>
+
 </table>
 @stop
 @section('js')
@@ -91,30 +111,29 @@
     });
     $(function() {
 
-                $("#warehouse").hide();
-                $("#report_table").hide();
-                $("#export").hide();
+        $("#warehouse").hide();
+        $("#report_table").hide();
+        $("#export").hide();
 
-                $("#ware ").on('click', function(e) {
-                    $("#warehouse").show();
-                });
-                $("#warehouse ").on('change', function(e) {
-                    $("#report_table").show();
-                });
-                $("#entire ").on('click', function(e) {
-                    $("#warehouse").hide();
-                });
-                $("#ware ").on('click', function(e) {
-                    $("#report_table").hide();
-                });
-                $("#entire ").on('click', function(e) {
-                    $("#report_table").show();
-                });
-                $("#entire,#warehouse ").on('change', function(e) {
-                    $("#export").show();
-                });
+        $("#ware ").on('click', function(e) {
+            $("#warehouse").show();
+        });
+        $("#warehouse ").on('change', function(e) {
+            $("#report_table").show();
+        });
+        $("#entire ").on('click', function(e) {
+            $("#warehouse").hide();
+        });
+        $("#ware ").on('click', function(e) {
+            $("#report_table").hide();
+        });
+        $("#entire ").on('click', function(e) {
+            $("#report_table").show();
+        });
+        $("#entire,#warehouse ").on('change', function(e) {
+            $("#export").show();
+        });
 
-                });
-    
+    });
 </script>
 @stop

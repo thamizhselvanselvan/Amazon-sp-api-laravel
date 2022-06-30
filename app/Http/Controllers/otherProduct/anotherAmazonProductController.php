@@ -68,7 +68,7 @@ class anotherAmazonProductController extends Controller
         $selected_header = $request->input('selected');
         $type = $request->input('type');
         $selected_header =  $selected_header;
-        Log::alert($selected_header);
+      
         $user = Auth::user();
         $id = $user->id;
         $email = $user->email;
@@ -94,7 +94,9 @@ class anotherAmazonProductController extends Controller
         foreach ($files as $key => $file) {
             if ($key > 1) {
 
-                $filesArray[][$file] =  date("F d Y H:i:s.", filemtime($path . '/' . $file));
+                if(!str_contains($file, '.mosh')){
+                    $filesArray[][$file] =  date("F d Y H:i:s.", filemtime($path . '/' . $file));
+                }
             }
         }
 
@@ -127,7 +129,7 @@ class anotherAmazonProductController extends Controller
 
         storage::put($path, $data);
         $this->insertCatalogAsin();
-        return redirect()->intended('/other-product/amazon_com')->with('success', 'Asin Updated Successfully');
+        return redirect()->intended('/other-product/asin_upload')->with('success', 'Asin Updated Successfully');
     }
 
     public function asinTxtSave(Request $request)
@@ -157,8 +159,7 @@ class anotherAmazonProductController extends Controller
     {
         $user = Auth::user()->id;
         $type = 'com';
-        $data = '';
-        OtherCatalogAsin::where('user_id', $user)->delete();
+       
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
             $base_path = base_path();

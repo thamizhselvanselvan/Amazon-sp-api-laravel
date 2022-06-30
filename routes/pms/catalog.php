@@ -28,4 +28,7 @@ Route::get('other-product/amazon_in', 'otherProduct\OtherAmazonInProductControll
 Route::post('other-product/export_in', 'otherProduct\OtherAmazonInProductController@exportOtherProductIn')->name('export.other-product-in');
 Route::get('other-prouduct/download_in', 'otherProduct\OtherAmazonInProductController@other_file_download_in');
 Route::get('other-product/file_download_in/{id}', 'otherProduct\OtherAmazonInProductController@download_other_product')->name('download.other-product-in');
+Route::get('other-product/asin_upload_in', 'otherProduct\OtherAmazonInProductController@asinUpload');
+Route::post('other-product/asin_save_in', 'otherProduct\OtherAmazonInProductController@asinSave');
+Route::post('other-product/add_bulk_asin_in', 'otherProduct\OtherAmazonInProductController@asinTxtSave');
 
