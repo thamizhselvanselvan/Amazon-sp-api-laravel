@@ -45,8 +45,8 @@ class Catalog
                 $token = ($mws_region['aws_verified']['auth_code']);
 
                 $seller = $value->seller_id;
-                $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
-
+                // $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
+                $check= [];
                 if (count($check) <= 0) {
 
                     $aws_id = NULL;
