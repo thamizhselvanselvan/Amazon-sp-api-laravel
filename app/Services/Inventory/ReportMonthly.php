@@ -3,9 +3,8 @@
 namespace App\Services\Inventory;
 
 use Carbon\Carbon;
-use Carbon\CarbonInterval;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rules\Exists;
+
 
 class ReportMonthly
 {
@@ -16,7 +15,6 @@ class ReportMonthly
     {
         $this->connection = DB::connection('inventory');
     }
-
 
     /* Monthly Inwarding Count*/
     public function MonthlyInCount(): array
@@ -138,11 +136,6 @@ class ReportMonthly
         return dateTimeFiltermonthly($shipment_out_amount);
     }
 
-
-  
-
-
-
           /* weekly closing stock */
     public function ClosingCountmonth(): array
     {
@@ -159,8 +152,6 @@ class ReportMonthly
         return dateTimeFiltermonthly($closing_month);
         
     }
-
-     
 
     /* Monthly closing amount*/
     public function ClosingAmountmonth()

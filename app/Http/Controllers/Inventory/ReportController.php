@@ -2,15 +2,9 @@
 
 namespace App\Http\Controllers\Inventory;
 
-use DatePeriod;
 use Carbon\Carbon;
-use Nette\Utils\Json;
 use League\Csv\Writer;
-use Carbon\CarbonInterval;
-use Illuminate\Http\Request;
-use Yajra\DataTables\DataTables;
 use App\Models\Inventory\Shipment;
-use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
 use App\Http\Controllers\Controller;
@@ -18,8 +12,6 @@ use App\Models\Inventory\Outshipment;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Inventory\ReportWeekly;
 use App\Services\Inventory\ReportMonthly;
-use App\Http\Controllers\Inventory\CampaignHistory;
-use Symfony\Component\Serializer\Encoder\JsonDecode;
 
 class ReportController extends Controller
 {
@@ -215,10 +207,9 @@ class ReportController extends Controller
         return $week_data;
     }
 
-
-    public function eportinvweekly(Request $request)
+    public function eportinvweekly(ReportWeekly $report_weekly)
     {
-        // $week_data = $this->getweekly($report_weekly);
+         $week_exp = $this->getweekly($report_weekly);
 
 
         $headers = [
@@ -241,7 +232,7 @@ class ReportController extends Controller
 
         $csv_value = [];
         $count = 0;
-        // $writer->insertAll($week_data);
+        $writer->insertAll($week_exp);
         return Storage::download($exportFilePath);
     }
 
@@ -292,23 +283,24 @@ class ReportController extends Controller
         foreach ($date_arraymonth as $key => $val) {
             $month_data[] = [
                 $val,
-                $month_closing_count[$key] ?? "",
-                $month_closing_amt[$key] ?? "",
-                $month_inv_count[$key] ?? "",
-                $month_inv_amt[$key] ?? "",
-                $month_out_count[$key] ?? "",
-                $month_out_amt[$key] ?? "",
-                $month_closing_count[$key] ?? "",
-                $month_closing_amt[$key] ?? ""
+                $month_closing_count[$key] ,
+                $month_closing_amt[$key] ,
+                $month_inv_count[$key] ,
+                $month_inv_amt[$key] ,
+                $month_out_count[$key] ,
+                $month_out_amt[$key] ,
+                $month_closing_count[$key] ,
+                $month_closing_amt[$key]
             ];
         }
         //  dd($month_data);
         return $month_data;
     }
 
-    public function eportinvmonthly(Request $request)
+    public function eportinvmonthly(ReportMonthly $report_monthly)
     {
-        // $month_data = $this->getMonthly();
+       
+        $month_exp = $this->getMonthly($report_monthly);
 
         $headers = [
             'Date',
@@ -321,7 +313,7 @@ class ReportController extends Controller
             'Closing Stock',
             'closing Stock  Amount'
         ];
-        $exportFilePath = 'Inventory/MonthlyReport.csv'; // your file path, where u want to save
+        $exportFilePath = 'Inventory/MonthlyReport.csv'; 
         if (!Storage::exists($exportFilePath)) {
             Storage::put($exportFilePath, '');
         }
@@ -330,7 +322,7 @@ class ReportController extends Controller
 
         $csv_value = [];
         $count = 0;
-        // $writer->insertAll($month_data);
+        $writer->insertAll($month_exp);
         return Storage::download($exportFilePath);
     }
 }

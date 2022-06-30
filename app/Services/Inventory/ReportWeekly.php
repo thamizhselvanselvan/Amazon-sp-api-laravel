@@ -3,9 +3,8 @@
 namespace App\Services\Inventory;
 
 use Carbon\Carbon;
-use Carbon\CarbonInterval;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rules\Exists;
+
 
 class ReportWeekly
 {
@@ -148,7 +147,6 @@ class ReportWeekly
         return dateTimeFilter($shipment_out_date_wise);
     }
 
-
     /* weekly closing stock */
     public function ClosingCount(): array
     {
@@ -165,8 +163,6 @@ class ReportWeekly
         return dateTimeFilter($closing);
         
     }
-
-     
 
     /* weekly closing amount*/
     public function ClosingAmount()
