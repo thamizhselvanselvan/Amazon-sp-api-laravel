@@ -103,7 +103,7 @@
                 "_token": "{{ csrf_token() }}",
                 },
                 success: function(response) {
-                    console.log(response);
+                    // console.log(response);
                     let table ="<table id='checkTable' class=table table-bordered table-striped text-center>";
                     table += "<thead><tr class='text-bold bg-info'><th>SELECTED</th><th>ORDER DATE</th> <th>ORDER NO</th><th>AWB NO.</th><th>ACTION</th> </tr><thead>";
 
