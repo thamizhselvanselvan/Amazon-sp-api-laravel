@@ -25,10 +25,10 @@
         </a>
 
         <a href="upload">
-            <x-adminlte-button label="Upload Invoice Excel" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
+            <x-adminlte-button label="Add New Records" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
         </a>
         <a href="template/download">
-            <x-adminlte-button label="Download Invoice Template" theme="primary" icon="fas fa-file-download" class="btn-sm" />
+            <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-download" class="btn-sm" />
         </a>
     </h2>
 </div>
@@ -55,16 +55,19 @@
         <thead>
             <tr class="text-bold bg-info">
                 <th>S/N</th>
-                <th>Invoice No.</th>
-                <th>Invoice Date</th>
-                <th>Channel</th>
-                <th>Shipped By</th>
-                <th>Awb No</th>
-                <th>Arn No.</th>
-                <th>Hsn Code</th>
-                <th>Quantity</th>
-                <th>Product Price</th>
-                <th>Action</th>
+                <th>INVOICE NO.</th>
+                <th>INVOICE DATE</th>
+                <th>MODE</th>
+                <th>CHANNEL</th>
+                <th>SHIPPED BY</th>
+                <th>AWB NO.</th>
+                <th>STORE NAME</th>
+                <th>BILL TO NAME</th>
+                <th>SHIP TO NAME</th>
+                <th>SKU</th>
+                <th>QTY</th>
+                <th>CURRENCY & PRODUCT PRICE</th>
+                <th>ACTION</th>
             </tr>
         </thead>
         <tbody>
@@ -80,8 +83,8 @@
             processing: true,
             serverSide: true,
             ajax: "{{ url('/invoice/manage') }}",
-            pageLength: 1000,
-            searching: false,
+            pageLength: 50,
+            // searching: false,
             columns: [{
                     data: 'DT_RowIndex',
                     name: 'DT_RowIndex',
@@ -96,39 +99,69 @@
                     data: 'invoice_date',
                     name: 'invoice_date',
                     orderable: false,
+                    searchable: false,
+                },
+                {
+                    data: 'mode',
+                    name: 'mode',
+                    orderable: false,
+                    searchable: false,
                 },
                 {
                     data: 'channel',
-                    name: 'channel'
+                    name: 'channel',
+                    orderable: false,
+                    searchable: false,
                 },
                 {
                     data: 'shipped_by',
                     name: 'shipped_by',
+                    orderable: false,
+                    searchable: false,
                 },
-
                 {
                     data: 'awb_no',
                     name: 'awb_no',
                 },
                 {
-                    data: 'arn_no',
-                    name: 'arn_no'
+                    data: 'store_name',
+                    name: 'store_name',
+                    orderable: false,
+                    searchable: false,
                 },
                 {
-                    data: 'hsn_code',
-                    name: 'hsn_code'
+                    data: 'bill_to_name',
+                    name: 'bill_to_name',
+                    orderable: false,
+                    searchable: false,
+                },
+                {
+                    data: 'ship_to_name',
+                    name: 'ship_to_name',
+                    orderable: false,
+                    searchable: false,
+                },
+                {
+                    data: 'sku',
+                    name: 'sku',
                 },
                 {
                     data: 'qty',
-                    name: 'qty'
+                    name: 'qty',
+                    orderable: false,
+                    searchable: false,
                 },
                 {
-                    data: 'product_price',
-                    name: 'product_price'
+                    data: 'currency',
+                    'render':function(data,type,row){
+                        return data+' '+row['product_price'];
+                    },
+                    orderable: false,
+                    searchable: false,
                 },
                 {
                     data: 'action',
-                    name: 'action'
+                    name: 'action',
                 },
 
             ],

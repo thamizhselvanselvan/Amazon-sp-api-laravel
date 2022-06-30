@@ -58,18 +58,20 @@ class InvoiceManagementController extends Controller
 
     public function SearchInvoice()
     {
-        return view('invoice.search_invoice');
+        $mode = DB::connection('web')->select("SELECT mode from invoices group by mode");
+        return view('invoice.search_invoice', compact('mode'));
     }
 
     public function SearchDateWiseInvoice(Request $request)
     {
         if($request->ajax())
         {
+            $mode = $request->invoice_mode;
             $date = $request->invoice_date;
             $newdate = explode( ' - ' ,$date);
             $date1 = $newdate[0];
             $date2 = $newdate[1];
-            $results = DB::connection('web')->select("SELECT id, invoice_no, invoice_date, channel, shipped_by, awb_no, arn_no, hsn_code, qty, product_price FROM invoices WHERE invoice_date BETWEEN '$date1' AND '$date2' ");
+            $results = DB::connection('web')->select("SELECT id, invoice_no, invoice_date, channel, shipped_by, awb_no, arn_no, hsn_code, qty, product_price FROM invoices WHERE mode = '$mode' and invoice_date BETWEEN '$date1' AND '$date2' ");
             
         }
         return response()->json($results);
@@ -87,18 +89,15 @@ class InvoiceManagementController extends Controller
         $data = DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
         $invoice_no = $data[0]->invoice_no;
         $awb_no = $data[0]->awb_no;
-        $invoice_mode = $data[0]->mode;
-        
+        $mode = $data[0]->mode;
+        $invoice_mode = strtolower($mode);
         $generator = new BarcodeGeneratorHTML();
         $invoice_bar_code = $generator->getBarcode($invoice_no, $generator::TYPE_CODE_128);
         $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_128);
 
-        // if($invoice_mode!= ''){
-            return view('invoice.usa2uae' , compact(['data'],'invoice_no', 'invoice_bar_code', 'bar_code'));
-        // }
-        // else{
-        //     return view('invoice.invoice' , compact(['data'],'invoice_no', 'invoice_bar_code', 'bar_code'));
-        // }
+        if($invoice_mode!= ''){
+            return view('invoice.'.$invoice_mode , compact(['data'],'invoice_no', 'invoice_bar_code', 'bar_code'));
+        }
     }
 
     public function selectedPrint($id)
@@ -107,26 +106,20 @@ class InvoiceManagementController extends Controller
         foreach($eachid as $id){
             // $data []= Invoice::where('id', $id)->get();
             $data []= DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
-            $invoice_no = $data[0][0]->invoice_no;
-            $invoice_mode_multi = $data[0][0]->mode;
-            $awb_no = $data[0][0]->awb_no;
-            
-            // po($awb_no);
-            // exit;
-            
-            $generator = new BarcodeGeneratorHTML();
-            $invoice_bar_code = $generator->getBarcode($invoice_no, $generator::TYPE_CODE_128);
-            $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_128);
-            
+            $invoice_mode = $data[0][0]->mode;
+            $invoice_mode_multi = strtolower($invoice_mode);
         }
-        // po($data);
-        // exit;
-        // if($invoice_mode_multi!= ''){
-            return view('invoice.multipleusa2uae', compact(['data'], 'invoice_bar_code', 'bar_code'));
-        // }
-        // else{
-        //     return view('invoice.invoice' , compact(['data'],'invoice_no', 'invoice_bar_code', 'bar_code'));
-        // }
+        foreach($data as $key => $record)
+        {
+            $invoice_no = $record[0]->invoice_no;
+            $awb_no = $record[0]->awb_no;
+            $generator = new BarcodeGeneratorHTML();
+            $invoice_bar_code []= $generator->getBarcode($invoice_no, $generator::TYPE_CODE_128);
+            $awb_bar_code []= $generator->getBarcode($awb_no, $generator::TYPE_CODE_128);
+        }
+        if($invoice_mode_multi!= ''){
+            return view('invoice.multiple'.$invoice_mode_multi , compact(['data'], 'invoice_bar_code', 'awb_bar_code'));
+        }
     }
 
     public function UploadExcel(Request $request)

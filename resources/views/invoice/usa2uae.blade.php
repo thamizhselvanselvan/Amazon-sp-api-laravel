@@ -3,30 +3,16 @@
 
 @section('title', 'Invoice')
 
-@section('css')
-
-    <link rel="stylesheet" href="/css/styles.css">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-
-    <style>
-     .dashed{
-    border: 1px dashed black;
-   }
-    </style>
-@stop
 @section('content_header')
    <!-- <a href="/invoice/manage" class="btn btn-sm btn-primary m-b-10 p-l-5"><i class="fa fa-arrow-left t-plus-1 fa-fw fa-sm"></i> Back</a> -->
    <div class="invoice-company text-inverse f-w-600">
       <span class="pull-right hidden-print">
          <a href="javascript:void(0);" class="btn btn-sm btn-white m-b-10 p-l-5" id="Export_to_pdf"><i class="fa fa-file t-plus-1 text-danger fa-fw fa-lg"></i> Export as PDF</a>
          <a href="javascript:;" onclick="window.print()" class="btn btn-sm btn-white m-b-10 p-l-5"><i class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
-         
       </span>
       <br>
    </div>
-   
 @stop
-
 
 @section('content')
   
@@ -48,7 +34,7 @@
                <div class=" text-inverse m-t-5"><strong> SHIPPED BY: </strong> {{ $value->shipped_by }}</div>
                <div class=" text-inverse m-t-5"><strong> AWB NO.: </strong> {{ $value->awb_no }}</div>
                <div class=" text-inverse m-t-5"><strong> HSN CODE: </strong> {{ $value->hsn_code }}</div>
-               <div class=" text-inverse m-t-5"><strong> ARN NO.: </strong> {{ $value->arn_no }}</div>
+               <div class=" text-inverse m-t-5"><strong> ARN NO.:&nbsp; </strong> {{ $value->arn_no }}</div><br>
                <div class="invoice-detail">
                   <!-- Services Product -->
                </div>
@@ -110,7 +96,7 @@
                   </thead>
                   <tbody>
                      <tr>
-                        <td class="text-center"> {{ $value->sr_no }} </td>
+                        <td class="text-center"> {{ $value->sku }} </td>
                         <td class="text-center"> {{ $value->item_description }} </td>
                         
                         @if ( $value->hsn_code == '')
@@ -145,8 +131,6 @@
                               {{$value->currency}} {{ $value->grand_total }}
                            @endif
                          </td>
-                         
-                       
                      </tr>
                     
                   </tbody>
@@ -226,11 +210,11 @@
                   </table>
                   <div class="row">
                         <div class="col ">
-                           <b class="bg-dark text-white mt-4 ml-2"> CONSIGNOR</b>
+                           <b class="bg-dark text-white mt-4 ml-2 consignor"> CONSIGNOR</b>
                            <p class=" ml-2 mt-"><b> {{ $value->bill_to_name }} </b><br> {{ $value->bill_to_add }} </p>
                         </div>
                         <div class="col ">
-                           <b class="bg-dark text-white mt-4 ml-2"> CONSIGNEE </b>
+                           <b class="bg-dark text-white mt-4 ml-2 consignee"> CONSIGNEE </b>
                            <p class=" ml-2 mt-0"><b> {{ $value->bill_to_name }} </b><br> {{ $value->ship_to_add }} </p>
                         </div>
                   </div>
@@ -262,7 +246,7 @@
                   <tbody>
                      <tr>
                         <td><h6 class=" ml-2"><strong>TERMS AND CONDITIONS</strong></h6>
-                        <p><table><tbody><tr><p class="ml-2">SIGNATURE............</p></tr></tbody></table></p></td>
+                        <p><table><tbody><tr><p class="ml-2">SIGNATURE...........................</p></tr></tbody></table></p></td>
                         <td class="text-center"><p><b> CONDITION & LIABILITY</b></p>
                         <p>I/We/hereby Agree to Terms & Condition of B2CShip (Pacific Impex LLC) and I / We Certify That the Nature of goods Are as Indicated on this Airway Bill</p>
                         </td>
