@@ -74,17 +74,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-
-                        $data = json_decode($store['items'], true);
-
-                        $data = (count($data) > 0) ? $data : [];
-
-                        @endphp
-                        @foreach ($data as $key => $val)
+    
+                        @foreach ($store as $key => $val)
 
                         <tr class='table_row'>
-                            <td name="ship_id[]" id="ship">{{$store['ship_id']}}</td>
+                            <td name="ship_id[]" id="ship">{{$val['ship_id']}}</td>
                             <td name="asin[]" id="quantity">{{$val['asin']}}</td>
                             <td name="name[]">{{$val['item_name']}}</td>
                             <td name="quantity[]" id="quantity">{{$val['quantity']}}</td>

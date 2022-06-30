@@ -16,6 +16,7 @@ use App\Http\Controllers\Controller;
 
 use App\Models\Inventory\Destination;
 use App\Models\Inventory\Outshipment;
+use App\Models\Inventory\Shipment_Inward_Details;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -110,18 +111,18 @@ class InventoryOutwardShipmentController extends Controller
     public function autofinish(Request $request)
     {
         if ($request->ajax()) {
-            $data = Inventory::query()
-                ->select('inventory.*', 'warehouses.name')
-                ->join('shipments', function ($query) {
-                    $query->on("shipments.ship_id", "=", "inventory.ship_id");
-                })
-                ->join('warehouses', function ($query) {
-                    $query->on("warehouses.id", "=", "shipments.warehouse");
-                })
-                ->where('warehouses.id', $request->id)
+            $data = Shipment_Inward_Details::query()
+                // ->select('inventory.*', 'warehouses.name')
+                // ->join('shipments', function ($query) {
+                //     $query->on("shipments.ship_id", "=", "inventory.ship_id");
+                // })
+                // ->join('warehouses', function ($query) {
+                //     $query->on("warehouses.id", "=", "shipments.warehouse");
+                // })
+                // ->where('warehouses.id', $request->id)
                 ->where("asin", "LIKE", "%{$request->asin}%")
                 ->orderBy('created_at')
-                ->limit(50)
+                // ->limit(50)
                 ->get();
             return response()->json($data);
         }

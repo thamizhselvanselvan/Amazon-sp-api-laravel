@@ -8,6 +8,7 @@ use App\Models\Inventory\Shipment;
 use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
 use App\Http\Controllers\Controller;
+use App\Models\Inventory\Shipment_Inward_Details;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -36,7 +37,8 @@ class StockController extends Controller
 
     public function dashboard()
     {
-        $ware_lists = Inventory::with(['shipment.warehouses'])->get()->unique('shipment.warehouses');
+        
+        $ware_lists = Shipment_Inward_Details::with('warehouses')->get()->unique('warehouses');
         // dd($ware_lists);exit;
         return view('inventory.stock.dashboard', compact('ware_lists'));
     }
@@ -44,14 +46,10 @@ class StockController extends Controller
     public function getlist(Request $request)
     {
         if ($request->ajax()) {
-            $ware = Inventory::query()
-            ->select('inventory.*', 'warehouses.name')
-            ->join('shipments', function($query) {
-                $query->on("shipments.ship_id", "=", "inventory.ship_id");
-            })
-            ->join('warehouses', function($query) {
-                $query->on("warehouses.id", "=", "shipments.warehouse");
-            })->where('warehouses.id', $request->id)->get();
+            $ware =  Shipment_Inward_Details::with('warehouses')
+        //   -> select('warehouses.*',$request->id)
+            ->where('warehouse_id', $request->id)
+            ->get();
 
             return response()->json($ware);
         }
@@ -60,8 +58,8 @@ class StockController extends Controller
     public function eportinv(Request $request)
     {
         $records = []; //Data from database
-        $records = Inventory::query()
-        ->select('warehouses.name', 'inventory.ship_id', 'inventory.asin', 'inventory.item_name', 'inventory.price', 'inventory.quantity', 'inventory.created_at', 'inventory.bin')
+        $records = Shipment_Inward_Details::query()
+        ->select('warehouses.name', 'Shipment_Inward_Details.ship_id', 'Shipment_Inward_Details.asin', 'Shipment_Inward_Details.item_name', 'Shipment_Inward_Details.price', 'Shipment_Inward_Details.quantity', 'Shipment_Inward_Details.created_at', 'Shipment_Inward_Details.bin')
         ->join('shipments', function($query) {
             $query->on("shipments.ship_id", "=", "inventory.ship_id");
         })

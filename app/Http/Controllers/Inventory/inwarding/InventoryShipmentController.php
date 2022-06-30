@@ -20,6 +20,8 @@ use App\Services\SP_API\CatalogAPI;
 use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
+use App\Models\Inventory\Shipment_Inward;
+use App\Models\Inventory\Shipment_Inward_Details;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use Picqer\Barcode\BarcodeGeneratorHTML;
@@ -33,7 +35,7 @@ class InventoryShipmentController extends Controller
 
         if ($request->ajax()) {
 
-            $data = Shipment::select("ship_id", "source_id")->distinct()->with(['vendors']);
+            $data = Shipment_Inward_Details::select("ship_id", "source_id")->distinct()->with(['vendors']);
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -66,18 +68,29 @@ class InventoryShipmentController extends Controller
     public function show($id)
     {
 
-        $view = Shipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
+        $view = Shipment_Inward_Details::where('ship_id', $id)->with(['warehouses', 'vendors'])->get();
+
+        $warehouse_name = '';
+        $vendor_name = '';
+        $currency_id = '';
+
         $generator = new BarcodeGeneratorHTML();
-        $bar_code = $generator->getBarcode($view->ship_id, $generator::TYPE_CODE_93);
+        foreach ($view as $key => $bar) {
+            //  dd($bar->ship_id);
+            $bar_code = $generator->getBarcode($bar->ship_id, $generator::TYPE_CODE_93);
+            $warehouse_name = $bar->warehouses->name;
+            $vendor_name = $bar->vendors->name;
+            $currency_id = $bar->currency;
+        }
 
         $currency = Currency::get();
         $currency_array = [];
         foreach ($currency as $key => $cur) {
             $currency_array[$cur->id] = $cur->name;
         }
-        // dd($currency);
 
-        return view('inventory.inward.shipment.view', compact('view', 'currency_array', 'bar_code'));
+
+        return view('inventory.inward.shipment.view', compact('view', 'currency_array', 'bar_code', 'id', 'warehouse_name', 'vendor_name', 'currency_id'));
     }
 
 
@@ -148,24 +161,28 @@ class InventoryShipmentController extends Controller
             ];
         }
 
-        Shipment::insert([
-            "ship_id" => $ship_id,
-            "warehouse" => $request->warehouse,
-            "currency" => $request->currency,
+        Shipment_Inward::insert([
+            "warehouse_id" => $request->warehouse,
             "source_id" => $request->source,
-            "items" => json_encode($items),
+            "ship_id" => $ship_id,
+            "currency" => $request->currency,
+            "shipment_count" => count($items),
             "created_at" => now(),
             "updated_at" => now()
         ]);
 
         foreach ($request->asin as $key1 => $asin1) {
 
-            Inventory::create([
+            Shipment_Inward_Details::create([
+                "warehouse_id" => $request->warehouse,
+                "source_id" => $request->source,
                 "ship_id" => $ship_id,
+                "currency" => $request->currency,
                 "asin" => $asin1,
-                "price" => $request->price[$key1],
                 "item_name" => $request->name[$key1],
+                "price" => $request->price[$key1],
                 "quantity" => $request->quantity[$key1],
+                "balance_quantity" => $request->quantity[$key1],
                 "created_at" => now(),
                 "updated_at" => now()
             ]);
@@ -189,7 +206,7 @@ class InventoryShipmentController extends Controller
     {
         if ($request->ajax()) {
 
-            $data = Shipment::query()->with(['vendors', 'warehouses']);
+            $data = Shipment_Inward_Details::query()->with(['vendors', 'warehouses']);
 
 
             return DataTables::of($data)
@@ -216,9 +233,11 @@ class InventoryShipmentController extends Controller
     }
     public function store($id)
     {
-        $store = Shipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
+        $store = Shipment_Inward_Details::where('ship_id', $id)->with(['warehouses', 'vendors'])->get();
+        foreach ($store as $value) {
 
-        $warehouse_id = ($store->warehouse);
+            $warehouse_id = $value->warehouse_id;
+        }
         $rack = Rack::where('warehouse_id', $warehouse_id)->get();
         return view('inventory.inward.shipment.store', compact('store', 'rack'));
     }
@@ -246,7 +265,7 @@ class InventoryShipmentController extends Controller
         foreach ($request->asin as $key1 => $asin) {
 
             $ship_id = $request->ship_id[$key1];
-            Inventory::where('ship_id', $ship_id)->where('asin', $asin)
+            Shipment_Inward_Details::where('ship_id', $ship_id)->where('asin', $asin)
                 ->update([
                     'bin' => $request->bin[$key1],
                 ]);
@@ -257,14 +276,13 @@ class InventoryShipmentController extends Controller
 
     public function printlable(Request $request, $id)
     {
-        $viewlable = Shipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
+        $viewlable = Shipment_Inward_Details::where('ship_id', $id)->with(['warehouses', 'vendors'])->get();
 
-        $data = json_decode($viewlable['items'], true);
+        $data = $viewlable;
         $bar_code = [];
         foreach ($data as $key => $val) {
             $generator = new BarcodeGeneratorHTML();
             $bar_code[]  = $generator->getBarcode($val['asin'], $generator::TYPE_CODE_93);
-             
         }
 
         return view('inventory.inward.shipment.lable', compact('viewlable', 'bar_code'));
