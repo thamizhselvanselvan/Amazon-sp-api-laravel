@@ -49,7 +49,7 @@
                                 <td>
                                     <div class="row">
                                         <div class="col">
-                                            <span><strong>SHIP TO <strong>
+                                            <span><strong>SHIP TO </strong>
                                                 @foreach ($result->shipping_address as $key => $value )
                                                     {{$value}},
                                                 @endforeach
@@ -70,9 +70,12 @@
                                                     Pieces: </strong> {{$result->order_item}} </div>
                                             <div class=" text-inverse m-b-5 text-left"><strong>
                                                     Order ID: </strong> {{$result->order_no}} </div>
-                                            <div class=" text-inverse m-b-5 text-left"><strong> Weight: </strong> {{$result->package_dimensions['Weight']->value}} {{$result->package_dimensions['Weight']->Units}}</div>
-                                            <div class=" text-inverse m-b-5 text-left"><strong> Dimensions: {{$result->package_dimensions['Height']->value}} X {{$result->package_dimensions['Length']->value}} X 
-                                            {{$result->package_dimensions['Width']->value}} 
+                                            <div class=" text-inverse m-b-5 text-left"><strong> Weight: </strong>
+                                             {{round((float)$result->package_dimensions['Weight']->value, 2)}} {{$result->package_dimensions['Weight']->Units}}</div>
+                                            <div class=" text-inverse m-b-5 text-left"><strong> Dimensions: 
+                                            {{round((float)$result->package_dimensions['Height']->value, 2)}} X 
+                                            {{round((float)$result->package_dimensions['Length']->value, 2)}} X 
+                                            {{round((float)$result->package_dimensions['Width']->value, 2)}} 
                                             {{$result->package_dimensions['Length']->Units}}
                                             </strong> </div>
                                         </div>

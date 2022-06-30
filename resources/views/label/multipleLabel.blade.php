@@ -67,9 +67,12 @@
                                         <div class=" text-inverse m-b-5 text-left"><strong> INVOICE DATE: </strong> {{date('Y-m-d', strtotime($value->purchase_date))}}</div>
                                         <div class=" text-inverse m-b-5 text-left"><strong> Pieces: </strong> {{$value->order_item}} </div>
                                         <div class=" text-inverse m-b-5 text-left"><strong> Order ID: </strong> {{$value->order_no}} </div>
-                                        <div class=" text-inverse m-b-5 text-left"><strong> Weight: </strong> {{$value->package_dimensions['Weight']->value}} {{$value->package_dimensions['Weight']->Units}}</div>
-                                        <div class=" text-inverse m-b-5 text-left"><strong> Dimensions: </strong> {{$value->package_dimensions['Height']->value}} X {{$value->package_dimensions['Length']->value}} X
-                                            {{$value->package_dimensions['Width']->value}}
+                                        <div class=" text-inverse m-b-5 text-left"><strong> Weight: </strong> {{round((float)$value->package_dimensions['Weight']->value, 2)}}
+                                         {{$value->package_dimensions['Weight']->Units}}</div>
+                                        <div class=" text-inverse m-b-5 text-left"><strong> Dimensions: </strong> 
+                                        {{round((float)$value->package_dimensions['Height']->value, 2)}} X 
+                                        {{round((float)$value->package_dimensions['Length']->value, 2)}} X
+                                            {{round((float)$value->package_dimensions['Width']->value, 2)}}
                                             {{$value->package_dimensions['Length']->Units}}
                                         </div>
                                     </div>
