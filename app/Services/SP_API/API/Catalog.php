@@ -46,7 +46,7 @@ class Catalog
 
                 $seller = $value->seller_id;
                 $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
-
+                // $check= [];
                 if (count($check) <= 0) {
 
                     $aws_id = NULL;
