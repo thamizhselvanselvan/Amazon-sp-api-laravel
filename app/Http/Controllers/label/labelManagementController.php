@@ -51,10 +51,10 @@ class labelManagementController extends Controller
 
     public function manage(Request $request)
     {
-        $data = $this->bladeOrderDetails();
-        dd($data);
+        // dd($data);
         if ($request->ajax()) {
-
+            
+            $data = $this->bladeOrderDetails();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($id) {
@@ -369,7 +369,7 @@ class labelManagementController extends Controller
 
         $data = DB::select("SELECT 
     
-    DISTINCT web.id, web.awb_no, web.order_no, DATE(ord.purchase_date), store.store_name
+    DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name
     from $web.labels as web     
     JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no 
     JOIN $order.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id 
