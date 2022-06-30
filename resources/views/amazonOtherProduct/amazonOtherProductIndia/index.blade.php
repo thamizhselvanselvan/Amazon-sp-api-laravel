@@ -31,9 +31,9 @@
         </div>
         <h2 class="row mb-4 ">
             <div class="col">
-                <x-adminlte-button label='Catalog Export' class="product_export_modal_open" theme="primary" icon="fas fa-file-export" />
+                <x-adminlte-button label='Export Catalog' class="product_export_modal_open" theme="primary" icon="fas fa-file-export" />
                 <a href='asin_upload_in'>
-                    <x-adminlte-button label='Import ASIN' class="" theme="primary" icon="fas fa-file-import" />
+                    <x-adminlte-button label='Export By ASIN' class="" theme="primary" icon="fas fa-file-export" />
                 </a>
                 <x-adminlte-button label='Download' class="file_download_modal_btn" theme="success" icon="fas fa-download" />
             </div>
@@ -44,7 +44,7 @@
         </h2>
         <!-- Header Modal -->
         <div class="modal fade" id="productExport" tabindex="-1" role="dialog" aria-labelledby="productExportModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="productExportModalLabel">Select Headers</h5>
@@ -86,7 +86,7 @@
                                 <h6>Update Time</h6>
                             </div>
                         </div>
-                        <hr>
+                        
                         <div class="form-check d-flex row">
                             <div class="col-2">
                                 <input class="form-check-input header_options" type="checkbox" value="availability" name='options[]' id="availability">
@@ -114,7 +114,7 @@
                                 <h6>List Price INR</h6>
                             </div>
                         </div>
-                        <hr>
+                        
                         <div class="form-check d-flex row">
                             <div class="col-2">
                                 <input class="form-check-input header_options" type="checkbox" value="price_aed" name='options[]' id="price_aed">
@@ -142,7 +142,7 @@
                                 <h6>Shipping Weight</h6>
                             </div>
                         </div>
-                        <hr>
+                        
                         <div class="form-check d-flex row">
 
                             <div class="col-2">
@@ -172,7 +172,7 @@
                                 <h6>Flipkart</h6>
                             </div>
                         </div>
-                        <hr>
+                        
                         <div class="form-check d-flex row">
                             <div class="col-2">
                                 <input class="form-check-input header_options" type="checkbox" value="amazon" name='options[]' id="amazon">
@@ -200,7 +200,7 @@
                                 <h6>UPC</h6>
                             </div>
                         </div>
-                        <hr>
+                        
                         <div class="form-check d-flex row">
                             <div class="col-2 ">
                                 <input class="form-check-input header_options" type="checkbox" value="latency" name='options[]' id="latency">
@@ -228,7 +228,7 @@
                                 <h6>Manufacturer</h6>
                             </div>
                         </div>
-                        <hr>
+                        
                         <div class="form-check d-flex row">
                             <div class="col-2">
                                 <input class="form-check-input header_options" type="checkbox" value="model" name='options[]' id="model">
@@ -256,7 +256,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary modal_close" data-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" id='exportToCsv'>Export All Catalog</button>
-                        <button type="button" class="btn btn-primary" id='exportbyAsin'>Export By Asin</button>
+                        <!-- <button type="button" class="btn btn-primary" id='exportbyAsin'>Export By Asin</button> -->
                     </div>
                 </div>
             </div>

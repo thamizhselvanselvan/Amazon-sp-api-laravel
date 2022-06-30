@@ -7,6 +7,10 @@
 <div class="row">
     <h1 class="m-0 text-dark">Upload ASIN</h1>
     <h2 class="text-right col">
+        <a href="/other-product/amazon_com">
+            <x-adminlte-button label='Back' class="" theme="primary" icon="fas fa-long-arrow-alt-left" />
+        </a>
+
         <x-adminlte-button label='Export Catalog By Asin' class="product_export_modal_open" theme="primary" icon="fas fa-file-export" />
     </h2>
 </div>
