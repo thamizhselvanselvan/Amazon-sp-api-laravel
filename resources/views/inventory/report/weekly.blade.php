@@ -77,8 +77,8 @@
             @endforeach -->
             
             <td>{{ $value[0] }}</td>
-            <td>working</td>
-            <td>working</td>
+            <td>{{ $value[1] }}</td>
+            <td>{{ $value[2] }}</td>
             <td>{{ $value[3] }}</td>
             <td>{{ $value[4] }}</td>
             <td>{{ $value[5] }}</td>
