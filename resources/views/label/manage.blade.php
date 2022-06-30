@@ -85,6 +85,10 @@
             searchable: false
             },
             {
+                data: 'status',
+                name: 'status',
+            },
+            {
                 data: 'store_name',
                 name: 'store_name'
             },
@@ -102,7 +106,12 @@
             },
             {
                 data: 'purchase_date',
-                name: 'purchase_date',
+                render: function(data, type, row){
+                    if(type === "sort" || type === "type"){
+                        return data;
+                    }
+                    return moment(data).format('YYYY-MM-DD');
+                }
             },
             // {
             //     data: 'check_box',
