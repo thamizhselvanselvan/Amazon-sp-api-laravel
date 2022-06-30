@@ -129,7 +129,7 @@ class anotherAmazonProductController extends Controller
 
         storage::put($path, $data);
         $this->insertCatalogAsin();
-        return redirect()->intended('/other-product/amazon_com')->with('success', 'Asin Updated Successfully');
+        return redirect()->intended('/other-product/asin_upload')->with('success', 'Asin Updated Successfully');
     }
 
     public function asinTxtSave(Request $request)

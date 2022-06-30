@@ -51,7 +51,7 @@ class exportOtherAmazonProduct extends Command
     public function handle()
     {
         $headerSelection = '';
-
+        // Log::alert('working');
         $selected = $this->argument('selected');
         $user = $this->argument('email');
         $id = $this->argument('id');
