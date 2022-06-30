@@ -60,7 +60,7 @@
     <thead>
         <tr class="text-bold bg-info">
             <th>S/N</th> 
-            <th>Status.</th>
+            <th>Status</th>
             <th>Order No.</th>
             <th>Awb No.</th>
             <!-- <td>Select All <br><input class="check_all" type="checkbox" value='' name="options[]" id="check_all" ></div> </td> -->
@@ -83,8 +83,8 @@
         pageLength: 1000,
         searching: false,
         columns: [{
-            data: 'DT_RowIndex',
-            name: 'DT_RowIndex',
+            data: 'sn',
+            name: 'sn',
             orderable: false,
             searchable: false
             },
