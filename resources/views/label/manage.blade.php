@@ -53,10 +53,21 @@
 <table class="table table-bordered yajra-datatable table-striped text-center">
     <thead>
         <tr class="text-bold bg-info">
+<<<<<<< HEAD
             <th>S/N</th>
             <th>Order Date</th>
             <th>Order No.</th>
             <th>Awb No.</th>
+=======
+
+            <th>S/N</th> 
+            <th>Status</th>
+            <th>Store Name </th>
+            <th>Order No.</th>
+            <th>Awb No.</th>
+            <th>Order Date</th>
+            <!-- <td>Select All <br><input class="check_all" type="checkbox" value='' name="options[]" id="check_all" ></div> </td> -->
+>>>>>>> 19c2fdd7b61776130ef271b49e2b5292c7df751c
             <th>Action</th>
         </tr>
     </thead>
@@ -75,8 +86,13 @@
         ajax: "{{ url('/label/manage') }}",
         pageLength: 50,
         columns: [{
+<<<<<<< HEAD
             data: 'id',
             name: 'id',
+=======
+            data: 'sn',
+            name: 'sn',
+>>>>>>> 19c2fdd7b61776130ef271b49e2b5292c7df751c
             orderable: false,
             searchable: false
             },
@@ -85,6 +101,10 @@
                 name: 'order_date',
                 orderable: false,
                 searchable: false
+            },
+            {
+                data: 'store_name',
+                name: 'store_name'
             },
             {
                 data: 'order_no',
@@ -98,6 +118,19 @@
                 orderable: false,
                 searchable: false
             },
+<<<<<<< HEAD
+=======
+            {
+                data: 'purchase_date',
+                name: 'purchase_date',
+            },
+            // {
+            //     data: 'check_box',
+            //     name: 'check_box',
+            //     orderable: false,
+            //     searchable: false,
+            // },
+>>>>>>> 19c2fdd7b61776130ef271b49e2b5292c7df751c
             {
                 data: 'action',
                 name: 'action',
