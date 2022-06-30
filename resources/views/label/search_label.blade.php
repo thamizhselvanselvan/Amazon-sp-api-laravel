@@ -32,14 +32,16 @@
             <form action="">
                 @csrf
                 <div class="form-group">
-                    <label>Label Date:</label>
+                    <label>Bag No.:</label>
                     <div class="input-group">
-                        <div class="input-group-prepend">
+                        <!-- <div class="input-group-prepend">
                             <span class="input-group-text">
                                 <i class="far fa-calendar-alt"></i>
                             </span>
-                        </div>
-                        <input type="text" class="form-control float-right datepicker" name="label_date" placeholder="Select Date Range" autocomplete="off" id="label_date">
+                        </div> -->
+                        
+                        <input type="text" class="form-control float-right" name="bag_no" placeholder="Input Bag No." id="bag_no">
+                        <!-- <input type="text" class="form-control float-right datepicker" name="label_date" placeholder="Select Date Range" autocomplete="off" id="label_date"> -->
                         <x-adminlte-button label="Search" theme="primary" icon="fas fa-search" id="SearchByDate" class="btn-sm ml-2" />
                         <x-adminlte-button label="Download Selected" id='download_selected' theme="primary" icon="fas fa-download" class="btn-sm ml-2" />
                         <x-adminlte-button label="Print Selected" target="_blank" id='print_selected' theme="primary" icon="fas fa-print" class="btn-sm ml-2" />
@@ -57,7 +59,7 @@
 <script type="text/javascript">
 
     $(document).ready(function(){
-        //begin search label
+        // begin search label
         $('#Searchbox').on('keyup', function(){
 
             let order_no = $.trim($(this).val());
@@ -69,36 +71,36 @@
             $(tr).addClass('bg-warning');
             tr.prependTo(table);
         });
-        //end search label
+        // end search label
         
-       var test = $(".datepicker").daterangepicker({
-        autoUpdateInput: false,
-        locale: {
-            format: "YYYY-MM-DD"
-        },
-       });
+    //    var test = $(".datepicker").daterangepicker({
+    //     autoUpdateInput: false,
+    //     locale: {
+    //         format: "YYYY-MM-DD"
+    //     },
+    //    });
 
-       $('.datepicker').on('apply.daterangepicker', function(ev, picker) {
-            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-        });
+    //    $('.datepicker').on('apply.daterangepicker', function(ev, picker) {
+    //         $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+    //     });
 
-        $('.datepicker').on('cancel.daterangepicker', function(ev, picker) {
-            $(this).val('');
-        });
+    //     $('.datepicker').on('cancel.daterangepicker', function(ev, picker) {
+    //         $(this).val('');
+    //     });
         
         $('#SearchByDate').click(function(){
-            if(($('.datepicker').val() == ''))
+            if(($('#bag_no').val() == ''))
             {
-                alert('Please Choose Date');
+                alert('Please Input Bag No.');
             }
             $('#showTable').show();
-            let label_date = $('#label_date').val();
+            let label_date = $('#bag_no').val();
             // alert(label_date);
             $.ajax({
                 method: 'POST',
                 url: "{{ url('/label/select-label')}}",
                 data:{ 
-                "invoice_date": label_date,
+                "bag_no": label_date,
                 "_token": "{{ csrf_token() }}",
                 },
                 success: function(response) {
