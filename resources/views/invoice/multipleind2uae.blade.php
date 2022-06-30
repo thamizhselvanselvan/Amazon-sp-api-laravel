@@ -154,7 +154,7 @@
                                 </div>
                             </div>
                             <!-- end invoice-price -->
-                            <p class=" mb-0 text-center">This is system generated invoice, it may contain only digital signature</p><br><br>
+                            <p class=" mb-0 text-center">This is system generated invoice, it may contain only digital signature.</p><br><br>
                             <div class="ind2uae d-none">
                                 <hr class="dashed"><br><br>
                                 <div class="row">

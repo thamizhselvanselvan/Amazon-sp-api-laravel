@@ -119,12 +119,12 @@
                     success: function(response) {
                         // console.log(response);
                         let table ="<table id='checkTable' class='table table-bordered table-striped text-center' >";
-                        table += "<thead><tr class='text-bold bg-info'><th>Selected</th> <th>Invoice No.</th><th>Invoice Date</th><th>Channel</th><th>Shipped By</th><th>Awb No</th><th>Arn NO.</th><th>Hsn Code</th><th>Quantity</th><th>Product Price</th><th class='text-center'>Action</th></tr></thead><tbody> ";
+                        table += "<thead><tr class='text-bold bg-info'><th>Selected</th> <th>INVOICE NO.</th><th>INVOICE DATE</th><th>MODE</th><th>CHANNEL</th><th>SHIPPED BY</th><th>AWB NO.</th><th>STORE NAME</th><th>BILL TO NAME</th><th>SHIP TO NAME</th><th>SKU</th><th>QTY</th><th>PRODUCT PRICE</th><th class='text-center'>ACTION</th></tr></thead><tbody> ";
     
                         $.each(response, function(i, response){
                             let invoice_id = response.invoice_no.replaceAll(/-/g, '_');
             
-                            table +="<tr class='"+invoice_id+"'><td><input class='check_options' type='checkbox' value="+ response.id +" name='options[]' id='checkid"+response.id+"'></td><td>"+response.invoice_no+"</td><td>"+response.invoice_date+"</td><td>"+response.channel+"</td><td>"+response.shipped_by+"</td><td>"+response.awb_no+"</td><td>"+response.arn_no+"</td><td>"+response.hsn_code+"</td><td>"+response.qty+"</td><td>"+response.product_price+"</td><td><div class='d-flex'><a href=/invoice/convert-pdf/"+ response.id +" class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/invoice/download-direct/"+ response.id +" class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a></td> </tr>";
+                            table +="<tr class='"+invoice_id+"'><td><input class='check_options' type='checkbox' value="+ response.id +" name='options[]' id='checkid"+response.id+"'></td><td>"+response.invoice_no+"</td><td>"+response.invoice_date+"</td><td>"+response.mode+"</td><td>"+response.channel+"</td><td>"+response.shipped_by+"</td><td>"+response.awb_no+"</td><td>"+response.store_name+"</td><td>"+response.bill_to_name+"</td><td>"+response.ship_to_name+"</td><td>"+response.sku+"</td><td>"+response.qty+"</td><td>"+response.currency +' '+ response.product_price+"</td><td><div class='d-flex'><a href=/invoice/convert-pdf/"+ response.id +" class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/invoice/download-direct/"+ response.id +" class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a></td> </tr>";
                         });
                         $('#showTable').html(table);
                     // alert('Export pdf successfully');

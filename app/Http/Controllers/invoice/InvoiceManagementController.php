@@ -71,7 +71,7 @@ class InvoiceManagementController extends Controller
             $newdate = explode( ' - ' ,$date);
             $date1 = $newdate[0];
             $date2 = $newdate[1];
-            $results = DB::connection('web')->select("SELECT id, invoice_no, invoice_date, channel, shipped_by, awb_no, arn_no, hsn_code, qty, product_price FROM invoices WHERE mode = '$mode' and invoice_date BETWEEN '$date1' AND '$date2' ");
+            $results = DB::connection('web')->select("SELECT id, invoice_no, invoice_date, mode, channel, shipped_by, awb_no, store_name, bill_to_name, ship_to_name, sku, qty, currency, product_price FROM invoices WHERE mode = '$mode' and invoice_date BETWEEN '$date1' AND '$date2' ");
             
         }
         return response()->json($results);
