@@ -133,7 +133,7 @@
     position: absolute;
 }
 
-.label-container {
+#label-container {
     max-width: 500px;
 }
 
@@ -166,5 +166,3 @@
   #showTable td {
     padding: 0;
   }
-
-  

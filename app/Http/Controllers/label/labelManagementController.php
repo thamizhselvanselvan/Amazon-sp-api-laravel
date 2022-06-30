@@ -38,12 +38,12 @@ class labelManagementController extends Controller
             $web = config('database.connections.web.database');
     
             $label = DB::select("SELECT 
-            DISTINCT web.id, web.awb_no, web.order_no
+            DISTINCT web.id, web.order_date, web.awb_no, web.order_no
             from $web.labels as web     
             JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no 
             JOIN $order.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
             JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin 
-            WHERE created_at BETWEEN '$date1' AND '$date2'
+            WHERE order_date BETWEEN '$date1' AND '$date2'
         ");
         
             // $results = DB::connection('web')->select("SELECT id, order_no, awb_no FROM labels WHERE created_at BETWEEN '$date1' AND '$date2' ");
@@ -281,7 +281,7 @@ class labelManagementController extends Controller
             }
             $date = new DateTime(date('Y-m-d'));
             $created_at = $date->format('Y-m-d');
-            $label->created_at = $created_at;
+            $label->order_date = $created_at;
             R::store($label);
         }
 
