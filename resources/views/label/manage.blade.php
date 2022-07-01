@@ -55,11 +55,13 @@
         <tr class="text-bold bg-info">
 
             <th>S/N</th> 
-            <th>Status</th>
+            <!-- <th>Status</th> -->
             <th>Store Name </th>
             <th>Order No.</th>
             <th>Awb No.</th>
             <th>Order Date</th>
+            <th>SKU</th>
+            <th>Customer</th>
             <!-- <td>Select All <br><input class="check_all" type="checkbox" value='' name="options[]" id="check_all" ></div> </td> -->
             <th>Action</th>
         </tr>
@@ -84,10 +86,10 @@
             orderable: false,
             searchable: false
             },
-            {
-                data: 'status',
-                name: 'status'
-            },
+            // {
+            //     data: 'status',
+            //     name: 'status'
+            // },
             {
                 data: 'store_name',
                 name: 'store_name'
@@ -108,12 +110,14 @@
                 data: 'purchase_date',
                 name: 'purchase_date'
             },
-            // {
-            //     data: 'check_box',
-            //     name: 'check_box',
-            //     orderable: false,
-            //     searchable: false,
-            // },
+            {
+                data: 'seller_sku',
+                name: 'seller_sku',
+            },
+            {
+                data: 'customer_name',
+                name: 'customer_name',
+            },
             {
                 data: 'action',
                 name: 'action',

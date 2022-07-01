@@ -61,12 +61,14 @@ class labelManagementController extends Controller
 
                     $this->order_details = $this->labelDataFormating($id->id);
                     if ($this->order_details) {
-                        $action = '<div class="d-flex"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
+                        $action = '<div class="d-flex pl-4"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
                         $action .= '<div class="d-flex pl-2"><a href="/label/download-direct/' . $id->id . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
+                        $action .= '<div class="text-center pl-4"><i class="fa fa-check-circle" style="color:green" aria-hidden="true"></i>';
                         return $action;
                     }
                     // $action1 = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
                     return "<div class ='text-left'>Details Not Avaliable</div>";
+                    return '<div class="text-center"><i class="fa fa-times" style="color:red" aria-hidden="true"></i>';
                 })
                 ->addColumn('sn', function ($id) {
                     return $id->id;
@@ -77,13 +79,21 @@ class labelManagementController extends Controller
                         return $check_box;
                     }
                 })
-                ->editColumn('status', function () {
-                    if ($this->order_details) {
-                        return '<div class="text-center"><i class="fa fa-check-circle" style="color:green" aria-hidden="true"></i>';
-                    }
-                    return '<div class="text-center"><i class="fa fa-times" style="color:red" aria-hidden="true"></i>';
+                // ->editColumn('status', function () {
+                //     if ($this->order_details) {
+                //         return '<div class="text-center"><i class="fa fa-check-circle" style="color:green" aria-hidden="true"></i>';
+                //     }
+                //     return '<div class="text-center"><i class="fa fa-times" style="color:red" aria-hidden="true"></i>';
+                // })
+                ->editColumn('purchase_date', function($date){
+                    $purchase_date = date('Y-m-d', strtotime($date->purchase_date));
+                    return $purchase_date;
                 })
-                ->rawColumns(['sn', 'action', 'check_box', 'status'])
+                ->editColumn('customer_name', function($customer_name){
+                    $customer_name =(array) json_decode($customer_name->shipping_address);
+                    return $customer_name['Name'];
+                })
+                ->rawColumns(['sn', 'action', 'check_box', 'purchase_date', 'customer_name'])
                 ->make(true);
         }
         return view('label.manage');
@@ -370,9 +380,10 @@ class labelManagementController extends Controller
 
         $data = DB::select("SELECT
 
-    DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name
+    DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
     from $web.labels as web
     JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
+    JOIN $order.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
     JOIN $order.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
     -- JOIN ord ON ord.our_seller_identifier = $order.ord_order_seller_credentials.seller_id as
 ");
