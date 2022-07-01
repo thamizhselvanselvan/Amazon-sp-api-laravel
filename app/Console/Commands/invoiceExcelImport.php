@@ -113,6 +113,5 @@ class invoiceExcelImport extends Command
                 }
             }
         }
-        exit;
     }
 }
