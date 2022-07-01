@@ -52,15 +52,15 @@ class labelManagementController extends Controller
 
     public function manage(Request $request)
     {
+        $data = $this->bladeOrderDetails();
         // dd($data);
         if ($request->ajax()) {
 
-            $data = $this->bladeOrderDetails();
             return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function ($id) {
-
-                    $this->order_details = $this->labelDataFormating($id->id);
+            ->addIndexColumn()
+            ->addColumn('action', function ($id) {
+                
+                $this->order_details = $this->labelDataFormating($id->id);
                     if ($this->order_details) {
                         $action = '<div class="d-flex pl-4"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
                         $action .= '<div class="d-flex pl-2"><a href="/label/download-direct/' . $id->id . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
@@ -92,7 +92,11 @@ class labelManagementController extends Controller
                 })
                 ->editColumn('customer_name', function($customer_name){
                     $customer_name =(array) json_decode($customer_name->shipping_address);
-                    return $customer_name['Name'];
+                    if(isset($customer_name['Name']))
+                    {
+                        return $customer_name['Name'];
+                    }
+                    return 'NA';
                 })
                 ->rawColumns(['sn', 'action', 'check_box', 'purchase_date', 'customer_name'])
                 ->make(true);
