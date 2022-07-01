@@ -32,20 +32,21 @@ class labelManagementController extends Controller
         if ($request->ajax()) {
 
             $bag_no = $request->bag_no;
-
             $order = config('database.connections.order.database');
             $catalog = config('database.connections.catalog.database');
             $web = config('database.connections.web.database');
-
-            $label = DB::select("SELECT web.id, web.order_no, web.awb_no, ord.purchase_date
-            from $web.labels as web
-            JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
-            JOIN $order.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
-            JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin
-            WHERE web.bag_no = $bag_no
-
-        ");
-            return response()->json($label);
+    
+            $data = DB::select("SELECT
+    
+        DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
+        from $web.labels as web
+        JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
+        JOIN $order.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
+        JOIN $order.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+        JOIN $catalog.catalog as cat ON cat.asin = orderDetails.asin
+        WHERE web.bag_no = $bag_no
+    ");
+            return response()->json($data);
         }
     }
 
@@ -385,6 +386,7 @@ class labelManagementController extends Controller
     JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
     JOIN $order.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
     JOIN $order.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+
     -- JOIN ord ON ord.our_seller_identifier = $order.ord_order_seller_credentials.seller_id as
 ");
 
