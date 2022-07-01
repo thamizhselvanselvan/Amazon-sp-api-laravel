@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use RedBeanPHP\R;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 
@@ -42,8 +43,8 @@ class invoiceExcelImport extends Command
     public function handle()
     {
         $path = 'invoiceExcel/invoice.xlsx';
-        
-        $file= Storage::path($path);
+
+        $file = Storage::path($path);
         $data = Excel::toArray([], $file);
 
         $host = config('database.connections.web.host');
@@ -53,7 +54,7 @@ class invoiceExcelImport extends Command
         $password = config('database.connections.web.password');
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-        
+
         $header = [];
         $result = [];
         $check = ['.', '(', ')'];
@@ -66,11 +67,12 @@ class invoiceExcelImport extends Command
         //  po($header);
         foreach ($data as $result) {
             foreach ($result as $key2 => $record) {
-                $invoice_number = $record[0];
                 if ($key2 != 0) {
+                    
+                    $invoice_number = $record[0];
+                    $sku = $record[13];
                     $id = NULL;
-                    // $Totaldata = Invoice::where('invoice_no', $record[0])->get();
-                    $Totaldata = DB::connection('web')->select("SELECT * from invoices where invoice_no ='$invoice_number' ");
+                    $Totaldata = DB::connection('web')->select("SELECT id from invoices where invoice_no ='$invoice_number' AND sku = '$sku'");
 
                     if (isset($Totaldata[0])) {
                         $id = $Totaldata[0]->id;
