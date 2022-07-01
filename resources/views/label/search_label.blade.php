@@ -95,7 +95,7 @@
                     $.each(response, function(i, response){
                         // alert(response);
                         let label_id = response.order_no.replaceAll(/-/g, '_');
-                        let change_date = moment(response.purchase_date, 'Y-m-d ').format('Y-m-d');
+                        let change_date = moment(response.purchase_date, 'YYYY-MM-DD ').format('YYYY-MM-DD');
                         
                         table +="<tr class='"+label_id+"'>";
                         table +="<td><input class='check_options' type='checkbox' value="+ response.id +" name='options[]' id='checkid"+response.id+"'></td>";
