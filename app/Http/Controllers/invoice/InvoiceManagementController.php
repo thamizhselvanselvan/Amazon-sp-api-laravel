@@ -122,7 +122,7 @@ class InvoiceManagementController extends Controller
             $record[] = $result;
         }
 
-        // dd($record);
+        // dd($invoice_mode_multi);?
         if ($invoice_mode_multi != '') {
             return view('invoice.multiple' . $invoice_mode_multi, compact(['record'], 'invoice_bar_code', 'awb_bar_code'));
         }
