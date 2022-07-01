@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route;    
 
 Route::get('invoice/manage', 'invoice\InvoiceManagementController@Index')->name('invoice.index');
 Route::get('invoice/search-invoice', 'invoice\InvoiceManagementController@SearchInvoice')->name('invoice.search_invoice');

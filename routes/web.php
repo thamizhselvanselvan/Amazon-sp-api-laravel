@@ -8,6 +8,7 @@ use App\Events\testEvent;
 use AWS\CRT\HTTP\Request;
 use App\Models\Mws_region;
 use Maatwebsite\Excel\Row;
+use App\Jobs\TestQueueFail;
 use Illuminate\Support\Str;
 use Smalot\PdfParser\Parser;
 use Dflydev\DotAccessData\Data;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Services\SP_API\API\Catalog;
 use Illuminate\Support\Facades\Auth;
@@ -25,15 +27,14 @@ use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 use SellingPartnerApi\Configuration;
 use Illuminate\Support\Facades\Route;
-use App\Services\Inventory\ReportWeekly;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\TestController;
+use App\Services\Inventory\ReportWeekly;
 use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
-use App\Jobs\TestQueueFail;
-use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
+use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
 /*
 |--------------------------------------------------------------------------
@@ -92,21 +93,8 @@ Route::get('job', function()
 
 Route::get('rename', function()
 {
-    $user = Auth::user()->email;
-        $path = "app/excel/downloads/otheramazonIN/" . $user;
-        $path = storage_path($path);
-        $files = (scandir($path));
-
-        $filesArray = [];
-        foreach ($files as $key => $file) {
-            if ($key > 1) {
-                if(str_contains($file, '.mosh'))
-                {
-                    $new_file_name = str_replace('.csv.mosh', '.csv', $file);
-                    rename($path.'/'.$file, $path.'/'.$new_file_name);
-                }
-            }
-        }
+    $currenturl =  request()->getSchemeAndHttpHost();
+    return $currenturl;
 });
 
 Route::get('test-queue-redis', function () {

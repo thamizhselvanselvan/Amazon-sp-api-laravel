@@ -20,9 +20,7 @@
 @stop
 
 @section('content')
-    @foreach ($data as $key => $record)
-
-        @foreach ($record as  $value)
+        @foreach ($record as $key => $value)
             <div class="container">
                 <div class="col-md-12">
                     <div class="invoice">
@@ -34,13 +32,13 @@
                         <div class="col-md-12 invoice-date text-left" >
 
                             <!-- <small>Invoice / July period</small> -->
-                            <div class=" text-inverse m-t-5"><strong> INVOICE DATE: </strong> {{ $value->invoice_date }}</div>
-                            <div class=" text-inverse m-t-5"><strong> INVOICE NO.: </strong> {{ $value->invoice_no }}</div>
-                            <div class=" text-inverse m-t-5"><strong> CHANNEL: </strong> {{ $value->channel }}</div>
-                            <div class=" text-inverse m-t-5"><strong> SHIPPED BY: </strong> {{ $value->shipped_by }}</div>
-                            <div class=" text-inverse m-t-5"><strong> AWB NO.: </strong> {{ $value->awb_no }}</div>
-                            <div class=" text-inverse m-t-5"><strong> HSN CODE: </strong> {{ $value->hsn_code }}</div>
-                            <div class=" text-inverse m-t-5"><strong> ARN NO.: &nbsp;</strong> {{ $value->arn_no }}</div><br>
+                            <div class=" text-inverse m-t-5"><strong> INVOICE DATE: </strong> {{ $value['invoice_date'] }}</div>
+                            <div class=" text-inverse m-t-5"><strong> INVOICE NO.: </strong> {{ $value['invoice_no'] }}</div>
+                            <div class=" text-inverse m-t-5"><strong> CHANNEL: </strong> {{ $value['channel'] }}</div>
+                            <div class=" text-inverse m-t-5"><strong> SHIPPED BY: </strong> {{ $value['shipped_by'] }}</div>
+                            <div class=" text-inverse m-t-5"><strong> AWB NO.: </strong> {{ $value['awb_no'] }}</div>
+                            
+                            <div class=" text-inverse m-t-5"><strong> ARN NO.: &nbsp;</strong> {{ $value['arn_no'] }}</div><br>
 
                         </div>
                         <div class="col-md-12 invoice-date text-left" >
@@ -48,7 +46,7 @@
                                 <div class="row">
                                     <div class="col"></div>
                                     <div class="col"></div>
-                                    <div class="col">{!! $invoice_bar_code[$key] !!} {{ $value->invoice_no }}</div>
+                                    <div class="col">{!! $invoice_bar_code[$key] !!} {{ $value['invoice_no'] }}</div>
 
                                 </div>
                             </div>
@@ -57,9 +55,9 @@
                         <div class="invoice-header">
                             <div class="invoice-from">
                             <address class="m-t-5 m-b-5">
-                                <strong class="text-inverse"><h6><b>COMPANY NAME</b></h6></strong><hr>
-                                <b> {{ $value->store_name }} </b><br>
-                                {{ $value->store_add }}
+                                <strong class="text-inverse"><h6><b>SHIPPED FROM</b></h6></strong><hr>
+                                <b> {{ $value['store_name'] }} </b><br>
+                                {{ $value['store_add'] }}
                             </address>
                             </div>
 
@@ -67,16 +65,16 @@
 
                             <address class="m-t-5 m-b-5">
                                 <strong class="text-inverse"><h6><b>BILL TO </b></h6></strong><hr>
-                                <b> {{ $value->bill_to_name }} </b><br>
-                                {{ $value->bill_to_add }}
+                                <b> {{ $value['bill_to_name'] }} </b><br>
+                                {{ $value['bill_to_add'] }}
                             </address>
                             </div>
                             <div class="invoice-to">
 
                             <address class="m-t-5 m-b-5">
                                 <strong class="text-inverse"><h6><b>SHIP TO </b></h6></strong><hr>
-                                <b> {{ $value->ship_to_name }} </b><br>
-                                {{ $value->ship_to_add }}
+                                <b> {{ $value['ship_to_name'] }} </b><br>
+                                {{ $value['ship_to_add'] }}
                             </address>
                             </div>
                         </div>
@@ -99,42 +97,43 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @foreach ($value['product_details'] as $key1 => $data )
                                     <tr>
-                                        <td class="text-center"> {{ $value->sku }} </td>
-                                        <td class="text-center"> {{ $value->item_description }} </td>
+                                        <td class="text-center"> {{ $key1 + 1 }} </td>
+                                        <td class="text-center"> {{ $data['item_description'] }} </td>
 
-                                        @if ( $value->hsn_code == '')
-                                        <td class="text-center">{{ $value->hsn_code }}</td>
+                                        @if ( $data['hsn_code'] == '')
+                                        <td class="text-center">{{ $data['hsn_code'] }}</td>
                                         @else
-                                        <td class="text-center">{{ $value->hsn_code }}</td>
+                                        <td class="text-center">{{ $data['hsn_code'] }}</td>
                                         @endif
 
-                                        @if ( $value->qty =='')
+                                        @if ( $data['qty'] =='')
                                         <td class="text-center">{{ 0 }}</td>
                                         @else
-                                        <td class="text-center">{{ $value->qty }}</td>
+                                        <td class="text-center">{{ $data['qty'] }}</td>
                                         @endif
 
-                                        @if ( $value->product_price =='')
+                                        @if ( $data['product_price'] =='')
                                         <td class="text-center">{{ 0 }}</td>
                                         @else
-                                        <td class="text-center">{{$value->currency}} {{ $value->product_price}}</td>
+                                        <td class="text-center">{{$data['currency']}} {{ $data['product_price']}}</td>
                                         @endif
 
-                                        @if ( $value->taxable_value =='')
+                                        @if ( $data['taxable_value'] =='')
                                         <td class="text-center">{{ 0 }}</td>
                                         @else
-                                        <td class="text-center">{{ $value->taxable_value}}</td>
+                                        <td class="text-center">{{ $data['taxable_value']}}</td>
                                         @endif
 
-                                        @if( $value->grand_total =='' )
+                                        @if( $data['grand_total'] =='' )
                                         <td class="text-center">{{ 0 }}</td>
                                         @else
-                                        <td class="text-center">{{$value->currency}} {{ $value->grand_total }}</td>
+                                        <td class="text-center">{{$data['currency']}} {{ $data['grand_total'] }}</td>
                                         @endif
 
                                     </tr>
-
+                                    @endforeach
                                 </tbody>
                             </table>
                             </div>
@@ -145,10 +144,10 @@
 
                                 </div>
                                 <div class="invoice-price-right">
-                                    @if ($value->grand_total == '')
+                                    @if ($value['grand_total'] == '')
                                     <small><b>GRAND TOTAL</b></small> <span class="f-w-600">{{ 0 }}</span>
                                     @else
-                                    <small><b>GRAND TOTAL</b></small> <span class="f-w-600">{{$value->currency}} {{ $value->grand_total }}</span>
+                                    <small><b>GRAND TOTAL</b></small> <span class="f-w-600">{{$data['currency']}} {{ $value['grand_total'] }}</span>
                                     @endif
 
                                 </div>
@@ -171,7 +170,7 @@
                                                     <th>CONSIGNMENT NOTE NUMBER</th>
                                                     </tr>
                                                     <tr>
-                                                    <th> {!!$awb_bar_code[$key] !!} {{$value->awb_no}}</th>
+                                                    <th> {!!$awb_bar_code[$key] !!} {{$value['awb_no']}}</th>
                                                     </tr>
                                                 </thead>
                                             </table>
@@ -209,8 +208,8 @@
                                 <thead>
                                     <tr>
                                         <td ><strong class="ml-2">SHIPPER A/C.:</strong></td>
-                                        <td ><strong class="ml-2">DATE: </strong>&nbsp;{{$value->invoice_date}} </td>
-                                        <td ><strong class="ml-2">ONFD NO.: </strong>&nbsp;{{$value->invoice_no}}</td>
+                                        <td ><strong class="ml-2">DATE: </strong>&nbsp;{{$value['invoice_date']}} </td>
+                                        <td ><strong class="ml-2">ONFD NO.: </strong>&nbsp;{{$value['invoice_no']}}</td>
 
                                     </tr>
                                 </thead>
@@ -220,11 +219,11 @@
                                     <div class="row">
                                         <div class="col ">
                                             <b class="bg-dark text-white mt-4 ml-2 consignor"> CONSIGNOR</b>
-                                            <p class=" ml-2 mt-2"><b> {{ $value->bill_to_name }} </b><br> {{ $value->bill_to_add }} </p>
+                                            <p class=" ml-2 mt-2"><b> {{ $value['bill_to_name'] }} </b><br> {{ $value['bill_to_add'] }} </p>
                                         </div>
                                         <div class="col ">
                                             <b class="bg-dark text-white mt-4 ml-2 consignee"> CONSIGNEE </b>
-                                            <p class=" ml-2 mt-2"><b> {{ $value->ship_to_name }} </b><br> {{ $value->ship_to_add }} </p>
+                                            <p class=" ml-2 mt-2"><b> {{ $value['ship_to_name'] }} </b><br> {{ $value['ship_to_add'] }} </p>
                                         </div>
                                     </div>
                                 </tbody>
@@ -242,14 +241,16 @@
                                         </tr>
                                     </strong>
                                     <tbody>
+                                    @foreach ($value['product_details'] as $key1 => $data )
                                         <tr>
-                                            <td>{{$value->no_of_pcs}}</td>
-                                            <td>{{$value->packing}}</td>
-                                            <td>{{$value->item_description}}</td>
-                                            <td>{{$value->dimension}}</td>
-                                            <td>{{$value->actual_weight}}</td>
-                                            <td>{{$value->charged_weight}}</td>
+                                            <td>{{$data['no_of_pcs']}}</td>
+                                            <td>{{$data['packing']}}</td>
+                                            <td>{{$data['item_description']}}</td>
+                                            <td>{{$data['dimension']}}</td>
+                                            <td>{{$data['actual_weight']}}</td>
+                                            <td>{{$data['charged_weight']}}</td>
                                         </tr>
+                                    @endforeach
                                     </tbody>
                                 </thead>
                             </table>
@@ -273,5 +274,4 @@
             </div>
             <p style="page-break-after: always;">&nbsp;</p>
         @endforeach
-    @endforeach
 @stop
