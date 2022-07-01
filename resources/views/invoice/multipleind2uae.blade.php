@@ -75,7 +75,7 @@
                             
                             <address class="m-t-5 m-b-5">
                                 <strong class="text-inverse"><h6><b>SHIP TO </b></h6></strong><hr>
-                                <b> {{ $value->bill_to_name }} </b><br>
+                                <b> {{ $value->ship_to_name }} </b><br>
                                 {{ $value->ship_to_add }}
                             </address>
                             </div>
