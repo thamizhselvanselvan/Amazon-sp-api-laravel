@@ -172,7 +172,7 @@ class AsinMasterController extends Controller
         if (!$request->hasFile('asin')) {
             return back()->with('error', "Please upload file to import it to the database");
         }
-        
+
         $source = file_get_contents($request->asin);
         $path = 'Seller/Remove/AsinMaster/remove_asin.csv';
 
@@ -201,6 +201,7 @@ class AsinMasterController extends Controller
 
     public function DownloadCSVTemplate()
     {
-        return Storage::download('SellerCsvTemplate.csv');
+        $filepath = public_path('template/Seller-Asin-Source-Template.csv');
+        return Response()->download($filepath);
     }
 }

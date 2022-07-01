@@ -94,6 +94,7 @@ class OrderItem
         $data = [];
         foreach ($result_orderItems['payload']['order_items'] as $result_order) {
             foreach ((array)$result_order as $result) {
+
                 $order_detials = R::dispense('orderitemdetails');
                 $order_detials->seller_identifier = $aws_id;
                 $order_detials->status = '0';
@@ -126,17 +127,16 @@ class OrderItem
 
                 //call catalog api
                 $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
-
+                // $check = [];
+                //$type = 1 for seller, 2 for Order, 3 for inventory
+                $data = NULL;
                 if (count($check) <= 0) {
-                    $count++;
+
                     $data[] = [
                         'asin' => $asin,
                         'country_code' => $awsCountryCode,
                         'aws_id' => $aws_id,
                     ];
-                }
-                //$type = 1 for seller, 2 for Order, 3 for inventory
-                if ($count == 10) {
 
                     if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
                         Seller_catalog_import_job::dispatch(
@@ -145,7 +145,7 @@ class OrderItem
                                 'type' => 2,
                                 'seller_id' => NULL
                             ]
-                        )->onConnection('redis')->onQueue('CA_Order_3');
+                        )->onConnection('redis')->onQueue('catalog');
                     } else {
 
                         Seller_catalog_import_job::dispatch(
@@ -156,27 +156,9 @@ class OrderItem
                             ]
                         );
                     }
-                    $data = [];
+                   
                 }
             }
-        }
-        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-            Seller_catalog_import_job::dispatch(
-                [
-                    'datas' => $data,
-                    'type' => 2,
-                    'seller_id' => NULL
-                ]
-            )->onConnection('redis')->onQueue('CA_Order_3');
-        } else {
-
-            Seller_catalog_import_job::dispatch(
-                [
-                    'datas' => $data,
-                    'type' => 2,
-                    'seller_id' => NULL
-                ]
-            );
         }
         // DB::connection('order')
         //     ->update("UPDATE orders SET order_item = '1' where amazon_order_identifier = '$order_id'");

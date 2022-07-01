@@ -136,6 +136,7 @@ class Order
                 $orders->updatedat = now();
                 $orders->createdat = now();
                 // dd($orders);
+                
                 R::store($orders);
 
                 if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
@@ -146,7 +147,7 @@ class Order
                             'country_code' => $awsCountryCode,
                            
                         ]
-                    )->onConnection('redis')->onQueue('CA_Order_2')->delay($delay);
+                    )->onConnection('redis')->onQueue('order')->delay($delay);
 
                     $delay += $delay_count;
                 } else {

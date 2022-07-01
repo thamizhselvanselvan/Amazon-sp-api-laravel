@@ -177,16 +177,12 @@ return [
 
     'environments' => [
         'production' => [
-            'ca-supervisor-11' => ['connection' => 'redis', 'queue' => ['CA_Order_1'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 0, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
-            'ca-supervisor-12' => ['connection' => 'redis', 'queue' => ['CA_Order_2'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 10, 'tries' => 0, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
-            'ca-supervisor-13' => ['connection' => 'redis', 'queue' => ['CA_Order_3'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 10, 'tries' => 0, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
-            'ca-supervisor-14' => ['connection' => 'redis', 'queue' => ['CA_Order_4'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 0, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
+            'ca-supervisor-1' => ['connection' => 'redis', 'queue' => ['order'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
+            'ca-supervisor-2' => ['connection' => 'redis', 'queue' => ['catalog'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 10, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
         ],
         'staging' => [
-            'ca-supervisor-11' => ['connection' => 'redis', 'queue' => ['CA_Order_1'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 0, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
-            'ca-supervisor-12' => ['connection' => 'redis', 'queue' => ['CA_Order_2'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 10, 'tries' => 0, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
-            'ca-supervisor-13' => ['connection' => 'redis', 'queue' => ['CA_Order_3'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 0, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
-            'ca-supervisor-14' => ['connection' => 'redis', 'queue' => ['CA_Order_4'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 0, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
+            'ca-supervisor-1' => ['connection' => 'redis', 'queue' => ['order'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
+            'ca-supervisor-2' => ['connection' => 'redis', 'queue' => ['catalog'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 10, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
         ],
     ],
 ];

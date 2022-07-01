@@ -25,7 +25,7 @@ class Seller_catalog_import_job implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Execute the job. 
      *
      * @return void
      */

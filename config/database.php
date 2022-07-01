@@ -54,6 +54,7 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
+
         'inventory' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
@@ -73,6 +74,7 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
+
         'catalog' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
@@ -92,6 +94,7 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
+
         'order' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
@@ -110,7 +113,8 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-        ],        
+        ],    
+
         'seller' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
@@ -130,6 +134,7 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],        
+
         'buybox' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
@@ -149,6 +154,7 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],      
+        
         'aws' => [
             'driver' => 'mysql',
             'read' => [
