@@ -164,7 +164,7 @@ class InvoiceManagementController extends Controller
         // echo 'working file';
         $passid = $request->id;
         $currenturl =  request()->getSchemeAndHttpHost();
-        return $currenturl;
+        // return $currenturl;
         $excelid = explode('-', $passid);
 
         foreach ($excelid as $getId) {
