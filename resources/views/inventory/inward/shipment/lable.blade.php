@@ -38,17 +38,11 @@
 </div>
 @stop
 @section('content')
-
-
-
-@php
-$data = json_decode($viewlable['items'], true);
-$data = (count($data) > 0) ? $data : [];
-@endphp
-@foreach ($data as $key => $val)
+          
+@foreach ($lable as $key => $val)
 
 <h5>New</h5>
-<h4>{!! $bar_code[$key] !!}</h4>
+<h4>{!! $bar_code[0] !!}</h4>
 <h6>{{$val['asin']}} {{$val['item_name']}}</h6>
 @endforeach
 @stop
