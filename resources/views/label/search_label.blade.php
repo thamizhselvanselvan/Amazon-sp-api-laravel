@@ -72,21 +72,6 @@
         });
         // end search label
         
-    //    var test = $(".datepicker").daterangepicker({
-    //     autoUpdateInput: false,
-    //     locale: {
-    //         format: "YYYY-MM-DD"
-    //     },
-    //    });
-
-    //    $('.datepicker').on('apply.daterangepicker', function(ev, picker) {
-    //         $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-    //     });
-
-    //     $('.datepicker').on('cancel.daterangepicker', function(ev, picker) {
-    //         $(this).val('');
-    //     });
-        
         $('#SearchByDate').click(function(){
             if(($('#bag_no').val() == ''))
             {
@@ -103,17 +88,20 @@
                 "_token": "{{ csrf_token() }}",
                 },
                 success: function(response) {
-                    // console.log(response);
+                    console.log(response);
                     let table ="<table id='checkTable' class=table table-bordered table-striped text-center>";
-                    table += "<thead><tr class='text-bold bg-info'><th>SELECTED</th><th>ORDER DATE</th> <th>ORDER NO</th><th>AWB NO.</th><th>ACTION</th> </tr><thead>";
+                    table += "<thead><tr class='text-bold bg-info'><th>Selected</th><th>Store Name</th><th>Order No.</th><th>Awb No.</th><th>Order Date</th><th>SKU</th><th>Customer</th><th>Action</th> </tr><thead>";
 
                     $.each(response, function(i, response){
+                        // alert(response);
                         let label_id = response.order_no.replaceAll(/-/g, '_');
-        
+                        let change_date = moment(response.purchase_date, 'Y-m-d ').format('Y-m-d');
+                        
                         table +="<tr class='"+label_id+"'>";
                         table +="<td><input class='check_options' type='checkbox' value="+ response.id +" name='options[]' id='checkid"+response.id+"'></td>";
-                        table += "<td>"+response.purchase_date+"</td><td>"+response.order_no+"</td>";
-                        table += "<td>"+response.awb_no+"</td><td><div class='d-flex'><a href=/label/pdf-template/"+ response.id +" class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/label/download-direct/"+ response.id +"  class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a></td> </tr>";
+                        table += "<td>"+response.store_name+"</td><td>"+response.order_no+"</td>";
+                        let t = JSON.parse(response.shipping_address);
+                        table += "<td>"+response.awb_no+"</td><td>"+change_date +"</td><td>"+response.seller_sku+"</td><td>"+ t['Name']+"</td><td><div class='d-flex'><a href=/label/pdf-template/"+ response.id +" class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/label/download-direct/"+ response.id +"  class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a></td> </tr>";
                     });
                     $('#showTable').html(table);
                 // alert('Export pdf successfully');
