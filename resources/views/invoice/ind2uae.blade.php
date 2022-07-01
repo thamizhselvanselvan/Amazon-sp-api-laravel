@@ -26,18 +26,18 @@
 @stop
 
 @section('content')
-  
+
 <input type="hidden" id="pid" value="{{$invoice_no}}" >
 <div class="container">
    <div class="col-md-12">
       <div class="invoice">
          <div class="container">
             <h4 class="text-center mt-0"> <strong> TAX INVOICE </strong> </h4>
-         </div>   
-           
+         </div>
+
             <div class="col-md-12 invoice-date text-left" >
                @foreach ($data as $key =>$value)
-                  
+
                <div class=" text-inverse m-t-5"><strong> INVOICE DATE: </strong> {{ $value->invoice_date }}</div>
                <div class=" text-inverse m-t-5"><strong> INVOICE NO: </strong> {{ $value->invoice_no }}</div>
                <div class=" text-inverse m-t-5"><strong> CHANNEL: </strong> {{ $value->channel }}</div>
@@ -62,12 +62,12 @@
                <address class="m-t-2 m-b-5">
                   <strong class="text-inverse"><h6><b>COMPANY NAME</b></h6></strong><hr>
                   <b> {{ $value->store_name }} </b><br>
-                  {{ $value->store__add }}
+                  {{ $value->store_add }}
                </address>
             </div>
-            
+
             <div class="invoice-to">
-               
+
                <address class="m-t-2 m-b-5">
                   <strong class="text-inverse"><h6><b>BILL TO </b></h6></strong><hr>
                   <b> {{ $value->bill_to_name }} </b><br>
@@ -75,7 +75,7 @@
                </address>
             </div>
             <div class="invoice-to">
-               
+
                <address class="m-t-2 m-b-5">
                   <strong class="text-inverse"><h6><b>SHIP TO </b></h6></strong><hr>
                   <b> {{ $value->ship_to_name }} </b><br>
@@ -83,7 +83,7 @@
                </address>
             </div>
          </div>
-         
+
          <div class="invoice-content">
             <div class="table-responsive">
                <table class="table table-invoice table-bordered table-bordered-dark table-sm">
@@ -102,7 +102,7 @@
                         <tr>
                             <td class="text-center"> {{ $value->sku }} </td>
                             <td class="text-center"> {{ $value->item_description }} </td>
-                            
+
                             <td class="text-center">
                                 @if ( $value->hsn_code == '')
                                     {{ $value->hsn_code }}
@@ -124,7 +124,7 @@
                                     {{$value->currency}} {{ $value->product_price}}
                                 @endif
                             </td>
-                            <td class="text-center"> 
+                            <td class="text-center">
                                 @if ( $value->taxable_value =='')
                                     {{ 0 }}
                                 @else
@@ -137,14 +137,14 @@
                             @else
                                 {{$value->currency}} {{ $value->grand_total }}
                             @endif
-                            </td>  
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <div class="invoice-price">
                <div class="invoice-price-left">
-                 
+
                </div>
                <div class="invoice-price-right">
                   @if ($value->grand_total == '')
@@ -152,11 +152,11 @@
                   @else
                   <small><strong> GRAND TOTAL </strong> </small> <span class="f-w-600">{{$value->currency}} {{ $value->grand_total }}</span>
                   @endif
-                  
+
                </div>
             </div>
             <p class=" mb-0 text-center">This is system generated invoice, it may contain only digital signature.</p>
-            
+
          </div>
          @endforeach
       </div>
@@ -173,17 +173,17 @@
          e.preventDefault();
          var url = $(location).attr('href');
          var invoice_no = $('#pid').val();
-    
+
          $.ajax({
             method: 'POST',
             url: "{{ url('/invoice/export-pdf')}}",
-            data:{ 
+            data:{
                'url':url,
                'invoice_no':invoice_no,
                "_token": "{{ csrf_token() }}",
                },
             success: function(response) {
-               
+
                window.location.href = '/invoice/download/'+invoice_no;
                alert('Download pdf successfully');
             }

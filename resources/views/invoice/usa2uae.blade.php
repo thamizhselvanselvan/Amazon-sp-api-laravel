@@ -55,7 +55,7 @@
                <address class="m-t-2 m-b-5">
                   <strong class="text-inverse"><h6><b>COMPANY NAME</b></h6></strong><hr>
                   <b> {{ $value->store_name }} </b><br>
-                  {{ $value->store__add }}
+                  {{ $value->store_add }}
                </address>
             </div>
 
@@ -211,7 +211,7 @@
                   <div class="row">
                         <div class="col ">
                            <b class="bg-dark text-white mt-4 ml-2 consignor"> CONSIGNOR</b>
-                           <p class=" ml-2 mt-"><b> {{ $value->bill_to_name }} </b><br> {{ $value->bill_to_add }} </p>
+                           <p class=" ml-2 mt-"><b> {{ $value->store_name }} </b><br> {{ $value->store_add }} </p>
                         </div>
                         <div class="col ">
                            <b class="bg-dark text-white mt-4 ml-2 consignee"> CONSIGNEE </b>

@@ -64,8 +64,7 @@ class InvoiceManagementController extends Controller
 
     public function SearchDateWiseInvoice(Request $request)
     {
-        if($request->ajax())
-        {
+        if ($request->ajax()) {
             $mode = $request->invoice_mode;
 
             $date = $request->invoice_date;
@@ -97,8 +96,8 @@ class InvoiceManagementController extends Controller
         $invoice_bar_code = $generator->getBarcode($invoice_no, $generator::TYPE_CODE_128);
         $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_128);
 
-        if($invoice_mode!= ''){
-            return view('invoice.'.$invoice_mode , compact(['data'],'invoice_no', 'invoice_bar_code', 'bar_code'));
+        if ($invoice_mode != '') {
+            return view('invoice.' . $invoice_mode, compact(['data'], 'invoice_no', 'invoice_bar_code', 'bar_code'));
         }
     }
 
@@ -107,20 +106,19 @@ class InvoiceManagementController extends Controller
         $eachid = explode('-', $id);
         foreach ($eachid as $id) {
             // $data []= Invoice::where('id', $id)->get();
-            $data []= DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
+            $data[] = DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
             $invoice_mode = $data[0][0]->mode;
             $invoice_mode_multi = strtolower($invoice_mode);
         }
-        foreach($data as $key => $record)
-        {
+        foreach ($data as $key => $record) {
             $invoice_no = $record[0]->invoice_no;
             $awb_no = $record[0]->awb_no;
             $generator = new BarcodeGeneratorHTML();
-            $invoice_bar_code []= $generator->getBarcode($invoice_no, $generator::TYPE_CODE_128);
-            $awb_bar_code []= $generator->getBarcode($awb_no, $generator::TYPE_CODE_128);
+            $invoice_bar_code[] = $generator->getBarcode($invoice_no, $generator::TYPE_CODE_128);
+            $awb_bar_code[] = $generator->getBarcode($awb_no, $generator::TYPE_CODE_128);
         }
-        if($invoice_mode_multi!= ''){
-            return view('invoice.multiple'.$invoice_mode_multi , compact(['data'], 'invoice_bar_code', 'awb_bar_code'));
+        if ($invoice_mode_multi != '') {
+            return view('invoice.multiple' . $invoice_mode_multi, compact(['data'], 'invoice_bar_code', 'awb_bar_code'));
         }
     }
 
@@ -154,7 +152,7 @@ class InvoiceManagementController extends Controller
         return response()->json(["success" => "All file uploaded successfully"]);
     }
 
-    // Begin download all selected rows 
+    // Begin download all selected rows
     public function SelectedDownload(Request $request)
     {
         // echo 'working file';
@@ -269,6 +267,7 @@ class InvoiceManagementController extends Controller
 
     public function downloadTemplate()
     {
-        return Storage::download('Invoice_Excel_Template.xlsx');
+        $filepath = public_path('template/Invoice-Template.xlsx');
+        return Response()->download($filepath);
     }
 }

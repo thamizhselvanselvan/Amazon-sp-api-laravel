@@ -38,12 +38,12 @@ class labelManagementController extends Controller
             $web = config('database.connections.web.database');
 
             $label = DB::select("SELECT web.id, web.order_no, web.awb_no, ord.purchase_date
-            from $web.labels as web     
-            JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no 
+            from $web.labels as web
+            JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
             JOIN $order.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
-            JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin 
+            JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin
             WHERE web.bag_no = $bag_no
-            
+
         ");
             return response()->json($label);
         }
@@ -53,7 +53,7 @@ class labelManagementController extends Controller
     {
         // dd($data);
         if ($request->ajax()) {
-            
+
             $data = $this->bladeOrderDetails();
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -218,7 +218,8 @@ class labelManagementController extends Controller
 
     public function downloadExcelTemplate()
     {
-        return Storage::download('Label_Excel_Template.xlsx');
+        $filepath = public_path('template/Label-Template.xlsx');
+        return Response()->download($filepath);
     }
 
     public function upload()
@@ -292,8 +293,8 @@ class labelManagementController extends Controller
         $catalog = config('database.connections.catalog.database');
         $web = config('database.connections.web.database');
 
-        $label = DB::select("SELECT cat.asin, 
-        GROUP_CONCAT(DISTINCT web.order_no)as order_no, 
+        $label = DB::select("SELECT cat.asin,
+        GROUP_CONCAT(DISTINCT web.order_no)as order_no,
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
         GROUP_CONCAT(DISTINCT ord.order_item) as order_item,
@@ -303,10 +304,10 @@ class labelManagementController extends Controller
         GROUP_CONCAT(DISTINCT cat.title) as title,
         GROUP_CONCAT(DISTINCT ordetail.seller_sku) as sku,
         GROUP_CONCAT(DISTINCT ordetail.quantity_ordered) as qty
-        from $web.labels as web     
-        JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no 
+        from $web.labels as web
+        JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
         JOIN $order.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
-        JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin 
+        JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin
         WHERE web.id = $id
         GROUP BY cat.asin
     ");
@@ -367,16 +368,16 @@ class labelManagementController extends Controller
         $catalog = config('database.connections.catalog.database');
         $web = config('database.connections.web.database');
 
-        $data = DB::select("SELECT 
-    
+        $data = DB::select("SELECT
+
     DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name
-    from $web.labels as web     
-    JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no 
-    JOIN $order.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id 
-    -- JOIN ord ON ord.our_seller_identifier = $order.ord_order_seller_credentials.seller_id as 
+    from $web.labels as web
+    JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
+    JOIN $order.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+    -- JOIN ord ON ord.our_seller_identifier = $order.ord_order_seller_credentials.seller_id as
 ");
 
         return $data;
     }
-    // INNER JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no 
+    // INNER JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
 }
