@@ -14,12 +14,13 @@ use App\Models\Inventory\Vendor;
 use App\Models\Inventory\Catalog;
 use App\Models\Inventory\Shipment;
 use Illuminate\Support\Facades\DB;
-use App\Models\Inventory\Inventory;
+
 use App\Models\Inventory\Warehouse;
 use App\Services\SP_API\CatalogAPI;
 use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
+use App\Models\inventory\Inventory;
 use App\Models\Inventory\Shipment_Inward;
 use App\Models\Inventory\Shipment_Inward_Details;
 use Illuminate\Support\Facades\Storage;
@@ -182,11 +183,28 @@ class InventoryShipmentController extends Controller
                 "item_name" => $request->name[$key1],
                 "price" => $request->price[$key1],
                 "quantity" => $request->quantity[$key1],
+                "created_at" => now(),
+                "updated_at" => now()
+            ]);
+        }
+
+
+        foreach ($request->asin as $key1 => $asin1) {
+
+            Inventory::create([
+                "warehouse_id" => $request->warehouse,
+                "ship_id" => $ship_id,
+                "asin" => $asin1,
+                "price" => $request->price[$key1],
+                "item_name" => $request->name[$key1],
+                "quantity" => $request->quantity[$key1],
                 "balance_quantity" => $request->quantity[$key1],
                 "created_at" => now(),
                 "updated_at" => now()
             ]);
         }
+
+
 
         foreach ($request->asin as $key => $asin) {
 
@@ -233,7 +251,7 @@ class InventoryShipmentController extends Controller
     }
     public function store($id)
     {
-        $store = Shipment_Inward_Details::where('ship_id', $id)->with(['warehouses', 'vendors'])->get();
+        $store = Inventory::where('ship_id', $id)->with(['warehouses', 'vendors'])->get();
         foreach ($store as $value) {
 
             $warehouse_id = $value->warehouse_id;
@@ -265,7 +283,7 @@ class InventoryShipmentController extends Controller
         foreach ($request->asin as $key1 => $asin) {
 
             $ship_id = $request->ship_id[$key1];
-            Shipment_Inward_Details::where('ship_id', $ship_id)->where('asin', $asin)
+            Inventory::where('ship_id', $ship_id)->where('asin', $asin)
                 ->update([
                     'bin' => $request->bin[$key1],
                 ]);

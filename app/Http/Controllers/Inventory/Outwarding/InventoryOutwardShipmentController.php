@@ -13,10 +13,11 @@ use function React\Promise\reduce;
 use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
 use App\Http\Controllers\Controller;
-
 use App\Models\Inventory\Destination;
 use App\Models\Inventory\Outshipment;
 use App\Models\Inventory\Shipment_Inward_Details;
+use App\Models\inventory\Shipment_Outward;
+use App\Models\inventory\Shipment_Outward_Details;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -31,7 +32,8 @@ class InventoryOutwardShipmentController extends Controller
 
         if ($request->ajax()) {
 
-            $data = Outshipment::select("ship_id", "destination_id")->distinct()->with(['vendors']);
+            $data = Shipment_Outward_Details::select("ship_id", "destination_id")->distinct()->with(['vendors']);
+
 
 
             return DataTables::of($data)
@@ -60,28 +62,24 @@ class InventoryOutwardShipmentController extends Controller
         $destination_lists = Vendor::where('type', 'Destination')->get();
         $currency_lists = Currency::get();
         $ware_list = [];
-        $ware_lists = Shipment::select(["warehouse", "ship_id"])->with(['warehouses'])->get()->unique('warehouse');
-        foreach ($ware_lists as $key => $ware) {
-            $ware_list[] =  [
-                'warehouse' => $ware['warehouse']
-            ];
-        }
+        $ware_lists = Shipment_Inward_Details::with('warehouses')->get()->unique('warehouses');
 
         return view('inventory.outward.shipment.create', compact('destination_lists', 'ware_lists', 'currency_lists'));
     }
 
     public function show(Request $reques, $id)
     {
-        $outview = Outshipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
-        $data = json_decode($outview['items'], true);
-        foreach ($data as $key => $val) {
-            $items[] = [
-                'asin' => $val['asin']
-            ];
-        }
+        $outview = Shipment_Outward_Details::where('ship_id', $id)->with(['warehouses', 'vendors'])->get();
 
+        foreach ($outview as $key => $val) {
+            $items[] =   $val['asin'];
+        }
         $generator = new BarcodeGeneratorHTML();
-        $bar_code = $generator->getBarcode($outview->ship_id, $generator::TYPE_CODE_93);
+        foreach ($outview as $key => $bar) {
+            
+            $bar_code = $generator->getBarcode($bar->ship_id, $generator::TYPE_CODE_93);
+        }
+      
         $currency = Currency::get();
         $currency_array = [];
         foreach ($currency as $key => $cur) {
@@ -95,7 +93,7 @@ class InventoryOutwardShipmentController extends Controller
             $loc[] = Bin::where('bin_id', $plc['bin'])->first();
         }
 
-        return view('inventory.outward.shipment.view', compact('outview', 'currency_array', 'bar_code', 'loc'));
+        return view('inventory.outward.shipment.view', compact('outview', 'id', 'currency_array', 'bar_code', 'bar', 'loc'));
     }
 
     public function outstore($id)
@@ -111,18 +109,12 @@ class InventoryOutwardShipmentController extends Controller
     public function autofinish(Request $request)
     {
         if ($request->ajax()) {
-            $data = Shipment_Inward_Details::query()
-                // ->select('inventory.*', 'warehouses.name')
-                // ->join('shipments', function ($query) {
-                //     $query->on("shipments.ship_id", "=", "inventory.ship_id");
-                // })
-                // ->join('warehouses', function ($query) {
-                //     $query->on("warehouses.id", "=", "shipments.warehouse");
-                // })
-                // ->where('warehouses.id', $request->id)
+            $data = Inventory::query()
                 ->where("asin", "LIKE", "%{$request->asin}%")
+                ->where('warehouse_id', $request->id)
+                ->where('balance_quantity','>',0)
                 ->orderBy('created_at')
-                // ->limit(50)
+                ->limit(50)
                 ->get();
             return response()->json($data);
         }
@@ -134,7 +126,10 @@ class InventoryOutwardShipmentController extends Controller
 
         if ($request->ajax()) {
 
-            return Inventory::query()->where('asin', $request->asin)->first();
+            return Inventory::query()->where('asin', $request->asin)
+            ->where('balance_quantity','>',0)
+            ->where('warehouse_id', $request->warehouse_id)
+            ->first();
         }
     }
     public function storeoutshipment(Request $request)
@@ -154,25 +149,42 @@ class InventoryOutwardShipmentController extends Controller
         }
 
 
-        Outshipment::insert([
+        Shipment_Outward::insert([
             "Ship_id" => $shipment_id,
-            "warehouse" => $request->warehouse,
+            "warehouse_id" => $request->warehouse,
             "currency" => $request->currency,
             "destination_id" => $request->destination,
-            "items" => json_encode($items),
+            "shipment_count" => count($items),
             "created_at" => now(),
             "updated_at" => now()
         ]);
 
+        foreach ($request->asin as $key => $asin) {
+
+            Shipment_Outward_Details::create([
+                "ship_id" => $shipment_id,
+                "warehouse_id" => $request->warehouse,
+                "destination_id" => $request->destination,
+                "currency" => $request->currency,
+                "asin" => $asin,
+                "item_name" => $request->name[$key],
+                "price" => $request->price[$key],
+                "quantity" => $request->quantity[$key],
+                "created_at" => now(),
+                "updated_at" => now()
+            ]);
+        }
+
 
         foreach ($request->id as $key1 => $id) {
 
-            if ($inventory = Inventory::where('id', $id)->first()) {
+            if ($inventory =    Inventory::where('id', $id)->first()) {
 
                 Inventory::where('id', $id)->update([
 
-                    'item_name' => $request->name[$key1],
-                    'quantity' => $inventory->quantity - $request->quantity[$key1],
+                    'out_quantity' =>$inventory->out_quantity +$request->quantity[$key],
+                    'balance_quantity' => $inventory->balance_quantity - $request->quantity[$key1],
+                    
                 ]);
             }
         }
