@@ -68,7 +68,7 @@ class labelManagementController extends Controller
                         return $action;
                     }
                     // $action1 = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
-                    return "<div class ='text-left'>Details Not Avaliable</div>";
+                    return "<div class ='d-flex pl-4'>Details Not Avaliable</div>";
                     return '<div class="text-center"><i class="fa fa-times" style="color:red" aria-hidden="true"></i>';
                 })
                 ->addColumn('sn', function ($id) {
