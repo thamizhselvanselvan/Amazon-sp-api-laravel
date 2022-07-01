@@ -105,21 +105,26 @@ class InvoiceManagementController extends Controller
     public function selectedPrint($id)
     {
         $eachid = explode('-', $id);
+        
+        $generator = new BarcodeGeneratorHTML();
         foreach ($eachid as $id) {
             // $data []= Invoice::where('id', $id)->get();
-            $data[] = DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
-            $invoice_mode = $data[0][0]->mode;
+            $data = DB::connection('web')->select("SELECT invoice_no from invoices where id ='$id' ");
+            
+            $result = $this->invoiceDataFormating($data[0]->invoice_no);
+
+            $invoice_mode = $result['mode'];
             $invoice_mode_multi = strtolower($invoice_mode);
+
+            $invoice_bar_code[] = $generator->getBarcode($result['invoice_no'], $generator::TYPE_CODE_128);
+            $awb_bar_code[] = $generator->getBarcode($result['awb_no'], $generator::TYPE_CODE_128);
+            
+            $record[] = $result;
         }
-        foreach ($data as $key => $record) {
-            $invoice_no = $record[0]->invoice_no;
-            $awb_no = $record[0]->awb_no;
-            $generator = new BarcodeGeneratorHTML();
-            $invoice_bar_code[] = $generator->getBarcode($invoice_no, $generator::TYPE_CODE_128);
-            $awb_bar_code[] = $generator->getBarcode($awb_no, $generator::TYPE_CODE_128);
-        }
+
+        // dd($record);
         if ($invoice_mode_multi != '') {
-            return view('invoice.multiple' . $invoice_mode_multi, compact(['data'], 'invoice_bar_code', 'awb_bar_code'));
+            return view('invoice.multiple' . $invoice_mode_multi, compact(['record'], 'invoice_bar_code', 'awb_bar_code'));
         }
     }
 
@@ -155,7 +160,7 @@ class InvoiceManagementController extends Controller
 
     // Begin download all selected rows
     public function SelectedDownload(Request $request)
-    {
+    { 
         // echo 'working file';
         $passid = $request->id;
         $currenturl =  URL::current();

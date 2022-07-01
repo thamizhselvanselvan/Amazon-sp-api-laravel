@@ -176,7 +176,6 @@
                 } else {
                     id += '-' + $(this).val();   
                 }
-
                 count++; 
                 window.location.href = '/invoice/selected-print/'+id;
             });
