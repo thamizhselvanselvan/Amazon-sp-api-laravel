@@ -110,7 +110,10 @@
                     $.each(response, function(i, response){
                         let label_id = response.order_no.replaceAll(/-/g, '_');
         
-                        table +="<tr class='"+label_id+"'><td><input class='check_options' type='checkbox' value="+ response.id +" name='options[]' id='checkid"+response.id+"'></td><td>"+response.order_date+"</td><td>"+response.order_no+"</td><td>"+response.awb_no+"</td><td><div class='d-flex'><a href=/label/pdf-template/"+ response.id +" class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/label/download-direct/"+ response.id +"  class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a></td> </tr>";
+                        table +="<tr class='"+label_id+"'>";
+                        table +="<td><input class='check_options' type='checkbox' value="+ response.id +" name='options[]' id='checkid"+response.id+"'></td>";
+                        table += "<td>"+response.purchase_date+"</td><td>"+response.order_no+"</td>";
+                        table += "<td>"+response.awb_no+"</td><td><div class='d-flex'><a href=/label/pdf-template/"+ response.id +" class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/label/download-direct/"+ response.id +"  class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a></td> </tr>";
                     });
                     $('#showTable').html(table);
                 // alert('Export pdf successfully');

@@ -106,12 +106,7 @@
             },
             {
                 data: 'purchase_date',
-                render: function(data, type, row){
-                    if(type === "sort" || type === "type"){
-                        return data;
-                    }
-                    return moment(data).format('YYYY-MM-DD');
-                }
+                name: 'purchase_date'
             },
             // {
             //     data: 'check_box',

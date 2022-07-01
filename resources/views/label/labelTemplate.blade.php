@@ -18,7 +18,7 @@
 <div class="container " id="label-container">
     <div class="col-md-12">
         <div class="invoice">
-            <div class="invoice-content">
+            <div class="invoice-content ">
                 <!-- <div class="table-responsive"> -->
                     <table class="table table-invoice table-bordered table-bordered-dark">
                         <tbody>
@@ -33,12 +33,9 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <h5><strong> Tracking Details : </strong></h5>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h5 class="text-center"><strong>{{ $result->awb_no }}</strong></h5>
+                                    <div class="row ">
+                                        <div class="col">
+                                            <h5><strong> Tracking Details: {{ $result->awb_no }} </strong></h5>
                                         </div>
                                     </div>
                                 </td>
@@ -51,28 +48,34 @@
                             <tr>
                                 <td>
                                     <div class="row">
-                                        <div class="col-md-6">
-                                            <h6><b>SHIP TO </b><br>
+                                        <div class="col">
+                                            <span><strong>SHIP TO </strong><br>
                                                 @foreach ($result->shipping_address as $key => $value )
                                                     {{$value}},
                                                 @endforeach
-                                            </h6>
+                                            </span>
                                             <br>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class=" text-inverse m-b-5 text-left"><strong>
-                                                    Order Date: </strong>{{$result->purchase_date}} </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col">
                                             <div class=" text-inverse m-b-5 text-left"><strong>
                                                     Invoice No: </strong> {{$result->order_no}} </div>
                                             <div class=" text-inverse m-b-5 text-left"><strong>
-                                                    Invoice Date: </strong> {{$result->purchase_date}} </div>
+                                                    Order Date: </strong>{{date('Y-m-d', strtotime($result->purchase_date))}} </div>
+                                            <div class=" text-inverse m-b-5 text-left"><strong>
+                                                    Invoice Date: </strong> {{date('Y-m-d', strtotime($result->purchase_date))}} </div>
                                             <div class=" text-inverse m-b-5 text-left"><strong>
                                                     Pieces: </strong> {{$result->order_item}} </div>
                                             <div class=" text-inverse m-b-5 text-left"><strong>
                                                     Order ID: </strong> {{$result->order_no}} </div>
-                                            <div class=" text-inverse m-b-5 text-left"><strong> Weight: </strong> {{$result->package_dimensions['Weight']->value}} {{$result->package_dimensions['Weight']->Units}}</div>
-                                            <div class=" text-inverse m-b-5 text-left"><strong> Dimensions: {{$result->package_dimensions['Height']->value}} X {{$result->package_dimensions['Length']->value}} X 
-                                            {{$result->package_dimensions['Width']->value}} 
+                                            <div class=" text-inverse m-b-5 text-left"><strong> Weight: </strong>
+                                             {{round((float)$result->package_dimensions['Weight']->value, 2)}} {{$result->package_dimensions['Weight']->Units}}</div>
+                                            <div class=" text-inverse m-b-5 text-left"><strong> Dimensions: 
+                                            {{round((float)$result->package_dimensions['Height']->value, 2)}} X 
+                                            {{round((float)$result->package_dimensions['Length']->value, 2)}} X 
+                                            {{round((float)$result->package_dimensions['Width']->value, 2)}} 
                                             {{$result->package_dimensions['Length']->Units}}
                                             </strong> </div>
                                         </div>
