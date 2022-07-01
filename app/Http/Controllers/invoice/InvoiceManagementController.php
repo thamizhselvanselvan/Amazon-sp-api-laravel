@@ -98,19 +98,19 @@ class InvoiceManagementController extends Controller
         $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_128);
 
         if ($invoice_mode != '') {
-            return view('invoice.'.$invoice_mode, compact(['value'], 'invoice_no', 'invoice_bar_code', 'bar_code'));
+            return view('invoice.' . $invoice_mode, compact(['value'], 'invoice_no', 'invoice_bar_code', 'bar_code'));
         }
     }
 
     public function selectedPrint($id)
     {
         $eachid = explode('-', $id);
-        
+
         $generator = new BarcodeGeneratorHTML();
         foreach ($eachid as $id) {
             // $data []= Invoice::where('id', $id)->get();
             $data = DB::connection('web')->select("SELECT invoice_no from invoices where id ='$id' ");
-            
+
             $result = $this->invoiceDataFormating($data[0]->invoice_no);
 
             $invoice_mode = $result['mode'];
@@ -118,7 +118,7 @@ class InvoiceManagementController extends Controller
 
             $invoice_bar_code[] = $generator->getBarcode($result['invoice_no'], $generator::TYPE_CODE_128);
             $awb_bar_code[] = $generator->getBarcode($result['awb_no'], $generator::TYPE_CODE_128);
-            
+
             $record[] = $result;
         }
 
@@ -160,19 +160,20 @@ class InvoiceManagementController extends Controller
 
     // Begin download all selected rows
     public function SelectedDownload(Request $request)
-    { 
+    {
         // echo 'working file';
         $passid = $request->id;
-        $currenturl =  URL::current();
-
+        $currenturl =  request()->getSchemeAndHttpHost();
+        return $currenturl;
         $excelid = explode('-', $passid);
-       
+
         foreach ($excelid as $getId) {
             // $id = Invoice::where('id', $getId)->get();
             $id = DB::connection('web')->select("SELECT * from invoices where id ='$getId' ");
             foreach ($id as $key => $value) {
                 $invoice_no = $value->invoice_no;
-                $url = str_replace('select-download', 'convert-pdf', $currenturl . '/' . $getId);
+                // $url = str_replace('select-download', 'convert-pdf', $currenturl . '/' . $getId);
+                $url = $currenturl.'/invoice/convert-pdf/'.$invoice_no;
                 $path = 'invoice/invoice' . $invoice_no . '.pdf';
                 if (!Storage::exists($path)) {
                     Storage::put($path, '');
