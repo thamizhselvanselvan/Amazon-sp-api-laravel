@@ -98,7 +98,7 @@ class InvoiceManagementController extends Controller
         $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_128);
 
         if ($invoice_mode != '') {
-            return view('invoice.'.$mode, compact(['value'], 'invoice_no', 'invoice_bar_code', 'bar_code'));
+            return view('invoice.'.$invoice_mode, compact(['value'], 'invoice_no', 'invoice_bar_code', 'bar_code'));
         }
     }
 

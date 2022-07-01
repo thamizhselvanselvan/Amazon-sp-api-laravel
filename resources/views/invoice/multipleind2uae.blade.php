@@ -56,7 +56,7 @@
                         <div class="invoice-header">
                             <div class="invoice-from">
                             <address class="m-t-5 m-b-5">
-                                <strong class="text-inverse"><h6><b>COMPANY NAME</b></h6></strong><hr>
+                                <strong class="text-inverse"><h6><b>SHIPPED FROM</b></h6></strong><hr>
                                 <b> {{ $value['store_name'] }} </b><br>
                                 {{ $value['store_add'] }}
                             </address>
