@@ -92,31 +92,35 @@
             // },
             {
                 data: 'store_name',
-                name: 'store_name'
+                name: 'store_name',
+                orderable: false,
+                searchable: false
             },
             {
                 data: 'order_no',
                 name: 'order_no',
-                orderable: false,
-                searchable: false
             },
             {
                 data: 'awb_no',
                 name: 'awb_no',
+            },
+            {
+                data: 'purchase_date',
+                name: 'purchase_date',
                 orderable: false,
                 searchable: false
             },
             {
-                data: 'purchase_date',
-                name: 'purchase_date'
-            },
-            {
                 data: 'seller_sku',
                 name: 'seller_sku',
+                orderable: false,
+                searchable: false
             },
             {
                 data: 'customer_name',
                 name: 'customer_name',
+                orderable: false,
+                searchable: false
             },
             {
                 data: 'action',
