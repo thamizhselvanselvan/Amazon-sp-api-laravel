@@ -15,7 +15,7 @@
 @stop
 
 @section('content')
-  
+
 <input type="hidden" id="pid" value="{{$invoice_no}}" >
 <div class="container">
    <div class="col-md-12">
@@ -23,11 +23,11 @@
          <!-- begin invoice-company -->
          <div class="container">
             <h4 class="text-center mt-0"> <strong> TAX INVOICE </strong> </h4>
-         </div>   
-           
+         </div>
+
             <div class="col-md-12 invoice-date text-left" >
                @foreach ($data as $key =>$value)
-                  
+
                <div class=" text-inverse m-t-5"><strong> INVOICE DATE: </strong> {{ $value->invoice_date }}</div>
                <div class=" text-inverse m-t-5"><strong> INVOICE NO.: </strong> {{ $value->invoice_no }}</div>
                <div class=" text-inverse m-t-5"><strong> CHANNEL: </strong> {{ $value->channel }}</div>
@@ -58,9 +58,9 @@
                   {{ $value->store__add }}
                </address>
             </div>
-            
+
             <div class="invoice-to">
-               
+
                <address class="m-t-2 m-b-5">
                   <strong class="text-inverse"><h6><b>BILL TO </b></h6></strong><hr>
                   <b> {{ $value->bill_to_name }} </b><br>
@@ -68,7 +68,7 @@
                </address>
             </div>
             <div class="invoice-to">
-               
+
                <address class="m-t-2 m-b-5">
                   <strong class="text-inverse"><h6><b>SHIP TO </b></h6></strong><hr>
                   <b> {{ $value->ship_to_name }} </b><br>
@@ -76,7 +76,7 @@
                </address>
             </div>
          </div>
-         
+
          <!-- end invoice-header -->
          <!-- begin invoice-content -->
          <div class="invoice-content">
@@ -98,7 +98,7 @@
                      <tr>
                         <td class="text-center"> {{ $value->sku }} </td>
                         <td class="text-center"> {{ $value->item_description }} </td>
-                        
+
                         @if ( $value->hsn_code == '')
                         <td class="text-center">{{ $value->hsn_code }}</td>
                         @else
@@ -110,7 +110,7 @@
                         @else
                         <td class="text-center">{{ $value->qty }}</td>
                         @endif
-                        
+
                         @if ( $value->product_price =='')
                         <td class="text-center">{{ 0 }}</td>
                         @else
@@ -122,8 +122,8 @@
                         @else
                         <td class="text-center">{{ $value->taxable_value}}</td>
                         @endif
-                        
-                         
+
+
                          <td class="text-center">
                            @if( $value->grand_total =='' )
                               {{ 0 }}
@@ -132,7 +132,7 @@
                            @endif
                          </td>
                      </tr>
-                    
+
                   </tbody>
                </table>
             </div>
@@ -140,7 +140,7 @@
             <!-- begin invoice-price -->
             <div class="invoice-price">
                <div class="invoice-price-left">
-                 
+
                </div>
                <div class="invoice-price-right">
                   @if ($value->grand_total == '')
@@ -148,7 +148,7 @@
                   @else
                   <small><strong> GRAND TOTAL </strong> </small> <span class="f-w-600">{{$value->currency}} {{ $value->grand_total }}</span>
                   @endif
-                  
+
                </div>
             </div>
             <!-- end invoice-price -->
@@ -192,7 +192,7 @@
                                  <td>USA</td>
                                  <td>UAE</td>
                               </tr>
-                              
+
                            </tbody>
                         </table>
                   </div>
@@ -202,9 +202,9 @@
                      <tbody>
                         <tr>
                            <td ><strong class="ml-2">SHIPPER A/C.:</strong></td>
-                           <td ><strong class="ml-2">DATE: </strong>&nbsp;{{$value->invoice_date}} </td>     
+                           <td ><strong class="ml-2">DATE: </strong>&nbsp;{{$value->invoice_date}} </td>
                            <td ><strong class="ml-2">ONFD NO.: </strong>&nbsp;{{$value->invoice_no}}</td>
-                              
+
                         </tr>
                      </tbody>
                   </table>
@@ -273,11 +273,11 @@
          e.preventDefault();
          var url = $(location).attr('href');
          var invoice_no = $('#pid').val();
-         
+
          $.ajax({
             method: 'POST',
             url: "{{ url('/invoice/export-pdf')}}",
-            data:{ 
+            data:{
                'url':url,
                'invoice_no':invoice_no,
                "_token": "{{ csrf_token() }}",
