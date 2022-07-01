@@ -29,9 +29,6 @@
     <a href="#" class="btn btn-primary btn-sm" id="printinv">
         <i class="fas fa-print"></i> Print
     </a>
-    <!-- <a href="/shipment/print/lable" class="btn btn-primary btn-sm" id="printinv">
-        <i class="fas fa-print"></i> Print Lable
-    </a> -->
 
 
 </div>
