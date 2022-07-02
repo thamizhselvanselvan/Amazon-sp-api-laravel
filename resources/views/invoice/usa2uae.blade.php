@@ -216,7 +216,7 @@
                   <div class="row">
                         <div class="col ">
                            <b class="bg-dark text-white mt-4 ml-2 consignor"> CONSIGNOR</b>
-                           <p class=" ml-2 mt-"><b> {{ $value['bill_to_name'] }} </b><br> {{ $value['store_add'] }} </p>
+                           <p class=" ml-2 mt-"><b> {{ $value['store_name']  }} </b><br> {{ $value['store_add'] }} </p>
                         </div>
                         <div class="col ">
                            <b class="bg-dark text-white mt-4 ml-2 consignee"> CONSIGNEE </b>
