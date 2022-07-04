@@ -69,7 +69,7 @@
             <x-adminlte-select name="warehouse" label="Select warehouse:" id="warehouse">
                 <option Value="">Select warehouse</option>
                 @foreach ($ware_lists as $ware_list)
-                <option value="{{ $ware_list->warehouse }}">{{$ware_list->warehouses->name }}</option>
+                <option value="{{ $ware_list->warehouses->id }}">{{$ware_list->warehouses->name }}</option>
                 @endforeach
             </x-adminlte-select>
 
@@ -95,7 +95,7 @@
             </div>
         </div>
     </div>
-    
+
 
     <div class="col-2" id="currency">
 
@@ -119,13 +119,13 @@
 <table class="table table-bordered yajra-datatable table-striped" id="outward_table">
     <thead>
         <tr>
-            <td>asin</td>
-            <td>Item Name</td>
-            <td>Inwarding Price</td>
-            <td>Outwarding Price</td>
-            <td>Quantity Left</td>
-            <td>Quantity</td>
-            <td>Action</td>
+            <th>asin</th>
+            <th>Item Name</th>
+            <th>Inwarding Price</th>
+            <th>Outwarding Price</th>
+            <th>Quantity Left</th>
+            <th>Quantity</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -265,7 +265,7 @@
 
             $.ajax({
                 method: 'POST',
-                url: '/shipment/warehouseg/'+ warehouse_id,
+                url: '/shipment/warehouseg/' + warehouse_id,
                 data: {
                     'asin': val,
                     "_token": "{{ csrf_token() }}",
@@ -368,12 +368,12 @@
     }
 
     function getData(asin, id) {
-
+        let warehouse_id = $("#warehouse").val();
         $.ajax({
             method: 'GET',
-            url: '/shipment/select/View',
+            url: '/shipment/select/View/',
             data: {
-                'asin': asin,
+                'asin': asin, warehouse_id,
                 'id': id
             },
             success: function(arr) {
@@ -384,20 +384,29 @@
                 html += "<td name='name[]'>" + arr.item_name + "</td>";
                 html += "<td>" + arr.price + "</td>";
                 html += "<td name='priceo[]'>" + arr.price + "</td>";
-                html += "<td name='quantityl[]'>" + arr.quantity + "</td>";
+                html += "<td name='quantityl[]'>" + arr.balance_quantity + "</td>";
                 html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
                 html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
                 html += "</tr>";
 
                 $("#outward_table").append(html);
+               
 
-                $("#quantity").on("change", function() {
-                    let out_qty =  $('#quantity').val();
-                    let exist_qty = arr.quantity;
-                   if(out_qty > exist_qty){
-                    alert('Product quantity Exceeds');
-                   }
-                });
+
+                    $("#quantity").on("change", function() {
+                            let out_qty = $('#quantity').val();
+
+                            let exist_qty = arr.balance_quantity;
+
+                            if (out_qty > exist_qty) {
+                                alert('Product quantity Exceeds');
+                                return false;
+                            } else if  (out_qty < exist_qty) {
+                                alert('item is not present In the warehouse');
+                                return false;
+                            }
+                       
+                    });
             },
             error: function(response) {
                 // console.log(response);
