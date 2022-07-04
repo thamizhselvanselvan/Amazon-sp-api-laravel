@@ -8,7 +8,7 @@
     .table td {
         padding: 0;
         padding-left: 5px;
-        
+
     }
 
     .btn-group-sm .btn,
@@ -54,15 +54,12 @@
     <thead>
         <tr class="text-bold bg-info">
 
-            <th>S/N</th> 
-            <!-- <th>Status</th> -->
-            <th>Store Name </th>
-            <th>Order No.</th>
-            <th>Awb No.</th>
+            <th>SR</th>
+            <th>Status</th>
+            <th>Store</th>
+            <th>Order</th>
+            <th>Awb</th>
             <th>Order Date</th>
-            <th>SKU</th>
-            <th>Customer</th>
-            <!-- <td>Select All <br><input class="check_all" type="checkbox" value='' name="options[]" id="check_all" ></div> </td> -->
             <th>Action</th>
         </tr>
     </thead>
@@ -133,7 +130,7 @@
 
     $(document).ready(function(){
         $('.check_all').change(function(){
-            
+
             if($('.check_all').is(':checked'))
             {
                 $('.check_options').prop('checked', true);
@@ -173,7 +170,7 @@
             $.ajax({
                 method: 'POST',
                 url: "{{ url('/label/select-download')}}",
-                data:{ 
+                data:{
                 'id':id,
                 "_token": "{{ csrf_token() }}",
                 },
