@@ -16,6 +16,7 @@ use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorHTML;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 
@@ -112,8 +113,8 @@ class labelManagementController extends Controller
         $result = (object)$result;
 
         // dd($result);
-        $generator = new BarcodeGeneratorHTML();
-        $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_93);
+        $generator = new BarcodeGeneratorPNG();
+        $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_93));
         return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no'));
     }
     public function ExportLabel(Request $request)
@@ -128,9 +129,11 @@ class labelManagementController extends Controller
         }
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-            ->format('A6')
-            ->showBackground()
+            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            ->paperSize(576, 384, 'px')
+            ->pages('1')
+            ->scale(1.44)
+            ->margins(0,0,0,0)
             ->savePdf($exportToPdf);
 
         return response()->json(['Save pdf sucessfully']);
@@ -314,9 +317,8 @@ class labelManagementController extends Controller
         GROUP_CONCAT(DISTINCT web.order_no)as order_no,
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
-        GROUP_CONCAT(DISTINCT ordetail.item_price) as order_item,
-        GROUP_CONCAT(DISTINCT ord.order_total) as order_total,
         GROUP_CONCAT(DISTINCT ordetail.shipping_address) as shipping_address,
+        GROUP_CONCAT(DISTINCT ordetail.item_price) as order_total,
         -- GROUP_CONCAT(DISTINCT cat.item_dimensions) as item_dimensions,
         GROUP_CONCAT(DISTINCT cat.package_dimensions) as package_dimensions,
         GROUP_CONCAT(DISTINCT cat.title) as title,
@@ -368,13 +370,9 @@ class labelManagementController extends Controller
 
                     $product[$key][$key1] = $label_detials;
                 } elseif ($key1 == 'asin') {
-                
-                }
-                elseif($key1 == 'order_total') 
-                {
+                } elseif ($key1 == 'order_total') {
                     $product[$key][$key1] = json_decode($label_detials);
-                }
-                else {
+                } else {
 
                     $label_data[$key1] = $label_detials;
                 }

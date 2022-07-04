@@ -492,7 +492,9 @@ body {
 }
 
 #label-container {
-    max-width: 500px;
+    max-width: 384px;
+    margin: 0 auto;
+    padding: 0px;
 }
 
 .search-box {
@@ -525,22 +527,26 @@ body {
     padding: 0;
 }
 
-.container .invoice {
+.container-fluid .invoice {
     width: 384px;
     height: 576px;
 }
 
-.container .invoice .product tr th,
-.container .invoice .product tr td {
+.container-fluid .invoice strong{
     font-size: 14px;
 }
 
-.container .invoice .product tr th{
+.container-fluid .invoice .product tr th,
+.container-fluid .invoice .product tr td {
+    font-size: 12px;
+}
+
+.container-fluid .invoice .product tr th{
     padding: 2px;
 }
 
 .return.small{
-    font-size: 10px !important;
+    font-size: 12px !important;
 }
 
 .return.small div{
