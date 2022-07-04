@@ -176,6 +176,7 @@ class labelManagementController extends Controller
             $bar_code[] = $generator->getBarcode($results['awb_no'], $generator::TYPE_CODE_93);
         }
 
+        // dd($result);
         return view('label.multipleLabel', compact('result', 'bar_code'));
     }
 
