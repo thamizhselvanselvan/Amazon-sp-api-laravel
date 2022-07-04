@@ -119,7 +119,7 @@
                             <td class="text-center p-1">{{$details['title']}}</td>
                             <td class="text-center p-1">{{$details['sku']}}</td>
                             <td class="text-center p-1">{{$details['qty']}}</td>
-                            <td class="text-center p-1">{{$details['qty']}}</td>
+                            <td class="text-center p-1">{{$details['order_total']->CurrencyCode}} {{$details['order_total']->Amount}}</td>
                         </tr>
                         @endforeach
                     </tbody>

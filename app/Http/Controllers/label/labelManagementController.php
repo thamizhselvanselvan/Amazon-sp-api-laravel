@@ -314,7 +314,7 @@ class labelManagementController extends Controller
         GROUP_CONCAT(DISTINCT web.order_no)as order_no,
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
-        GROUP_CONCAT(DISTINCT ord.order_item) as order_item,
+        GROUP_CONCAT(DISTINCT ordetail.item_price) as order_item,
         GROUP_CONCAT(DISTINCT ord.order_total) as order_total,
         GROUP_CONCAT(DISTINCT ordetail.shipping_address) as shipping_address,
         -- GROUP_CONCAT(DISTINCT cat.item_dimensions) as item_dimensions,
@@ -351,8 +351,6 @@ class labelManagementController extends Controller
                         $buyer_address[$add_key] =  $add_details;
                     }
                     $label_data[$key1] = $buyer_address;
-                } elseif ($key1 == 'order_total') {
-                    $label_data[$key1] = json_decode($label_detials);
                 } elseif ($key1 == 'package_dimensions') {
                     $dimensions = [];
                     $shipping_address = json_decode($label_detials);
@@ -370,7 +368,13 @@ class labelManagementController extends Controller
 
                     $product[$key][$key1] = $label_detials;
                 } elseif ($key1 == 'asin') {
-                } else {
+                
+                }
+                elseif($key1 == 'order_total') 
+                {
+                    $product[$key][$key1] = json_decode($label_detials);
+                }
+                else {
 
                     $label_data[$key1] = $label_detials;
                 }
