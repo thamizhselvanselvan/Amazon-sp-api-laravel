@@ -12,101 +12,118 @@
 </div>
 @stop
 
+@section('css')
+<style type="text/css">
+    
+</style>
+@stop
+
 @section('content')
 <input type="hidden" id="awb_no" value="{{$awb_no}}">
 
 <div class="container " id="label-container">
     <div class="col-md-12">
-        <div class="invoice">
+        <div class="invoice p-2">
             <div class="invoice-content ">
                 <!-- <div class="table-responsive"> -->
-                    <table class="table table-invoice table-bordered table-bordered-dark">
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <div class="row">
-                                        <div class="col "></div>
-                                        <div class="col ">{!! $bar_code !!} <b> {{ $result->awb_no }} </b></div>
-                                        <div class="col "></div>
+                <table class="table table-invoice table-bordered table-bordered-dark<td pt-1 pb-1">">
+                    <tbody >
+                        <tr>
+                            <td class="pb-0">
+                                <div class="row">
+                                    <div class="col"></div>
+                                    <div class="col">{!! $bar_code !!}
+                                        <b>
+                                            <div class="text-center">{{ $result->awb_no }}</div>
+                                        </b>
                                     </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="row ">
-                                        <div class="col">
-                                            <h5><strong> Tracking Details: {{ $result->awb_no }} </strong></h5>
+                                    <div class="col"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="pt-1 pb-1">
+                                <div class="row ">
+                                    <div class="col">
+                                        <div class="text-inverse m-b-5 text-left"><strong>
+                                                Invoice No: </strong> {{$result->order_no}}
+                                        </div>
+                                        <div class="text-inverse m-b-5 text-left"><strong>
+                                                Order Date: </strong>{{date('Y-m-d', strtotime($result->purchase_date))}}
+                                        </div>
+                                        <div class="text-inverse m-b-5 text-left"><strong> Price: </strong>
+                                            @if ($result->order_total)
+                                            {{$result->order_total->CurrencyCode}} {{$result->order_total->Amount}}
+                                            @endif
                                         </div>
                                     </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <h5><strong>Prepaid: </strong></h5>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="row">
-                                        <div class="col">
-                                            <span><strong>SHIP TO </strong><br>
-                                                @foreach ($result->shipping_address as $key => $value )
-                                                    {{$value}},
-                                                @endforeach
-                                            </span>
-                                            <br>
-                                        </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="pt-1 pb-1">
+                                <div class="row">
+                                    <div class="col">
+                                        <strong>Ship To: </strong><br>
+                                        <strong>{{$result->shipping_address['Name']}}</strong><br>
+                                        @if(isset($result->shipping_address['AddressLine1']))
+                                        {{$result->shipping_address['AddressLine1']}},
+                                        @endif
+
+                                        @if(isset($result->shipping_address['AddressLine2']))
+                                        {{$result->shipping_address['AddressLine2']}}
+                                        @endif
+                                        <br>
+                                        <strong>City: </strong>
+                                        @if(isset($result->shipping_address['City']))
+                                        {{$result->shipping_address['City']}}
+                                        @else
+                                        NA
+                                        @endif
+                                        <br>
+                                        @if(isset($result->shipping_address['County']))
+                                        <strong>County: </strong>
+                                        {{$result->shipping_address['County']}},
+                                        @endif
+
+                                        @if(isset($result->shipping_address['CountryCode']))
+                                        {{$result->shipping_address['CountryCode']}}
+                                        @endif
+                                        <br>
+                                        @if(isset($result->shipping_address['Phone']))
+                                        <strong>Phone: </strong>
+                                        {{$result->shipping_address['Phone']}}
+                                        @endif
+                                        <br>
                                     </div>
-                                    <hr>
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class=" text-inverse m-b-5 text-left"><strong>
-                                                    Invoice No: </strong> {{$result->order_no}} </div>
-                                            <div class=" text-inverse m-b-5 text-left"><strong>
-                                                    Order Date: </strong>{{date('Y-m-d', strtotime($result->purchase_date))}} </div>
-                                            <div class=" text-inverse m-b-5 text-left"><strong>
-                                                    Invoice Date: </strong> {{date('Y-m-d', strtotime($result->purchase_date))}} </div>
-                                            <div class=" text-inverse m-b-5 text-left"><strong>
-                                                    Pieces: </strong> {{$result->order_item}} </div>
-                                            <div class=" text-inverse m-b-5 text-left"><strong>
-                                                    Order ID: </strong> {{$result->order_no}} </div>
-                                            <div class=" text-inverse m-b-5 text-left"><strong> Weight: </strong>
-                                             {{round((float)$result->package_dimensions['Weight']->value, 2)}} {{$result->package_dimensions['Weight']->Units}}</div>
-                                            <div class=" text-inverse m-b-5 text-left"><strong> Dimensions: 
-                                            {{round((float)$result->package_dimensions['Height']->value, 2)}} X 
-                                            {{round((float)$result->package_dimensions['Length']->value, 2)}} X 
-                                            {{round((float)$result->package_dimensions['Width']->value, 2)}} 
-                                            {{$result->package_dimensions['Length']->Units}}
-                                            </strong> </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <table class="table table-bordered table-bordered-dark">
-                        <thead>
-                            <tr>
-                                <th class="text-left">Sr</th>
-                                <th class="text-center">Product Name</th>
-                                <th class="text-center">SKU</th>
-                                <th class="text-center" width="10%">QTY</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($result->product as $key => $value)
-                            <tr>
-                                <td class="text-center">{{$key+1}}</td>
-                                <td class="">{{$value['title']}}</td>
-                                <td class="text-center">{{$value['sku']}}</td>
-                                <td class="text-center">{{$value['qty']}}</td>
-                            </tr>
-                            @endforeach
-                            <!-- <tr>
-                                <td colspan="4"><strong>Return Address :</strong> Mahzuz, Al Habtoor Warehouse No.27 ,Al QusaisIndustrial Area 3 mumbai, MH, IN, 400025</td>
-                            </tr> -->
-                        </tbody>
-                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered table-bordered-dark">
+                    <thead>
+                        <tr>
+                            <th class="text-left">Sr</th>
+                            <th class="text-center">Product Name</th>
+                            <th class="text-center">SKU</th>
+                            <th class="text-center" width="10%">QTY</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($result->product as $key => $value)
+                        <tr>
+                            <td class="text-center p-1">{{$key+1}}</td>
+                            <td class="p-1">{{$value['title']}}</td>
+                            <td class="text-center p-1">{{$value['sku']}}</td>
+                            <td class="text-center p-1">{{$value['qty']}}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                    <tr>
+                        <td class="mt-1 p-1 small" colspan="4"><strong>Return Address:</strong> Mahzuz, Al Habtoor Warehouse No.27 ,Al QusaisIndustrial Area 3 mumbai, MH, IN, 400025</td>
+                    </tr>
+                </table>
                 <!-- </div> -->
             </div>
         </div>

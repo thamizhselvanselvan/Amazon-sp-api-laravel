@@ -733,7 +733,7 @@ return [
 
         [
             'text' => 'Tools',
-            'can' => ['Admin', 'Inventory'],
+            'can' => ['Admin', 'Inventory','BOE'],
             'submenu' =>
             [
                 [

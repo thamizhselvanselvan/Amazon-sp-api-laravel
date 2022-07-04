@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\AWS_Business_API\Auth\AWS_Business;
 use RedBeanPHP\R;
 use Carbon\Carbon;
 use App\Models\User;
@@ -8,6 +9,7 @@ use App\Events\testEvent;
 use AWS\CRT\HTTP\Request;
 use App\Models\Mws_region;
 use Maatwebsite\Excel\Row;
+use App\Jobs\TestQueueFail;
 use Illuminate\Support\Str;
 use Smalot\PdfParser\Parser;
 use Dflydev\DotAccessData\Data;
@@ -18,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Services\SP_API\API\Catalog;
 use Illuminate\Support\Facades\Auth;
@@ -25,15 +28,14 @@ use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 use SellingPartnerApi\Configuration;
 use Illuminate\Support\Facades\Route;
-use App\Services\Inventory\ReportWeekly;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\TestController;
+use App\Services\Inventory\ReportWeekly;
 use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
-use App\Jobs\TestQueueFail;
-use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
+use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +49,95 @@ use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
 */
 
 Route::get('test', function (ReportWeekly $report_weekly) {
+
+  $host       = "na.business-api.amazon.com";
+  $accessKey  = 'AKIARVGPJZCJHLW5MH63';
+  $secretKey  = 'zjYimrzHWwT3eA3eKkuCGxMb+OA2fibMivnnht3t';
+  $region     = "us-east-1";
+  $service    = "execute-api";
+  $requestUrl = "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
+  $uri        = 'products/2020-08-26/products/B081G4G8N8';
+  $httpRequestMethod = 'GET';
+  $data       = '';
+
+  $sign = new AWS_Business;
+  $headers = $sign->sign($host, $uri, $requestUrl,
+              $accessKey, $secretKey, $region, $service,
+              $httpRequestMethod, $data);
+
+  apiCall($headers);
+
+  exit;
+
+  $data = '';
+  $host               = "na.business-api.amazon.com";
+  $accessKey          = "AKIARVGPJZCJHLW5MH63";
+  $secretKey          = "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";
+  $region             = "us-east-1";
+  $service            = "execute-api";
+  $requestUrl         = "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
+  $uri                = 'products/2020-08-26/products';
+  $httpRequestMethod  = 'GET';
+
+  $headers = calcualteAwsSignatureAndReturnHeaders($host, $uri, $requestUrl,
+              $accessKey, $secretKey, $region, $service,
+              $httpRequestMethod, $data);
+
+  apiCall($headers);
+
+  exit;
+
+    // $requestUrl = "https://na.business-api.amazon.com";
+    // $httpRequestMethod = "GET";
+    // $headers = calcualteAwsSignatureAndReturnHeaders();
+    $data = '';
+
+    $host               = "na.business-api.amazon.com";
+    // $accessKey          = ACCESS_KEY;
+    // $secretKey          = SECRET_KEY;
+    $accessKey          = "AKIARVGPJZCJHLW5MH63";
+    $secretKey          = "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";
+    $region             = "us-east-1";
+    $service            = "execute-api";
+    $requestUrl         = "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
+                          //?productRegion=US&locale=es_US
+                          //productRegion=US&locale=es_US
+    $uri                = 'products/2020-08-26/products/B081G4G8N8';
+    $httpRequestMethod  = 'GET';
+
+    $headers = calcualteAwsSignatureAndReturnHeaders($host, $uri, $requestUrl,
+                $accessKey, $secretKey, $region, $service,
+                $httpRequestMethod, $data);
+
+    $call = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, $debug=TRUE);
+    dd($headers, $call);
+    exit;
+
+     $host = "na.business-api.amazon.com";
+     $uri = "products/2020-08-26/products/B081G4G8N8";
+     $requestUrl = "https://na.business-api.amazon.com";
+     $accessKey = "AKIARVGPJZCJHLW5MH63";
+     $secretKey = "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";
+     $region = "us-east-1";
+     $service = "execute-api";
+     $httpRequestMethod = "";
+     $data = "";
+
+     $headers = calcualteAwsSignatureAndReturnHeaders($host, $uri, $requestUrl,
+     $accessKey, $secretKey, $region, $service,
+     $httpRequestMethod, $data, $debug = TRUE);
+
+
+     $result = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, TRUE);
+
+
+     exit;
+  $aws = new AWS_Business;
+
+  dd($aws->signTest());
+
+   exit;
+
 
 
   po($report_weekly->OpeningShipmentCount());
@@ -92,21 +183,8 @@ Route::get('job', function()
 
 Route::get('rename', function()
 {
-    $user = Auth::user()->email;
-        $path = "app/excel/downloads/otheramazonIN/" . $user;
-        $path = storage_path($path);
-        $files = (scandir($path));
-
-        $filesArray = [];
-        foreach ($files as $key => $file) {
-            if ($key > 1) {
-                if(str_contains($file, '.mosh'))
-                {
-                    $new_file_name = str_replace('.csv.mosh', '.csv', $file);
-                    rename($path.'/'.$file, $path.'/'.$new_file_name);
-                }
-            }
-        }
+    $currenturl =  request()->getSchemeAndHttpHost();
+    return $currenturl;
 });
 
 Route::get('test-queue-redis', function () {

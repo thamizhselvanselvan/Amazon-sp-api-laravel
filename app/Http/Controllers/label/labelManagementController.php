@@ -32,41 +32,45 @@ class labelManagementController extends Controller
         if ($request->ajax()) {
 
             $bag_no = $request->bag_no;
-
             $order = config('database.connections.order.database');
             $catalog = config('database.connections.catalog.database');
             $web = config('database.connections.web.database');
-
-            $label = DB::select("SELECT web.id, web.order_no, web.awb_no, ord.purchase_date
-            from $web.labels as web
-            JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
-            JOIN $order.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
-            JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin
-            WHERE web.bag_no = $bag_no
-
-        ");
-            return response()->json($label);
+    
+            $data = DB::select("SELECT
+    
+        DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
+        from $web.labels as web
+        JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
+        JOIN $order.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
+        JOIN $order.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+        JOIN $catalog.catalog as cat ON cat.asin = orderDetails.asin
+        WHERE web.bag_no = $bag_no
+    ");
+            return response()->json($data);
         }
     }
 
     public function manage(Request $request)
     {
+        $data = $this->bladeOrderDetails();
         // dd($data);
         if ($request->ajax()) {
 
-            $data = $this->bladeOrderDetails();
             return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function ($id) {
-
-                    $this->order_details = $this->labelDataFormating($id->id);
+            ->addIndexColumn()
+            ->addColumn('action', function ($id) {
+                
+                $this->order_details = $this->labelDataFormating($id->id);
                     if ($this->order_details) {
-                        $action = '<div class="d-flex"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
+                        $action = '<div class="d-flex pl-5"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
                         $action .= '<div class="d-flex pl-2"><a href="/label/download-direct/' . $id->id . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
+                        $action .= '<div class="text-center pl-3"><i class="fa fa-check-circle" style="color:green" aria-hidden="true"></i>';
                         return $action;
                     }
                     // $action1 = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
-                    return "<div class ='text-left'>Details Not Avaliable</div>";
+                    $action ="<div class ='text-center d-flex pl-5'>Details Not Avaliable
+                    <div class='text-center  pl-5'><i class='fa fa-times' style='color:red' aria-hidden='true'></i>";
+                    return $action;
                 })
                 ->addColumn('sn', function ($id) {
                     return $id->id;
@@ -77,13 +81,25 @@ class labelManagementController extends Controller
                         return $check_box;
                     }
                 })
-                ->editColumn('status', function () {
-                    if ($this->order_details) {
-                        return '<div class="text-center"><i class="fa fa-check-circle" style="color:green" aria-hidden="true"></i>';
-                    }
-                    return '<div class="text-center"><i class="fa fa-times" style="color:red" aria-hidden="true"></i>';
+                // ->editColumn('status', function () {
+                //     if ($this->order_details) {
+                //         return '<div class="text-center"><i class="fa fa-check-circle" style="color:green" aria-hidden="true"></i>';
+                //     }
+                //     return '<div class="text-center"><i class="fa fa-times" style="color:red" aria-hidden="true"></i>';
+                // })
+                ->editColumn('purchase_date', function($date){
+                    $purchase_date = date('Y-m-d', strtotime($date->purchase_date));
+                    return $purchase_date;
                 })
-                ->rawColumns(['sn', 'action', 'check_box', 'status'])
+                ->editColumn('customer_name', function($customer_name){
+                    $customer_name =(array) json_decode($customer_name->shipping_address);
+                    if(isset($customer_name['Name']))
+                    {
+                        return $customer_name['Name'];
+                    }
+                    return 'NA';
+                })
+                ->rawColumns(['sn', 'action', 'check_box', 'purchase_date', 'customer_name'])
                 ->make(true);
         }
         return view('label.manage');
@@ -96,6 +112,7 @@ class labelManagementController extends Controller
         $awb_no = $result['awb_no'];
         $result = (object)$result;
 
+        // dd($result);
         $generator = new BarcodeGeneratorHTML();
         $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_93);
         return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no'));
@@ -159,6 +176,7 @@ class labelManagementController extends Controller
             $bar_code[] = $generator->getBarcode($results['awb_no'], $generator::TYPE_CODE_93);
         }
 
+        // dd($result);
         return view('label.multipleLabel', compact('result', 'bar_code'));
     }
 
@@ -298,6 +316,7 @@ class labelManagementController extends Controller
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
         GROUP_CONCAT(DISTINCT ord.order_item) as order_item,
+        GROUP_CONCAT(DISTINCT ord.order_total) as order_total,
         GROUP_CONCAT(DISTINCT ordetail.shipping_address) as shipping_address,
         -- GROUP_CONCAT(DISTINCT cat.item_dimensions) as item_dimensions,
         GROUP_CONCAT(DISTINCT cat.package_dimensions) as package_dimensions,
@@ -333,7 +352,11 @@ class labelManagementController extends Controller
                         $buyer_address[$add_key] =  $add_details;
                     }
                     $label_data[$key1] = $buyer_address;
-                } elseif ($key1 == 'package_dimensions') {
+                }elseif($key1 == 'order_total') 
+                {
+                    $label_data[$key1] = json_decode($label_detials);
+                }
+                elseif ($key1 == 'package_dimensions') {
                     $dimensions = [];
                     $shipping_address = json_decode($label_detials);
                     foreach ((array)$shipping_address as $add_key => $add_details) {
@@ -370,10 +393,12 @@ class labelManagementController extends Controller
 
         $data = DB::select("SELECT
 
-    DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name
+    DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
     from $web.labels as web
     JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
+    JOIN $order.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
     JOIN $order.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+
     -- JOIN ord ON ord.our_seller_identifier = $order.ord_order_seller_credentials.seller_id as
 ");
 

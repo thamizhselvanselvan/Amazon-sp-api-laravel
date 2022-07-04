@@ -32,7 +32,7 @@ class InvoiceManagementController extends Controller
 
         if ($request->ajax()) {
             // $data = Invoice::orderBy('id', 'DESC')->get();
-            $data = DB::connection('web')->select("select * from invoices order by id DESC");
+            $data = DB::connection('web')->select("select DISTINCT * from invoices order by id DESC");
             foreach ($data as $key => $value) {
                 $result[$key]['id'] = $value;
             }
@@ -40,9 +40,8 @@ class InvoiceManagementController extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function ($id) use ($result) {
 
-                    // $action1 = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
-                    $action = '<div class="d-flex"><a href="/invoice/convert-pdf/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
-                    $action .= '<div class="d-flex pl-2"><a href="/invoice/download-direct/' . $id->id . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
+                    $action = '<div class="d-flex"><a href="/invoice/convert-pdf/' . $id->invoice_no . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
+                    $action .= '<div class="d-flex pl-2"><a href="/invoice/download-direct/' . $id->invoice_no . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
                     return $action;
                 })
                 ->rawColumns(['action'])
@@ -85,11 +84,13 @@ class InvoiceManagementController extends Controller
     public function showTemplate(Request $request)
     {
         $id = $request->id;
-        // $data = Invoice::where('id', $id)->get();
-        $data = DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
-        $invoice_no = $data[0]->invoice_no;
-        $awb_no = $data[0]->awb_no;
-        $mode = $data[0]->mode;
+
+        $data = $this->invoiceDataFormating($id);
+        $value = $data;
+        // dd($value);
+        $invoice_no = $data['invoice_no'];
+        $awb_no = $data['awb_no'];
+        $mode = $data['mode'];
         $invoice_mode = strtolower($mode);
 
         $generator = new BarcodeGeneratorHTML();
@@ -97,28 +98,33 @@ class InvoiceManagementController extends Controller
         $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_128);
 
         if ($invoice_mode != '') {
-            return view('invoice.' . $invoice_mode, compact(['data'], 'invoice_no', 'invoice_bar_code', 'bar_code'));
+            return view('invoice.' . $invoice_mode, compact(['value'], 'invoice_no', 'invoice_bar_code', 'bar_code'));
         }
     }
 
     public function selectedPrint($id)
     {
         $eachid = explode('-', $id);
+
+        $generator = new BarcodeGeneratorHTML();
         foreach ($eachid as $id) {
             // $data []= Invoice::where('id', $id)->get();
-            $data[] = DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
-            $invoice_mode = $data[0][0]->mode;
+            $data = DB::connection('web')->select("SELECT invoice_no from invoices where id ='$id' ");
+
+            $result = $this->invoiceDataFormating($data[0]->invoice_no);
+
+            $invoice_mode = $result['mode'];
             $invoice_mode_multi = strtolower($invoice_mode);
+
+            $invoice_bar_code[] = $generator->getBarcode($result['invoice_no'], $generator::TYPE_CODE_128);
+            $awb_bar_code[] = $generator->getBarcode($result['awb_no'], $generator::TYPE_CODE_128);
+
+            $record[] = $result;
         }
-        foreach ($data as $key => $record) {
-            $invoice_no = $record[0]->invoice_no;
-            $awb_no = $record[0]->awb_no;
-            $generator = new BarcodeGeneratorHTML();
-            $invoice_bar_code[] = $generator->getBarcode($invoice_no, $generator::TYPE_CODE_128);
-            $awb_bar_code[] = $generator->getBarcode($awb_no, $generator::TYPE_CODE_128);
-        }
+
+        // dd($invoice_mode_multi);?
         if ($invoice_mode_multi != '') {
-            return view('invoice.multiple' . $invoice_mode_multi, compact(['data'], 'invoice_bar_code', 'awb_bar_code'));
+            return view('invoice.multiple' . $invoice_mode_multi, compact(['record'], 'invoice_bar_code', 'awb_bar_code'));
         }
     }
 
@@ -157,8 +163,8 @@ class InvoiceManagementController extends Controller
     {
         // echo 'working file';
         $passid = $request->id;
-        $currenturl =  URL::current();
-
+        $currenturl =  request()->getSchemeAndHttpHost();
+        // return $currenturl;
         $excelid = explode('-', $passid);
 
         foreach ($excelid as $getId) {
@@ -166,7 +172,8 @@ class InvoiceManagementController extends Controller
             $id = DB::connection('web')->select("SELECT * from invoices where id ='$getId' ");
             foreach ($id as $key => $value) {
                 $invoice_no = $value->invoice_no;
-                $url = str_replace('select-download', 'convert-pdf', $currenturl . '/' . $getId);
+                // $url = str_replace('select-download', 'convert-pdf', $currenturl . '/' . $getId);
+                $url = $currenturl.'/invoice/convert-pdf/'.$invoice_no;
                 $path = 'invoice/invoice' . $invoice_no . '.pdf';
                 if (!Storage::exists($path)) {
                     Storage::put($path, '');
@@ -210,7 +217,7 @@ class InvoiceManagementController extends Controller
     public function DirectDownloadPdf(Request $request, $id)
     {
         // $data = Invoice::where('id', $id)->get();
-        $data = DB::connection('web')->select("SELECT * from invoices where id ='$id' ");
+        $data = DB::connection('web')->select("SELECT * from invoices where invoice_no ='$id' ");
         $invoice_no = $data[0]->invoice_no;
 
         $currenturl =  URL::current();
@@ -269,5 +276,43 @@ class InvoiceManagementController extends Controller
     {
         $filepath = public_path('template/Invoice-Template.xlsx');
         return Response()->download($filepath);
+    }
+
+    public function invoiceDataFormating($id)
+    {
+        $invoice_details = [];
+        $grand_total = 0;
+        $invoice_data = DB::connection('web')->select("SELECT * from invoices where invoice_no ='$id' ");
+        $item_details[] = [
+            'item_description' => NULL,
+            'hsn_code' => NULL,
+            'qty' => NULL,
+            'currency' => NULL,
+            'product_price' => NULL,
+            'taxable_value' => NULL,
+            'total_including_taxes' => NULL,
+            'grand_total' => NULL,
+            'no_of_pcs' => NULL,
+            'packing' => NULL,
+            'dimension' => NULL,
+            'actual_weight' => NULL,
+            'charged_weight' => NULL,
+        ];
+
+        foreach ($invoice_data as $key => $value) {
+            foreach ($value as $key1 => $data) {
+                if (array_key_exists($key1, $item_details[0])) {
+                    $item_details[$key][$key1] = $data;
+                    if ($key1 == 'total_including_taxes') {
+                        $grand_total += $data;
+                    }
+                } else {
+                    $invoice_details[$key1] =  $data;
+                }
+            }
+        }
+        $invoice_details['grand_total'] = $grand_total;
+        $invoice_details['product_details'] = $item_details;
+        return $invoice_details;
     }
 }
