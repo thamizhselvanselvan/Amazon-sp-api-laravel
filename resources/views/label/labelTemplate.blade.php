@@ -26,7 +26,7 @@
         <div class="invoice p-2">
             <div class="invoice-content ">
                 <!-- <div class="table-responsive"> -->
-                <table class="table table-invoice table-bordered table-bordered-dark<td class="pt-1 pb-1">">
+                <table class="table table-invoice table-bordered table-bordered-dark<td pt-1 pb-1">">
                     <tbody >
                         <tr>
                             <td class="pb-0">

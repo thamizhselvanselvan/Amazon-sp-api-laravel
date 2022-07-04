@@ -19,7 +19,7 @@
 
 @section('content')
 @foreach ($result as $key => $value)
-<div class="container label-container">
+<div class="container label-container" id="label-container">
     <div class="col-md-12">
         <div class="invoice p-2 ">
             <div class="invoice-content mb-0">
