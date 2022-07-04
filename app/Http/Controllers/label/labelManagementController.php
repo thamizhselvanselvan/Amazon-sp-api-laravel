@@ -62,14 +62,15 @@ class labelManagementController extends Controller
                 
                 $this->order_details = $this->labelDataFormating($id->id);
                     if ($this->order_details) {
-                        $action = '<div class="d-flex pl-4"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
+                        $action = '<div class="d-flex pl-5"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
                         $action .= '<div class="d-flex pl-2"><a href="/label/download-direct/' . $id->id . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
-                        $action .= '<div class="text-center pl-4"><i class="fa fa-check-circle" style="color:green" aria-hidden="true"></i>';
+                        $action .= '<div class="text-center pl-3"><i class="fa fa-check-circle" style="color:green" aria-hidden="true"></i>';
                         return $action;
                     }
                     // $action1 = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
-                    return "<div class ='d-flex pl-4'>Details Not Avaliable</div><i class='fa fa-times pl-4' style='color:red' aria-hidden='true'></i>";
-                    
+                    $action ="<div class ='text-center d-flex pl-5'>Details Not Avaliable
+                    <div class='text-center  pl-5'><i class='fa fa-times' style='color:red' aria-hidden='true'></i>";
+                    return $action;
                 })
                 ->addColumn('sn', function ($id) {
                     return $id->id;
