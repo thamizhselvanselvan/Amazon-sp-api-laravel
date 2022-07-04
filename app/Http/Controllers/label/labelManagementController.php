@@ -35,7 +35,7 @@ class labelManagementController extends Controller
             $order = config('database.connections.order.database');
             $catalog = config('database.connections.catalog.database');
             $web = config('database.connections.web.database');
-    
+
             $data = DB::select("SELECT
     
         DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
@@ -57,10 +57,10 @@ class labelManagementController extends Controller
         if ($request->ajax()) {
 
             return DataTables::of($data)
-            ->addIndexColumn()
-            ->addColumn('action', function ($id) {
-                
-                $this->order_details = $this->labelDataFormating($id->id);
+                ->addIndexColumn()
+                ->addColumn('action', function ($id) {
+
+                    $this->order_details = $this->labelDataFormating($id->id);
                     if ($this->order_details) {
                         $action = '<div class="d-flex pl-5"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
                         $action .= '<div class="d-flex pl-2"><a href="/label/download-direct/' . $id->id . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
@@ -68,7 +68,7 @@ class labelManagementController extends Controller
                         return $action;
                     }
                     // $action1 = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
-                    $action ="<div class ='text-center d-flex pl-5'>Details Not Avaliable
+                    $action = "<div class ='text-center d-flex pl-5'>Details Not Avaliable
                     <div class='text-center  pl-5'><i class='fa fa-times' style='color:red' aria-hidden='true'></i>";
                     return $action;
                 })
@@ -87,14 +87,13 @@ class labelManagementController extends Controller
                 //     }
                 //     return '<div class="text-center"><i class="fa fa-times" style="color:red" aria-hidden="true"></i>';
                 // })
-                ->editColumn('purchase_date', function($date){
+                ->editColumn('purchase_date', function ($date) {
                     $purchase_date = date('Y-m-d', strtotime($date->purchase_date));
                     return $purchase_date;
                 })
-                ->editColumn('customer_name', function($customer_name){
-                    $customer_name =(array) json_decode($customer_name->shipping_address);
-                    if(isset($customer_name['Name']))
-                    {
+                ->editColumn('customer_name', function ($customer_name) {
+                    $customer_name = (array) json_decode($customer_name->shipping_address);
+                    if (isset($customer_name['Name'])) {
                         return $customer_name['Name'];
                     }
                     return 'NA';
@@ -352,11 +351,9 @@ class labelManagementController extends Controller
                         $buyer_address[$add_key] =  $add_details;
                     }
                     $label_data[$key1] = $buyer_address;
-                }elseif($key1 == 'order_total') 
-                {
+                } elseif ($key1 == 'order_total') {
                     $label_data[$key1] = json_decode($label_detials);
-                }
-                elseif ($key1 == 'package_dimensions') {
+                } elseif ($key1 == 'package_dimensions') {
                     $dimensions = [];
                     $shipping_address = json_decode($label_detials);
                     foreach ((array)$shipping_address as $add_key => $add_details) {

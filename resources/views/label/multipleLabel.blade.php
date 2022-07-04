@@ -5,6 +5,15 @@
 
 <link rel="stylesheet" href="/css/styles.css">
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+<style type="text/css">
+    @media print {
+        @page {
+            size: 4in 6in;
+            margin: 0;
+        }
+    }
+</style>
 @stop
 @section('content_header')
 <div class="invoice-company text-inverse f-w-600">
@@ -38,7 +47,7 @@
                         <tr>
                             <td class="p-2">
                                 <div class="row">
-                                    <div class="col-6">
+                                    <div class="col-12">
                                         <div class=" text-inverse m-b-5 text-left">
                                             <strong> Invoice No: </strong>
                                             {{$value->order_no}}
@@ -47,13 +56,6 @@
                                             <strong> Order Date: </strong>
                                             {{date('Y-m-d', strtotime($value->purchase_date))}}
                                         </div>
-                                        <div class=" text-inverse m-b-5 text-left">
-                                            <strong> Price: </strong>
-                                            @if (isset($value->order_total))
-                                            {{$value->order_total->CurrencyCode}}
-                                            {{$value->order_total->Amount}}
-                                            @endif
-                                        </div>
                                     </div>
                                 </div>
                             </td>
@@ -61,7 +63,7 @@
                         <tr>
                             <td class="pt-1 pb-1">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col">
                                         <div class="col">
                                             <strong>Ship To: </strong><br>
                                             <strong>{{$value->shipping_address['Name']}}</strong><br>
@@ -100,13 +102,14 @@
                         </tr>
                     </tbody>
                 </table>
-                <table class="table table-bordered table-bordered-dark">
+                <table class="table table-bordered table-bordered-dark product">
                     <thead>
                         <tr>
                             <th class="text-left">Sr</th>
                             <th class="text-center">Product Name</th>
                             <th class="text-center">SKU</th>
-                            <th class="text-center" width="10%">QTY</th>
+                            <th class="text-center">QTY</th>
+                            <th class="text-center">Price</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -116,13 +119,15 @@
                             <td class="text-center p-1">{{$details['title']}}</td>
                             <td class="text-center p-1">{{$details['sku']}}</td>
                             <td class="text-center p-1">{{$details['qty']}}</td>
+                            <td class="text-center p-1">{{$details['qty']}}</td>
                         </tr>
                         @endforeach
                     </tbody>
-                    <tr>
-                        <td class="mt-1 p-1 small" colspan="4"><strong>Return Address:</strong> Mahzuz, Al Habtoor Warehouse No.27 ,Al QusaisIndustrial Area 3 mumbai, MH, IN, 400025</td>
-                    </tr>
                 </table>
+                <div class="mt-1 p-1 small return">
+                    <div>Return Address:</div>
+                    <span>Mahzuz, Al Habtoor Warehouse No.27, Al QusaisIndustrial Area 3 Mumbai, MH, IN, 400025</span>
+                </div>
                 <!-- </div> -->
             </div>
         </div>

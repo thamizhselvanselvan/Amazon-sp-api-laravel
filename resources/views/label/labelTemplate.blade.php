@@ -14,7 +14,12 @@
 
 @section('css')
 <style type="text/css">
-    
+    @media print {
+        @page {
+            size: 4in 6in;
+            margin: 0;
+        }
+    }
 </style>
 @stop
 
@@ -26,8 +31,8 @@
         <div class="invoice p-2">
             <div class="invoice-content ">
                 <!-- <div class="table-responsive"> -->
-                <table class="table table-invoice table-bordered table-bordered-dark<td pt-1 pb-1">">
-                    <tbody >
+                <table class="table table-invoice table-bordered table-bordered-dark<td pt-1 pb-1">
+                    <tbody>
                         <tr>
                             <td class="pb-0">
                                 <div class="row">
@@ -51,13 +56,9 @@
                                         <div class="text-inverse m-b-5 text-left"><strong>
                                                 Order Date: </strong>{{date('Y-m-d', strtotime($result->purchase_date))}}
                                         </div>
-                                        <div class="text-inverse m-b-5 text-left"><strong> Price: </strong>
-                                            @if ($result->order_total)
-                                            {{$result->order_total->CurrencyCode}} {{$result->order_total->Amount}}
-                                            @endif
-                                        </div>
                                     </div>
                                 </div>
+
                             </td>
                         </tr>
                         <tr>
@@ -101,13 +102,14 @@
                         </tr>
                     </tbody>
                 </table>
-                <table class="table table-bordered table-bordered-dark">
+                <table class="table table-bordered table-bordered-dark product">
                     <thead>
                         <tr>
                             <th class="text-left">Sr</th>
                             <th class="text-center">Product Name</th>
                             <th class="text-center">SKU</th>
-                            <th class="text-center" width="10%">QTY</th>
+                            <th class="text-center">QTY</th>
+                            <th class="text-center">Price</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -117,44 +119,48 @@
                             <td class="p-1">{{$value['title']}}</td>
                             <td class="text-center p-1">{{$value['sku']}}</td>
                             <td class="text-center p-1">{{$value['qty']}}</td>
+                            <td class="text-center p-1">{{$value['qty']}}</td>
                         </tr>
                         @endforeach
                     </tbody>
-                    <tr>
-                        <td class="mt-1 p-1 small" colspan="4"><strong>Return Address:</strong> Mahzuz, Al Habtoor Warehouse No.27 ,Al QusaisIndustrial Area 3 mumbai, MH, IN, 400025</td>
-                    </tr>
+
+
                 </table>
+
+                <div class="mt-1 p-1 small return">
+                    <div>Return Address:</div>
+                    <span>Mahzuz, Al Habtoor Warehouse No.27, Al QusaisIndustrial Area 3 Mumbai, MH, IN, 400025</span>
+                </div>
                 <!-- </div> -->
             </div>
         </div>
     </div>
-</div>
 
-@stop
+    @stop
 
-@section('js')
-<script>
-    $(document).ready(function() {
-        $('#Export_to_pdf').click(function(e) {
-            e.preventDefault();
-            var url = $(location).attr('href');
-            var awb_no = $('#awb_no').val();
-            // alert(url);
-            $.ajax({
-                method: 'POST',
-                url: "{{ url('/label/export-pdf')}}",
-                data: {
-                    'url': url,
-                    'awb_no': awb_no,
-                    "_token": "{{ csrf_token() }}",
-                },
-                success: function(response) {
+    @section('js')
+    <script>
+        $(document).ready(function() {
+            $('#Export_to_pdf').click(function(e) {
+                e.preventDefault();
+                var url = $(location).attr('href');
+                var awb_no = $('#awb_no').val();
+                // alert(url);
+                $.ajax({
+                    method: 'POST',
+                    url: "{{ url('/label/export-pdf')}}",
+                    data: {
+                        'url': url,
+                        'awb_no': awb_no,
+                        "_token": "{{ csrf_token() }}",
+                    },
+                    success: function(response) {
 
-                    window.location.href = '/label/download/' + awb_no;
-                    alert('Download pdf successfully');
-                }
+                        window.location.href = '/label/download/' + awb_no;
+                        alert('Download pdf successfully');
+                    }
+                });
             });
         });
-    });
-</script>
-@stop
+    </script>
+    @stop
