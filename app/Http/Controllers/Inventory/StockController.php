@@ -46,9 +46,10 @@ class StockController extends Controller
     public function getlist(Request $request)
     {
         if ($request->ajax()) {
-            $ware =  Shipment_Inward_Details::with('warehouses')
+            $ware =  Inventory::with('warehouses')
         //   -> select('warehouses.*',$request->id)
             ->where('warehouse_id', $request->id)
+            ->where('balance_quantity','>',0)
             ->get();
 
             return response()->json($ware);
@@ -58,8 +59,8 @@ class StockController extends Controller
     public function eportinv(Request $request)
     {
         $records = []; //Data from database
-        $records = Shipment_Inward_Details::query()
-        ->select('warehouses.name', 'Shipment_Inward_Details.ship_id', 'Shipment_Inward_Details.asin', 'Shipment_Inward_Details.item_name', 'Shipment_Inward_Details.price', 'Shipment_Inward_Details.quantity', 'Shipment_Inward_Details.created_at', 'Shipment_Inward_Details.bin')
+        $records = Inventory::query()
+        ->select('warehouses.name',  'inventory.asin','inventory.ship_id', 'inventory.item_name', 'inventory.price', 'inventory.balance_quantity', 'inventory.created_at', 'inventory.bin')
         ->join('shipments', function($query) {
             $query->on("shipments.ship_id", "=", "inventory.ship_id");
         })
@@ -73,8 +74,8 @@ class StockController extends Controller
             'Shipment ID',
             'ASIN',
             'Item Name',
-            'Inwarding Price',
-            'Quantity',
+            'Inwarding Price/Unit',
+            'Quantity Left',
             'Inwarding Date',
             'Storage Bin'
         ];

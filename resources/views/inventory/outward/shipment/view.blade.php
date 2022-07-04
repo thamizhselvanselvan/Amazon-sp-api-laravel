@@ -50,7 +50,7 @@
 </div>
 <div class="row">
     <div class="col-5">
-        <h4 style="font-family:Times New Roman ;">Shipment ID : {{ $outview->ship_id }} </h4>
+        <h4 style="font-family:Times New Roman ;">Shipment ID : {{ $id  }} </h4>
     </div>
     <div class="col-5">
         <h4></h4>
@@ -60,9 +60,9 @@
     </div>
 </div>
 
-<h4 style="font-family:Times New Roman;">Warehouse : {{ $outview->warehouses->name }} </h4>
-<h4 style="font-family:Times New Roman;">Destination : {{ $outview->vendors->name }}</h4>
-<h4 style="font-family:Times New Roman;">Currency : {{ $currency_array[$outview->currency] }} </h4>
+<h4 style="font-family:Times New Roman;">Warehouse : {{ $bar->warehouses->name }} </h4>
+<h4 style="font-family:Times New Roman;">Destination : {{ $bar->vendors->name }}</h4>
+<h4 style="font-family:Times New Roman;">Currency : {{  $bar->currency}} </h4>
 
 <table class="table table-bordered yajra-datatable table-striped">
     <thead>
@@ -75,17 +75,14 @@
         </tr>
     </thead>
     <tbody>
-        @php
-        $data = json_decode($outview['items'], true);
-        $data = (count($data) > 0) ? $data : [];
-        @endphp
-        @foreach ($data as $key => $val)
+      
+        @foreach ($outview as $key =>  $bar)
 
         <tr>
-            <td>{{$val['asin']}}</td>
-            <td>{{$val['item_name']}}</td>
-            <td>{{$val['quantity']}}</td>
-            <td>{{$val['price']}}</td>
+            <td>{{$bar['asin']}}</td>
+            <td>{{$bar['item_name']}}</td>
+            <td>{{$bar['quantity']}}</td>
+            <td>{{$bar['price']}}</td>
             <td>{{$loc[$key]['rack_id']}}-{{$loc[$key]['shelve_id']}}-{{$loc[$key]['bin_id']}}</td>
             @endforeach
         

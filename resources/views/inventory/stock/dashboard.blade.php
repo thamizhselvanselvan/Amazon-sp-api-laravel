@@ -77,7 +77,7 @@
             <td id="detail">ASIN</td>
             <td id="detail">Item Name</td>
             <td id="detail">Price/Unit</td>
-            <td id="detail">Quantity</td>
+            <td id="detail">Quantity Left</td>
             <td id="detail">Inwarding Date</td>
             <td id="detail">Bin</td>
         </tr>
@@ -124,7 +124,7 @@
                     html += "<td>" + value.asin + "</td>";
                     html += "<td>" + value.item_name + "</td>";
                     html += "<td>" + value.price + "</td>";
-                    html += "<td>" + value.quantity + "</td>";
+                    html += "<td>" + value.balance_quantity + "</td>";
                     html += "<td>" + d.toDateString() + "</td>";
                     html += "<td>" + value.bin + "</td>";
                     html += "</tr>";
