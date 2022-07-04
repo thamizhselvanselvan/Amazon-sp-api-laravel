@@ -111,6 +111,7 @@ class labelManagementController extends Controller
         $awb_no = $result['awb_no'];
         $result = (object)$result;
 
+        // dd($result);
         $generator = new BarcodeGeneratorHTML();
         $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_93);
         return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no'));
@@ -313,6 +314,7 @@ class labelManagementController extends Controller
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
         GROUP_CONCAT(DISTINCT ord.order_item) as order_item,
+        GROUP_CONCAT(DISTINCT ord.order_total) as order_total,
         GROUP_CONCAT(DISTINCT ordetail.shipping_address) as shipping_address,
         -- GROUP_CONCAT(DISTINCT cat.item_dimensions) as item_dimensions,
         GROUP_CONCAT(DISTINCT cat.package_dimensions) as package_dimensions,
@@ -348,7 +350,11 @@ class labelManagementController extends Controller
                         $buyer_address[$add_key] =  $add_details;
                     }
                     $label_data[$key1] = $buyer_address;
-                } elseif ($key1 == 'package_dimensions') {
+                }elseif($key1 == 'order_total') 
+                {
+                    $label_data[$key1] = json_decode($label_detials);
+                }
+                elseif ($key1 == 'package_dimensions') {
                     $dimensions = [];
                     $shipping_address = json_decode($label_detials);
                     foreach ((array)$shipping_address as $add_key => $add_details) {
