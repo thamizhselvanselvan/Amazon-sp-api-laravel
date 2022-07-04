@@ -14,14 +14,8 @@
 
 @section('css')
 <style type="text/css">
-    @page {
-        size: 384px 576px;
-        margin: 0px;
-        padding: 0px;
-    }
+    
 </style>
-
-
 @stop
 
 @section('content')
