@@ -6,6 +6,7 @@ use App\Models\Aws_credential;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Http;
 
 if (!function_exists('ddp')) {
     function ddp($value)
@@ -237,4 +238,238 @@ if(!function_exists('dateTimeFilter')) {
           return (isset($data[$date])) ? $data[$date] : 0;
       }, iterator_to_array($period)));
   }
+}
+
+
+
+
+function calcualteAwsSignatureAndReturnHeaders($host, $uri, $requestUrl,
+            $accessKey, $secretKey, $region, $service,
+            $httpRequestMethod, $data, $debug = TRUE){
+
+    $terminationString  = 'aws4_request';
+    $algorithm          = 'AWS4-HMAC-SHA256';
+    $phpAlgorithm       = 'sha256';
+    $canonicalURI       = $uri;
+    $canonicalQueryString = 'productRegion=US&locale=es_US';
+    $signedHeaders      = 'content-type;host;x-amz-date'; //;x-amz-user-email;x-amz-access-token
+    $accessToken        = 'Atza|IwEBIGVsmmnXo9b3xSuoeypSSlvQtk37QrrHmabOhogciCW_fEng9G4qxZrvROLTuEOfL8IOWMuYKFp1JlVFH9uQE_0DsyPbVFZSlg4zqsFfEIncmABIL8iSlaHJbzobNiNgifWfzOOqs_nvQSswC6I76qZdDxtsj77KqxX_NJ2kRNe76TnpoECWO7EeSNndk-tsPQZ1Rc-BLHXr09CgXczvZvPXTHHA51wlBbEP3UhPvrM0PY_x0NBSlBOmN7Aipe-z27NNAV8CT7I8I-g66SSUhEIwBdqiWHlqrDrYch_dhPbYnGlrhvUmBSvfF9i3UdTHMWsuHVkTc8IY8o33zU6peEor';
+
+    $currentDateTime = new DateTime('UTC');
+    $reqDate = $currentDateTime->format('Ymd');
+    $reqDateTime = $currentDateTime->format('Ymd\THis\Z');
+
+    // Create signing key
+    $kSecret = 'AWS4' . $secretKey;
+    $kDate = hash_hmac($phpAlgorithm, $reqDate, $kSecret, true);
+    $kRegion = hash_hmac($phpAlgorithm, $region, $kDate, true);
+    $kService = hash_hmac($phpAlgorithm, $service, $kRegion, true);
+    $kSigning = hash_hmac($phpAlgorithm, $terminationString, $kService, true);
+
+    // Create canonical headers
+    $canonicalHeaders = array();
+    $canonicalHeaders[] = 'content-type: application/x-www-form-urlencoded';
+    $canonicalHeaders[] = 'host: ' . $host;
+    $canonicalHeaders[] = 'x-amz-date: ' . $reqDateTime;
+  //  $canonicalHeaders[] = 'x-amz-user-email: nitrouspurchases@gmail.com';
+  //  $canonicalHeaders[] = 'x-amz-access-token: ' . $accessToken;
+    $canonicalHeadersStr = implode("\n", $canonicalHeaders);
+
+    // Create request payload
+    $requestHasedPayload = hash($phpAlgorithm, $data);
+
+    // Create canonical request
+    $canonicalRequest = array();
+    $canonicalRequest[] = $httpRequestMethod;
+    $canonicalRequest[] = $canonicalURI;
+    $canonicalRequest[] = $canonicalQueryString;
+    $canonicalRequest[] = $canonicalHeadersStr . "\n";
+    $canonicalRequest[] = $signedHeaders;
+    $canonicalRequest[] = $requestHasedPayload;
+    $requestCanonicalRequest = implode("\n", $canonicalRequest);
+    $requestHasedCanonicalRequest = hash($phpAlgorithm, utf8_encode($requestCanonicalRequest));
+    if($debug){
+        echo "<h5>Canonical to string</h5>";
+        echo "<pre>";
+        echo $requestCanonicalRequest;
+        echo "</pre>";
+    }
+
+    // Create scope
+    $credentialScope = array();
+    $credentialScope[] = $reqDate;
+    $credentialScope[] = $region;
+    $credentialScope[] = $service;
+    $credentialScope[] = $terminationString;
+    $credentialScopeStr = implode('/', $credentialScope);
+
+    // Create string to signing
+    $stringToSign = array();
+    $stringToSign[] = $algorithm;
+    $stringToSign[] = $reqDateTime;
+    $stringToSign[] = $credentialScopeStr;
+    $stringToSign[] = $requestHasedCanonicalRequest;
+    $stringToSignStr = implode("\n", $stringToSign);
+    if($debug){
+        echo "<h5>String to Sign</h5>";
+        echo "<pre>";
+        echo $stringToSignStr;
+        echo "</pre>";
+    }
+
+    // Create signature
+    $signature = hash_hmac($phpAlgorithm, $stringToSignStr, $kSigning);
+
+    // Create authorization header
+    $authorizationHeader = array();
+    $authorizationHeader[] = 'Credential=' . $accessKey . '/' . $credentialScopeStr;
+    $authorizationHeader[] = 'SignedHeaders=' . $signedHeaders;
+    $authorizationHeader[] = 'Signature=' . ($signature);
+    $authorizationHeaderStr = $algorithm . ' ' . implode(', ', $authorizationHeader);
+
+    // Request headers
+    $headers = array();
+    $headers[] = 'authorization: '.$authorizationHeaderStr;
+//    $headers[] = 'content-length:'.strlen($data);
+    $headers[] = 'content-type: application/x-www-form-urlencoded';
+    $headers[] = 'host: ' . $host;
+    $headers[] = 'x-amz-date: ' . $reqDateTime;
+    $headers[] = 'x-amz-user-email: nitrouspurchases@gmail.com';
+    $headers[] = 'x-amz-access-token: '.$accessToken;
+
+    return $headers;
+}
+
+function apiCall($header) {
+
+  $curl = curl_init();
+
+  curl_setopt_array($curl, array(
+    CURLOPT_URL => 'https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'GET',
+    CURLOPT_HTTPHEADER => $header,
+  ));
+
+  $response = curl_exec($curl);
+
+  curl_close($curl);
+  dd($header, $response);
+
+}
+
+/**
+* This function is in use
+* for send request with authorization header
+*/
+function callToAPI($requestUrl, $httpRequestMethod, $headers, $data, $debug=TRUE)
+{
+
+  $response = Http::withHeaders($headers)->get($requestUrl);
+
+    if($response->successful()) {
+      echo "OK";
+    } else {
+      dd($headers, $response->body(), $response->headers(), $response->object());
+    }
+
+}// End callToAPI
+
+
+
+
+//$host = "na.business-api.amazon.com";
+//$requestUrl = "https://na.business-api.amazon.com";
+
+
+ function signRequest(){
+    $method = 'GET';
+    $uri = '/products/2020-08-26/products';
+    //$json = file_get_contents('php://input');
+    //$obj = json_decode($json);
+    $param = '';
+
+    // if(isset($obj->method))
+    // {
+    //     $m = explode("|", $obj->method);
+    //     $method = $m[0];
+    //     $uri .= $m[1];
+    // }
+
+    $secretKey = 'zjYimrzHWwT3eA3eKkuCGxMb+OA2fibMivnnht3t';
+    $access_key = 'AKIARVGPJZCJHLW5MH63';
+    $token = 'Atza|IwEBIBmeBZ3mcWW8RekHjmTsLuHnenrYAwcbZiC-DoHLWDV-i1k7JC8qrJY50HANhHSoBB0_AtbBTDdQZx47ben7Hf031KAJe2b5FCmLtqlVsb3cakXlV3knVdq20EsmMsK3CWOh55EJbN6sU2BckIJKjih2eZmf04jpCooPl5JH2sWVsmNzhBcXza8q_cZwNjUeS0lPY5aMMxlLqAdBYLQG5ycXIdzKUEimEq57DeA2QV9neMsO-i_Xzk3HZpz1gWZboDeBIiq626uM7hxe38IxLem_tWUdA5ynyXdtv_U6oeceBiXolCalKPmXGcLV8SOfJvG3sILzCK1VLD2-GTHDJdir';
+    $region = 'us-east-1';
+    $service = 'execute-api';
+    $email = 'nitrouspurchases@gmail.com';
+
+    $options = array(); $headers = array();
+    $host = "na.business-api.amazon.com";
+    //.execute-api.us-east-1.amazonaws.com
+    //$host = "na.business-api.amazon.com";
+      //Or you can define your host here.. I am using API gateway.
+
+    $alg = 'sha256';
+
+    $date = new DateTime( 'UTC' );
+
+    $dd = $date->format( 'Ymd\THis\Z' );
+
+    $amzdate2 = new DateTime( 'UTC' );
+    $amzdate2 = $amzdate2->format( 'Ymd' );
+    $amzdate = $dd;
+
+    $algorithm = 'AWS4-HMAC-SHA256';
+
+
+    // $parameters = (array) $obj->data;
+    //
+    //    if($obj->data == null || empty($obj->data))
+    // {
+    //     $obj->data = "";
+    // }else{
+    //     $param = json_encode($obj->data);
+    //     if($param == "{}")
+    //     {
+    //         $param = "";
+    //
+    //     }
+
+    $requestPayload = strtolower($param);
+    $hashedPayload = hash($alg, $requestPayload);
+
+    $canonical_uri = $uri;
+    $canonical_querystring = '/B081G4G8N8?productRegion=US&locale=es_US';
+
+    $canonical_headers = "content-type:"."application/json"."\n"."host:".$host."\n"."x-amz-date:".$amzdate."\n"."x-amz-access-token:".$token."\n"."x-amz-user-email:".$email."\n";
+    $signed_headers = 'host;x-amz-date;x-amz-access-token;x-amz-user-email';
+    $canonical_request = "".$method."\n".$canonical_uri."\n".$canonical_querystring."\n".$canonical_headers."\n".$signed_headers."\n".$hashedPayload;
+
+    $credential_scope = $amzdate2 . '/' . $region . '/' . $service . '/' . 'aws4_request';
+    $string_to_sign  = "".$algorithm."\n".$amzdate ."\n".$credential_scope."\n".hash('sha256', $canonical_request)."";
+   //string_to_sign is the answer..hash('sha256', $canonical_request)//
+
+    $kSecret = 'AWS4' . $secretKey;
+    $kDate = hash_hmac( $alg, $amzdate2, $kSecret, true );
+    $kRegion = hash_hmac( $alg, $region, $kDate, true );
+    $kService = hash_hmac( $alg, $service, $kRegion, true );
+    $kSigning = hash_hmac( $alg, 'aws4_request', $kService, true );
+    $signature = hash_hmac( $alg, $string_to_sign, $kSigning );
+    $authorization_header = $algorithm . ' ' . 'Credential=' . $access_key . '/' . $credential_scope . ', ' .  'SignedHeaders=' . $signed_headers . ', ' . 'Signature=' . $signature;
+
+    $headers = [
+            //    'content-type'=>'application/x-www-form-urlencoded',
+                'x-amz-access-token'=>$token,
+                'x-amz-date'=>$amzdate,
+                'x-amz-user-email' => 'nitrouspurchases@gmail.com',
+                'Authorization'=>$authorization_header,
+                'host' => 'na.business-api.amazon.com'
+              ];
+    return $headers;
+
 }
