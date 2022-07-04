@@ -17,6 +17,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 
+use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
+
 class labelManagementController extends Controller
 {
     private $order_details;
@@ -28,63 +30,75 @@ class labelManagementController extends Controller
     public function GetLabel(Request $request)
     {
         if ($request->ajax()) {
-            $date = $request->invoice_date;
-            $newdate = explode(' - ', $date);
-            $date1 = $newdate[0];
-            $date2 = $newdate[1];
-            // po($newdate);
+
+            $bag_no = $request->bag_no;
             $order = config('database.connections.order.database');
             $catalog = config('database.connections.catalog.database');
             $web = config('database.connections.web.database');
     
-            $label = DB::select("SELECT 
-            DISTINCT web.id, web.awb_no, web.order_no
-            from $web.labels as web     
-            JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no 
-            JOIN $order.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
-            JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin 
-            WHERE created_at BETWEEN '$date1' AND '$date2'
-        ");
-        
-            // $results = DB::connection('web')->select("SELECT id, order_no, awb_no FROM labels WHERE created_at BETWEEN '$date1' AND '$date2' ");
+            $data = DB::select("SELECT
+    
+        DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
+        from $web.labels as web
+        JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
+        JOIN $order.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
+        JOIN $order.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+        JOIN $catalog.catalog as cat ON cat.asin = orderDetails.asin
+        WHERE web.bag_no = $bag_no
+    ");
+            return response()->json($data);
         }
-        return response()->json($label);
     }
 
     public function manage(Request $request)
     {
+        $data = $this->bladeOrderDetails();
+        // dd($data);
         if ($request->ajax()) {
-            $data = DB::connection('web')->select("select * from labels order by id DESC");
 
-            foreach ($data as $key => $value) {
-                $result[$key]['id'] = $value;
-            }
             return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function ($id) use ($result) {
-
-                    $this->order_details = $this->labelDataFormating($id->id);
+            ->addIndexColumn()
+            ->addColumn('action', function ($id) {
+                
+                $this->order_details = $this->labelDataFormating($id->id);
                     if ($this->order_details) {
-                        $action = '<div class="d-flex"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
+                        $action = '<div class="d-flex pl-4"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
                         $action .= '<div class="d-flex pl-2"><a href="/label/download-direct/' . $id->id . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
+                        $action .= '<div class="text-center pl-4"><i class="fa fa-check-circle" style="color:green" aria-hidden="true"></i>';
                         return $action;
                     }
                     // $action1 = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
-                    return 'Details Not Avaliable';
+                    return "<div class ='d-flex pl-4'>Details Not Avaliable</div>";
+                    return '<div class="text-center pl-4"><i class="fa fa-times" style="color:red" aria-hidden="true"></i>';
                 })
-                ->addColumn('check_box', function ($id) use ($result) {
+                ->addColumn('sn', function ($id) {
+                    return $id->id;
+                })
+                ->addColumn('check_box', function ($id) {
                     if ($this->order_details) {
                         $check_box = '<div class="pl-2"><input class="check_options" type="checkbox" value=' . $id->id . ' name="options[]" ></div>';
                         return $check_box;
                     }
                 })
-                ->editColumn('status', function () {
-                    if ($this->order_details) {
-                        return 'Avaliable';
-                    }
-                    return 'Not Avaliable';
+                // ->editColumn('status', function () {
+                //     if ($this->order_details) {
+                //         return '<div class="text-center"><i class="fa fa-check-circle" style="color:green" aria-hidden="true"></i>';
+                //     }
+                //     return '<div class="text-center"><i class="fa fa-times" style="color:red" aria-hidden="true"></i>';
+                // })
+                ->editColumn('purchase_date', function($date){
+                    $purchase_date = date('Y-m-d', strtotime($date->purchase_date));
+                    return $purchase_date;
                 })
-                ->rawColumns(['action', 'check_box', 'status'])
+                ->editColumn('customer_name', function($customer_name){
+                    $customer_name =(array) json_decode($customer_name->shipping_address);
+                    if(isset($customer_name['Name']))
+                    {
+                        return $customer_name['Name'];
+                    }
+                    return 'NA';
+                })
+                ->rawColumns(['sn', 'action', 'check_box', 'purchase_date', 'customer_name'])
                 ->make(true);
         }
         return view('label.manage');
@@ -219,8 +233,8 @@ class labelManagementController extends Controller
 
     public function downloadExcelTemplate()
     {
-        $path = public_path() . '/storage/LabelTemplate/Label_Excel_Template.xlsx';
-        return response()->download($path);
+        $filepath = public_path('template/Label-Template.xlsx');
+        return Response()->download($filepath);
     }
 
     public function upload()
@@ -281,19 +295,11 @@ class labelManagementController extends Controller
             }
             $date = new DateTime(date('Y-m-d'));
             $created_at = $date->format('Y-m-d');
-            $label->created_at = $created_at;
+            // $label->order_date = $created_at;
             R::store($label);
         }
 
         return response()->json(["success" => "All file uploaded successfully"]);
-    }
-
-    public function labelTemplate()
-    {
-        $generator = new BarcodeGeneratorHTML();
-        $bar_code = $generator->getBarcode('290306639908', $generator::TYPE_CODE_39);
-
-        return view('label.template', compact('bar_code'));
     }
 
     public function labelDataFormating($id)
@@ -302,8 +308,8 @@ class labelManagementController extends Controller
         $catalog = config('database.connections.catalog.database');
         $web = config('database.connections.web.database');
 
-        $label = DB::select("SELECT cat.asin, 
-        GROUP_CONCAT(DISTINCT web.order_no)as order_no, 
+        $label = DB::select("SELECT cat.asin,
+        GROUP_CONCAT(DISTINCT web.order_no)as order_no,
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
         GROUP_CONCAT(DISTINCT ord.order_item) as order_item,
@@ -313,10 +319,10 @@ class labelManagementController extends Controller
         GROUP_CONCAT(DISTINCT cat.title) as title,
         GROUP_CONCAT(DISTINCT ordetail.seller_sku) as sku,
         GROUP_CONCAT(DISTINCT ordetail.quantity_ordered) as qty
-        from $web.labels as web     
-        JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no 
+        from $web.labels as web
+        JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
         JOIN $order.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
-        JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin 
+        JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin
         WHERE web.id = $id
         GROUP BY cat.asin
     ");
@@ -370,5 +376,25 @@ class labelManagementController extends Controller
         return $label_data;
     }
 
-    // INNER JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no 
+
+    public function bladeOrderDetails()
+    {
+        $order = config('database.connections.order.database');
+        $catalog = config('database.connections.catalog.database');
+        $web = config('database.connections.web.database');
+
+        $data = DB::select("SELECT
+
+    DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
+    from $web.labels as web
+    JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
+    JOIN $order.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
+    JOIN $order.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+
+    -- JOIN ord ON ord.our_seller_identifier = $order.ord_order_seller_credentials.seller_id as
+");
+
+        return $data;
+    }
+    // INNER JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
 }

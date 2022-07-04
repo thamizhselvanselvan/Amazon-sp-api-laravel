@@ -92,18 +92,18 @@ class OtherAmazonInProductController extends Controller
         $filesArray = [];
         foreach ($files as $key => $file) {
             if ($key > 1) {
-
-                $filesArray[][$file] =  date("F d Y H:i:s.", filemtime($path . '/' . $file));
+                if(!str_contains($file, '.mosh'))
+                {
+                    $filesArray[][$file] =  date("F d Y H:i:s.", filemtime($path . '/' . $file));
+                }
             }
         }
-
+        
         return response()->json(['success' => true, "files_lists" => $filesArray]);
     }
 
     public function download_other_product($id)
     {
-        //Other Amazon file download
-        // $file_path = "excel/downloads/otheramazon/otherProductDetails".$id.'.csv';
         $user = Auth::user()->email;
         $file_path = "excel/downloads/otheramazonIN/" . $user . '/' . $id;
         //$path = Storage::path($file_path);
@@ -112,9 +112,6 @@ class OtherAmazonInProductController extends Controller
         }
         return 'file not exist';
     }
-
-
-
 
     public function asinUpload()
     {

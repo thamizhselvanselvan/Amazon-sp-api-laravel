@@ -9,13 +9,13 @@
         <h1 class="m-0 text-dark text-center ">Label Excel Upload</h1>
     </div>
 </div>
-<!-- <div class="row">
-  <div class="col-6">
-    <a href="/BOE/index" class="btn btn-primary">
-      <i class="fas fa-long-arrow-alt-left"></i> Back
-    </a>
-  </div>
-</div> -->
+<div class="row">
+    <div class="col">
+        <a href="{{ route('label.manage') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-long-arrow-alt-left"></i> Back
+        </a>
+    </div>
+</div>
 
 @stop
 

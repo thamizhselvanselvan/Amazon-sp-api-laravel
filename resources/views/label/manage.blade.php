@@ -26,17 +26,11 @@
             <x-adminlte-button label="Search Label" theme="primary" icon="fas fa-search" class="btn-sm" />
         </a>
         <a href="upload">
-            <x-adminlte-button label="Upload Excel Sheet" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
+            <x-adminlte-button label="Add New Records" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
         </a>
         <a href="excel/template">
             <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-file-download" class="btn-sm" />
         </a>
-        <!-- <a href="download-all"> -->
-            <!-- <x-adminlte-button label="Download Selected" id='download_selected' theme="primary" icon="fas fa-download" class="btn-sm" /> -->
-        <!-- </a> -->
-        <!-- <a  href=""> -->
-            <!-- <x-adminlte-button label="Print Selected" id='print_selected' theme="primary" icon="fas fa-print" class="btn-sm" /> -->
-        <!-- </a> -->
     </h2>
 </div>
 @stop
@@ -59,10 +53,15 @@
 <table class="table table-bordered yajra-datatable table-striped text-center">
     <thead>
         <tr class="text-bold bg-info">
+
             <th>S/N</th> 
-            <th>Status.</th>
+            <!-- <th>Status</th> -->
+            <th>Store Name </th>
             <th>Order No.</th>
             <th>Awb No.</th>
+            <th>Order Date</th>
+            <th>SKU</th>
+            <th>Customer</th>
             <!-- <td>Select All <br><input class="check_all" type="checkbox" value='' name="options[]" id="check_all" ></div> </td> -->
             <th>Action</th>
         </tr>
@@ -80,35 +79,54 @@
         processing: true,
         serverSide: true,
         ajax: "{{ url('/label/manage') }}",
-        pageLength: 1000,
-        searching: false,
+        pageLength: 50,
         columns: [{
-            data: 'DT_RowIndex',
-            name: 'DT_RowIndex',
+            data: 'sn',
+            name: 'sn',
             orderable: false,
             searchable: false
             },
+            // {
+            //     data: 'status',
+            //     name: 'status'
+            // },
             {
-                data: 'status',
-                name: 'status'
+                data: 'store_name',
+                name: 'store_name',
+                orderable: false,
+                searchable: false
             },
             {
                 data: 'order_no',
-                name: 'order_no'
+                name: 'order_no',
             },
             {
                 data: 'awb_no',
                 name: 'awb_no',
             },
-            // {
-            //     data: 'check_box',
-            //     name: 'check_box',
-            //     orderable: false,
-            //     searchable: false,
-            // },
+            {
+                data: 'purchase_date',
+                name: 'purchase_date',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'seller_sku',
+                name: 'seller_sku',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'customer_name',
+                name: 'customer_name',
+                orderable: false,
+                searchable: false
+            },
             {
                 data: 'action',
                 name: 'action',
+                orderable: false,
+                searchable: false
             },
         ],
     });

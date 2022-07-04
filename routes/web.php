@@ -9,6 +9,7 @@ use App\Events\testEvent;
 use AWS\CRT\HTTP\Request;
 use App\Models\Mws_region;
 use Maatwebsite\Excel\Row;
+use App\Jobs\TestQueueFail;
 use Illuminate\Support\Str;
 use Smalot\PdfParser\Parser;
 use Dflydev\DotAccessData\Data;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Services\SP_API\API\Catalog;
 use Illuminate\Support\Facades\Auth;
@@ -26,13 +28,15 @@ use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 use SellingPartnerApi\Configuration;
 use Illuminate\Support\Facades\Route;
-use App\Services\Inventory\ReportWeekly;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\TestController;
+use App\Services\Inventory\ReportWeekly;
 use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
+use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -44,7 +48,7 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 |
 */
 
-Route::get('pdf', function (ReportWeekly $report_weekly) {
+Route::get('test', function (ReportWeekly $report_weekly) {
 
   $host       = "na.business-api.amazon.com";
   $accessKey  = 'AKIARVGPJZCJHLW5MH63';
@@ -136,9 +140,9 @@ Route::get('pdf', function (ReportWeekly $report_weekly) {
 
 
 
-  dd($report_weekly->OpeningShipmentCount());
+  po($report_weekly->OpeningShipmentCount());
 
-    dd(User::get());
+   
 
     exit;
 
@@ -172,6 +176,16 @@ Route::get('command', function () {
     }
 });
 
+Route::get('job', function()
+{
+    TestQueueFail::dispatch();
+});
+
+Route::get('rename', function()
+{
+    $currenturl =  request()->getSchemeAndHttpHost();
+    return $currenturl;
+});
 
 Route::get('test-queue-redis', function () {
 

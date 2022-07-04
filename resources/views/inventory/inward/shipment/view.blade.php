@@ -29,9 +29,6 @@
     <a href="#" class="btn btn-primary btn-sm" id="printinv">
         <i class="fas fa-print"></i> Print
     </a>
-    <!-- <a href="/shipment/print/lable" class="btn btn-primary btn-sm" id="printinv">
-        <i class="fas fa-print"></i> Print Lable
-    </a> -->
 
 
 </div>
@@ -59,7 +56,7 @@
 
         <div class="row">
             <div class="col-5">
-                <h4 style="font-family:Times New Roman ;">Shipment ID : {{ $view->ship_id }} </h4>
+                <h4 style="font-family:Times New Roman ;">Shipment ID : {{ $id }} </h4>
             </div>
             <div class="col-5">
                 <h4></h4>
@@ -69,9 +66,10 @@
             </div>
         </div>
 
-        <h4 style="font-family:Times New Roman;"> Warehouse : {{ $view->warehouses->name }} </h4>
-        <h4 style="font-family:Times New Roman;"> Source : {{ $view->vendors->name }} </h4>
-        <h4 style="font-family:Times New Roman ;">Currency : {{ $currency_array[$view->currency]}} </h4>
+
+        <h4 style="font-family:Times New Roman;"> Warehouse : {{ $warehouse_name }} </h4>
+        <h4 style="font-family:Times New Roman;"> Source : {{ $vendor_name }} </h4>
+        <h4 style="font-family:Times New Roman ;">Currency : {{ $currency_array[$currency_id]}} </h4>
         <h6></h6>
     </div>
 
@@ -87,16 +85,10 @@
             </tr>
         </thead>
         <tbody>
-            @php
-            $data = json_decode($view['items'], true);
 
-            $data = (count($data) > 0) ? $data : [];
 
-            @endphp
-            @foreach ($data as $key => $val)
-
+            @foreach($view as $val) 
             <tr>
-
                 <td>{{$val['asin']}}</td>
                 <td>{{$val['item_name']}}</td>
                 <td>{{$val['quantity']}}</td>

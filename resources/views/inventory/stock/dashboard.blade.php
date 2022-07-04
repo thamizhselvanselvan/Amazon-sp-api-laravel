@@ -37,7 +37,7 @@
                 <x-adminlte-select name="ware_id" id="warehouse" label="Select Warehouse">
                     <option value=" ">Select Warehouse</option>
                     @foreach ($ware_lists as $ware_list)
-                    <option value="{{ (isset($ware_list->shipment->warehouses)) ? $ware_list->shipment->warehouses->id : '' }}">{{ (isset($ware_list->shipment->warehouses)) ? $ware_list->shipment->warehouses->name : '' }}</option>
+                    <option value="{{ $ware_list->warehouses->id }}">{{$ware_list->warehouses->name }}</option>
                     @endforeach
                 </x-adminlte-select>
             </div>
@@ -98,9 +98,10 @@
     });
 
     $('#warehouse').change(function(e) {
+
         e.preventDefault();
         var id = $(this).val();
-
+       
         $.ajax({
             method: 'GET',
             url: '/inventory/list',

@@ -94,7 +94,9 @@ class anotherAmazonProductController extends Controller
         foreach ($files as $key => $file) {
             if ($key > 1) {
 
-                $filesArray[][$file] =  date("F d Y H:i:s.", filemtime($path . '/' . $file));
+                if(!str_contains($file, '.mosh')){
+                    $filesArray[][$file] =  date("F d Y H:i:s.", filemtime($path . '/' . $file));
+                }
             }
         }
 
@@ -127,7 +129,7 @@ class anotherAmazonProductController extends Controller
 
         storage::put($path, $data);
         $this->insertCatalogAsin();
-        return redirect()->intended('/other-product/amazon_com')->with('success', 'Asin Updated Successfully');
+        return redirect()->intended('/other-product/asin_upload')->with('success', 'Asin Updated Successfully');
     }
 
     public function asinTxtSave(Request $request)
