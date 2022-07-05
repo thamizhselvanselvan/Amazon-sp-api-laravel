@@ -18,6 +18,7 @@ class exportOtherAmazonProduct extends Command
     private $writer;
     private $totalProductCount;
     private $currentCount;
+    private $headers_default;
 
     /**
      * The name and signature of the console command.
@@ -138,6 +139,11 @@ class exportOtherAmazonProduct extends Command
 
     public function catalogExportByAsin($id, $user, $headers)
     {
+        foreach($headers as $header_value)
+        {
+            $this->headers_default[$header_value] = 'N/A' ;
+        }
+
         $exportFilePath = "excel/downloads/otheramazon/" . $user . "/otherProductDetails";
         $deleteFilePath = "app/excel/downloads/otheramazon/" . $user;
 
@@ -195,7 +201,20 @@ class exportOtherAmazonProduct extends Command
                 return (array) $datas;
             }, $records);
 
-            $this->writer->insertall($records);
+            $all_asins = [];
+            foreach($selected_asin as $asin)
+            {
+                if($val = array_search($asin, array_column($records, 'asin'))){
+
+                    $all_asins[] = $records[$val];
+                }
+                else
+                {
+                    $this->headers_default['asin'] = $asin;
+                    $all_asins[] = $this->headers_default;
+                }
+            }
+            $this->writer->insertall($all_asins);
 
             if ($this->check == $this->count) {
                 $this->fileNameOffset++;
