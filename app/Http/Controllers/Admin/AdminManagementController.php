@@ -16,10 +16,11 @@ class AdminManagementController extends Controller
 {
     function index(Request $request)
     {
+        
         $user = Auth::user();
         $login_id = $user->id;
         $role = $user->roles->first()->name;
-        $users = User::latest()->orderBy('created_at')->get();
+        $users = User::latest()->orderBy('id', 'DESC')->get();
         // dd($users[0]->roles);
         if ($request->ajax()) {
 
@@ -32,6 +33,10 @@ class AdminManagementController extends Controller
                     }
                     if ($login_id == $user->id || $role =='Admin' && $user->id != 1 ) {
                         $edit .= '<a href="/admin/' . $user->id . '/edit" class="edit btn btn-success btn-sm"> <i class="fas fa-edit"></i> Edit</a>';
+                    }
+                    if ($login_id == $user->id || $role == 'Admin' && $user->id != 1) {
+                        $edit .= '<a href="/admin/' . $user->id . '/remove" class="ml-2 btn btn-danger btn-sm">
+                        <i class="fa fa-remove"></i> Remove</a>';
                     }
                     return $edit;
                 })
@@ -165,5 +170,48 @@ class AdminManagementController extends Controller
         $user->assignRole($role);
         return redirect()->intended('/admin/user_list')->with('success', 'User ' . $request->name . ' has been updated successfully');
         // return $request;
+    }
+
+    public function delete($id)
+    {
+        $user = User::find($id)->delete();
+        return redirect()->intended('/admin/user_list')->with('success', 'User  has been deleted successfully');
+    }
+
+    public function bin(Request $request)
+    {
+        $user = Auth::user();
+        $login_id = $user->id;
+        $role = $user->roles->first()->name;
+        $users = User::onlyTrashed()->get();
+        // po($users);
+        if($request->ajax())
+        {
+            return dataTables::of($users)
+            ->addIndexColumn()
+            ->addColumn('action', function($user) use($login_id){
+                $action ='';
+                    $action = "<a href='role-restore/" . $user->id . "' class='btn btn-success btn-sm mr-2'><i class='fas fa-trash-restore'></i>Restore</a>";
+                    return $action;
+            })
+            ->addColumn('role', function($role){
+                $roles = $role->roles;
+                $roles = json_decode($roles);
+                $multiple_roles ='';
+                foreach($roles as $key => $role){
+                    $multiple_roles .= $role->name;
+                }
+                return ($multiple_roles);
+            })
+            ->rawColumns(['action', 'role'])
+            ->make(true);
+        }
+        return view('admin.adminmanagement.bin');
+    }
+
+    public function restore($id)
+    {
+        $restore = User::withTrashed()->find($id)->restore();
+        return redirect()->intended('/admin/user_list')->with('success', 'User  has been restored successfully');
     }
 }
