@@ -13,9 +13,11 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
+use App\Models\Mws_region;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorHTML;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 
@@ -35,7 +37,7 @@ class labelManagementController extends Controller
             $order = config('database.connections.order.database');
             $catalog = config('database.connections.catalog.database');
             $web = config('database.connections.web.database');
-    
+
             $data = DB::select("SELECT
     
         DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
@@ -57,19 +59,20 @@ class labelManagementController extends Controller
         if ($request->ajax()) {
 
             return DataTables::of($data)
-            ->addIndexColumn()
-            ->addColumn('action', function ($id) {
-                
-                $this->order_details = $this->labelDataFormating($id->id);
+                ->addIndexColumn()
+                ->addColumn('action', function ($id) {
+
+                    $this->order_details = $this->labelDataFormating($id->id);
                     if ($this->order_details) {
-                        $action = '<div class="d-flex pl-4"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
+                        $action = '<div class="d-flex pl-5"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
                         $action .= '<div class="d-flex pl-2"><a href="/label/download-direct/' . $id->id . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
-                        $action .= '<div class="text-center pl-4"><i class="fa fa-check-circle" style="color:green" aria-hidden="true"></i>';
+                        $action .= '<div class="text-center pl-3"><i class="fa fa-check-circle" style="color:green" aria-hidden="true"></i>';
                         return $action;
                     }
                     // $action1 = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
-                    return "<div class ='d-flex pl-4'>Details Not Avaliable</div><div class='text-center pl-2'><i class='fa fa-times' style='color:red' aria-hidden='true'></i>";
-                    
+                    $action = "<div class ='text-center d-flex pl-5'>Details Not Avaliable
+                    <div class='text-center  pl-5'><i class='fa fa-times' style='color:red' aria-hidden='true'></i>";
+                    return $action;
                 })
                 ->addColumn('sn', function ($id) {
                     return $id->id;
@@ -86,14 +89,13 @@ class labelManagementController extends Controller
                 //     }
                 //     return '<div class="text-center"><i class="fa fa-times" style="color:red" aria-hidden="true"></i>';
                 // })
-                ->editColumn('purchase_date', function($date){
+                ->editColumn('purchase_date', function ($date) {
                     $purchase_date = date('Y-m-d', strtotime($date->purchase_date));
                     return $purchase_date;
                 })
-                ->editColumn('customer_name', function($customer_name){
-                    $customer_name =(array) json_decode($customer_name->shipping_address);
-                    if(isset($customer_name['Name']))
-                    {
+                ->editColumn('customer_name', function ($customer_name) {
+                    $customer_name = (array) json_decode($customer_name->shipping_address);
+                    if (isset($customer_name['Name'])) {
                         return $customer_name['Name'];
                     }
                     return 'NA';
@@ -111,8 +113,9 @@ class labelManagementController extends Controller
         $awb_no = $result['awb_no'];
         $result = (object)$result;
 
-        $generator = new BarcodeGeneratorHTML();
-        $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_93);
+        // dd($result);
+        $generator = new BarcodeGeneratorPNG();
+        $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_93));
         return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no'));
     }
     public function ExportLabel(Request $request)
@@ -127,9 +130,11 @@ class labelManagementController extends Controller
         }
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-            ->format('A6')
-            ->showBackground()
+            //->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            ->paperSize(576, 384, 'px')
+            ->pages('1')
+            ->scale(1.44)
+            ->margins(0, 0, 0, 0)
             ->savePdf($exportToPdf);
 
         return response()->json(['Save pdf sucessfully']);
@@ -155,9 +160,10 @@ class labelManagementController extends Controller
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
 
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-            ->format('A6')
-            ->showBackground()
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            ->pages('1')
+            ->scale(1.44)
+            ->margins(0, 0, 0, 0)
             ->savePdf($exportToPdf);
 
         return $this->downloadLabel($awb_no);
@@ -169,7 +175,6 @@ class labelManagementController extends Controller
         foreach ($allid as $id) {
             $results = $this->labelDataFormating($id);
             $result[] = (object)$results;
-
             $generator = new BarcodeGeneratorHTML();
             $bar_code[] = $generator->getBarcode($results['awb_no'], $generator::TYPE_CODE_93);
         }
@@ -179,6 +184,7 @@ class labelManagementController extends Controller
 
     public function DownloadSelected(Request $request)
     {
+
         $passid = $request->id;
         $currenturl =  URL::current();
 
@@ -189,17 +195,21 @@ class labelManagementController extends Controller
             $id = DB::connection('web')->select("select * from labels where id = '$getId' ");
 
             foreach ($id as $key => $value) {
+
                 $awb_no = $value->awb_no;
                 $url = str_replace('select-download', 'pdf-template', $currenturl . '/' . $getId);
+
                 $path = 'label/label' . $awb_no . '.pdf';
                 if (!Storage::exists($path)) {
                     Storage::put($path, '');
                 }
                 $exportToPdf = storage::path($path);
                 Browsershot::url($url)
-                    // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-                    ->format('A6')
-                    ->showBackground()
+                    // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+                    ->paperSize(576, 384, 'px')
+                    ->pages('1')
+                    ->scale(1.44)
+                    ->margins(0, 0, 0, 0)
                     ->savePdf($exportToPdf);
 
                 $saveAsPdf[] = 'label' . $awb_no . '.pdf';
@@ -312,8 +322,8 @@ class labelManagementController extends Controller
         GROUP_CONCAT(DISTINCT web.order_no)as order_no,
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
-        GROUP_CONCAT(DISTINCT ord.order_item) as order_item,
         GROUP_CONCAT(DISTINCT ordetail.shipping_address) as shipping_address,
+        GROUP_CONCAT(DISTINCT ordetail.item_price) as order_total,
         -- GROUP_CONCAT(DISTINCT cat.item_dimensions) as item_dimensions,
         GROUP_CONCAT(DISTINCT cat.package_dimensions) as package_dimensions,
         GROUP_CONCAT(DISTINCT cat.title) as title,
@@ -345,8 +355,14 @@ class labelManagementController extends Controller
                     $buyer_address = [];
                     $shipping_address = json_decode($label_detials);
                     foreach ((array)$shipping_address as $add_key => $add_details) {
+
+                        if($add_key == 'CountryCode')
+                        {                            $country_name = Mws_region::where('region_code', $add_details)->get('region')->first();
+                            $buyer_address['country'] = $country_name->region;
+                        }
                         $buyer_address[$add_key] =  $add_details;
                     }
+                    
                     $label_data[$key1] = $buyer_address;
                 } elseif ($key1 == 'package_dimensions') {
                     $dimensions = [];
@@ -365,6 +381,8 @@ class labelManagementController extends Controller
 
                     $product[$key][$key1] = $label_detials;
                 } elseif ($key1 == 'asin') {
+                } elseif ($key1 == 'order_total') {
+                    $product[$key][$key1] = json_decode($label_detials);
                 } else {
 
                     $label_data[$key1] = $label_detials;
