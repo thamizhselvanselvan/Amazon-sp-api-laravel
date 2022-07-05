@@ -129,7 +129,7 @@ class labelManagementController extends Controller
         }
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            //->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1.44)
