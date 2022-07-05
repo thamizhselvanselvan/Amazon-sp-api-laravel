@@ -159,7 +159,7 @@ class labelManagementController extends Controller
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
 
         Browsershot::url($url)
-            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->pages('1')
             ->scale(1.44)
             ->margins(0, 0, 0, 0)
@@ -204,7 +204,7 @@ class labelManagementController extends Controller
                 }
                 $exportToPdf = storage::path($path);
                 Browsershot::url($url)
-                    ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+                    // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
                     ->paperSize(576, 384, 'px')
                     ->pages('1')
                     ->scale(1.44)
