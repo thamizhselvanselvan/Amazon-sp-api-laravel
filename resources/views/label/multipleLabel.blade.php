@@ -10,7 +10,28 @@
     @media print {
         @page {
             size: 4in 6in;
-            margin: 0;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .container-fluid {
+
+            size: 4in 6in;
+            width: 384px;
+            height: 576px;
+            margin: 0px;
+            padding: 0px;
+        }
+        #label-container {
+            margin: 0px;
+            padding: 0px;
+            width: 384px;
+            height: 576px;
+            padding-top: 5px;
+        }
+        #label-container .invoice {
+            margin: 0px;
+            padding: 0px;
         }
     }
 </style>
@@ -30,7 +51,7 @@
 @foreach ($result as $key => $value)
 <div class="container label-container" id="label-container">
     <div class="col-md-12">
-        <div class="invoice p-2 ">
+        <div class="invoice p-1">
             <div class="invoice-content mb-0">
                 <!-- <div class="table-responsive"> -->
                 <table class="table table-invoice table-bordered table-bordered-dark ">

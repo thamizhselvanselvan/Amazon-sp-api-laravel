@@ -133,7 +133,7 @@ class labelManagementController extends Controller
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1.44)
-            ->margins(0,0,0,0)
+            ->margins(0, 0, 0, 0)
             ->savePdf($exportToPdf);
 
         return response()->json(['Save pdf sucessfully']);
@@ -159,9 +159,10 @@ class labelManagementController extends Controller
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
 
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-            ->format('A6')
-            ->showBackground()
+            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            ->pages('1')
+            ->scale(1.44)
+            ->margins(0, 0, 0, 0)
             ->savePdf($exportToPdf);
 
         return $this->downloadLabel($awb_no);
@@ -173,17 +174,16 @@ class labelManagementController extends Controller
         foreach ($allid as $id) {
             $results = $this->labelDataFormating($id);
             $result[] = (object)$results;
-
             $generator = new BarcodeGeneratorHTML();
             $bar_code[] = $generator->getBarcode($results['awb_no'], $generator::TYPE_CODE_93);
         }
 
-        // dd($result);
         return view('label.multipleLabel', compact('result', 'bar_code'));
     }
 
     public function DownloadSelected(Request $request)
     {
+
         $passid = $request->id;
         $currenturl =  URL::current();
 
@@ -194,17 +194,21 @@ class labelManagementController extends Controller
             $id = DB::connection('web')->select("select * from labels where id = '$getId' ");
 
             foreach ($id as $key => $value) {
+
                 $awb_no = $value->awb_no;
                 $url = str_replace('select-download', 'pdf-template', $currenturl . '/' . $getId);
+
                 $path = 'label/label' . $awb_no . '.pdf';
                 if (!Storage::exists($path)) {
                     Storage::put($path, '');
                 }
                 $exportToPdf = storage::path($path);
                 Browsershot::url($url)
-                    // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-                    ->format('A6')
-                    ->showBackground()
+                    ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+                    ->paperSize(576, 384, 'px')
+                    ->pages('1')
+                    ->scale(1.44)
+                    ->margins(0, 0, 0, 0)
                     ->savePdf($exportToPdf);
 
                 $saveAsPdf[] = 'label' . $awb_no . '.pdf';
