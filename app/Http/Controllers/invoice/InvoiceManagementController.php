@@ -42,6 +42,7 @@ class InvoiceManagementController extends Controller
 
                     $action = '<div class="d-flex"><a href="/invoice/convert-pdf/' . $id->invoice_no . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
                     $action .= '<div class="d-flex pl-2"><a href="/invoice/download-direct/' . $id->invoice_no . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
+                    $action .= '<div class="d-flex pl-2"><a href="/invoice/edit/' . $id->invoice_no . ' " class=" btn btn-primary btn-sm"><i class="fas fa-edit"></i> Edit </a>';
                     return $action;
                 })
                 ->rawColumns(['action'])
@@ -217,7 +218,7 @@ class InvoiceManagementController extends Controller
     public function DirectDownloadPdf(Request $request, $id)
     {
         // $data = Invoice::where('id', $id)->get();
-        $data = DB::connection('web')->select("SELECT * from invoices where invoice_no ='$id' ");
+        $data = DB::connection('web')->select("SELECT * from invoices where invoice_no =$id ");
         $invoice_no = $data[0]->invoice_no;
 
         $currenturl =  URL::current();
@@ -314,5 +315,12 @@ class InvoiceManagementController extends Controller
         $invoice_details['grand_total'] = $grand_total;
         $invoice_details['product_details'] = $item_details;
         return $invoice_details;
+    }
+
+    public function edit($id)
+    {
+        $data = DB::connection('web')->select("SELECT * FROM invoices WHERE invoice_no = '$id' ");
+        // dd($data);
+        return view('invoice.edit');
     }
 }

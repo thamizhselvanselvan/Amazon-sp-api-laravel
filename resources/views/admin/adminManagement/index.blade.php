@@ -40,6 +40,9 @@
                 <a href="{{ route('add_user.create') }}">
                     <x-adminlte-button label="Add User" theme="primary" icon="fas fa-plus" />
                 </a>
+                <a href="{{ ('bin') }}">
+                    <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" />
+                </a>
             </h2>
 
             <table class="table table-bordered yajra-datatable table-striped text-center" style="line-height:12px">
@@ -68,9 +71,10 @@
                 processing: true,
                 serverSide: true,
                 ajax: "{{ url('admin/user_list') }}",
+                pageLength:50,
                 columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
+                        data: 'id',
+                        name: 'id',
                         orderable: false,
                         searchable: false
                     },
