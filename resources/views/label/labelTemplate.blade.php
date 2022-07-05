@@ -114,11 +114,12 @@
                                     <br>
                                     @if(isset($result->shipping_address['County']))
                                     <strong>County: </strong>
-                                    {{$result->shipping_address['County']}},
+                                    {{$result->shipping_address['County']}}
                                     @endif
-
-                                    @if(isset($result->shipping_address['CountryCode']))
-                                    {{$result->shipping_address['CountryCode']}}
+                                    <br>
+                                    @if(isset($result->shipping_address['country']))
+                                    <strong>Country: </strong>
+                                    {{$result->shipping_address['country']}}
                                     @endif
                                     <br>
                                     @if(isset($result->shipping_address['Phone']))

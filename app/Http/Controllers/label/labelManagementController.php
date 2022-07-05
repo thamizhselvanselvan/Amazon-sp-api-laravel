@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
+use App\Models\Mws_region;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorHTML;
@@ -354,8 +355,14 @@ class labelManagementController extends Controller
                     $buyer_address = [];
                     $shipping_address = json_decode($label_detials);
                     foreach ((array)$shipping_address as $add_key => $add_details) {
+
+                        if($add_key == 'CountryCode')
+                        {                            $country_name = Mws_region::where('region_code', $add_details)->get('region')->first();
+                            $buyer_address['country'] = $country_name->region;
+                        }
                         $buyer_address[$add_key] =  $add_details;
                     }
+                    
                     $label_data[$key1] = $buyer_address;
                 } elseif ($key1 == 'package_dimensions') {
                     $dimensions = [];
