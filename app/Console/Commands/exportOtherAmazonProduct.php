@@ -190,11 +190,6 @@ class exportOtherAmazonProduct extends Command
                 $this->writer->insertOne($headers);
             }
 
-            $records1 = $records->toArray();
-            $records1 = array_map(function ($datas) {
-                return $datas['asin'];
-            }, $records1);
-
             $records = $records->toArray();
             $records = array_map(function ($datas) {
                 return (array) $datas;
