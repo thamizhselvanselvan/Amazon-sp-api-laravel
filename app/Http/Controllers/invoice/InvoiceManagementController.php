@@ -319,8 +319,52 @@ class InvoiceManagementController extends Controller
 
     public function edit($id)
     {
+        // $url = URL::previous();
         $data = DB::connection('web')->select("SELECT * FROM invoices WHERE invoice_no = '$id' ");
-        // dd($data);
-        return view('invoice.edit');
+        return view('invoice.edit', compact('data'));
+    }
+    public function update(Request $request, $id)
+    {
+        $invoice = invoice::find($id);
+        $url = $request->url;
+//         po($url);
+// exit;
+        $invoice->invoice_no = $request->invoice_no;
+        $invoice->invoice_date = $request->invoice_date;
+        $invoice->mode = $request->mode;
+        $invoice->channel = $request->channel;
+        $invoice->shipped_by = $request->shipped_by;
+        $invoice->awb_no = $request->awb_no;
+        $invoice->arn_no = $request->arn_no;
+        $invoice->store_name = $request->store_name;
+        $invoice->store__add = $request->store_add;
+        $invoice->bill_to_name = $request->bill_to_name;
+        $invoice->bill_to_add = $request->bill_to_add;
+        $invoice->ship_to_name = $request->ship_to_name;
+        $invoice->ship_to_add = $request->ship_to_add;
+        $invoice->sku = $request->sku;
+        $invoice->item_description = $request->item_description;
+        $invoice->hsn_code = $request->hsn_code;
+        $invoice->qty = $request->qty;
+        $invoice->currency = $request->currency;
+        $invoice->product_price = $request->product_price;
+        $invoice->taxable_value = $request->taxable_value;
+        $invoice->total_including_taxes = $request->total_including_taxes;
+        $invoice->grand_total = $request->grand_total;
+        $invoice->no_of_pcs = $request->no_of_pcs;
+        $invoice->packing = $request->packing;
+        $invoice->dimension = $request->dimension;
+        $invoice->actual_weight = $request->actual_weight;
+        $invoice->charged_weight = $request->charged_weight;
+        $invoice->update();
+
+        
+        // if($request->url =='https://amazon-sp-api-laravel.app/invoice/manage'){
+
+            return redirect()->intended('/invoice/manage')->with('success', 'Invoice  has been updated successfully');
+        // }
+        // else{
+        //     return redirect()->intended('/invoice/search-invoice')->with('success', 'Invoice  has been updated successfully');
+        // }
     }
 }
