@@ -717,10 +717,10 @@ return [
 
                 ],
                 // [
-                //     'text' => 'Seller Credentials', 
-                //     'url' => 'seller/credentials', 
-                //     'can' => ['Admin', 'Seller'], 
-                //     'icon' => 'far fa-fw fa-user', 
+                //     'text' => 'Seller Credentials',
+                //     'url' => 'seller/credentials',
+                //     'can' => ['Admin', 'Seller'],
+                //     'icon' => 'far fa-fw fa-user',
                 // ],
                 [
                     'text' => 'Seller Invoice',
@@ -741,7 +741,11 @@ return [
                     'url' => 'invoice/manage',
                     'can' => ['Admin', 'Inventory'],
                 ],
-
+                [
+                    'text' => 'Label',
+                    'url' => 'label/manage',
+                    'can' => ['Admin', 'Inventory'],
+                ],
                 [
                     'text' => 'BOE',
                     'can' =>  ['Admin', 'BOE'],
@@ -761,11 +765,6 @@ return [
 
                         ],
                     ],
-                ],
-                [
-                    'text' => 'Label',
-                    'url' => 'label/manage',
-                    'can' => ['Admin', 'Inventory'],
                 ],
             ],
         ]
