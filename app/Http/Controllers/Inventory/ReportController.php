@@ -11,7 +11,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Inventory\Outshipment;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Inventory\ReportWeekly;
+use App\Models\Inventory\Shipment_Inward;
 use App\Services\Inventory\ReportMonthly;
+use App\Models\Inventory\Shipment_Inward_Details;
+use App\Models\inventory\Shipment_Outward_Details;
 
 class ReportController extends Controller
 {
@@ -25,86 +28,100 @@ class ReportController extends Controller
 
         /* Inwarding count */
         $todayinward = 0;
-        $dayin =   Shipment::whereDate('created_at',  Carbon::today()->toDateString())->get();
-
+        $dayin =  Shipment_Inward_Details::whereDate('created_at',  Carbon::today()->toDateString())->get();
         foreach ($dayin as $key => $item) {
 
-            $item_list = json_decode($item->items, true);
-
-            foreach ($item_list as  $value) {
-                $todayinward += $value['quantity'];
-            }
+            $todayinward += $item['quantity'];
         }
+
         /* Outwarding count */
         $todayoutward = 0;
-        $dayout =   Outshipment::whereDate('created_at',  Carbon::today()->toDateString())->get();
+        $dayout =   Shipment_Outward_Details::whereDate('created_at',  Carbon::today()->toDateString())->get();
         foreach ($dayout as $key => $value) {
-            $item_list = json_decode($value->items, true);
 
-            foreach ($item_list as  $data) {
-
-                $todayoutward += $data['quantity'];
-            }
+            $todayoutward += $value['quantity'];
         }
+
         /* Opeaning Stock */
-        $todayopeningstock = 0;
+        $todayopening = 0;
         $startTime = Carbon::today()->subDays(365);
         $endTimeYesterday = Carbon::yesterday()->endOfDay();
-        $open = Inventory::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
+        // $open = Inventory::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
+        // foreach ($open as  $data) {
+        //     $todayopeningstock +=  $data['balance_quantity'];
+        // }
+        $open = Shipment_Inward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
         foreach ($open as  $data) {
-            $todayopeningstock +=  $data['quantity'];
+            $todayopening +=  $data['quantity'];
+        }
+        $todayoutstock = 0;
+        $close =  Shipment_Outward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
+        foreach ($close as  $cdata) {
+            $todayoutstock +=  $cdata['quantity'];
         }
 
+        $todayopeningstock =  $todayopening - $todayoutstock;
 
         /* Closing Stock count */
+        $startTimecls = Carbon::today()->subDays(365);
+        $endTime = Carbon::now();
+
         $todayclosingstock = 0;
-        $close =   Inventory::get();
+        $close =  Inventory::whereBetween('created_at', [$startTimecls, $endTime])->get();
 
         foreach ($close as  $data) {
-            $todayclosingstock +=  $data['quantity'];
+            $todayclosingstock +=  $data['balance_quantity'];
         }
 
         /* Opeaning Amount */
         $amt = [];
-        $openstockamt =   Inventory::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
-        foreach ($openstockamt as $amt) {
-            $singleprice[] = [
+        $openamtamt =  Shipment_Inward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
+        foreach ($openamtamt as $amt) {
+            $singlepricein[] = [
                 'price' => $amt['price'],
                 'qty' => $amt['quantity'],
                 'total' => $amt['price'] * $amt['quantity'],
             ];
         }
-        foreach ($singleprice as $sum) {
-            $totalprice[] = $sum['total'];
+        $closeamt =  Shipment_Outward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
+        foreach ($closeamt as $amt) {
+            $singlepriceout[] = [
+                'price' => $amt['price'],
+                'qty' => $amt['quantity'],
+                'total' => $amt['price'] * $amt['quantity'],
+            ];
         }
-        $totalopenamt =  array_sum($totalprice);
+
+        foreach ($singlepricein as $sum) {
+            $totalpricein[] = $sum['total'];
+        }
+        foreach ($singlepriceout as $sumclose) {
+            $totalpriceout[] = $sumclose['total'];
+        }
+
+        $totalinamt =  array_sum($totalpricein);
+        $totalotamt = array_sum($totalpriceout);
+
+        $totalopenamt =   $totalinamt  -  $totalotamt;
 
         /* Day Inwarding Amount */
 
-        $dayinamt =   Shipment::whereDate('created_at',  Carbon::today()->toDateString())->get();
+        $dayinamt =   Shipment_Inward_Details::whereDate('created_at',  Carbon::today()->toDateString())->get();
         $totaldayinvamt = 0;
+
         foreach ($dayinamt as $key => $amtday) {
 
-            $item_lists = json_decode($amtday->items);
-
-            foreach ($item_lists as $item) {
-
-                $totaldayinvamt += $item->quantity * $item->price;
-            }
+            $totaldayinvamt += $amtday->quantity * $amtday->price;
         }
 
         /* Outwarding Amount */
 
-        $dayoutamt =   Outshipment::whereDate('created_at',  Carbon::today()->toDateString())->get();
+        $dayoutamt =   Shipment_Outward_Details::whereDate('created_at',  Carbon::today()->toDateString())->get();
         $totaldayoutamt = 0;
         foreach ($dayoutamt as $key => $amtdayout) {
 
-            $item_lists = json_decode($amtdayout->items);
 
-            foreach ($item_lists as $item) {
-
-                $totaldayoutamt += $item->quantity * $item->price;
-            }
+            $totaldayoutamt += $amtdayout->quantity * $amtdayout->price;
         }
 
         /* Cloasing Amount */
@@ -115,7 +132,7 @@ class ReportController extends Controller
             $closeprice[] = [
                 'price' => $close['price'],
                 'qty' => $close['quantity'],
-                'total' => $close['price'] * $close['quantity'],
+                'total' => $close['price'] * $close['balance_quantity'],
             ];
         }
         foreach ($closeprice as $dayclose) {
@@ -181,9 +198,9 @@ class ReportController extends Controller
 
 
         /* weekly closing count*/
-       /* weekly opeanig Count*/
-       $week_closing_count = $report_weekly->ClosingCount();
-       
+        /* weekly opeanig Count*/
+        $week_closing_count = $report_weekly->ClosingCount();
+
         /* weekly closing Amount*/
         $week_closing_amt = $report_weekly->ClosingAmount();
 
@@ -209,7 +226,7 @@ class ReportController extends Controller
 
     public function eportinvweekly(ReportWeekly $report_weekly)
     {
-         $week_exp = $this->getweekly($report_weekly);
+        $week_exp = $this->getweekly($report_weekly);
 
 
         $headers = [
@@ -272,24 +289,24 @@ class ReportController extends Controller
 
         /* Monthly closing count*/
         $month_closing_count = 0;
-         $month_closing_count = $report_monthly->ClosingCountmonth();
+        $month_closing_count = $report_monthly->ClosingCountmonth();
 
         /* Monthly closing Amount*/
         $month_closing_amt = 0;
-         $month_closing_amt = $report_monthly->ClosingAmountmonth();
+        $month_closing_amt = $report_monthly->ClosingAmountmonth();
 
         // dd($date_arraymonth, $month_inv_count,$month_inv_amt,$month_out_count,$month_out_amt,$month_closing_count,$month_closing_amt);
         $month_data = [];
         foreach ($date_arraymonth as $key => $val) {
             $month_data[] = [
                 $val,
-                $month_closing_count[$key] ,
-                $month_closing_amt[$key] ,
-                $month_inv_count[$key] ,
-                $month_inv_amt[$key] ,
-                $month_out_count[$key] ,
-                $month_out_amt[$key] ,
-                $month_closing_count[$key] ,
+                $month_closing_count[$key],
+                $month_closing_amt[$key],
+                $month_inv_count[$key],
+                $month_inv_amt[$key],
+                $month_out_count[$key],
+                $month_out_amt[$key],
+                $month_closing_count[$key],
                 $month_closing_amt[$key]
             ];
         }
@@ -299,7 +316,7 @@ class ReportController extends Controller
 
     public function eportinvmonthly(ReportMonthly $report_monthly)
     {
-       
+
         $month_exp = $this->getMonthly($report_monthly);
 
         $headers = [
@@ -313,7 +330,7 @@ class ReportController extends Controller
             'Closing Stock',
             'closing Stock  Amount'
         ];
-        $exportFilePath = 'Inventory/MonthlyReport.csv'; 
+        $exportFilePath = 'Inventory/MonthlyReport.csv';
         if (!Storage::exists($exportFilePath)) {
             Storage::put($exportFilePath, '');
         }
