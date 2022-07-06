@@ -86,8 +86,8 @@ class RobinTest extends Controller
         msg("app.env: " . config('app.env'));
         echo "<HR>";
 
-        echo ("Key: gg.LARAVEL_IONIC_SALT <br>Value: " . config('gg.LARAVEL_IONIC_SALT') . "<hr>");
-        echo ("Key: gg.APP_DEEPLINK_LOGIN_URL <br>Value: " . config('gg.APP_DEEPLINK_LOGIN_URL') . "<hr>");
+        echo ("Key: pms.LARAVEL_IONIC_SALT <br>Value: " . config('pms.LARAVEL_IONIC_SALT') . "<hr>");
+        echo ("Key: pms.APP_DEEPLINK_LOGIN_URL <br>Value: " . config('pms.APP_DEEPLINK_LOGIN_URL') . "<hr>");
 
         exit;
     }

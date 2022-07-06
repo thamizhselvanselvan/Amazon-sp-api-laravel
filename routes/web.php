@@ -141,7 +141,6 @@ Route::get('test', function (ReportWeekly $report_weekly) {
 
 
 
-  po($report_weekly->OpeningShipmentCount());
 
    
 
