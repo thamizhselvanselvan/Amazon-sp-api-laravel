@@ -65,37 +65,23 @@
     </div>
 </div>
 
-<table class="table table-bordered yajra-datatable table-striped " id="report_table">
+<table class="table table-bordered yajra-datatable table-striped " id="report_table" width="100%">
     <thead>
         <tr>
+            <th>ID</th>
             <th id="detail">Date</th>
             <th id="detail">Opening Stock</th>
-            <th id="detail">Open Stock Amount</th>
+            <th id="detail">Open Stock Amt.</th>
             <th id="detail">Inwarded</th>
-            <th id="detail">Inv.Inwarded Amt</th>
+            <th id="detail">Inv.Inwarded Amt.</th>
             <th id="detail"> Outwarded</th>
-            <th id="detail">Inv.Outwarding Amt</th>
+            <th id="detail">Inv.Outwarding Amt.</th>
             <th id="detail">Closing Stock</th>
-            <th id="detail">Closing Stock Amount</th>
+            <th id="detail">Closing Stock Amt.</th>
         </tr>
     </thead>
 
-    <tbody id="data_display">
-        @foreach ($month_data as $key => $value)
-
-        <tr>
-
-        <td>{{ $value[0] }}</td>
-            <td>{{ $value[1] }}</td>
-            <td>{{ $value[2] }}</td>
-            <td>{{ $value[3] }}</td>
-            <td>{{ $value[4] }}</td>
-            <td>{{ $value[5] }}</td>
-            <td>{{ $value[6] }}</td>
-            <td>{{ $value[7] }}</td>
-            <td>{{ $value[8] }}</td>
-        </tr>
-        @endforeach
+    <tbody>
     </tbody>
 
 </table>
@@ -107,6 +93,63 @@
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
+    });
+
+
+
+    $(function() {
+
+        let yajra_table = $('.yajra-datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('monthly.view') }}",
+      
+            columns: [{
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'date',
+                    name: 'date'
+                },
+                {
+                    data: 'opeaning_stock',
+                    name: 'opeaning_stock'
+                },
+                {
+                    data: 'opeaning_amount',
+                    name: 'opeaning_amount'
+                },
+                {
+                    data: 'inwarding',
+                    name: 'inwarding'
+                },
+                {
+                    data: 'inw_amount',
+                    name: 'inw_amount'
+                },
+                {
+                    data: 'outwarding',
+                    name: 'outwarding'
+                },
+                {
+                    data: 'outw_amount',
+                    name: 'outw_amount'
+                },
+                {
+                    data: 'closing_stock',
+                    name: 'closing_stock'
+                },
+                {
+                    data: 'closing_amount',
+                    name: 'closing_amount'
+                },
+            ]
+        });
+
+
     });
     $(function() {
 

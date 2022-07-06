@@ -26,6 +26,7 @@ Route::resource('inventory/disposes', 'Inventory\Master\InventoryDisposeControll
 // Route::get('inventory/stocks','Inventory\StockController@stokes')->name('inventory.stocks');
 Route::get('inventory/stocks', 'Inventory\StockController@dashboard')->name('inventory.stocks');
 Route::get('inventory/list', 'Inventory\StockController@getlist');
+Route::get('inventory/expo', 'Inventory\StockController@eportinv');
 Route::get('inventory/export', 'Inventory\StockController@eportinv')->name('inventory.export');
 
 
@@ -69,9 +70,9 @@ Route::resource('inventory/outwardings', 'Inventory\Outwarding\InventoryOutwardS
 
 
 Route::get('reports/daily', 'Inventory\ReportController@daily');
-Route::get('reports/weekly', 'Inventory\ReportController@weekly');
+Route::get('reports/weekly', 'Inventory\ReportController@index');
 Route::get('export/weekly', 'Inventory\ReportController@eportinvweekly');
-Route::get('reports/monthly', 'Inventory\ReportController@monthly');
+Route::get('reports/monthly', 'Inventory\ReportController@monthlyview')->name('monthly.view');
 Route::get('export/monthly', 'Inventory\ReportController@eportinvmonthly');
 
 Route::resource('inventory/reports', 'Inventory\ReportController');
