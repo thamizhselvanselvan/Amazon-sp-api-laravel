@@ -46,6 +46,7 @@
         <table class="table table-bordered yajra-datatable table-striped">
             <thead>
                 <tr>
+                    <th>ID</th>
                     <th>Rack ID</th>
                     <th>Shelve ID</th>
                     <th>Bin ID</th>
@@ -72,6 +73,11 @@
             serverSide: true,
             ajax: "{{route('bins.index') }}",
             columns: [{
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                }, {
                     data: 'rack_id',
                     name: 'rack_id'
                 },

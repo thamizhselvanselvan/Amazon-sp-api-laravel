@@ -45,7 +45,7 @@
             <table class="table table-bordered yajra-datatable table-striped">
                 <thead>
                     <tr>
-                        <th>id</th>
+                        <th>ID</th>
                         <th>Warheouse Name</th>
                         <th>Rack ID</th>
                         <th>Shelve ID</th>
