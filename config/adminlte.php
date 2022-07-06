@@ -254,40 +254,9 @@ return [
             'can' =>  ['Admin'],
             'submenu' => [
                 [
-                    'text' => 'Company Master',
-                    'url' => 'company',
-                    'can' => ['Admin', 'Account'],
-                    'icon' => 'far fa-fw fa-file',
-                ],
-
-                [
-                    'text' => 'Region Master ',
-                    'url'  => 'admin/mws_regions',
-                    'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin']
-                ],
-                [
-                    'text' => 'Credentials Master',
-                    'url'  => 'admin/credentials',
-                    'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin']
-                ],
-                [
-                    'text' => 'Currency Master',
-                    'url'  => 'admin/currencys',
-                    'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin']
-                ],
-                [
-                    'text' => 'Asin Master',
-                    'url'  => 'asin-master',
-                    'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin']
-                ],
-                [
                     'text' => 'Roles',
                     'url' => 'admin/rolespermissions',
-                    'icon' => 'fas fa-user',
+                    'icon' => 'far fa-fw fa-user',
                     'can' =>  ['Admin']
                 ],
                 [
@@ -313,10 +282,46 @@ return [
                 [
                     'text' => 'Geo',
                     'url' => 'admin/geo',
-                    'icon' => 'fas fa-user',
+                    'icon' => 'fas fa-globe-asia',
                     'can' =>  ['Admin']
+                    
                 ],
-
+                [
+                    'text' => 'Company Master',
+                    'url' => 'company',
+                    'can' => ['Admin', 'Account'],
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                // [
+                //     'text' => 'Store management',
+                //     'url' => '',
+                //     'can' => ['Admin', 'Account'],
+                //     'icon' => 'far fa-fw fa-file',
+                // ],
+                [
+                    'text' => 'BuyBox',
+                    'can' =>  ['Admin'],
+                    'submenu' => [
+                        [
+                            'text' => 'Region Master ',
+                            'url'  => 'admin/mws_regions',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin']
+                        ],
+                        [
+                            'text' => 'Credentials Master',
+                            'url'  => 'admin/credentials',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin']
+                        ],
+                        [
+                            'text' => 'Currency Master',
+                            'url'  => 'admin/currencys',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin']
+                        ],
+                    ]
+                ],
             ],
         ],
 
@@ -324,6 +329,12 @@ return [
             'text'    => 'Catalog',
             'can' =>   ['Admin', 'Catalog'],
             'submenu' => [
+                [
+                    'text' => 'Asin Master',
+                    'url'  => 'asin-master',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin']
+                ],
 
                 [
                     'text' => 'Universal Textiles',
@@ -733,7 +744,7 @@ return [
 
         [
             'text' => 'Tools',
-            'can' => ['Admin', 'Inventory','BOE'],
+            'can' => ['Admin', 'Inventory', 'BOE'],
             'submenu' =>
             [
                 [
