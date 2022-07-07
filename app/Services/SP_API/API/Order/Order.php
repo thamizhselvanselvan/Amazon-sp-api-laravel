@@ -41,7 +41,7 @@ class Order
         $marketplace_ids = [$marketplace_ids];
 
         $apiInstance = new OrdersApi($config);
-        $startTime = Carbon::now()->subHours(2)->toISOString();
+        $startTime = Carbon::now()->subHours(6)->toISOString();
         // $startTime = Carbon::now()->subDays(5)->toISOString();
 
         // echo $startTime;
@@ -85,7 +85,6 @@ class Order
             $orders->country = $awsCountryCode;
             $amazon_order_id = '';
             foreach ((array)$result as $detailsKey => $details) {
-
 
                 $detailsKey = lcfirst($detailsKey);
                 if (is_Object($details)) {
