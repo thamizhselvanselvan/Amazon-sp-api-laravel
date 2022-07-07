@@ -77,14 +77,13 @@ class InventoryOutwardShipmentController extends Controller
         foreach ($outview as $key => $bar) {
             
             $bar_code = $generator->getBarcode($bar->ship_id, $generator::TYPE_CODE_93);
+            $currency_id = $bar->currency;
+    
         }
       
-        $currency = Currency::get();
-        $currency_array = [];
-        foreach ($currency as $key => $cur) {
-            $currency_array[$cur->id] = $cur->name;
-        }
-
+        $currency = Currency::where('id', $currency_id )->get()->first();
+    
+        
         $place = Inventory::whereIn('asin', $items)->get();
         $loc = [];
         foreach ($place as $plc) {
@@ -92,7 +91,7 @@ class InventoryOutwardShipmentController extends Controller
             $loc[] = Bin::where('bin_id', $plc['bin'])->first();
         }
 
-        return view('inventory.outward.shipment.view', compact('outview', 'id', 'currency_array', 'bar_code', 'bar', 'loc'));
+        return view('inventory.outward.shipment.view', compact('outview', 'id', 'currency', 'bar_code', 'bar', 'loc'));
     }
 
     public function outstore($id)
