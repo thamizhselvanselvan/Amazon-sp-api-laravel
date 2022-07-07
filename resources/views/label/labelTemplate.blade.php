@@ -23,6 +23,11 @@
             padding: 0px;
         }
 
+        body {
+            margin-top: 5px;
+            margin-left: 0px;
+            transform: scale(1.4);
+        }
         .container-fluid {
 
             size: 4in 6in;

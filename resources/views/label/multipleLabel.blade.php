@@ -13,12 +13,13 @@
             margin: 0px;
             padding: 0px;
         }
+
         body {
-        margin-top: 5px;
-        margin-left: 0px;
-        transform: scale(auto);
-        transform-origin: 0 0;
-    }
+            margin-top: 5px;
+            margin-left: 0px;
+            transform: scale(1.4);
+        }
+
         .container-fluid {
 
             size: 4in 6in;
@@ -27,6 +28,7 @@
             margin: 0px;
             padding: 0px;
         }
+
         #label-container {
             margin: 0px;
             padding: 0px;
@@ -34,6 +36,7 @@
             height: 576px;
             padding-top: 5px;
         }
+
         #label-container .invoice {
             margin: 0px;
             padding: 0px;
