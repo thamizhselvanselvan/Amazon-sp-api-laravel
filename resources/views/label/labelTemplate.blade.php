@@ -93,7 +93,7 @@
                         <td class="pt-1 pb-1">
                             <div class="row">
                                 <div class="col p-0">
-                                    <strong>Ship To: </strong><br>
+                                    <strong>Ship To: </strong>
                                     <strong>{{$result->shipping_address['Name']}}</strong><br>
                                     
                                     <strong>Address: </strong>
