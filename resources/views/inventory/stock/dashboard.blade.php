@@ -119,7 +119,7 @@
                     const d = new Date(value.created_at);
 
                     html += "<tr>";
-                    html += "<td>" + value.name + "</td>";
+                    html += "<td>" + value.warehouses.name + "</td>";
                     html += "<td>" + value.ship_id + "</td>";
                     html += "<td>" + value.asin + "</td>";
                     html += "<td>" + value.item_name + "</td>";

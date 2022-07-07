@@ -158,6 +158,171 @@ class ReportController extends Controller
 
         return view('inventory.report.daily', compact('ware_lists', 'data'));
     }
+
+public function warerepo(Request $request)
+{
+    if ($request->ajax()) {
+        /* Date */
+        $date = Carbon::now()->format('d M Y');
+
+        /* Inwarding count */
+        $todayinward = 0;
+        $dayin =  Shipment_Inward_Details::whereDate('created_at',  Carbon::today()->toDateString())
+        ->where('warehouse_id', $request->id)
+        ->get();
+        foreach ($dayin as $key => $item) {
+
+            $todayinward += $item['quantity'];
+        }
+
+        /* Outwarding count */
+        $todayoutward = 0;
+        $dayout =   Shipment_Outward_Details::whereDate('created_at',  Carbon::today()->toDateString())
+        ->where('warehouse_id', $request->id)
+        ->get();
+        foreach ($dayout as $key => $value) {
+
+            $todayoutward += $value['quantity'];
+        }
+
+        /* Opeaning Stock */
+        $todayopening = 0;
+        $startTime = Carbon::today()->subDays(365);
+        $endTimeYesterday = Carbon::yesterday()->endOfDay();
+
+        $open = Shipment_Inward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])
+        ->where('warehouse_id', $request->id)
+        ->get();
+        foreach ($open as  $data) {
+            $todayopening +=  $data['quantity'];
+        }
+        $todayoutstock = 0;
+        $close =  Shipment_Outward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])
+        ->where('warehouse_id', $request->id)
+        ->get();
+        foreach ($close as  $cdata) {
+            $todayoutstock +=  $cdata['quantity'];
+        }
+
+        $todayopeningstock =  $todayopening - $todayoutstock;
+
+        /* Closing Stock count */
+        $startTimecls = Carbon::today()->subDays(365);
+        $endTime = Carbon::now();
+
+        $todayclosingstock = 0;
+        $close =  Inventory::whereBetween('created_at', [$startTimecls, $endTime])
+        ->where('warehouse_id', $request->id)
+        ->get();
+
+        foreach ($close as  $data) {
+            $todayclosingstock +=  $data['balance_quantity'];
+        }
+
+        /* Opeaning Amount */
+        $amt = [];
+        $singlepricein = [];
+        $openamtamt =  Shipment_Inward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])
+        ->where('warehouse_id', $request->id)
+        ->get();
+        foreach ($openamtamt as $amt) {
+            $singlepricein[] = [
+                'price' => $amt['price'],
+                'qty' => $amt['quantity'],
+                'total' => $amt['price'] * $amt['quantity'],
+            ];
+        }
+        $singlepriceout = [];
+        $closeamt =  Shipment_Outward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])
+        ->where('warehouse_id', $request->id)
+        ->get();
+        foreach ($closeamt as $amt) {
+            $singlepriceout[] = [
+                'price' => $amt['price'],
+                'qty' => $amt['quantity'],
+                'total' => $amt['price'] * $amt['quantity'],
+            ];
+        }
+        $totalpricein = [];
+        foreach ($singlepricein as $sum) {
+            $totalpricein[] = $sum['total'];
+        }
+        $totalpriceout = [];
+        foreach ($singlepriceout as $sumclose) {
+            $totalpriceout[] = $sumclose['total'];
+        }
+
+        $totalinamt =  array_sum($totalpricein);
+        $totalotamt = array_sum($totalpriceout);
+
+        $totalopenamt =   $totalinamt  -  $totalotamt;
+
+        /* Day Inwarding Amount */
+
+        $totaldayinvamt = 0;
+        $dayinamt =   Shipment_Inward_Details::whereDate('created_at',  Carbon::today()->toDateString())
+        ->where('warehouse_id', $request->id)
+        ->get();
+
+        foreach ($dayinamt as $key => $amtday) {
+
+            $totaldayinvamt += $amtday->quantity * $amtday->price;
+        }
+
+        /* Outwarding Amount */
+
+        $dayoutamt =   Shipment_Outward_Details::whereDate('created_at',  Carbon::today()->toDateString())
+        ->where('warehouse_id', $request->id)
+        ->get();
+        $totaldayoutamt = 0;
+        foreach ($dayoutamt as $key => $amtdayout) {
+
+
+            $totaldayoutamt += $amtdayout->quantity * $amtdayout->price;
+        }
+
+        /* Cloasing Amount */
+        $closeamt =   Inventory::where('warehouse_id', $request->id)->get();
+        
+        $dayclosingamt = 0;
+        $closeprice = [];
+        $dayclosing = [];
+        foreach ($closeamt as $close) {
+            $closeprice[] = [
+                'price' => $close['price'],
+                'qty' => $close['quantity'],
+                'total' => $close['price'] * $close['balance_quantity'],
+            ];
+        }
+        foreach ($closeprice as $dayclose) {
+
+            $dayclosing[] = $dayclose['total'];
+        }
+        $dayclosingamt =  array_sum($dayclosing);
+
+
+        $data = [
+            "date" => $date,
+            "open_stock" => $todayopeningstock,
+            "open_stock_amt" => $totalopenamt,
+            "inwarded" => $todayinward ? $todayinward : 0,
+            "tdy_inv_amt" => $totaldayinvamt,
+            "outwarded" => $todayoutward,
+            "tdy_out_amt" => $totaldayoutamt,
+            "closing_stock" => $todayclosingstock,
+            "closing_amt" => $dayclosingamt
+        ];
+
+       
+    
+        return response()->json($data);
+    }
+}
+
+
+
+    
+
     public function index(Request $request)
     {
         $ware_lists = Warehouse::get();
@@ -227,8 +392,6 @@ class ReportController extends Controller
         $writer->insertAll($week_data->toarray());
         return Storage::download($exportFilePath);
     }
-
-
 
     public function monthlyview(Request $request)
     {

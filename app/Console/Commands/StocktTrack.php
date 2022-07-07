@@ -5,14 +5,11 @@ namespace App\Console\Commands;
 use Carbon\Carbon;
 use AWS\CRT\HTTP\Request;
 use Illuminate\Console\Command;
-use App\Models\inventory\Stocks;
-use App\Models\Inventory\Shipment;
 use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
 use Illuminate\Support\Facades\Log;
-use App\Models\Inventory\Outshipment;
 use App\Models\Inventory\Shipment_Inward_Details;
-use App\Models\inventory\Shipment_Outward_Details;
+use App\Models\Inventory\Shipment_Outward_Details;
 
 class StocktTrack extends Command
 {
