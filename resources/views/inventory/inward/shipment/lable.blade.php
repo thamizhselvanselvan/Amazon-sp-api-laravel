@@ -13,7 +13,7 @@
 
     h6 {
         overflow: hidden;
-        max-width: 35ch;
+        max-width: 40ch;
         font-size: 0.875em;
         height: 1.2em;
         /* exactly 2 lines */
@@ -39,12 +39,17 @@
 @stop
 @section('content')
           
-@foreach ($lable as $key => $val)
+    @foreach ($lable as $key => $val)
 
-<h5>New</h5>
-<h4>{!! $bar_code[0] !!}</h4>
-<h6>{{$val['asin']}} {{$val['item_name']}}</h6>
-@endforeach
+        <h5>New</h5>
+        @for($i = 0; $i < $quant[$key]; $i++)
+            <h6>{{$val['asin']}} </h6>
+            <h4>{!! $bar_code[0] !!}</h4>
+            <h6>{{$val['item_name']}}</h6>
+        @endfor
+
+    @endforeach
+
 @stop
 
 
