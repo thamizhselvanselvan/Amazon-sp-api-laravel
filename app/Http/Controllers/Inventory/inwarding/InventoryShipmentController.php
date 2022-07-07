@@ -28,14 +28,18 @@ class InventoryShipmentController extends Controller
     {
 
         if ($request->ajax()) {
-
-            $data = Shipment_Inward_Details::select("ship_id", "source_id")->distinct()->with(['vendors']);
-
+            
+            
+            $data = Shipment_Inward_Details::select("ship_id", "source_id","created_at")->distinct()->with(['vendors'])->get();
             return DataTables::of($data)
-                ->addIndexColumn()
+            ->addIndexColumn()
                 ->addColumn('source_name', function ($data) {
                     return ($data->vendors) ? $data->vendors->name : " NA";
                 })
+                ->editColumn('date', function ($row) {
+                    return Carbon::parse($row['created_at'])->format('M d Y');
+                })
+
                 ->addColumn('action', function ($row) {
                     $actionBtn  = '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '" class="edit btn btn-success btn-sm"><i class="fas fa-eye"></i> View</a>';
                     $actionBtn .= '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '/place" class="store btn btn-primary btn-sm ml-2"><i class="fas fa-box"></i> Bin Placement </a>';
@@ -43,13 +47,14 @@ class InventoryShipmentController extends Controller
                     return $actionBtn;
                 })
 
-                ->rawColumns(['source_name', 'action'])
+                ->rawColumns(['source_name', 'action','date'])
                 ->make(true);
         }
 
 
         return view('inventory.inward.shipment.index');
     }
+
     public function create()
     {
 
@@ -86,7 +91,6 @@ class InventoryShipmentController extends Controller
 
         return view('inventory.inward.shipment.view', compact('view', 'currency_array', 'bar_code', 'id', 'warehouse_name', 'vendor_name', 'currency_id'));
     }
-
 
     public function createView(Request $request)
     {
@@ -131,7 +135,6 @@ class InventoryShipmentController extends Controller
             return Product::query()->where('asin1', $request->asin)->first();
         }
     }
-
 
     public function storeshipment(Request $request)
     {
@@ -242,6 +245,7 @@ class InventoryShipmentController extends Controller
 
         return view('inventory.inward.shipment.view');
     }
+
     public function store($id)
     {
         $store = Inventory::where('ship_id', $id)->with(['warehouses', 'vendors'])->get();
@@ -283,7 +287,6 @@ class InventoryShipmentController extends Controller
         }
         return response()->json(['success' => 'Shipment has stored successfully']);
     }
-
 
     public function printlable(Request $request, $id)
     {
