@@ -69,13 +69,13 @@
         <tr>
             <td>{{ $data['date'] }}</td>
             <td>{{ $data['open_stock'] }}</td>
-            <td>{{ $data['open_stock_amt'] }}</td>
-            <td>{{ $data['inwarded'] }}</td>
-            <td>{{ $data['tdy_inv_amt'] }}</td>
+            <td>&#8377 {{ $data['open_stock_amt'] }}</td>
+            <td> {{ $data['inwarded'] }}</td>
+            <td> &#8377 {{ $data['tdy_inv_amt'] }}</td>
             <td>{{ $data['outwarded'] }}</td>
-            <td>{{ $data['tdy_out_amt'] }}</td>
+            <td> &#8377 {{ $data['tdy_out_amt'] }}</td>
             <td>{{ $data['closing_stock'] }}</td>
-            <td>{{ $data['closing_amt'] }}</td>
+            <td> &#8377 {{ $data['closing_amt'] }}</td>
          
             
     </tbody>

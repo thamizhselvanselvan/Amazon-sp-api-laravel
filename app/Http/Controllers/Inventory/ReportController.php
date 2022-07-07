@@ -4,17 +4,17 @@ namespace App\Http\Controllers\Inventory;
 
 use Carbon\Carbon;
 use League\Csv\Writer;
-use App\Models\Inventory\Shipment;
+use Illuminate\Http\Request;
+use App\Models\Inventory\Stocks;
 use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
 use App\Http\Controllers\Controller;
-use App\Models\Inventory\Outshipment;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Inventory\ReportWeekly;
-use App\Models\Inventory\Shipment_Inward;
+use Yajra\DataTables\Facades\DataTables;
 use App\Services\Inventory\ReportMonthly;
 use App\Models\Inventory\Shipment_Inward_Details;
-use App\Models\inventory\Shipment_Outward_Details;
+use App\Models\Inventory\Shipment_Outward_Details;
 
 class ReportController extends Controller
 {
@@ -46,7 +46,7 @@ class ReportController extends Controller
         $todayopening = 0;
         $startTime = Carbon::today()->subDays(365);
         $endTimeYesterday = Carbon::yesterday()->endOfDay();
-    
+
         $open = Shipment_Inward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
         foreach ($open as  $data) {
             $todayopening +=  $data['quantity'];
@@ -72,6 +72,7 @@ class ReportController extends Controller
 
         /* Opeaning Amount */
         $amt = [];
+        $singlepricein = [];
         $openamtamt =  Shipment_Inward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
         foreach ($openamtamt as $amt) {
             $singlepricein[] = [
@@ -80,6 +81,7 @@ class ReportController extends Controller
                 'total' => $amt['price'] * $amt['quantity'],
             ];
         }
+        $singlepriceout = [];
         $closeamt =  Shipment_Outward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
         foreach ($closeamt as $amt) {
             $singlepriceout[] = [
@@ -88,10 +90,11 @@ class ReportController extends Controller
                 'total' => $amt['price'] * $amt['quantity'],
             ];
         }
-
+        $totalpricein = [];
         foreach ($singlepricein as $sum) {
             $totalpricein[] = $sum['total'];
         }
+        $totalpriceout = [];
         foreach ($singlepriceout as $sumclose) {
             $totalpriceout[] = $sumclose['total'];
         }
@@ -103,8 +106,8 @@ class ReportController extends Controller
 
         /* Day Inwarding Amount */
 
-        $dayinamt =   Shipment_Inward_Details::whereDate('created_at',  Carbon::today()->toDateString())->get();
         $totaldayinvamt = 0;
+        $dayinamt =   Shipment_Inward_Details::whereDate('created_at',  Carbon::today()->toDateString())->get();
 
         foreach ($dayinamt as $key => $amtday) {
 
@@ -123,6 +126,8 @@ class ReportController extends Controller
 
         /* Cloasing Amount */
         $closeamt =   Inventory::get();
+        
+        $dayclosingamt = 0;
         $closeprice = [];
         $dayclosing = [];
         foreach ($closeamt as $close) {
@@ -153,75 +158,54 @@ class ReportController extends Controller
 
         return view('inventory.report.daily', compact('ware_lists', 'data'));
     }
-
-    public function  weekly(ReportWeekly $report_weekly)
+    public function index(Request $request)
     {
         $ware_lists = Warehouse::get();
-        $week_data = $this->getweekly($report_weekly);
+        if ($request->ajax()) {
+            $startTime = Carbon::today()->subDays(7);
+            $endTimeYesterday = Carbon::yesterday()->endOfDay();
+            $data = Stocks::whereBetween('created_at', [$startTime, $endTimeYesterday])
+                ->orderBy('id', 'DESC')
+                ->get();
 
-        return view('inventory.report.weekly', compact('ware_lists', 'week_data'));
-    }
+            return DataTables::of($data)
+                ->addIndexColumn()
 
-    public function getweekly($report_weekly)
-    {
-        //Week date //
-        $date_array = [];
-        $i = 0;
-        while ($i < 7) {
-            $today = Carbon::today();
-            array_push($date_array, $today->subDays($i)->format('Y-m-d'));
-            $i++;
+                ->editColumn('opeaning_stock_amt', function ($data) {
+                    return "&#8377 " . $data->opeaning_amount;
+                })
+                ->editColumn('inward_amt', function ($data) {
+                    return "&#8377 " . $data->inw_amount;
+                })
+
+                ->editColumn('outward_amount', function ($data) {
+                    return "&#8377 " . $data->outw_amount;
+                })
+
+                ->editColumn('cls_amount', function ($data) {
+                    return "&#8377 " . $data->closing_amount;
+                })
+                ->rawColumns(['opeaning_stock_amt','inward_amt','outward_amount','cls_amount'])
+                ->make(true);
         }
 
 
-        /* weekly opeanig Count*/
-        $open_count = $report_weekly->OpeningStock();
-        /* weekly Inwarding Count*/
-        $inward_count = $report_weekly->InwardingCount();
-
-
-        /* weekly Inwarding  Amount*/
-        $week_inv_amt = $report_weekly->InwardingAmount();
-
-        /* weekly Outwarding  Count*/
-        $week_out_count = $report_weekly->OutwardShipmentCount();
-
-        /* weekly Outwarding  Amount*/
-        $week_out_amt = $report_weekly->OutwardShipmentAmount();
-
-        /* weekly closing count*/
-        /* weekly opeanig Count*/
-        $week_closing_count = $report_weekly->ClosingCount();
-
-        /* weekly closing Amount*/
-        $week_closing_amt = $report_weekly->ClosingAmount();
-
-
-
-        $week_data = [];
-        foreach ($date_array as $k => $val) {
-            $week_data[] = [
-                $val,
-                $week_closing_count[$k],
-                $week_closing_amt[$k],
-                $inward_count[$k],
-                $week_inv_amt[$k],
-                $week_out_count[$k],
-                $week_out_amt[$k],
-                $week_closing_count[$k],
-                $week_closing_amt[$k]
-            ];
-        }
-
-        return $week_data;
+        return view('inventory.report.weekly', compact('ware_lists'));
     }
 
-    public function eportinvweekly(ReportWeekly $report_weekly)
+    public function eportinvweekly()
     {
-        $week_exp = $this->getweekly($report_weekly);
+        $startTime = Carbon::today()->subDays(7);
+        $endTimeYesterday = Carbon::yesterday()->endOfDay();
+
+        $week_data =  Stocks::whereBetween('created_at', [$startTime, $endTimeYesterday])
+            ->select('date', 'opeaning_stock', 'opeaning_amount', 'inwarding', 'inw_amount', 'outwarding', 'outw_amount', 'closing_stock', 'closing_amount')
+            ->orderBy('id', 'DESC')
+            ->get();
 
 
         $headers = [
+
             'Date',
             'Opening Stock',
             'Opening Stock Amount',
@@ -232,86 +216,65 @@ class ReportController extends Controller
             'Closing Stock',
             'closing Stock Amount'
         ];
-        $exportFilePath = 'Inventory/weeklyReport.csv'; // your file path, where u want to save
+        $exportFilePath = 'Inventory/weeklyReport.csv';
         if (!Storage::exists($exportFilePath)) {
             Storage::put($exportFilePath, '');
         }
         $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
         $writer->insertOne($headers);
 
-        $csv_value = [];
-        $count = 0;
-        $writer->insertAll($week_exp);
+
+        $writer->insertAll($week_data->toarray());
         return Storage::download($exportFilePath);
     }
 
-    public function Monthly(ReportMonthly $report_monthly)
+
+
+    public function monthlyview(Request $request)
     {
         $ware_lists = Warehouse::get();
-        $month_data = $this->getMonthly($report_monthly);
-        return view('inventory.report.monthly', compact('ware_lists', 'month_data'));
-    }
+        if ($request->ajax()) {
+            $startTime = Carbon::today()->subDays(31);
+            $endTimeYesterday = Carbon::yesterday()->endOfDay();
+            $data = Stocks::whereBetween('created_at', [$startTime, $endTimeYesterday])
+                ->orderBy('id', 'DESC')
+                ->get();
 
-    public function getMonthly($report_monthly)
-    {
-        //Monthly date //
-        $date_arraymonth = [];
-        $i = 0;
-        while ($i < 31) {
-            $today = Carbon::today();
-            array_push($date_arraymonth, $today->subDays($i)->format('Y-m-d'));
-            $i++;
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->editColumn('opeaning_stock_amt', function ($data) {
+                    return "&#8377 " . $data->opeaning_amount;
+                })
+                ->editColumn('inward_amt', function ($data) {
+                    return "&#8377 " . $data->inw_amount;
+                })
+
+                ->editColumn('outward_amount', function ($data) {
+                    return "&#8377 " . $data->outw_amount;
+                })
+
+                ->editColumn('cls_amount', function ($data) {
+                    return "&#8377 " . $data->closing_amount;
+                })
+                ->rawColumns(['opeaning_stock_amt','inward_amt','outward_amount','cls_amount'])
+                ->make(true);
         }
 
-        /* Monthly Inwarding Count*/
-        $month_inv_count = $report_monthly->MonthlyInCount();
 
-
-        /* Monthly Inwarding  Amount*/
-        $month_inv_amt = $report_monthly->MonthlyInAmount();
-
-        /* Monthly Outwarding  Count*/
-        $month_out_count = $report_monthly->monthly_out_count();
-
-
-
-        /* Monthly Outwarding  Amount*/
-        $month_out_amt = $report_monthly->monthly_out_amount();
-
-
-        /* Monthly closing count*/
-        $month_closing_count = 0;
-        $month_closing_count = $report_monthly->ClosingCountmonth();
-
-        /* Monthly closing Amount*/
-        $month_closing_amt = 0;
-        $month_closing_amt = $report_monthly->ClosingAmountmonth();
-
-        // dd($date_arraymonth, $month_inv_count,$month_inv_amt,$month_out_count,$month_out_amt,$month_closing_count,$month_closing_amt);
-        $month_data = [];
-        foreach ($date_arraymonth as $key => $val) {
-            $month_data[] = [
-                $val,
-                $month_closing_count[$key],
-                $month_closing_amt[$key],
-                $month_inv_count[$key],
-                $month_inv_amt[$key],
-                $month_out_count[$key],
-                $month_out_amt[$key],
-                $month_closing_count[$key],
-                $month_closing_amt[$key]
-            ];
-        }
-        //  dd($month_data);
-        return $month_data;
+        return view('inventory.report.monthly', compact('ware_lists'));
     }
-
-    public function eportinvmonthly(ReportMonthly $report_monthly)
+    public function eportinvmonthly()
     {
-
-        $month_exp = $this->getMonthly($report_monthly);
+        $startTime = Carbon::today()->subDays(31);
+        $endTimeYesterday = Carbon::yesterday()->endOfDay();
+        $records = [];
+        $records =  Stocks::whereBetween('created_at', [$startTime, $endTimeYesterday])
+            ->select('date', 'opeaning_stock', 'opeaning_amount', 'inwarding', 'inw_amount', 'outwarding', 'outw_amount', 'closing_stock', 'closing_amount')
+            ->orderBy('id', 'DESC')
+            ->get();
 
         $headers = [
+
             'Date',
             'Opening Stock',
             'Opening Stock Amount',
@@ -329,9 +292,7 @@ class ReportController extends Controller
         $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
         $writer->insertOne($headers);
 
-        $csv_value = [];
-        $count = 0;
-        $writer->insertAll($month_exp);
+        $writer->insertAll($records->toArray());
         return Storage::download($exportFilePath);
     }
 }

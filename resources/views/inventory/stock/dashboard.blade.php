@@ -44,7 +44,7 @@
             <div class="col-3">
                 <h2>
                     <div style="margin-top: 1.8rem;">
-                        <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export" id="export" />
+                        <x-adminlte-button type="button" label="Export" theme="primary" icon="fas fa-file-export" id="export" />
                     </div>
                 </h2>
             </div>
@@ -71,12 +71,13 @@
 <table class="table table-bordered yajra-datatable table-striped " id="detail_table">
     <thead>
         <tr>
-            <!-- <td>S/L </td> -->
             <td id="detail">Warehouse Name</td>
             <td id="detail"> Shipment ID</td>
             <td id="detail">ASIN</td>
             <td id="detail">Item Name</td>
             <td id="detail">Price/Unit</td>
+            <td id="detail">Quantity In.</td>
+            <td id="detail">Quantity/out.</td>
             <td id="detail">Quantity Left</td>
             <td id="detail">Inwarding Date</td>
             <td id="detail">Bin</td>
@@ -101,7 +102,7 @@
 
         e.preventDefault();
         var id = $(this).val();
-       
+
         $.ajax({
             method: 'GET',
             url: '/inventory/list',
@@ -118,12 +119,13 @@
                     const d = new Date(value.created_at);
 
                     html += "<tr>";
-                    // html += "<td>"+value.id+"</td>" ;  
                     html += "<td>" + value.name + "</td>";
                     html += "<td>" + value.ship_id + "</td>";
                     html += "<td>" + value.asin + "</td>";
                     html += "<td>" + value.item_name + "</td>";
                     html += "<td>" + value.price + "</td>";
+                    html += "<td>" + value.quantity + "</td>";
+                    html += "<td>" + value.out_quantity + "</td>";
                     html += "<td>" + value.balance_quantity + "</td>";
                     html += "<td>" + d.toDateString() + "</td>";
                     html += "<td>" + value.bin + "</td>";
@@ -141,6 +143,27 @@
             }
         });
 
+    });
+
+    $('#export').click(function(){
+
+
+        var id =   $('#warehouse').val();
+   
+        $.ajax({
+            url: '/inventory/expo',
+            method: 'get',
+            data: {
+                'id': id,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(result) {
+               alert('success')
+            },
+            error: function(response){
+                console.log(response);
+            }
+        });
     });
 </script>
 @stop
