@@ -37,7 +37,7 @@
 </style>
 @stop
 @section('content_header')
-<div class="invoice-company text-inverse f-w-600">
+<div class="label-company text-inverse f-w-600">
     <span class="pull-right hidden-print">
         <!-- <a href="javascript:void(0);" class="btn btn-sm btn-white m-b-10 p-l-5" id="Export_to_pdf"><i class="fa fa-file t-plus-1 text-danger fa-fw fa-lg"></i> Export as PDF</a> -->
         <a href="javascript:;" onclick="window.print()" class="btn btn-sm bg-info m-b-10 p-l-5"><i class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
@@ -51,10 +51,10 @@
 @foreach ($result as $key => $value)
 <div class="container label-container" id="label-container">
     <div class="col-md-12">
-        <div class="invoice p-1">
-            <div class="invoice-content mb-0">
+        <div class="label p-1">
+            <div class="label-content mb-0">
                 <!-- <div class="table-responsive"> -->
-                <table class="table table-invoice table-bordered table-bordered-dark ">
+                <table class="table table-label table-bordered table-bordered-dark ">
                     <tbody>
                         <tr>
                             <td class="pb-0 pt-2">
@@ -86,7 +86,7 @@
                                 <div class="row">
                                     <div class="col">
                                         <div class="col">
-                                            <strong>Ship To: </strong><br>
+                                            <strong>Ship To: </strong>
                                             <strong>{{$value->shipping_address['Name']}}</strong><br>
                                             @if(isset($value->shipping_address['AddressLine1']))
                                             {{$value->shipping_address['AddressLine1']}},
