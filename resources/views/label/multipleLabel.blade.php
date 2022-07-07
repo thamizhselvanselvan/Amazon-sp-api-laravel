@@ -13,7 +13,12 @@
             margin: 0px;
             padding: 0px;
         }
-
+        body {
+        margin-top: 5px;
+        margin-left: 0px;
+        transform: scale(auto);
+        transform-origin: 0 0;
+    }
         .container-fluid {
 
             size: 4in 6in;
