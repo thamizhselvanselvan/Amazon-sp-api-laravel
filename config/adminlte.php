@@ -264,20 +264,6 @@ return [
                     'icon' => 'far fa-fw fa-user',
                     'url'  => 'admin/user_list',
                     'can'  => ['Admin'],
-                    // 'submenu' => [
-                    //     [
-                    //         'text' => 'Admin Management',
-                    //         'url'  => 'admin/user_list',
-                    //         'icon' => 'far fa-fw fa-user',
-                    //         'can' =>  ['Admin'],
-                    //     ],
-                    //     [
-                    //         'text' => 'Catalog Management',
-                    //         'url'  => 'admin/catalog_user',
-                    //         'icon' => 'far fa-fw fa-user',
-                    //         'can' =>  ['Admin']
-                    //     ]
-                    // ],
                 ],
                 [
                     'text' => 'Geo',
@@ -292,12 +278,12 @@ return [
                     'can' => ['Admin', 'Account'],
                     'icon' => 'far fa-fw fa-file',
                 ],
-                // [
-                //     'text' => 'Store management',
-                //     'url' => '',
-                //     'can' => ['Admin', 'Account'],
-                //     'icon' => 'far fa-fw fa-file',
-                // ],
+                [
+                    'text' => 'Store management',
+                    'url' => 'admin/stores',
+                    'can' => ['Admin', 'Account'],
+                    'icon' => 'far fa-fw fa-file',
+                ],
                 [
                     'text' => 'BuyBox',
                     'can' =>  ['Admin'],
@@ -383,33 +369,6 @@ return [
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin', 'Inventory'],
                     'submenu' => [
-
-                        // [
-                        //     'text' => 'Region',
-                        //     'icon' => 'far fa-fw fa-file',
-                        //     'can' =>  ['Admin', 'Inventory'],
-                        //     'submenu' => [
-                        //             [
-                        //                 'text' => 'Country',
-                        //                 'url'  => 'inventory/features',
-                        //                 'icon' => 'far fa-fw fa-file',
-                        //                 'can' =>  ['Admin', 'Inventory']
-                        //             ],
-                        //             [
-                        //                 'text' => 'State',
-                        //                 'url'  => 'inventory/features',
-                        //                 'icon' => 'far fa-fw fa-file',
-                        //                 'can' =>  ['Admin', 'Inventory']
-                        //             ],
-                        //             [
-                        //                 'text' => 'City',
-                        //                 'url'  => 'inventory/features',
-                        //                 'icon' => 'far fa-fw fa-file',
-                        //                 'can' =>  ['Admin', 'Inventory']
-                        //             ],
-                        //         ],
-                        // ],
-
                         [
                             'text' => 'Warehouse',
                             'url'  => 'inventory/warehouses',
@@ -452,14 +411,6 @@ return [
                             'can' =>  ['Admin', 'Inventory']
 
                         ],
-                        // [
-                        //     'text' => 'Dispose Reason',
-                        //     'icon' => 'far fa-fw fa-file',
-                        //     'url'  => 'inventory/disposes',
-                        //     'can' =>  ['Admin', 'Inventory']
-
-                        // ],
-
                     ],
                 ],
 
@@ -489,27 +440,6 @@ return [
                             'icon' => 'far fa-fw fa-file',
                             'url'  => 'inventory/shipments',
                             'can' =>  ['Admin', 'Inventory'],
-                            // 'submenu' => [
-                            //     // [
-                            //     //     'text' => 'Source',
-                            //     //     'url'  => 'inventory/sources',
-                            //     //     'icon' => 'far fa-fw fa-file',
-                            //     //     'can' =>  ['Admin', 'Inventory'],
-                            //     // ],
-                            //     [
-                            //         'text' => 'Shipment',
-                            //         'url'  => 'inventory/shipments',
-                            //         'icon' => 'far fa-fw fa-file',
-                            //         'can' =>  ['Admin', 'Inventory']
-                            //     ],
-                            //     [
-                            //         'text' => 'Inwarding',
-                            //         'url'  => 'shipment/inward/view',
-                            //         'icon' => 'far fa-fw fa-file',
-                            //         'can' =>  ['Admin', 'Inventory']
-                            //     ],
-
-                            // ],
                         ],
 
                         [
@@ -517,27 +447,6 @@ return [
                             'icon' => 'far fa-fw fa-file',
                             'url'  => 'inventory/outwardings',
                             'can' =>  ['Admin', 'Inventory'],
-                            // 'submenu' => [
-                            // [
-                            //     'text' => 'Destination',
-                            //     'url'  => 'inventory/destinations',
-                            //     'icon' => 'far fa-fw fa-file',
-                            //     'can' =>  ['Admin', 'Inventory'],
-
-                            // ],
-                            //     [
-                            //         'text' => 'Shipment',
-                            //         'url'  => 'inventory/outwardings',
-                            //         'icon' => 'far fa-fw fa-file',
-                            //         'can' =>  ['Admin', 'Inventory']
-                            //     ],
-                            //     [
-                            //         'text' => 'Outwarding',
-                            //         'url'  => 'shipment/outwarding/view',
-                            //         'icon' => 'far fa-fw fa-file',
-                            //         'can' =>  ['Admin', 'Inventory']
-                            //     ],
-                            // ],
                         ],
                     ],
                 ],
@@ -605,33 +514,8 @@ return [
                     'icon' => 'far fa-fw fa-file',
 
                 ],
-                [
-                    'text' => 'Order',
-                    'url' => 'orders/list',
-                    'can' => ['Admin'],
-                    'icon' => 'far fa-fw fa-file',
-
-                ],
-                // [
-                //     'text' => 'Orders Details',
-                //     'url' => 'orders/details ',
-                //     'can' => ['Admin'],
-                //     'icon' => 'far fa-fw fa-file',
-
-
-                // ],
-                // [
-                //     'text' => 'Orders Item Details',
-                //     'url' => 'orders/item-details ',
-                //     'can' => ['Admin'],
-                //     'icon' => 'far fa-fw fa-file',
-
-
-                // ],
             ],
         ],
-
-
         [
             'text' => 'B2C Ship',
             'can' =>  ['Admin', 'B2CShip'],
@@ -706,13 +590,6 @@ return [
             'text' => 'Seller Central',
             'can' =>  ['Admin', 'Seller'],
             'submenu' => [
-                // [
-                //     'text' => 'Dashboard',
-                //     'url' => 'seller/dashboard',
-                //     'can' => ['Admin', 'Seller'],
-                //     'icon' => 'far fa-fw fa-file',
-
-                // ],
                 [
                     'text' => 'Asin Master',
                     'url' => 'seller/asin-master',
@@ -727,12 +604,6 @@ return [
                     'icon' => 'far fa-fw fa-file',
 
                 ],
-                // [
-                //     'text' => 'Seller Credentials',
-                //     'url' => 'seller/credentials',
-                //     'can' => ['Admin', 'Seller'],
-                //     'icon' => 'far fa-fw fa-user',
-                // ],
                 [
                     'text' => 'Seller Invoice',
                     'url' => 'seller/invoice',
@@ -779,28 +650,6 @@ return [
                 ],
             ],
         ]
-        // [
-        //     'text' => 'BuyBox',
-        //     'url' => 'buybox',
-        //     'can' => ['Admin'],
-        //     'submenu' => [
-        //         [
-        //             'text' => 'Asin Master',
-        //             'url' => 'buybox/asin',
-        //             'icon' => 'far fa-fw fa-file',
-        //             'can' => ['Admin'],
-        //         ]
-        //     ]
-        // ]
-
-        // [
-        //     'text' => 'Download Files',
-        //     'url'  => 'file_downloads',
-        //     'icon' => 'far fa-fw fa-file',
-        //     'can' =>  ['Admin']
-        // ],
-
-
     ],
 
     /*
