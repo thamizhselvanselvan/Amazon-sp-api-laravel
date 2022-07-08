@@ -2,7 +2,7 @@
 @section('title', 'Search Invoice')
 
 @section('content_header')
-<h3 class="register-heading">Invoice Update</h3>
+<h3 class="register-heading">Update Invoice</h3>
 <div class="row">
     <div class="col">
         <a href="{{ route('invoice.index') }}" class="btn btn-primary btn-sm">
@@ -34,15 +34,15 @@
                 <div class="col-3">
                     <div class="form-group">
                         <label for="">Invoice No.</label>
-                        <input type="text" name="invoice_no"  class="form-control" placeholder="Invoice No *" value="{{$value->invoice_no}}" />
+                        <input tabindex="1" type="text" name="invoice_no"  class="form-control" placeholder="Invoice No *" value="{{$value->invoice_no}}" />
                     </div>
                     <div class="form-group">
                         <label for="">Shipped By</label>
-                        <input type="text" name="shipped_by"  class="form-control"  placeholder="Shipped By" value="{{$value->shipped_by}}" />
+                        <input  type="text" name="shipped_by"  class="form-control"  placeholder="Shipped By" value="{{$value->shipped_by}}" />
                     </div>
                     <div class="form-group">
                         <label for="">Bill To Name</label>
-                        <input type="text" name="bill_to_name"  class="form-control"  placeholder="Bil To Name" value="{{$value->bill_to_name}}" />
+                        <input tabindex="3" type="text" name="bill_to_name"  class="form-control"  placeholder="Bil To Name" value="{{$value->bill_to_name}}" />
                     </div>
                     <div class="form-group">
                         <label for="">Quantity</label>
@@ -64,7 +64,7 @@
                 <div class="col-3">
                     <div class="form-group">
                         <label for="">Invoice Date</label>
-                        <input type="text" name="invoice_date"  class="form-control" placeholder="Invoice Date" value="{{$value->invoice_date}}" />
+                        <input tabindex="2" type="text" name="invoice_date"  class="form-control" placeholder="Invoice Date" value="{{$value->invoice_date}}" />
                     </div>
                     <div class="form-group">
                         <label for="">Awb No.</label>

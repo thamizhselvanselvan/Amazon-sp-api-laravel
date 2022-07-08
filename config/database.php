@@ -194,6 +194,26 @@ return [
             'password' => env('MSSQL_DB_PASSWORD', ''),
             'charset' => 'utf8',
         ],
+        
+        'ship' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('SNT_DB_HOST', '127.0.0.1'),
+            'port' => env('SNT_DB_PORT', '3306'),
+            'database' => env('SNT_DB_DATABASE', 'forge'),
+            'username' => env('SNT_DB_USERNAME', 'forge'),
+            'password' => env('SNT_DB_PASSWORD', ''),
+            'unix_socket' => env('SNT_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => env('SNT_DB_PREFIX') . '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
     ],
 
     /*

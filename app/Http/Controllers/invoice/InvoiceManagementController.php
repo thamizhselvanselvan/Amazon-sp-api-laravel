@@ -33,6 +33,7 @@ class InvoiceManagementController extends Controller
         if ($request->ajax()) {
             // $data = Invoice::orderBy('id', 'DESC')->get();
             $data = DB::connection('web')->select("select DISTINCT * from invoices order by id DESC");
+            $result = [];
             foreach ($data as $key => $value) {
                 $result[$key]['id'] = $value;
             }
