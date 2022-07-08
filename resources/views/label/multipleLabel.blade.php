@@ -14,11 +14,10 @@
             padding: 0 !important;
         }
         .container-fluid {
-            /*
+            
             size: 4in 6in;
             width: 384px;
             height: 576px;
-            */
             margin: 0px;
             padding: 0px;
         }
