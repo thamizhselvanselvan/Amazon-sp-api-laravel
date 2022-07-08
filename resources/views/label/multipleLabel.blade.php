@@ -10,28 +10,33 @@
     @media print {
         @page {
             size: 4in 6in;
-            margin: 0px;
-            padding: 0px;
+            margin: 0 !important;
+            padding: 0 !important;
         }
-
         .container-fluid {
-
+            
             size: 4in 6in;
             width: 384px;
             height: 576px;
             margin: 0px;
             padding: 0px;
         }
+
         #label-container {
             margin: 0px;
             padding: 0px;
-            width: 384px;
-            height: 576px;
-            padding-top: 5px;
+            /* padding-top: 5px; */
+            transform-origin: 0 0;
+            transform: scale(1.4);
         }
+
         #label-container .invoice {
             margin: 0px;
             padding: 0px;
+            /*
+            width: 384px;
+            height: 576px;
+            */
         }
     }
 </style>
@@ -160,4 +165,9 @@
 @stop
 
 @section('js')
+<script>
+    // $(document).ready(function() {
+    //     window.print()
+    // });
+</script>
 @stop

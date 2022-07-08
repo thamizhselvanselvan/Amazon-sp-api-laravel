@@ -30,25 +30,28 @@ class InvoiceManagementController extends Controller
     public function Index(request $request)
     {
 
-        if ($request->ajax()) {
-            // $data = Invoice::orderBy('id', 'DESC')->get();
-            $data = DB::connection('web')->select("select DISTINCT * from invoices order by id DESC");
-            foreach ($data as $key => $value) {
-                $result[$key]['id'] = $value;
-            }
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function ($id) use ($result) {
+        // if ($request->ajax()) {
+        //     // $data = Invoice::orderBy('id', 'DESC')->get();
+        //     $data = DB::connection('web')->select("select DISTINCT * from invoices order by id DESC");
+        //     foreach ($data as $key => $value) {
+        //         $result[$key]['id'] = $value;
+        //     }
+        //     return DataTables::of($data)
+        //         ->addIndexColumn()
+        //         ->addColumn('action', function ($id) use ($result) {
 
-                    $action = '<div class="d-flex"><a href="/invoice/convert-pdf/' . $id->invoice_no . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
-                    $action .= '<div class="d-flex pl-2"><a href="/invoice/download-direct/' . $id->invoice_no . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
-                    $action .= '<div class="d-flex pl-2"><a href="/invoice/edit/' . $id->invoice_no . ' " class=" btn btn-primary btn-sm"><i class="fas fa-edit"></i> Edit </a>';
-                    return $action;
-                })
-                ->rawColumns(['action'])
-                ->make(true);
-        }
-        return view('invoice.index');
+        //             $action = '<div class="d-flex"><a href="/invoice/convert-pdf/' . $id->invoice_no . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
+        //             $action .= '<div class="d-flex pl-2"><a href="/invoice/download-direct/' . $id->invoice_no . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
+        //             $action .= '<div class="d-flex pl-2"><a href="/invoice/edit/' . $id->invoice_no . ' " class=" btn btn-primary btn-sm"><i class="fas fa-edit"></i> Edit </a>';
+        //             return $action;
+        //         })
+        //         ->rawColumns(['action'])
+        //         ->make(true);
+        // }
+        // return view('invoice.index');
+        $mode = DB::connection('web')->select("SELECT mode from invoices group by mode");
+        return view('invoice.search_invoice', compact('mode'));
+        // $this->SearchInvoice();
     }
 
     public function Upload()

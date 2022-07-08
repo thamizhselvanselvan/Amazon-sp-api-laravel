@@ -22,24 +22,20 @@
             margin: 0px;
             padding: 0px;
         }
-
         .container-fluid {
-
             size: 4in 6in;
             width: 384px;
             height: 576px;
             margin: 0px;
             padding: 0px;
-
         }
 
         #label-container {
-            
             margin: 0px;
             padding: 0px;
-            width: 384px;
-            height: 576px;
-            padding-top: 5px;
+            /* padding-top: 5px; */
+            transform-origin: 0 0;
+            transform: scale(1.4);
         }
 
         #label-container .label {
