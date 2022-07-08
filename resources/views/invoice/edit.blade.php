@@ -145,7 +145,7 @@
                     </div>
                     <div class="form-group">
                         <label for="">Store Address</label>
-                        <textarea name="store_add" class="form-control"  placeholder="Store Address" >{{$value->store__add}}</textarea>
+                        <textarea name="store_add" class="form-control"  placeholder="Store Address" >{{$value->store_add}}</textarea>
                     </div>
                     <input type="submit" class="btn btn-success mt-4"  value="Update"/>
                 </div>
