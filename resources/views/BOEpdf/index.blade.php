@@ -38,10 +38,10 @@
 <table class="table table-bordered yajra-datatable table-striped">
     <thead>
         <tr>
-        <td>S/N</td>
+        <td>Sr</td>
             <!-- <td>Company Name</td> -->
             <td>AWB No.</td>
-            <td>Reg No</td>
+            <td>REG No.</td>
             <td>Authorized Courier</td>
             <td>Name of Consignor</td>
             <td>Name of Consignee</td>
@@ -54,7 +54,7 @@
             <td>Interest</td>
             <!-- <td>CBX II No</td> -->
             <td>HSN Code</td>
-            <td>Qty</td>
+            <td>QTY</td>
             <td>Date of Arrival</td>
         </tr>
     </thead>

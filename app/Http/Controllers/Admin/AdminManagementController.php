@@ -21,10 +21,10 @@ class AdminManagementController extends Controller
         $user = Auth::user();
         $login_id = $user->id;
         $role = $user->roles->first()->name;
-        $users = User::latest()->orderBy('id', 'DESC')->get();
+        $users = User::latest()->where('id','>', '1')->orderBy('id', 'DESC')->get();
         // dd($users[0]->roles);
         if ($request->ajax()) {
-
+            
             return DataTables::of($users)
                 ->addIndexColumn()
                 ->addColumn('action', function ($user)  use ($login_id, $role) {
@@ -36,8 +36,8 @@ class AdminManagementController extends Controller
                         $edit .= '<a href="/admin/' . $user->id . '/edit" class="edit btn btn-success btn-sm"> <i class="fas fa-edit"></i> Edit</a>';
                     }
                     if ($login_id == $user->id || $role == 'Admin' && $user->id != 1) {
-                        $edit .= '<a href="/admin/' . $user->id . '/remove" class="ml-2 btn btn-danger btn-sm">
-                        <i class="fa fa-remove"></i> Remove</a>';
+                        $edit .= '<button  remove-btn="' . $user->id . '" class="ml-2 btn btn-danger btn-sm" id="remove">
+                        <i class="fa fa-remove"></i> Remove</button>';
                     }
                     return $edit;
                 })
@@ -172,7 +172,8 @@ class AdminManagementController extends Controller
     public function delete($id)
     {
         $user = User::find($id)->delete();
-        return redirect()->intended('/admin/user_list')->with('success', 'User  has been deleted successfully');
+        // return redirect()->intended('/admin/user_list')->with('success', 'User  has been deleted successfully');
+        return response()->json(['success' => 'User has been deleted successfully']);
     }
 
     public function bin(Request $request)
@@ -202,7 +203,7 @@ class AdminManagementController extends Controller
                 ->rawColumns(['action', 'role'])
                 ->make(true);
         }
-        return view('admin.adminmanagement.bin');
+        return view('admin.adminManagement.bin');
     }
 
     public function restore($id)
