@@ -42,7 +42,7 @@ class Countrystatecity extends Command
      */
     public function handle()
     {
-         $path =  public_path('country.json');
+        $path =  public_path('country.json');
         $jsonfile = json_decode(file_get_contents($path),true);
         $countries_list = [];
 
@@ -50,7 +50,15 @@ class Countrystatecity extends Command
         {
             $countries_list [] = [
 
-                "name" => $jsondata['name'],
+                 "name" => $jsondata['name'],
+                "country_code" => $jsondata['iso3'],
+                "code" => $jsondata['iso2'],
+                "numeric_code" => $jsondata['numeric_code'],
+                "phone_code" => $jsondata['phone_code'],
+                "capital" => $jsondata['capital'],
+                "currency" => $jsondata['currency'],
+                "currency_name" => $jsondata['currency_name'],
+                "currency_symbol" => $jsondata['currency_symbol'],
                 "created_at" => now(),
                 "updated_at" => now(),
             ];

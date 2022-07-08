@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\shipntrack;
+namespace App\Http\Controllers\Shipntrack;
 
 use File;
 use Excel;
