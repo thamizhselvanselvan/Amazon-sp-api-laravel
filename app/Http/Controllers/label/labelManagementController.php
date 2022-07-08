@@ -314,6 +314,7 @@ class labelManagementController extends Controller
 
     public function labelDataFormating($id)
     {
+        $label = '';
         $order = config('database.connections.order.database');
         $catalog = config('database.connections.catalog.database');
         $web = config('database.connections.web.database');
@@ -401,6 +402,7 @@ class labelManagementController extends Controller
 
     public function bladeOrderDetails()
     {
+        $data = '';
         $order = config('database.connections.order.database');
         $catalog = config('database.connections.catalog.database');
         $web = config('database.connections.web.database');

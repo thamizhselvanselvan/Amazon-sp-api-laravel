@@ -649,6 +649,18 @@ return [
                     ],
                 ],
             ],
+        ],
+
+        [
+            'text'  => 'Ship & Track',
+            'can' =>['Admin'],
+            'submenu' => [
+                [
+                    'text'  =>  'Rate Master',
+                    'url'   =>  'shipntrack/manage',
+                    'can'   =>  ['Admin'],
+                ],
+            ]
         ]
     ],
 
