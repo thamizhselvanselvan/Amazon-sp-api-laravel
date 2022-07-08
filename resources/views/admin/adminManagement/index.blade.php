@@ -99,5 +99,32 @@
             });
 
         });
+
+        $(document).on('click','#remove', function(e){
+            e.preventDefault();
+            let bool = confirm('Are you sure you want to delete?');
+            if (!bool) {
+                return false;
+            }
+            let id = $(this).attr('remove-btn');
+            $.ajax({
+                method: 'GET',
+                url: "/admin/"+id+"/remove",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
+                    alert('User  has been deleted successfully');
+                    if(response.success)
+                    {
+                        getBack();
+                    }
+                },
+            });
+            function getBack()
+            {
+                window.location.href = '/admin/user_list' ;
+            }
+        });
     </script>
 @stop

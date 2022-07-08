@@ -55,7 +55,7 @@
             <th>Last Update</th>
             <th>Unshipped</th>
             <th>Pending</th>
-            <th>Canceled</th>
+            <th>Cancelled</th>
             <th>Shipped</th>
             <th>Total</th>
         </tr>

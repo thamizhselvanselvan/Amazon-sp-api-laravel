@@ -17,7 +17,7 @@
                     <tr>
                         <th>No</th>
                         <th>Role Name</th>
-                        <th>Permission</th>
+                        <!-- <th>Permission</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -36,6 +36,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: "{{ url('admin/rolespermissions') }}",
+                pageLength: 50,
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -46,10 +47,10 @@
                         data: 'name',
                         name: 'name'
                     },
-                    {
-                        data: 'permissions',
-                        name: 'permissions'
-                    }
+                    // {
+                    //     data: 'permissions',
+                    //     name: 'permissions'
+                    // }
                 ]
             });
 

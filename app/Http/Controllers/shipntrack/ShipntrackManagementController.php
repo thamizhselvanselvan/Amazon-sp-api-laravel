@@ -22,7 +22,6 @@ class ShipntrackManagementController extends Controller
     public function uploadCsv(Request $request)
     {
         $files =  $request->files;
-        $arr = [];
         
         foreach($files as $key => $file)
         {
@@ -45,13 +44,14 @@ class ShipntrackManagementController extends Controller
         $password = config('database.connections.ship.password');
         
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+        $symbols = [' ', '-'];
     
         foreach($csv as $data)
         {   
             $shipntrack = R::dispense('rakemasters');
             foreach($data as $key => $result)
             {
-                $header = str_replace(' ', '_', strtolower($key));
+                $header = str_replace($symbols, '_', strtolower($key));
                 if($header)
                 {
                     $shipntrack->$header = $result;
