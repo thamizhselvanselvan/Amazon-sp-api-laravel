@@ -126,8 +126,8 @@ class OrderItem
                 R::store($order_detials);
 
                 //call catalog api
-                $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
-                // $check = [];
+                // $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
+                $check = [];
                 //$type = 1 for seller, 2 for Order, 3 for inventory
                 $data = NULL;
                 if (count($check) <= 0) {
