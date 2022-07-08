@@ -7,48 +7,58 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
 <style type="text/css">
-    @media print {
-        @page {
-            size: 4in 6in;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-        .container-fluid {
-            
-            size: 4in 6in;
-            width: 384px;
-            height: 576px;
-            margin: 0px;
-            padding: 0px;
-        }
+@media print {
+    @page {
+        size: 4in 6in;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
 
-        #label-container {
-            margin: 0px;
-            padding: 0px;
-            /* padding-top: 5px; */
-            transform-origin: 0 0;
-            transform: scale(1.4);
-        }
+    .container-fluid {
 
-        #label-container .invoice {
-            margin: 0px;
-            padding: 0px;
-            /*
+        size: 4in 6in;
+        width: 384px;
+        height: 576px;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    #label-container {
+        margin: 0px;
+        padding: 0px;
+        /* padding-top: 5px; */
+        transform-origin: 0 0;
+        transform: scale(1.4);
+    }
+
+    #label-container .invoice {
+        margin: 0px;
+        padding: 0px;
+        /*
             width: 384px;
             height: 576px;
             */
-        }
     }
+}
+
 </style>
 @stop
 @section('content_header')
 <div class="label-company text-inverse f-w-600">
     <span class="pull-right hidden-print">
         <!-- <a href="javascript:void(0);" class="btn btn-sm btn-white m-b-10 p-l-5" id="Export_to_pdf"><i class="fa fa-file t-plus-1 text-danger fa-fw fa-lg"></i> Export as PDF</a> -->
-        <a href="javascript:;" onclick="window.print()" class="btn btn-sm bg-info m-b-10 p-l-5"><i class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
+        <a href="javascript:;" onclick="window.print()" class="btn btn-sm bg-info m-b-10 p-l-5"><i
+                class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
 
     </span>
     <br>
+</div>
+<div class="row">
+    <div class="col">
+        <a href="{{ route('label.search-label') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-long-arrow-alt-left"></i> Back
+        </a>
+    </div>
 </div>
 @stop
 
@@ -65,7 +75,8 @@
                             <td class="pb-0 pt-2">
                                 <div class="row">
                                     <div class="col"></div>
-                                    <div class="col text-center">{!! $bar_code[$key] !!} <b> {{ $value->awb_no }} </b></div>
+                                    <div class="col text-center">{!! $bar_code[$key] !!} <b> {{ $value->awb_no }} </b>
+                                    </div>
                                     <div class="col"></div>
                                 </div>
                             </td>
@@ -146,7 +157,8 @@
                             <td class="text-center p-1">{{$details['title']}}</td>
                             <td class="text-center p-1">{{$details['sku']}}</td>
                             <td class="text-center p-1">{{$details['qty']}}</td>
-                            <td class="text-center p-1">{{$details['order_total']->CurrencyCode}} {{$details['order_total']->Amount}}</td>
+                            <td class="text-center p-1">{{$details['order_total']->CurrencyCode}}
+                                {{$details['order_total']->Amount}}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -166,8 +178,8 @@
 
 @section('js')
 <script>
-    // $(document).ready(function() {
-    //     window.print()
-    // });
+// $(document).ready(function() {
+//     window.print()
+// });
 </script>
 @stop

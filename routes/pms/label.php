@@ -11,7 +11,7 @@ Route::prefix('label/')->group(function () {
     Route::get('template', 'label\labelManagementController@labelTemplate');
 });
 
-Route::get('label/search-label', 'label\labelManagementController@SearchLabel');
+Route::get('label/search-label', 'label\labelManagementController@SearchLabel')->name('label.search-label');
 Route::post('label/select-label', 'label\labelManagementController@GetLabel');
 Route::get('label/pdf-template/{id}', 'label\labelManagementController@showTemplate');
 Route::post('label/export-pdf', 'label\labelManagementController@ExportLabel');
