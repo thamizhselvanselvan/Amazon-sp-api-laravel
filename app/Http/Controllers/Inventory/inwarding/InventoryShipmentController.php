@@ -11,16 +11,18 @@ use App\Models\Inventory\Rack;
 use App\Models\Inventory\Shelve;
 use App\Models\Inventory\Vendor;
 use App\Models\Inventory\Catalog;
+use Illuminate\Support\Facades\DB;
+use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
 use App\Services\SP_API\CatalogAPI;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
-use App\Models\Inventory\Inventory;
-use App\Models\Inventory\Shipment_Inward;
-use App\Models\Inventory\Shipment_Inward_Details;
+use App\Models\Inventory\Country;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\Inventory\Shipment_Inward;
+use App\Models\Inventory\Shipment_Inward_Details;
 
 class InventoryShipmentController extends Controller
 {
@@ -100,32 +102,41 @@ class InventoryShipmentController extends Controller
 
     public function autocomplete(Request $request)
     {
-        $data = Product::select("asin1", "item_name")->distinct()
-            ->where("asin1", "LIKE", "%{$request->asin}%")
-            ->limit(50)
-            ->get();
+        $data = new Catalog();
+        $data->asin = $request->uploaded;
 
-        if ($data->count() > 0) {
-            return response()->json($data);
-        }
 
-        $data = Catalog::select("asin", "item_name")->distinct()
-            ->where("asin", "LIKE", "%{$request->asin}%")
-            ->limit(50)
-            ->get();
+        // $data->source = $request->source;
 
-        if ($data->count() > 0) {
-            $datas[] = [
-                'asin' => $data->asin1
-            ];
-            return response()->json($data);
-        }
-
-        $catalogApi = new CatalogAPI();
-        $data[] = $catalogApi->getAsin($request->asin);
-
-        return response()->json($data);
+        $data->save();
+        return response()->json(['success' => 'Data is successfully added']);
     }
+    // $data = Product::select("asin1", "item_name")->distinct()
+    //     ->where("asin1", "LIKE", "%{$request->asin}%")
+    //     ->limit(50)
+    //     ->get();
+
+    // if ($data->count() > 0) {
+    //     return response()->json($data);
+    // }
+
+    // $data = Catalog::select("asin", "item_name")->distinct()
+    //     ->where("asin", "LIKE", "%{$request->asin}%")
+    //     ->limit(50)
+    //     ->get();
+
+    // if ($data->count() > 0) {
+    //     $datas[] = [
+    //         'asin' => $data->asin1
+    //     ];
+    //     return response()->json($data);
+    // }
+
+    // // $catalogApi = new CatalogAPI();
+    // // $data[] = $catalogApi->getAsin($request->asin);
+
+    // return response()->json($data);
+
 
     public function selectView(Request $request)
     {
