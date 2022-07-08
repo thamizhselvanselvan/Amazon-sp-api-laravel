@@ -51,6 +51,7 @@
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Date</th>
                         <th>Shipment ID</th>
                         <th>Source</th>
                         <th>Action</th>
@@ -71,6 +72,10 @@
     <script type="text/javascript">
         $(function() {
 
+            $.extend($.fn.dataTable.defaults, {
+                pageLength: 50,
+            });
+
             let yajra_table = $('.yajra-datatable').DataTable({
                 processing: true,
                 serverSide: true,
@@ -81,6 +86,10 @@
                         name: 'DT_RowIndex',
                         orderable: false,
                         searchable: false
+                    },
+                    {
+                        data: 'date',
+                        name: 'date'
                     },
                     {
                         data: 'ship_id',

@@ -19,8 +19,8 @@ class InventoryShelveController extends Controller
 
     public function index(Request $request)
     {
-       
-    
+
+
         // $data = Shelve::query()->with(['bins', 'racks', 'warehouses'])->get();
         // dd($data);
 
@@ -81,7 +81,7 @@ class InventoryShelveController extends Controller
         $shelve_lists = [];
 
         foreach ($request->shelve_id as $key => $shelve_id) {
-            
+
             $shelve_lists[] = [
                 'name' =>  $request->name[$key],
                 'shelve_id' =>  $shelve_id,
@@ -90,8 +90,7 @@ class InventoryShelveController extends Controller
                 'created_at' => now(),
                 'updated_at' => now()
             ];
-        
-         }
+        }
 
         Shelve::insert($shelve_lists);
 
@@ -100,11 +99,12 @@ class InventoryShelveController extends Controller
 
     public function edit($id)
     {
-        $shelve = Shelve::where('id', $id)->first();
         $ware_lists = Warehouse::get();
+        $shelve = Shelve::where('id', $id)->first();
         $rack_lists = Rack::get();
+        $selected_warehouse = $shelve->warehouse;
 
-        return view('inventory.master.racks.shelve.edit', compact(['shelve', 'rack_lists', 'ware_lists']));
+        return view('inventory.master.racks.shelve.edit', compact(['shelve', 'rack_lists', 'ware_lists', 'selected_warehouse']));
     }
 
     public function update(Request $request, $id)
@@ -116,10 +116,10 @@ class InventoryShelveController extends Controller
             'name' => 'required|min:3|max:100',
             'shelve_id' => 'required|min:1|max:100'
 
-           
+
         ]);
-       
-         Shelve::where('id', $id)->update($validated);
+
+        Shelve::where('id', $id)->update($validated);
 
         // $rack_exists = Rack::where('id', $request->rack_id)->exists();
 

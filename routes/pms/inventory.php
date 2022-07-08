@@ -72,6 +72,7 @@ Route::resource('inventory/outwardings', 'Inventory\Outwarding\InventoryOutwardS
 Route::get('reports/daily', 'Inventory\ReportController@daily');
 Route::get('reports/weekly', 'Inventory\ReportController@index');
 Route::get('export/weekly', 'Inventory\ReportController@eportinvweekly');
+Route::get('export/daily', 'Inventory\ReportController@eportdaily');
 Route::get('reports/monthly', 'Inventory\ReportController@monthlyview')->name('monthly.view');
 Route::get('export/monthly', 'Inventory\ReportController@eportinvmonthly');
 Route::get('inventory/warewise', 'Inventory\ReportController@warerepo');

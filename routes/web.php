@@ -48,6 +48,16 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('csv',function(){
+ 
+    $path = 'ShipnTrack/export_rate.csv';
+    // $data= file_get_contents($value);
+    // Storage::put($path, $data);
+    $csv = Reader::createFromPath(storage::path($path), 'r');
+    $csv->setDelimiter("\t");
+    $csv->setHeaderOffset(0);
+    po($csv);
+});
 
 Route::get('test', function (ReportWeekly $report_weekly) {
 

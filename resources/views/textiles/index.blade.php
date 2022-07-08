@@ -62,7 +62,7 @@
             <table class="table table-bordered yajra-datatable table-striped">
                 <thead>
                     <tr>
-                        <th>No</th>
+                        <th>S/N</th>
                         <th>ID </th>
                         <th>Ean</th>
                         <th>Brand</th>

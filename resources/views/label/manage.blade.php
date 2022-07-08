@@ -57,7 +57,7 @@
                     <th>Sr</th>
                     <th>Store Name </th>
                     <th>Order No.</th>
-                    <th>Awb No.</th>
+                    <th>AWB No.</th>
                     <th>Order Date</th>
                     <th>SKU</th>
                     <th>Customer</th>

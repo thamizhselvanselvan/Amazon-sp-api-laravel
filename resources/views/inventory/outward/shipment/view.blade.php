@@ -62,7 +62,7 @@
 
 <h4 style="font-family:Times New Roman;">Warehouse : {{ $bar->warehouses->name }} </h4>
 <h4 style="font-family:Times New Roman;">Destination : {{ $bar->vendors->name }}</h4>
-<h4 style="font-family:Times New Roman;">Currency : {{  $bar->currency}} </h4>
+<h4 style="font-family:Times New Roman;">Currency : {{ $currency->name}} </h4>
 
 <table class="table table-bordered yajra-datatable table-striped">
     <thead>

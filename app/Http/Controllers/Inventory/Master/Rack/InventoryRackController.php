@@ -95,7 +95,7 @@ class InventoryRackController extends Controller
         $warehouse_lists = Warehouse::get();
         $name = Rack::where('id', $id)->first();
         $selected_warehouse = $name->warehouse_id;
-        return view('inventory.master.racks.rack.edit', compact('name','warehouse_lists','selected_warehouse'));
+        return view('inventory.master.racks.rack.edit', compact('name', 'warehouse_lists', 'selected_warehouse'));
     }
 
 

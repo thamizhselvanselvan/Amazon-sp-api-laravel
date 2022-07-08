@@ -270,7 +270,7 @@ return [
                     'url' => 'admin/geo',
                     'icon' => 'fas fa-globe-asia',
                     'can' =>  ['Admin']
-                    
+
                 ],
                 [
                     'text' => 'Company Master',
@@ -503,6 +503,7 @@ return [
 
             ],
         ],
+
         [
             'text' => 'Orders',
             'can' =>  ['Admin'],
@@ -516,6 +517,88 @@ return [
                 ],
             ],
         ],
+
+
+
+        [
+            'text' => 'Seller Central',
+            'can' =>  ['Admin', 'Seller'],
+            'submenu' => [
+                [
+                    'text' => 'Asin Master',
+                    'url' => 'seller/asin-master',
+                    'can' => ['Admin', 'Seller'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+                [
+                    'text' => 'Catalog Details',
+                    'url' => 'seller/catalog',
+                    'can' => ['Admin', 'Seller'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+                [
+                    'text' => 'Seller Invoice',
+                    'url' => 'seller/invoice',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-user',
+                ],
+            ]
+        ],
+
+
+
+        [
+            'text'  => 'Ship & Track',
+            'can' => ['Admin'],
+            'submenu' => [
+                [
+                    'text'  =>  'Rate Master',
+                    'url'   =>  'shipntrack/manage',
+                    'can'   =>  ['Admin'],
+                ],
+            ]
+        ],
+
+        [
+            'text' => 'Tools',
+            'can' => ['Admin', 'Inventory', 'BOE'],
+            'submenu' =>
+            [
+                [
+                    'text' => 'Invoice',
+                    'url' => 'invoice/manage',
+                    'can' => ['Admin', 'Inventory'],
+                ],
+                [
+                    'text' => 'Label',
+                    'url' => 'label/manage',
+                    'can' => ['Admin', 'Inventory'],
+                ],
+                [
+                    'text' => 'BOE',
+                    'can' =>  ['Admin', 'BOE'],
+                    'submenu' => [
+                        [
+                            'text' => 'Manage',
+                            'url' => 'BOE/index',
+                            'can' => ['Admin', 'BOE'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ],
+                        [
+                            'text' => 'Report',
+                            'url' => 'BOE/report',
+                            'can' => ['Admin', 'BOE'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ],
+                    ],
+                ],
+            ],
+        ],
+
         [
             'text' => 'B2C Ship',
             'can' =>  ['Admin', 'B2CShip'],
@@ -585,71 +668,6 @@ return [
                 ],
             ],
         ],
-
-        [
-            'text' => 'Seller Central',
-            'can' =>  ['Admin', 'Seller'],
-            'submenu' => [
-                [
-                    'text' => 'Asin Master',
-                    'url' => 'seller/asin-master',
-                    'can' => ['Admin', 'Seller'],
-                    'icon' => 'far fa-fw fa-file',
-
-                ],
-                [
-                    'text' => 'Catalog Details',
-                    'url' => 'seller/catalog',
-                    'can' => ['Admin', 'Seller'],
-                    'icon' => 'far fa-fw fa-file',
-
-                ],
-                [
-                    'text' => 'Seller Invoice',
-                    'url' => 'seller/invoice',
-                    'can' => ['Admin'],
-                    'icon' => 'far fa-fw fa-user',
-                ],
-            ]
-        ],
-
-        [
-            'text' => 'Tools',
-            'can' => ['Admin', 'Inventory', 'BOE'],
-            'submenu' =>
-            [
-                [
-                    'text' => 'Invoice',
-                    'url' => 'invoice/manage',
-                    'can' => ['Admin', 'Inventory'],
-                ],
-                [
-                    'text' => 'Label',
-                    'url' => 'label/manage',
-                    'can' => ['Admin', 'Inventory'],
-                ],
-                [
-                    'text' => 'BOE',
-                    'can' =>  ['Admin', 'BOE'],
-                    'submenu' => [
-                        [
-                            'text' => 'Manage',
-                            'url' => 'BOE/index',
-                            'can' => ['Admin', 'BOE'],
-                            'icon' => 'far fa-fw fa-file',
-
-                        ],
-                        [
-                            'text' => 'Report',
-                            'url' => 'BOE/report',
-                            'can' => ['Admin', 'BOE'],
-                            'icon' => 'far fa-fw fa-file',
-
-                        ],
-                    ],
-                ],
-            ],
-        ]
     ],
 
     /*
