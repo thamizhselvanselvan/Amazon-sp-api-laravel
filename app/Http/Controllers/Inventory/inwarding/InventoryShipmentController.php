@@ -75,7 +75,7 @@ class InventoryShipmentController extends Controller
 
         $generator = new BarcodeGeneratorHTML();
         foreach ($view as $key => $bar) {
-            //  dd($bar->ship_id);
+
             $bar_code = $generator->getBarcode($bar->ship_id, $generator::TYPE_CODE_93);
             $warehouse_name = $bar->warehouses->name;
             $vendor_name = $bar->vendors->name;
@@ -304,7 +304,7 @@ class InventoryShipmentController extends Controller
             $bar_code[]  = $generator->getBarcode($data['asin'], $generator::TYPE_CODE_93);
         }
 
-        return view('inventory.inward.shipment.lable', compact('viewlable', 'lable', 'data', 'bar_code','quant'));
+        return view('inventory.inward.shipment.lable', compact('viewlable', 'lable', 'data', 'bar_code', 'quant'));
     }
 
     public function Exportlable(Request $request)
@@ -318,7 +318,7 @@ class InventoryShipmentController extends Controller
 
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-             ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf);
 
@@ -328,5 +328,9 @@ class InventoryShipmentController extends Controller
     public function DownloadPdf($ship_id)
     {
         return Storage::download('/product/label' . $ship_id . '.pdf');
+    }
+    public function bulkupload()
+    {
+        return view('inventory.inward.shipment.upload');
     }
 }
