@@ -51,8 +51,7 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>
-                            Date</th>
+                        <th>Date</th>
                         <th>Shipment ID</th>
                         <th>Source</th>
                         <th>Action</th>

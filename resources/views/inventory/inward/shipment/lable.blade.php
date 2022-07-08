@@ -38,7 +38,7 @@
 </div>
 @stop
 @section('content')
-          
+        <div class="row">
     @foreach ($lable as $key => $val)
 
         <h5>New</h5>
@@ -49,7 +49,7 @@
         @endfor
 
     @endforeach
-
+    </div>
 @stop
 
 
