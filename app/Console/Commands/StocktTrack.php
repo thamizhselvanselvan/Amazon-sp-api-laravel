@@ -5,12 +5,11 @@ namespace App\Console\Commands;
 use Carbon\Carbon;
 use AWS\CRT\HTTP\Request;
 use Illuminate\Console\Command;
-use App\Models\inventory\Stocks;
-use App\Models\Inventory\Shipment;
 use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
 use Illuminate\Support\Facades\Log;
-use App\Models\Inventory\Outshipment;
+use App\Models\Inventory\Shipment_Inward_Details;
+use App\Models\Inventory\Shipment_Outward_Details;
 
 class StocktTrack extends Command
 {
@@ -45,102 +44,107 @@ class StocktTrack extends Command
      */
     public function handle()
     {
+        
         /* Date */
         $date = Carbon::now()->format('d M Y');
 
+        /* Inwarding count */
+        $todayinward = 0;
+        $dayin =  Shipment_Inward_Details::whereDate('created_at',  Carbon::today()->toDateString())->get();
+        foreach ($dayin as $key => $item) {
 
-        /* Opeaning Stock */
-        $todayopeningstock = 0;
-        $startTime = Carbon::today()->subDays(365);
-        $endTimeYesterday = Carbon::yesterday()->endOfDay();
-        $open = Inventory::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
-        foreach ($open as  $data) {
-            $todayopeningstock +=  $data['quantity'];
+            $todayinward += $item['quantity'];
         }
 
+        /* Outwarding count */
+        $todayoutward = 0;
+        $dayout =   Shipment_Outward_Details::whereDate('created_at',  Carbon::today()->toDateString())->get();
+        foreach ($dayout as $key => $value) {
+
+            $todayoutward += $value['quantity'];
+        }
+
+        /* Opeaning Stock */
+        $todayopening = 0;
+        $startTime = Carbon::today()->subDays(365);
+        $endTimeYesterday = Carbon::yesterday()->endOfDay();
+        // $open = Inventory::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
+        // foreach ($open as  $data) {
+        //     $todayopeningstock +=  $data['balance_quantity'];
+        // }
+        $open = Shipment_Inward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
+        foreach ($open as  $data) {
+            $todayopening +=  $data['quantity'];
+        }
+        $todayoutstock = 0;
+        $close =  Shipment_Outward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
+        foreach ($close as  $cdata) {
+            $todayoutstock +=  $cdata['quantity'];
+        }
+
+        $todayopeningstock =  $todayopening - $todayoutstock;
+
+        /* Closing Stock count */
+        $startTimecls = Carbon::today()->subDays(365);
+        $endTime = Carbon::now();
+
+        $todayclosingstock = 0;
+        $close =  Inventory::whereBetween('created_at', [$startTimecls, $endTime])->get();
+
+        foreach ($close as  $data) {
+            $todayclosingstock +=  $data['balance_quantity'];
+        }
 
         /* Opeaning Amount */
         $amt = [];
-        $totalopenamt = 0;
-        $openstockamt =   Inventory::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
-        foreach ($openstockamt as $amt) {
-            $singleprice[] = [
+        $openamtamt =  Shipment_Inward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
+        foreach ($openamtamt as $amt) {
+            $singlepricein[] = [
                 'price' => $amt['price'],
                 'qty' => $amt['quantity'],
                 'total' => $amt['price'] * $amt['quantity'],
             ];
         }
-        foreach ($singleprice as $sum) {
-            $totalprice[] = $sum['total'];
+        $closeamt =  Shipment_Outward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
+        foreach ($closeamt as $amt) {
+            $singlepriceout[] = [
+                'price' => $amt['price'],
+                'qty' => $amt['quantity'],
+                'total' => $amt['price'] * $amt['quantity'],
+            ];
         }
-        $totalopenamt =  array_sum($totalprice);
 
-
-        /* Inwarding count */
-        $todayinward = 0;
-        $dayin =   Shipment::whereDate('created_at',  Carbon::today()->toDateString())->get();
-
-        foreach ($dayin as $key => $item) {
-
-            $item_list = json_decode($item->items, true);
-
-            foreach ($item_list as  $value) {
-                $todayinward += $value['quantity'];
-            }
+        foreach ($singlepricein as $sum) {
+            $totalpricein[] = $sum['total'];
         }
+        foreach ($singlepriceout as $sumclose) {
+            $totalpriceout[] = $sumclose['total'];
+        }
+
+        $totalinamt =  array_sum($totalpricein);
+        $totalotamt = array_sum($totalpriceout);
+
+        $totalopenamt =   $totalinamt  -  $totalotamt;
+
         /* Day Inwarding Amount */
 
-        $dayinwamount = 0;
-        $dayinamt =   shipment::whereDate('created_at',  Carbon::today()->toDateString())->get();
-        foreach ($dayinamt as $key => $amtdayout) {
+        $dayinamt =   Shipment_Inward_Details::whereDate('created_at',  Carbon::today()->toDateString())->get();
+        $totaldayinvamt = 0;
 
-            $item_lists = json_decode($amtdayout->items);
+        foreach ($dayinamt as $key => $amtday) {
 
-            foreach ($item_lists as $item) {
-
-                $dayinwamount += $item->quantity * $item->price;
-            }
+            $totaldayinvamt += $amtday->quantity * $amtday->price;
         }
-
-        /* Outwarding count */
-        $todayoutward = 0;
-        $dayout =   Outshipment::whereDate('created_at',  Carbon::today()->toDateString())->get();
-        foreach ($dayout as $key => $value) {
-            $item_list = json_decode($value->items, true);
-
-            foreach ($item_list as  $data) {
-
-                $todayoutward += $data['quantity'];
-            }
-        }
-
-
 
         /* Outwarding Amount */
 
-        $dayoutamt =   Outshipment::whereDate('created_at',  Carbon::today()->toDateString())->get();
+        $dayoutamt =   Shipment_Outward_Details::whereDate('created_at',  Carbon::today()->toDateString())->get();
         $totaldayoutamt = 0;
         foreach ($dayoutamt as $key => $amtdayout) {
 
-            $item_lists = json_decode($amtdayout->items);
 
-            foreach ($item_lists as $item) {
-
-                $totaldayoutamt += $item->quantity * $item->price;
-            }
+            $totaldayoutamt += $amtdayout->quantity * $amtdayout->price;
         }
-
-
-
-        /* Closing Stock count */
-        $todayclosingstock = 0;
-        $close =   Inventory::get();
-
-        foreach ($close as  $data) {
-            $todayclosingstock +=  $data['quantity'];
-        }
-
-
 
         /* Cloasing Amount */
         $closeamt =   Inventory::get();
@@ -150,7 +154,7 @@ class StocktTrack extends Command
             $closeprice[] = [
                 'price' => $close['price'],
                 'qty' => $close['quantity'],
-                'total' => $close['price'] * $close['quantity'],
+                'total' => $close['price'] * $close['balance_quantity'],
             ];
         }
         foreach ($closeprice as $dayclose) {
@@ -159,12 +163,15 @@ class StocktTrack extends Command
         }
         $dayclosingamt =  array_sum($dayclosing);
 
+
+      
+
         DB::connection('inventory')->table('stocks')->insert([
             'date' => $date,
             'opeaning_stock' => $todayopeningstock,
             'opeaning_amount' => $totalopenamt,
             'inwarding' =>  $todayinward,
-            'inw_amount' =>  $dayinwamount,
+            'inw_amount' =>  $totaldayinvamt,
             'outwarding' =>   $todayoutward,
             'outw_amount' => $totaldayoutamt,
             'closing_stock' =>  $todayclosingstock,

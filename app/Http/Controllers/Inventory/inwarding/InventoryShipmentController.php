@@ -9,25 +9,18 @@ use Illuminate\Http\Request;
 use App\Models\Inventory\Bin;
 use App\Models\Inventory\Rack;
 use App\Models\Inventory\Shelve;
-use App\Models\Inventory\Source;
 use App\Models\Inventory\Vendor;
 use App\Models\Inventory\Catalog;
-use App\Models\Inventory\Shipment;
-use Illuminate\Support\Facades\DB;
-
 use App\Models\Inventory\Warehouse;
 use App\Services\SP_API\CatalogAPI;
-use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
-use App\Models\inventory\Inventory;
+use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Shipment_Inward;
 use App\Models\Inventory\Shipment_Inward_Details;
 use Illuminate\Support\Facades\Storage;
-use Picqer\Barcode\BarcodeGeneratorPNG;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
-use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Current;
 
 class InventoryShipmentController extends Controller
 {

@@ -50,7 +50,7 @@
             <table class="table table-bordered yajra-datatable table-striped">
                 <thead>
                     <tr>
-                        <th>id</th>
+                        <th>ID</th>
                         <th>Name</th>
                         <th>Address 1</th>
                         <!-- <th>Address 2</th> -->
@@ -59,7 +59,7 @@
                         <th>City</th>
                         <th>Pin Code</th>
                         <th>Contact Person Name</th>
-                        <th>Phone NO</th>
+                        <th>Phone No</th>
                         <th>Email</th>
                         <th>Action</th>
                     </tr>

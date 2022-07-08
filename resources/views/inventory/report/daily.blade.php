@@ -2,11 +2,26 @@
 
 @section('title','Inventory Reports')
 @section('css')
-<link rel="stylesheet" href="/css/style.css">
-@stop
 
+<link rel="stylesheet" href="/css/styles.css">
+<style>
+    .table td {
+        padding: 0;
+        padding-left: 5px;
+    }
+
+    .table th {
+        padding: 2;
+        padding-left: 5px;
+    }
+
+    #detail {
+        font-weight: bold;
+    }
+</style>
+@stop
 @section('content_header')
-<h1 class="m-0 text-dark"> Daily Inventory  Reports</h1>
+<h1 class="m-0 text-dark"> Daily Inventory Reports</h1>
 @stop
 @section('content')
 <div class="row">
@@ -41,17 +56,17 @@
 </div>
 <div class="row" id="warehouse">
     <div class="col-2">
-        <x-adminlte-select name="ware_id" label="Select Warehouse">
+        <x-adminlte-select name="ware_id" class="demo" label="Select Warehouse">
             <option value=" ">Select Warehouse</option>
-            @foreach ($ware_lists as $ware_list)
-            <option value="{{ $ware_list->id }}">{{ $ware_list->name }}</option>
+            @foreach ($ware_lists as $ware_lists)
+            <option value="{{ $ware_lists->id }}">{{ $ware_lists->name }}</option>
             @endforeach
         </x-adminlte-select>
 
     </div>
 </div>
 
-<table class="table table-bordered yajra-datatable table-striped " id="report_table">
+<table class="table table-bordered yajra-datatable table-striped " id ="table" >
     <thead>
         <tr>
             <th id="detail">Date</th>
@@ -65,19 +80,19 @@
             <th id="detail">Closing Stock Amount</th>
         </tr>
     </thead>
-    <tbody id="data_display">
+    <tbody id="report_table">
         <tr>
             <td>{{ $data['date'] }}</td>
             <td>{{ $data['open_stock'] }}</td>
-            <td>{{ $data['open_stock_amt'] }}</td>
-            <td>{{ $data['inwarded'] }}</td>
-            <td>{{ $data['tdy_inv_amt'] }}</td>
+            <td>&#8377 {{ $data['open_stock_amt'] }}</td>
+            <td> {{ $data['inwarded'] }}</td>
+            <td> &#8377 {{ $data['tdy_inv_amt'] }}</td>
             <td>{{ $data['outwarded'] }}</td>
-            <td>{{ $data['tdy_out_amt'] }}</td>
+            <td> &#8377 {{ $data['tdy_out_amt'] }}</td>
             <td>{{ $data['closing_stock'] }}</td>
-            <td>{{ $data['closing_amt'] }}</td>
-         
-            
+            <td> &#8377 {{ $data['closing_amt'] }}</td>
+        </tr>
+
     </tbody>
 </table>
 @stop
@@ -91,30 +106,73 @@
     });
     $(function() {
 
-                $("#warehouse").hide();
-                $("#report_table").hide();
-                $("#export").hide();
+        $("#warehouse").hide();
+        $("#report_table").hide();
+        $("#table").hide();
+        $("#export").hide();
 
-                $("#ware ").on('click', function(e) {
-                    $("#warehouse").show();
-                });
-                $("#warehouse ").on('change', function(e) {
-                    $("#report_table").show();
-                });
-                $("#entire ").on('click', function(e) {
-                    $("#warehouse").hide();
-                });
-                $("#ware ").on('click', function(e) {
-                    $("#report_table").hide();
-                });
-                $("#entire ").on('click', function(e) {
-                    $("#report_table").show();
-                });
-                $("#entire,#warehouse ").on('change', function(e) {
-                    $("#export").show();
-                });
+        $("#ware ").on('click', function(e) {
+            $("#warehouse").show();
+        });
+        $("#warehouse ").on('change', function(e) {
+            $("#table").show();
+        });
+        $("#warehouse ").on('change', function(e) {
+            $("#report_table").show();
+        });
+        $("#entire ").on('click', function(e) {
+            $("#warehouse").hide();
+        });
+        $("#entire ").on('click', function(e) {
+            $("#table").show();
+        });
+        $("#ware ").on('click', function(e) {
+            $("#report_table").hide();
+        });
+        $("#entire ").on('click', function(e) {
+            $("#report_table").show();
+        });
+        $("#entire,#warehouse ").on('change', function(e) {
+            $("#export").show();
+        });
 
-                });
-    
+    });
+
+    $('#warehouse').change(function(e) {
+
+        e.preventDefault();
+        var id = $('.demo').val();
+
+
+        $.ajax({
+            url: '/inventory/warewise',
+            method: 'GET',
+            data: {
+                'id': id,
+                "_token": "{{ csrf_token() }}",
+            },
+            'dataType': 'json',
+            success: function(response) {
+                let html = '';                    
+                    // console.log(value);
+                    html += "<tr>";
+                    html += "<td>" + response.date + "</td>";
+                    html += "<td>" + response.open_stock + "</td>";
+                    html += "<td>" + response.open_stock_amt  + "</td>";
+                    html += "<td>" + response.inwarded + "</td>";
+                    html += "<td>" + response.tdy_inv_amt + "</td>";
+                    html += "<td>" + response.outwarded + "</td>";
+                    html += "<td>" + response.tdy_out_amt + "</td>";
+                    html += "<td>" + response.closing_stock + "</td>";
+                    html += "<td>" + response.closing_amt+ "</td>";
+                    html += "</tr>";
+                $("#report_table").html(html);
+            },
+            error: function(response) {
+                console.log(response);
+            }
+        });
+
+    });
 </script>
 @stop

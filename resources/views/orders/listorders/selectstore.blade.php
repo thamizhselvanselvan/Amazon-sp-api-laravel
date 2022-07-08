@@ -1,13 +1,13 @@
 @extends('adminlte::page')
-@section('title', 'Orders List')
+@section('title', 'Store List')
 
 @section('content_header')
 <div class='row'>
     <h1 class="m-0 text-dark col">Select Store</h1>
     <h2 class="mb-4 text-right col">
-        <a href="/orders/list">
+        <!-- <a href="/orders/list">
             <x-adminlte-button label="Back" theme="primary" icon="fas fa-arrow-alt-circle-left" />
-        </a>
+        </a> -->
         <x-adminlte-button label="Save Store" id='select_store' theme="primary" icon="fas fa-check-circle" />
     </h2>
 </div>
@@ -35,12 +35,6 @@
         </div>
 
         <h2 class="mb-4">
-            <!-- <a href="">
-                <x-adminlte-button label="Orders List" theme="primary" icon="fas fa-file-import" />
-            </a>
-            <a href="{{route('select.store')}}">
-                <x-adminlte-button label="Select Store" theme="primary" icon="fas fa-check-circle" />
-            </a> -->
         </h2>
         <table class="table table-bordered yajra-datatable table-striped">
             <thead>
@@ -65,7 +59,7 @@
     let yajra_table = $('.yajra-datatable').DataTable({
         processing: true,
         serverSide: true,
-        ajax: "{{ url('orders/select-store') }}",
+        ajax: "{{ url('admin/stores') }}",
         pageLength: 50,
         lengthMenu: [10, 50, 100, 500],
         columns: [{
@@ -152,7 +146,7 @@
 
         $.ajax({
             method: 'post',
-            url: '/orders/update-store',
+            url: '/admin/update-store',
             data: {
                 "_token": "{{ csrf_token() }}",
                 "_method": 'post',
@@ -162,7 +156,7 @@
             success: function(response) {
 
                 alert(response.success);
-                window.location = '/orders/list';
+                window.location = '/admin/stores';
             }
         })
     });
