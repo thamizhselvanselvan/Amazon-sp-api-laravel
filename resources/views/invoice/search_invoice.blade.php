@@ -22,7 +22,6 @@
 </div> -->
 @stop
 @section('content')
-
 <div class="container-fluid search-box">
     <div class="row">
         <div class="col-3 pt-2">
@@ -39,9 +38,7 @@
         </div>
 
         <div class="col-2"></div>
-
         <div class="col d-flex justify-content-end">
-
             <div class="form-group mr-2">
                 <x-adminlte-select label="Mode: " name="mode" id="mode" class="float-right">
                     <option value="">Select Mode</option>
@@ -50,7 +47,6 @@
                     @endforeach
                 </x-adminlte-select>
             </div>
-
             <div class="form-group">
                 <label>Invoice Date:</label>
                 <div class="input-group">
@@ -67,17 +63,13 @@
                         icon="fas fa-download" class="btn-sm ml-2" />
                     <x-adminlte-button label="Print Selected" id='select_print' theme="primary" icon="fas fa-print"
                         class="btn-sm ml-2" />
-
                 </div>
             </div>
-
         </div>
-
     </div>
 </div>
-<div id="showTable" class="">
-
-    <table id='checkTable' class='table table-bordered table-striped text-center'>
+<div id="showTable" class="d-none">
+    <table class='table table-bordered table-striped text-center'>
         <thead>
             <tr class='text-bold bg-info'>
                 <th>Select All <input type='checkbox' id='selectAll'></th>
@@ -96,8 +88,10 @@
                 <th class='text-center'>Action</th>
             </tr>
         </thead>
+        <tbody id='checkTable'>
+        </tbody>
+    </table>
 </div>
-<!-- <input type='checkbox'  id='selectAll' /> -->
 @stop
 
 @section('js')
@@ -117,7 +111,7 @@ $(document).ready(function() {
     });
     //end search invoice
 
-    $('#showTable').hide();
+    // $('#showTable').css("display", "none");
     $(".datepicker").daterangepicker({
         autoUpdateInput: false,
         locale: {
@@ -135,13 +129,14 @@ $(document).ready(function() {
 
     $('#search').click(function() {
 
+
         if ($('#mode').val() == '') {
             alert('Please Choose Mode');
         } else if (($('.datepicker').val() == '')) {
             alert('Please Choose Date');
         } else {
 
-            $('#showTable').show();
+            $('#showTable').removeClass("d-none");
             let invoice_mode = $('#mode').val();
             let invoice_date = $('#invoice_date').val();
             // alert(invoice_date);
@@ -155,35 +150,46 @@ $(document).ready(function() {
                 },
                 success: function(response) {
                     // console.log(response);
-                    let table =
-                        "<tbody > ";
-                    $.each(response, function(i, response) {
-                        let invoice_id = response.invoice_no.replaceAll(/-/g, '_');
+                    let table_data = '';
 
-                        table += "<tr class='" + invoice_id +
+                    $.each(response, function(i, response) {
+                        let invoice_id = response.invoice_no.replaceAll(
+                            /-/g,
+                            '_');
+
+                        table_data += "<tr class='" + invoice_id +
                             "'><td><input class='check_options' type='checkbox' value=" +
-                            response.id + " name='options[]' id='checkid" + response
+                            response.id + " name='options[]' id='checkid" +
+                            response
                             .id + "'></td><td>" + response.invoice_no +
-                            "</td><td>" + response.invoice_date + "</td><td>" +
+                            "</td><td>" + response.invoice_date +
+                            "</td><td>" +
                             response.mode + "</td><td>" + response.channel +
-                            "</td><td>" + response.shipped_by + "</td><td>" +
-                            response.awb_no + "</td><td>" + response.store_name +
-                            "</td><td>" + response.bill_to_name + "</td><td>" +
-                            response.ship_to_name + "</td><td>" + response.sku +
-                            "</td><td>" + response.qty + "</td><td>" + response
+                            "</td><td>" + response.shipped_by +
+                            "</td><td>" +
+                            response.awb_no + "</td><td>" + response
+                            .store_name +
+                            "</td><td>" + response.bill_to_name +
+                            "</td><td>" +
+                            response.ship_to_name + "</td><td>" + response
+                            .sku +
+                            "</td><td>" + response.qty + "</td><td>" +
+                            response
                             .currency + ' ' + response.product_price +
                             "</td><td><div class='d-flex'><a href=/invoice/convert-pdf/" +
                             response.invoice_no +
                             " class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/invoice/download-direct/" +
                             response.invoice_no +
                             " class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a>";
-                        table += "<div class='d-flex pl-2'><a href=/invoice/edit/" +
+                        table_data +=
+                            "<div class='d-flex pl-2'><a href=/invoice/edit/" +
                             response.invoice_no +
                             " class='edit btn btn-primary btn-sm'><i class='fas fa-edit'></i> Edit </a></td> </tr>"
                     });
-                    $('#checkTable').append(table);
+                    $('#checkTable').html(table_data);
                     // alert('Export pdf successfully');
-                }
+
+                },
             });
         }
 
