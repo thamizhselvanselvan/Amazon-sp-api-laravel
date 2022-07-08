@@ -341,7 +341,7 @@ class InvoiceManagementController extends Controller
         $invoice->awb_no = $request->awb_no;
         $invoice->arn_no = $request->arn_no;
         $invoice->store_name = $request->store_name;
-        $invoice->store__add = $request->store_add;
+        $invoice->store_add = $request->store_add;
         $invoice->bill_to_name = $request->bill_to_name;
         $invoice->bill_to_add = $request->bill_to_add;
         $invoice->ship_to_name = $request->ship_to_name;
