@@ -11,13 +11,15 @@ use App\Models\Inventory\Rack;
 use App\Models\Inventory\Shelve;
 use App\Models\Inventory\Vendor;
 use App\Models\Inventory\Catalog;
+use App\Models\Inventory\Country;
 use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
 use App\Services\SP_API\CatalogAPI;
+use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
-use App\Models\Inventory\Country;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
@@ -102,40 +104,53 @@ class InventoryShipmentController extends Controller
 
     public function autocomplete(Request $request)
     {
-        $data = new Catalog();
-        $data->asin = $request->uploaded;
+        $asins = preg_split('/[\r\n| |:|,]/', $request->asin, -1, PREG_SPLIT_NO_EMPTY);
+
+        $data = [];
+        $asinCol = [];
+        foreach ($asins as $asin) {
+
+            $data[$asin] = [
+                'asin' => $asin,
+                'source' => $request->source
+            ];
+
+            $asinCol[] = $asin;
+        }
+
+        $catalog = Catalog::query()
+            ->select("asin", "item_name")
+            ->whereIn("asin", $asinCol)
+            ->get()->groupBy('asin');
+
+        $catalog_insert = [];
+        $filtere_data = [];
+        foreach ($data as $asin_key => $val) {
+            if (isset($catalog[$asin_key])) {
+
+                $name = $catalog[$asin_key]->first()->item_name;
+
+                if (strlen($name) > 0) {
+
+                    $filtere_data[$asin_key] = $catalog[$asin_key];
+                } else {
+                    $filtere_data[$asin_key] = "NA";
+                }
+            } else {
+                $filtere_data[$asin_key] = "NA";
+                $catalog_insert[$asin_key] = $val;
+            }
+        }
+
+        if (count($catalog_insert) > 0) {
+            Catalog::insert($catalog_insert);
+            Artisan::call('mosh:inventory_catalog_import');
+        }
 
 
-        // $data->source = $request->source;
-
-        $data->save();
-        return response()->json(['success' => 'Data is successfully added']);
+        return response()->json(['success' => 'Data is successfully added', 'data' => $filtere_data]);
     }
-    // $data = Product::select("asin1", "item_name")->distinct()
-    //     ->where("asin1", "LIKE", "%{$request->asin}%")
-    //     ->limit(50)
-    //     ->get();
 
-    // if ($data->count() > 0) {
-    //     return response()->json($data);
-    // }
-
-    // $data = Catalog::select("asin", "item_name")->distinct()
-    //     ->where("asin", "LIKE", "%{$request->asin}%")
-    //     ->limit(50)
-    //     ->get();
-
-    // if ($data->count() > 0) {
-    //     $datas[] = [
-    //         'asin' => $data->asin1
-    //     ];
-    //     return response()->json($data);
-    // }
-
-    // // $catalogApi = new CatalogAPI();
-    // // $data[] = $catalogApi->getAsin($request->asin);
-
-    // return response()->json($data);
 
 
     public function selectView(Request $request)
@@ -213,16 +228,16 @@ class InventoryShipmentController extends Controller
 
 
 
-        foreach ($request->asin as $key => $asin) {
+        // foreach ($request->asin as $key => $asin) {
 
-            $createcat[] = [
-                "asin" => $asin,
-                "item_name" => $request->name[$key],
-                "created_at" => now(),
-                "updated_at" => now()
-            ];
-        }
-        Catalog::insert($createcat);
+        //     $createcat[] = [
+        //         "asin" => $asin,
+        //         "item_name" => $request->name[$key],
+        //         "created_at" => now(),
+        //         "updated_at" => now()
+        //     ];
+        // }
+        // Catalog::insert($createcat);
 
         return response()->json(['success' => 'Shipment has Created successfully']);
     }
@@ -230,7 +245,7 @@ class InventoryShipmentController extends Controller
     public function inwardingdata(Request $request)
     {
         $data = Shipment_Inward_Details::query()->with(['vendors', 'warehouses']);
-        dd($data);
+
         if ($request->ajax()) {
 
 

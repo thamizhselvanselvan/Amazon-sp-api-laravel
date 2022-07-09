@@ -149,7 +149,23 @@
             },
             'dataType': 'json',
             success: function(response) {
-                console.log(response);
+                console.log(response.data);
+
+                let html = '';
+                $.each(response, function(index, value) {
+
+                    let html = "<tr class='table_row'>";
+                    html += "<td name='asin[]'>" + response.data[asin] + "</td>";
+                    html += "<td name='name[]'>" + response.data[2] + "</td>";
+                    html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
+                    html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
+                    html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
+                    html += "</tr>";
+
+                    $("#report_table").append(html);
+                });
+
+
 
             },
             error: function(response) {
@@ -157,8 +173,6 @@
             }
         });
     });
-
-
 
     $(".create_shipmtn_btn").on("click", function() {
         let ware_valid = $('#warehouse').val();
@@ -247,19 +261,19 @@
 
 
     /* Display Autocomplete data:*/
-    function getData(asin, item_name) {
+    // function getData(asin, item_name) {
 
-        let html = "<tr class='table_row'>";
-        html += "<td name='asin[]'>" + asin + "</td>";
-        html += "<td name='name[]'>" + item_name + "</td>";
-        html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
-        html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
-        html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
-        html += "</tr>";
+    //     let html = "<tr class='table_row'>";
+    //     html += "<td name='asin[]'>" + asin + "</td>";
+    //     html += "<td name='name[]'>" + item_name + "</td>";
+    //     html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
+    //     html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
+    //     html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
+    //     html += "</tr>";
 
-        $("#report_table").append(html);
+    //     $("#report_table").append(html);
 
-    }
+    // }
 
     /*Delete Row :*/
     $('#report_table').on('click', ".remove1", function() {
