@@ -5,6 +5,7 @@ namespace App\Jobs;
 use Exception;
 use App\Models\Mws_region;
 use Illuminate\Bus\Queueable;
+use App\Models\Inventory\Catalog;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -13,7 +14,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
-use SellingPartnerApi\Api\CatalogApi as Catalog;
 
 class InventoryCatalogImportJob implements ShouldQueue
 {
@@ -43,7 +43,7 @@ class InventoryCatalogImportJob implements ShouldQueue
 
             $asin = $value['asin'];
             $country_code = $value['source'];
-            
+
             $mws_region = Mws_region::with('aws_verified')->where('region_code', $country_code)->get()->first();
 
             $auth_code = ($mws_region['aws_verified']['auth_code']);
@@ -52,14 +52,15 @@ class InventoryCatalogImportJob implements ShouldQueue
 
             $apiInstance = new CatalogItemsV0Api($config);
             $marketplace = $this->marketplace_id($country_code);
-            
+
             try {
                 $result = $apiInstance->getCatalogItem($marketplace, $asin);
                 $result = json_decode(json_encode($result));
-                
-                $data_formate = (array)($result->payload->AttributeSets[0]);
-                Log::alert($data_formate['Title']);
 
+                $data_formate = (array)($result->payload->AttributeSets[0]);
+                $title = $data_formate['Title'];
+                Catalog::insert(['title', $title])->where('source', $country_code)->where('asin', $asin);
+                Log::alert($data_formate['Title']);
             } catch (Exception $e) {
                 Log::warning($e);
             }
