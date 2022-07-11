@@ -26,6 +26,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Models\Inventory\Shipment_Inward;
 use App\Models\Inventory\Shipment_Inward_Details;
 use League\Glide\Manipulators\Encode;
+use Nette\Utils\Json;
 
 class InventoryShipmentController extends Controller
 {
@@ -148,7 +149,7 @@ class InventoryShipmentController extends Controller
         foreach ($data as $asin_key => $val) {
             if (isset($catalog[$asin_key])) {
 
-                $name = $catalog[$asin_key]->first()->item_name;
+                $name = (string)$catalog[$asin_key]->first()->item_name;
 
                 if (strlen($name) > 0) {
 
@@ -170,7 +171,7 @@ class InventoryShipmentController extends Controller
 
             Artisan::call('mosh:inventory_catalog_import');
         }
-
+        sleep(6);
 
         return response()->json(['success' => 'Data is successfully added', 'data' =>   $filtere_data]);
     }

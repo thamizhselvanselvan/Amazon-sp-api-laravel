@@ -266,7 +266,7 @@ return [
                     'can'  => ['Admin'],
                 ],
                 [
-                    'text' => 'Geo',
+                    'text' => 'Geo Master',
                     'url' => 'admin/geo',
                     'icon' => 'fas fa-globe-asia',
                     'can' =>  ['Admin']
@@ -555,7 +555,7 @@ return [
             'submenu' => [
                 [
                     'text'  =>  'Rate Master',
-                    'url'   =>  'shipntrack/manage',
+                    'url'   =>  'shipntrack/index',
                     'can'   =>  ['Admin'],
                 ],
             ]
