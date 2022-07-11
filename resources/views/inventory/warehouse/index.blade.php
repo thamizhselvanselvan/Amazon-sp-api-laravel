@@ -55,7 +55,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
-                    <th>Address 1</th>
+                    <th>Address</th>
                     <!-- <th>Address 2</th> -->
                     <!-- <th>Country</th>
                         <th>State</th> -->
