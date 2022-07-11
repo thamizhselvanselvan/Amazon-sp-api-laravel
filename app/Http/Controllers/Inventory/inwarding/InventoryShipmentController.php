@@ -171,7 +171,7 @@ class InventoryShipmentController extends Controller
 
             Artisan::call('mosh:inventory_catalog_import');
         }
-
+        sleep(6);
 
         return response()->json(['success' => 'Data is successfully added', 'data' =>   $filtere_data]);
     }
