@@ -25,6 +25,7 @@ use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Inventory\Shipment_Inward;
 use App\Models\Inventory\Shipment_Inward_Details;
+use League\Glide\Manipulators\Encode;
 
 class InventoryShipmentController extends Controller
 {
@@ -104,7 +105,12 @@ class InventoryShipmentController extends Controller
 
     public function autocomplete(Request $request)
     {
+
+
+
+
         $asins = preg_split('/[\r\n| |:|,]/', $request->asin, -1, PREG_SPLIT_NO_EMPTY);
+
 
         $data = [];
         $asinCol = [];
@@ -116,12 +122,26 @@ class InventoryShipmentController extends Controller
             ];
 
             $asinCol[] = $asin;
+            $sourcecol[] =   $request->source;
         }
+
+        $source_list = Vendor::query()
+            ->select("country")
+            ->whereIn("id", $sourcecol)
+            ->first();
+
+
+        $wantedsrc = Country::query()
+            ->select("code")
+            ->whereIn("id", $source_list)
+            ->first();
+
+
 
         $catalog = Catalog::query()
             ->select("asin", "item_name")
             ->whereIn("asin", $asinCol)
-            ->get()->groupBy('asin');
+            ->get()->unique('asin')->groupBy('asin');
 
         $catalog_insert = [];
         $filtere_data = [];
@@ -138,17 +158,21 @@ class InventoryShipmentController extends Controller
                 }
             } else {
                 $filtere_data[$asin_key] = "NA";
-                $catalog_insert[$asin_key] = $val;
+                $catalog_insert[$asin_key] = [
+                    'asin' => $val['asin'],
+                    'source' => $wantedsrc->code
+                ];
             }
         }
 
         if (count($catalog_insert) > 0) {
             Catalog::insert($catalog_insert);
+
             Artisan::call('mosh:inventory_catalog_import');
         }
 
 
-        return response()->json(['success' => 'Data is successfully added', 'data' => $filtere_data]);
+        return response()->json(['success' => 'Data is successfully added', 'data' =>   $filtere_data]);
     }
 
 
@@ -354,9 +378,5 @@ class InventoryShipmentController extends Controller
     public function DownloadPdf($ship_id)
     {
         return Storage::download('/product/label' . $ship_id . '.pdf');
-    }
-    public function bulkupload()
-    {
-        return view('inventory.inward.shipment.upload');
     }
 }
