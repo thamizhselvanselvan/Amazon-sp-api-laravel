@@ -29,6 +29,7 @@ Route::get('inventory/stocks', 'Inventory\StockController@dashboard')->name('inv
 Route::get('inventory/list', 'Inventory\StockController@getlist');
 Route::get('inventory/expo', 'Inventory\StockController@eportinv');
 Route::get('inventory/export', 'Inventory\StockController@eportinv')->name('inventory.export');
+Route::get('inventory/exp/{id}', 'Inventory\StockController@downexp');
 
 
 Route::post('json/{id}', 'Inventory\InventoryWarehouseController@CountryStateCity')->name('country.name');

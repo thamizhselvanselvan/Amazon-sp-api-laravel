@@ -42,15 +42,15 @@ class Import_inventory_catalog extends Command
      */
     public function handle()
     {
-        Catalog::where('item_name', '')->chunk(10, function ($records) {
+        Catalog::where('item_name', NULL)->chunk(10, function ($records) {
 
             if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-    
+
                 InventoryCatalogImportJob::dispatch([
                     'data' => $records,
                 ])->onConnection('redis')->onQueue('inventory');;
             } else {
-    
+
                 InventoryCatalogImportJob::dispatch(
                     [
                         'data' => $records,
