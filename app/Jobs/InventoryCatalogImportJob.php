@@ -59,7 +59,7 @@ class InventoryCatalogImportJob implements ShouldQueue
 
                 $data_formate = (array)($result->payload->AttributeSets[0]);
                 $title = $data_formate['Title'];
-                Catalog::where('source', $country_code)->where('asin', $asin)->update(['item_name', $title]);
+                Catalog::where('source', $country_code)->where('asin', $asin)->update(['item_name' => $title]);
 
                 Log::alert($data_formate['Title']);
             } catch (Exception $e) {
