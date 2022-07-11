@@ -222,7 +222,7 @@ class InvoiceManagementController extends Controller
     public function DirectDownloadPdf(Request $request, $id)
     {
         // $data = Invoice::where('id', $id)->get();
-        $data = DB::connection('web')->select("SELECT * from invoices where invoice_no =$id ");
+        $data = DB::connection('web')->select("SELECT * from invoices where invoice_no = '$id '");
         $invoice_no = $data[0]->invoice_no;
 
         $currenturl =  URL::current();
