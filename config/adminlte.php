@@ -609,6 +609,11 @@ return [
                     'url' => 'b2cship/dashboard'
                 ],
                 [
+                    'text' => 'Monitor',
+                    'can' => ['Admin', 'B2CShip'],
+                    'url' => 'b2cship/monitor'
+                ],
+                [
                     'text' => 'Details',
                     'can' => ['Admin', 'B2CShip'],
                     'submenu' => [
