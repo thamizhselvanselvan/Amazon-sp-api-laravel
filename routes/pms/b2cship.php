@@ -12,9 +12,12 @@ Route::get('b2cship/micro_status_report', 'B2cship\TrackingStatusController@micr
 Route::get('b2cship/micro_status_missing_report', 'B2cship\TrackingStatusController@microStatusMissingReport');
 Route::get('b2cship/update-report', 'B2cship\TrackingStatusController@update_report');
 
+Route::get('b2cship/monitor', 'B2cship\B2cshipMonitorController@index');
+
 Route::get('bombion/packet-activities','B2cship\BombinoPacketActivitiesController@PacketActivitiesDetails');
 Route::get('bombion/update-packet-details','B2cship\BombinoPacketActivitiesController@UpdatePacketDetails');
 Route::get('bombion/csv-export','B2cship\BombinoPacketActivitiesController@ExportToCSV');
+
 
 // Route::get('b2cship/Trackingtab','B2cship\B2cshipDashboardController@showDashboard');
 // Route::get('b2cship/TrackingAPInActive','B2cship\B2cshipDashboardController@TrackingApiDetailsInactive');
