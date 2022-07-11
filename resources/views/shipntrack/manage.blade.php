@@ -122,7 +122,7 @@ $(function() {
             dataType: 'json',
             success: function(response) {
                 // console.log(response);
-                alert(response.success);
+                alert('File upload successfully');
                 if (response.success) {
                     // getBack();
                 }
