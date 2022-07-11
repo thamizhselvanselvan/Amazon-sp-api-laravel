@@ -21,11 +21,6 @@ use Illuminate\Support\Facades\Storage;
 
 class ShipntrackManagementController extends Controller
 {
-    public function manage()
-    {
-        return view('shipntrack.manage');
-    }
-
     public function Index(Request $request)
     {
         if($request->ajax())
@@ -40,11 +35,11 @@ class ShipntrackManagementController extends Controller
         return view('shipntrack.index');
     }
     
-    public function templateDownload()
+    public function upload()
     {
-        return Storage::download('shipntrackCSV/Export-Rate.csv');
+        return view('shipntrack.manage');
     }
-
+    
     public function uploadCsv(Request $request)
     {
         $files =  $request->files;
@@ -75,4 +70,10 @@ class ShipntrackManagementController extends Controller
         
         return response()->json(['success' => 'File upload successfully']);
     }
+
+    public function templateDownload()
+    {
+        return Storage::download('shipntrackCSV/Export-Rate.csv');
+    }
+
 }

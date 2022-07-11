@@ -45,7 +45,7 @@ let yajra_table = $('.yajra-datatable').DataTable({
 
         processing: true,
         serverSide: true,
-        ajax: "{{ url('/shipntrack/manage') }}",
+        ajax: "{{ url('/shipntrack/index') }}",
         pageLength: 50,
         // searching: false,
         columns: [{
