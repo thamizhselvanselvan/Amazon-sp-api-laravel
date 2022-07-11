@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Shipntrack;
+namespace App\Http\Controllers\shipntrack;
 
 use File;
 use Excel;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ShipntrackManagementController extends Controller
 {
-    public function index()
+    public function Index()
     {
         return view('shipntrack.manage');
     }
