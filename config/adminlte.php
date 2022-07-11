@@ -266,7 +266,7 @@ return [
                     'can'  => ['Admin'],
                 ],
                 [
-                    'text' => 'Geo',
+                    'text' => 'Geo Master',
                     'url' => 'admin/geo',
                     'icon' => 'fas fa-globe-asia',
                     'can' =>  ['Admin']
