@@ -31,6 +31,7 @@ class ShipntrackManagementController extends Controller
         if($request->ajax())
         {
             // $shipntrack_data =Ratemaster::get();
+            $shipntrack_data = '';
             $shipntrack_data = DB::connection('ship')->select("SELECT * FROM ratemasters");
             return DataTables::of($shipntrack_data)
             ->addIndexColumn()
