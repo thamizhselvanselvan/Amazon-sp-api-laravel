@@ -11,6 +11,7 @@ use League\Csv\Statement;
 use App\Models\Ratemaster;
 use Illuminate\Http\Request;
 
+use Illuminate\Http\Response;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
@@ -73,7 +74,7 @@ class ShipntrackManagementController extends Controller
 
     public function templateDownload()
     {
-        return Storage::download('shipntrackCSV/Export-Rate.csv');
+        return Response()->download(public_path('shipntrackCSV/Export-Rate.csv'));
     }
 
 }
