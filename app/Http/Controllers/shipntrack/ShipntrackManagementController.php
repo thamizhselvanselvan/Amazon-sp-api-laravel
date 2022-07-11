@@ -48,7 +48,7 @@ class ShipntrackManagementController extends Controller
     
         foreach($csv as $data)
         {   
-            $shipntrack = R::dispense('rakemasters');
+            $shipntrack = R::dispense('ratemasters');
             foreach($data as $key => $result)
             {
                 $header = str_replace($symbols, '_', strtolower($key));
@@ -59,5 +59,6 @@ class ShipntrackManagementController extends Controller
                 }     
             }
         }
+        return response()->json(['success' => 'File upload successfully']);
     }
 }
