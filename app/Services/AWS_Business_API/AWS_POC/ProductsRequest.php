@@ -14,7 +14,7 @@ class ProductsRequest
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
         $client_secret = "80b1db8f2e3ae4b755bd50a0bcc21228694381e6a35b178efdb43799ccedd1ae";
         $refresh_token =
-            "Atza|IwEBIHEVMfJBrO4xxiQJrxV0wdEMs6yCeAkOalPFT7OurFLFk0WcckjytvbWXZw3AV1lpANE7IV8pQZ8d6uYh6roujC6AwkuWWafFqUMWIEWsijV16Bqa0Nd3BVHI8lSPJboQ7R3bH8A_2eh5oN1yJQLYpQicvGikXtVtA07pO5SUT31IxTRMT5JB1ja7EJ-vzZk_hZZQN3Zx7d1ECxsKCPlOONBLUOHt_5zhKhae7USTmNVHJSm4cjqx5VYlOdYxeCY_CN7yTE7im5tFWCOAKVBmiogOcrsdm4_LzXNwBQhNTLL4rStEoIYLaD19G-cC5GkmlFhcPOg0uKlInHLRe5JUgaH";
+            "Atza|IwEBIHrIJ44QxbFZks7g7fQDLtb8kZsNHhKlz12wfD5oo3_WErQw3OYjKhrRGzTwV_9E5ZrMMvSsT7eDhGjmqbxLqaRIRV90h33PkBO1Kc9AP72H9CYBz3KDNCgPylt4d5LcjK0_d8kMWR7XmSSfQsUeZT4RSOsaEdZsDkHL8JlhHcCmYYThLyUwJ-HLYW26axO261uj-GLxx6WpTVYFvP4EWvoD7tJiNH9vXM13j5TQn2NA0SXf3LLYPAMwYGqh9dcdPdYsMrhstNugnne3eD2QeVSYOl0wOIjCcQbrqQnedsVgGxvJhDXFI2n-jbXjAv9wQDXYq4S2VBOh5vxuXepVyGOD";
         $request_data = array(
             "client_id" => $client_id,
             "client_secret" => $client_secret,
@@ -23,7 +23,7 @@ class ProductsRequest
         );
 
         $reqToken =
-            "Atza|IwEBIHEVMfJBrO4xxiQJrxV0wdEMs6yCeAkOalPFT7OurFLFk0WcckjytvbWXZw3AV1lpANE7IV8pQZ8d6uYh6roujC6AwkuWWafFqUMWIEWsijV16Bqa0Nd3BVHI8lSPJboQ7R3bH8A_2eh5oN1yJQLYpQicvGikXtVtA07pO5SUT31IxTRMT5JB1ja7EJ-vzZk_hZZQN3Zx7d1ECxsKCPlOONBLUOHt_5zhKhae7USTmNVHJSm4cjqx5VYlOdYxeCY_CN7yTE7im5tFWCOAKVBmiogOcrsdm4_LzXNwBQhNTLL4rStEoIYLaD19G-cC5GkmlFhcPOg0uKlInHLRe5JUgaH";
+            "Atza|IwEBIHrIJ44QxbFZks7g7fQDLtb8kZsNHhKlz12wfD5oo3_WErQw3OYjKhrRGzTwV_9E5ZrMMvSsT7eDhGjmqbxLqaRIRV90h33PkBO1Kc9AP72H9CYBz3KDNCgPylt4d5LcjK0_d8kMWR7XmSSfQsUeZT4RSOsaEdZsDkHL8JlhHcCmYYThLyUwJ-HLYW26axO261uj-GLxx6WpTVYFvP4EWvoD7tJiNH9vXM13j5TQn2NA0SXf3LLYPAMwYGqh9dcdPdYsMrhstNugnne3eD2QeVSYOl0wOIjCcQbrqQnedsVgGxvJhDXFI2n-jbXjAv9wQDXYq4S2VBOh5vxuXepVyGOD";
         //  $reqToken = getToken($request_data);
 
         $host               = "na.business-api.amazon.com";
