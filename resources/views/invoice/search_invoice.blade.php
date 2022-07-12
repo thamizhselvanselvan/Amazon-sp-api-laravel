@@ -22,9 +22,22 @@
 </div> -->
 @stop
 @section('content')
+<div class="row">
+    <div class="col">
+
+        <div class="alert_display">
+            @if ($message = Session::get('success'))
+            <div class="alert alert-warning alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>{{ $message }}</strong>
+            </div>
+            @endif
+        </div>
+    </div>
+</div>
 <div class="container-fluid search-box">
     <div class="row">
-        <div class="col-3 pt-2">
+        <div class="col pt-2">
             <div class="mt-4">
                 <a href="upload">
                     <x-adminlte-button label="Add Records" theme="primary" icon="fas fa-file-upload"
@@ -34,10 +47,14 @@
                     <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-download"
                         class="btn-md ml-1" />
                 </a>
+                <a href="zip/download">
+                    <x-adminlte-button label="Download Invoice Zip" theme="primary" icon="fas fa-download"
+                        class="btn-md ml-1" id='zip-download' />
+                </a>
             </div>
         </div>
 
-        <div class="col-2"></div>
+        <!-- <div class="col-2"></div> -->
         <div class="col d-flex justify-content-end">
             <div class="form-group mr-2">
                 <x-adminlte-select label="Mode: " name="mode" id="mode" class="float-right">
@@ -98,6 +115,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
     //start search invoice
+    // $('#zip-download').hide();
     $("#Searchbox").on('keyup', function() {
         let self = $(this);
         let invoice_no = $.trim(self.val());
@@ -128,8 +146,6 @@ $(document).ready(function() {
     });
 
     $('#search').click(function() {
-
-
         if ($('#mode').val() == '') {
             alert('Please Choose Mode');
         } else if (($('.datepicker').val() == '')) {
@@ -196,6 +212,8 @@ $(document).ready(function() {
     });
 
     $('#selected-download').click(function() {
+        let invoice_mode = $('#mode').val();
+        let invoice_date = $('#invoice_date').val();
         var url = $(location).attr('href');
         let id = '';
         let count = 0;
@@ -214,16 +232,34 @@ $(document).ready(function() {
             url: "{{ url('/invoice/select-download')}}",
             data: {
                 'id': id,
+                "invoice_date": invoice_date,
+                "invoice_mode": invoice_mode,
                 "_token": "{{ csrf_token() }}",
             },
             success: function(response) {
-                arr += response;
-                window.location.href = '/invoice/zip-download/' + arr;
+                // arr += response;
+                // window.location.href = '/invoice/zip-download/' + arr;
                 // alert('Export pdf successfully');
-            }
+                // $('#zip-download').show();
+
+            },
         });
 
     });
+    // $('#zip-download').click(function() {
+    //     let invoice_mode = $('#mode').val();
+    //     let invoice_date = $('#invoice_date').val();
+    //     $.ajax({
+    //         method: 'GET',
+    //         url: "{{ url('/zip/download')}}",
+    //         data: {
+    //             "invoice_date": invoice_date,
+    //             "invoice_mode": invoice_mode,
+    //             "_token": "{{ csrf_token() }}",
+    //         },
+
+    //     });
+    // });
 
     $('#select_print').click(function() {
         var url = $(location).attr('href');
