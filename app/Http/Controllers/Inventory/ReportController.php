@@ -46,10 +46,7 @@ class ReportController extends Controller
         $todayopening = 0;
         $startTime = Carbon::today()->subDays(365);
         $endTimeYesterday = Carbon::yesterday()->endOfDay();
-        // $open = Inventory::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
-        // foreach ($open as  $data) {
-        //     $todayopeningstock +=  $data['balance_quantity'];
-        // }
+    
         $open = Shipment_Inward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
         foreach ($open as  $data) {
             $todayopening +=  $data['quantity'];
@@ -179,23 +176,18 @@ class ReportController extends Controller
 
         /* weekly opeanig Count*/
         $open_count = $report_weekly->OpeningStock();
-        //  dd($open_count);
         /* weekly Inwarding Count*/
-        $inward_count = $report_weekly->OpeningShipmentCount();
+        $inward_count = $report_weekly->InwardingCount();
 
 
         /* weekly Inwarding  Amount*/
         $week_inv_amt = $report_weekly->InwardingAmount();
 
-
         /* weekly Outwarding  Count*/
         $week_out_count = $report_weekly->OutwardShipmentCount();
 
-
-
         /* weekly Outwarding  Amount*/
         $week_out_amt = $report_weekly->OutwardShipmentAmount();
-
 
         /* weekly closing count*/
         /* weekly opeanig Count*/
