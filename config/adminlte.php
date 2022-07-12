@@ -555,7 +555,7 @@ return [
             'submenu' => [
                 [
                     'text'  =>  'Rate Master',
-                    'url'   =>  'shipntrack/manage',
+                    'url'   =>  'shipntrack/index',
                     'can'   =>  ['Admin'],
                 ],
             ]
@@ -595,6 +595,11 @@ return [
 
                         ],
                     ],
+                ],
+                [
+                    'text' => 'Bulk Amazon Invoice Upload',
+                    'url' => 'amazon/invoice',
+                    'can' => ['Admin', 'Inventory'],
                 ],
             ],
         ],

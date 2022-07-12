@@ -132,7 +132,7 @@ $(function() {
         });
 
         function getBack() {
-            window.location.href = '/shipntrack/manage';
+            window.location.href = '/shipntrack/index';
         }
     });
 });

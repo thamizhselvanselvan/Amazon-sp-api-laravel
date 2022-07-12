@@ -11,6 +11,7 @@ use League\Csv\Statement;
 use App\Models\Ratemaster;
 use Illuminate\Http\Request;
 
+use Illuminate\Http\Response;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
@@ -21,11 +22,6 @@ use Illuminate\Support\Facades\Storage;
 
 class ShipntrackManagementController extends Controller
 {
-    public function manage()
-    {
-        return view('shipntrack.manage');
-    }
-
     public function Index(Request $request)
     {
         if($request->ajax())
@@ -40,11 +36,11 @@ class ShipntrackManagementController extends Controller
         return view('shipntrack.index');
     }
     
-    public function templateDownload()
+    public function upload()
     {
-        return Storage::download('shipntrackCSV/Export-Rate.csv');
+        return view('shipntrack.manage');
     }
-
+    
     public function uploadCsv(Request $request)
     {
         $files =  $request->files;
@@ -66,7 +62,7 @@ class ShipntrackManagementController extends Controller
         
         if(App::environment(['Production', 'Staging', 'production', 'staging']))
         {
-             $base_path = base_path();
+            $base_path = base_path();
             $command = "cd $base_path && php artisan pms:shipntrack-csv-upload > /dev/null &";
             exec($command);
         }else{
@@ -75,4 +71,10 @@ class ShipntrackManagementController extends Controller
         
         return response()->json(['success' => 'File upload successfully']);
     }
+
+    public function templateDownload()
+    {
+        return Response()->download(public_path('shipntrackCSV/Export-Rate.csv'));
+    }
+
 }

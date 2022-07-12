@@ -16,13 +16,13 @@ class B2cshipMonitorController extends Controller
         $startTime = Carbon::now()->subMinutes(60);
         $now = Carbon::now();
       
+        $whereCondition = 'GenerateBombinoLabel';
        $data = DB::connection('b2cship')->select(
         "SELECT * FROM ErrorLog 
-        WHERE ErrorFrom <> ''
+        WHERE ErrorFrom = '$whereCondition'
         AND ErrorDate BETWEEN '$startTime' AND '$now'
          ORDER BY ErrorID DESC");
        
-    //    dd($data);
         return view('b2cship.monitor.index', compact('data'));
     }
 }

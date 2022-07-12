@@ -1,0 +1,11 @@
+Weight	Base Rate	Commission	Source-Destination
+0.5	381	5	IN-SG
+1	506	5	IN-SG
+1.5	631	5	IN-SG
+2	755	5	IN-SG
+0.5	271	5	IN-AE
+1	317	5	IN-AE
+1.5	364	5	IN-AE
+2	410	5	IN-AE
+2.5	457	5	IN-AE
+3	599	5	IN-AE
