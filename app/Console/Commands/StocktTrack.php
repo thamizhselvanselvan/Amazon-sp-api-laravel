@@ -98,6 +98,7 @@ class StocktTrack extends Command
         /* Opeaning Amount */
         $amt = [];
         $singlepricein = [];
+        $singlepriceout = [];
         $openamtamt =  Shipment_Inward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
         foreach ($openamtamt as $amt) {
             $singlepricein[] = [
