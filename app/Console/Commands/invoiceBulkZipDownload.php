@@ -67,7 +67,7 @@ class invoiceBulkZipDownload extends Command
                 }
                 $exportToPdf = storage::path($path);
                 Browsershot::url($url)
-                    ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+                    // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
                     ->showBackground()
                     ->savePdf($exportToPdf);
 

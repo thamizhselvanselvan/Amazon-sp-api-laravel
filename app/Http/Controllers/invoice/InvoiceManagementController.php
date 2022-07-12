@@ -177,7 +177,7 @@ class InvoiceManagementController extends Controller
         if(App::environment(['Production', 'Staging', 'production', 'staging']))
         {
             $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:invoice-bulk-zip-download ['--data_array' => $data]  > /dev/null &";
+            $command = "cd $base_path && php artisan pms:invoice-bulk-zip-download [--data_array = $data]  > /dev/null &";
             exec($command);
         }else{
             Artisan::call('pms:invoice-bulk-zip-download', ['--data_array' => $data]);
