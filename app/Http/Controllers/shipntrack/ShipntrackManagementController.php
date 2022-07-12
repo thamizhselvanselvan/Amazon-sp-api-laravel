@@ -62,7 +62,7 @@ class ShipntrackManagementController extends Controller
         
         if(App::environment(['Production', 'Staging', 'production', 'staging']))
         {
-             $base_path = base_path();
+            $base_path = base_path();
             $command = "cd $base_path && php artisan pms:shipntrack-csv-upload > /dev/null &";
             exec($command);
         }else{

@@ -166,61 +166,60 @@ class InvoiceManagementController extends Controller
     // Begin download all selected rows
     public function SelectedDownload(Request $request)
     {
-        // echo 'working file';
-        $passid = $request->id;
-        $currenturl =  request()->getSchemeAndHttpHost();
-        // return $currenturl;
-        $excelid = explode('-', $passid);
-
-        foreach ($excelid as $getId) {
-            // $id = Invoice::where('id', $getId)->get();
-            $id = DB::connection('web')->select("SELECT * from invoices where id ='$getId' ");
-            foreach ($id as $key => $value) {
-                $invoice_no = $value->invoice_no;
-                // $url = str_replace('select-download', 'convert-pdf', $currenturl . '/' . $getId);
-                $url = $currenturl.'/invoice/convert-pdf/'.$invoice_no;
-                $path = 'invoice/invoice' . $invoice_no . '.pdf';
-                if (!Storage::exists($path)) {
-                    Storage::put($path, '');
-                }
-                $exportToPdf = storage::path($path);
-                Browsershot::url($url)
-                    // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-                    ->showBackground()
-                    ->savePdf($exportToPdf);
-
-                $saveAsPdf[] = 'invoice' . $invoice_no . '.pdf';
-            }
+        $this->deleteAllPdf();
+        
+        $data = [
+            'passid' => $request->id,
+            'currenturl' => request()->getSchemeAndHttpHost(),
+            'invoice_date' => $request->invoice_date,
+            'invoice_mode' => $request->invoice_mode,
+        ];
+        if(App::environment(['Production', 'Staging', 'production', 'staging']))
+        {
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan pms:invoice-bulk-zip-download ['--data_array' => $data]  > /dev/null &";
+            exec($command);
+        }else{
+            Artisan::call('pms:invoice-bulk-zip-download', ['--data_array' => $data]);
         }
-
-        return response()->json($saveAsPdf);
+        
+        return response()->json(['success' => 'zip created successfully']);
     }
 
-    public function zipDownload($arr)
+    public function zipDownload()
     {
-        $replace = explode(',', $arr);
-        $zip = new ZipArchive;
-        $path = 'zip/' . 'invoice.zip';
-        $fileName = Storage::path('zip/' . 'invoice.zip');
-        Storage::delete($path);
-        if (!Storage::exists($path)) {
-            Storage::put($path, '');
+        if(!Storage::exists('invoice/zip/invoice.zip')){
+            return redirect()->intended('/invoice/search-invoice')->with('success', 'File not available right now!');
         }
-        if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
-            foreach ($replace as $key => $value) {
-                $path = Storage::path('invoice/' . $value);
-                $relativeNameInZipFile = basename($path);
-                $zip->addFile($path, $relativeNameInZipFile);
-            }
-            $zip->close();
-        }
-        return response()->download($fileName);
+        return Storage::download('invoice/zip/invoice.zip');
     }
+
+    // public function zipDownload($arr)
+    // {
+    //     $replace = explode(',', $arr);
+    //     $zip = new ZipArchive;
+    //     $path = 'zip/' . 'invoice.zip';
+    //     $fileName = Storage::path('zip/' . 'invoice.zip');
+    //     Storage::delete($path);
+    //     if (!Storage::exists($path)) {
+    //         Storage::put($path, '');
+    //     }
+    //     if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
+    //         foreach ($replace as $key => $value) {
+    //             $path = Storage::path('invoice/' . $value);
+    //             $relativeNameInZipFile = basename($path);
+    //             $zip->addFile($path, $relativeNameInZipFile);
+    //         }
+    //         $zip->close();
+    //     }
+    //     return response()->download($fileName);
+    // }
 
     // end download all selected rows
 
     public function DirectDownloadPdf(Request $request, $id)
     {
+        $this->deleteAllPdf();
         // $data = Invoice::where('id', $id)->get();
         $data = DB::connection('web')->select("SELECT * from invoices where invoice_no = '$id' ");
         $invoice_no = $data[0]->invoice_no;
@@ -240,6 +239,8 @@ class InvoiceManagementController extends Controller
 
     public function ExportPdf(Request $request)
     {
+        $this->deleteAllPdf();
+        
         $id = $request->invoice_no;
         $url = $request->url;
         $file_path =  'invoice/invoice' . $id . '.pdf';
@@ -331,8 +332,7 @@ class InvoiceManagementController extends Controller
     {
         $invoice = invoice::find($id);
         $url = $request->url;
-//         po($url);
-// exit;
+        
         $invoice->invoice_no = $request->invoice_no;
         $invoice->invoice_date = $request->invoice_date;
         $invoice->mode = $request->mode;
@@ -371,4 +371,15 @@ class InvoiceManagementController extends Controller
         //     return redirect()->intended('/invoice/search-invoice')->with('success', 'Invoice  has been updated successfully');
         // }
     }
+public function deleteAllPdf()
+{
+    $files =glob(Storage::path('invoice/*'));
+    foreach($files as $file)
+    {
+        if(is_file($file)){
+            unlink($file);
+        }
+    }
+}
+    
 }
