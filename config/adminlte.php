@@ -685,18 +685,33 @@ return [
             'submenu' => [
                 [
                     'text' => 'Search Product Request',
-                    'url' => 'buisness/search/products',
+                    'url' => 'business/search/products',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
 
                 ],
                 [
                     'text' => 'Product Request',
-                    'url' => 'buisness/products',
+                    'url' => 'business/products',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+                [
+                    'text' => 'Search Offers Request',
+                    'url' => 'business/offers',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+                [
+                    'text' => 'Get Products By Asins',
+                    'url' => 'business/byasins',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
 
                 ]
+
             ]
         ],
     ],
