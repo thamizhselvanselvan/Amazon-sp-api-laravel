@@ -115,6 +115,7 @@ class InventoryShipmentController extends Controller
 
         $data = [];
         $asinCol = [];
+        $sourcecol = [];
         foreach ($asins as $asin) {
 
             $data[$asin] = [
@@ -175,7 +176,6 @@ class InventoryShipmentController extends Controller
 
         return response()->json(['success' => 'Data is successfully added', 'data' =>   $filtere_data]);
     }
-
 
 
     public function selectView(Request $request)

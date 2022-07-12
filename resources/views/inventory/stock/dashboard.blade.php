@@ -72,7 +72,7 @@
     <thead>
         <tr>
             <td id="detail">Warehouse Name</td>
-            <td id="detail"> Shipment ID</td>
+            <td id="detail">Shipment ID</td>
             <td id="detail">ASIN</td>
             <td id="detail">Item Name</td>
             <td id="detail">Price/Unit</td>
@@ -147,6 +147,7 @@
 
     });
 
+    /*download PDF */
     $('#export').click(function() {
 
 

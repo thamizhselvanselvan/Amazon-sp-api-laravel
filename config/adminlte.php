@@ -671,7 +671,28 @@ return [
                         ]
                     ]
                 ],
+
             ],
+        ],
+        [
+            'text' => 'AWS-POC',
+            'can' => ['Admin'],
+            'submenu' => [
+                [
+                    'text' => 'Search Product Request',
+                    'url' => 'buisness/search/products',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+                [
+                    'text' => 'Product Request',
+                    'url' => 'buisness/products',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ]
+            ]
         ],
     ],
 
