@@ -596,6 +596,11 @@ return [
                         ],
                     ],
                 ],
+                [
+                    'text' => 'Bulk Amazon Invoice Upload',
+                    'url' => 'amazon/invoice',
+                    'can' => ['Admin', 'Inventory'],
+                ],
             ],
         ],
 
