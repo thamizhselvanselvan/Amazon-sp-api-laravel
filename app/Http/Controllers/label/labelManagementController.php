@@ -6,19 +6,21 @@ use DateTime;
 use ZipArchive;
 use RedBeanPHP\R;
 use App\Models\Label;
+use App\Models\Mws_region;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
-use App\Models\Mws_region;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
-use Picqer\Barcode\BarcodeGeneratorHTML;
-use Picqer\Barcode\BarcodeGeneratorPNG;
 
+use Picqer\Barcode\BarcodeGeneratorPNG;
+use Picqer\Barcode\BarcodeGeneratorHTML;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 
 class labelManagementController extends Controller
@@ -121,6 +123,7 @@ class labelManagementController extends Controller
     public function ExportLabel(Request $request)
     {
         //Single Download
+        $this->deleteAllPdf();
         $url = $request->url;
         $awb_no = $request->awb_no;
         $file_path = 'label/label' . $awb_no . '.pdf';
@@ -130,7 +133,7 @@ class labelManagementController extends Controller
         }
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
@@ -146,8 +149,8 @@ class labelManagementController extends Controller
     }
 
     public function DownloadDirect($id)
-    {
-
+    { 
+        $this->deleteAllPdf();
         $result = DB::connection('web')->select("select * from labels where id = '$id' ");
         $awb_no = $result[0]->awb_no;
         $file_path = 'label/label' . $awb_no . '.pdf';
@@ -160,7 +163,7 @@ class labelManagementController extends Controller
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
 
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
@@ -189,58 +192,48 @@ class labelManagementController extends Controller
         $passid = $request->id;
         $currenturl =  URL::current();
 
-        $excelid = explode('-', $passid);
-
-        foreach ($excelid as $getId) {
-            // $id = Label::where('id', $getId)->get();
-            $id = DB::connection('web')->select("select * from labels where id = '$getId' ");
-
-            foreach ($id as $key => $value) {
-
-                $awb_no = $value->awb_no;
-                $url = str_replace('select-download', 'pdf-template', $currenturl . '/' . $getId);
-
-                $path = 'label/label' . $awb_no . '.pdf';
-                if (!Storage::exists($path)) {
-                    Storage::put($path, '');
-                }
-                $exportToPdf = storage::path($path);
-                Browsershot::url($url)
-                    // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-                    ->paperSize(576, 384, 'px')
-                    ->pages('1')
-                    ->scale(1)
-                    ->margins(0, 0, 0, 0)
-                    ->savePdf($exportToPdf);
-
-                $saveAsPdf[] = 'label' . $awb_no . '.pdf';
-            }
+         if(App::environment(['Production', 'Staging', 'production', 'staging']))
+        {
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan pms:label-bulk-zip-download $passid $currenturl > /dev/null &";
+            exec($command);
+        }else{
+            Artisan::call('pms:label-bulk-zip-download'.' '.$passid.' '.$currenturl );
         }
 
-        return response()->json($saveAsPdf);
+        return response()->json(['success' => 'Zip created successfully']);
     }
 
-    public function zipDownload($arr)
+    public function zipDownload()
     {
-        // po($arr);
-        $replace = explode(',', $arr);
-        $zip = new ZipArchive;
-        $path = 'label/zip/' . 'label.zip';
-        $fileName = Storage::path('label/zip/' . 'label.zip');
-        Storage::delete($path);
-        if (!Storage::exists($path)) {
-            Storage::put($path, '');
+        if(!Storage::exists('label/zip/label.zip'))
+        {
+            return redirect()->intended('/label/search-label')->with('success', 'File not available right now! Please wait.');
         }
-        if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
-            foreach ($replace as $key => $value) {
-                $path = Storage::path('label/' . $value);
-                $relativeNameInZipFile = basename($path);
-                $zip->addFile($path, $relativeNameInZipFile);
-            }
-            $zip->close();
-        }
-        return response()->download($fileName);
+        return Storage::download('label/zip/label.zip');
     }
+
+    // public function zipDownload($arr)
+    // {
+    //     // po($arr);
+    //     $replace = explode(',', $arr);
+    //     $zip = new ZipArchive;
+    //     $path = 'label/zip/' . 'label.zip';
+    //     $fileName = Storage::path('label/zip/' . 'label.zip');
+    //     Storage::delete($path);
+    //     if (!Storage::exists($path)) {
+    //         Storage::put($path, '');
+    //     }
+    //     if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
+    //         foreach ($replace as $key => $value) {
+    //             $path = Storage::path('label/' . $value);
+    //             $relativeNameInZipFile = basename($path);
+    //             $zip->addFile($path, $relativeNameInZipFile);
+    //         }
+    //         $zip->close();
+    //     }
+    //     return response()->download($fileName);
+    // }
 
     public function downloadExcelTemplate()
     {
@@ -422,4 +415,16 @@ class labelManagementController extends Controller
         return $data;
     }
     // INNER JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
+
+    public function deleteAllPdf()
+    {
+        $files =glob(Storage::path('label/*'));
+        // dd($files);
+        foreach($files as $file)
+        {
+            if(is_file($file)){
+                unlink($file);
+            }
+        }
+    }
 }

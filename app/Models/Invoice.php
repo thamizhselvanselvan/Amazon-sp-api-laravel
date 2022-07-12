@@ -49,4 +49,9 @@ class Invoice extends Model
         $this->getConnection()->setTablePrefix('');
     }
 
+    public function __distruct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->getConnection()->setTablePrefix('sp_');
+    }
 }
