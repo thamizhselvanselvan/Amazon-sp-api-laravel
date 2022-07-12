@@ -168,19 +168,16 @@ class InvoiceManagementController extends Controller
     {
         $this->deleteAllPdf();
         
-        $data = [
-            'passid' => $request->id,
-            'currenturl' => request()->getSchemeAndHttpHost(),
-            'invoice_date' => $request->invoice_date,
-            'invoice_mode' => $request->invoice_mode,
-        ];
+            $passid = $request->id;
+            $currenturl = request()->getSchemeAndHttpHost();
+            
         if(App::environment(['Production', 'Staging', 'production', 'staging']))
         {
             $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:invoice-bulk-zip-download [--data_array = $data]  > /dev/null &";
+            $command = "cd $base_path && php artisan pms:invoice-bulk-zip-download $passid $currenturl > /dev/null &";
             exec($command);
         }else{
-            Artisan::call('pms:invoice-bulk-zip-download', ['--data_array' => $data]);
+            Artisan::call('pms:invoice-bulk-zip-download'.' '.$passid.' '.$currenturl );
         }
         
         return response()->json(['success' => 'zip created successfully']);

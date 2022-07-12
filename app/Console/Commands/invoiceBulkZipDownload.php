@@ -17,7 +17,7 @@ class invoiceBulkZipDownload extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:invoice-bulk-zip-download {--data_array=*}';
+    protected $signature = 'pms:invoice-bulk-zip-download {passid} {currenturl} ';
 
     /**
      * The console command description.
@@ -43,11 +43,8 @@ class invoiceBulkZipDownload extends Command
      */
     public function handle()
     {
-        $data = $this->option('data_array');
-        $passid = $data['passid'];
-        $currenturl = $data['currenturl'];
-        $invoice_date = $data['invoice_date'];
-        $invoice_mode = $data['invoice_mode'];
+        $passid = $this->argument('passid');
+        $currenturl = $this->argument('currenturl');
 
            $path = 'invoice/zip/'.'invoice.zip';
             Storage::delete($path);
