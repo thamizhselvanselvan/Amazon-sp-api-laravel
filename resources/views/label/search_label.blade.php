@@ -114,48 +114,53 @@ $(document).ready(function() {
     $('#SearchByDate').click(function() {
         if (($('#bag_no').val() == '')) {
             alert('Please Input Bag No.');
+        } else {
+
+            $('#showTable').removeClass('d-none');
+            let label_date = $('#bag_no').val();
+            // alert(label_date);
+            $.ajax({
+                method: 'POST',
+                url: "{{ url('/label/select-label')}}",
+                data: {
+                    "bag_no": label_date,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
+                    console.log(response);
+                    let table = '';
+
+                    $.each(response, function(i, response) {
+                        // alert(response);
+                        let label_id = response.order_no.replaceAll(/-/g, '_');
+                        let change_date = moment(response.purchase_date,
+                                'YYYY-MM-DD ')
+                            .format('YYYY-MM-DD');
+
+                        table += "<tr class='" + label_id + "'>";
+                        table +=
+                            "<td><input class='check_options' type='checkbox' value=" +
+                            response.id + " name='options[]' id='checkid" + response
+                            .id + "'></td>";
+                        table += "<td>" + response.store_name + "</td><td>" +
+                            response
+                            .order_no + "</td>";
+                        let t = JSON.parse(response.shipping_address);
+                        table += "<td>" + response.awb_no + "</td><td>" +
+                            change_date +
+                            "</td><td>" + response.seller_sku + "</td><td>" + t[
+                                'Name'] +
+                            "</td><td><div class='d-flex'><a href=/label/pdf-template/" +
+                            response.id +
+                            " class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/label/download-direct/" +
+                            response.id +
+                            "  class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a></td> </tr>";
+                    });
+                    $('#checkTable').html(table);
+                    // alert('Export pdf successfully');
+                }
+            });
         }
-        $('#showTable').removeClass('d-none');
-        let label_date = $('#bag_no').val();
-        // alert(label_date);
-        $.ajax({
-            method: 'POST',
-            url: "{{ url('/label/select-label')}}",
-            data: {
-                "bag_no": label_date,
-                "_token": "{{ csrf_token() }}",
-            },
-            success: function(response) {
-                console.log(response);
-                let table = '';
-
-                $.each(response, function(i, response) {
-                    // alert(response);
-                    let label_id = response.order_no.replaceAll(/-/g, '_');
-                    let change_date = moment(response.purchase_date, 'YYYY-MM-DD ')
-                        .format('YYYY-MM-DD');
-
-                    table += "<tr class='" + label_id + "'>";
-                    table +=
-                        "<td><input class='check_options' type='checkbox' value=" +
-                        response.id + " name='options[]' id='checkid" + response
-                        .id + "'></td>";
-                    table += "<td>" + response.store_name + "</td><td>" + response
-                        .order_no + "</td>";
-                    let t = JSON.parse(response.shipping_address);
-                    table += "<td>" + response.awb_no + "</td><td>" + change_date +
-                        "</td><td>" + response.seller_sku + "</td><td>" + t[
-                            'Name'] +
-                        "</td><td><div class='d-flex'><a href=/label/pdf-template/" +
-                        response.id +
-                        " class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/label/download-direct/" +
-                        response.id +
-                        "  class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a></td> </tr>";
-                });
-                $('#checkTable').html(table);
-                // alert('Export pdf successfully');
-            }
-        });
         // <td>Invoice No.</td><td>Invoice Date</td><td>Channel</td><td>Shipped By</td><td>Awb No</td><td>Arn NO.</td><td>Hsn Code</td><td>Quantity</td><td>Product Price</td><td class='text-center'>Action</td></tr></thead><tbody>
     });
 
