@@ -2,27 +2,27 @@
 
 namespace App\Http\Controllers\invoice;
 
-use App\Models\Invoice;
-use App\Http\Controllers\Controller;
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Storage;
-
-use Spatie\Browsershot\Browsershot;
-use Maatwebsite\Excel\Facades\Excel;
-use Picqer\Barcode\BarcodeGeneratorHTML;
-use Yajra\DataTables\Facades\DataTables;
-
 use File;
+
 use DateTime;
 use ZipArchive;
 use RedBeanPHP\R;
 use League\Csv\Reader;
+use App\Models\Invoice;
+use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
+
+use Spatie\Browsershot\Browsershot;
+use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
+use Picqer\Barcode\BarcodeGeneratorHTML;
+use Yajra\DataTables\Facades\DataTables;
 
 
 class InvoiceManagementController extends Controller
@@ -69,16 +69,30 @@ class InvoiceManagementController extends Controller
     {
         if ($request->ajax()) {
             $mode = $request->invoice_mode;
-
-            $date = $request->invoice_date;
-            $newdate = explode(' - ', $date);
-            $date1 = $newdate[0];
-            $date2 = $newdate[1];
+            $bag_no = $request->bag_no;
+            $Invoice_date = $request->invoice_date;
             $results = '';
-           
-            $results = DB::connection('web')->select("SELECT id, invoice_no, invoice_date, mode, channel, shipped_by, awb_no, store_name, bill_to_name, ship_to_name, sku, qty, currency, product_price FROM invoices WHERE mode = '$mode' and invoice_date BETWEEN '$date1' AND '$date2' "); 
+            // $results = DB::connection('web')->select("SELECT id, invoice_no, invoice_date, mode, channel, shipped_by, awb_no, store_name, bill_to_name, ship_to_name, sku, qty, currency, product_price FROM invoices WHERE mode = '$mode' and invoice_date BETWEEN '$date1' AND '$date2' "); 
+            $results = Invoice::when(!empty(trim($request->invoice_mode)), function ($query) use($mode){
+                $query->where('mode', $mode);
+            })
+            ->when(!empty(trim($request->bag_no)), function ($query) use($bag_no){
+                $query->where('bag_no', $bag_no);
+            })
+            ->when(!empty(trim($request->invoice_date)), function ($query) use($Invoice_date){
+                $date = $this->split_date($Invoice_date);
+                $query->whereBetween('invoice_date', [$date[0], $date[1]]);
+            })
+            ->get();
         }
+        // Log::alert(json_encode($results));
         return response()->json($results);
+    }
+
+    public function split_date($date)
+    { 
+        $newdate = explode(' - ', $date);
+        return ([trim($newdate[0]), trim($newdate[1])]);
     }
 
     public function showpdf(Request $request)
@@ -186,7 +200,7 @@ class InvoiceManagementController extends Controller
     public function zipDownload()
     {
         if(!Storage::exists('invoice/zip/invoice.zip')){
-            return redirect()->intended('/invoice/search-invoice')->with('success', 'File not available right now!');
+            return redirect()->intended('/invoice/search-invoice')->with('success', 'File is not available right now! Please wait.');
         }
         return Storage::download('invoice/zip/invoice.zip');
     }
@@ -368,15 +382,15 @@ class InvoiceManagementController extends Controller
         //     return redirect()->intended('/invoice/search-invoice')->with('success', 'Invoice  has been updated successfully');
         // }
     }
-public function deleteAllPdf()
-{
-    $files =glob(Storage::path('invoice/*'));
-    foreach($files as $file)
+    public function deleteAllPdf()
     {
-        if(is_file($file)){
-            unlink($file);
+        $files =glob(Storage::path('invoice/*'));
+        foreach($files as $file)
+        {
+            if(is_file($file)){
+                unlink($file);
+            }
         }
     }
-}
     
 }

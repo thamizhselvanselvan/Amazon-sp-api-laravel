@@ -43,7 +43,7 @@ class textilesImportScheduler extends Command
      */
     public function handle()
     {   
-        Log::warning("Script executed production onclick !");  
+        // Log::warning("Script executed production onclick !");  
 
         $url ='https://files.channable.com/f8k02iylfY7c5YTsxH-SxQ==.csv';
 

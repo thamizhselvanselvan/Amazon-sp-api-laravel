@@ -54,15 +54,21 @@
             </div>
         </div>
 
-        <!-- <div class="col-2"></div> -->
-        <div class="col d-flex justify-content-end">
+
+        <div class="col-7 d-flex justify-content-end">
             <div class="form-group mr-2">
                 <x-adminlte-select label="Mode: " name="mode" id="mode" class="float-right">
-                    <option value="">Select Mode</option>
+                    <option value='NULL'>Select Mode</option>
                     @foreach ($mode as $value)
                     <option value="{{$value->mode}} ">{{$value->mode}}</option>
                     @endforeach
                 </x-adminlte-select>
+                <p class="vmode" id="vmode"></p>
+            </div>
+            <div class="form-group bag_no mr-2">
+                <x-adminlte-input label="Bag No.:" name="bag_no" id="bag_no" placeholder="Bag No.">
+
+                </x-adminlte-input>
             </div>
             <div class="form-group">
                 <label>Invoice Date:</label>
@@ -144,28 +150,37 @@ $(document).ready(function() {
     $('.datepicker').on('cancel.daterangepicker', function(ev, picker) {
         $(this).val('');
     });
-
+    $('#mode').on('change', function() {
+        if ($('#mode').val() != 'NULL') {
+            var id = document.getElementById('mode');
+            id.style = ' none';
+            document.getElementById('vmode').innerHTML = '';
+        }
+    });
     $('#search').click(function() {
-        if ($('#mode').val() == '') {
-            alert('Please Choose Mode');
-        } else if (($('.datepicker').val() == '')) {
-            alert('Please Choose Date');
+        if ($('#mode').val() == 'NULL') {
+            var id = document.getElementById('mode');
+            id.style = 'border: 2px solid red';
+            let text = 'Mode must be filled out';
+            document.getElementById('vmode').innerHTML = text;
+            document.getElementById('vmode').style.color = 'red';
         } else {
 
             $('#showTable').removeClass("d-none");
+            let bag_no = $('#bag_no').val();
             let invoice_mode = $('#mode').val();
             let invoice_date = $('#invoice_date').val();
-            // alert(invoice_date);
             $.ajax({
                 method: 'POST',
                 url: "{{ url('/invoice/select-invoice')}}",
                 data: {
+                    "bag_no": bag_no,
                     "invoice_date": invoice_date,
                     "invoice_mode": invoice_mode,
                     "_token": "{{ csrf_token() }}",
                 },
                 success: function(response) {
-                    // console.log(response);
+                    console.log(response);
                     let table_data = '';
 
                     $.each(response, function(i, response) {
@@ -203,8 +218,6 @@ $(document).ready(function() {
                             " class='edit btn btn-primary btn-sm'><i class='fas fa-edit'></i> Edit </a></td> </tr>"
                     });
                     $('#checkTable').html(table_data);
-                    // alert('Export pdf successfully');
-
                 },
             });
         }
@@ -212,6 +225,7 @@ $(document).ready(function() {
     });
 
     $('#selected-download').click(function() {
+        alert('Invoice is downloading please wait.');
         let invoice_mode = $('#mode').val();
         let invoice_date = $('#invoice_date').val();
         var url = $(location).attr('href');
@@ -226,7 +240,6 @@ $(document).ready(function() {
             }
             count++;
         });
-        // alert(id);
         $.ajax({
             method: 'POST',
             url: "{{ url('/invoice/select-download')}}",
@@ -240,26 +253,9 @@ $(document).ready(function() {
                 // arr += response;
                 // window.location.href = '/invoice/zip-download/' + arr;
                 // alert('Export pdf successfully');
-                // $('#zip-download').show();
-
             },
         });
-
     });
-    // $('#zip-download').click(function() {
-    //     let invoice_mode = $('#mode').val();
-    //     let invoice_date = $('#invoice_date').val();
-    //     $.ajax({
-    //         method: 'GET',
-    //         url: "{{ url('/zip/download')}}",
-    //         data: {
-    //             "invoice_date": invoice_date,
-    //             "invoice_mode": invoice_mode,
-    //             "_token": "{{ csrf_token() }}",
-    //         },
-
-    //     });
-    // });
 
     $('#select_print').click(function() {
         var url = $(location).attr('href');
@@ -275,7 +271,6 @@ $(document).ready(function() {
             count++;
             window.location.href = '/invoice/selected-print/' + id;
         });
-        // alert(id);
     });
 
 });

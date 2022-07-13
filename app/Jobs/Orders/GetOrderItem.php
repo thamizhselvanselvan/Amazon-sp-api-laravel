@@ -32,7 +32,7 @@ class GetOrderItem implements ShouldQueue
      */
     public function handle()
     {
-        Log::info("Order Item Import");
+        // Log::info("Order Item Import");
         $order_id = $this->payload['order_id'];
         $aws_id = $this->payload['aws_id'];
         $country_code = $this->payload['country_code'];
