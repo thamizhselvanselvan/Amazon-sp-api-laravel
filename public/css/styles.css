@@ -558,3 +558,8 @@ body {
 .bag_no {
     width: 150px;
 }
+
+.vmode {
+    margin-top: -10px;
+    font-size: small;
+}

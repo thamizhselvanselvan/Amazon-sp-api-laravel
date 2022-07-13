@@ -208,7 +208,7 @@ class labelManagementController extends Controller
     {
         if(!Storage::exists('label/zip/label.zip'))
         {
-            return redirect()->intended('/label/search-label')->with('success', 'File not available right now! Please wait.');
+            return redirect()->intended('/label/search-label')->with('success', 'File is not available right now! Please wait.');
         }
         return Storage::download('label/zip/label.zip');
     }

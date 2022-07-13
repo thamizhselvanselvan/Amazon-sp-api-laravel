@@ -58,11 +58,12 @@
         <div class="col-7 d-flex justify-content-end">
             <div class="form-group mr-2">
                 <x-adminlte-select label="Mode: " name="mode" id="mode" class="float-right">
-                    <option value>Select Mode</option>
+                    <option value='NULL'>Select Mode</option>
                     @foreach ($mode as $value)
                     <option value="{{$value->mode}} ">{{$value->mode}}</option>
                     @endforeach
                 </x-adminlte-select>
+                <p class="vmode" id="vmode"></p>
             </div>
             <div class="form-group bag_no mr-2">
                 <x-adminlte-input label="Bag No.:" name="bag_no" id="bag_no" placeholder="Bag No.">
@@ -151,17 +152,19 @@ $(document).ready(function() {
     });
 
     $('#search').click(function() {
-        // if ($('#mode').val() == '') {
-        //     // alert('Please Choose Mode');
-        // } else if (($('.datepicker').val() == '')) {
-        //     // alert('Please Choose Date');
-        // } else {
+        if ($('#mode').val() == 'NULL') {
+            // alert('Please Choose Mode');
+            var id = document.getElementById('mode');
+            id.style = 'border: 2px solid red';
+            let text = 'Mode must be filled out';
+            document.getElementById('vmode').innerHTML = text;
+            document.getElementById('vmode').style.color = 'red';
+        }
 
         $('#showTable').removeClass("d-none");
         let bag_no = $('#bag_no').val();
         let invoice_mode = $('#mode').val();
         let invoice_date = $('#invoice_date').val();
-        // alert(invoice_mode);
         $.ajax({
             method: 'POST',
             url: "{{ url('/invoice/select-invoice')}}",
@@ -210,12 +213,8 @@ $(document).ready(function() {
                         " class='edit btn btn-primary btn-sm'><i class='fas fa-edit'></i> Edit </a></td> </tr>"
                 });
                 $('#checkTable').html(table_data);
-                // alert('Export pdf successfully');
-
             },
         });
-        // }
-
     });
 
     $('#selected-download').click(function() {
@@ -234,7 +233,6 @@ $(document).ready(function() {
             }
             count++;
         });
-        // alert(id);
         $.ajax({
             method: 'POST',
             url: "{{ url('/invoice/select-download')}}",
@@ -250,7 +248,6 @@ $(document).ready(function() {
                 // alert('Export pdf successfully');
             },
         });
-
     });
 
     $('#select_print').click(function() {
@@ -267,7 +264,6 @@ $(document).ready(function() {
             count++;
             window.location.href = '/invoice/selected-print/' + id;
         });
-        // alert(id);
     });
 
 });
