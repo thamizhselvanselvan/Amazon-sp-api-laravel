@@ -7,14 +7,32 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Jobs\AmazonInvoice\AmazonInvoiceUploadDO;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
+use App\Jobs\AmazonInvoice\AmazonInvoiceUploadDO;
 
 class AmazonInvoiceManagementController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
+        // dd($data);
+        if ($request->ajax()) {
+            $data = DB::connection('web')->select("SELECT * FROM amazoninvoice ORDER BY status ASC");
+            return DataTables::of($data)
+                ->editColumn('status', function ($data) {
+                    if($data->status == 0)
+                    {
+                        return 'Failed';
+                    }
+                    else{
+                        return 'Uploaded';
+                    }
+                    // return $data->status;
+                })
+                ->rawColumns(['status'])
+                ->make(true);
+        }
         return view('amazonInvoice.index');
     }
 
@@ -76,11 +94,9 @@ class AmazonInvoiceManagementController extends Controller
             $job_data['Date'] = $value->BookingDate;
 
             $class = 'AmazonInvoice\\AmazonInvoiceUploadDO';
-        
-            jobDispatchFunc($class, $job_data,'amazonInvoice');   
 
+            jobDispatchFunc($class, $job_data, 'amazonInvoice');
         }
-        
         return response()->json(["message" => "All file uploaded successfully"]);
     }
 }
