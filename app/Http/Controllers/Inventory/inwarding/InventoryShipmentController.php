@@ -347,9 +347,9 @@ class InventoryShipmentController extends Controller
             $quant[] = $val->quantity;
         }
         // dd($quant);
+        $bar_code = [];
         foreach ($lable as $viewlable) {
             $data = $viewlable;
-            $bar_code = [];
 
             $generator = new BarcodeGeneratorHTML();
             $bar_code[]  = $generator->getBarcode($data['asin'], $generator::TYPE_CODE_93);

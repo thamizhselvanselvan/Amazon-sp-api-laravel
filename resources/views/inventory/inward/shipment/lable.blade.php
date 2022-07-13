@@ -38,18 +38,16 @@
 </div>
 @stop
 @section('content')
-        <div class="row">
+<div class="row">
     @foreach ($lable as $key => $val)
-
-        <h5>New</h5>
-        @for($i = 0; $i < $quant[$key]; $i++)
-            <h6>{{$val['asin']}} </h6>
-            <h4>{!! $bar_code[0] !!}</h4>
-            <h6>{{$val['item_name']}}</h6>
+    <h5>New</h5>
+    @for($i = 0; $i < $quant[$key]; $i++) <h6>{{$val['asin']}} </h6>
+        <h4>{!! $bar_code[$key] !!}</h4>
+        <h6>{{$val['item_name']}}</h6>
         @endfor
 
-    @endforeach
-    </div>
+        @endforeach
+</div>
 @stop
 
 
