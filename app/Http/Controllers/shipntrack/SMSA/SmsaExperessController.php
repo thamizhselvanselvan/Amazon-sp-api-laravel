@@ -10,6 +10,7 @@ class SmsaExperessController extends Controller
 
     public function SmsaGetTrackingDetails()
     {
+        //['290316182530','290314335520','290314335017','290314333540','290314335404'];
         $awbNo = '290314335017';
         $password = 'Bom@7379';
         $url = "http://track.smsaexpress.com/SECOM/SMSAwebService.asmx";
@@ -45,7 +46,14 @@ class SmsaExperessController extends Controller
         $plainXML = $this->mungXML(trim($data));
         $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
 
-        dd($arrayResult['soap_Body']);
+        $arrayResult = $arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram'];
+        if (array_key_exists('NewDataSet', $arrayResult)) {
+
+            dd($arrayResult['NewDataSet']['Tracking']);
+        }
+        else{
+            echo "Invalid Awb No.";
+        }
     }
 
     public function mungXML($xml)
