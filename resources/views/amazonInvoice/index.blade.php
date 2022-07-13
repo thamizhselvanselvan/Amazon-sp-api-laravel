@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Amazon.in product')
+@section('title', 'Amazon Invoice')
 
 @section('content_header')
 <div class="row">
@@ -26,7 +26,7 @@
             <th>Order Id</th>
             <th>Booking Date</th>
             <th>Status</th>
-            <!-- <th>Action</th> -->
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -64,6 +64,12 @@
                 {
                     data: 'status',
                     name: 'status',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'action',
+                    name: 'action',
                     orderable: false,
                     searchable: false
                 },
