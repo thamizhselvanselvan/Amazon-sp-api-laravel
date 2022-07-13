@@ -54,15 +54,20 @@
             </div>
         </div>
 
-        <!-- <div class="col-2"></div> -->
-        <div class="col d-flex justify-content-end">
+
+        <div class="col-7 d-flex justify-content-end">
             <div class="form-group mr-2">
                 <x-adminlte-select label="Mode: " name="mode" id="mode" class="float-right">
-                    <option value="">Select Mode</option>
+                    <option value>Select Mode</option>
                     @foreach ($mode as $value)
                     <option value="{{$value->mode}} ">{{$value->mode}}</option>
                     @endforeach
                 </x-adminlte-select>
+            </div>
+            <div class="form-group bag_no mr-2">
+                <x-adminlte-input label="Bag No.:" name="bag_no" id="bag_no" placeholder="Bag No.">
+
+                </x-adminlte-input>
             </div>
             <div class="form-group">
                 <label>Invoice Date:</label>
@@ -146,72 +151,75 @@ $(document).ready(function() {
     });
 
     $('#search').click(function() {
-        if ($('#mode').val() == '') {
-            alert('Please Choose Mode');
-        } else if (($('.datepicker').val() == '')) {
-            alert('Please Choose Date');
-        } else {
+        // if ($('#mode').val() == '') {
+        //     // alert('Please Choose Mode');
+        // } else if (($('.datepicker').val() == '')) {
+        //     // alert('Please Choose Date');
+        // } else {
 
-            $('#showTable').removeClass("d-none");
-            let invoice_mode = $('#mode').val();
-            let invoice_date = $('#invoice_date').val();
-            // alert(invoice_date);
-            $.ajax({
-                method: 'POST',
-                url: "{{ url('/invoice/select-invoice')}}",
-                data: {
-                    "invoice_date": invoice_date,
-                    "invoice_mode": invoice_mode,
-                    "_token": "{{ csrf_token() }}",
-                },
-                success: function(response) {
-                    // console.log(response);
-                    let table_data = '';
+        $('#showTable').removeClass("d-none");
+        let bag_no = $('#bag_no').val();
+        let invoice_mode = $('#mode').val();
+        let invoice_date = $('#invoice_date').val();
+        // alert(invoice_mode);
+        $.ajax({
+            method: 'POST',
+            url: "{{ url('/invoice/select-invoice')}}",
+            data: {
+                "bag_no": bag_no,
+                "invoice_date": invoice_date,
+                "invoice_mode": invoice_mode,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(response) {
+                console.log(response);
+                let table_data = '';
 
-                    $.each(response, function(i, response) {
-                        let invoice_id = response.invoice_no.replaceAll(
-                            /-/g,
-                            '_');
+                $.each(response, function(i, response) {
+                    let invoice_id = response.invoice_no.replaceAll(
+                        /-/g,
+                        '_');
 
-                        table_data += "<tr class='" + invoice_id +
-                            "'><td><input class='check_options' type='checkbox' value=" +
-                            response.id + " name='options[]' id='checkid" +
-                            response
-                            .id + "'></td><td>" + response.invoice_no +
-                            "</td><td>" + response.invoice_date +
-                            "</td><td>" +
-                            response.mode + "</td><td>" + response.channel +
-                            "</td><td>" + response.shipped_by +
-                            "</td><td>" +
-                            response.awb_no + "</td><td>" + response
-                            .store_name +
-                            "</td><td>" + response.bill_to_name +
-                            "</td><td>" +
-                            response.ship_to_name + "</td><td>" + response
-                            .sku +
-                            "</td><td>" + response.qty + "</td><td>" +
-                            response
-                            .currency + ' ' + response.product_price +
-                            "</td><td><div class='d-flex'><a href=/invoice/convert-pdf/" +
-                            response.invoice_no +
-                            " class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/invoice/download-direct/" +
-                            response.invoice_no +
-                            " class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a>";
-                        table_data +=
-                            "<div class='d-flex pl-2'><a href=/invoice/edit/" +
-                            response.invoice_no +
-                            " class='edit btn btn-primary btn-sm'><i class='fas fa-edit'></i> Edit </a></td> </tr>"
-                    });
-                    $('#checkTable').html(table_data);
-                    // alert('Export pdf successfully');
+                    table_data += "<tr class='" + invoice_id +
+                        "'><td><input class='check_options' type='checkbox' value=" +
+                        response.id + " name='options[]' id='checkid" +
+                        response
+                        .id + "'></td><td>" + response.invoice_no +
+                        "</td><td>" + response.invoice_date +
+                        "</td><td>" +
+                        response.mode + "</td><td>" + response.channel +
+                        "</td><td>" + response.shipped_by +
+                        "</td><td>" +
+                        response.awb_no + "</td><td>" + response
+                        .store_name +
+                        "</td><td>" + response.bill_to_name +
+                        "</td><td>" +
+                        response.ship_to_name + "</td><td>" + response
+                        .sku +
+                        "</td><td>" + response.qty + "</td><td>" +
+                        response
+                        .currency + ' ' + response.product_price +
+                        "</td><td><div class='d-flex'><a href=/invoice/convert-pdf/" +
+                        response.invoice_no +
+                        " class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/invoice/download-direct/" +
+                        response.invoice_no +
+                        " class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a>";
+                    table_data +=
+                        "<div class='d-flex pl-2'><a href=/invoice/edit/" +
+                        response.invoice_no +
+                        " class='edit btn btn-primary btn-sm'><i class='fas fa-edit'></i> Edit </a></td> </tr>"
+                });
+                $('#checkTable').html(table_data);
+                // alert('Export pdf successfully');
 
-                },
-            });
-        }
+            },
+        });
+        // }
 
     });
 
     $('#selected-download').click(function() {
+        alert('Invoice is downloading please wait.');
         let invoice_mode = $('#mode').val();
         let invoice_date = $('#invoice_date').val();
         var url = $(location).attr('href');
@@ -240,26 +248,10 @@ $(document).ready(function() {
                 // arr += response;
                 // window.location.href = '/invoice/zip-download/' + arr;
                 // alert('Export pdf successfully');
-                // $('#zip-download').show();
-
             },
         });
 
     });
-    // $('#zip-download').click(function() {
-    //     let invoice_mode = $('#mode').val();
-    //     let invoice_date = $('#invoice_date').val();
-    //     $.ajax({
-    //         method: 'GET',
-    //         url: "{{ url('/zip/download')}}",
-    //         data: {
-    //             "invoice_date": invoice_date,
-    //             "invoice_mode": invoice_mode,
-    //             "_token": "{{ csrf_token() }}",
-    //         },
-
-    //     });
-    // });
 
     $('#select_print').click(function() {
         var url = $(location).attr('href');

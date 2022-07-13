@@ -19,4 +19,5 @@ Route::get('label/download/{awb_no}', 'label\labelManagementController@downloadL
 Route::get('label/download-direct/{id}', 'label\labelManagementController@DownloadDirect');
 Route::get('label/print-selected/{id}', 'label\labelManagementController@PrintSelected');
 Route::POST('label/select-download', 'label\labelManagementController@DownloadSelected');
-Route::get('label/zip-download/{arr}', 'label\labelManagementController@zipDownload');
+// Route::get('label/zip-download/{arr}', 'label\labelManagementController@zipDownload');
+Route::get('label/zip/download', 'label\labelManagementController@zipDownload');

@@ -23,10 +23,27 @@
 @stop
 
 @section('content')
+<div class="row">
+    <div class="col">
 
+        <div class="alert_display">
+            @if ($message = Session::get('success'))
+            <div class="alert alert-warning alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>{{ $message }}</strong>
+            </div>
+            @endif
+        </div>
+    </div>
+</div>
 <div class="container-fluid label-search-box">
     <div class="row">
-        <div class="col"></div>
+        <div class="col">
+            <a href="zip/download">
+                <x-adminlte-button label="Download Label Zip" theme="primary" icon="fas fa-download" class="btn-md ml-1"
+                    id='zip-download' />
+            </a>
+        </div>
         <div class="col">
             <form action="">
                 @csrf
@@ -169,6 +186,7 @@ $(document).ready(function() {
     });
 
     $('#download_selected').click(function() {
+        alert('Label is downloading please wait.');
         let id = '';
         let count = '';
         let arr = '';
@@ -180,6 +198,7 @@ $(document).ready(function() {
             }
             count++;
         });
+        // alert(id);
         $.ajax({
             method: 'POST',
             url: "{{ url('/label/select-download')}}",
@@ -188,8 +207,8 @@ $(document).ready(function() {
                 "_token": "{{ csrf_token() }}",
             },
             success: function(response) {
-                arr += response;
-                window.location.href = '/label/zip-download/' + arr;
+                // arr += response;
+                // window.location.href = '/label/zip-download/' + arr;
                 // alert('Export pdf successfully');
             }
         });
