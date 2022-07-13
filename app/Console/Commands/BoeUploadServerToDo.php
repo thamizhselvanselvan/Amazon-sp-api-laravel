@@ -67,7 +67,7 @@ class BoeUploadServerToDo extends Command
             }
         });
 
-        Log::alert('Boe Uploaded to Do');
+        // Log::alert('Boe Uploaded to Do');
     //    UploadBoeToDO::dispatch();
 
     }
