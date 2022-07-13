@@ -8,11 +8,11 @@ use App\Services\AWS_Business_API\AWS_POC\getProductsByAsins;
 
 class GetProductsByAsinsController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        // $ApiCall = new getProductsByAsins();
-        // $data = $ApiCall->getASINby();
-        // dd($data);
+        $ApiCall = new getProductsByAsins();
+        $data = $ApiCall->getASINby();
+        dd($data);
         return View('buisnessapi.get_products_byasins.index');
     }
     public function searchasinproduct(Request $request)
