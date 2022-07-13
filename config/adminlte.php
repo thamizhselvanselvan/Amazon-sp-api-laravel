@@ -558,6 +558,11 @@ return [
                     'url'   =>  'shipntrack/index',
                     'can'   =>  ['Admin'],
                 ],
+                [
+                    'text'  =>  'SMSA Tracking',
+                    'url'   =>  'shipntrack/smsa',
+                    'can'   =>  ['Admin'],
+                ],
             ]
         ],
 
