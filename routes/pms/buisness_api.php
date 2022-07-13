@@ -14,5 +14,5 @@ Route::resource('business/products', 'BuisnessAPI\ProductsRequestController');
 Route::get('buisness/product/offers', 'BuisnessAPI\searchOffersRequestController@searchoffersproduct');
 Route::resource('business/offers', 'BuisnessAPI\searchOffersRequestController');
 
-
-Route::resource('business/byasins', 'BuisnessAPI\ProductsRequestController');
+Route::get('business/asin/details', 'BuisnessAPI\searchOffersRequestController@searchasinproduct');
+Route::resource('business/byasins', 'BuisnessAPI\GetProductsByAsinsController');
