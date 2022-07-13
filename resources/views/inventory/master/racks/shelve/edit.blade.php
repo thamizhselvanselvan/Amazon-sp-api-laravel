@@ -71,21 +71,21 @@
 
                 </div>
                 <div class="col-4">
-
-
                     <x-adminlte-select name="ware_id" label="Select Warehouse">
                         <option>Select Warehouse</option>
                         @foreach ($ware_lists as $ware_list)
-
-                        <option value="{{ $ware_list->id }}">{{ $ware_list->name  }}</option>
-
+                        @if ($ware_list->id == $selected_warehouse)
+                        <option value="{{ $ware_list->id }}" selected> {{ $ware_list->name }}</option>
+                        @else
+                        <option value="{{ $ware_list->id }}">{{$ware_list->name }}</option>
+                        @endif
                         @endforeach
 
                     </x-adminlte-select>
                 </div>
                 <div class="col-4">
                     <x-adminlte-select name="rack_id" label="Select Rack">
-                 
+
                         @foreach ($rack_lists as $rack_list)
 
                         @if ($rack_list->id == $shelve->rack_id)
@@ -115,7 +115,7 @@
 
             </div>
 
-        
+
 
             <div class="col-12 text-center">
                 <x-adminlte-button label="Submit" theme="primary" class="Shelves.update" icon="fas fa-save" type="submit" />

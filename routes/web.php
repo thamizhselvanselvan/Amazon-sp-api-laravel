@@ -48,6 +48,40 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('country',function(){
+ 
+    $path =  public_path('country.json');
+        $jsonfile = json_decode(file_get_contents($path),true);
+        $countries_list = [];
+
+        foreach($jsonfile as $jsondata)
+        {
+            $countries_list [] = [
+
+                "name" => $jsondata['name'],
+                "country_code" => $jsondata['iso3'],
+                "code" => $jsondata['iso2'],
+                "numeric_code" => $jsondata['numeric_code'],
+                "phone_code" => $jsondata['phone_code'],
+                "capital" => $jsondata['capital'],
+                "currency" => $jsondata['currency'],
+                "currency_name" => $jsondata['currency_name'],
+                "currency_symbol" => $jsondata['currency_symbol'],
+                "created_at" => now(),
+                "updated_at" => now(),
+            ];
+        }
+        po($countries_list);
+       
+        $country_count = Country::count();
+
+        if($country_count <= 0 )
+        {
+            Country::insert($countries_list);
+        }
+
+        $countries = Country::get();
+});
 
 Route::get('test', function (ReportWeekly $report_weekly) {
 

@@ -5,14 +5,11 @@ namespace App\Console\Commands;
 use Carbon\Carbon;
 use AWS\CRT\HTTP\Request;
 use Illuminate\Console\Command;
-use App\Models\inventory\Stocks;
-use App\Models\Inventory\Shipment;
 use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
 use Illuminate\Support\Facades\Log;
-use App\Models\Inventory\Outshipment;
 use App\Models\Inventory\Shipment_Inward_Details;
-use App\Models\inventory\Shipment_Outward_Details;
+use App\Models\Inventory\Shipment_Outward_Details;
 
 class StocktTrack extends Command
 {
@@ -47,7 +44,7 @@ class StocktTrack extends Command
      */
     public function handle()
     {
-        
+
         /* Date */
         $date = Carbon::now()->format('d M Y');
 
@@ -100,6 +97,8 @@ class StocktTrack extends Command
 
         /* Opeaning Amount */
         $amt = [];
+        $singlepricein = [];
+        $singlepriceout = [];
         $openamtamt =  Shipment_Inward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
         foreach ($openamtamt as $amt) {
             $singlepricein[] = [
@@ -167,7 +166,7 @@ class StocktTrack extends Command
         $dayclosingamt =  array_sum($dayclosing);
 
 
-      
+
 
         DB::connection('inventory')->table('stocks')->insert([
             'date' => $date,
@@ -180,7 +179,7 @@ class StocktTrack extends Command
             'closing_stock' =>  $todayclosingstock,
             'closing_amount' =>   $dayclosingamt,
             'created_at' => now(),
-        'updated_at' => now()
+            'updated_at' => now()
         ]);
     }
 }

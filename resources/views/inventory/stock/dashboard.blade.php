@@ -44,7 +44,7 @@
             <div class="col-3">
                 <h2>
                     <div style="margin-top: 1.8rem;">
-                        <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export" id="export" />
+                        <x-adminlte-button type="button" label="Export" theme="primary" icon="fas fa-file-export" id="export" />
                     </div>
                 </h2>
             </div>
@@ -72,7 +72,7 @@
     <thead>
         <tr>
             <td id="detail">Warehouse Name</td>
-            <td id="detail"> Shipment ID</td>
+            <td id="detail">Shipment ID</td>
             <td id="detail">ASIN</td>
             <td id="detail">Item Name</td>
             <td id="detail">Price/Unit</td>
@@ -119,7 +119,7 @@
                     const d = new Date(value.created_at);
 
                     html += "<tr>";
-                    html += "<td>" + value.name + "</td>";
+                    html += "<td>" + value.warehouses.name + "</td>";
                     html += "<td>" + value.ship_id + "</td>";
                     html += "<td>" + value.asin + "</td>";
                     html += "<td>" + value.item_name + "</td>";
@@ -136,6 +136,8 @@
 
                 $("#data_display").html(html);
 
+                // window.location.href = '/inventory/exp/' + id;
+                // alert(' pdf Downloaded  successfully');
 
             },
             error: function(response) {
@@ -145,22 +147,26 @@
 
     });
 
-    $('#export').click(function(){
+    /*download PDF */
+    $('#export').click(function() {
 
 
-        var id =   $('#warehouse').val();
-   
+        var id = $('#warehouse').val();
+
         $.ajax({
             url: '/inventory/expo',
-            method: 'POST',
+            method: 'get',
             data: {
                 'id': id,
                 "_token": "{{ csrf_token() }}",
             },
             success: function(result) {
-               alert('success')
+                window.location.href = '/inventory/exp/' + id;
+                alert('  Downloaded  successfully');
+
+
             },
-            error: function(response){
+            error: function(response) {
                 console.log(response);
             }
         });

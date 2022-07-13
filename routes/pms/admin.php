@@ -30,4 +30,7 @@ Route::get('admin/catalog/create', 'Admin\CatalogManagementController@create')->
 Route::post('admin/catalog/user_save', 'Admin\CatalogManagementController@user_save')->name('catalog_user_save');
 Route::delete('admin/catalog/{id}/user_delete', 'Admin\CatalogManagementController@trash')->name('catalog_user_delete');
 
+Route::get('admin/stores', 'Admin\AdminManagementController@selectStore')->name('admin.store');
+Route::post('admin/update-store', 'Admin\AdminManagementController@updateStore'); 
+
 

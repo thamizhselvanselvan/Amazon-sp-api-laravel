@@ -4,12 +4,12 @@
 
     <div class="{{ config('adminlte.classes_topnav_container', 'container') }}">
 
-        {{-- Navbar brand logo --}}
+        <!-- {{-- Navbar brand logo --}}
         @if(config('adminlte.logo_img_xl'))
             @include('adminlte::partials.common.brand-logo-xl')
         @else
             @include('adminlte::partials.common.brand-logo-xs')
-        @endif
+        @endif -->
 
         {{-- Navbar toggler button --}}
         <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse"

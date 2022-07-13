@@ -15,7 +15,7 @@ class CreateCountriesTable extends Migration
     {
         Schema::connection('inventory')->create('countries', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); 
+            $table->string('name');
             $table->timestamps();
         });
     }

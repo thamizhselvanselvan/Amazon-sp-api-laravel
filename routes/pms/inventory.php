@@ -9,13 +9,14 @@ Route::resource('inventory/racks', 'Inventory\Master\Rack\InventoryRackControlle
 Route::post('rack/{id}', 'Inventory\Master\Rack\InventoryShelveController@getRack');
 Route::resource('inventory/shelves', 'Inventory\Master\Rack\InventoryShelveController');
 
-Route::get('inventory/bins/create/rack/{id?}', 'Inventory\Master\Rack\InventoryBinController@create')->name('inventory.bin.create');
+Route::get('inventory/bins/create/rack/{id?}', 'Inventory\Master\Rack\InventoryBinController@create')->name('inventory.bin.make');
 Route::get('inventory/bins/create/rack/{rack_id?}/shelve/{shelve_id?}', 'Inventory\Master\Rack\InventoryBinController@create')->name('inventory.bin.create');
 Route::post('Binrack/{id}', 'Inventory\Master\Rack\InventoryBinController@getBinRack');
 Route::post('BinShelves/{id}', 'Inventory\Master\Rack\InventoryBinController@getBinRackShelve');
 Route::post('Bins/{id}', 'Inventory\Master\Rack\InventoryBinController@getBinRackShelve');
 Route::resource('inventory/bins', 'Inventory\Master\Rack\InventoryBinController');
 
+Route::resource('inventory/items', 'Inventory\Master\InventoryItemsController.');
 
 Route::resource('inventory/sources', 'Inventory\Master\InventorySourceController');
 Route::get('inventory/Index', 'Inventory\Master\InventorySourceController@index');
@@ -28,6 +29,7 @@ Route::get('inventory/stocks', 'Inventory\StockController@dashboard')->name('inv
 Route::get('inventory/list', 'Inventory\StockController@getlist');
 Route::get('inventory/expo', 'Inventory\StockController@eportinv');
 Route::get('inventory/export', 'Inventory\StockController@eportinv')->name('inventory.export');
+Route::get('inventory/exp/{id}', 'Inventory\StockController@downexp');
 
 
 Route::post('json/{id}', 'Inventory\InventoryWarehouseController@CountryStateCity')->name('country.name');
@@ -46,6 +48,10 @@ Route::resource('inventory/vendors', 'Inventory\InventoryVendorController');
 
 Route::get('shipment/select/view', 'Inventory\inwarding\InventoryShipmentController@selectView');
 Route::get('shipment/autocomplete', 'Inventory\inwarding\InventoryShipmentController@autocomplete');
+
+Route::post('shipment/upload', 'Inventory\inwarding\InventoryShipmentController@autocomplete');
+
+
 Route::post('shipment/storeshipment', 'Inventory\inwarding\InventoryShipmentController@storeshipment');
 Route::get('shipment/select/region', 'Inventory\inwarding\InventoryShipmentController@selectregion');
 Route::get('shipment/inward/view', 'Inventory\inwarding\InventoryShipmentController@inwardingdata')->name('shipments.view');
@@ -72,7 +78,11 @@ Route::resource('inventory/outwardings', 'Inventory\Outwarding\InventoryOutwardS
 Route::get('reports/daily', 'Inventory\ReportController@daily');
 Route::get('reports/weekly', 'Inventory\ReportController@index');
 Route::get('export/weekly', 'Inventory\ReportController@eportinvweekly');
+Route::get('export/daily', 'Inventory\ReportController@eportdaily');
 Route::get('reports/monthly', 'Inventory\ReportController@monthlyview')->name('monthly.view');
 Route::get('export/monthly', 'Inventory\ReportController@eportinvmonthly');
+Route::get('inventory/warewise', 'Inventory\ReportController@warerepo');
+
+
 
 Route::resource('inventory/reports', 'Inventory\ReportController');

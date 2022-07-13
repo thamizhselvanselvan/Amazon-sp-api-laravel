@@ -8,16 +8,12 @@ use Illuminate\Http\Request;
 use App\Models\Inventory\Bin;
 use App\Models\Inventory\Rack;
 use App\Models\Inventory\Vendor;
-use App\Models\Inventory\Shipment;
-use function React\Promise\reduce;
 use App\Models\Inventory\Inventory;
-use App\Models\Inventory\Warehouse;
 use App\Http\Controllers\Controller;
-use App\Models\Inventory\Destination;
 use App\Models\Inventory\Outshipment;
 use App\Models\Inventory\Shipment_Inward_Details;
-use App\Models\inventory\Shipment_Outward;
-use App\Models\inventory\Shipment_Outward_Details;
+use App\Models\Inventory\Shipment_Outward;
+use App\Models\Inventory\Shipment_Outward_Details;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -32,7 +28,7 @@ class InventoryOutwardShipmentController extends Controller
 
         if ($request->ajax()) {
 
-            $data = Shipment_Outward_Details::select("ship_id", "destination_id")->distinct()->with(['vendors']);
+            $data = Shipment_Outward_Details::select("ship_id", "destination_id","created_at")->distinct()->with(['vendors']);
 
 
 
@@ -41,12 +37,15 @@ class InventoryOutwardShipmentController extends Controller
                 ->addColumn('destination_name', function ($data) {
                     return ($data->vendors) ? $data->vendors->name : " NA";
                 })
+                ->editColumn('date', function ($row) {
+                    return Carbon::parse($row['created_at'])->format('M d Y');
+                })
                 ->addColumn('action', function ($row) {
                     $actionBtn = '<div class="d-flex"><a href="/inventory/outwardings/' . $row->ship_id . '" class="edit btn btn-success btn-sm"><i class="fas fa-eye"></i> View</a>';
                     // $actionBtn .= '<div class="d-flex"><a href="/inventory/outwardings/' . $row->ship_id . '/outship" class="store btn btn-primary btn-sm ml-2"><i class="fas fa-box"></i> Storage </a>';
                     return $actionBtn;
                 })
-                ->rawColumns(['destinations_name', 'action'])
+                ->rawColumns(['destinations_name', 'action','date'])
                 ->make(true);
         }
 
@@ -78,14 +77,13 @@ class InventoryOutwardShipmentController extends Controller
         foreach ($outview as $key => $bar) {
             
             $bar_code = $generator->getBarcode($bar->ship_id, $generator::TYPE_CODE_93);
+            $currency_id = $bar->currency;
+    
         }
       
-        $currency = Currency::get();
-        $currency_array = [];
-        foreach ($currency as $key => $cur) {
-            $currency_array[$cur->id] = $cur->name;
-        }
-
+        $currency = Currency::where('id', $currency_id )->get()->first();
+    
+        
         $place = Inventory::whereIn('asin', $items)->get();
         $loc = [];
         foreach ($place as $plc) {
@@ -93,7 +91,7 @@ class InventoryOutwardShipmentController extends Controller
             $loc[] = Bin::where('bin_id', $plc['bin'])->first();
         }
 
-        return view('inventory.outward.shipment.view', compact('outview', 'id', 'currency_array', 'bar_code', 'bar', 'loc'));
+        return view('inventory.outward.shipment.view', compact('outview', 'id', 'currency', 'bar_code', 'bar', 'loc'));
     }
 
     public function outstore($id)
