@@ -39,7 +39,8 @@ class RemoveUploadedFiles extends Command
      * @return int
      */
     public function handle()
-    {Log::alert("remove uploaded file from server command executed at ".now());
+    {
+        // Log::alert("remove uploaded file from server command executed at ".now());
         $count = BOE::where('do', 0)->count();
         $chunk = 10;
         if ($count == 0) {
