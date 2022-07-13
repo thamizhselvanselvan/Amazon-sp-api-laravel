@@ -58,11 +58,12 @@
         <div class="col-7 d-flex justify-content-end">
             <div class="form-group mr-2">
                 <x-adminlte-select label="Mode: " name="mode" id="mode" class="float-right">
-                    <option value>Select Mode</option>
+                    <option value='NULL'>Select Mode</option>
                     @foreach ($mode as $value)
                     <option value="{{$value->mode}} ">{{$value->mode}}</option>
                     @endforeach
                 </x-adminlte-select>
+                <p class="vmode" id="vmode"></p>
             </div>
             <div class="form-group bag_no mr-2">
                 <x-adminlte-input label="Bag No.:" name="bag_no" id="bag_no" placeholder="Bag No.">
@@ -149,72 +150,77 @@ $(document).ready(function() {
     $('.datepicker').on('cancel.daterangepicker', function(ev, picker) {
         $(this).val('');
     });
-
+    $('#mode').on('change', function() {
+        if ($('#mode').val() != 'NULL') {
+            var id = document.getElementById('mode');
+            id.style = ' none';
+            document.getElementById('vmode').innerHTML = '';
+        }
+    });
     $('#search').click(function() {
-        // if ($('#mode').val() == '') {
-        //     // alert('Please Choose Mode');
-        // } else if (($('.datepicker').val() == '')) {
-        //     // alert('Please Choose Date');
-        // } else {
+        if ($('#mode').val() == 'NULL') {
+            var id = document.getElementById('mode');
+            id.style = 'border: 2px solid red';
+            let text = 'Mode must be filled out';
+            document.getElementById('vmode').innerHTML = text;
+            document.getElementById('vmode').style.color = 'red';
+        } else {
 
-        $('#showTable').removeClass("d-none");
-        let bag_no = $('#bag_no').val();
-        let invoice_mode = $('#mode').val();
-        let invoice_date = $('#invoice_date').val();
-        // alert(invoice_mode);
-        $.ajax({
-            method: 'POST',
-            url: "{{ url('/invoice/select-invoice')}}",
-            data: {
-                "bag_no": bag_no,
-                "invoice_date": invoice_date,
-                "invoice_mode": invoice_mode,
-                "_token": "{{ csrf_token() }}",
-            },
-            success: function(response) {
-                console.log(response);
-                let table_data = '';
+            $('#showTable').removeClass("d-none");
+            let bag_no = $('#bag_no').val();
+            let invoice_mode = $('#mode').val();
+            let invoice_date = $('#invoice_date').val();
+            $.ajax({
+                method: 'POST',
+                url: "{{ url('/invoice/select-invoice')}}",
+                data: {
+                    "bag_no": bag_no,
+                    "invoice_date": invoice_date,
+                    "invoice_mode": invoice_mode,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
+                    console.log(response);
+                    let table_data = '';
 
-                $.each(response, function(i, response) {
-                    let invoice_id = response.invoice_no.replaceAll(
-                        /-/g,
-                        '_');
+                    $.each(response, function(i, response) {
+                        let invoice_id = response.invoice_no.replaceAll(
+                            /-/g,
+                            '_');
 
-                    table_data += "<tr class='" + invoice_id +
-                        "'><td><input class='check_options' type='checkbox' value=" +
-                        response.id + " name='options[]' id='checkid" +
-                        response
-                        .id + "'></td><td>" + response.invoice_no +
-                        "</td><td>" + response.invoice_date +
-                        "</td><td>" +
-                        response.mode + "</td><td>" + response.channel +
-                        "</td><td>" + response.shipped_by +
-                        "</td><td>" +
-                        response.awb_no + "</td><td>" + response
-                        .store_name +
-                        "</td><td>" + response.bill_to_name +
-                        "</td><td>" +
-                        response.ship_to_name + "</td><td>" + response
-                        .sku +
-                        "</td><td>" + response.qty + "</td><td>" +
-                        response
-                        .currency + ' ' + response.product_price +
-                        "</td><td><div class='d-flex'><a href=/invoice/convert-pdf/" +
-                        response.invoice_no +
-                        " class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/invoice/download-direct/" +
-                        response.invoice_no +
-                        " class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a>";
-                    table_data +=
-                        "<div class='d-flex pl-2'><a href=/invoice/edit/" +
-                        response.invoice_no +
-                        " class='edit btn btn-primary btn-sm'><i class='fas fa-edit'></i> Edit </a></td> </tr>"
-                });
-                $('#checkTable').html(table_data);
-                // alert('Export pdf successfully');
-
-            },
-        });
-        // }
+                        table_data += "<tr class='" + invoice_id +
+                            "'><td><input class='check_options' type='checkbox' value=" +
+                            response.id + " name='options[]' id='checkid" +
+                            response
+                            .id + "'></td><td>" + response.invoice_no +
+                            "</td><td>" + response.invoice_date +
+                            "</td><td>" +
+                            response.mode + "</td><td>" + response.channel +
+                            "</td><td>" + response.shipped_by +
+                            "</td><td>" +
+                            response.awb_no + "</td><td>" + response
+                            .store_name +
+                            "</td><td>" + response.bill_to_name +
+                            "</td><td>" +
+                            response.ship_to_name + "</td><td>" + response
+                            .sku +
+                            "</td><td>" + response.qty + "</td><td>" +
+                            response
+                            .currency + ' ' + response.product_price +
+                            "</td><td><div class='d-flex'><a href=/invoice/convert-pdf/" +
+                            response.invoice_no +
+                            " class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/invoice/download-direct/" +
+                            response.invoice_no +
+                            " class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a>";
+                        table_data +=
+                            "<div class='d-flex pl-2'><a href=/invoice/edit/" +
+                            response.invoice_no +
+                            " class='edit btn btn-primary btn-sm'><i class='fas fa-edit'></i> Edit </a></td> </tr>"
+                    });
+                    $('#checkTable').html(table_data);
+                },
+            });
+        }
 
     });
 
@@ -234,7 +240,6 @@ $(document).ready(function() {
             }
             count++;
         });
-        // alert(id);
         $.ajax({
             method: 'POST',
             url: "{{ url('/invoice/select-download')}}",
@@ -250,7 +255,6 @@ $(document).ready(function() {
                 // alert('Export pdf successfully');
             },
         });
-
     });
 
     $('#select_print').click(function() {
@@ -267,7 +271,6 @@ $(document).ready(function() {
             count++;
             window.location.href = '/invoice/selected-print/' + id;
         });
-        // alert(id);
     });
 
 });

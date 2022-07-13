@@ -200,7 +200,7 @@ class InvoiceManagementController extends Controller
     public function zipDownload()
     {
         if(!Storage::exists('invoice/zip/invoice.zip')){
-            return redirect()->intended('/invoice/search-invoice')->with('success', 'File not available right now! Please wait.');
+            return redirect()->intended('/invoice/search-invoice')->with('success', 'File is not available right now! Please wait.');
         }
         return Storage::download('invoice/zip/invoice.zip');
     }
@@ -382,15 +382,15 @@ class InvoiceManagementController extends Controller
         //     return redirect()->intended('/invoice/search-invoice')->with('success', 'Invoice  has been updated successfully');
         // }
     }
-public function deleteAllPdf()
-{
-    $files =glob(Storage::path('invoice/*'));
-    foreach($files as $file)
+    public function deleteAllPdf()
     {
-        if(is_file($file)){
-            unlink($file);
+        $files =glob(Storage::path('invoice/*'));
+        foreach($files as $file)
+        {
+            if(is_file($file)){
+                unlink($file);
+            }
         }
     }
-}
     
 }
