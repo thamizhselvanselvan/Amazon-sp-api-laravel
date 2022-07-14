@@ -3,7 +3,10 @@
 @section('title', 'PDF Master')
 
 @section('content_header')
+<div class="row">
+    <h1 class="m-0 text-dark col">ShipNTrack Management</h1>
 
+</div>
 <div class="row mt-3">
     <div class="col">
         <h1 class="m-0 text-dark text-center "> CSV Upload</h1>
@@ -63,7 +66,7 @@ div.form-group {
             <div class="col-3"></div>
 
             <div class="col-6">
-                <x-adminlte-input label="Select CSV" name="files[]" id="files" type="file" />
+                <x-adminlte-input label="Select CSV File" name="files[]" id="files" type="file" />
                 <label></label>
             </div>
             <div class="col-12">
@@ -111,7 +114,6 @@ $(function() {
             }
             ++count;
         });
-
         $.ajax({
             type: 'POST',
             url: "{{ url('/shipntrack/upload/csv')}}",
@@ -124,14 +126,14 @@ $(function() {
                 // console.log(response);
                 alert('File upload successfully');
                 if (response.success) {
-                    // getBack();
+                    getBack();
                 }
             },
         });
 
-        //   function getBack() {
-        //     window.location.href = '/invoice/manage'
-        //   }
+        function getBack() {
+            window.location.href = '/shipntrack/index';
+        }
     });
 });
 </script>

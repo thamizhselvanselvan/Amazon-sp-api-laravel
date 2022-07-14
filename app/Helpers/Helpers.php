@@ -4,9 +4,10 @@ use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use App\Models\Aws_credential;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Route;
 
 if (!function_exists('ddp')) {
     function ddp($value)
@@ -483,3 +484,14 @@ function callToAPI($requestUrl, $httpRequestMethod, $headers, $data, $debug=TRUE
 
 }
 
+if (!function_exists('jobDispatchFunc')) {
+    function jobDispatchFunc($class, $parameters, $queue_type = 'default')
+    {
+        $class = 'App\\Jobs\\' . $class;
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+            dispatch(new $class($parameters))->onConnection('redis')->onQueue($queue_type);
+        } else {
+            dispatch(new $class($parameters));
+        }
+    }
+}

@@ -23,10 +23,27 @@
 @stop
 
 @section('content')
+<div class="row">
+    <div class="col">
 
+        <div class="alert_display">
+            @if ($message = Session::get('success'))
+            <div class="alert alert-warning alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>{{ $message }}</strong>
+            </div>
+            @endif
+        </div>
+    </div>
+</div>
 <div class="container-fluid label-search-box">
     <div class="row">
-        <div class="col"></div>
+        <div class="col">
+            <a href="zip/download">
+                <x-adminlte-button label="Download Label Zip" theme="primary" icon="fas fa-download" class="btn-md ml-1"
+                    id='zip-download' />
+            </a>
+        </div>
         <div class="col">
             <form action="">
                 @csrf
@@ -97,48 +114,53 @@ $(document).ready(function() {
     $('#SearchByDate').click(function() {
         if (($('#bag_no').val() == '')) {
             alert('Please Input Bag No.');
+        } else {
+
+            $('#showTable').removeClass('d-none');
+            let label_date = $('#bag_no').val();
+            // alert(label_date);
+            $.ajax({
+                method: 'POST',
+                url: "{{ url('/label/select-label')}}",
+                data: {
+                    "bag_no": label_date,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
+                    console.log(response);
+                    let table = '';
+
+                    $.each(response, function(i, response) {
+                        // alert(response);
+                        let label_id = response.order_no.replaceAll(/-/g, '_');
+                        let change_date = moment(response.purchase_date,
+                                'YYYY-MM-DD ')
+                            .format('YYYY-MM-DD');
+
+                        table += "<tr class='" + label_id + "'>";
+                        table +=
+                            "<td><input class='check_options' type='checkbox' value=" +
+                            response.id + " name='options[]' id='checkid" + response
+                            .id + "'></td>";
+                        table += "<td>" + response.store_name + "</td><td>" +
+                            response
+                            .order_no + "</td>";
+                        let t = JSON.parse(response.shipping_address);
+                        table += "<td>" + response.awb_no + "</td><td>" +
+                            change_date +
+                            "</td><td>" + response.seller_sku + "</td><td>" + t[
+                                'Name'] +
+                            "</td><td><div class='d-flex'><a href=/label/pdf-template/" +
+                            response.id +
+                            " class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/label/download-direct/" +
+                            response.id +
+                            "  class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a></td> </tr>";
+                    });
+                    $('#checkTable').html(table);
+                    // alert('Export pdf successfully');
+                }
+            });
         }
-        $('#showTable').removeClass('d-none');
-        let label_date = $('#bag_no').val();
-        // alert(label_date);
-        $.ajax({
-            method: 'POST',
-            url: "{{ url('/label/select-label')}}",
-            data: {
-                "bag_no": label_date,
-                "_token": "{{ csrf_token() }}",
-            },
-            success: function(response) {
-                console.log(response);
-                let table = '';
-
-                $.each(response, function(i, response) {
-                    // alert(response);
-                    let label_id = response.order_no.replaceAll(/-/g, '_');
-                    let change_date = moment(response.purchase_date, 'YYYY-MM-DD ')
-                        .format('YYYY-MM-DD');
-
-                    table += "<tr class='" + label_id + "'>";
-                    table +=
-                        "<td><input class='check_options' type='checkbox' value=" +
-                        response.id + " name='options[]' id='checkid" + response
-                        .id + "'></td>";
-                    table += "<td>" + response.store_name + "</td><td>" + response
-                        .order_no + "</td>";
-                    let t = JSON.parse(response.shipping_address);
-                    table += "<td>" + response.awb_no + "</td><td>" + change_date +
-                        "</td><td>" + response.seller_sku + "</td><td>" + t[
-                            'Name'] +
-                        "</td><td><div class='d-flex'><a href=/label/pdf-template/" +
-                        response.id +
-                        " class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/label/download-direct/" +
-                        response.id +
-                        "  class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a></td> </tr>";
-                });
-                $('#checkTable').html(table);
-                // alert('Export pdf successfully');
-            }
-        });
         // <td>Invoice No.</td><td>Invoice Date</td><td>Channel</td><td>Shipped By</td><td>Awb No</td><td>Arn NO.</td><td>Hsn Code</td><td>Quantity</td><td>Product Price</td><td class='text-center'>Action</td></tr></thead><tbody>
     });
 
@@ -169,6 +191,7 @@ $(document).ready(function() {
     });
 
     $('#download_selected').click(function() {
+        alert('Label is downloading please wait.');
         let id = '';
         let count = '';
         let arr = '';
@@ -180,6 +203,7 @@ $(document).ready(function() {
             }
             count++;
         });
+        // alert(id);
         $.ajax({
             method: 'POST',
             url: "{{ url('/label/select-download')}}",
@@ -188,8 +212,8 @@ $(document).ready(function() {
                 "_token": "{{ csrf_token() }}",
             },
             success: function(response) {
-                arr += response;
-                window.location.href = '/label/zip-download/' + arr;
+                // arr += response;
+                // window.location.href = '/label/zip-download/' + arr;
                 // alert('Export pdf successfully');
             }
         });

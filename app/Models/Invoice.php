@@ -21,7 +21,7 @@ class Invoice extends Model
         'awb_no',
         'arn_no',
         'store_name',
-        'store__add',
+        'store_add',
         'bill_to_name',
         'bll_to_add',
         'ship_to_name',
@@ -49,4 +49,9 @@ class Invoice extends Model
         $this->getConnection()->setTablePrefix('');
     }
 
+    public function __distruct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->getConnection()->setTablePrefix('sp_');
+    }
 }

@@ -2,27 +2,27 @@
 
 namespace App\Http\Controllers\invoice;
 
-use App\Models\Invoice;
-use App\Http\Controllers\Controller;
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Storage;
-
-use Spatie\Browsershot\Browsershot;
-use Maatwebsite\Excel\Facades\Excel;
-use Picqer\Barcode\BarcodeGeneratorHTML;
-use Yajra\DataTables\Facades\DataTables;
-
 use File;
+
 use DateTime;
 use ZipArchive;
 use RedBeanPHP\R;
 use League\Csv\Reader;
+use App\Models\Invoice;
+use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
+
+use Spatie\Browsershot\Browsershot;
+use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
+use Picqer\Barcode\BarcodeGeneratorHTML;
+use Yajra\DataTables\Facades\DataTables;
 
 
 class InvoiceManagementController extends Controller
@@ -69,16 +69,30 @@ class InvoiceManagementController extends Controller
     {
         if ($request->ajax()) {
             $mode = $request->invoice_mode;
-
-            $date = $request->invoice_date;
-            $newdate = explode(' - ', $date);
-            $date1 = $newdate[0];
-            $date2 = $newdate[1];
+            $bag_no = $request->bag_no;
+            $Invoice_date = $request->invoice_date;
             $results = '';
-           
-            $results = DB::connection('web')->select("SELECT id, invoice_no, invoice_date, mode, channel, shipped_by, awb_no, store_name, bill_to_name, ship_to_name, sku, qty, currency, product_price FROM invoices WHERE mode = '$mode' and invoice_date BETWEEN '$date1' AND '$date2' "); 
+            // $results = DB::connection('web')->select("SELECT id, invoice_no, invoice_date, mode, channel, shipped_by, awb_no, store_name, bill_to_name, ship_to_name, sku, qty, currency, product_price FROM invoices WHERE mode = '$mode' and invoice_date BETWEEN '$date1' AND '$date2' "); 
+            $results = Invoice::when(!empty(trim($request->invoice_mode)), function ($query) use($mode){
+                $query->where('mode', $mode);
+            })
+            ->when(!empty(trim($request->bag_no)), function ($query) use($bag_no){
+                $query->where('bag_no', $bag_no);
+            })
+            ->when(!empty(trim($request->invoice_date)), function ($query) use($Invoice_date){
+                $date = $this->split_date($Invoice_date);
+                $query->whereBetween('invoice_date', [$date[0], $date[1]]);
+            })
+            ->get();
         }
+        // Log::alert(json_encode($results));
         return response()->json($results);
+    }
+
+    public function split_date($date)
+    { 
+        $newdate = explode(' - ', $date);
+        return ([trim($newdate[0]), trim($newdate[1])]);
     }
 
     public function showpdf(Request $request)
@@ -166,61 +180,57 @@ class InvoiceManagementController extends Controller
     // Begin download all selected rows
     public function SelectedDownload(Request $request)
     {
-        // echo 'working file';
-        $passid = $request->id;
-        $currenturl =  request()->getSchemeAndHttpHost();
-        // return $currenturl;
-        $excelid = explode('-', $passid);
-
-        foreach ($excelid as $getId) {
-            // $id = Invoice::where('id', $getId)->get();
-            $id = DB::connection('web')->select("SELECT * from invoices where id ='$getId' ");
-            foreach ($id as $key => $value) {
-                $invoice_no = $value->invoice_no;
-                // $url = str_replace('select-download', 'convert-pdf', $currenturl . '/' . $getId);
-                $url = $currenturl.'/invoice/convert-pdf/'.$invoice_no;
-                $path = 'invoice/invoice' . $invoice_no . '.pdf';
-                if (!Storage::exists($path)) {
-                    Storage::put($path, '');
-                }
-                $exportToPdf = storage::path($path);
-                Browsershot::url($url)
-                    // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-                    ->showBackground()
-                    ->savePdf($exportToPdf);
-
-                $saveAsPdf[] = 'invoice' . $invoice_no . '.pdf';
-            }
+        $this->deleteAllPdf();
+        
+            $passid = $request->id;
+            $currenturl = request()->getSchemeAndHttpHost();
+            
+        if(App::environment(['Production', 'Staging', 'production', 'staging']))
+        {
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan pms:invoice-bulk-zip-download $passid $currenturl > /dev/null &";
+            exec($command);
+        }else{
+            Artisan::call('pms:invoice-bulk-zip-download'.' '.$passid.' '.$currenturl );
         }
-
-        return response()->json($saveAsPdf);
+        
+        return response()->json(['success' => 'zip created successfully']);
     }
 
-    public function zipDownload($arr)
+    public function zipDownload()
     {
-        $replace = explode(',', $arr);
-        $zip = new ZipArchive;
-        $path = 'zip/' . 'invoice.zip';
-        $fileName = Storage::path('zip/' . 'invoice.zip');
-        Storage::delete($path);
-        if (!Storage::exists($path)) {
-            Storage::put($path, '');
+        if(!Storage::exists('invoice/zip/invoice.zip')){
+            return redirect()->intended('/invoice/search-invoice')->with('success', 'File is not available right now! Please wait.');
         }
-        if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
-            foreach ($replace as $key => $value) {
-                $path = Storage::path('invoice/' . $value);
-                $relativeNameInZipFile = basename($path);
-                $zip->addFile($path, $relativeNameInZipFile);
-            }
-            $zip->close();
-        }
-        return response()->download($fileName);
+        return Storage::download('invoice/zip/invoice.zip');
     }
+
+    // public function zipDownload($arr)
+    // {
+    //     $replace = explode(',', $arr);
+    //     $zip = new ZipArchive;
+    //     $path = 'zip/' . 'invoice.zip';
+    //     $fileName = Storage::path('zip/' . 'invoice.zip');
+    //     Storage::delete($path);
+    //     if (!Storage::exists($path)) {
+    //         Storage::put($path, '');
+    //     }
+    //     if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
+    //         foreach ($replace as $key => $value) {
+    //             $path = Storage::path('invoice/' . $value);
+    //             $relativeNameInZipFile = basename($path);
+    //             $zip->addFile($path, $relativeNameInZipFile);
+    //         }
+    //         $zip->close();
+    //     }
+    //     return response()->download($fileName);
+    // }
 
     // end download all selected rows
 
     public function DirectDownloadPdf(Request $request, $id)
     {
+        $this->deleteAllPdf();
         // $data = Invoice::where('id', $id)->get();
         $data = DB::connection('web')->select("SELECT * from invoices where invoice_no = '$id' ");
         $invoice_no = $data[0]->invoice_no;
@@ -240,6 +250,8 @@ class InvoiceManagementController extends Controller
 
     public function ExportPdf(Request $request)
     {
+        $this->deleteAllPdf();
+        
         $id = $request->invoice_no;
         $url = $request->url;
         $file_path =  'invoice/invoice' . $id . '.pdf';
@@ -331,8 +343,7 @@ class InvoiceManagementController extends Controller
     {
         $invoice = invoice::find($id);
         $url = $request->url;
-//         po($url);
-// exit;
+        
         $invoice->invoice_no = $request->invoice_no;
         $invoice->invoice_date = $request->invoice_date;
         $invoice->mode = $request->mode;
@@ -371,4 +382,15 @@ class InvoiceManagementController extends Controller
         //     return redirect()->intended('/invoice/search-invoice')->with('success', 'Invoice  has been updated successfully');
         // }
     }
+    public function deleteAllPdf()
+    {
+        $files =glob(Storage::path('invoice/*'));
+        foreach($files as $file)
+        {
+            if(is_file($file)){
+                unlink($file);
+            }
+        }
+    }
+    
 }

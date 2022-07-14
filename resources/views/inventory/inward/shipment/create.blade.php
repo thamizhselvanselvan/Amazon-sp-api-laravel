@@ -91,11 +91,11 @@
 <table class="table table-bordered yajra-datatable table-striped" id="report_table">
     <thead>
         <tr>
-            <td>asin</td>
-            <td>Item Name</td>
-            <td>Quantity</td>
-            <td>Price/Unit</td>
-            <td>Action</td>
+            <th>ASIN</th>
+            <th>Item Name</th>
+            <th>Quantity</th>
+            <th>Price/Unit</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -149,14 +149,14 @@
             },
             'dataType': 'json',
             success: function(response) {
-                console.log(response.data);
-
+                console.log(response);
                 let html = '';
-                $.each(response, function(index, value) {
+                $.each(response.data, function(index, value) {
+
 
                     let html = "<tr class='table_row'>";
-                    html += "<td name='asin[]'>" + response.data[asin] + "</td>";
-                    html += "<td name='name[]'>" + response.data[2] + "</td>";
+                    html += "<td name='asin[]'>" + value[0].asin + "</td>";
+                    html += "<td name='name[]'>" + value[0].item_name + "</td>";
                     html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
                     html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
                     html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
@@ -164,8 +164,6 @@
 
                     $("#report_table").append(html);
                 });
-
-
 
             },
             error: function(response) {

@@ -72,7 +72,7 @@
     <thead>
         <tr>
             <td id="detail">Warehouse Name</td>
-            <td id="detail"> Shipment ID</td>
+            <td id="detail">Shipment ID</td>
             <td id="detail">ASIN</td>
             <td id="detail">Item Name</td>
             <td id="detail">Price/Unit</td>
@@ -136,6 +136,8 @@
 
                 $("#data_display").html(html);
 
+                // window.location.href = '/inventory/exp/' + id;
+                // alert(' pdf Downloaded  successfully');
 
             },
             error: function(response) {
@@ -145,11 +147,12 @@
 
     });
 
-    $('#export').click(function(){
+    /*download PDF */
+    $('#export').click(function() {
 
 
-        var id =   $('#warehouse').val();
-   
+        var id = $('#warehouse').val();
+
         $.ajax({
             url: '/inventory/expo',
             method: 'get',
@@ -158,9 +161,12 @@
                 "_token": "{{ csrf_token() }}",
             },
             success: function(result) {
-               alert('success')
+                window.location.href = '/inventory/exp/' + id;
+                alert('  Downloaded  successfully');
+
+
             },
-            error: function(response){
+            error: function(response) {
                 console.log(response);
             }
         });

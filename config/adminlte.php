@@ -266,7 +266,7 @@ return [
                     'can'  => ['Admin'],
                 ],
                 [
-                    'text' => 'Geo',
+                    'text' => 'Geo Master',
                     'url' => 'admin/geo',
                     'icon' => 'fas fa-globe-asia',
                     'can' =>  ['Admin']
@@ -555,7 +555,12 @@ return [
             'submenu' => [
                 [
                     'text'  =>  'Rate Master',
-                    'url'   =>  'shipntrack/manage',
+                    'url'   =>  'shipntrack/index',
+                    'can'   =>  ['Admin'],
+                ],
+                [
+                    'text'  =>  'SMSA Tracking',
+                    'url'   =>  'shipntrack/smsa',
                     'can'   =>  ['Admin'],
                 ],
             ]
@@ -563,7 +568,7 @@ return [
 
         [
             'text' => 'Tools',
-            'can' => ['Admin', 'Inventory', 'BOE'],
+            'can' => ['Admin', 'Inventory', 'BOE', 'KYC'],
             'submenu' =>
             [
                 [
@@ -596,6 +601,11 @@ return [
                         ],
                     ],
                 ],
+                [
+                    'text' => 'Bulk Amazon Invoice Upload',
+                    'url' => 'amazon/invoice',
+                    'can' => ['Admin', 'KYC'],
+                ],
             ],
         ],
 
@@ -607,6 +617,11 @@ return [
                     'text' => 'Dashboard',
                     'can' => ['Admin', 'B2CShip'],
                     'url' => 'b2cship/dashboard'
+                ],
+                [
+                    'text' => 'Monitor',
+                    'can' => ['Admin', 'B2CShip'],
+                    'url' => 'b2cship/monitor'
                 ],
                 [
                     'text' => 'Details',
@@ -666,7 +681,43 @@ return [
                         ]
                     ]
                 ],
+
             ],
+        ],
+        [
+            'text' => 'AWS-POC',
+            'can' => ['Admin'],
+            'submenu' => [
+                [
+                    'text' => 'Search Product Request',
+                    'url' => 'business/search/products',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+                [
+                    'text' => 'Product Request',
+                    'url' => 'business/products',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+                [
+                    'text' => 'Search Offers Request',
+                    'url' => 'business/offers',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+                [
+                    'text' => 'Get Products By Asins',
+                    'url' => 'business/byasins',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ]
+
+            ]
         ],
     ],
 

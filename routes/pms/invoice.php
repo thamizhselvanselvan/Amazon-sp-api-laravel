@@ -19,3 +19,4 @@ Route::get('invoice/selected-print/{id}', 'invoice\InvoiceManagementController@s
 Route::get('invoice/template/download', 'invoice\InvoiceManagementController@downloadTemplate');
 Route::get('invoice/edit/{id}', 'invoice\InvoiceManagementController@edit');
 Route::post('invoice/update/{id}', 'invoice\InvoiceManagementController@update')->name('invoice.update');
+Route::get('invoice/zip/download', 'invoice\InvoiceManagementController@zipDownload');

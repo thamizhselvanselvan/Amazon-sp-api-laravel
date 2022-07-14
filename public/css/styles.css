@@ -367,12 +367,14 @@ body {
     background: #eee;
 }
 
-.invoice, .label{
+.invoice,
+.label {
     background: #fff;
     padding: 20px;
 }
 
-.invoice-company, .label-company {
+.invoice-company,
+.label-company {
     font-size: 20px;
 }
 
@@ -532,7 +534,7 @@ body {
     height: 576px;
 }
 
-.container-fluid .label strong{
+.container-fluid .label strong {
     font-size: 14px;
 }
 
@@ -541,14 +543,32 @@ body {
     font-size: 12px;
 }
 
-.container-fluid .label .product tr th{
+.container-fluid .label .product tr th {
     padding: 2px;
 }
 
-.return.small{
+.return.small {
     font-size: 12px !important;
 }
 
-.return.small div{
+.return.small div {
     font-weight: bold;
+}
+
+.bag_no {
+    width: 150px;
+}
+
+.vmode {
+    margin-top: -10px;
+    font-size: small;
+}
+
+.shipRow {
+    display: inline-block;
+    margin-top: 32px;
+}
+#source {
+    height: 32px;
+    margin-top: none;
 }
