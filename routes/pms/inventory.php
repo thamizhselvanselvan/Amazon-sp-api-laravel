@@ -50,6 +50,7 @@ Route::get('shipment/select/view', 'Inventory\inwarding\InventoryShipmentControl
 Route::get('shipment/autocomplete', 'Inventory\inwarding\InventoryShipmentController@autocomplete');
 
 Route::post('shipment/upload', 'Inventory\inwarding\InventoryShipmentController@autocomplete');
+Route::post('shipment/upload/refresh', 'Inventory\inwarding\InventoryShipmentController@refreshtable');
 
 
 Route::post('shipment/storeshipment', 'Inventory\inwarding\InventoryShipmentController@storeshipment');

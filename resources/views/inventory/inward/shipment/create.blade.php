@@ -104,7 +104,7 @@
             <th>Action</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="report_table_body">
     </tbody>
 </table>
 @stop
@@ -134,8 +134,15 @@
         $("#upload,#refresh").show();
     });
     // $("#refresh").on('click', function(e) {
-    //     $("#report_table").show();
+    //     $("#report_table").hide();
     // });
+
+    // $("#refresh").on("click", function(e) {
+    //     $("#report_table").load("http://amazon-sp-api-laravel.test/inventory/shipments/create #report_table");
+    // });
+
+
+
 
     $("#upload").on('click', function(e) {
         $("#currency,#report_table,#create").show();
@@ -147,6 +154,11 @@
 
     $(".upload_asin_btn").on("click", function() {
         let uploaded = $('.up_asin').val();
+
+        if ((uploaded.length < 10)) {
+            alert('Invalid Asin');
+            return false;
+        }
         let source = $('#source').val();
 
         $.ajax({
@@ -162,9 +174,7 @@
                 console.log(response);
                 let html = '';
                 $.each(response.data, function(index, value) {
-
-
-                    let html = "<tr class='table_row'>";
+                    html += "<tr class='table_row'>";
                     html += "<td name='asin[]'>" + value[0].asin + "</td>";
                     html += "<td name='name[]'>" + value[0].item_name + "</td>";
                     html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
@@ -172,8 +182,8 @@
                     html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
                     html += "</tr>";
 
-                    $("#report_table").append(html);
                 });
+                $("#report_table").append(html);
 
             },
             error: function(response) {
@@ -181,6 +191,48 @@
             }
         });
     });
+
+
+    $(".refresh_btn").on("click", function() {
+        let uploaded = $('.up_asin').val();
+        if ((uploaded.length < 10)) {
+            alert('Invalid Asin');
+            return false;
+        }
+        let source = $('#source').val();
+
+        $.ajax({
+            method: 'POST',
+            url: '/shipment/upload/refresh',
+            data: {
+                'asin': uploaded,
+                'source': source,
+                "_token": "{{ csrf_token() }}",
+            },
+            'dataType': 'json',
+            success: function(response) {
+                console.log(response);
+
+                let html = '';
+                $.each(response.data, function(index, value) {
+                    html += "<tr class='table_row'>";
+                    html += "<td name='asin[]'>" + value[0].asin + "</td>";
+                    html += "<td name='name[]'>" + value[0].item_name + "</td>";
+                    html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
+                    html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
+                    html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
+                    html += "</tr>";
+                });
+
+                $("#report_table_body").html(html);
+            },
+            error: function(response) {
+                console.log(response);
+            }
+        });
+    });
+
+
 
     $(".create_shipmtn_btn").on("click", function() {
         let ware_valid = $('#warehouse').val();
