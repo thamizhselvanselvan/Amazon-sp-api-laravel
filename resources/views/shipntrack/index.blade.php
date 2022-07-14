@@ -20,8 +20,7 @@
     <div class="col">
         <div class="row justify-content-end">
 
-            <x-adminlte-select label="Source-Destination:" theme="primary" name="source-destinaion" id="source"
-                class="select-sm">
+            <x-adminlte-select label="Source-Destination:" theme="primary" name="source-destinaion" id="source">
                 <option value="">Select Source-Destination</option>
                 @foreach ($sourcedestination as $value)
                 <option value="{{$value->source_destination}}">{{$value->source_destination}}</option>
