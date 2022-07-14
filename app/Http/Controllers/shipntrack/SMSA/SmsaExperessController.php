@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\shipntrack\SMSA;
 
 use App\Http\Controllers\Controller;
+use App\Models\ShipNTrack\SMSA\SmsaTrackings;
 use Illuminate\Http\Request;
 
 class SmsaExperessController extends Controller
@@ -30,12 +31,29 @@ class SmsaExperessController extends Controller
         $datas = preg_split('/[\r\n| |:|,]/', $tracking_id, -1, PREG_SPLIT_NO_EMPTY);
         $datas = array_unique($datas);
 
-        $tracking_details = [];
         foreach ($datas as $awbNo) {
+            $tracking_details = [];
+            $details = $this->TrackingResponse($awbNo);
+            foreach ($details as $key => $value) {
+        
+                $tracking_details[] = [
 
-            $tracking_details[] = $this->TrackingResponse($awbNo);
-            
+                    "awbno" => $value['awbNo'],
+                    "date" => date('Y-m-d H:i:s',strtotime($value['Date'])),
+                    "activity" => $value['Activity'],
+                    "details" => $value['Details'],
+                    "location" => $value['Location']
+                ];
+            }
+
+            SmsaTrackings::upsert(
+                $tracking_details,
+                ['awbno_date_activity_unique'],
+                ['awbno', 'date', 'activity', 'details', 'location']
+            );
         }
+        // retrun v
+        return redirect()->intended('/shipntrack/smsa')->with('success', 'Tracking Details Saved');
     }
 
     public function TrackingResponse($awbNo)

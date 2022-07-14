@@ -14,11 +14,34 @@
 @stop
 
 @section('content')
+
+<div class="row">
+    <div class="col">
+
+        <div class="alert_display">
+            @if ($message = Session::get('success'))
+            <div class="alert alert-success alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>{{ $message }}</strong>
+            </div>
+            @endif
+        </div>
+
+        <div class="alert_display">
+            @if ($message = Session::get('error'))
+            <div class="alert alert-danger alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>{{ $message }}</strong>
+            </div>
+            @endif
+        </div>
+    </div>
+</div>
 <div class="pl-2">
     <table class="table table-bordered yajra-datatable table-striped text-center table-sm">
         <thead>
             <tr class="text-bold bg-info">
-               
+
             </tr>
         </thead>
         <tbody>
