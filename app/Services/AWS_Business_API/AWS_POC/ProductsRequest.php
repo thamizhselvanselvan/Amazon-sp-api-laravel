@@ -6,7 +6,7 @@ namespace App\Services\AWS_Business_API\AWS_POC;
 class ProductsRequest
 {
 
-    public function getASINpr()
+    public function getASINpr($asin)
     {
         date_default_timezone_set('Asia/Jakarta');
 
@@ -14,7 +14,7 @@ class ProductsRequest
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
         $client_secret = "80b1db8f2e3ae4b755bd50a0bcc21228694381e6a35b178efdb43799ccedd1ae";
         $refresh_token =
-            "Atza|IwEBIHrIJ44QxbFZks7g7fQDLtb8kZsNHhKlz12wfD5oo3_WErQw3OYjKhrRGzTwV_9E5ZrMMvSsT7eDhGjmqbxLqaRIRV90h33PkBO1Kc9AP72H9CYBz3KDNCgPylt4d5LcjK0_d8kMWR7XmSSfQsUeZT4RSOsaEdZsDkHL8JlhHcCmYYThLyUwJ-HLYW26axO261uj-GLxx6WpTVYFvP4EWvoD7tJiNH9vXM13j5TQn2NA0SXf3LLYPAMwYGqh9dcdPdYsMrhstNugnne3eD2QeVSYOl0wOIjCcQbrqQnedsVgGxvJhDXFI2n-jbXjAv9wQDXYq4S2VBOh5vxuXepVyGOD";
+            "Atza|IwEBICeiKeCNYMXGkKg2q_Nmi3kIbN7i6r_2WB7gx-pelqKSZ4Id8KVpaZXcCjgoMkcUyDk7f7ANQQAB20xqUFbPAvFXVn8rIPPSFygARL2jBIri7pbH6URdxbuuDZY-Axe8UHdHYyeCzQAWcuUYALiWMljY85w5SPu4zWiqtz47N5-Ef8q6_D-d7VVFmNh1InESGRktjA3BRZ7oA5Iznr_rb_7hPETx8Ka5SgxzdjAxi_xgXj2NOYCfRH66LkBKivNRq-6dqzIB26XB_ti2uAWLumPn8B2namSxHsXFVpWkM0bTa7juJb3l1NHNzLKOu77BE1CvS3a_iq_DHa5yteZKwVZd";
         $request_data = array(
             "client_id" => $client_id,
             "client_secret" => $client_secret,
@@ -23,7 +23,7 @@ class ProductsRequest
         );
 
         $reqToken =
-            "Atza|IwEBIHrIJ44QxbFZks7g7fQDLtb8kZsNHhKlz12wfD5oo3_WErQw3OYjKhrRGzTwV_9E5ZrMMvSsT7eDhGjmqbxLqaRIRV90h33PkBO1Kc9AP72H9CYBz3KDNCgPylt4d5LcjK0_d8kMWR7XmSSfQsUeZT4RSOsaEdZsDkHL8JlhHcCmYYThLyUwJ-HLYW26axO261uj-GLxx6WpTVYFvP4EWvoD7tJiNH9vXM13j5TQn2NA0SXf3LLYPAMwYGqh9dcdPdYsMrhstNugnne3eD2QeVSYOl0wOIjCcQbrqQnedsVgGxvJhDXFI2n-jbXjAv9wQDXYq4S2VBOh5vxuXepVyGOD";
+            "Atza|IwEBICeiKeCNYMXGkKg2q_Nmi3kIbN7i6r_2WB7gx-pelqKSZ4Id8KVpaZXcCjgoMkcUyDk7f7ANQQAB20xqUFbPAvFXVn8rIPPSFygARL2jBIri7pbH6URdxbuuDZY-Axe8UHdHYyeCzQAWcuUYALiWMljY85w5SPu4zWiqtz47N5-Ef8q6_D-d7VVFmNh1InESGRktjA3BRZ7oA5Iznr_rb_7hPETx8Ka5SgxzdjAxi_xgXj2NOYCfRH66LkBKivNRq-6dqzIB26XB_ti2uAWLumPn8B2namSxHsXFVpWkM0bTa7juJb3l1NHNzLKOu77BE1CvS3a_iq_DHa5yteZKwVZd";
         //  $reqToken = getToken($request_data);
 
         $host               = "na.business-api.amazon.com";
@@ -31,8 +31,8 @@ class ProductsRequest
         $secretKey          = "zjYimrzHWwT3eA3eKkuCGxMb+OA2fibMivnnht3t";
         $region             = "us-east-1";
         $service            = "execute-api";
-        $requestUrl         = "https://na.business-api.amazon.com/products/2020-08-26/products/B07NQPLWXW";
-        $uri                = '/products/2020-08-26/products/B07NQPLWXW';
+        $requestUrl         = "https://na.business-api.amazon.com/products/2020-08-26/products/$asin";
+        $uri                = "/products/2020-08-26/products/$asin";
         $httpRequestMethod  = 'GET';
         $data                = '';
 
@@ -181,7 +181,7 @@ class ProductsRequest
         // echo '<pre>';
         // print_r($headersFS);
 
-        curl_setopt($curl, CURLOPT_URL, "https://na.business-api.amazon.com/products/2020-08-26/products/B07NQPLWXW?facets=OFFERS&locale=en_US&productRegion=US");
+        curl_setopt($curl, CURLOPT_URL, "https://na.business-api.amazon.com/products/2020-08-26/products/$asin?facets=OFFERS&locale=en_US&productRegion=US");
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headersFS);
