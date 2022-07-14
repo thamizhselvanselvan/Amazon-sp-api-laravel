@@ -90,10 +90,11 @@ class ReportController extends Controller
                 'total' => $amt['price'] * $amt['quantity'],
             ];
         }
-
+        $totalpricein = [];
         foreach ($singlepricein as $sum) {
             $totalpricein[] = $sum['total'];
         }
+        $totalpriceout = [];
         foreach ($singlepriceout as $sumclose) {
             $totalpriceout[] = $sumclose['total'];
         }
@@ -125,6 +126,8 @@ class ReportController extends Controller
 
         /* Cloasing Amount */
         $closeamt =   Inventory::get();
+        
+        $dayclosingamt = 0;
         $closeprice = [];
         $dayclosing = [];
         foreach ($closeamt as $close) {

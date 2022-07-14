@@ -44,7 +44,7 @@
             <div class="col-3">
                 <h2>
                     <div style="margin-top: 1.8rem;">
-                        <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export" id="export" />
+                        <x-adminlte-button type="button" label="Export" theme="primary" icon="fas fa-file-export" id="export" />
                     </div>
                 </h2>
             </div>
@@ -152,7 +152,7 @@
    
         $.ajax({
             url: '/inventory/expo',
-            method: 'POST',
+            method: 'get',
             data: {
                 'id': id,
                 "_token": "{{ csrf_token() }}",
