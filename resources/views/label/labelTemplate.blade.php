@@ -2,7 +2,7 @@
 @section('title', 'Label')
 
 @section('content_header')
-<div class="invoice-company text-inverse f-w-600">
+<div class="label-company text-inverse f-w-600">
     <span class="pull-right hidden-print">
         <a href="javascript:void(0);" class="btn btn-sm btn-white m-b-10 p-l-5" id="Export_to_pdf"><i class="fa fa-file t-plus-1 text-danger fa-fw fa-lg"></i> Export as PDF</a>
         <a href="javascript:;" onclick="window.print()" class="btn btn-sm btn-white m-b-10 p-l-5"><i class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
@@ -42,7 +42,7 @@
             padding-top: 5px;
         }
 
-        #label-container .invoice {
+        #label-container .label {
             margin: 0px;
             padding: 0px;
         }
@@ -55,10 +55,10 @@
 <input type="hidden" id="awb_no" value="{{$awb_no}}">
 
 <div class="col-md-12" id="label-container">
-    <div class="invoice p-1">
-        <div class="invoice-content ">
+    <div class="label p-1">
+        <div class="label-content">
             <!-- <div class="table-responsive"> -->
-            <table class="table table-invoice table-bordered table-bordered-dark<td pt-1 pb-0 mb-1">
+            <table class="table table-label table-bordered table-bordered-dark<td pt-1 pb-0 mb-1">
                 <tbody>
                     <tr>
                         <td class="pb-0">

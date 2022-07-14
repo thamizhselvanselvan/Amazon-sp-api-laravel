@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\TestController;
 use App\Services\Inventory\ReportWeekly;
+use Spatie\Permission\Models\Permission;
 use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
@@ -140,7 +141,6 @@ Route::get('test', function (ReportWeekly $report_weekly) {
 
 
 
-  po($report_weekly->OpeningShipmentCount());
 
    
 
@@ -179,6 +179,12 @@ Route::get('command', function () {
 Route::get('job', function()
 {
     TestQueueFail::dispatch();
+});
+
+Route::get('deleterole', function()
+{
+    $role = Role::findByName('Orders');
+    $role->delete();
 });
 
 Route::get('rename', function()

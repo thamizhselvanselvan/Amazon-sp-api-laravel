@@ -367,12 +367,12 @@ body {
     background: #eee;
 }
 
-.invoice {
+.invoice, .label{
     background: #fff;
     padding: 20px;
 }
 
-.invoice-company {
+.invoice-company, .label-company {
     font-size: 20px;
 }
 
@@ -527,21 +527,21 @@ body {
     padding: 0;
 }
 
-.container-fluid .invoice {
+.container-fluid .label {
     width: 384px;
     height: 576px;
 }
 
-.container-fluid .invoice strong{
+.container-fluid .label strong{
     font-size: 14px;
 }
 
-.container-fluid .invoice .product tr th,
-.container-fluid .invoice .product tr td {
+.container-fluid .label .product tr th,
+.container-fluid .label .product tr td {
     font-size: 12px;
 }
 
-.container-fluid .invoice .product tr th{
+.container-fluid .label .product tr th{
     padding: 2px;
 }
 

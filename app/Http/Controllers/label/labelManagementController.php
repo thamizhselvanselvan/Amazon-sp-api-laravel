@@ -356,13 +356,17 @@ class labelManagementController extends Controller
                     $shipping_address = json_decode($label_detials);
                     foreach ((array)$shipping_address as $add_key => $add_details) {
 
-                        if($add_key == 'CountryCode')
-                        {                            $country_name = Mws_region::where('region_code', $add_details)->get('region')->first();
-                            $buyer_address['country'] = $country_name->region;
+                        if ($add_key == 'CountryCode') {
+                            $country_name = Mws_region::where('region_code', $add_details)->get('region')->first();
+                            if(isset($country_name->region))
+                            {
+                                $buyer_address['country'] = $country_name->region;
+                            }
+                        
                         }
                         $buyer_address[$add_key] =  $add_details;
                     }
-                    
+
                     $label_data[$key1] = $buyer_address;
                 } elseif ($key1 == 'package_dimensions') {
                     $dimensions = [];

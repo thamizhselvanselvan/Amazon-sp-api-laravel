@@ -18,6 +18,7 @@ class exportOtherAmazonInProduct extends Command
     private $writer;
     private $totalProductCount;
     private $currentCount;
+    private $headers_default;
 
     /**
      * The name and signature of the console command.
@@ -99,6 +100,9 @@ class exportOtherAmazonInProduct extends Command
                     return (array) $datas;
                 }, $records);
 
+                foreach ($records as $key => $data) {
+                    Log::alert(json_encode($data));
+                }
                 $this->writer->insertall($records);
 
                 if ($this->check == $this->count) {
@@ -115,7 +119,7 @@ class exportOtherAmazonInProduct extends Command
                     $percentage = 100;
                 }
                 event(new testEvent($percentage));
-            }); 
+            });
         }
 
         //remame file .mosh to .csv
@@ -126,10 +130,9 @@ class exportOtherAmazonInProduct extends Command
         $filesArray = [];
         foreach ($files as $key => $file) {
             if ($key > 1) {
-                if(str_contains($file, '.mosh'))
-                {
+                if (str_contains($file, '.mosh')) {
                     $new_file_name = str_replace('.csv.mosh', '.csv', $file);
-                    rename($path.'/'.$file, $path.'/'.$new_file_name);
+                    rename($path . '/' . $file, $path . '/' . $new_file_name);
                 }
             }
         }
@@ -137,6 +140,11 @@ class exportOtherAmazonInProduct extends Command
 
     public function catalogExportByAsin($id, $user, $headers)
     {
+        foreach($headers as $header_value)
+        {
+            $this->headers_default[$header_value] = 'N/A' ;
+        }
+        // Log::notice($this->headers_default);
         $exportFilePath = "excel/downloads/otheramazonIN/" . $user . "/otherProductDetails";
         $deleteFilePath = "app/excel/downloads/otheramazonIN/" . $user;
 
@@ -158,8 +166,6 @@ class exportOtherAmazonInProduct extends Command
 
         $this->totalProductCount = count($selected_asin);
         // $this->totalProductCount = OthercatDetails::count();
-        Log::alert('count' . $this->totalProductCount);
-
         $selected_count = 0;
         $chunk_asin = [];
         foreach ($selected_asin as $asin) {
@@ -189,23 +195,30 @@ class exportOtherAmazonInProduct extends Command
                 $this->writer->insertOne($headers);
             }
 
-            $records1 = $records->toArray();
-            $records1 = array_map(function ($datas) {
-                return $datas['asin'];
-            }, $records1);
-
             $records = $records->toArray();
             $records = array_map(function ($datas) {
-                return (array) $datas;
+                    return (array) $datas;
             }, $records);
+            // Log::info($records);
+            $all_asins = [];
+            foreach($selected_asin as $asin) {
 
-            $this->writer->insertall($records);
+                if($val = array_search(trim($asin), array_column($records, 'asin'))) {
+
+                    $all_asins[] = $records[$val];
+
+                } else {
+
+                    $this->headers_default['asin'] = $asin;
+                    $all_asins[] = $this->headers_default;
+                }
+            }
+            $this->writer->insertall($all_asins);
 
             if ($this->check == $this->count) {
 
                 $this->fileNameOffset++;
                 $this->count = 1;
-
             } else {
 
                 ++$this->count;

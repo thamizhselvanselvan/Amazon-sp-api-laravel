@@ -42,6 +42,7 @@ class InvoiceManagementController extends Controller
 
                     $action = '<div class="d-flex"><a href="/invoice/convert-pdf/' . $id->invoice_no . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
                     $action .= '<div class="d-flex pl-2"><a href="/invoice/download-direct/' . $id->invoice_no . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
+                    $action .= '<div class="d-flex pl-2"><a href="/invoice/edit/' . $id->invoice_no . ' " class=" btn btn-primary btn-sm"><i class="fas fa-edit"></i> Edit </a>';
                     return $action;
                 })
                 ->rawColumns(['action'])
@@ -217,7 +218,7 @@ class InvoiceManagementController extends Controller
     public function DirectDownloadPdf(Request $request, $id)
     {
         // $data = Invoice::where('id', $id)->get();
-        $data = DB::connection('web')->select("SELECT * from invoices where invoice_no ='$id' ");
+        $data = DB::connection('web')->select("SELECT * from invoices where invoice_no =$id ");
         $invoice_no = $data[0]->invoice_no;
 
         $currenturl =  URL::current();
@@ -314,5 +315,56 @@ class InvoiceManagementController extends Controller
         $invoice_details['grand_total'] = $grand_total;
         $invoice_details['product_details'] = $item_details;
         return $invoice_details;
+    }
+
+    public function edit($id)
+    {
+        // $url = URL::previous();
+        $data = DB::connection('web')->select("SELECT * FROM invoices WHERE invoice_no = '$id' ");
+        return view('invoice.edit', compact('data'));
+    }
+    public function update(Request $request, $id)
+    {
+        $invoice = invoice::find($id);
+        $url = $request->url;
+//         po($url);
+// exit;
+        $invoice->invoice_no = $request->invoice_no;
+        $invoice->invoice_date = $request->invoice_date;
+        $invoice->mode = $request->mode;
+        $invoice->channel = $request->channel;
+        $invoice->shipped_by = $request->shipped_by;
+        $invoice->awb_no = $request->awb_no;
+        $invoice->arn_no = $request->arn_no;
+        $invoice->store_name = $request->store_name;
+        $invoice->store__add = $request->store_add;
+        $invoice->bill_to_name = $request->bill_to_name;
+        $invoice->bill_to_add = $request->bill_to_add;
+        $invoice->ship_to_name = $request->ship_to_name;
+        $invoice->ship_to_add = $request->ship_to_add;
+        $invoice->sku = $request->sku;
+        $invoice->item_description = $request->item_description;
+        $invoice->hsn_code = $request->hsn_code;
+        $invoice->qty = $request->qty;
+        $invoice->currency = $request->currency;
+        $invoice->product_price = $request->product_price;
+        $invoice->taxable_value = $request->taxable_value;
+        $invoice->total_including_taxes = $request->total_including_taxes;
+        $invoice->grand_total = $request->grand_total;
+        $invoice->no_of_pcs = $request->no_of_pcs;
+        $invoice->packing = $request->packing;
+        $invoice->dimension = $request->dimension;
+        $invoice->actual_weight = $request->actual_weight;
+        $invoice->charged_weight = $request->charged_weight;
+        $invoice->update();
+
+        
+        // if($request->url =='https://amazon-sp-api-laravel.app/invoice/manage'){
+
+            return redirect()->intended('/invoice/manage')->with('success', 'Invoice  has been updated successfully');
+        // }
+        // else{
+        //     return redirect()->intended('/invoice/search-invoice')->with('success', 'Invoice  has been updated successfully');
+        // }
     }
 }
