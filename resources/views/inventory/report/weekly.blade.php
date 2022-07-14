@@ -2,11 +2,22 @@
 
 @section('title','Inventory Reports')
 @section('css')
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/styles.css">
+<style>
+    .table td {
+        padding: 0;
+        padding-left: 5px;
+    }
+
+    .table th {
+        padding: 2;
+        padding-left: 5px;
+    }
+</style>
 @stop
 
 @section('content_header')
-<h1 class="m-0 text-dark"> Weekly Inventory  Reports</h1>
+<h1 class="m-0 text-dark"> Weekly Inventory Reports</h1>
 @stop
 @section('content')
 <div class="row">
@@ -31,15 +42,15 @@
         <input type="radio" name="size" id="ware">
         <label for="ware"> Warehouse Wise Report</label>
     </div>
-    
+
     <div class="col-1 justify-content-right">
-    <form class="row" action="/export/weekly">
-        <h2>
-            <div style="margin-top: -1rem;">
-                <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export " id="export" />
-            </div>
-        </h2>
-    </form>
+        <form class="row" action="/export/weekly">
+            <h2>
+                <div style="margin-top: -1rem;">
+                    <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export " id="export" />
+                </div>
+            </h2>
+        </form>
     </div>
 </div>
 <div class="row" id="warehouse">
@@ -54,40 +65,25 @@
     </div>
 </div>
 
-<table class="table table-bordered yajra-datatable table-striped " id="report_table">
+<table class="table table-bordered yajra-datatable table-striped " id="report_table" width="100%">
+
     <thead>
         <tr>
+            <th>ID</th>
             <th id="detail">Date</th>
             <th id="detail">Opening Stock</th>
-            <th id="detail">Open Stock Amount</th>
+            <th id="detail">Open Stock Amt.</th>
             <th id="detail">Inwarded</th>
-            <th id="detail">Inv.Inwarded Amt</th>
+            <th id="detail">Inv.Inwarded Amt.</th>
             <th id="detail"> Outwarded</th>
-            <th id="detail">Inv.Outwarding Amt</th>
+            <th id="detail">Inv.Outwarded Amt.</th>
             <th id="detail">Closing Stock</th>
-            <th id="detail">Closing Stock Amount</th>
+            <th id="detail">Closing Stock Amt.</th>
         </tr>
     </thead>
-    <tbody >
-    <tbody id="data_display">
-            @foreach ($week_data as $key => $value)
-        <tr>
-            <!-- @foreach ($value as $data )
-            <td>{{$data}}</td>
-            @endforeach -->
-            
-            <td>{{ $value[0] }}</td>
-            <td>{{ $value[1] }}</td>
-            <td>{{ $value[2] }}</td>
-            <td>{{ $value[3] }}</td>
-            <td>{{ $value[4] }}</td>
-            <td>{{ $value[5] }}</td>
-            <td>{{ $value[6] }}</td>
-            <td>{{ $value[7] }}</td>
-            <td>{{ $value[8] }}</td>
-        </tr>
-        @endforeach
-    </tbody>
+
+    <tbody>
+
     </tbody>
 </table>
 @stop
@@ -99,32 +95,86 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
     $(function() {
 
-                $("#warehouse").hide();
-                $("#report_table").hide();
-                $("#export").hide();
+        let yajra_table = $('.yajra-datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('reports.index') }}",
+            columns: [{
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'date',
+                    name: 'date'
+                },
+                {
+                    data: 'opeaning_stock',
+                    name: 'opeaning_stock'
+                },
+                {
+                    data: 'opeaning_amount',
+                    name: 'opeaning_amount'
+                },
+                {
+                    data: 'inwarding',
+                    name: 'inwarding'
+                },
+                {
+                    data: 'inw_amount',
+                    name: 'inw_amount'
+                },
+                {
+                    data: 'outwarding',
+                    name: 'outwarding'
+                },
+                {
+                    data: 'outw_amount',
+                    name: 'outw_amount'
+                },
+                {
+                    data: 'closing_stock',
+                    name: 'closing_stock'
+                },
+                {
+                    data: 'closing_amount',
+                    name: 'closing_amount'
+                },
+            ]
+        });
 
-                $("#ware ").on('click', function(e) {
-                    $("#warehouse").show();
-                });
-                $("#warehouse ").on('change', function(e) {
-                    $("#report_table").show();
-                });
-                $("#entire ").on('click', function(e) {
-                    $("#warehouse").hide();
-                });
-                $("#ware ").on('click', function(e) {
-                    $("#report_table").hide();
-                });
-                $("#entire ").on('click', function(e) {
-                    $("#report_table").show();
-                });
-                $("#entire,#warehouse ").on('change', function(e) {
-                    $("#export").show();
-                });
 
-                });
-    
+    });
+
+    $(function() {
+
+        $("#warehouse").hide();
+        $("#report_table").hide();
+        $("#export").hide();
+
+        $("#ware ").on('click', function(e) {
+            $("#warehouse").show();
+        });
+        $("#warehouse ").on('change', function(e) {
+            $("#report_table").show();
+        });
+        $("#entire ").on('click', function(e) {
+            $("#warehouse").hide();
+        });
+        $("#ware ").on('click', function(e) {
+            $("#report_table").hide();
+        });
+        $("#entire ").on('click', function(e) {
+            $("#report_table").show();
+        });
+        $("#entire,#warehouse ").on('change', function(e) {
+            $("#export").show();
+        });
+
+    });
 </script>
 @stop
