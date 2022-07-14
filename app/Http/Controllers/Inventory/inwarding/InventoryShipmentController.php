@@ -81,6 +81,7 @@ class InventoryShipmentController extends Controller
 
         $generator = new BarcodeGeneratorHTML();
         foreach ($view as $key => $bar) {
+            $bar_code = '';
 
             $bar_code = $generator->getBarcode($bar->ship_id, $generator::TYPE_CODE_93);
             $warehouse_name = $bar->warehouses->name;
@@ -97,7 +98,6 @@ class InventoryShipmentController extends Controller
 
         return view('inventory.inward.shipment.view', compact('view', 'currency_array', 'bar_code', 'id', 'warehouse_name', 'vendor_name', 'currency_id'));
     }
-
     public function createView(Request $request)
     {
 
@@ -174,9 +174,40 @@ class InventoryShipmentController extends Controller
         }
 
 
-        return response()->json(['success' => 'Data is successfully added', 'data' =>   $filtere_data]);
+        return response()->json(['success' => 'Data  successfully added', 'data' =>   $filtere_data]);
     }
 
+    public function refreshtable(Request $request)
+    {
+        $asins = preg_split('/[\r\n| |:|,]/', $request->asin, -1, PREG_SPLIT_NO_EMPTY);
+
+
+        $data = [];
+        $asinCol = [];
+
+        foreach ($asins as $asin) {
+
+            $data[$asin] = [
+                'asin' => $asin,
+
+            ];
+
+            $asinCol[] = $asin;
+        }
+
+
+
+
+        $catalog = Catalog::query()
+            ->select("asin", "item_name")
+            ->whereIn("asin", $asinCol)
+            ->get()->unique('asin')->groupBy('asin');
+
+
+
+
+        return response()->json(['success' => 'Data  successfully Refreshed', 'data' => $catalog]);
+    }
 
     public function selectView(Request $request)
     {
