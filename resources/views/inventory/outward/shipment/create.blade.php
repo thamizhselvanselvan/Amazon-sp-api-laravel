@@ -391,25 +391,23 @@
 
                 $("#outward_table").append(html);
                
+                    // $("#quantity").on("change", function() {
+                    //         let out_qty = $('#quantity').val();
 
+                    //         let exist_qty = arr.balance_quantity;
 
-                    $("#quantity").on("change", function() {
-                            let out_qty = $('#quantity').val();
-
-                            let exist_qty = arr.balance_quantity;
-
-                            if (out_qty > exist_qty) {
-                                alert('Product quantity Exceeds');
-                                return false;
-                            } else if  (out_qty < exist_qty) {
-                                alert('item is not present In the warehouse');
-                                return false;
-                            }
+                    //         if (out_qty > exist_qty) {
+                    //             alert('Product quantity Exceeds');
+                    //             return false;
+                    //         } else if  (out_qty < exist_qty) {
+                    //             alert('item is not present In the warehouse');
+                    //             return false;
+                    //         }
                        
-                    });
+                    // });
             },
             error: function(response) {
-                // console.log(response);
+                 console.log(response);
             }
         });
     }

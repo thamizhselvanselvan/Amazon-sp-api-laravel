@@ -79,11 +79,11 @@
         @foreach ($outview as $key =>  $bar)
 
         <tr>
-            <td>{{$bar['asin']}}</td>
-            <td>{{$bar['item_name']}}</td>
-            <td>{{$bar['quantity']}}</td>
-            <td>{{$bar['price']}}</td>
-            <td>{{$loc[$key]['rack_id']}}-{{$loc[$key]['shelve_id']}}-{{$loc[$key]['bin_id']}}</td>
+            <td>{{ $bar['asin'] }}</td>
+            <td>{{ $bar['item_name'] }}</td>
+            <td>{{ $bar['quantity'] }}</td>
+            <td>{{ $bar['price']}}</td>
+            <td>{{ $loc[$key]['rack_id'] ?? 'NA' }} - {{ $loc[$key]['shelve_id'] ?? 'NA' }} - {{ (isset($loc[$key])) ? $loc[$key]['bin_id'] : "NA" }}</td>
             @endforeach
         
         </tr>
