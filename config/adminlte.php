@@ -558,12 +558,17 @@ return [
                     'url'   =>  'shipntrack/index',
                     'can'   =>  ['Admin'],
                 ],
+                [
+                    'text'  =>  'SMSA Tracking',
+                    'url'   =>  'shipntrack/smsa',
+                    'can'   =>  ['Admin'],
+                ],
             ]
         ],
 
         [
             'text' => 'Tools',
-            'can' => ['Admin', 'Inventory', 'BOE'],
+            'can' => ['Admin', 'Inventory', 'BOE', 'KYC'],
             'submenu' =>
             [
                 [
@@ -599,7 +604,7 @@ return [
                 [
                     'text' => 'Bulk Amazon Invoice Upload',
                     'url' => 'amazon/invoice',
-                    'can' => ['Admin', 'Inventory'],
+                    'can' => ['Admin', 'KYC'],
                 ],
             ],
         ],
