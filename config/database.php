@@ -195,7 +195,7 @@ return [
             'charset' => 'utf8',
         ],
         
-        'ship' => [
+        'shipntracking' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
             'host' => env('SNT_DB_HOST', '127.0.0.1'),
