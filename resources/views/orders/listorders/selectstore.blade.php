@@ -45,12 +45,12 @@
                     <th>Region</th>
                     <th>Order</th>
                     <th>Order Item</th>
-                    <th>Enable ShipNTrack</th>
+                    <!-- <th>Enable ShipNTrack</th>
                     <th>
                         <select name="source" id="source">
                             <option value="">Select Source-Destination</option>
                         </select>
-                    </th>
+                    </th> -->
                 </tr>
             </thead>
             <tbody>
@@ -95,15 +95,15 @@ let yajra_table = $('.yajra-datatable').DataTable({
             orderable: false,
             searchable: false
         },
-        {
-            name: ,
-            data: ,
-            orderable: false,
-            searchable: false
-        },
-        {
-            name: data:
-        }
+        // {
+        //     name: ,
+        //     data: ,
+        //     orderable: false,
+        //     searchable: false
+        // },
+        // {
+        //     name: data:
+        // }
 
 
     ],
