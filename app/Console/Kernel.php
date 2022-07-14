@@ -27,11 +27,11 @@ class Kernel extends ConsoleKernel
         
         if (app()->environment() === 'production') {
 
-            // $schedule->command('pms:sellers-orders-import')->everyTenMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+            $schedule->command('pms:sellers-orders-import')->everyTenMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
         }
-
+        
         if (app()->environment() === 'staging') {
-
+            $schedule->command('pms:sellers-orders-import')->everyTenMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
         }
         
         if (app()->environment() === 'local') {
