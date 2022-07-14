@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Inventory;
 use Carbon\Carbon;
 use League\Csv\Writer;
 use Illuminate\Http\Request;
-use App\Models\inventory\Stocks;
+use App\Models\Inventory\Stocks;
 use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
 use App\Http\Controllers\Controller;
@@ -14,7 +14,7 @@ use App\Services\Inventory\ReportWeekly;
 use Yajra\DataTables\Facades\DataTables;
 use App\Services\Inventory\ReportMonthly;
 use App\Models\Inventory\Shipment_Inward_Details;
-use App\Models\inventory\Shipment_Outward_Details;
+use App\Models\Inventory\Shipment_Outward_Details;
 
 class ReportController extends Controller
 {

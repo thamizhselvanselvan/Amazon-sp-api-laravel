@@ -16,8 +16,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Inventory\Destination;
 use App\Models\Inventory\Outshipment;
 use App\Models\Inventory\Shipment_Inward_Details;
-use App\Models\inventory\Shipment_Outward;
-use App\Models\inventory\Shipment_Outward_Details;
+use App\Models\Inventory\Shipment_Outward;
+use App\Models\Inventory\Shipment_Outward_Details;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
 
