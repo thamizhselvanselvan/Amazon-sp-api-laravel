@@ -41,16 +41,7 @@
         </div>
     </div>
 </div>
-<div class="col" id="datapro3">
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
+<div class="col" id="datapro4">
     <h4> </h4>
 
 </div>
@@ -86,23 +77,8 @@
                 let html = '';
 
 
-                let weight = 'Item Weight';
-                let model = 'Item model number';
-                let Dimensions = 'Product Dimensions';
-                let part = 'Part Number';
 
-                html += "<h4> ASIN : " + response[0].asin + "</h4>";
-                html += "<h4> ASIN Type : " + response[0].asinType + "</h4>";
-                html += "<h4> Item Name : " + response[0].title + " </h4>";
-                html += "<h4> Features : " + response[0].features[0] + " </h4>";
-                html += "<h4> Manufacturer :" + response[0].productOverview.Manufacturer + " </h4>";
-                html += "<h4> Part Number :" + response[0].productOverview[part] + " </h4>";
-                html += "<h4> Weight :" + response[0].productOverview[weight] + " </h4>";
-                html += "<h4> Model :" + response[0].productOverview[model] + " </h4>";
-                html += "<h4> Dimentions :" + response[0].productOverview[Dimensions] + " </h4>";
-                html += "<h4> URL:  " + response[0].url + " </h4>";
-
-                $("#datapro2").html(html);
+                $("#datapro4").html(html);
             },
 
             error: function(response) {

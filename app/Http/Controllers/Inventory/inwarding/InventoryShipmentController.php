@@ -172,7 +172,7 @@ class InventoryShipmentController extends Controller
 
             Artisan::call('mosh:inventory_catalog_import');
         }
-        sleep(6);
+
 
         return response()->json(['success' => 'Data is successfully added', 'data' =>   $filtere_data]);
     }
@@ -347,9 +347,9 @@ class InventoryShipmentController extends Controller
             $quant[] = $val->quantity;
         }
         // dd($quant);
+        $bar_code = [];
         foreach ($lable as $viewlable) {
             $data = $viewlable;
-            $bar_code = [];
 
             $generator = new BarcodeGeneratorHTML();
             $bar_code[]  = $generator->getBarcode($data['asin'], $generator::TYPE_CODE_93);

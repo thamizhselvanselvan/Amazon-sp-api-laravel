@@ -14,7 +14,7 @@ class getProductsByAsins
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
         $client_secret = "80b1db8f2e3ae4b755bd50a0bcc21228694381e6a35b178efdb43799ccedd1ae";
         $refresh_token =
-            "Atza|IwEBIBlwVAWCiaY3MOjauafDCQMs2FJDUVlv8HA9XVSpEBWcja-1G3hxYrDqn8huvFy2x9al2shiGUyYQ4vXgXyNSzRF5J2uTgH2oS_yQ-JR0RzJHWEJbbXwtfLO_l80UjBH4K9cdo-xvGYsMOeQE2O8ElkoclXPS4cu5LRkdFjGMABNl0pdQPTk8WR1jD5Fddv5CnbV4RRI84zE5new3DD6WEynCrtJKtfOgn7dHplVtMk19OCyvnJ-e3_mEJwixCKijwTJAq0Q4mNuS9jb2p2jPaVSM6eYF6tkRXnUjnQzsMwcM6PZHmbUiCiNt4PWA4bBh5XcXD6EctcUpZcdRBEVSB9_";
+            "Atza|IwEBICeiKeCNYMXGkKg2q_Nmi3kIbN7i6r_2WB7gx-pelqKSZ4Id8KVpaZXcCjgoMkcUyDk7f7ANQQAB20xqUFbPAvFXVn8rIPPSFygARL2jBIri7pbH6URdxbuuDZY-Axe8UHdHYyeCzQAWcuUYALiWMljY85w5SPu4zWiqtz47N5-Ef8q6_D-d7VVFmNh1InESGRktjA3BRZ7oA5Iznr_rb_7hPETx8Ka5SgxzdjAxi_xgXj2NOYCfRH66LkBKivNRq-6dqzIB26XB_ti2uAWLumPn8B2namSxHsXFVpWkM0bTa7juJb3l1NHNzLKOu77BE1CvS3a_iq_DHa5yteZKwVZd";
         $request_data = array(
             "client_id" => $client_id,
             "client_secret" => $client_secret,
@@ -23,7 +23,7 @@ class getProductsByAsins
         );
 
         $reqToken =
-            "Atza|IwEBIBlwVAWCiaY3MOjauafDCQMs2FJDUVlv8HA9XVSpEBWcja-1G3hxYrDqn8huvFy2x9al2shiGUyYQ4vXgXyNSzRF5J2uTgH2oS_yQ-JR0RzJHWEJbbXwtfLO_l80UjBH4K9cdo-xvGYsMOeQE2O8ElkoclXPS4cu5LRkdFjGMABNl0pdQPTk8WR1jD5Fddv5CnbV4RRI84zE5new3DD6WEynCrtJKtfOgn7dHplVtMk19OCyvnJ-e3_mEJwixCKijwTJAq0Q4mNuS9jb2p2jPaVSM6eYF6tkRXnUjnQzsMwcM6PZHmbUiCiNt4PWA4bBh5XcXD6EctcUpZcdRBEVSB9_";
+            "Atza|IwEBIBI9Cc78gso54BnZpdngPq9LQcsxhmWd0tC72vnE4zfDNu7fHTjjZ7s3cXYkjbChYjAqq-kjkyp_Dat7T_B_Mnt9TKfna_yS3H9RoWnsIEdTUtZawbrVaKKlYX1J4f-jOsjL8UZhk_jov8dgPBk57oTrgJgIlf5v16PwyXznsvt7rOYonpFWnmlppHgdZVVX_UqRjrh7Ckm2-ayMTfV56hfpbHL0yItMfDUMCHiIZfS17FmpwqSqoOxgNKNp3ntRFDJBK5s4q0QRU1nyyGEHILciR4HssWVZDgh74Qs3Ucbh5vWL5q83l1_SsfoGqvyebzAwEaSp8iGpmtQoFAWA4vn6";
         // $reqToken = getToken($request_data);
 
         $host               = "na.business-api.amazon.com";
@@ -31,10 +31,14 @@ class getProductsByAsins
         $secretKey          = "zjYimrzHWwT3eA3eKkuCGxMb+OA2fibMivnnht3t";
         $region             = "us-east-1";
         $service            = "execute-api";
-        $requestUrl         = "https://na.business-api.amazon.com//products/2020-08-26/products/getProductsByAsins";
-        $uri                = "/products/2020-08-26/products/B00THOYRN6";
+        $requestUrl         = "https://na.business-api.amazon.com/products/2020-08-26/products/getProductsByAsins";
+        $uri                = "/products/2020-08-26/products/getProductsByAsins";
         $httpRequestMethod  = 'POST';
-        $data                = '';
+        $data                = json_encode([
+              'productIds' => ["B07NQPLWXW"],
+              'productRegion' => 'US',
+              'locale' => 'en_US'
+        ]);
 
         function calcualteAwsSignatureAndReturnHeaders(
             $today,
@@ -55,7 +59,7 @@ class getProductsByAsins
             $algorithm      = 'AWS4-HMAC-SHA256';
             $phpAlgorithm       = 'sha256';
             $canonicalURI       = $uri;
-            $canonicalQueryString   = 'facets=OFFERS&locale=en_US&productRegion=US';
+            $canonicalQueryString   = '';
             $signedHeaders      = 'host;x-amz-access-token;x-amz-date;x-amz-user-email';
             $userEmail     = "nitrouspurchases@gmail.com";
 
@@ -63,14 +67,11 @@ class getProductsByAsins
             $reqDate = date("Ymd");
             $reqDateTime = date("Ymd\THis\Z");
 
-
             $kSecret = $secretKey;
             $kDate = hash_hmac($phpAlgorithm, $reqDate, 'AWS4' . $kSecret, true);
             $kRegion = hash_hmac($phpAlgorithm, $region, $kDate, true);
             $kService = hash_hmac($phpAlgorithm, $service, $kRegion, true);
             $kSigning = hash_hmac($phpAlgorithm, $terminationString, $kService, true);
-
-
 
             // Create canonical headers
             $canonicalHeaders = array();
@@ -93,12 +94,6 @@ class getProductsByAsins
             $canonicalRequest[] = $requestHasedPayload;
             $requestCanonicalRequest = implode("\n", $canonicalRequest);
             $requestHasedCanonicalRequest = hash($phpAlgorithm, utf8_encode($requestCanonicalRequest));
-            // if ($debug) {
-            //     echo "<h5>Canonical to string</h5>";
-            //     echo "<pre>";
-            //     echo $requestCanonicalRequest;
-            //     echo "</pre>";
-            // }
 
             // Create scope
             $credentialScope = array();
@@ -115,12 +110,7 @@ class getProductsByAsins
             $stringToSign[] = $credentialScopeStr;
             $stringToSign[] = $requestHasedCanonicalRequest;
             $stringToSignStr = implode("\n", $stringToSign);
-            if ($debug) {
-                // echo "<h5>String to Sign</h5>";
-                // echo "<pre>";
-                // echo $stringToSignStr;
-                // echo "</pre>";
-            }
+            if ($debug) {}
 
             // Create signature
             $signature = hash_hmac($phpAlgorithm, $stringToSignStr, $kSigning);
@@ -132,8 +122,7 @@ class getProductsByAsins
             $authorizationHeader[] = 'Signature=' . ($signature);
             $authorizationHeaderStr = $algorithm . ' ' . implode(', ', $authorizationHeader);
 
-
-            // Request headers 
+            // Request headers
             $headers = array();
             $headers[] = 'Authorization:' . $authorizationHeaderStr;
             $headers[] = 'host: ' . $host;
@@ -143,13 +132,10 @@ class getProductsByAsins
 
             return $headers;
         }
+
         $dt = date("Y-m-d H:i:s");
         $today = date("Ymd\THis\Z");
-
         $Time = date("Ymd\THis\Z", strtotime('-7 hours', strtotime($dt)));
-
-
-
 
         $AwsSignature = calcualteAwsSignatureAndReturnHeaders(
             $Time,
@@ -165,33 +151,32 @@ class getProductsByAsins
             $data,
             $debug = true
         );
-        // echo '<pre>';
-        // print_r($AwsSignature);
-        $curl = curl_init();
 
         $headersFS = array(
             'x-amz-access-token:' . $reqToken,
             'host:na.business-api.amazon.com',
             $AwsSignature[0],
             'x-amz-date:' . $Time,
+            'Content-Type: application/json',
             'x-amz-user-email:nitrouspurchases@gmail.com',
         );
 
-        // echo '<pre>';
-        // print_r($headersFS);
-
-        curl_setopt($curl, CURLOPT_URL, "https://na.business-api.amazon.com/products/2020-08-26/products/B00THOYRN6?facets=OFFERS&locale=en_US&productRegion=US");
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, "https://na.business-api.amazon.com/products/2020-08-26/products/getProductsByAsins");
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headersFS);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
 
         $server_APIoutput = curl_exec($curl);
+
         $JsonResponse = json_decode($server_APIoutput);
 
         return $JsonResponse;
+
+        var_dump($JsonResponse);
 
         if (curl_errno($curl)) {
             echo 'Error:' . curl_error($curl);

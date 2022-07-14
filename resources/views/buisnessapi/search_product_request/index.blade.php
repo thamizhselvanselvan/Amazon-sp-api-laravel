@@ -43,16 +43,6 @@
 </div>
 <div class="col" id="datapro">
     <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <!-- <h4 style="font-family:Times New Roman;">Availabality : </h4> -->
 
 </div>
 
@@ -84,22 +74,11 @@
             },
             response: 'json',
             success: function(response) {
+                // console.log(response);
+                $var = (JSON.stringify(response));
                 let html = '';
 
-
-                let weight = 'Item Weight';
-                let model = 'Item model number';
-                let Dimensions = 'Product Dimensions';
-                html += "<h4> ASIN :" + response[0].asin + "</h4>";
-                html += "<h4> ASIN Type : " + response[0].asinType + "</h4>";
-                html += "<h4> Item Name : " + response[0].title + " </h4>";
-                html += "<h4> Features :" + response[0].features[0] + " </h4>";
-                html += "<h4> Manufacturer :" + response[0].productOverview.Manufacturer + " </h4>";
-                html += "<h4> UPC :" + response[0].productOverview.UPC + " </h4>";
-                html += "<h4> Weight :" + response[0].productOverview[weight] + " </h4>";
-                html += "<h4> Model :" + response[0].productOverview[model] + " </h4>";
-                html += "<h4> Dimentions :" + response[0].productOverview[Dimensions] + " </h4>";
-                html += "<h4> URL :" + response[0].url + " </h4>";
+                html += "<h5> ASIN Details :" + $var + "</h5>";
 
                 $("#datapro").html(html);
             },

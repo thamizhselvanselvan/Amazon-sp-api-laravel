@@ -41,16 +41,7 @@
         </div>
     </div>
 </div>
-<div class="col" id="datapro2">
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
-    <h4> </h4>
+<div class="col" id="datapro3">
     <h4> </h4>
 
 </div>
@@ -83,7 +74,15 @@
             },
             response: 'json',
             success: function(response) {
-                console.log(response);
+
+
+                $var = (JSON.stringify(response));
+                let html = '';
+
+                html += "<h5> ASIN Details :" + $var + "</h5>";
+
+
+                $("#datapro3").html(html);
             },
 
             error: function(response) {
