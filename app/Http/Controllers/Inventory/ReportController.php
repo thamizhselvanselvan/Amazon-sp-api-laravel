@@ -167,6 +167,22 @@ class ReportController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
+
+                ->editColumn('opeaning_stock_amt', function ($data) {
+                    return "&#8377 " . $data->opeaning_amount;
+                })
+                ->editColumn('inward_amt', function ($data) {
+                    return "&#8377 " . $data->inw_amount;
+                })
+
+                ->editColumn('outward_amount', function ($data) {
+                    return "&#8377 " . $data->outw_amount;
+                })
+
+                ->editColumn('cls_amount', function ($data) {
+                    return "&#8377 " . $data->closing_amount;
+                })
+                ->rawColumns(['opeaning_stock_amt','inward_amt','outward_amount','cls_amount'])
                 ->make(true);
         }
 
@@ -223,6 +239,21 @@ class ReportController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->editColumn('opeaning_stock_amt', function ($data) {
+                    return "&#8377 " . $data->opeaning_amount;
+                })
+                ->editColumn('inward_amt', function ($data) {
+                    return "&#8377 " . $data->inw_amount;
+                })
+
+                ->editColumn('outward_amount', function ($data) {
+                    return "&#8377 " . $data->outw_amount;
+                })
+
+                ->editColumn('cls_amount', function ($data) {
+                    return "&#8377 " . $data->closing_amount;
+                })
+                ->rawColumns(['opeaning_stock_amt','inward_amt','outward_amount','cls_amount'])
                 ->make(true);
         }
 

@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Inventory;
 
 use League\Csv\Writer;
 use Illuminate\Http\Request;
-use App\Models\Inventory\Shipment;
 use App\Models\Inventory\Inventory;
-use App\Models\Inventory\Warehouse;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory\Shipment_Inward_Details;
 use Illuminate\Support\Facades\Storage;

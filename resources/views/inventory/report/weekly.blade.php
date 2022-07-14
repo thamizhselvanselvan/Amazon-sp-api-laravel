@@ -117,32 +117,32 @@
                     name: 'opeaning_stock'
                 },
                 {
-                    data: 'opeaning_amount',
-                    name: 'opeaning_amount'
+                    data: 'opeaning_stock_amt',
+                    name: 'opeaning_stock_amt'
                 },
                 {
                     data: 'inwarding',
                     name: 'inwarding'
                 },
                 {
-                    data: 'inw_amount',
-                    name: 'inw_amount'
+                    data: 'inward_amt',
+                    name: 'inward_amt'
                 },
                 {
                     data: 'outwarding',
                     name: 'outwarding'
                 },
                 {
-                    data: 'outw_amount',
-                    name: 'outw_amount'
+                    data: 'outward_amount',
+                    name: 'outward_amount'
                 },
                 {
                     data: 'closing_stock',
                     name: 'closing_stock'
                 },
                 {
-                    data: 'closing_amount',
-                    name: 'closing_amount'
+                    data: 'cls_amount',
+                    name: 'cls_amount'
                 },
             ]
         });
