@@ -50,11 +50,11 @@ class shipntrackCSVUpload extends Command
         $csv->setDelimiter("\t");
         $csv->setHeaderOffset(0);
         
-        $host = config('database.connections.ship.host');
-        $dbname = config('database.connections.ship.database');
-        $port = config('database.connections.ship.port');
-        $username = config('database.connections.ship.username');
-        $password = config('database.connections.ship.password');
+        $host = config('database.connections.shipntracking.host');
+        $dbname = config('database.connections.shipntracking.database');
+        $port = config('database.connections.shipntracking.port');
+        $username = config('database.connections.shipntracking.username');
+        $password = config('database.connections.shipntracking.password');
         
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
         $symbols = [' ', '-'];
