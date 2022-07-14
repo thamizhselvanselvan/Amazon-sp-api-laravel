@@ -72,6 +72,7 @@ class ReportController extends Controller
 
         /* Opeaning Amount */
         $amt = [];
+        $singlepricein = [];
         $openamtamt =  Shipment_Inward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
         foreach ($openamtamt as $amt) {
             $singlepricein[] = [
@@ -80,6 +81,7 @@ class ReportController extends Controller
                 'total' => $amt['price'] * $amt['quantity'],
             ];
         }
+        $singlepriceout = [];
         $closeamt =  Shipment_Outward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])->get();
         foreach ($closeamt as $amt) {
             $singlepriceout[] = [
@@ -103,8 +105,8 @@ class ReportController extends Controller
 
         /* Day Inwarding Amount */
 
-        $dayinamt =   Shipment_Inward_Details::whereDate('created_at',  Carbon::today()->toDateString())->get();
         $totaldayinvamt = 0;
+        $dayinamt =   Shipment_Inward_Details::whereDate('created_at',  Carbon::today()->toDateString())->get();
 
         foreach ($dayinamt as $key => $amtday) {
 
