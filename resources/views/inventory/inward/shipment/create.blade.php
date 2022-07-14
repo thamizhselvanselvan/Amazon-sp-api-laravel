@@ -82,11 +82,17 @@
             </div>
         </div>
     </div>
-    <div class="col-12">
+</div>
+<div class="row">
+    <div class="col-0">
         <x-adminlte-button label="Submit" theme="primary" icon="fas fa-file-upload" id="upload" class="btn-sm upload_asin_btn" />
+    </div>
+    <div class="col-1">
+        <x-adminlte-button label="Refresh" theme="primary" icon="fas fa-redo-alt" id="refresh" class="btn-sm refresh_btn " />
     </div>
 </div>
 </div>
+
 <br>
 <table class="table table-bordered yajra-datatable table-striped" id="report_table">
     <thead>
@@ -118,14 +124,18 @@
     $("#asin").hide();
     $("#upload").hide();
     $("#currency").hide();
+    $("#refresh").hide();
 
     $("#source").on('change', function(e) {
         $("#asin").show();
     });
 
     $("#asin").on('click', function(e) {
-        $("#upload").show();
+        $("#upload,#refresh").show();
     });
+    // $("#refresh").on('click', function(e) {
+    //     $("#report_table").show();
+    // });
 
     $("#upload").on('click', function(e) {
         $("#currency,#report_table,#create").show();

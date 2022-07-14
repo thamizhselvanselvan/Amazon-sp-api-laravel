@@ -28,8 +28,8 @@
             <i class="fas fa-long-arrow-alt-left"></i> Back
         </a>
     </div>
-    <div class="col-3">
-        <button type="button" class="btn btn-primary btn-sm" id="Export_to_pdf"><i class="fas fa-print"></i> Print PDF</button>
+    <div class="col-2">
+        <button type="button" class="btn btn-primary btn-sm" id="Export_to_pdf"><i class="fas fa-download"></i> Download PDF</button>
     </div>
     <div class="col-3">
         <h3>Shipment ID : {{ $viewlable->ship_id }} </h3><br>
@@ -38,18 +38,23 @@
 </div>
 @stop
 @section('content')
+
+@foreach ($lable as $key => $val)
+<h5>New</h5>
 <div class="row">
-    @foreach ($lable as $key => $val)
-    <h5>New</h5>
-    @for($i = 0; $i < $quant[$key]; $i++) <h6>{{$val['asin']}} </h6>
+    @for($i = 0; $i < $quant[$key]; $i++) <div class="col-3">
+
+        <h6>{{$val['asin']}} </h6>
         <h4>{!! $bar_code[$key] !!}</h4>
         <h6>{{$val['item_name']}}</h6>
-        @endfor
 
-        @endforeach
 </div>
-@stop
+@endfor
+</div>
+@endforeach
 
+
+@stop
 
 @section('js')
 <script>
