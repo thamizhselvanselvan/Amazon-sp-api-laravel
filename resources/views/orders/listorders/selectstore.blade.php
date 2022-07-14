@@ -15,9 +15,10 @@
 
 @section('css')
 <style>
-    .table td {
-        padding: 0.1rem;
-    }
+.table td {
+    padding: 0.1rem;
+}
+
 </style>
 @stop
 @section('content')
@@ -44,6 +45,12 @@
                     <th>Region</th>
                     <th>Order</th>
                     <th>Order Item</th>
+                    <th>Enable ShipNTrack</th>
+                    <th>
+                        <select name="source" id="source">
+                            <option value="">Select Source-Destination</option>
+                        </select>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -56,111 +63,119 @@
 
 @section('js')
 <script type="text/javascript">
-    let yajra_table = $('.yajra-datatable').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: "{{ url('admin/stores') }}",
-        pageLength: 50,
-        lengthMenu: [10, 50, 100, 500],
-        columns: [{
-                data: 'DT_RowIndex',
-                name: 'DT_RowIndex',
-                orderable: false,
-                searchable: false
-            },
-            {
-                data: 'store_name',
-                name: 'store_name'
-            },
-            {
-                data: 'region',
-                name: 'region'
-            },
-            {
-                data: 'order',
-                name: 'order',
-                orderable: false,
-                searchable: false
-            },
-            {
-                data: 'order_item',
-                name: 'order_item',
-                orderable: false,
-                searchable: false
-            }
-
-
-        ],
-        "initComplete":function( settings, json){
-
-            $(".order").each(function() {
-                let self = $(this);
-
-                if(self.is(":checked")) {
-                    self.parent().parent().next().find('.order_item').prop('disabled', false);
-                }
-            });
-
-            $('.order').on("click", function() {
-                let self = $(this);
-                let bool = true;
-
-                if(self.is(":checked")) {
-                    bool = false;
-                }
-
-                self.parent().parent().next().find('.order_item').prop('disabled', bool);
-            });
+let yajra_table = $('.yajra-datatable').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: "{{ url('admin/stores') }}",
+    pageLength: 50,
+    lengthMenu: [10, 50, 100, 500],
+    columns: [{
+            data: 'DT_RowIndex',
+            name: 'DT_RowIndex',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'store_name',
+            name: 'store_name'
+        },
+        {
+            data: 'region',
+            name: 'region'
+        },
+        {
+            data: 'order',
+            name: 'order',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'order_item',
+            name: 'order_item',
+            orderable: false,
+            searchable: false
+        },
+        {
+            name: ,
+            data: ,
+            orderable: false,
+            searchable: false
+        },
+        {
+            name: data:
         }
-    });
 
 
-    
+    ],
+    "initComplete": function(settings, json) {
 
-    $('#select_store').on('click', function() {
+        $(".order").each(function() {
+            let self = $(this);
 
-        let selected_store = '';
-        let order_item = '';
-        let order_count = 0;
-        let count = 0;
-        $("input[name='options[]']:checked").each(function() {
-            if (count == 0) {
-
-                selected_store += $(this).val();
-            } else {
-                selected_store += '-' + $(this).val();
+            if (self.is(":checked")) {
+                self.parent().parent().next().find('.order_item').prop('disabled', false);
             }
-            count++;
         });
 
-        $("input[name='orderItem[]']:checked").each(function() {
+        $('.order').on("click", function() {
+            let self = $(this);
+            let bool = true;
 
-            if (order_count == 0) {
-
-                order_item += $(this).val();
-            } else {
-                order_item += '-' + $(this).val();
+            if (self.is(":checked")) {
+                bool = false;
             }
-            order_count++;
+
+            self.parent().parent().next().find('.order_item').prop('disabled', bool);
         });
+    }
+});
 
-        $.ajax({
-            method: 'post',
-            url: '/admin/update-store',
-            data: {
-                "_token": "{{ csrf_token() }}",
-                "_method": 'post',
-                'selected_store': selected_store,
-                'order_item': order_item,
-            },
-            success: function(response) {
 
-                alert(response.success);
-                window.location = '/admin/stores';
-            }
-        })
+
+
+$('#select_store').on('click', function() {
+
+    let selected_store = '';
+    let order_item = '';
+    let order_count = 0;
+    let count = 0;
+    $("input[name='options[]']:checked").each(function() {
+        if (count == 0) {
+
+            selected_store += $(this).val();
+        } else {
+            selected_store += '-' + $(this).val();
+        }
+        count++;
     });
-    
+
+    $("input[name='orderItem[]']:checked").each(function() {
+
+        if (order_count == 0) {
+
+            order_item += $(this).val();
+        } else {
+            order_item += '-' + $(this).val();
+        }
+        order_count++;
+    });
+
+    $.ajax({
+        method: 'post',
+        url: '/admin/update-store',
+        data: {
+            "_token": "{{ csrf_token() }}",
+            "_method": 'post',
+            'selected_store': selected_store,
+            'order_item': order_item,
+        },
+        success: function(response) {
+
+            alert(response.success);
+            window.location = '/admin/stores';
+        }
+    })
+});
 </script>
 
 @stop
