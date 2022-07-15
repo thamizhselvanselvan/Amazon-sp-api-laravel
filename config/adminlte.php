@@ -563,6 +563,11 @@ return [
                     'url'   =>  'shipntrack/smsa',
                     'can'   =>  ['Admin'],
                 ],
+                [
+                    'text'  =>  'Bombino Tracking',
+                    'url'   =>  'shipntrack/bombino',
+                    'can'   =>  ['Admin'],
+                ],
             ]
         ],
 

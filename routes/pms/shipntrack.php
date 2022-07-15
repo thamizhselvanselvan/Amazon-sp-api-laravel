@@ -12,4 +12,6 @@ Route::get('shipntrack/smsa', 'shipntrack\SMSA\SmsaExperessController@index')->n
 Route::get('shipntrack/smsa/moredetails/{awbno}', 'shipntrack\SMSA\SmsaExperessController@PacketMoreDetails');
 Route::get('shipntrack/smsa/upload', 'shipntrack\SMSA\SmsaExperessController@uploadAwb')->name('shipntrack.smsa.upload');
 Route::post('shipntrack/smsa/gettracking', 'shipntrack\SMSA\SmsaExperessController@GetTrackingDetails')->name('shipntrack.smsa.gettracking');
- 
+
+Route::get('shipntrack/bombino', 'shipntrack\Bombino\BombinoExpressController@index')->name('shipntrack.bombino');
+
