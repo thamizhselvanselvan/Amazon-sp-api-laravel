@@ -19,6 +19,29 @@
         /* exactly 2 lines */
 
     }
+
+    .print-label {
+        border: 1px solid lightgrey;
+        width: 300px;
+        margin: 2px;
+    }
+
+    .breaker {
+        display: block;
+        border: 1px solid lightgrey;
+        width: 100%;
+    }
+
+    .print-page-breaker {
+        width: 100%;
+    }
+
+    @media print {
+        .print-page-breaker {
+            page-break-after: always;
+            border: 1px solid red;
+        }
+    }
 </style>
 @stop
 @section('content_header')
@@ -40,61 +63,54 @@
 @stop
 @section('content')
 
-<h5>New</h5>
-
-@foreach ($lable as $key => $val) 
-
-   @php $counter = 1; @endphp 
- 
-  @for($i = 1; $i<= $quant[$key]; $i++)
-
-    @if($counter==1) <div class="row">
-     @endif
-    <div class="col-4 sam">
+<div class="row">
+    @php $counter = 1; @endphp
+    @foreach ($lable as $key => $val)
+    @for($i = 1; $i<= $quant[$key]; $i++) <div class="print-label col">
         <h6>{{$val['asin']}} </h6>
-        <h4>{!! $bar_code[$key] !!}</h4>
+        <h4><img src="data:image/png;base64,{!! $bar_code[$key] !!}" /></h4>
         <h6>{{$val['item_name']}}</h6>
-    </div>
-    @if($counter == 5)
-        <div class="col-4 ">
-            <p style="page-break-after: always;">&nbsp;</p>
-        </div>
-        </div> 
-        @php
-        $counter = 1;
-        @endphp
+</div>
+@php $counter++; @endphp
+@if($counter == 42)
+</div>
+<div class="print-page-breaker"></div>
+<div class="row">
+
+
+
+    @php $counter = 1; @endphp
     @endif
-      @php $counter++; @endphp
-   @endfor
-@endforeach
+    @endfor
+    <div class="breaker"></div>
+    @endforeach
+</div>
 
+@stop
 
+@section('js')
+<script>
+    $(document).ready(function() {
+        $('#Export_to_pdf').click(function(e) {
+            e.preventDefault();
+            var url = $(location).attr('href');
+            var ship_id = $.trim($('#ship').val());
 
-    @stop
+            $.ajax({
+                method: 'POST',
+                url: "{{ url('shipment/lable/export-pdf')}}",
+                data: {
+                    'id': ship_id,
+                    'url': url,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
 
-    @section('js')
-    <script>
-        $(document).ready(function() {
-            $('#Export_to_pdf').click(function(e) {
-                e.preventDefault();
-                var url = $(location).attr('href');
-                var ship_id = $.trim($('#ship').val());
-
-                $.ajax({
-                    method: 'POST',
-                    url: "{{ url('shipment/lable/export-pdf')}}",
-                    data: {
-                        'id': ship_id,
-                        'url': url,
-                        "_token": "{{ csrf_token() }}",
-                    },
-                    success: function(response) {
-
-                        window.location.href = '/Shipment/download/' + ship_id;
-                        alert(' pdf Downloaded  successfully');
-                    }
-                });
+                    window.location.href = '/Shipment/download/' + ship_id;
+                    alert(' pdf Downloaded  successfully');
+                }
             });
         });
-    </script>
-    @stop
+    });
+</script>
+@stop
