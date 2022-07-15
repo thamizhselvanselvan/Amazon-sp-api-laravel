@@ -10,16 +10,16 @@ class GetProductsByAsinsController extends Controller
 {
     public function index()
     {
-        $ApiCall = new getProductsByAsins();
-        $data = $ApiCall->getASINby();
-        dd($data);
+        // $ApiCall = new getProductsByAsins();
+        // $data = $ApiCall->getASINbyasin();
+        // dd($data);
         return View('buisnessapi.get_products_byasins.index');
     }
     public function searchasinproduct(Request $request)
     {
 
         $ApiCall = new getProductsByAsins();
-        $data = $ApiCall->getASINby($request->asin);
+        $data = $ApiCall->getASINbyasin($request->asin);
 
         return response()->json(['success' => 'Asin details4 successfully Fetched', $data]);
     }

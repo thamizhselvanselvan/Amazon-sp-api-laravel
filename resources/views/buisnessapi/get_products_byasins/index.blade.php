@@ -74,6 +74,7 @@
             },
             response: 'json',
             success: function(response) {
+                console.log(response);
                 let html = '';
 
 

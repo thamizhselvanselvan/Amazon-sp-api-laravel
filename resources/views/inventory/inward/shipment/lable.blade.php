@@ -30,6 +30,7 @@
     </div>
     <div class="col-2">
         <button type="button" class="btn btn-primary btn-sm" id="Export_to_pdf"><i class="fas fa-download"></i> Download PDF</button>
+
     </div>
     <div class="col-3">
         <h3>Shipment ID : {{ $viewlable->ship_id }} </h3><br>
@@ -39,46 +40,61 @@
 @stop
 @section('content')
 
-@foreach ($lable as $key => $val)
 <h5>New</h5>
-<div class="row">
-    @for($i = 0; $i < $quant[$key]; $i++) <div class="col-3">
 
+@foreach ($lable as $key => $val) 
+
+   @php $counter = 1; @endphp 
+ 
+  @for($i = 1; $i<= $quant[$key]; $i++)
+
+    @if($counter==1) <div class="row">
+     @endif
+    <div class="col-4 sam">
         <h6>{{$val['asin']}} </h6>
         <h4>{!! $bar_code[$key] !!}</h4>
         <h6>{{$val['item_name']}}</h6>
-
-</div>
-@endfor
-</div>
+    </div>
+    @if($counter == 5)
+        <div class="col-4 ">
+            <p style="page-break-after: always;">&nbsp;</p>
+        </div>
+        </div> 
+        @php
+        $counter = 1;
+        @endphp
+    @endif
+      @php $counter++; @endphp
+   @endfor
 @endforeach
 
 
-@stop
 
-@section('js')
-<script>
-    $(document).ready(function() {
-        $('#Export_to_pdf').click(function(e) {
-            e.preventDefault();
-            var url = $(location).attr('href');
-            var ship_id = $.trim($('#ship').val());
+    @stop
 
-            $.ajax({
-                method: 'POST',
-                url: "{{ url('shipment/lable/export-pdf')}}",
-                data: {
-                    'id': ship_id,
-                    'url': url,
-                    "_token": "{{ csrf_token() }}",
-                },
-                success: function(response) {
+    @section('js')
+    <script>
+        $(document).ready(function() {
+            $('#Export_to_pdf').click(function(e) {
+                e.preventDefault();
+                var url = $(location).attr('href');
+                var ship_id = $.trim($('#ship').val());
 
-                    window.location.href = '/Shipment/download/' + ship_id;
-                    alert(' pdf Downloaded  successfully');
-                }
+                $.ajax({
+                    method: 'POST',
+                    url: "{{ url('shipment/lable/export-pdf')}}",
+                    data: {
+                        'id': ship_id,
+                        'url': url,
+                        "_token": "{{ csrf_token() }}",
+                    },
+                    success: function(response) {
+
+                        window.location.href = '/Shipment/download/' + ship_id;
+                        alert(' pdf Downloaded  successfully');
+                    }
+                });
             });
         });
-    });
-</script>
-@stop
+    </script>
+    @stop
