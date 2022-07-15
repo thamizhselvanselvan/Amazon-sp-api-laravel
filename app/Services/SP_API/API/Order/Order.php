@@ -42,7 +42,7 @@ class Order
 
         $apiInstance = new OrdersApi($config);
         // $startTime = Carbon::now()->subHours(6)->toISOString();
-        $startTime = Carbon::now()->subDays(30)->toISOString();
+        $startTime = Carbon::now()->subDays(10)->toISOString();
 
         // echo $startTime;
         $createdAfter = $startTime;

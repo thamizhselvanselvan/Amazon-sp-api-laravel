@@ -2,19 +2,37 @@
 
 namespace App\Http\Controllers\shipntrack\SMSA;
 
-use App\Http\Controllers\Controller;
-use App\Models\ShipNTrack\SMSA\SmsaTrackings;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Yajra\DataTables\Facades\DataTables;
+use App\Models\ShipNTrack\SMSA\SmsaTrackings;
+
+use function Clue\StreamFilter\fun;
 
 class SmsaExperessController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-
+        if ($request->ajax()) {
+            $data = SmsaTrackings::orderBy('date', 'desc')->get()->unique('awbno');
+            return DataTables::of($data)
+                ->addColumn('action', function ($data) {
+                    $action = "<a href='/shipntrack/smsa/moredetails/" . $data['awbno'] . "' class='' target='_blank'>More Details</a>";
+                    return $action;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
         return view('shipntrack.Smsa.index');
     }
 
+    public function PacketMoreDetails($awbNo)
+    {
+       $result = SmsaTrackings::where('awbno', $awbNo)->orderBy('date', 'desc')->get();
+    //    dd($result);
+    return view('shipntrack.Smsa.packetDetails', compact('result'));
+    }
     public function uploadAwb()
     {
         return view('shipntrack.Smsa.upload');
@@ -35,11 +53,11 @@ class SmsaExperessController extends Controller
             $tracking_details = [];
             $details = $this->TrackingResponse($awbNo);
             foreach ($details as $key => $value) {
-        
+
                 $tracking_details[] = [
 
                     "awbno" => $value['awbNo'],
-                    "date" => date('Y-m-d H:i:s',strtotime($value['Date'])),
+                    "date" => date('Y-m-d H:i:s', strtotime($value['Date'])),
                     "activity" => $value['Activity'],
                     "details" => $value['Details'],
                     "location" => $value['Location']
