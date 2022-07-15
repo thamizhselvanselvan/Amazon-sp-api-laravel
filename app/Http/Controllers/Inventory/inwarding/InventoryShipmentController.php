@@ -374,10 +374,15 @@ class InventoryShipmentController extends Controller
     public function printlable(Request $request, $id)
     {
         $lable = Shipment_Inward_Details::where('ship_id', $id)->with(['warehouses', 'vendors'])->get();
+        $quant = [];
+        $total = 0;
         foreach ($lable as $key => $val) {
-            $quant[] = $val->quantity;
+            $quant[] += $val->quantity;
         }
-        // dd($quant);
+        foreach ($quant as $key => $jay) {
+            $total += $jay;
+        }
+
         $bar_code = [];
         foreach ($lable as $viewlable) {
             $data = $viewlable;
@@ -386,7 +391,7 @@ class InventoryShipmentController extends Controller
             $bar_code[]  = $generator->getBarcode($data['asin'], $generator::TYPE_CODE_93);
         }
 
-        return view('inventory.inward.shipment.lable', compact('viewlable', 'lable', 'data', 'bar_code', 'quant'));
+        return view('inventory.inward.shipment.lable', compact('viewlable', 'lable', 'data', 'bar_code', 'quant', 'total'));
     }
 
     public function Exportlable(Request $request)
@@ -400,7 +405,7 @@ class InventoryShipmentController extends Controller
 
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf);
 
