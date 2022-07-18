@@ -19,6 +19,29 @@
         /* exactly 2 lines */
 
     }
+
+    .print-label {
+        border: 1px solid lightgrey;
+        width: 300px;
+        margin: 2px;
+    }
+
+    .breaker {
+        display: block;
+        border: 1px solid lightgrey;
+        width: 100%;
+    }
+
+    .print-page-breaker {
+        width: 100%;
+    }
+
+    @media print {
+        .print-page-breaker {
+            page-break-after: always;
+            border: 1px solid red;
+        }
+    }
 </style>
 @stop
 @section('content_header')
@@ -30,6 +53,7 @@
     </div>
     <div class="col-2">
         <button type="button" class="btn btn-primary btn-sm" id="Export_to_pdf"><i class="fas fa-download"></i> Download PDF</button>
+
     </div>
     <div class="col-3">
         <h3>Shipment ID : {{ $viewlable->ship_id }} </h3><br>
@@ -39,20 +63,28 @@
 @stop
 @section('content')
 
-@foreach ($lable as $key => $val)
-<h5>New</h5>
 <div class="row">
-    @for($i = 0; $i < $quant[$key]; $i++) <div class="col-3">
-
+    @php $counter = 1; @endphp
+    @foreach ($lable as $key => $val)
+    @for($i = 1; $i<= $quant[$key]; $i++) <div class="print-label col">
         <h6>{{$val['asin']}} </h6>
-        <h4>{!! $bar_code[$key] !!}</h4>
+        <h4><img src="data:image/png;base64,{!! $bar_code[$key] !!}" /></h4>
         <h6>{{$val['item_name']}}</h6>
-
 </div>
-@endfor
+@php $counter++; @endphp
+@if($counter == 42)
 </div>
-@endforeach
+<div class="print-page-breaker"></div>
+<div class="row">
 
+
+
+    @php $counter = 1; @endphp
+    @endif
+    @endfor
+    <div class="breaker"></div>
+    @endforeach
+</div>
 
 @stop
 

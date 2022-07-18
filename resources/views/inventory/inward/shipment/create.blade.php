@@ -44,7 +44,7 @@
     </div>
     <div class="col-2">
         <div class="form-group">
-            <x-adminlte-select name="source" label="Select Source:" id="source">
+            <x-adminlte-select name="source" label="Select Source:" id="source1">
                 <option value=" ">Select source</option>
                 @foreach ($source_lists as $source_list)
                 <option value="{{ $source_list->id }}">{{$source_list->name }}</option>
@@ -126,7 +126,7 @@
     $("#currency").hide();
     $("#refresh").hide();
 
-    $("#source").on('change', function(e) {
+    $("#source1").on('change', function(e) {
         $("#asin").show();
     });
 
@@ -159,7 +159,7 @@
             alert('Invalid Asin');
             return false;
         }
-        let source = $('#source').val();
+        let source = $('#source1').val();
 
         $.ajax({
             method: 'POST',
@@ -199,7 +199,7 @@
             alert('Invalid Asin');
             return false;
         }
-        let source = $('#source').val();
+        let source = $('#source1').val();
 
         $.ajax({
             method: 'POST',
@@ -263,7 +263,7 @@
 
             });
 
-            let source = $('#source').val();
+            let source = $('#source1').val();
             data.append('source', source);
 
             let warehouse = $('#warehouse').val();

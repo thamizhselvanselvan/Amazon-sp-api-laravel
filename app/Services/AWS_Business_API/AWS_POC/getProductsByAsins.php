@@ -6,15 +6,17 @@ namespace App\Services\AWS_Business_API\AWS_POC;
 class getProductsByAsins
 {
 
-    public function getASINby()
+    public function getASINbyasin($asin)
     {
+        dd($asin);
         date_default_timezone_set('Asia/Jakarta');
 
         // require_once('refrashToken.php');
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
         $client_secret = "80b1db8f2e3ae4b755bd50a0bcc21228694381e6a35b178efdb43799ccedd1ae";
         $refresh_token =
-            "Atza|IwEBICeiKeCNYMXGkKg2q_Nmi3kIbN7i6r_2WB7gx-pelqKSZ4Id8KVpaZXcCjgoMkcUyDk7f7ANQQAB20xqUFbPAvFXVn8rIPPSFygARL2jBIri7pbH6URdxbuuDZY-Axe8UHdHYyeCzQAWcuUYALiWMljY85w5SPu4zWiqtz47N5-Ef8q6_D-d7VVFmNh1InESGRktjA3BRZ7oA5Iznr_rb_7hPETx8Ka5SgxzdjAxi_xgXj2NOYCfRH66LkBKivNRq-6dqzIB26XB_ti2uAWLumPn8B2namSxHsXFVpWkM0bTa7juJb3l1NHNzLKOu77BE1CvS3a_iq_DHa5yteZKwVZd";
+            "Atza|IwEBIPzZmP3G1kiOaS8WkxXx6ntB-KxatQ6IARybMDM4d_nC8e4sFWtM_B7OxtBoDmRuEWrmqQpVVYfJJWZaKSuGSa2N4iqlgmtjR4b-LBaFbIyanK3-1rom97-eUfmHn4HPON_rLgVf6GeQCCcGwV3BlqPUfCmnwGcjDopJvY9ZIPlLJVc--svYH5IxCkOXWWLp1hoh8Q47FJAb0oiD1-f_SQV7zcqXh6HKKjs5MonZB-mqDKQ1r203p9paUA-kEWHG77HEIrHvhJmiteAsgJL1ruoJT_085IPNSwuiIYdryy2A3HZmPIKcFL0vbfhViqH0WscrV9LhzfiWAVMDps-KKRj5";
+
         $request_data = array(
             "client_id" => $client_id,
             "client_secret" => $client_secret,
@@ -23,7 +25,8 @@ class getProductsByAsins
         );
 
         $reqToken =
-            "Atza|IwEBIBI9Cc78gso54BnZpdngPq9LQcsxhmWd0tC72vnE4zfDNu7fHTjjZ7s3cXYkjbChYjAqq-kjkyp_Dat7T_B_Mnt9TKfna_yS3H9RoWnsIEdTUtZawbrVaKKlYX1J4f-jOsjL8UZhk_jov8dgPBk57oTrgJgIlf5v16PwyXznsvt7rOYonpFWnmlppHgdZVVX_UqRjrh7Ckm2-ayMTfV56hfpbHL0yItMfDUMCHiIZfS17FmpwqSqoOxgNKNp3ntRFDJBK5s4q0QRU1nyyGEHILciR4HssWVZDgh74Qs3Ucbh5vWL5q83l1_SsfoGqvyebzAwEaSp8iGpmtQoFAWA4vn6";
+            "Atza|IwEBIPzZmP3G1kiOaS8WkxXx6ntB-KxatQ6IARybMDM4d_nC8e4sFWtM_B7OxtBoDmRuEWrmqQpVVYfJJWZaKSuGSa2N4iqlgmtjR4b-LBaFbIyanK3-1rom97-eUfmHn4HPON_rLgVf6GeQCCcGwV3BlqPUfCmnwGcjDopJvY9ZIPlLJVc--svYH5IxCkOXWWLp1hoh8Q47FJAb0oiD1-f_SQV7zcqXh6HKKjs5MonZB-mqDKQ1r203p9paUA-kEWHG77HEIrHvhJmiteAsgJL1ruoJT_085IPNSwuiIYdryy2A3HZmPIKcFL0vbfhViqH0WscrV9LhzfiWAVMDps-KKRj5";
+
         // $reqToken = getToken($request_data);
 
         $host               = "na.business-api.amazon.com";
@@ -35,9 +38,9 @@ class getProductsByAsins
         $uri                = "/products/2020-08-26/products/getProductsByAsins";
         $httpRequestMethod  = 'POST';
         $data                = json_encode([
-              'productIds' => ["B07NQPLWXW"],
-              'productRegion' => 'US',
-              'locale' => 'en_US'
+            'productIds' => [$asin],
+            'productRegion' => 'US',
+            'locale' => 'en_US'
         ]);
 
         function calcualteAwsSignatureAndReturnHeaders(
@@ -110,7 +113,8 @@ class getProductsByAsins
             $stringToSign[] = $credentialScopeStr;
             $stringToSign[] = $requestHasedCanonicalRequest;
             $stringToSignStr = implode("\n", $stringToSign);
-            if ($debug) {}
+            if ($debug) {
+            }
 
             // Create signature
             $signature = hash_hmac($phpAlgorithm, $stringToSignStr, $kSigning);
