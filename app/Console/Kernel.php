@@ -23,7 +23,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('pms:boe-upload-Do')->everyFourHours()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
         $schedule->command('pms:remove-uploaded-boe')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
         // $schedule->command('pms:seller-order-item-import')->everyTenMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-        $schedule->command('pms:stock-tracking')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+        // $schedule->command('pms:stock-tracking')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+    
+        // $schedule->command('mosh:access_token_generate')->cron('*/50 * * * *')->withoutOverlapping();
         
         if (app()->environment() === 'production') {
 

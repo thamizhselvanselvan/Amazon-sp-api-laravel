@@ -2,11 +2,13 @@
 
 namespace App\Services\AWS_Business_API\AWS_POC;
 
+use Illuminate\Support\Facades\Storage;
+
 
 class getProductsByAsins
 {
 
-    public function getASINbyasin($asin)
+    public function getASINbyasin()
     {
       
         date_default_timezone_set('Asia/Jakarta');
@@ -15,7 +17,7 @@ class getProductsByAsins
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
         $client_secret = "80b1db8f2e3ae4b755bd50a0bcc21228694381e6a35b178efdb43799ccedd1ae";
         $refresh_token =
-        "Atzr|IwEBIGBnur8ckY5T1BPQTCvdM-LDHEQ1rqpBrKNAy44n_6HQKhz2DstKC0hOFUkWowyUN64k99Fj6BVJCR0nXTXn_MD6dLaoAHtsKQW6_VDStqyR8FImcHm94A6SLuGukK6qHNF0-4c9hY3nx03jBHQ9K4TOLg55O-vDTkr6T6WCn4q0hcJ05e4324qZdOBvoAzaJb9NFQkQyjX1ken_o9Wf55aZzbbgPcRmxqKy35o9k2HdcLFFnr9Qj737MMXQQ0AUT8f5YhMg7cNF6DM2VIX43wK3WMG6JwGjkszmL-4TWKbv4bRjRZXHLs1WkgUmwMGyH_0Lr6bgtQbvj76m9WQGg11H";
+            file_get_contents(Storage::path('\Business\token.txt'));
 
         $request_data = array(
             "client_id" => $client_id,
@@ -25,7 +27,8 @@ class getProductsByAsins
         );
 
         $reqToken =
-        "Atzr|IwEBIGBnur8ckY5T1BPQTCvdM-LDHEQ1rqpBrKNAy44n_6HQKhz2DstKC0hOFUkWowyUN64k99Fj6BVJCR0nXTXn_MD6dLaoAHtsKQW6_VDStqyR8FImcHm94A6SLuGukK6qHNF0-4c9hY3nx03jBHQ9K4TOLg55O-vDTkr6T6WCn4q0hcJ05e4324qZdOBvoAzaJb9NFQkQyjX1ken_o9Wf55aZzbbgPcRmxqKy35o9k2HdcLFFnr9Qj737MMXQQ0AUT8f5YhMg7cNF6DM2VIX43wK3WMG6JwGjkszmL-4TWKbv4bRjRZXHLs1WkgUmwMGyH_0Lr6bgtQbvj76m9WQGg11H";
+
+            file_get_contents(Storage::path('\Business\token.txt'));
 
         // $reqToken = getToken($request_data);
 
@@ -38,7 +41,7 @@ class getProductsByAsins
         $uri                = "/products/2020-08-26/products/getProductsByAsins";
         $httpRequestMethod  = 'POST';
         $data                = json_encode([
-            'productIds' => [$asin],
+            'productIds' => ["B09BG96KFJ"],
             'productRegion' => 'US',
             'locale' => 'en_US'
         ]);
@@ -180,7 +183,6 @@ class getProductsByAsins
 
         return $JsonResponse;
 
-         var_dump($asin);
 
         if (curl_errno($curl)) {
             echo 'Error:' . curl_error($curl);

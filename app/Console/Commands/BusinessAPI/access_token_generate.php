@@ -56,7 +56,7 @@ class access_token_generate extends Command
         $r = json_decode($response);
         $token =  $r->access_token;
 
-        $file_path = 'Business\token';
+        $file_path = 'Business\token.txt';
         if (!Storage::exists($file_path)) {
             Storage::put($file_path, '');
         }

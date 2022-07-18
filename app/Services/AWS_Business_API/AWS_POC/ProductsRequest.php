@@ -2,6 +2,7 @@
 
 namespace App\Services\AWS_Business_API\AWS_POC;
 
+use Illuminate\Support\Facades\Storage;
 
 class ProductsRequest
 {
@@ -13,7 +14,9 @@ class ProductsRequest
         // require_once('refrashToken.php');
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
         $client_secret = "80b1db8f2e3ae4b755bd50a0bcc21228694381e6a35b178efdb43799ccedd1ae";
-        $refresh_token = "Atza|IwEBIB4HIKqTVSzxHjrt04uxgW15DHn1iuf_7ffGeOh_1Ce6jJfJ6yjjNEAJzTNkQtMs4wdDNejvttqwFmDvOFPJOJpkIfQOLYfiGESZ44kfMDXobtnVtxMd1qpfI7DXkptboO27BRqpzV7zZjqlCpGCVSSDL7awmlOiHlVwmPiwPyolCkLHiB8Ox0S0g4V3rCPh3baEYOVt-gWLT2Tp3nS7_ux5lTR783vbfehYe02TwfZV2p0l4SDtg89UEzhM2gImRtTpBCyMOQ-8DnuB8HAIhpCwVylBM4k2zgWO3yyDnotltNyeBqhuuWgZdNZwvecGO58N5VZ37sXnR8YNv1-be2gjSqtaQYIUS2R4_X7taDLj7w";
+        $refresh_token =
+        file_get_contents(Storage::path('\Business\token.txt'));
+    
       
         $request_data = array(
             "client_id" => $client_id,
@@ -21,10 +24,12 @@ class ProductsRequest
             "refresh_token" => $refresh_token,
             "grant_type" => "refresh_token"
         );
-
+      
         $reqToken =
-        "Atza|IwEBIB4HIKqTVSzxHjrt04uxgW15DHn1iuf_7ffGeOh_1Ce6jJfJ6yjjNEAJzTNkQtMs4wdDNejvttqwFmDvOFPJOJpkIfQOLYfiGESZ44kfMDXobtnVtxMd1qpfI7DXkptboO27BRqpzV7zZjqlCpGCVSSDL7awmlOiHlVwmPiwPyolCkLHiB8Ox0S0g4V3rCPh3baEYOVt-gWLT2Tp3nS7_ux5lTR783vbfehYe02TwfZV2p0l4SDtg89UEzhM2gImRtTpBCyMOQ-8DnuB8HAIhpCwVylBM4k2zgWO3yyDnotltNyeBqhuuWgZdNZwvecGO58N5VZ37sXnR8YNv1-be2gjSqtaQYIUS2R4_X7taDLj7w";
-        //  $reqToken = getToken($request_data);
+            file_get_contents(Storage::path('\Business\token.txt'));
+
+    
+      
 
         $host               = "na.business-api.amazon.com";
         $accessKey          = "AKIARVGPJZCJHLW5MH63";
@@ -166,8 +171,7 @@ class ProductsRequest
             $data,
             $debug = true
         );
-        // echo '<pre>';
-        // print_r($AwsSignature);
+       
         $curl = curl_init();
 
         $headersFS = array(
@@ -178,8 +182,7 @@ class ProductsRequest
             'x-amz-user-email:nitrouspurchases@gmail.com',
         );
 
-        // echo '<pre>';
-        // print_r($headersFS);
+      
 
         curl_setopt($curl, CURLOPT_URL, "https://na.business-api.amazon.com/products/2020-08-26/products/$asin?facets=OFFERS&locale=en_US&productRegion=US");
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);

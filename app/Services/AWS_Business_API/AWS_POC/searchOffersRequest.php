@@ -2,6 +2,8 @@
 
 namespace App\Services\AWS_Business_API\AWS_POC;
 
+use Illuminate\Support\Facades\Storage;
+
 
 class searchOffersRequest
 {
@@ -14,7 +16,7 @@ class searchOffersRequest
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
         $client_secret = "80b1db8f2e3ae4b755bd50a0bcc21228694381e6a35b178efdb43799ccedd1ae";
         $refresh_token =
-        "Atza|IwEBICbhJr1lu6fIAfacNMYXmhDqUrptjsWLn_xOiFm8F7lD1qnjLQTMd0TG5Fe2rO_bliRKX5dyIMkQajUKQ3_ZdLxSgo0137RfMnk9TSSRl-yRejkmn86cT6N0uBeLvjlMroK5RPcsePkQ4Wg4F3tLfFUbtwbDECrAWlhSNokSWAE7GdHgNi193ybxAtXj1raACL2G12rU4bEb-xSSNnw9hea7pPdAsrn9KeJNrfICBpMnfB4xXkCJmecAoz2pxY9pZGiX0pC0NKkibw-uk1kcicOtJiBZZONZLWSI_fxva-noQBlpZLLzdGu4RHVLzIqL8FHD-WzlNXUnOZChA-exD36n";
+            file_get_contents(Storage::path('\Business\token.txt'));
         $request_data = array(
             "client_id" => $client_id,
             "client_secret" => $client_secret,
@@ -23,7 +25,7 @@ class searchOffersRequest
         );
 
         $reqToken =
-        "Atza|IwEBICbhJr1lu6fIAfacNMYXmhDqUrptjsWLn_xOiFm8F7lD1qnjLQTMd0TG5Fe2rO_bliRKX5dyIMkQajUKQ3_ZdLxSgo0137RfMnk9TSSRl-yRejkmn86cT6N0uBeLvjlMroK5RPcsePkQ4Wg4F3tLfFUbtwbDECrAWlhSNokSWAE7GdHgNi193ybxAtXj1raACL2G12rU4bEb-xSSNnw9hea7pPdAsrn9KeJNrfICBpMnfB4xXkCJmecAoz2pxY9pZGiX0pC0NKkibw-uk1kcicOtJiBZZONZLWSI_fxva-noQBlpZLLzdGu4RHVLzIqL8FHD-WzlNXUnOZChA-exD36n";
+        file_get_contents(Storage::path('\Business\token.txt'));
         // $reqToken = getToken($request_data);
 
         $host               = "na.business-api.amazon.com";
