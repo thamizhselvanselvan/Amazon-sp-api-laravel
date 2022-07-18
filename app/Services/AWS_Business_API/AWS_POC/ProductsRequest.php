@@ -9,12 +9,12 @@ class ProductsRequest
     public function getASINpr($asin)
     {
         date_default_timezone_set('Asia/Jakarta');
-
+        
         // require_once('refrashToken.php');
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
         $client_secret = "80b1db8f2e3ae4b755bd50a0bcc21228694381e6a35b178efdb43799ccedd1ae";
-        $refresh_token =
-            "Atza|IwEBIPzZmP3G1kiOaS8WkxXx6ntB-KxatQ6IARybMDM4d_nC8e4sFWtM_B7OxtBoDmRuEWrmqQpVVYfJJWZaKSuGSa2N4iqlgmtjR4b-LBaFbIyanK3-1rom97-eUfmHn4HPON_rLgVf6GeQCCcGwV3BlqPUfCmnwGcjDopJvY9ZIPlLJVc--svYH5IxCkOXWWLp1hoh8Q47FJAb0oiD1-f_SQV7zcqXh6HKKjs5MonZB-mqDKQ1r203p9paUA-kEWHG77HEIrHvhJmiteAsgJL1ruoJT_085IPNSwuiIYdryy2A3HZmPIKcFL0vbfhViqH0WscrV9LhzfiWAVMDps-KKRj5";
+        $refresh_token = "Atza|IwEBIB4HIKqTVSzxHjrt04uxgW15DHn1iuf_7ffGeOh_1Ce6jJfJ6yjjNEAJzTNkQtMs4wdDNejvttqwFmDvOFPJOJpkIfQOLYfiGESZ44kfMDXobtnVtxMd1qpfI7DXkptboO27BRqpzV7zZjqlCpGCVSSDL7awmlOiHlVwmPiwPyolCkLHiB8Ox0S0g4V3rCPh3baEYOVt-gWLT2Tp3nS7_ux5lTR783vbfehYe02TwfZV2p0l4SDtg89UEzhM2gImRtTpBCyMOQ-8DnuB8HAIhpCwVylBM4k2zgWO3yyDnotltNyeBqhuuWgZdNZwvecGO58N5VZ37sXnR8YNv1-be2gjSqtaQYIUS2R4_X7taDLj7w";
+      
         $request_data = array(
             "client_id" => $client_id,
             "client_secret" => $client_secret,
@@ -23,7 +23,7 @@ class ProductsRequest
         );
 
         $reqToken =
-            "Atza|IwEBIPzZmP3G1kiOaS8WkxXx6ntB-KxatQ6IARybMDM4d_nC8e4sFWtM_B7OxtBoDmRuEWrmqQpVVYfJJWZaKSuGSa2N4iqlgmtjR4b-LBaFbIyanK3-1rom97-eUfmHn4HPON_rLgVf6GeQCCcGwV3BlqPUfCmnwGcjDopJvY9ZIPlLJVc--svYH5IxCkOXWWLp1hoh8Q47FJAb0oiD1-f_SQV7zcqXh6HKKjs5MonZB-mqDKQ1r203p9paUA-kEWHG77HEIrHvhJmiteAsgJL1ruoJT_085IPNSwuiIYdryy2A3HZmPIKcFL0vbfhViqH0WscrV9LhzfiWAVMDps-KKRj5";
+        "Atza|IwEBIB4HIKqTVSzxHjrt04uxgW15DHn1iuf_7ffGeOh_1Ce6jJfJ6yjjNEAJzTNkQtMs4wdDNejvttqwFmDvOFPJOJpkIfQOLYfiGESZ44kfMDXobtnVtxMd1qpfI7DXkptboO27BRqpzV7zZjqlCpGCVSSDL7awmlOiHlVwmPiwPyolCkLHiB8Ox0S0g4V3rCPh3baEYOVt-gWLT2Tp3nS7_ux5lTR783vbfehYe02TwfZV2p0l4SDtg89UEzhM2gImRtTpBCyMOQ-8DnuB8HAIhpCwVylBM4k2zgWO3yyDnotltNyeBqhuuWgZdNZwvecGO58N5VZ37sXnR8YNv1-be2gjSqtaQYIUS2R4_X7taDLj7w";
         //  $reqToken = getToken($request_data);
 
         $host               = "na.business-api.amazon.com";

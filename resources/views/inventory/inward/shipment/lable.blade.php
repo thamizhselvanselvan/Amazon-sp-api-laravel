@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Print lable')
+@section('title', 'Print label')
 
 @section('css')
 

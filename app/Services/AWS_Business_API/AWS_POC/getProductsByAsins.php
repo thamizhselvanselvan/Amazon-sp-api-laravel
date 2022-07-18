@@ -8,14 +8,14 @@ class getProductsByAsins
 
     public function getASINbyasin($asin)
     {
-        dd($asin);
+      
         date_default_timezone_set('Asia/Jakarta');
 
         // require_once('refrashToken.php');
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
         $client_secret = "80b1db8f2e3ae4b755bd50a0bcc21228694381e6a35b178efdb43799ccedd1ae";
         $refresh_token =
-            "Atza|IwEBIPzZmP3G1kiOaS8WkxXx6ntB-KxatQ6IARybMDM4d_nC8e4sFWtM_B7OxtBoDmRuEWrmqQpVVYfJJWZaKSuGSa2N4iqlgmtjR4b-LBaFbIyanK3-1rom97-eUfmHn4HPON_rLgVf6GeQCCcGwV3BlqPUfCmnwGcjDopJvY9ZIPlLJVc--svYH5IxCkOXWWLp1hoh8Q47FJAb0oiD1-f_SQV7zcqXh6HKKjs5MonZB-mqDKQ1r203p9paUA-kEWHG77HEIrHvhJmiteAsgJL1ruoJT_085IPNSwuiIYdryy2A3HZmPIKcFL0vbfhViqH0WscrV9LhzfiWAVMDps-KKRj5";
+        "Atzr|IwEBIGBnur8ckY5T1BPQTCvdM-LDHEQ1rqpBrKNAy44n_6HQKhz2DstKC0hOFUkWowyUN64k99Fj6BVJCR0nXTXn_MD6dLaoAHtsKQW6_VDStqyR8FImcHm94A6SLuGukK6qHNF0-4c9hY3nx03jBHQ9K4TOLg55O-vDTkr6T6WCn4q0hcJ05e4324qZdOBvoAzaJb9NFQkQyjX1ken_o9Wf55aZzbbgPcRmxqKy35o9k2HdcLFFnr9Qj737MMXQQ0AUT8f5YhMg7cNF6DM2VIX43wK3WMG6JwGjkszmL-4TWKbv4bRjRZXHLs1WkgUmwMGyH_0Lr6bgtQbvj76m9WQGg11H";
 
         $request_data = array(
             "client_id" => $client_id,
@@ -25,7 +25,7 @@ class getProductsByAsins
         );
 
         $reqToken =
-            "Atza|IwEBIPzZmP3G1kiOaS8WkxXx6ntB-KxatQ6IARybMDM4d_nC8e4sFWtM_B7OxtBoDmRuEWrmqQpVVYfJJWZaKSuGSa2N4iqlgmtjR4b-LBaFbIyanK3-1rom97-eUfmHn4HPON_rLgVf6GeQCCcGwV3BlqPUfCmnwGcjDopJvY9ZIPlLJVc--svYH5IxCkOXWWLp1hoh8Q47FJAb0oiD1-f_SQV7zcqXh6HKKjs5MonZB-mqDKQ1r203p9paUA-kEWHG77HEIrHvhJmiteAsgJL1ruoJT_085IPNSwuiIYdryy2A3HZmPIKcFL0vbfhViqH0WscrV9LhzfiWAVMDps-KKRj5";
+        "Atzr|IwEBIGBnur8ckY5T1BPQTCvdM-LDHEQ1rqpBrKNAy44n_6HQKhz2DstKC0hOFUkWowyUN64k99Fj6BVJCR0nXTXn_MD6dLaoAHtsKQW6_VDStqyR8FImcHm94A6SLuGukK6qHNF0-4c9hY3nx03jBHQ9K4TOLg55O-vDTkr6T6WCn4q0hcJ05e4324qZdOBvoAzaJb9NFQkQyjX1ken_o9Wf55aZzbbgPcRmxqKy35o9k2HdcLFFnr9Qj737MMXQQ0AUT8f5YhMg7cNF6DM2VIX43wK3WMG6JwGjkszmL-4TWKbv4bRjRZXHLs1WkgUmwMGyH_0Lr6bgtQbvj76m9WQGg11H";
 
         // $reqToken = getToken($request_data);
 
@@ -180,7 +180,7 @@ class getProductsByAsins
 
         return $JsonResponse;
 
-        var_dump($JsonResponse);
+         var_dump($asin);
 
         if (curl_errno($curl)) {
             echo 'Error:' . curl_error($curl);

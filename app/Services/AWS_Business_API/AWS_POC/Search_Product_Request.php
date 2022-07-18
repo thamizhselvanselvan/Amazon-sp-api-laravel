@@ -14,7 +14,7 @@ class Search_Product_Request
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
         $client_secret = "80b1db8f2e3ae4b755bd50a0bcc21228694381e6a35b178efdb43799ccedd1ae";
         $refresh_token =
-            "Atza|IwEBIPzZmP3G1kiOaS8WkxXx6ntB-KxatQ6IARybMDM4d_nC8e4sFWtM_B7OxtBoDmRuEWrmqQpVVYfJJWZaKSuGSa2N4iqlgmtjR4b-LBaFbIyanK3-1rom97-eUfmHn4HPON_rLgVf6GeQCCcGwV3BlqPUfCmnwGcjDopJvY9ZIPlLJVc--svYH5IxCkOXWWLp1hoh8Q47FJAb0oiD1-f_SQV7zcqXh6HKKjs5MonZB-mqDKQ1r203p9paUA-kEWHG77HEIrHvhJmiteAsgJL1ruoJT_085IPNSwuiIYdryy2A3HZmPIKcFL0vbfhViqH0WscrV9LhzfiWAVMDps-KKRj5";
+        "Atza|IwEBICbhJr1lu6fIAfacNMYXmhDqUrptjsWLn_xOiFm8F7lD1qnjLQTMd0TG5Fe2rO_bliRKX5dyIMkQajUKQ3_ZdLxSgo0137RfMnk9TSSRl-yRejkmn86cT6N0uBeLvjlMroK5RPcsePkQ4Wg4F3tLfFUbtwbDECrAWlhSNokSWAE7GdHgNi193ybxAtXj1raACL2G12rU4bEb-xSSNnw9hea7pPdAsrn9KeJNrfICBpMnfB4xXkCJmecAoz2pxY9pZGiX0pC0NKkibw-uk1kcicOtJiBZZONZLWSI_fxva-noQBlpZLLzdGu4RHVLzIqL8FHD-WzlNXUnOZChA-exD36n";
         $request_data = array(
             "client_id" => $client_id,
             "client_secret" => $client_secret,
@@ -23,7 +23,7 @@ class Search_Product_Request
         );
 
         $reqToken =
-            "Atza|IwEBIPzZmP3G1kiOaS8WkxXx6ntB-KxatQ6IARybMDM4d_nC8e4sFWtM_B7OxtBoDmRuEWrmqQpVVYfJJWZaKSuGSa2N4iqlgmtjR4b-LBaFbIyanK3-1rom97-eUfmHn4HPON_rLgVf6GeQCCcGwV3BlqPUfCmnwGcjDopJvY9ZIPlLJVc--svYH5IxCkOXWWLp1hoh8Q47FJAb0oiD1-f_SQV7zcqXh6HKKjs5MonZB-mqDKQ1r203p9paUA-kEWHG77HEIrHvhJmiteAsgJL1ruoJT_085IPNSwuiIYdryy2A3HZmPIKcFL0vbfhViqH0WscrV9LhzfiWAVMDps-KKRj5";
+        "Atza|IwEBICbhJr1lu6fIAfacNMYXmhDqUrptjsWLn_xOiFm8F7lD1qnjLQTMd0TG5Fe2rO_bliRKX5dyIMkQajUKQ3_ZdLxSgo0137RfMnk9TSSRl-yRejkmn86cT6N0uBeLvjlMroK5RPcsePkQ4Wg4F3tLfFUbtwbDECrAWlhSNokSWAE7GdHgNi193ybxAtXj1raACL2G12rU4bEb-xSSNnw9hea7pPdAsrn9KeJNrfICBpMnfB4xXkCJmecAoz2pxY9pZGiX0pC0NKkibw-uk1kcicOtJiBZZONZLWSI_fxva-noQBlpZLLzdGu4RHVLzIqL8FHD-WzlNXUnOZChA-exD36n";
         // $reqToken = getToken($request_data);
 
         $host               = "na.business-api.amazon.com";
