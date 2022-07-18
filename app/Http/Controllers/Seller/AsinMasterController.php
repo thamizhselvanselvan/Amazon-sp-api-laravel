@@ -201,7 +201,7 @@ class AsinMasterController extends Controller
 
     public function DownloadCSVTemplate()
     {
-        $filepath = public_path('template/Seller-Asin-Source-Template.csv');
+        $filepath = public_path('template/Seller-Asin-Destination-Template.csv');
         return Response()->download($filepath);
     }
 }
