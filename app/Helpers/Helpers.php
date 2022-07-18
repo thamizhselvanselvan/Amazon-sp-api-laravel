@@ -5,6 +5,7 @@ use Carbon\CarbonInterval;
 use App\Models\Aws_credential;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
@@ -493,5 +494,18 @@ if (!function_exists('jobDispatchFunc')) {
         } else {
             dispatch(new $class($parameters));
         }
+    }
+}
+
+if (!function_exists('table_model_set')) {
+    function table_model_set(string $country_code, string $model, string $table_name): object
+    {
+
+        $country_code_lr = strtolower($country_code);
+
+        $namespace = 'App\\Models\\Admin\\BB\\' . $model;
+        $product_model = new $namespace;
+
+        return $product_model->setTable($table_name . '_' . $country_code_lr . 's');
     }
 }

@@ -28,7 +28,7 @@ class InventoryOutwardShipmentController extends Controller
 
         if ($request->ajax()) {
 
-            $data = Shipment_Outward_Details::select("ship_id", "destination_id","created_at")->distinct()->with(['vendors']);
+            $data = Shipment_Outward_Details::select("ship_id", "destination_id","created_at")->distinct()->with(['vendors'])->orderby('created_at','DESC');
 
 
 

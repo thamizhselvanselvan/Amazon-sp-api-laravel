@@ -21,6 +21,7 @@ use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Inventory\Shipment_Inward;
@@ -36,7 +37,7 @@ class InventoryShipmentController extends Controller
         if ($request->ajax()) {
 
 
-            $data = Shipment_Inward_Details::select("ship_id", "source_id", "created_at")->distinct()->with(['vendors'])->get();
+            $data = Shipment_Inward_Details::select("ship_id", "source_id", "created_at")->distinct()->with(['vendors'])->orderby('created_at','DESC')->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('source_name', function ($data) {
@@ -387,8 +388,10 @@ class InventoryShipmentController extends Controller
         foreach ($lable as $viewlable) {
             $data = $viewlable;
 
-            $generator = new BarcodeGeneratorHTML();
-            $bar_code[]  = $generator->getBarcode($data['asin'], $generator::TYPE_CODE_93);
+            //$generator = new BarcodeGeneratorHTML();
+            //$bar_code[]  = $generator->getBarcode($data['asin'], $generator::TYPE_CODE_93);
+            $generator = new BarcodeGeneratorPNG();
+            $bar_code[]  = base64_encode($generator->getBarcode($data['asin'], $generator::TYPE_CODE_93));
         }
 
         return view('inventory.inward.shipment.lable', compact('viewlable', 'lable', 'data', 'bar_code', 'quant', 'total'));
@@ -405,7 +408,7 @@ class InventoryShipmentController extends Controller
 
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+           // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf);
 
