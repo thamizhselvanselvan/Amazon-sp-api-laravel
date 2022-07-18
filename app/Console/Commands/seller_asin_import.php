@@ -69,7 +69,7 @@ class seller_asin_import extends Command
         $count = 0;
         foreach ($records as $key => $record) {
             $asin = $record['ASIN'];
-            $country_code = $record['Source'];
+            $country_code = $record['Destination'];
 
             $asin_master[] = [
                 'seller_id' => $seller_id,
