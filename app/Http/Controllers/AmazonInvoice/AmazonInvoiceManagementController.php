@@ -102,7 +102,7 @@ class AmazonInvoiceManagementController extends Controller
 
             $class = 'AmazonInvoice\\AmazonInvoiceUploadDO';
 
-            jobDispatchFunc($class, $job_data, 'amazonInvoice');
+            jobDispatchFunc($class, $job_data, 'default');
         }
         return response()->json(["message" => "All file uploaded successfully"]);
     }

@@ -226,11 +226,11 @@ return [
 
     'menu' => [
         // Navbar items:
-        [
-            'type'         => 'navbar-search',
-            'text'         => 'search',
-            'topnav_right' => true,
-        ],
+        // [
+        //     'type'         => 'navbar-search',
+        //     'text'         => 'search',
+        //     'topnav_right' => true,
+        // ],
         [
             'type'         => 'fullscreen-widget',
             'topnav_right' => true,
@@ -531,12 +531,17 @@ return [
                     'icon' => 'far fa-fw fa-file',
 
                 ],
+                // [
+                //     'text' => 'Catalog Details',
+                //     'url' => 'seller/catalog',
+                //     'can' => ['Admin', 'Seller'],
+                //     'icon' => 'far fa-fw fa-file',
+                // ],
                 [
-                    'text' => 'Catalog Details',
-                    'url' => 'seller/catalog',
+                    'text' => 'Asin Details',
+                    'url' => 'seller/price/details',
                     'can' => ['Admin', 'Seller'],
                     'icon' => 'far fa-fw fa-file',
-
                 ],
                 [
                     'text' => 'Seller Invoice',

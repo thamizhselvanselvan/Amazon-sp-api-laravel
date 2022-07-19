@@ -5,9 +5,11 @@ use Carbon\CarbonInterval;
 use App\Models\Aws_credential;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 if (!function_exists('ddp')) {
     function ddp($value)
@@ -493,5 +495,37 @@ if (!function_exists('jobDispatchFunc')) {
         } else {
             dispatch(new $class($parameters));
         }
+    }
+}
+
+if (!function_exists('table_model_set')) {
+    function table_model_set(string $country_code, string $model, string $table_name): object
+    {
+
+        $country_code_lr = strtolower($country_code);
+
+        $namespace = 'App\\Models\\Admin\\BB\\' . $model;
+        $product_model = new $namespace;
+
+        return $product_model->setTable($table_name . '_' . $country_code_lr . 's');
+    }
+}
+
+if (!function_exists('commandExecFunc')) {
+    function commandExecFunc(string $user_command): bool
+    {
+
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+
+            $base_path = base_path();
+            $command = "cd $base_path && nohup php artisan $user_command > /dev/null &";
+
+            exec($command);
+        } else {
+
+            Artisan::call("$user_command");
+        }
+
+        return true;
     }
 }
