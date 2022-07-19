@@ -31,6 +31,7 @@ Route::prefix('seller/')->group(function () {
     Route::get('price/details', 'seller\SellerCatalogController@Pricing');
     Route::get('price/get', 'seller\SellerCatalogController@GetPrice');
     Route::get('price/export', 'seller\SellerCatalogController@ExportPricing');
+    Route::get('price/download', 'seller\SellerCatalogController@PriceFileDownload');
     //credentials
     Route::get('credentials', 'Seller\SellerController@index');
 

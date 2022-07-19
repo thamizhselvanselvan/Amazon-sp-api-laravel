@@ -134,4 +134,27 @@ class SellerCatalogController extends Controller
 
     return redirect('/seller/price/details')->with("success", "Asin Price Details Is Exporting In CSV.");
   }
+
+  public function PriceFileDownload()
+    {
+        $user = Auth::user();
+
+        $seller_id = $user->bb_seller_id ? $user->bb_seller_id : $user->id;
+        $path = "app/excel/downloads/seller/" . $seller_id;
+
+        $path = storage_path($path);
+        $files = (scandir($path));
+
+        $filesArray = [];
+        foreach ($files as $key => $file) {
+            if ($key > 1) {
+                if(!str_contains($file, '.mosh'))
+                {
+                    $filesArray[][$file] =  date("F d Y H:i:s.", filemtime($path . '/' . $file));
+                }
+            }
+        }
+
+        return response()->json(['success' => true, "files_lists" => $filesArray]);
+    }
 }
