@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
+use App\Models\order\OrderSellerCredentials;
+use App\Services\SP_API\API\Order\missingOrder;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
@@ -304,6 +306,33 @@ class labelManagementController extends Controller
         return response()->json(["success" => "All file uploaded successfully"]);
     }
 
+    public function missing()
+    {
+        $selected_store = OrderSellerCredentials::where('dump_order', '1')
+            ->where('get_order_item', '1')
+            ->get(['seller_id', 'store_name', 'country_code']);
+
+        return view('label.missing', compact('selected_store'));
+    }
+
+    public function missingOrderId(Request $request)
+    {
+        $seller = explode(',', $request->seller_id);
+        $order_id = $request->order_id;
+        $seller_id = $seller[0];
+        $country_code = $seller[1];
+
+        $datas = preg_split('/[\r\n| |:|,]/', $order_id, -1, PREG_SPLIT_NO_EMPTY);
+        $auth_code = NULL;
+        
+        $amazon_order_id = $datas[0];
+        $order = new missingOrder();
+        $order_details = $order->GetMissingOrderDetails($seller_id, $country_code, $auth_code, $amazon_order_id);
+        po($order_details);
+        exit;
+        dd($seller_id, $country_code, $datas);
+    }
+
     public function labelDataFormating($id)
     {
         $label = '';
@@ -414,7 +443,7 @@ class labelManagementController extends Controller
     public function deleteAllPdf()
     {
         $files = glob(Storage::path('label/*'));
-        
+
         foreach ($files as $file) {
             if (is_file($file)) {
                 unlink($file);
