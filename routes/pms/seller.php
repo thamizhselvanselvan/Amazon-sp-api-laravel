@@ -29,6 +29,7 @@ Route::prefix('seller/')->group(function () {
     //pricing
 
     Route::get('price/details', 'seller\SellerCatalogController@Pricing');
+    Route::get('price/get', 'seller\SellerCatalogController@GetPrice');
     Route::get('price/export', 'seller\SellerCatalogController@ExportPricing');
     //credentials
     Route::get('credentials', 'Seller\SellerController@index');

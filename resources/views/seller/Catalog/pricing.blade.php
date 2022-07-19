@@ -3,8 +3,32 @@
 
 @section('content_header')
 <div class="row">
+    <div class="col">
+        <div class="alert_display">
+            @if ($message = Session::get('success'))
+            <div class="alert alert-success alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>{{ $message }}</strong>
+            </div>
+            @endif
+        </div>
+
+        <div class="alert_display">
+            @if ($message = Session::get('error'))
+            <div class="alert alert-danger alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>{{ $message }}</strong>
+            </div>
+            @endif
+        </div>
+    </div>
+</div>
+<div class="row">
     <h1 class="m-0 text-dark">ASIN Price Details</h1>
     <div class="col text-right">
+        <a href="/seller/price/get">
+            <x-adminlte-button label="Get Price" theme="primary" icon="fas fa-sync" id='pricing' />
+        </a>
         <a href="/seller/price/export">
             <x-adminlte-button label="Pricing CSV Export" theme="primary" icon="fas fa-file-import" id='pricing' />
         </a>

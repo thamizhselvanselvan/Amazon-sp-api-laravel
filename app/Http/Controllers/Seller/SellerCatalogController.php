@@ -120,11 +120,18 @@ class SellerCatalogController extends Controller
     return view('seller.catalog.pricing');
   }
 
+  public function GetPrice()
+  {
+    commandExecFunc("mosh:seller-asin-get-price");
+    return redirect('/seller/price/details')->with("success", "Price is Importing");
+  }
   public function ExportPricing()
   {
     $user = Auth::user();
     $seller_id = $user->bb_seller_id ? $user->bb_seller_id : $user->id;
 
-    commandExecFunc("mosh:seller-asin-price-export --seller_id=${seller_id}"); 
+    commandExecFunc("mosh:seller-asin-price-export --seller_id=${seller_id}");
+
+    return redirect('/seller/price/details')->with("success", "Asin Price Details Is Exporting In CSV.");
   }
 }
