@@ -10,9 +10,9 @@ class GetProductsByAsinsController extends Controller
 {
     public function index()
     {
-        // $ApiCall = new getProductsByAsins();
-        // $data = $ApiCall->getASINbyasin();
-        // dd($data);
+        $ApiCall = new getProductsByAsins();
+        $data = $ApiCall->getASINbyasin();
+        dd($data);
         return View('buisnessapi.get_products_byasins.index');
     }
     public function searchasinproduct(Request $request)
