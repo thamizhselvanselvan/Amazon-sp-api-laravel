@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 class Search_Product_Request
 {
 
-    public function getASIN($asin)
+    public function getASIN()
     {
         date_default_timezone_set('Asia/Jakarta');
 
@@ -34,9 +34,17 @@ class Search_Product_Request
         $region             = "us-east-1";
         $service            = "execute-api";
         $requestUrl         = "https://na.business-api.amazon.com/products/2020-08-26/products";
-        $uri                = "/products/2020-08-26/products/$asin";
+        $uri                = "/products/2020-08-26/products";
         $httpRequestMethod  = 'GET';
-        $data                = '';
+        $data                = json_encode(["asin" => "B09BG96KFJ"]);
+        
+        // json_encode([
+        //     "parameters" => [
+        //         "keywords" => "B09BG96KFJ",
+        //         "in" => "query",
+        //         "name" => "keywords",
+
+        //     ]]);
 
         function calcualteAwsSignatureAndReturnHeaders(
             $today,
@@ -182,7 +190,7 @@ class Search_Product_Request
         // echo '<pre>';
         // print_r($headersFS);
 
-        curl_setopt($curl, CURLOPT_URL, "https://na.business-api.amazon.com/products/2020-08-26/products/$asin?facets=OFFERS&locale=en_US&productRegion=US");
+        curl_setopt($curl, CURLOPT_URL, "https://na.business-api.amazon.com/products/2020-08-26/productslocale=en_US&productRegion=US");
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headersFS);

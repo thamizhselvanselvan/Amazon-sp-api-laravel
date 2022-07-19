@@ -40,7 +40,6 @@ class access_token_generate extends Command
      */
     public function handle()
     {
-        Log::alert("Acess token generation started");
         $postData = array(
             "grant_type" => "refresh_token",
             "client_id" =>  "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5",

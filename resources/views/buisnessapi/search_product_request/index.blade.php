@@ -85,20 +85,22 @@
     });
     $(".product_search").on("click", function() {
         let asin = $('#asin').val();
-
+        let key = $('#Keyword').val();
+      
 
         $.ajax({
             method: 'GET',
             url: '/product/details',
             data: {
                 'asin': asin,
+                "keyword": key,
                 "_token": "{{ csrf_token() }}",
             },
             response: 'json',
             success: function(response) {
                 console.log(response);
                 $var = (JSON.stringify(response));
-              
+
                 let html = '';
 
                 html += "<h5> ASIN Details :" + $var + "</h5>";
