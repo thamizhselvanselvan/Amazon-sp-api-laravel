@@ -115,7 +115,7 @@
 
             error: function(response) {
                 console.log(response);
-                alert('Invalid ASIN');
+                alert('Error');
             }
         });
     });
