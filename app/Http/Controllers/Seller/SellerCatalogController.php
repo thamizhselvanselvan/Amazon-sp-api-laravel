@@ -136,25 +136,37 @@ class SellerCatalogController extends Controller
   }
 
   public function PriceFileDownload()
-    {
-        $user = Auth::user();
+  {
+    $user = Auth::user();
 
-        $seller_id = $user->bb_seller_id ? $user->bb_seller_id : $user->id;
-        $path = "app/excel/downloads/seller/" . $seller_id;
+    $seller_id = $user->bb_seller_id ? $user->bb_seller_id : $user->id;
+    $path = "app/excel/downloads/seller/" . $seller_id;
 
-        $path = storage_path($path);
-        $files = (scandir($path));
+    $path = storage_path($path);
+    $files = (scandir($path));
 
-        $filesArray = [];
-        foreach ($files as $key => $file) {
-            if ($key > 1) {
-                if(!str_contains($file, '.mosh'))
-                {
-                    $filesArray[][$file] =  date("F d Y H:i:s.", filemtime($path . '/' . $file));
-                }
-            }
+    $filesArray = [];
+    foreach ($files as $key => $file) {
+      if ($key > 1) {
+        if (!str_contains($file, '.mosh')) {
+          $filesArray[][$file] =  date("F d Y H:i:s.", filemtime($path . '/' . $file));
         }
-
-        return response()->json(['success' => true, "files_lists" => $filesArray]);
+      }
     }
+
+    return response()->json(['success' => true, "files_lists" => $filesArray]);
+  }
+
+  public function Download($id)
+  {
+    $user = Auth::user();
+    $seller_id = $user->bb_seller_id ? $user->bb_seller_id : $user->id;
+
+    $file_path = "excel/downloads/seller/" . $seller_id . '/' . $id;
+  
+    if (Storage::exists($file_path)) {
+      return Storage::download($file_path);
+    }
+    return 'file not exist';
+  }
 }

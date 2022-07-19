@@ -43,7 +43,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Download Amazon Other Products</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">Download Asin Details CSV</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -140,7 +140,7 @@
                             let file_time = value[file_name];
 
                             html += "<li class='p-0 m-0'>";
-                            html += "<a href='/other-product/file_download_in/" + file_name + "' class='p-0 m-0'> Part " + parseInt(index + 1) + "</a> ";
+                            html += "<a href='/seller/price/download/" + file_name + "' class='p-0 m-0'> Part " + parseInt(index + 1) + "</a> ";
                             html += file_time;
                             html += "</li>";
 
