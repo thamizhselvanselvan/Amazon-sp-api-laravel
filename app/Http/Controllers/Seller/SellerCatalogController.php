@@ -117,7 +117,7 @@ class SellerCatalogController extends Controller
         ->addIndexColumn()
         ->make(true);
     }
-    return view('seller.catalog.pricing');
+    return view('seller.Catalog.pricing');
   }
 
   public function GetPrice()
