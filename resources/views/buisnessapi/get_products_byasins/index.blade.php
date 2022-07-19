@@ -62,9 +62,14 @@
         $("#datapro3").show();
     });
     $(".product_search").on("click", function() {
-        let asin = $('#asin').val();
-
-
+        let asin = $('#product_asin4').val();
+        let length = asin.length;
+        if (asin.length < 10 || asin.length > 10)
+        {
+            alert("Invalid ASIN");
+            return false;
+        }
+      
         $.ajax({
             method: 'GET',
             url: '/business/asin/details',
@@ -74,8 +79,14 @@
             },
             response: 'json',
             success: function(response) {
-                console.log(response);
+
+
+
+                $var = (JSON.stringify(response));
                 let html = '';
+
+                html += "<h5> ASIN Details :" + $var + "</h5>";
+
 
 
 

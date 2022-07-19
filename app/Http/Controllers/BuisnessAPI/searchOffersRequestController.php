@@ -17,6 +17,6 @@ class searchOffersRequestController extends Controller
         $ApiCall = new searchOffersRequest();
         $data = $ApiCall->getAsinoff($request->asin);
 
-        return response()->json(['success' => 'Asin details3 successfully Fetched', $data]);
+        return response()->json(['success' => ' details successfully Fetched', $data]);
     }
 }

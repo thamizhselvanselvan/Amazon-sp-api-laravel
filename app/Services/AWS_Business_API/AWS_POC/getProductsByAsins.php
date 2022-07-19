@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Storage;
 class getProductsByAsins
 {
 
-    public function getASINbyasin()
+    public function getASINbyasin($asin)
     {
-      
+    
         date_default_timezone_set('Asia/Jakarta');
 
         // require_once('refrashToken.php');
@@ -32,6 +32,7 @@ class getProductsByAsins
 
         // $reqToken = getToken($request_data);
 
+   
         $host               = "na.business-api.amazon.com";
         $accessKey          = "AKIARVGPJZCJHLW5MH63";
         $secretKey          = "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";
@@ -41,7 +42,7 @@ class getProductsByAsins
         $uri                = "/products/2020-08-26/products/getProductsByAsins";
         $httpRequestMethod  = 'POST';
         $data                = json_encode([
-            'productIds' => ["B09BG96KFJ"],
+            'productIds' => ["$asin"],
             'productRegion' => 'US',
             'locale' => 'en_US'
         ]);
@@ -180,6 +181,8 @@ class getProductsByAsins
         $server_APIoutput = curl_exec($curl);
 
         $JsonResponse = json_decode($server_APIoutput);
+
+        
 
         return $JsonResponse;
 
