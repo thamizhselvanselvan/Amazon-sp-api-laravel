@@ -2,11 +2,13 @@
 
 namespace App\Services\AWS_Business_API\AWS_POC;
 
+use Illuminate\Support\Facades\Storage;
+
 
 class Search_Product_Request
 {
 
-    public function getASIN($asin)
+    public function getASIN()
     {
         date_default_timezone_set('Asia/Jakarta');
 
@@ -14,7 +16,7 @@ class Search_Product_Request
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
         $client_secret = "80b1db8f2e3ae4b755bd50a0bcc21228694381e6a35b178efdb43799ccedd1ae";
         $refresh_token =
-            "Atza|IwEBIPzZmP3G1kiOaS8WkxXx6ntB-KxatQ6IARybMDM4d_nC8e4sFWtM_B7OxtBoDmRuEWrmqQpVVYfJJWZaKSuGSa2N4iqlgmtjR4b-LBaFbIyanK3-1rom97-eUfmHn4HPON_rLgVf6GeQCCcGwV3BlqPUfCmnwGcjDopJvY9ZIPlLJVc--svYH5IxCkOXWWLp1hoh8Q47FJAb0oiD1-f_SQV7zcqXh6HKKjs5MonZB-mqDKQ1r203p9paUA-kEWHG77HEIrHvhJmiteAsgJL1ruoJT_085IPNSwuiIYdryy2A3HZmPIKcFL0vbfhViqH0WscrV9LhzfiWAVMDps-KKRj5";
+        file_get_contents(Storage::path('\Business\token.txt'));
         $request_data = array(
             "client_id" => $client_id,
             "client_secret" => $client_secret,
@@ -23,7 +25,7 @@ class Search_Product_Request
         );
 
         $reqToken =
-            "Atza|IwEBIPzZmP3G1kiOaS8WkxXx6ntB-KxatQ6IARybMDM4d_nC8e4sFWtM_B7OxtBoDmRuEWrmqQpVVYfJJWZaKSuGSa2N4iqlgmtjR4b-LBaFbIyanK3-1rom97-eUfmHn4HPON_rLgVf6GeQCCcGwV3BlqPUfCmnwGcjDopJvY9ZIPlLJVc--svYH5IxCkOXWWLp1hoh8Q47FJAb0oiD1-f_SQV7zcqXh6HKKjs5MonZB-mqDKQ1r203p9paUA-kEWHG77HEIrHvhJmiteAsgJL1ruoJT_085IPNSwuiIYdryy2A3HZmPIKcFL0vbfhViqH0WscrV9LhzfiWAVMDps-KKRj5";
+        file_get_contents(Storage::path('\Business\token.txt'));
         // $reqToken = getToken($request_data);
 
         $host               = "na.business-api.amazon.com";
@@ -32,9 +34,17 @@ class Search_Product_Request
         $region             = "us-east-1";
         $service            = "execute-api";
         $requestUrl         = "https://na.business-api.amazon.com/products/2020-08-26/products";
-        $uri                = "/products/2020-08-26/products/$asin";
+        $uri                = "/products/2020-08-26/products";
         $httpRequestMethod  = 'GET';
-        $data                = '';
+        $data                = json_encode(["asin" => "B09BG96KFJ"]);
+        
+        // json_encode([
+        //     "parameters" => [
+        //         "keywords" => "B09BG96KFJ",
+        //         "in" => "query",
+        //         "name" => "keywords",
+
+        //     ]]);
 
         function calcualteAwsSignatureAndReturnHeaders(
             $today,
@@ -180,7 +190,7 @@ class Search_Product_Request
         // echo '<pre>';
         // print_r($headersFS);
 
-        curl_setopt($curl, CURLOPT_URL, "https://na.business-api.amazon.com/products/2020-08-26/products/$asin?facets=OFFERS&locale=en_US&productRegion=US");
+        curl_setopt($curl, CURLOPT_URL, "https://na.business-api.amazon.com/products/2020-08-26/productslocale=en_US&productRegion=US");
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headersFS);

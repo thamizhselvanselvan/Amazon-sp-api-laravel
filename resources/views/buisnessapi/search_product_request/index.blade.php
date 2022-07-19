@@ -24,26 +24,33 @@
     </div>
 </div>
 <div class="row">
-
-
     <div class="col-2">
-        <x-adminlte-input label="Enter ASIN:" name="asin" id="asin" type="text" placeholder="Asin...." />
+        <input type="radio" name="size" id="asinwise">
+        <label for=" entire">Search By ASIN</label>
+    </div>
+    <div class="col-9">
+        <input type="radio" name="size" id="keywise">
+        <label for="ware">Search by Keyword </label>
+    </div>
+</div>
+<div class="row">
+    <div class="col-2" id="asin_search">
+        <x-adminlte-input label=" Enter ASIN:" name="asin" id="asin" type="text" placeholder="Asin...." />
     </div>
 
+    <div class="col-2" id="key_search">
+        <x-adminlte-input label="Enter Keyword:" name="Keyword" id="Keyword" type="text" placeholder="Keyword...." />
+    </div>
+</div>
+<div class="row">
     <div class="col ">
-        <div style="margin-top: 2.3rem;">
-
-            <!-- //<a href="/shipment/storeshipment"> -->
-            <x-adminlte-button label="Submit" theme="primary" icon="fas fa-file-upload" id="create" class="btn-sm product_search" />
-            <!-- </a> -->
-
-
-        </div>
+        <!-- //<a href="/shipment/storeshipment"> -->
+        <x-adminlte-button label="Submit" theme="primary" icon="fas fa-file-upload" id="create" class="btn-sm product_search" />
+        <!-- </a> -->
     </div>
 </div>
 <div class="col" id="datapro">
     <h4> </h4>
-
 </div>
 
 
@@ -56,26 +63,44 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-    $("#datapro").hide();
 
-    $(".product_search").on('click', function(e) {
-        $("#datapro").show();
+    // $("#datapro").hide();
+    $("#asin_search").hide();
+    $("#key_search").hide();
+    $("#create").hide();
+
+
+    $("#asinwise").on('click', function(e) {
+        $("#asin_search").show();
+        $("#key_search").hide();
+
+    });
+    $("#keywise").on('click', function(e) {
+        $("#key_search").show();
+        $("#asin_search").hide();
+    });
+    $("#keywise,#asinwise").on('click', function(e) {
+        $("#create").show();
+
     });
     $(".product_search").on("click", function() {
         let asin = $('#asin').val();
-
+        let key = $('#Keyword').val();
+      
 
         $.ajax({
             method: 'GET',
             url: '/product/details',
             data: {
                 'asin': asin,
+                "keyword": key,
                 "_token": "{{ csrf_token() }}",
             },
             response: 'json',
             success: function(response) {
-                // console.log(response);
+                console.log(response);
                 $var = (JSON.stringify(response));
+
                 let html = '';
 
                 html += "<h5> ASIN Details :" + $var + "</h5>";

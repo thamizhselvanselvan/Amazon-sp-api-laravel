@@ -195,10 +195,6 @@ class ReportController extends Controller
         return Storage::download($exportFilePath);
     }
 
-
-
-
-
     public function warerepo(Request $request)
     {
         if ($request->ajax()) {
