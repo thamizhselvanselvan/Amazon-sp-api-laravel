@@ -13,13 +13,13 @@ class CreateSellerAsinPricingTable extends Migration
      */
     public function up()
     {
-        Schema::connection('seller')->create('seller_asin_pricing', function (Blueprint $table) {
+        Schema::connection('seller')->create('seller_asin_details', function (Blueprint $table) {
             $table->id();
             $table->string('seller_id');
             $table->string('asin');
-            $table->string('is_fulfilment_by_amazon');
-            $table->string('price');
-            $table->string('status');
+            $table->string('is_fulfilment_by_amazon')->nullable();
+            $table->string('price')->nullable();
+            $table->string('status')->nullable()->default('0');
             $table->unique(['seller_id','asin'], 'seller_id_asin_unique');
             $table->timestamps();
             $table->softDeletes();
@@ -33,6 +33,6 @@ class CreateSellerAsinPricingTable extends Migration
      */
     public function down()
     {
-        Schema::connection('seller')->dropIfExists('seller_asin_pricing');
+        Schema::connection('seller')->dropIfExists('seller_asin_details');
     }
 }
