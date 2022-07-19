@@ -61,7 +61,7 @@
                             <div class="row">
                                 <div class="col p-0"></div>
                                 <div class="col p-0">
-                                    <img src='data:image/png;base64,{!! $bar_code !!}'>
+                                    <img src='data:image/png;base64,{!! $bar_code !!}' width="300px">
                                     <b>
                                         <div class="text-center">{{ $result->awb_no }}</div>
                                     </b>
@@ -156,7 +156,7 @@
 
             <div class="mt-1 p-1 small return">
                 <div>Return Address:</div>
-                <span>Mahzuz, Al Habtoor Warehouse No.27, Al QusaisIndustrial Area 3 Mumbai, MH, IN, 400025</span>
+                <span>Warehouse 61, Al Habtoor Warehouses, Industrial Area 3, Al Qusias, Dubai UAE</span>
             </div>
             <!-- </div> -->
         </div>

@@ -117,7 +117,7 @@ class labelManagementController extends Controller
 
         // dd($result);
         $generator = new BarcodeGeneratorPNG();
-        $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_93));
+        $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39E));
         return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no'));
     }
     public function ExportLabel(Request $request)
@@ -179,8 +179,8 @@ class labelManagementController extends Controller
         foreach ($allid as $id) {
             $results = $this->labelDataFormating($id);
             $result[] = (object)$results;
-            $generator = new BarcodeGeneratorHTML();
-            $bar_code[] = $generator->getBarcode($results['awb_no'], $generator::TYPE_CODE_93);
+            $generator = new BarcodeGeneratorPNG();
+            $bar_code[] = base64_encode($generator->getBarcode($results['awb_no'], $generator::TYPE_CODE_39E));
         }
 
         return view('label.multipleLabel', compact('result', 'bar_code'));
