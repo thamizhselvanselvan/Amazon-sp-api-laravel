@@ -11,7 +11,7 @@ class sellerAsinPricing extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:seller-asin-pricing';
+    protected $signature = 'mosh:seller-asin-get-pricing';
 
     /**
      * The console command description.

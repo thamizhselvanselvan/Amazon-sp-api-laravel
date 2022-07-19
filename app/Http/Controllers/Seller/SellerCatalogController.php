@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\seller\AsinMasterSeller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use App\Models\seller\SellerAsinDetails;
+use Yajra\DataTables\Facades\DataTables;
 
 class SellerCatalogController extends Controller
 {
@@ -83,7 +85,7 @@ class SellerCatalogController extends Controller
     $exportFilePath = "excel/downloads/seller/" . $user_name . "/catalog";
     $fileName = Storage::path($exportFilePath . '/catalog.zip');
     if (!Storage::exists($exportFilePath . '/catalog.zip')) {
-      Storage::put($exportFilePath.'.catalog.zip', '');
+      Storage::put($exportFilePath . '.catalog.zip', '');
     }
     if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
       $path = Storage::path($exportFilePath);
@@ -91,15 +93,38 @@ class SellerCatalogController extends Controller
       foreach ($files as $key => $file) {
         if ($key > 1) {
 
-          $path_csv = $path.'/'.$file;
+          $path_csv = $path . '/' . $file;
           $relativeNameInZipFile = basename($path_csv);
           $zip->addFile($path_csv, $relativeNameInZipFile);
-
         }
       }
-     
+
       $zip->close();
     }
     return response()->download($fileName);
+  }
+
+  public function Pricing(Request $request)
+  {
+    if ($request->ajax()) {
+
+      $user = Auth::user();
+      $seller_id = $user->bb_seller_id ? $user->bb_seller_id : $user->id;
+
+      $data = SellerAsinDetails::query()->where('seller_id', $seller_id)->get();
+
+      return DataTables::of($data)
+        ->addIndexColumn()
+        ->make(true);
+    }
+    return view('seller.catalog.pricing');
+  }
+
+  public function ExportPricing()
+  {
+    $user = Auth::user();
+    $seller_id = $user->bb_seller_id ? $user->bb_seller_id : $user->id;
+
+    commandExecFunc("mosh:seller-asin-price-export --seller_id=${seller_id}"); 
   }
 }

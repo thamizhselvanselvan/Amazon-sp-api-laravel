@@ -18,13 +18,11 @@ class AsinMasterController extends Controller
 {        //
     public function index(Request $request)
     {
-        $path = public_path() . '/storage/SellerCsvTemplate.csv';
-
         if ($request->ajax()) {
 
             $user = Auth::user();
-            $seller_id = $user->bb_seller_id;
-
+            $seller_id = $user->bb_seller_id ? $user->bb_seller_id : $user->id;
+            
             $data = AsinMasterSeller::query()->where('seller_id', $seller_id)->get();
 
             return DataTables::of($data)
@@ -38,7 +36,7 @@ class AsinMasterController extends Controller
                 ->make(true);
         }
 
-        return view('seller.asin_master.index', compact('path'));
+        return view('seller.asin_master.index');
     }
 
     public function addAsin()
@@ -190,7 +188,6 @@ class AsinMasterController extends Controller
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:seller-asin-remove $seller_id > /dev/null &";
             exec($command);
-
         } else {
 
             Artisan::call('pms:seller-asin-remove ' . $seller_id);

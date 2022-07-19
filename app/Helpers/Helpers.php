@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 if (!function_exists('ddp')) {
     function ddp($value)
@@ -507,5 +508,24 @@ if (!function_exists('table_model_set')) {
         $product_model = new $namespace;
 
         return $product_model->setTable($table_name . '_' . $country_code_lr . 's');
+    }
+}
+
+if (!function_exists('commandExecFunc')) {
+    function commandExecFunc(string $user_command): bool
+    {
+
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+
+            $base_path = base_path();
+            $command = "cd $base_path && nohup php artisan $user_command > /dev/null &";
+
+            exec($command);
+        } else {
+
+            Artisan::call("$user_command");
+        }
+
+        return true;
     }
 }
