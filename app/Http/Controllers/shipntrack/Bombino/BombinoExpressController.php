@@ -36,7 +36,7 @@ class BombinoExpressController extends Controller
 
             $class = 'ShipNTrack\\Bombino\\BombinoGetTracking';
             $parameters['awb_no'] = $awb_no;
-            $queue_type = 'default';
+            $queue_type = 'tracking';
             jobDispatchFunc(class: $class, parameters: $parameters, queue_type: $queue_type);
 
         }
