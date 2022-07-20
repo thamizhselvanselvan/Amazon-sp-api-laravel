@@ -707,7 +707,7 @@ return [
                 ],
                 [
                     'text' => 'Product Request',
-                    'url' => 'business/products',
+                    'url' => 'business/products/request',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
 

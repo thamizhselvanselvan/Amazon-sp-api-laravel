@@ -9,7 +9,7 @@ Route::resource('business/search/products', 'BuisnessAPI\SearchProductRequestCon
 
 
 Route::get('buisness/product/details', 'BuisnessAPI\ProductsRequestController@productRequestasin');
-Route::resource('business/products', 'BuisnessAPI\ProductsRequestController');
+Route::resource('business/products/request', 'BuisnessAPI\ProductsRequestController');
 
 Route::get('buisness/product/offers', 'BuisnessAPI\searchOffersRequestController@searchoffersproduct');
 Route::resource('business/offers', 'BuisnessAPI\searchOffersRequestController');
