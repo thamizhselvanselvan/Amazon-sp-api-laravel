@@ -41,7 +41,6 @@
 @section('content')
     <div class="row">
         <div class="col">
-
             <div class="alert_display">
                 @if ($message = Session::get('success'))
                     <div class="alert alert-success alert-block">

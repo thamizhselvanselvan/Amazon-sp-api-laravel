@@ -21,7 +21,7 @@ class Order
 {
     use ConfigTrait;
 
-    public function SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code)
+    public function SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code, $amazon_order_id)
     {
         $seller_id = $awsId;
 
@@ -44,13 +44,13 @@ class Order
         // $startTime = Carbon::now()->subHours(6)->toISOString();
         $startTime = Carbon::now()->subDays(10)->toISOString();
         $createdAfter = $startTime;
-        $lastUpdatedBefore = now()->toISOString();
         $max_results_per_page = 100;
         $next_token = NULL;
 
+        $amazon_order_ids = $amazon_order_id ? [$amazon_order_id] : NULL;
         try {
             next_token_exist:
-            $results = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses = null, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, $next_token, $amazon_order_ids = null, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
+            $results = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses = null, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, $next_token, $amazon_order_ids, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
             $next_token = $results['next_token'];
             $this->OrderDataFormating($results, $awsCountryCode, $awsId);
 
@@ -61,7 +61,7 @@ class Order
             $amazon_order_id = '';
         } catch (Exception $e) {
 
-            Log::warning('Exception when calling OrdersApi->getOrders: '. $e->getMessage());
+            Log::warning('Exception when calling OrdersApi->getOrders: ' . $e->getMessage());
         }
     }
 
@@ -133,7 +133,7 @@ class Order
                 $orders->updatedat = now();
                 $orders->createdat = now();
                 // dd($orders);
-                
+
                 R::store($orders);
 
                 if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
@@ -142,7 +142,7 @@ class Order
                             'order_id' => $amazon_order_id,
                             'aws_id' => $awsId,
                             'country_code' => $awsCountryCode,
-                           
+
                         ]
                     )->onConnection('redis')->onQueue('order')->delay($delay);
 
@@ -154,7 +154,7 @@ class Order
                             'order_id' => $amazon_order_id,
                             'aws_id' => $awsId,
                             'country_code' => $awsCountryCode,
-                         
+
                         ]
                     );
                 }

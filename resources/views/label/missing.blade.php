@@ -39,7 +39,7 @@
     <div class="row">
         <div class="col">
             <label>Amazon Order Id</label>
-            <textarea class="form-control" rows="3" placeholder="333-7777777-7777777" name="order_id"></textarea>
+            <textarea class="form-control" rows="3" placeholder="Eg:- Amazon Order Id: 333-7777777-7777777" name="order_id"></textarea>
             <div class="text-right m-2">
                 <a href='asin_save_in'>
                     <x-adminlte-button label='Submit' class="btn-sm" theme="primary" icon="fas fa-file-upload" type="submit" />
