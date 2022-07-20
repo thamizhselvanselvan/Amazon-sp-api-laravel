@@ -31,6 +31,9 @@
             <a href="excel/template">
                 <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-file-download" class="btn-sm" />
             </a>
+            <a href="missing">
+                <x-adminlte-button label="Find Missing Orders" theme="primary" icon="fas fa-sync" class="btn-sm" />
+            </a>
         </h2>
     </div>
 @stop

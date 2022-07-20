@@ -43,8 +43,6 @@ class Order
         $apiInstance = new OrdersApi($config);
         // $startTime = Carbon::now()->subHours(6)->toISOString();
         $startTime = Carbon::now()->subDays(10)->toISOString();
-
-        // echo $startTime;
         $createdAfter = $startTime;
         $lastUpdatedBefore = now()->toISOString();
         $max_results_per_page = 100;

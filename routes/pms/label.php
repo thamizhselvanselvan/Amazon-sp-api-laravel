@@ -9,6 +9,8 @@ Route::prefix('label/')->group(function () {
     Route::get('upload', 'label\labelManagementController@upload');
     Route::post('upload/excel', 'label\labelManagementController@uploadExcel');
     Route::get('template', 'label\labelManagementController@labelTemplate');
+    Route::get('missing', 'label\labelManagementController@missing');
+    Route::post('missing/order_id', 'label\labelManagementController@missingOrderId');
 });
 
 Route::get('label/search-label', 'label\labelManagementController@SearchLabel')->name('label.search-label');
