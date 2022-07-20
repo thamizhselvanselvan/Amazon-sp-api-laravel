@@ -696,33 +696,33 @@ return [
         ],
         [
             'text' => 'AWS-POC',
-            'can' => ['Admin'],
+            'can' => ['Admin','POC'],
             'submenu' => [
                 [
                     'text' => 'Search Product Request',
                     'url' => 'business/search/products',
-                    'can' => ['Admin'],
+                    'can' => ['Admin', 'POC'],
                     'icon' => 'far fa-fw fa-file',
 
                 ],
                 [
                     'text' => 'Product Request',
                     'url' => 'business/products/request',
-                    'can' => ['Admin'],
+                    'can' => ['Admin', 'POC'],
                     'icon' => 'far fa-fw fa-file',
 
                 ],
                 [
                     'text' => 'Search Offers Request',
                     'url' => 'business/offers',
-                    'can' => ['Admin'],
+                    'can' => ['Admin', 'POC'],
                     'icon' => 'far fa-fw fa-file',
 
                 ],
                 [
                     'text' => 'Get Products By Asins',
                     'url' => 'business/byasins',
-                    'can' => ['Admin'],
+                    'can' => ['Admin', 'POC'],
                     'icon' => 'far fa-fw fa-file',
 
                 ]
