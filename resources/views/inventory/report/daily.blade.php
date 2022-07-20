@@ -40,7 +40,7 @@
 <div class="row">
     <div class="col-2">
         <input type="radio" name="size" id="entire">
-        <label for=" entire"> Entire Warehouse's Report</label>
+        <label for=" entire"> Entire Warehouse Report</label>
     </div>
     <div class="col-9">
         <input type="radio" name="size" id="ware">
