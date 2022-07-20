@@ -16,7 +16,7 @@ class searchOffersRequest
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
         $client_secret = "80b1db8f2e3ae4b755bd50a0bcc21228694381e6a35b178efdb43799ccedd1ae";
         $refresh_token =
-            file_get_contents(Storage::path('\Business\token.txt'));
+            file_get_contents(Storage::path('Business/token.txt'));
         $request_data = array(
             "client_id" => $client_id,
             "client_secret" => $client_secret,
@@ -25,7 +25,7 @@ class searchOffersRequest
         );
 
         $reqToken =
-        file_get_contents(Storage::path('\Business\token.txt'));
+        file_get_contents(Storage::path('Business/token.txt'));
         // $reqToken = getToken($request_data);
 
         $host               = "na.business-api.amazon.com";

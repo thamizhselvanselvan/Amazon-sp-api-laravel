@@ -17,6 +17,6 @@ class ProductsRequestController extends Controller
         $ApiCall = new ProductsRequest();
         $data = $ApiCall->getASINpr($request->asin);
 
-        return response()->json(['success' => 'Asin details2 successfully Fetched', $data]);
+        return response()->json(['success' => ' details successfully Fetched', $data]);
     }
 }

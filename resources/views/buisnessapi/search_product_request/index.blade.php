@@ -23,7 +23,7 @@
         </div>
     </div>
 </div>
-<div class="row">
+<!-- <div class="row">
     <div class="col-2">
         <input type="radio" name="size" id="asinwise">
         <label for=" entire">Search By ASIN</label>
@@ -32,15 +32,15 @@
         <input type="radio" name="size" id="keywise">
         <label for="ware">Search by Keyword </label>
     </div>
-</div>
+</div> -->
 <div class="row">
     <div class="col-2" id="asin_search">
         <x-adminlte-input label=" Enter ASIN:" name="asin" id="asin" type="text" placeholder="Asin...." />
     </div>
 
-    <div class="col-2" id="key_search">
+    <!-- <div class="col-2" id="key_search">
         <x-adminlte-input label="Enter Keyword:" name="Keyword" id="Keyword" type="text" placeholder="Keyword...." />
-    </div>
+    </div> -->
 </div>
 <div class="row">
     <div class="col ">
@@ -65,35 +65,40 @@
     });
 
     // $("#datapro").hide();
-    $("#asin_search").hide();
-    $("#key_search").hide();
-    $("#create").hide();
+    // $("#asin_search").hide();
+    // $("#key_search").hide();
+    // $("#create").hide();
 
 
-    $("#asinwise").on('click', function(e) {
-        $("#asin_search").show();
-        $("#key_search").hide();
+    // $("#asinwise").on('click', function(e) {
+    //     $("#asin_search").show();
+    //     $("#key_search").hide();
 
-    });
-    $("#keywise").on('click', function(e) {
-        $("#key_search").show();
-        $("#asin_search").hide();
-    });
-    $("#keywise,#asinwise").on('click', function(e) {
-        $("#create").show();
+    // });
+    // $("#keywise").on('click', function(e) {
+    //     $("#key_search").show();
+    //     $("#asin_search").hide();
+    // });
+    // $("#keywise,#asinwise").on('click', function(e) {
+    //     $("#create").show();
 
-    });
+    // });
     $(".product_search").on("click", function() {
         let asin = $('#asin').val();
-        let key = $('#Keyword').val();
-      
+        let length = asin.length;
+        if (asin.length <10 || asin.length >10)
+        { 
 
+            alert("Invalid ASIN");
+            return false;
+        }
+            
         $.ajax({
             method: 'GET',
             url: '/product/details',
             data: {
                 'asin': asin,
-                "keyword": key,
+               
                 "_token": "{{ csrf_token() }}",
             },
             response: 'json',
@@ -110,7 +115,7 @@
 
             error: function(response) {
                 console.log(response);
-                alert('Invalid ASIN');
+                alert('Error');
             }
         });
     });
