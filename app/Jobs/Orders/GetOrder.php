@@ -34,8 +34,9 @@ class GetOrder implements ShouldQueue
     {
         $awsCountryCode = $this->payload['country_code'];
         $seller_id = $this->payload['seller_id'];
+        $amazon_order_id = $this->payload['amazon_order_id'];
         $auth_code = NULL;
         $order = new Order();
-        $order->SelectedSellerOrder($seller_id, $awsCountryCode, $auth_code);
+        $order->SelectedSellerOrder($seller_id, $awsCountryCode, $auth_code, $amazon_order_id);
     }
 }

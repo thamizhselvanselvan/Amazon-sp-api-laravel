@@ -49,29 +49,30 @@ class SellerOrdersImport extends Command
         $aws_data = OrderSellerCredentials::where('dump_order', 1)->get();
         // Log::alert(json_encode($aws_data));
         foreach ($aws_data as $aws_value) {
-            
+
             // $awsId  = $aws_value['id'];
             $awsCountryCode = $aws_value['country_code'];
             $seller_id = $aws_value['seller_id'];
             $auth_code = NULL;
-            
+
             if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-    
+
                 GetOrder::dispatch(
                     [
                         'country_code' => $awsCountryCode,
-                        'seller_id' =>$seller_id
-                     ]
+                        'seller_id' => $seller_id,
+                        'amazon_order_id' => NULL
+                    ]
                 )->onConnection('redis')->onQueue('order');
             } else {
                 GetOrder::dispatch(
                     [
                         'country_code' => $awsCountryCode,
-                        'seller_id' => $seller_id
+                        'seller_id' => $seller_id,
+                        'amazon_order_id' => NULL
                     ]
                 );
             }
         }
-
     }
 }

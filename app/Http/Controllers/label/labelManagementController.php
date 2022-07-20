@@ -8,6 +8,7 @@ use RedBeanPHP\R;
 use App\Models\Label;
 use App\Models\Mws_region;
 use Illuminate\Http\Request;
+use App\Jobs\Orders\GetOrder;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
@@ -15,14 +16,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
-use App\Models\order\OrderSellerCredentials;
-use App\Services\SP_API\API\Order\missingOrder;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
-
 use Picqer\Barcode\BarcodeGeneratorPNG;
+
 use Picqer\Barcode\BarcodeGeneratorHTML;
+use App\Models\order\OrderSellerCredentials;
+use App\Services\SP_API\API\Order\missingOrder;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 
 class labelManagementController extends Controller
@@ -323,14 +324,27 @@ class labelManagementController extends Controller
         $country_code = $seller[1];
 
         $datas = preg_split('/[\r\n| |:|,]/', $order_id, -1, PREG_SPLIT_NO_EMPTY);
-        $auth_code = NULL;
-        
-        $amazon_order_id = $datas[0];
-        $order = new missingOrder();
-        $order_details = $order->GetMissingOrderDetails($seller_id, $country_code, $auth_code, $amazon_order_id);
-        po($order_details);
-        exit;
-        dd($seller_id, $country_code, $datas);
+        foreach ($datas as $amazon_order_id) {
+            if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+
+                GetOrder::dispatch(
+                    [
+                        'country_code' => $country_code,
+                        'seller_id' => $seller_id,
+                        'amazon_order_id' => $amazon_order_id
+                    ]
+                )->onConnection('redis')->onQueue('order');
+            } else {
+                GetOrder::dispatch(
+                    [
+                        'country_code' => $country_code,
+                        'seller_id' => $seller_id,
+                        'amazon_order_id' => $amazon_order_id
+                    ]
+                );
+            }
+        }
+        return redirect('/label/manage')->with("success", "Order Details Is Updating, Please Wait.");
     }
 
     public function labelDataFormating($id)
