@@ -11,7 +11,9 @@ class SearchProductRequestController extends Controller
 {
     public function index()
     {
-     
+        $api = new Search_Product_Request();
+        $data = $api->getAsin();
+        dd($data);
         return View('buisnessapi.search_product_request.index');
     }
     public function searchproductRequest(Request $request)

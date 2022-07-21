@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 class Search_Product_Request
 {
 
-    public function getASIN($asin)
+    public function getASIN()
     {
         date_default_timezone_set('Asia/Jakarta');
 
@@ -34,9 +34,20 @@ class Search_Product_Request
         $region             = "us-east-1";
         $service            = "execute-api";
         $requestUrl         = "https://na.business-api.amazon.com/products/2020-08-26/products";
-        $uri                = "/products/2020-08-26/products/$asin";
+        $uri                = "/products/2020-08-26/products";
         $httpRequestMethod  = 'GET';
-        $data                = '';
+        $data               =  '';
+        $Request_url_query_string = "?productRegion=US&locale=en_US";
+        $keyword = "&keywords=Lenovo";
+        $canonicalQueryString_custom = 'productRegion=US&locale=en_US';
+
+        if(isset($keyword) && !empty($keyword)) {
+          // $Request_url_query_string .= $keyword;
+         //   $canonicalQueryString_custom .= $keyword;
+        }
+
+       // $Request_url_query_string = urlencode($Request_url_query_string);
+       // $canonicalQueryString_custom = urlencode($canonicalQueryString_custom);
 
         function calcualteAwsSignatureAndReturnHeaders(
             $today,
@@ -50,6 +61,7 @@ class Search_Product_Request
             $service,
             $httpRequestMethod,
             $data,
+            $canonicalQueryString_custom = '',
             $debug = TRUE
         ) {
 
@@ -57,22 +69,21 @@ class Search_Product_Request
             $algorithm      = 'AWS4-HMAC-SHA256';
             $phpAlgorithm       = 'sha256';
             $canonicalURI       = $uri;
-            $canonicalQueryString   = 'facets=OFFERS&locale=en_US&productRegion=US';
+            $canonicalQueryString   = $canonicalQueryString_custom;
             $signedHeaders      = 'host;x-amz-access-token;x-amz-date;x-amz-user-email';
             $userEmail     = "nitrouspurchases@gmail.com";
+
+            //dd($canonicalQueryString);
 
             //AMZ date format
             $reqDate = date("Ymd");
             $reqDateTime = date("Ymd\THis\Z");
-
 
             $kSecret = $secretKey;
             $kDate = hash_hmac($phpAlgorithm, $reqDate, 'AWS4' . $kSecret, true);
             $kRegion = hash_hmac($phpAlgorithm, $region, $kDate, true);
             $kService = hash_hmac($phpAlgorithm, $service, $kRegion, true);
             $kSigning = hash_hmac($phpAlgorithm, $terminationString, $kService, true);
-
-
 
             // Create canonical headers
             $canonicalHeaders = array();
@@ -95,12 +106,6 @@ class Search_Product_Request
             $canonicalRequest[] = $requestHasedPayload;
             $requestCanonicalRequest = implode("\n", $canonicalRequest);
             $requestHasedCanonicalRequest = hash($phpAlgorithm, utf8_encode($requestCanonicalRequest));
-            // if ($debug) {
-            //     echo "<h5>Canonical to string</h5>";
-            //     echo "<pre>";
-            //     echo $requestCanonicalRequest;
-            //     echo "</pre>";
-            // }
 
             // Create scope
             $credentialScope = array();
@@ -117,12 +122,6 @@ class Search_Product_Request
             $stringToSign[] = $credentialScopeStr;
             $stringToSign[] = $requestHasedCanonicalRequest;
             $stringToSignStr = implode("\n", $stringToSign);
-            if ($debug) {
-                // echo "<h5>String to Sign</h5>";
-                // echo "<pre>";
-                // echo $stringToSignStr;
-                // echo "</pre>";
-            }
 
             // Create signature
             $signature = hash_hmac($phpAlgorithm, $stringToSignStr, $kSigning);
@@ -134,7 +133,6 @@ class Search_Product_Request
             $authorizationHeader[] = 'Signature=' . ($signature);
             $authorizationHeaderStr = $algorithm . ' ' . implode(', ', $authorizationHeader);
 
-
             // Request headers 
             $headers = array();
             $headers[] = 'Authorization:' . $authorizationHeaderStr;
@@ -145,14 +143,12 @@ class Search_Product_Request
 
             return $headers;
         }
+
         $dt = date("Y-m-d H:i:s");
         $today = date("Ymd\THis\Z");
 
         $Time = date("Ymd\THis\Z", strtotime('-7 hours', strtotime($dt)));
-
-
-
-
+        
         $AwsSignature = calcualteAwsSignatureAndReturnHeaders(
             $Time,
             $reqToken,
@@ -165,10 +161,11 @@ class Search_Product_Request
             $service,
             $httpRequestMethod,
             $data,
+            $canonicalQueryString_custom,
             $debug = true
         );
-        // echo '<pre>';
-        // print_r($AwsSignature);
+       
+
         $curl = curl_init();
 
         $headersFS = array(
@@ -177,12 +174,9 @@ class Search_Product_Request
             $AwsSignature[0],
             'x-amz-date:' . $Time,
             'x-amz-user-email:nitrouspurchases@gmail.com',
-        );
+        );  
 
-        // echo '<pre>';
-        // print_r($headersFS);
-
-        curl_setopt($curl, CURLOPT_URL, "https://na.business-api.amazon.com/products/2020-08-26/products/$asin?facets=OFFERS&locale=en_US&productRegion=US");
+        curl_setopt($curl, CURLOPT_URL, $requestUrl. $Request_url_query_string);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headersFS);
@@ -191,6 +185,8 @@ class Search_Product_Request
 
 
         $server_APIoutput = curl_exec($curl);
+
+        dd($server_APIoutput);
         $JsonResponse = json_decode($server_APIoutput);
 
         return $JsonResponse;
