@@ -35,7 +35,7 @@
 </div> -->
 <div class="row">
     <div class="col-2" id="asin_search">
-        <x-adminlte-input label=" Enter ASIN:" name="asin" id="asin" type="text" placeholder="Asin...." />
+        <x-adminlte-input label=" Enter ASIN:" name="asin" id="asin" type="text"  placeholder=" Asin...." />
     </div>
 
     <!-- <div class="col-2" id="key_search">
@@ -49,9 +49,10 @@
         <!-- </a> -->
     </div>
 </div>
+<pre>
 <div class="col" id="datapro">
-    <h4> </h4>
 </div>
+</pre>
 
 
 @stop
@@ -86,30 +87,26 @@
     $(".product_search").on("click", function() {
         let asin = $('#asin').val();
         let length = asin.length;
-        if (asin.length <10 || asin.length >10)
-        { 
+        if (asin.length < 10 || asin.length > 10) {
 
             alert("Invalid ASIN");
             return false;
         }
-            
+
         $.ajax({
             method: 'GET',
             url: '/product/details',
             data: {
                 'asin': asin,
-               
+
                 "_token": "{{ csrf_token() }}",
             },
             response: 'json',
             success: function(response) {
-                console.log(response);
-                $var = (JSON.stringify(response));
+                $var = prettifyJson(response, true);
 
                 let html = '';
-
-                html += "<h5> ASIN Details :" + $var + "</h5>";
-
+                html += $var;
                 $("#datapro").html(html);
             },
 
@@ -119,5 +116,32 @@
             }
         });
     });
+
+    function prettifyJson(json, prettify) {
+        if (typeof json !== 'string') {
+            if (prettify) {
+                json = JSON.stringify(json, undefined, 4);
+            } else {
+                json = JSON.stringify(json);
+            }
+        }
+        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+            function(match) {
+                let cls = "<span>";
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = "<span class='text-danger'>";
+                    } else {
+                        cls = "<span>";
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = "<span class='text-primary'>";
+                } else if (/null/.test(match)) {
+                    cls = "<span class='text-info'>";
+                }
+                return cls + match + "</span>";
+            }
+        );
+    }
 </script>
 @stop

@@ -38,7 +38,7 @@ class InventoryCatalogImportJob implements ShouldQueue
     public function handle()
     {
         $datas = $this->payload['data'];
-        Log::alert('Inv Catalog working');
+        // Log::alert('Inv Catalog working');
         foreach ($datas as $value) {
 
             $asin = $value['asin'];
