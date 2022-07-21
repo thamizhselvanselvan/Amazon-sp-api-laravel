@@ -44,7 +44,7 @@
     </div>
     <div class="col-2">
         <div class="form-group">
-            <x-adminlte-select name="source" label="Select Source:" id="source">
+            <x-adminlte-select name="source" label="Select Source:" id="source1">
                 <option value=" ">Select source</option>
                 @foreach ($source_lists as $source_list)
                 <option value="{{ $source_list->id }}">{{$source_list->name }}</option>
@@ -82,11 +82,17 @@
             </div>
         </div>
     </div>
-    <div class="col-12">
+</div>
+<div class="row">
+    <div class="col-0">
         <x-adminlte-button label="Submit" theme="primary" icon="fas fa-file-upload" id="upload" class="btn-sm upload_asin_btn" />
+    </div>
+    <div class="col-1">
+        <x-adminlte-button label="Refresh" theme="primary" icon="fas fa-redo-alt" id="refresh" class="btn-sm refresh_btn " />
     </div>
 </div>
 </div>
+
 <br>
 <table class="table table-bordered yajra-datatable table-striped" id="report_table">
     <thead>
@@ -98,7 +104,7 @@
             <th>Action</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="report_table_body">
     </tbody>
 </table>
 @stop
@@ -118,14 +124,25 @@
     $("#asin").hide();
     $("#upload").hide();
     $("#currency").hide();
+    $("#refresh").hide();
 
-    $("#source").on('change', function(e) {
+    $("#source1").on('change', function(e) {
         $("#asin").show();
     });
 
     $("#asin").on('click', function(e) {
-        $("#upload").show();
+        $("#upload,#refresh").show();
     });
+    // $("#refresh").on('click', function(e) {
+    //     $("#report_table").hide();
+    // });
+
+    // $("#refresh").on("click", function(e) {
+    //     $("#report_table").load("http://amazon-sp-api-laravel.test/inventory/shipments/create #report_table");
+    // });
+
+
+
 
     $("#upload").on('click', function(e) {
         $("#currency,#report_table,#create").show();
@@ -137,7 +154,12 @@
 
     $(".upload_asin_btn").on("click", function() {
         let uploaded = $('.up_asin').val();
-        let source = $('#source').val();
+
+        if ((uploaded.length < 10)) {
+            alert('Invalid Asin');
+            return false;
+        }
+        let source = $('#source1').val();
 
         $.ajax({
             method: 'POST',
@@ -152,9 +174,7 @@
                 console.log(response);
                 let html = '';
                 $.each(response.data, function(index, value) {
-
-
-                    let html = "<tr class='table_row'>";
+                    html += "<tr class='table_row'>";
                     html += "<td name='asin[]'>" + value[0].asin + "</td>";
                     html += "<td name='name[]'>" + value[0].item_name + "</td>";
                     html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
@@ -162,8 +182,8 @@
                     html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
                     html += "</tr>";
 
-                    $("#report_table").append(html);
                 });
+                $("#report_table").append(html);
 
             },
             error: function(response) {
@@ -171,6 +191,48 @@
             }
         });
     });
+
+
+    $(".refresh_btn").on("click", function() {
+        let uploaded = $('.up_asin').val();
+        if ((uploaded.length < 10)) {
+            alert('Invalid Asin');
+            return false;
+        }
+        let source = $('#source1').val();
+
+        $.ajax({
+            method: 'POST',
+            url: '/shipment/upload/refresh',
+            data: {
+                'asin': uploaded,
+                'source': source,
+                "_token": "{{ csrf_token() }}",
+            },
+            'dataType': 'json',
+            success: function(response) {
+                console.log(response);
+
+                let html = '';
+                $.each(response.data, function(index, value) {
+                    html += "<tr class='table_row'>";
+                    html += "<td name='asin[]'>" + value[0].asin + "</td>";
+                    html += "<td name='name[]'>" + value[0].item_name + "</td>";
+                    html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
+                    html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
+                    html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
+                    html += "</tr>";
+                });
+
+                $("#report_table_body").html(html);
+            },
+            error: function(response) {
+                console.log(response);
+            }
+        });
+    });
+
+
 
     $(".create_shipmtn_btn").on("click", function() {
         let ware_valid = $('#warehouse').val();
@@ -201,7 +263,7 @@
 
             });
 
-            let source = $('#source').val();
+            let source = $('#source1').val();
             data.append('source', source);
 
             let warehouse = $('#warehouse').val();

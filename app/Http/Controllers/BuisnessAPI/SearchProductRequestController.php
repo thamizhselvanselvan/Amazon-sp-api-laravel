@@ -11,6 +11,7 @@ class SearchProductRequestController extends Controller
 {
     public function index()
     {
+     
         return View('buisnessapi.search_product_request.index');
     }
     public function searchproductRequest(Request $request)
@@ -18,6 +19,6 @@ class SearchProductRequestController extends Controller
         $ApiCall = new Search_Product_Request();
         $data = $ApiCall->getAsin($request->asin);
 
-        return response()->json(['success' => 'Asin details successfully Fetched', $data]);
+        return response()->json(['success' => ' details successfully Fetched', $data]);
     }
 }

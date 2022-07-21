@@ -126,38 +126,38 @@ class OrderItem
                 R::store($order_detials);
 
                 //call catalog api
-                $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
+                // $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
                 // $check = [];
                 //$type = 1 for seller, 2 for Order, 3 for inventory
-                $data = NULL;
-                if (count($check) <= 0) {
+                // $data = NULL;
+                // if (count($check) <= 0) {
 
-                    $data[] = [
-                        'asin' => $asin,
-                        'country_code' => $awsCountryCode,
-                        'aws_id' => $aws_id,
-                    ];
+                //     $data[] = [
+                //         'asin' => $asin,
+                //         'country_code' => $awsCountryCode,
+                //         'aws_id' => $aws_id,
+                //     ];
 
-                    if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-                        Seller_catalog_import_job::dispatch(
-                            [
-                                'datas' => $data,
-                                'type' => 2,
-                                'seller_id' => NULL
-                            ]
-                        )->onConnection('redis')->onQueue('catalog');
-                    } else {
+                //     if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+                //         Seller_catalog_import_job::dispatch(
+                //             [
+                //                 'datas' => $data,
+                //                 'type' => 2,
+                //                 'seller_id' => NULL
+                //             ]
+                //         )->onConnection('redis')->onQueue('catalog');
+                //     } else {
 
-                        Seller_catalog_import_job::dispatch(
-                            [
-                                'datas' => $data,
-                                'type' => 2,
-                                'seller_id' => NULL
-                            ]
-                        );
-                    }
+                //         Seller_catalog_import_job::dispatch(
+                //             [
+                //                 'datas' => $data,
+                //                 'type' => 2,
+                //                 'seller_id' => NULL
+                //             ]
+                //         );
+                //     }
                    
-                }
+                // }
             }
         }
         // DB::connection('order')

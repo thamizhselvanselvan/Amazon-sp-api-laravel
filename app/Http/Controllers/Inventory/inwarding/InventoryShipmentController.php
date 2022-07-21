@@ -21,6 +21,7 @@ use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Inventory\Shipment_Inward;
@@ -36,7 +37,7 @@ class InventoryShipmentController extends Controller
         if ($request->ajax()) {
 
 
-            $data = Shipment_Inward_Details::select("ship_id", "source_id", "created_at")->distinct()->with(['vendors'])->get();
+            $data = Shipment_Inward_Details::select("ship_id", "source_id", "created_at")->distinct()->with(['vendors'])->orderby('created_at','DESC')->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('source_name', function ($data) {
@@ -81,6 +82,7 @@ class InventoryShipmentController extends Controller
 
         $generator = new BarcodeGeneratorHTML();
         foreach ($view as $key => $bar) {
+            $bar_code = '';
 
             $bar_code = $generator->getBarcode($bar->ship_id, $generator::TYPE_CODE_93);
             $warehouse_name = $bar->warehouses->name;
@@ -97,7 +99,6 @@ class InventoryShipmentController extends Controller
 
         return view('inventory.inward.shipment.view', compact('view', 'currency_array', 'bar_code', 'id', 'warehouse_name', 'vendor_name', 'currency_id'));
     }
-
     public function createView(Request $request)
     {
 
@@ -174,9 +175,40 @@ class InventoryShipmentController extends Controller
         }
 
 
-        return response()->json(['success' => 'Data is successfully added', 'data' =>   $filtere_data]);
+        return response()->json(['success' => 'Data  successfully added', 'data' =>   $filtere_data]);
     }
 
+    public function refreshtable(Request $request)
+    {
+        $asins = preg_split('/[\r\n| |:|,]/', $request->asin, -1, PREG_SPLIT_NO_EMPTY);
+
+
+        $data = [];
+        $asinCol = [];
+
+        foreach ($asins as $asin) {
+
+            $data[$asin] = [
+                'asin' => $asin,
+
+            ];
+
+            $asinCol[] = $asin;
+        }
+
+
+
+
+        $catalog = Catalog::query()
+            ->select("asin", "item_name")
+            ->whereIn("asin", $asinCol)
+            ->get()->unique('asin')->groupBy('asin');
+
+
+
+
+        return response()->json(['success' => 'Data  successfully Refreshed', 'data' => $catalog]);
+    }
 
     public function selectView(Request $request)
     {
@@ -343,19 +375,26 @@ class InventoryShipmentController extends Controller
     public function printlable(Request $request, $id)
     {
         $lable = Shipment_Inward_Details::where('ship_id', $id)->with(['warehouses', 'vendors'])->get();
+        $quant = [];
+        $total = 0;
         foreach ($lable as $key => $val) {
-            $quant[] = $val->quantity;
+            $quant[] += $val->quantity;
         }
-        // dd($quant);
+        foreach ($quant as $key => $jay) {
+            $total += $jay;
+        }
+
         $bar_code = [];
         foreach ($lable as $viewlable) {
             $data = $viewlable;
 
-            $generator = new BarcodeGeneratorHTML();
-            $bar_code[]  = $generator->getBarcode($data['asin'], $generator::TYPE_CODE_93);
+            //$generator = new BarcodeGeneratorHTML();
+            //$bar_code[]  = $generator->getBarcode($data['asin'], $generator::TYPE_CODE_93);
+            $generator = new BarcodeGeneratorPNG();
+            $bar_code[]  = base64_encode($generator->getBarcode($data['asin'], $generator::TYPE_CODE_93));
         }
 
-        return view('inventory.inward.shipment.lable', compact('viewlable', 'lable', 'data', 'bar_code', 'quant'));
+        return view('inventory.inward.shipment.lable', compact('viewlable', 'lable', 'data', 'bar_code', 'quant', 'total'));
     }
 
     public function Exportlable(Request $request)
@@ -369,7 +408,7 @@ class InventoryShipmentController extends Controller
 
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+           // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf);
 

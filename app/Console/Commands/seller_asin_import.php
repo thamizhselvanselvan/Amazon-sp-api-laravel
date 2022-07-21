@@ -57,62 +57,65 @@ class seller_asin_import extends Command
             ->where(function (array $record) {
                 return $record;
             })
-            ->offset(0)
-            ;
-           
+            ->offset(0);
+
         $records = $stmt->process($csv);
 
         $asin_master = [];
         $product = [];
         $product_lowest_price = [];
-          
 
-            $count = 0;
-            foreach($records as $key => $record)
-            {
-                $asin = $record['ASIN'];
-                $country_code = $record['Source'];
 
-                $asin_master[] = [
-                    'seller_id' => $seller_id,
-                    'asin' => $asin,
-                    'source' => $country_code, 
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ];
-                
-                $product[] = [
-                    'seller_id' => $seller_id,
-                    'asin1' => $asin,
-                    'priority' => 1,
-                    'country_code'=> $country_code,
-                ];
+        $count = 0;
+        foreach ($records as $key => $record) {
+            $asin = $record['ASIN'];
+            $country_code = $record['Destination'];
 
-                $product_lowest_price[] = [
-                    'asin' => $asin,
-                    'import_type' => 'Seller',
-                    'country_code' => $country_code,
-                ];
+            $asin_master[] = [
+                'seller_id' => $seller_id,
+                'asin' => $asin,
+                'source' => $country_code,
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
 
-                if($count == 1000) {
+            $product[] = [
+                'seller_id' => $seller_id,
+                'active' => 1,
+                'asin1' => $asin,
+            ];
 
-                    AsinMasterSeller::insert($asin_master);
-                    BB_Product::insert($product);
-                    BB_Product_lowest_price_offer::upsert($product_lowest_price, ['asin','country_code'], ['asin', 'country_code']);
+            $product_lowest_price[] = [
+                'asin' => $asin,
+                'import_type' => 'Seller',
+            ];
 
-                    $count = 0;
-                    $asin_master = [];
-                    $product = [];
-                    $product_lowest_price = [];
-                }
+            if ($count == 1000) {
 
-                $count++;
-            }	
-            
-            AsinMasterSeller::insert($asin_master); 
-            BB_Product::insert($product);
-            BB_Product_lowest_price_offer::upsert($product_lowest_price, ['asin', 'country_code'], ['asin', 'country_code']);
+                AsinMasterSeller::insert($asin_master);
+                $bb_product = table_model_set($country_code, 'BB_Product', 'product');
+                $bb_product->insert($product);
 
-            Log::warning(" asin import successfully");
+                $bb_product_lowest_price = table_model_set(country_code: $country_code, model: 'BB_Product_lowest_price_offer', table_name: 'product_lp_offer');
+                $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin']);
+                // BB_Product_lowest_price_offer::upsert($product_lowest_price, ['asin', 'country_code'], ['asin', 'country_code']);
+
+                $count = 0;
+                $asin_master = [];
+                $product = [];
+                $product_lowest_price = [];
+            }
+
+            $count++;
+        }
+
+        AsinMasterSeller::insert($asin_master);
+        $bb_product = table_model_set($country_code, 'BB_Product', 'product');
+        $bb_product->insert($product);
+
+        $bb_product_lowest_price = table_model_set(country_code: $country_code, model: 'BB_Product_lowest_price_offer', table_name: 'product_lp_offer');
+        $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin']);
+
+        Log::warning(" asin import successfully");
     }
 }

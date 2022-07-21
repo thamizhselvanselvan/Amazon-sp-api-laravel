@@ -24,7 +24,7 @@ class ShipntrackManagementController extends Controller
 {
     public function Index(Request $request)
     {
-         $sourcedestination = DB::connection('ship')->select("SELECT source_destination FROM ratemasters group by source_destination ");
+         $sourcedestination = DB::connection('shipntracking')->select("SELECT source_destination FROM ratemasters group by source_destination ");
         //  po($sourcedestination);
          return view('shipntrack.index', compact('sourcedestination'));
     }
@@ -35,7 +35,7 @@ class ShipntrackManagementController extends Controller
         if($request->ajax())
         {
             $shipntrack_data = '';
-            $shipntrack_data = DB::connection('ship')->select("SELECT * FROM ratemasters WHERE source_destination = '$option' ");
+            $shipntrack_data = DB::connection('shipntracking')->select("SELECT * FROM ratemasters WHERE source_destination = '$option' ");
         
         }
         return response()->json($shipntrack_data);

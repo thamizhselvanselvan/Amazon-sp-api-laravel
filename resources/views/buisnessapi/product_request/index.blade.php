@@ -62,7 +62,13 @@
         $("#datapro").show();
     });
     $(".product_search").on("click", function() {
-        let asin = $('#asin').val();
+        let asin = $('#product_asin').val();
+        let length = asin.length;
+        if (asin.length < 10 || asin.length > 10) {
+
+            alert("Invalid ASIN");
+            return false;
+        }
 
 
         $.ajax({

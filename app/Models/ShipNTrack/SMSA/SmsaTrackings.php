@@ -9,6 +9,7 @@ class SmsaTrackings extends Model
 {
     use HasFactory;
     
+    protected $connection = 'shipntracking';
     protected $fillable = [
         'awbno',
         'date',

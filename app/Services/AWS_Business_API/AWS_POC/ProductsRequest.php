@@ -2,6 +2,7 @@
 
 namespace App\Services\AWS_Business_API\AWS_POC;
 
+use Illuminate\Support\Facades\Storage;
 
 class ProductsRequest
 {
@@ -9,22 +10,26 @@ class ProductsRequest
     public function getASINpr($asin)
     {
         date_default_timezone_set('Asia/Jakarta');
-
+        
         // require_once('refrashToken.php');
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
         $client_secret = "80b1db8f2e3ae4b755bd50a0bcc21228694381e6a35b178efdb43799ccedd1ae";
         $refresh_token =
-            "Atza|IwEBICeiKeCNYMXGkKg2q_Nmi3kIbN7i6r_2WB7gx-pelqKSZ4Id8KVpaZXcCjgoMkcUyDk7f7ANQQAB20xqUFbPAvFXVn8rIPPSFygARL2jBIri7pbH6URdxbuuDZY-Axe8UHdHYyeCzQAWcuUYALiWMljY85w5SPu4zWiqtz47N5-Ef8q6_D-d7VVFmNh1InESGRktjA3BRZ7oA5Iznr_rb_7hPETx8Ka5SgxzdjAxi_xgXj2NOYCfRH66LkBKivNRq-6dqzIB26XB_ti2uAWLumPn8B2namSxHsXFVpWkM0bTa7juJb3l1NHNzLKOu77BE1CvS3a_iq_DHa5yteZKwVZd";
+        file_get_contents(Storage::path('Business/token.txt'));
+    
+      
         $request_data = array(
             "client_id" => $client_id,
             "client_secret" => $client_secret,
             "refresh_token" => $refresh_token,
             "grant_type" => "refresh_token"
         );
-
+      
         $reqToken =
-            "Atza|IwEBICeiKeCNYMXGkKg2q_Nmi3kIbN7i6r_2WB7gx-pelqKSZ4Id8KVpaZXcCjgoMkcUyDk7f7ANQQAB20xqUFbPAvFXVn8rIPPSFygARL2jBIri7pbH6URdxbuuDZY-Axe8UHdHYyeCzQAWcuUYALiWMljY85w5SPu4zWiqtz47N5-Ef8q6_D-d7VVFmNh1InESGRktjA3BRZ7oA5Iznr_rb_7hPETx8Ka5SgxzdjAxi_xgXj2NOYCfRH66LkBKivNRq-6dqzIB26XB_ti2uAWLumPn8B2namSxHsXFVpWkM0bTa7juJb3l1NHNzLKOu77BE1CvS3a_iq_DHa5yteZKwVZd";
-        //  $reqToken = getToken($request_data);
+            file_get_contents(Storage::path('Business/token.txt'));
+
+    
+      
 
         $host               = "na.business-api.amazon.com";
         $accessKey          = "AKIARVGPJZCJHLW5MH63";
@@ -166,8 +171,7 @@ class ProductsRequest
             $data,
             $debug = true
         );
-        // echo '<pre>';
-        // print_r($AwsSignature);
+       
         $curl = curl_init();
 
         $headersFS = array(
@@ -178,8 +182,7 @@ class ProductsRequest
             'x-amz-user-email:nitrouspurchases@gmail.com',
         );
 
-        // echo '<pre>';
-        // print_r($headersFS);
+      
 
         curl_setopt($curl, CURLOPT_URL, "https://na.business-api.amazon.com/products/2020-08-26/products/$asin?facets=OFFERS&locale=en_US&productRegion=US");
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
