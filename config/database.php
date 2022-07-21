@@ -92,7 +92,7 @@ return [
             'unix_socket' => env('CATALOG_DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => env('CATALOG_DB_PREFIX') . '_',
+            'prefix' => env('CATALOG_DB_PREFIX'),
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,

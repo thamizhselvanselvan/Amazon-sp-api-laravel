@@ -32,3 +32,17 @@ Route::get('other-product/asin_upload_in', 'otherProduct\OtherAmazonInProductCon
 Route::post('other-product/asin_save_in', 'otherProduct\OtherAmazonInProductController@asinSave');
 Route::post('other-product/add_bulk_asin_in', 'otherProduct\OtherAmazonInProductController@asinTxtSave');
 
+
+Route::get('catalog-asin-master', 'Catalog\AsinMasterController@index')->name('catalog-asin-master');
+Route::get('add-asin', 'Catalog\AsinMasterController@addAsin');
+Route::get('import-bulk-asin', 'Catalog\AsinMasterController@importBulkAsin');
+Route::get('export-asin', 'Catalog\AsinMasterController@exportAsinToCSV');
+Route::post('add-bulk-asin', 'Catalog\AsinMasterController@addBulkAsin');
+Route::get('asinMaster_download', 'Catalog\AsinMasterController@download_asin_master')->name('download.asinMaster');
+Route::get('edit-asin/{id}', 'Catalog\AsinMasterController@editasin');
+Route::put('update/{id}', 'Catalog\AsinMasterController@update')->name('update.asin');
+Route::post('remove-catalog-asin/{id}', 'Catalog\AsinMasterController@trash');
+Route::get('asin/bin', 'Catalog\AsinMasterController@trashView')->name('softDelete.view');
+Route::post('asin/restore/{id}', 'Catalog\AsinMasterController@restore')->name('restore.view');
+
+Route::get('asin-template-download', 'Catalog\AsinMasterController@AsinTemplateDownload')->name('download.template');

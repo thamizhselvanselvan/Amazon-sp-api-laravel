@@ -1,31 +1,31 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Catalog;
 
-use App\Models\Asin_master;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
+use App\Models\Catalog\Asin_master;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 
 class AsinMasterController extends Controller
 {
-    //
     public function index(Request $request)
     {
 
         if ($request->ajax()) {
 
             $data = Asin_master::query();
-
+            
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     $actionBtn = '<div class="d-flex"><a href="edit-asin/' . $row->id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
                     $actionBtn .= '<button data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
-
+                    
                     return $actionBtn;
                     
                 })
@@ -42,7 +42,7 @@ class AsinMasterController extends Controller
     public function editasin($id)
     {
 
-        $asin = asin_master::where('id', $id)->first();
+        $asin = Asin_master::where('id', $id)->first();
         return view('AsinMaster.edit', compact('asin'));
     }
     public function update(Request $request, $id)
@@ -60,9 +60,9 @@ class AsinMasterController extends Controller
 
         $validated['source'] = strtoupper($validated['source']);
 
-        asin_master::where('id', $id)->update($validated);
+        Asin_master::where('id', $id)->update($validated);
 
-        return redirect()->intended('/asin-master')->with('success', 'Asin has been updated successfully');
+        return redirect()->intended('/catalog-asin-master')->with('success', 'Asin has been updated successfully');
     }
 
 
@@ -70,19 +70,17 @@ class AsinMasterController extends Controller
     {
        Asin_master::where('id', $request->id)->delete();
 
-   return redirect()->intended('/asin-master')->with('success', 'Asin has been pushed to Bin successfully');
+   return redirect()->intended('/catalog-asin-master')->with('success', 'Asin has been pushed to Bin successfully');
     }
 
 
     public function trashView(Request $request)
     {
-        // dd($asins);
+        $asins = Asin_master::onlyTrashed()->get();
+        
         if ($request->ajax()) {
-            $asins = Asin_master::onlyTrashed()->get();
-
             return DataTables::of($asins)
                 ->addIndexColumn()
-
                 ->addColumn('action', function ($asins) {
                     return '<button data-id="' . $asins->id . '" class="restore btn btn-success"><i class="fas fa-trash-restore"></i> Restore</button>';
                 })
@@ -110,7 +108,7 @@ class AsinMasterController extends Controller
     {
 
         $request->validate([
-            'asin' => 'required|mimes:csv,txt,xls,xlsx'
+            'asin' => 'required|mimes:csv'
         ]);
 
         if (!$request->hasFile('asin')) {
@@ -167,5 +165,11 @@ class AsinMasterController extends Controller
             return Storage::download($file_path);
         }
         return 'file not exist';
+    }
+
+    public function AsinTemplateDownload(){
+        
+        $file_path = public_path('template/Catalog-Asin-template.csv');
+        return response()->download($file_path);
     }
 }
