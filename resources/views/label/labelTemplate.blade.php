@@ -64,7 +64,7 @@
                             <div class="row">
                                 <div class="col p-0"></div>
                                 <div class="col p-0">
-                                    <img class="barcode-img" src='data:image/png;base64,{!! $bar_code !!}'>
+                                    <img class="label-barcode-img" src='data:image/png;base64,{!! $bar_code !!}'>
                                     <b>
                                         <div class="text-center">{{ $result->awb_no }}</div>
                                     </b>

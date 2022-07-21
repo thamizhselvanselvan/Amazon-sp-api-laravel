@@ -7,46 +7,48 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
 <style type="text/css">
-    @media print {
-        @page {
-            size: 4in 6in;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
+@media print {
+    @page {
+        size: 4in 6in;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
 
-        .container-fluid {
+    .container-fluid {
 
-            size: 4in 6in;
-            width: 384px;
-            height: 576px;
-            margin: 0px;
-            padding: 0px;
-        }
+        size: 4in 6in;
+        width: 384px;
+        height: 576px;
+        margin: 0px;
+        padding: 0px;
+    }
 
-        #label-container {
-            margin: 0px;
-            padding: 0px;
-            /* padding-top: 5px; */
-            transform-origin: 0 0;
-            transform: scale(1.4);
-        }
+    #label-container {
+        margin: 0px;
+        padding: 0px;
+        /* padding-top: 5px; */
+        transform-origin: 0 0;
+        transform: scale(1.4);
+    }
 
-        #label-container .invoice {
-            margin: 0px;
-            padding: 0px;
-            /*
+    #label-container .invoice {
+        margin: 0px;
+        padding: 0px;
+        /*
             width: 384px;
             height: 576px;
             */
-        }
     }
+}
+
 </style>
 @stop
 @section('content_header')
 <div class="label-company text-inverse f-w-600">
     <span class="pull-right hidden-print">
         <!-- <a href="javascript:void(0);" class="btn btn-sm btn-white m-b-10 p-l-5" id="Export_to_pdf"><i class="fa fa-file t-plus-1 text-danger fa-fw fa-lg"></i> Export as PDF</a> -->
-        <a href="javascript:;" onclick="window.print()" class="btn btn-sm bg-info m-b-10 p-l-5"><i class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
+        <a href="javascript:;" onclick="window.print()" class="btn btn-sm bg-info m-b-10 p-l-5"><i
+                class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
 
     </span>
     <br>
@@ -74,7 +76,8 @@
                                 <div class="row">
                                     <div class="col"></div>
                                     <div class="col p-0">
-                                        <img src='data:image/png;base64,{!! $bar_code[$key] !!}' width="300px">
+                                        <img class="label-barcode-img"
+                                            src='data:image/png;base64,{!! $bar_code[$key] !!}' width="300px">
                                         <b>
                                             <div class="text-center">{{ $value->awb_no }}</div>
                                         </b>
@@ -181,8 +184,8 @@
 
 @section('js')
 <script>
-    // $(document).ready(function() {
-    //     window.print()
-    // });
+// $(document).ready(function() {
+//     window.print()
+// });
 </script>
 @stop
