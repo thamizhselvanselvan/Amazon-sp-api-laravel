@@ -11,7 +11,6 @@ use function Clue\StreamFilter\fun;
 
 class SmsaExperessController extends Controller
 {
-
     public function index(Request $request)
     {
         if ($request->ajax()) {
@@ -29,9 +28,9 @@ class SmsaExperessController extends Controller
 
     public function PacketMoreDetails($awbNo)
     {
-       $result = SmsaTrackings::where('awbno', $awbNo)->orderBy('date', 'desc')->get();
-    //    dd($result);
-    return view('shipntrack.Smsa.packetDetails', compact('result'));
+        $result = SmsaTrackings::where('awbno', $awbNo)->orderBy('date', 'desc')->get();
+        //    dd($result);
+        return view('shipntrack.Smsa.packetDetails', compact('result'));
     }
     public function uploadAwb()
     {
@@ -70,13 +69,12 @@ class SmsaExperessController extends Controller
                 ['awbno', 'date', 'activity', 'details', 'location']
             );
         }
-        // retrun v
         return redirect()->intended('/shipntrack/smsa')->with('success', 'Tracking Details Saved');
     }
 
     public function TrackingResponse($awbNo)
     {
-        $password = 'Bom@7379';
+        $password = config('database.smsa_password');
         $url = "http://track.smsaexpress.com/SECOM/SMSAwebService.asmx";
 
         $xmlRequest = "<?xml version='1.0' encoding='utf-8'?>

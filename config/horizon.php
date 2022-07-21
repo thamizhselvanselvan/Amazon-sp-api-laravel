@@ -180,11 +180,13 @@ return [
             'ca-supervisor-1' => ['connection' => 'redis', 'queue' => ['order'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
             'ca-supervisor-2' => ['connection' => 'redis', 'queue' => ['catalog'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 10, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
             'ca-supervisor-3' => ['connection' => 'redis', 'queue' => ['inventory'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 10, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
+            'ca-supervisor-4' => ['connection' => 'redis', 'queue' => ['tracking'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 10, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
         ],
         'staging' => [
             'ca-supervisor-1' => ['connection' => 'redis', 'queue' => ['order'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
             'ca-supervisor-2' => ['connection' => 'redis', 'queue' => ['catalog'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 10, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
             'ca-supervisor-3' => ['connection' => 'redis', 'queue' => ['inventory'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 10, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
+            'ca-supervisor-4' => ['connection' => 'redis', 'queue' => ['tracking'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 10, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
         ],
     ],
 ];

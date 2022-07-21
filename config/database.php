@@ -17,6 +17,12 @@ return [
 
     'default' => env('DB_CONNECTION', 'mysql'),
 
+    'bombino_account_id' => env('BOMBINO_ACCOUNT_ID'),
+    'bombino_user_id' => env('BOMBINO_USER_ID'),
+    'bombino_password' => env('BOMBINO_PASSWORD'),
+
+    'smsa_password' => env('SMSA_PASSWORD'),
+
     /*
     |--------------------------------------------------------------------------
     | Database Connections
