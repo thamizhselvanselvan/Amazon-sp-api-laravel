@@ -41,10 +41,10 @@
         </div>
     </div>
 </div>
-<div class="col" id="datapro2">
-    <h4> </h4>
-
-</div>
+<pre>
+    <div class="col" id="datapro2">
+    </div>
+</pre>
 
 
 @stop
@@ -83,7 +83,7 @@
 
 
 
-                $var = (JSON.stringify(response));
+                $var = prettifyJson(response, true);
                 let html = '';
 
                 html += "<h5> ASIN Details :" + $var + "</h5>";
@@ -98,5 +98,32 @@
             }
         });
     });
+
+    function prettifyJson(json, prettify) {
+        if (typeof json !== 'string') {
+            if (prettify) {
+                json = JSON.stringify(json, undefined, 4);
+            } else {
+                json = JSON.stringify(json);
+            }
+        }
+        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+            function(match) {
+                let cls = "<span>";
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = "<span class='text-danger'>";
+                    } else {
+                        cls = "<span>";
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = "<span class='text-primary'>";
+                } else if (/null/.test(match)) {
+                    cls = "<span class='text-info'>";
+                }
+                return cls + match + "</span>";
+            }
+        );
+    }
 </script>
 @stop

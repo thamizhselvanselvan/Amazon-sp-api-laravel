@@ -696,38 +696,52 @@ return [
         ],
         [
             'text' => 'AWS-POC',
-            'can' => ['Admin','POC'],
+            'can' => ['Admin', 'POC'],
             'submenu' => [
                 [
-                    'text' => 'Search Product Request',
-                    'url' => 'business/search/products',
+                    'text' => 'Search Product ',
                     'can' => ['Admin', 'POC'],
+                    'icon' => 'far fa-fw fa-file',
+                    'submenu' => [
+                        [
+                            'text' => 'Search Product Request',
+                            'url' => 'business/search/products',
+                            'can' => ['Admin', 'POC'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ],
+                        [
+                            'text' => 'Product Request',
+                            'url' => 'business/products/request',
+                            'can' => ['Admin', 'POC'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ],
+                        [
+                            'text' => 'Search Offers Request',
+                            'url' => 'business/offers',
+                            'can' => ['Admin', 'POC'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ],
+                        [
+                            'text' => 'Get Products By Asins',
+                            'url' => 'business/byasins',
+                            'can' => ['Admin', 'POC'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ]
+                    ],
+                ],
+
+                [
+                    'text' => 'Order API',
+                    'url' => 'business/orders',
+                    'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
 
                 ],
-                [
-                    'text' => 'Product Request',
-                    'url' => 'business/products/request',
-                    'can' => ['Admin', 'POC'],
-                    'icon' => 'far fa-fw fa-file',
-
-                ],
-                [
-                    'text' => 'Search Offers Request',
-                    'url' => 'business/offers',
-                    'can' => ['Admin', 'POC'],
-                    'icon' => 'far fa-fw fa-file',
-
-                ],
-                [
-                    'text' => 'Get Products By Asins',
-                    'url' => 'business/byasins',
-                    'can' => ['Admin', 'POC'],
-                    'icon' => 'far fa-fw fa-file',
-
-                ]
-
-            ]
+            ],
         ],
     ],
 

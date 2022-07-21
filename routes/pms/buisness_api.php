@@ -16,3 +16,7 @@ Route::resource('business/offers', 'BuisnessAPI\searchOffersRequestController');
 
 Route::get('business/asin/details', 'BuisnessAPI\GetProductsByAsinsController@searchasinproduct');
 Route::resource('business/byasins', 'BuisnessAPI\GetProductsByAsinsController');
+
+
+
+Route::resource('business/orders', 'BuisnessAPI\OrdersController');
