@@ -16,9 +16,6 @@
         padding-left: 5px;
     }
 
-    #detail {
-        font-weight: bold;
-    }
 </style>
 @stop
 
@@ -71,16 +68,16 @@
 <table class="table table-bordered yajra-datatable table-striped " id="detail_table">
     <thead>
         <tr>
-            <td id="detail">Warehouse Name</td>
-            <td id="detail">Shipment ID</td>
-            <td id="detail">ASIN</td>
-            <td id="detail">Item Name</td>
-            <td id="detail">Price/Unit</td>
-            <td id="detail">Quantity In.</td>
-            <td id="detail">Quantity/out.</td>
-            <td id="detail">Quantity Left</td>
-            <td id="detail">Inwarding Date</td>
-            <td id="detail">Bin</td>
+            <th>Warehouse Name</th>
+            <th>Shipment ID</th>
+            <th>ASIN</th>
+            <th>Item Name</th>
+            <th>Price/Unit</th>
+            <th>Quantity In.</th>
+            <th>Quantity/out.</th>
+            <th>Quantity Left</th>
+            <th>Inwarding Date</th>
+            <th>Bin</th>
         </tr>
     </thead>
     <tbody id="data_display">
