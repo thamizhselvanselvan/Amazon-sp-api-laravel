@@ -12,7 +12,7 @@
 
 <div class="row">
     <div class="col">
-        <a href="{{ Route('asin-master') }}" class="btn btn-primary">
+        <a href="{{ Route('catalog.asin.master') }}" class="btn btn-primary">
 
             <i class="fas fa-long-arrow-alt-left"></i> Back
         </a>
@@ -62,7 +62,7 @@
         </div>
         @endif
 
-        <form class="row" action="{{Route('update.asin', $asin->id) }}" method="POST" id="">
+        <form class="row" action="{{Route('catalog.update.asin', $asin->id) }}" method="POST" id="">
             @csrf
             @method('PUT')
 

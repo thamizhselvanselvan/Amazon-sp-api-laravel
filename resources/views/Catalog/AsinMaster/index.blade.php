@@ -25,14 +25,14 @@
             <a href="import-bulk-asin">
                 <x-adminlte-button label="Asin Bulk Import" theme="primary" icon="fas fa-file-import" />
             </a>
-            <a href="export-asin">
+            <a href="{{route('catalog.asin.export')}}">
                 <x-adminlte-button label="Asin Export" theme="primary" icon="fas fa-file-export" />
             </a>
 
             <x-adminlte-button label="Download Asin" theme="primary" icon="fas fa-file-download" data-toggle="modal"
                 data-target="#exampleModal"></x-adminlte-button>
 
-            <a href="{{ route('download.template') }}">
+            <a href="{{ route('catalog.download.template') }}">
                 <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-file-download"
                     id="exportUniversalTextiles" />
             </a>
@@ -48,12 +48,10 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <ul>
-                                <li>
-                                    <a href="{{ route('download.asinMaster') }}">
-                                        <h4>Download Asin Master</h4>
-                                </li>
-                            </ul>
+
+                            <a href="{{ route('catalog.download.asinMaster') }}">
+                                <h6>Download ASIN </h6>
+
 
                         </div>
                         <div class="modal-footer">
@@ -63,7 +61,7 @@
                 </div>
             </div>
             </a>
-            <a href="{{ route('softDelete.view') }}">
+            <a href="{{ route('catalog.softDelete.view') }}">
                 <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" />
             </a>
         </h2>
@@ -103,7 +101,7 @@ function yajra_datatable() {
         serverSide: true,
         destroy: true,
         pageLength: 50,
-        ajax: "{{ url('catalog-asin-master') }}",
+        ajax: "{{ url('catalog/asin-master') }}",
         columns: [{
                 data: 'id',
                 name: 'id',
@@ -167,23 +165,10 @@ $(document).on('click', ".delete", function(e) {
     let id = self.attr('data-id');
 
     self.prop('disable', true);
-    // let loader = $('.loader');
-
-    // let alert_dislay_div = $('.alert_display');
-    // let alert_template = `<div class="alert alert-block d-none alert_main">
-    //                         <button type="button" class="close" data-dismiss="alert">×</button>
-    //                         <strong class="alert_message"></strong>
-    //                     </div>`;
-    // alert_dislay_div.html(alert_template);
-
-    // let alert_message = $('.alert_message');
-    // let alert_main = $('.alert_main');
-
-    // loader.removeClass('d-none');
 
     $.ajax({
         method: 'post',
-        url: '/remove-catalog-asin/' + id,
+        url: '/catalog/remove/asin/' + id,
         data: {
             "_token": "{{ csrf_token() }}",
         },
