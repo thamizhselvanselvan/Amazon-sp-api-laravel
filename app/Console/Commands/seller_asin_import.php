@@ -74,7 +74,7 @@ class seller_asin_import extends Command
             $asin_master[] = [
                 'seller_id' => $seller_id,
                 'asin' => $asin,
-                'source' => $country_code,
+                'destination_1' => $country_code,
                 'created_at' => now(),
                 'updated_at' => now()
             ];

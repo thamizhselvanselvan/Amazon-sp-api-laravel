@@ -48,18 +48,18 @@ class sellerAsinPricing extends Command
 
             $seller_id = $user_id->bb_seller_id;
             AsinMasterSeller::where('seller_id', $seller_id)->chunk($chunk, function ($data) use ($seller_id) {
-                $country_code = strtolower($data[0]['source']);
-                $asin = [];
+                $country_code = strtolower($data[0]['destination_1']);
+                $asin_array = [];
 
                 foreach ($data as $value) {
                     $a = $value['asin'];
-                    $asin[] = "'$a'";
+                    $asin_array[] = "'$a'";
                 }
 
                 $product_lp = 'bb_product_lp_seller_detail_' . $country_code . 's';
                 $product = 'bb_product_' . $country_code . 's';
 
-                $asin = implode(',', $asin);
+                $asin = implode(',', $asin_array);
                 $product_details = DB::connection('buybox')
                     ->select("SELECT 
                         PPO.asin, PPO.is_fulfilled_by_amazon, PPO.listingprice_amount
@@ -79,12 +79,12 @@ class sellerAsinPricing extends Command
                         'price' => $product_value->listingprice_amount,
                     ];
                 }
+
                 SellerAsinDetails::upsert(
                     $asin_pricing,
                     'seller_id_asin_unique',
                     ['seller_id', 'asin', 'is_fulfilment_by_amazon', 'price', 'status']
                 );
-                // po($asin_pricing);
             });
         }
 
