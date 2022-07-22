@@ -317,7 +317,7 @@ return [
             'submenu' => [
                 [
                     'text' => 'Asin Master',
-                    'url'  => 'asin-master',
+                    'url'  => 'catalog-asin-master',
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin']
                 ],

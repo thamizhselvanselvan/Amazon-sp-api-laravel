@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Catalog;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,6 +10,8 @@ class Asin_master extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $connection = 'catalog';
+    
     protected $table = 'asin_masters';
 
     protected $fillable = [
@@ -43,11 +45,5 @@ class Asin_master extends Model
             'source', // Local key on suppliers table...
             // 'id' // Local key on products table...
         );
-    }
-
-    public function __distruct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-        $this->getConnection()->setTablePrefix('sa_');
     }
 }

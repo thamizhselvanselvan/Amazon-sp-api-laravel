@@ -572,3 +572,7 @@ body {
     height: 32px;
     margin-top: none;
 }
+.label-barcode-img {
+    height: 46px;
+    width: 300px;
+}

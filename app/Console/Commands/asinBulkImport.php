@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use League\Csv\Reader;
 use League\Csv\Statement;
-use App\Models\Asin_master;
 use Illuminate\Console\Command;
+use App\Models\Catalog\Asin_master;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -50,41 +50,29 @@ class asinBulkImport extends Command
         $csv->setDelimiter(",");
         $csv->setHeaderOffset(0);
 
-        Log::warning(" csv file importing");
-        $stmt = (new Statement())
-            ->where(function (array $record) {
-                return $record;
-            })
-            ->offset(0)
-            ;
-           
-        $records = $stmt->process($csv);
-
         $asin = [];
-          
+        $count = 0;
+        foreach($csv as $key => $record)
+        {
+            $asin[] = [
+                'asin' => $record['ASIN'],
+                'source' => $record['Source'],
+                'destination_1' => $record['Destination_1'],
+                'destination_2' => $record['Destination_2'],
+                'destination_3' => $record['Destination_3'],
+                'destination_4' => $record['Destination_4'],
+                'destination_5' => $record['Destination_5']
+            ];
+            if($count == 1000) {
+            
+                Asin_master::upsert($asin, ['asin'], ['source','destination_1','destination_2','destination_3','destination_4','destination_5']);
 
-            $count = 0;
-            foreach($records as $key => $record)
-            {
-                $asin[] = [
-                    'asin' => $record['ASIN'],
-                    'source' => $record['Source'],
-                    'destination_1' => $record['Destination 1'],
-                    'destination_2' => $record['Destination 2'],
-                    'destination_3' => $record['Destination 3'],
-                    'destination_4' => $record['Destination 4'],
-                    'destination_5' => $record['Destination 5']
-                ];
-                if($count == 1000) {
-                
-                    Asin_master::upsert($asin, ['asin'], ['source','destination_1','destination_2','destination_3','destination_4','destination_5']);
-
-                    $count = 0;
-                    $asin = [];
-                }
-                $count++;
-                
-            }	
+                $count = 0;
+                $asin = [];
+            }
+            $count++;
+            
+        }	
             
             Asin_master::upsert($asin, ['asin'], ['source','destination_1','destination_2','destination_3','destination_4','destination_5']); 
             Log::warning(" asin import successfully");
