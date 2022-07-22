@@ -31,19 +31,19 @@ class AsinMasterController extends Controller
                 })
                 ->make(true);
         }
-        return view('AsinMaster.index');
+        return view('Catalog.AsinMaster.index');
     }
 
     public function addAsin()
     {
 
-        return view('AsinMaster.addAsin');
+        return view('Catalog.AsinMaster.addAsin');
     }
     public function editasin($id)
     {
 
         $asin = Asin_master::where('id', $id)->first();
-        return view('AsinMaster.edit', compact('asin'));
+        return view('Catalog.AsinMaster.edit', compact('asin'));
     }
     public function update(Request $request, $id)
     {
@@ -62,7 +62,7 @@ class AsinMasterController extends Controller
 
         Asin_master::where('id', $id)->update($validated);
 
-        return redirect()->intended('/catalog-asin-master')->with('success', 'Asin has been updated successfully');
+        return redirect()->intended('/catalog/asin-master')->with('success', 'Asin has been updated successfully');
     }
 
 
@@ -70,7 +70,7 @@ class AsinMasterController extends Controller
     {
        Asin_master::where('id', $request->id)->delete();
 
-   return redirect()->intended('/catalog-asin-master')->with('success', 'Asin has been pushed to Bin successfully');
+   return redirect()->intended('/catalog/asin-master')->with('success', 'Asin has been pushed to Bin successfully');
     }
 
 
@@ -87,21 +87,19 @@ class AsinMasterController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('AsinMaster.trash');
+        return view('Catalog.AsinMaster.trash');
     }
 
     public function restore(Request $request) {
 
         Asin_master::where('id', $request->id)->restore();
-        
         return response()->json(['success' => 'Asin has restored successfully']);
     }
 
 
     public function importBulkAsin()
     {
-
-        return view('AsinMaster.importAsin');
+        return view('Catalog.AsinMaster.importAsin');
     }
 
     public function addBulkAsin(Request $request)
@@ -154,13 +152,12 @@ class AsinMasterController extends Controller
             Artisan::call('pms:asin-export');
         }
 
-        return redirect()->intended('/asin-master');
+        return redirect()->intended('/catalog/asin-master');
     }
 
     public function download_asin_master()
     {
-        $file_path = "excel/downloads/asins/asinExport.csv";
-        //$path = Storage::path($file_path);
+        $file_path = "excel/downloads/asins/zip/CatalogAsin.zip";
         if (Storage::exists($file_path)) {
             return Storage::download($file_path);
         }

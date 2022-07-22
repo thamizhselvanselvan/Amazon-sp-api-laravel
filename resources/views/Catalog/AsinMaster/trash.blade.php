@@ -9,7 +9,7 @@
 
 <div class="row">
     <div class="col">
-        <a href="{{ Route('catalog-asin-master') }}" class="btn btn-primary">
+        <a href="{{ Route('catalog.asin.master') }}" class="btn btn-primary">
             <i class="fas fa-long-arrow-alt-left"></i> Back
         </a>
     </div>
@@ -84,7 +84,7 @@ function yajra_datatable() {
         serverSide: true,
         destroy: true,
         pageLength: 50,
-        ajax: "{{ route('softDelete.view') }}",
+        ajax: "{{ route('catalog.softDelete.view') }}",
         columns: [{
                 data: 'id',
                 name: 'id',
@@ -147,31 +147,17 @@ $(document).on('click', ".restore", function(e) {
     let id = self.attr('data-id');
 
     self.prop('disable', true);
-    // let loader = $('.loader');
-
-    // let alert_dislay_div = $('.alert_display');
-    // let alert_template = `<div class="alert alert-block d-none alert_main">
-    //                         <button type="button" class="close" data-dismiss="alert">×</button>
-    //                         <strong class="alert_message"></strong>
-    //                     </div>`;
-    // alert_dislay_div.html(alert_template);
-
-    // let alert_message = $('.alert_message');
-    // let alert_main = $('.alert_main');
-
-    // loader.removeClass('d-none');
 
     $.ajax({
         method: 'post',
-        url: '/asin/restore/' + id,
+        url: '/catalog/asin/restore/' + id,
         data: {
             "_token": "{{ csrf_token() }}",
         },
         response: 'json',
         success: function(response) {
-            // alert('Restore success');
+
             self.prop('disable', false);
-            // loader.addClass('d-none');
 
             yajra_datatable().load();
 
@@ -181,15 +167,6 @@ $(document).on('click', ".restore", function(e) {
             }
 
         },
-        error: function(response) {
-
-            // self.prop('disable', false);
-            // // loader.addClass('d-none;');
-
-            // alert_main.removeClass('d-none alert-success').addClass('alert-danger');
-            // alert_message.html('Oops something went wrong. Contct Admin');
-
-        }
     });
 
 });
