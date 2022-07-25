@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Catalog;
 
 use League\Csv\Reader;
 use League\Csv\Statement;
@@ -16,7 +16,7 @@ class asinBulkImport extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:asin-import';
+    protected $signature = 'pms:asin-import {user_id} ';
 
     /**
      * The console command description.
@@ -43,6 +43,8 @@ class asinBulkImport extends Command
     public function handle()
     {
         Log::warning(" pms:asin-import command executed looking for path");
+        $user_id = $this->argument('user_id');
+        Log::alert($user_id);
 
         $path = 'AsinMaster/asin.csv';
        
@@ -54,8 +56,10 @@ class asinBulkImport extends Command
         $count = 0;
         foreach($csv as $key => $record)
         {
+            // Log::notice($user_id);
             $asin[] = [
                 'asin' => $record['ASIN'],
+                'user_id' => $user_id,
                 'source' => $record['Source'],
                 'destination_1' => $record['Destination_1'],
                 'destination_2' => $record['Destination_2'],

@@ -42,7 +42,7 @@
                     <tr class="length">
                         <th>S/N</th>
                         <th>ASIN</th>
-                        <th>Source</th>
+                        <th>Destination</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -71,8 +71,8 @@
                     orderable: false
                 },
                 {
-                    data: 'source',
-                    name: 'source',
+                    data: 'destination_1',
+                    name: 'destination_1',
                     orderable: false
                 },
                 {

@@ -1,12 +1,12 @@
 @extends('adminlte::page')
 
-@section('title', 'ASIN Master')
+@section('title', 'Delete ASIN')
 
 @section('content_header')
 
 <div class="row">
     <div class="col">
-        <a href="/catalog/asin-master" class="btn btn-primary">
+        <a href="/seller/asin-master" class="btn btn-primary">
             <i class="fas fa-long-arrow-alt-left"></i> Back
         </a>
     </div>
@@ -14,7 +14,7 @@
 
 <div class="row mt-3">
     <div class="col">
-        <h1 class="m-0 text-dark text-center ">Add Asin</h1>
+        <h1 class="m-0 text-dark text-center ">Remove Asin</h1>
     </div>
 </div>
 
@@ -46,7 +46,7 @@
         </x-adminlte-alert>
         @endif
 
-        <form class="row" action="{{ route('catalog.asin.import')}}" method="POST" enctype="multipart/form-data">
+        <form class="row" action="remove" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="col-3"></div>
@@ -59,8 +59,7 @@
 
             <div class="col-12">
                 <div class="text-center">
-                    <x-adminlte-button label="Upload Asin" theme="primary" class="add_asin" icon="fas fa-plus"
-                        type="submit" />
+                    <x-adminlte-button label="Submit" theme="primary" class="add_asin" icon="fas fa-plus" type="submit" />
                 </div>
             </div>
         </form>
