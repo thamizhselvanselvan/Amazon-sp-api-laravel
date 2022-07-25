@@ -8,15 +8,22 @@ use Illuminate\Support\Facades\Storage;
 class Search_Product_Request
 {
 
-    public function getASIN()
+    public function getASIN($data)
     {
+        $type ='';
+        $key_value = '';
+       foreach($data as $key => $value)
+       {
+        $type =$key;
+        $key_value = $value;
+       }
         date_default_timezone_set('Asia/Jakarta');
 
         // require_once('refrashToken.php');
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
         $client_secret = "80b1db8f2e3ae4b755bd50a0bcc21228694381e6a35b178efdb43799ccedd1ae";
         $refresh_token =
-        file_get_contents(Storage::path('Business/token.txt'));
+            file_get_contents(Storage::path('Business/token.txt'));
         $request_data = array(
             "client_id" => $client_id,
             "client_secret" => $client_secret,
@@ -25,7 +32,7 @@ class Search_Product_Request
         );
 
         $reqToken =
-        file_get_contents(Storage::path('Business/token.txt'));
+            file_get_contents(Storage::path('Business/token.txt'));
         // $reqToken = getToken($request_data);
 
         $host               = "na.business-api.amazon.com";
@@ -33,21 +40,19 @@ class Search_Product_Request
         $secretKey          = "zjYimrzHWwT3eA3eKkuCGxMb+OA2fibMivnnht3t";
         $region             = "us-east-1";
         $service            = "execute-api";
-        $requestUrl         = "https://na.business-api.amazon.com/products/2020-08-26/products";
-        $uri                = "/products/2020-08-26/products";
+
+        if ($type == 'asin') {
+            $query              = 'locale=en_US&productRegion=US';
+            $uri                = "/products/2020-08-26/products/$key_value";
+        } else {
+            $query              = "keywords=$key_value&locale=en_US&productRegion=US";
+            $uri                = "/products/2020-08-26/products";
+        }
+        $requestUrl         = "https://na.business-api.amazon.com$uri?$query";
         $httpRequestMethod  = 'GET';
         $data               =  '';
-        $Request_url_query_string = "?productRegion=US&locale=en_US";
-        $keyword = "&keywords=Lenovo";
-        $canonicalQueryString_custom = 'productRegion=US&locale=en_US';
 
-        if(isset($keyword) && !empty($keyword)) {
-          // $Request_url_query_string .= $keyword;
-         //   $canonicalQueryString_custom .= $keyword;
-        }
 
-       // $Request_url_query_string = urlencode($Request_url_query_string);
-       // $canonicalQueryString_custom = urlencode($canonicalQueryString_custom);
 
         function calcualteAwsSignatureAndReturnHeaders(
             $today,
@@ -61,7 +66,7 @@ class Search_Product_Request
             $service,
             $httpRequestMethod,
             $data,
-            $canonicalQueryString_custom = '',
+            $canonicalQueryString,
             $debug = TRUE
         ) {
 
@@ -69,11 +74,10 @@ class Search_Product_Request
             $algorithm      = 'AWS4-HMAC-SHA256';
             $phpAlgorithm       = 'sha256';
             $canonicalURI       = $uri;
-            $canonicalQueryString   = $canonicalQueryString_custom;
             $signedHeaders      = 'host;x-amz-access-token;x-amz-date;x-amz-user-email';
             $userEmail     = "nitrouspurchases@gmail.com";
 
-            //dd($canonicalQueryString);
+
 
             //AMZ date format
             $reqDate = date("Ymd");
@@ -148,7 +152,7 @@ class Search_Product_Request
         $today = date("Ymd\THis\Z");
 
         $Time = date("Ymd\THis\Z", strtotime('-7 hours', strtotime($dt)));
-        
+
         $AwsSignature = calcualteAwsSignatureAndReturnHeaders(
             $Time,
             $reqToken,
@@ -161,10 +165,10 @@ class Search_Product_Request
             $service,
             $httpRequestMethod,
             $data,
-            $canonicalQueryString_custom,
+            $query,
             $debug = true
         );
-       
+
 
         $curl = curl_init();
 
@@ -174,9 +178,9 @@ class Search_Product_Request
             $AwsSignature[0],
             'x-amz-date:' . $Time,
             'x-amz-user-email:nitrouspurchases@gmail.com',
-        );  
+        );
 
-        curl_setopt($curl, CURLOPT_URL, $requestUrl. $Request_url_query_string);
+        curl_setopt($curl, CURLOPT_URL, $requestUrl . '');
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headersFS);
@@ -185,16 +189,15 @@ class Search_Product_Request
 
 
         $server_APIoutput = curl_exec($curl);
-
-        dd($server_APIoutput);
         $JsonResponse = json_decode($server_APIoutput);
-
+        
         return $JsonResponse;
-
+        
         if (curl_errno($curl)) {
             echo 'Error:' . curl_error($curl);
         }
-
+        
         curl_close($curl);
+
     }
 }
