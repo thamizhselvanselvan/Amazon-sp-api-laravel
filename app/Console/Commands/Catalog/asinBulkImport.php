@@ -7,7 +7,6 @@ use League\Csv\Statement;
 use Illuminate\Console\Command;
 use App\Models\Catalog\Asin_master;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class asinBulkImport extends Command
@@ -17,7 +16,7 @@ class asinBulkImport extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:asin-import';
+    protected $signature = 'pms:asin-import {user_id} ';
 
     /**
      * The console command description.
@@ -44,7 +43,7 @@ class asinBulkImport extends Command
     public function handle()
     {
         Log::warning(" pms:asin-import command executed looking for path");
-        $user_id = Auth::user()->id;
+        $user_id = $this->argument('user_id');
         Log::alert($user_id);
 
         $path = 'AsinMaster/asin.csv';
@@ -57,6 +56,7 @@ class asinBulkImport extends Command
         $count = 0;
         foreach($csv as $key => $record)
         {
+            // Log::notice($user_id);
             $asin[] = [
                 'asin' => $record['ASIN'],
                 'user_id' => $user_id,
