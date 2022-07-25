@@ -285,6 +285,12 @@ return [
                     'icon' => 'far fa-fw fa-file',
                 ],
                 [
+                    'text'  =>  'Rate Master',
+                    'url'   =>  'admin/rate-master/index',
+                    'can'   =>  ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
                     'text' => 'BuyBox',
                     'can' =>  ['Admin'],
                     'submenu' => [
@@ -558,11 +564,6 @@ return [
             'text'  => 'Ship & Track',
             'can' => ['Admin'],
             'submenu' => [
-                [
-                    'text'  =>  'Rate Master',
-                    'url'   =>  'shipntrack/index',
-                    'can'   =>  ['Admin'],
-                ],
                 [
                     'text'  =>  'SMSA Tracking',
                     'url'   =>  'shipntrack/smsa',

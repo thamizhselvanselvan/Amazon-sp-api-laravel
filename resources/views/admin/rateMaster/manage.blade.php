@@ -4,8 +4,15 @@
 
 @section('content_header')
 <div class="row">
-    <h1 class="m-0 text-dark col">ShipNTrack Management</h1>
+    <h1 class="m-0 text-dark col">Rate Master Management</h1>
 
+</div>
+<div class="row">
+    <div class="col">
+        <a href="{{ route('rateMaster.index') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-long-arrow-alt-left"></i> Back
+        </a>
+    </div>
 </div>
 <div class="row mt-3">
     <div class="col">
@@ -116,7 +123,7 @@ $(function() {
         });
         $.ajax({
             type: 'POST',
-            url: "{{ url('/shipntrack/upload/csv')}}",
+            url: "{{ url('/admin/rate-master/upload/csv')}}",
             data: formData,
             cache: false,
             contentType: false,
@@ -132,7 +139,7 @@ $(function() {
         });
 
         function getBack() {
-            window.location.href = '/shipntrack/index';
+            window.location.href = '/admin/rate-master/index';
         }
     });
 });

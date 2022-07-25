@@ -122,7 +122,6 @@ class Catalog
                 //inventory
 
             } elseif ($type == 4) {
-                Log::warning($type);
                 DB::connection('catalog')
                 ->update("UPDATE asin_masters SET status = '1' WHERE status = '0'");
             }
