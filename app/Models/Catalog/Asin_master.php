@@ -16,6 +16,7 @@ class Asin_master extends Model
 
     protected $fillable = [
         'asin',
+        'user_id',
         'source',
         'destination_1',
         'destination_2',

@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\catalog;
 
 use Illuminate\Bus\Queueable;
-use App\Services\SP_API\CatalogImport;
 use Illuminate\Support\Facades\Log;
+use App\Services\SP_API\API\Catalog;
+use App\Services\SP_API\CatalogImport;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,17 +34,9 @@ class AmazonCatalogImport implements ShouldQueue
      */
     public function handle()
     {
-        Log::alert("Alert from Jobs");
-       
-
-        // $asin = $this->payload['asin'];
-        // $country_code = $this->payload['country_code'];
-        // $auth_code =  $this->payload['auth_code'];
-        // $aws_key = $this->payload['aws_key'];
-
-        // Log::alert($asin,$country_code,$auth_code,$aws_key);
-
-        $amazonCatalogsImport = new CatalogImport();
-        $amazonCatalogsImport->amazonCatalogImport( $this->payload['asin'], $this->payload['country_code'], $this->payload['auth_code'], $this->payload['aws_key']);
+        $asin_source = $this->payload;
+        $type = 4;
+        $catalog =  new Catalog();
+        $catalog->index($asin_source, $seller_id = NULL, $type);        
     }
 }

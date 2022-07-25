@@ -331,7 +331,7 @@ return [
                 [
 
                     'text' => 'PMS Amazon',
-                    'url'  => 'product/amazon_com',
+                    'url'  => 'catalog/product',
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin'],
                 ],

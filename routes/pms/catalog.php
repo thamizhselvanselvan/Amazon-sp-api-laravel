@@ -37,7 +37,7 @@ Route::get('catalog/asin-master', 'Catalog\AsinMasterController@index')->name('c
 Route::get('catalog/add-asin', 'Catalog\AsinMasterController@addAsin');
 Route::get('catalog/import-bulk-asin', 'Catalog\AsinMasterController@importBulkAsin');
 Route::get('catalog/asin-export', 'Catalog\AsinMasterController@exportAsinToCSV')->name('catalog.asin.export');
-Route::post('catalog/add-bulk-asin', 'Catalog\AsinMasterController@addBulkAsin');
+Route::post('catalog/add-bulk-asin', 'Catalog\AsinMasterController@addBulkAsin')->name('catalog.asin.import');
 Route::get('asinMaster_download', 'Catalog\AsinMasterController@download_asin_master')->name('catalog.download.asinMaster');
 Route::get('catalog/edit-asin/{id}', 'Catalog\AsinMasterController@editasin');
 Route::put('catalog/update/{id}', 'Catalog\AsinMasterController@update')->name('catalog.update.asin');
@@ -45,3 +45,6 @@ Route::post('catalog/remove/asin/{id}', 'Catalog\AsinMasterController@trash');
 Route::get('catalog/asin/bin', 'Catalog\AsinMasterController@trashView')->name('catalog.softDelete.view');
 Route::post('catalog/asin/restore/{id}', 'Catalog\AsinMasterController@restore')->name('catalog.restore.view');
 Route::get('catalog/asin-template-download', 'Catalog\AsinMasterController@AsinTemplateDownload')->name('catalog.download.template');
+
+Route::get('catalog/product', 'Catalog\CatalogProductController@Index');
+Route::get('catalog/product/fetch-from-amazon', 'Catalog\CatalogProductController@Amazon')->name('catalog.amazon.product');

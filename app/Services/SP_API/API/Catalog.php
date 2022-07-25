@@ -4,10 +4,10 @@ namespace App\Services\SP_API\API;
 
 use Exception;
 use RedBeanPHP\R;
+use App\Models\Mws_region;
 use App\Models\Aws_credential;
 use SellingPartnerApi\Endpoint;
 use App\Models\Admin\BB\BB_User;
-use App\Models\Mws_region;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -21,8 +21,10 @@ use SellingPartnerApi\Api\CatalogItemsV0Api;
 class Catalog
 {
     use ConfigTrait;
+    
     public function index($datas, $seller_id = NULL, $type)
     {
+        
         //$type = 1 for seller, 2 for Order, 3 for inventory
         $host = config('database.connections.catalog.host');
         $dbname = config('database.connections.catalog.database');
@@ -35,22 +37,25 @@ class Catalog
             R::selectDatabase('catalog');
         }
 
-        if ($type == 1) {
+        if ($type == 1 || $type == 4) {
+            // Log::notice($type);
             foreach ($datas as $value) {
                 $asin = NULL;
+                $value = (object)$value;
                 $asin = $value->asin;
                 $country_code = $value->source;
 
                 $mws_region = Mws_region::with('aws_verified')->where('region_code', $country_code)->get()->first();
                 $token = ($mws_region['aws_verified']['auth_code']);
 
-                $seller = $value->seller_id;
-                $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
-                // $check= [];
+                $seller_id = $value->seller_id;
+                $check = DB::connection('catalog')->select("SELECT asin from catalogs where asin = '$asin'");
+                // $check = catalog::where('asin', $asin)->get();
+                // $check = [];
                 if (count($check) <= 0) {
 
                     $aws_id = NULL;
-                    $this->getCatalog($country_code, $token, $asin, $seller, $type, $aws_id);
+                    $this->getCatalog($country_code, $token, $asin, $seller_id, $type, $aws_id);
                 }
             }
         } elseif ($type == 2) {
@@ -60,40 +65,36 @@ class Catalog
                 $country_code = $value['country_code'];
                 $aws_id = $value['aws_id'];
                 $auth_code = NULL;
-                // $seller_detilas = Aws_credential::where('seller_id', $seller)->get();
-                // $token = ($seller_detilas[0]->auth_code);
-                // $token = "Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg";
-                $this->getCatalog($country_code, $auth_code, $asin, $type, $aws_id);
+                $seller_id = NULL;
+                $this->getCatalog($country_code, $auth_code, $asin, $seller_id, $type, $aws_id);
             }
             // return true;
         }
     }
 
-    public function getCatalog($country_code, $auth_code, $asin, $type, $aws_id)
+    public function getCatalog($country_code, $auth_code, $asin, $seller_id, $type, $aws_id)
     {
         $config = $this->config($aws_id, $country_code, $auth_code);
         $apiInstance = new CatalogItemsV0Api($config);
         $marketplace = $this->marketplace_id($country_code);
-        $country_code = '';
-
+        // $country_code = '';
+        
+        $seller_id = $aws_id?$aws_id:$seller_id; 
         try {
             $result = $apiInstance->getCatalogItem($marketplace, $asin);
             $result = json_decode(json_encode($result));
             if (isset(($result->payload->AttributeSets[0]))) {
 
                 $result = (array)($result->payload->AttributeSets[0]);
-                $productcatalogs = R::dispense('catalog');
+                $productcatalogs = R::dispense('catalogs');
 
-                $productcatalogs->seller_id = $aws_id;
+                $productcatalogs->seller_id = $seller_id;
                 $productcatalogs->asin = $asin;
                 $productcatalogs->source = $country_code;
 
                 foreach ($result as $key => $data) {
                     $key = lcfirst($key);
-                    // if($key == 'title')
-                    // {
-                    //     $productcatalogs->{$key} = $data;
-                    // }
+                    
                     if (is_object($data)) {
 
                         $productcatalogs->{$key} = json_encode($data);
@@ -101,7 +102,7 @@ class Catalog
                         $productcatalogs->{$key} = ($data);
                     } else {
                         $productcatalogs->{$key} = json_encode($data);
-                        // $value [][$key] = ($data);
+                        
                     }
                 }
                 R::store($productcatalogs);
@@ -120,6 +121,10 @@ class Catalog
             } elseif ($type == 3) {
                 //inventory
 
+            } elseif ($type == 4) {
+                Log::warning($type);
+                DB::connection('catalog')
+                ->update("UPDATE asin_masters SET status = '1' WHERE status = '0'");
             }
         } catch (Exception $e) {
             Log::alert($e);

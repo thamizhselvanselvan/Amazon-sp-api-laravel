@@ -104,7 +104,7 @@ class AsinMasterController extends Controller
 
     public function addBulkAsin(Request $request)
     {
-
+        // po('working');exit;
         $request->validate([
             'asin' => 'required|mimes:csv'
         ]);
@@ -133,7 +133,7 @@ class AsinMasterController extends Controller
             Artisan::call('pms:asin-import');
         }
 
-        return redirect('/import-bulk-asin')->with('success', 'All Asins uploaded successfully');
+        return redirect('catalog/import-bulk-asin')->with('success', 'All Asins uploaded successfully');
     }
 
     public function exportAsinToCSV()
