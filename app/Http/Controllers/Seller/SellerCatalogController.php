@@ -111,7 +111,7 @@ class SellerCatalogController extends Controller
       $user = Auth::user();
       $seller_id = $user->bb_seller_id ? $user->bb_seller_id : $user->id;
 
-      $data = SellerAsinDetails::query()->where('seller_id', $seller_id)->get();
+      $data = SellerAsinDetails::query()->where([['seller_id', $seller_id], ['delist', '0']])->get();
 
       return DataTables::of($data)
         ->addIndexColumn()
@@ -163,7 +163,7 @@ class SellerCatalogController extends Controller
     $seller_id = $user->bb_seller_id ? $user->bb_seller_id : $user->id;
 
     $file_path = "excel/downloads/seller/" . $seller_id . '/' . $id;
-  
+
     if (Storage::exists($file_path)) {
       return Storage::download($file_path);
     }

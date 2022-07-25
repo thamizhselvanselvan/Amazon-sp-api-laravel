@@ -51,7 +51,6 @@ class sellerAsinRemove extends Command
         $csv->setDelimiter(",");
         $csv->setHeaderOffset(0);
 
-        Log::warning(" csv file importing");
         $stmt = (new Statement())
             ->where(function (array $record) {
                 return $record;
@@ -67,9 +66,10 @@ class sellerAsinRemove extends Command
 
         $count = 1;
         $tagger = 1;
+        $country_code = '';
         foreach ($records as $key => $record) {
             $asin = $record['ASIN'];
-            $country_code = $record['Source'];
+            $country_code = $record['Destination'];
 
             $asin_masters[$tagger][$seller_id][] = [
                 'asin' => $asin
@@ -92,10 +92,11 @@ class sellerAsinRemove extends Command
 
             foreach ($asin_master as $seller_id => $asins) {
 
-                AsinMasterSeller::whereIn('asin', $asins)->where('sseller_id', $seller_id)->delete();
-                BB_Product::whereIn('asin1', $asins)->where('seller_id', $seller_id)->delete();
+                AsinMasterSeller::whereIn('asin', $asins)->where('seller_id', $seller_id)->delete();
+                $bb_product = table_model_set($country_code, 'BB_Product', 'product');
+                $bb_product->whereIn('asin1', $asins)->where('seller_id', $seller_id)->delete();
             }
         }
-        Log::warning(" asin delete successfully");
+        Log::warning("asin delete successfully");
     }
 }

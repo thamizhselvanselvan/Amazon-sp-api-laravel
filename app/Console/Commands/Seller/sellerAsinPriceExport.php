@@ -66,35 +66,37 @@ class sellerAsinPriceExport extends Command
 
         $record_per_csv = 1000000;
         $chunk = 100000;
-        $headers = ['Asin', 'Is fulfilment By Amazon', 'Price'];
+        $headers = ['Asin', 'Is fulfilment By Amazon', 'Listing Price'];
         $this->check = $record_per_csv / $chunk;
 
         $this->totalProductCount = SellerAsinDetails::count();
 
-        SellerAsinDetails::select(['asin','is_fulfilment_by_amazon','price'])->where('seller_id', $seller_id)->chunk($chunk, function ($records) use ($exportFilePath, $headers, $chunk) {
+        SellerAsinDetails::select(['asin', 'is_fulfilment_by_amazon', 'listingprice_amount'])
+            ->where('seller_id', $seller_id)
+            ->chunk($chunk, function ($records) use ($exportFilePath, $headers, $chunk) {
 
-            if ($this->count == 1) {
-                if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv.mosh')) {
-                    Storage::put($exportFilePath . $this->fileNameOffset . '.csv.mosh', '');
+                if ($this->count == 1) {
+                    if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv.mosh')) {
+                        Storage::put($exportFilePath . $this->fileNameOffset . '.csv.mosh', '');
+                    }
+                    $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv.mosh'), "w");
+                    $this->writer->insertOne($headers);
                 }
-                $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv.mosh'), "w");
-                $this->writer->insertOne($headers);
-            }
 
-            $records = $records->toArray();
-            $records = array_map(function ($datas) {
-                return (array) $datas;
-            }, $records);
+                $records = $records->toArray();
+                $records = array_map(function ($datas) {
+                    return (array) $datas;
+                }, $records);
 
-            $this->writer->insertall($records);
+                $this->writer->insertall($records);
 
-            if ($this->check == $this->count) {
-                $this->fileNameOffset++;
-                $this->count = 1;
-            } else {
-                ++$this->count;
-            }
-        });
+                if ($this->check == $this->count) {
+                    $this->fileNameOffset++;
+                    $this->count = 1;
+                } else {
+                    ++$this->count;
+                }
+            });
 
         $path = "app/excel/downloads/seller/" . $seller_id;
         $path = storage_path($path);
@@ -110,5 +112,4 @@ class sellerAsinPriceExport extends Command
             }
         }
     }
-
 }
