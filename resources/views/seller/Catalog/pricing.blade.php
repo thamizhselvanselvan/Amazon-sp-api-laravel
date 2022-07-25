@@ -65,7 +65,7 @@
             <th>S/N</th>
             <th>ASIN</th>
             <th>Is Fulfilment By Amazon</th>
-            <th>Price</th>
+            <th>Listing Price</th>
         </tr>
     </thead>
     <tbody>
@@ -97,8 +97,8 @@
                 orderable: false
             },
             {
-                data: 'price',
-                name: 'price',
+                data: 'listingprice_amount',
+                name: 'listingprice_amount',
                 orderable: false,
                 searchable: false
             },

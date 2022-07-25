@@ -19,7 +19,7 @@ Route::prefix('seller/')->group(function () {
     Route::get('asin/delete', 'Seller\AsinMasterController@deleteAsinView');
     Route::post('asin/remove', 'Seller\AsinMasterController@SellerAsinRemove');
     Route::get('csv/template', 'Seller\AsinMasterController@DownloadCSVTemplate');
-    
+
     //catalog
     Route::get('catalog-details', 'Seller\SellerCatalogController@ImportCatalogDetails');
     Route::get('catalog', 'Seller\SellerCatalogController@index');
@@ -37,5 +37,5 @@ Route::prefix('seller/')->group(function () {
     Route::get('credentials', 'Seller\SellerController@index');
 
     //Invoice
-    Route::get('invoice','Seller\SellerController@sellerInvoice');
+    Route::get('invoice', 'Seller\SellerController@sellerInvoice');
 });

@@ -139,7 +139,7 @@ class OrderItem
                 //     ];
 
                 //     if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-                //         Seller_catalog_import_job::dispatch(
+                // Seller_catalog_import_job::dispatch(
                 //             [
                 //                 'datas' => $data,
                 //                 'type' => 2,
@@ -156,7 +156,7 @@ class OrderItem
                 //             ]
                 //         );
                 //     }
-                   
+
                 // }
             }
         }
