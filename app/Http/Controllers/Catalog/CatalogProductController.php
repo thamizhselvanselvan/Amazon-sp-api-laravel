@@ -84,6 +84,7 @@ class CatalogProductController extends Controller
             {
                 jobDispatchFunc($class, $asin_source, 'default');
                 $asin_source = [];
+                $count = 0;
             }
             else{
                 
@@ -94,7 +95,7 @@ class CatalogProductController extends Controller
                 ];
                 $count ++;
             }
-            $count = 0;
+           
         }
         jobDispatchFunc($class, $asin_source, 'default');
         
