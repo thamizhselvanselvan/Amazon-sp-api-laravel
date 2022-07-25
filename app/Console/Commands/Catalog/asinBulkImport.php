@@ -16,7 +16,7 @@ class asinBulkImport extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:asin-import {user_id}';
+    protected $signature = 'pms:asin-import {user_id} ';
 
     /**
      * The console command description.
@@ -56,6 +56,7 @@ class asinBulkImport extends Command
         $count = 0;
         foreach($csv as $key => $record)
         {
+            // Log::notice($user_id);
             $asin[] = [
                 'asin' => $record['ASIN'],
                 'user_id' => $user_id,

@@ -106,6 +106,7 @@ class AsinMasterController extends Controller
     public function addBulkAsin(Request $request)
     {
         $user_id = Auth::user()->id;
+        Log::alert($user_id);
         $request->validate([
             'asin' => 'required|mimes:csv'
         ]);
@@ -125,13 +126,13 @@ class AsinMasterController extends Controller
             Log::warning("asin production executed");
 
             $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:asin-import $user_id> /dev/null &";
+            $command = "cd $base_path && php artisan pms:asin-import ${user_id} > /dev/null &";
             exec($command);
             Log::warning("asin production command executed");
         } else {
 
             Log::warning("Export coma executed local !");
-            Artisan::call('pms:asin-import'.' '. $user_id);
+            Artisan::call('pms:asin-import' .' '.$user_id );
         }
 
         return redirect('catalog/import-bulk-asin')->with('success', 'All Asins uploaded successfully');
