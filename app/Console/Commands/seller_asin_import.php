@@ -93,11 +93,11 @@ class seller_asin_import extends Command
             if ($count == 1000) {
 
                 AsinMasterSeller::insert($asin_master);
-                $bb_product = table_model_set($country_code, 'BB_Product', 'product');
-                $bb_product->insert($product);
+                // $bb_product = table_model_set($country_code, 'BB_Product', 'product');
+                // $bb_product->insert($product);
 
-                $bb_product_lowest_price = table_model_set(country_code: $country_code, model: 'BB_Product_lowest_price_offer', table_name: 'product_lp_offer');
-                $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin']);
+                // $bb_product_lowest_price = table_model_set(country_code: $country_code, model: 'BB_Product_lowest_price_offer', table_name: 'product_lp_offer');
+                // $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin']);
                 // BB_Product_lowest_price_offer::upsert($product_lowest_price, ['asin', 'country_code'], ['asin', 'country_code']);
 
                 $count = 0;
@@ -110,11 +110,11 @@ class seller_asin_import extends Command
         }
 
         AsinMasterSeller::insert($asin_master);
-        $bb_product = table_model_set($country_code, 'BB_Product', 'product');
-        $bb_product->insert($product);
+        // $bb_product = table_model_set($country_code, 'BB_Product', 'product');
+        // $bb_product->insert($product);
 
-        $bb_product_lowest_price = table_model_set(country_code: $country_code, model: 'BB_Product_lowest_price_offer', table_name: 'product_lp_offer');
-        $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin']);
+        // $bb_product_lowest_price = table_model_set(country_code: $country_code, model: 'BB_Product_lowest_price_offer', table_name: 'product_lp_offer');
+        // $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin']);
 
         Log::warning(" asin import successfully");
     }

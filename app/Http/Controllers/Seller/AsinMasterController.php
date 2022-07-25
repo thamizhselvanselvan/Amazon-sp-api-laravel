@@ -152,7 +152,7 @@ class AsinMasterController extends Controller
 
     public function deleteAsinView()
     {
-        return view('AsinMaster.deleteAsin');
+        return view('seller.asin_master.deleteAsin');
     }
 
     public function SellerAsinRemove(Request $request)
