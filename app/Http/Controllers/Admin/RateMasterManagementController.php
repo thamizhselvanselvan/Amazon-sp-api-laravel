@@ -26,7 +26,7 @@ class RateMasterManagementController extends Controller
     {
          $sourcedestination = DB::connection('shipntracking')->select("SELECT source_destination FROM ratemasters group by source_destination ");
         //  po($sourcedestination);
-         return view('Admin.rateMaster.index', compact('sourcedestination'));
+         return view('admin.rateMaster.index', compact('sourcedestination'));
     }
     
     public function GetDataTable(Request $request)
@@ -47,7 +47,7 @@ class RateMasterManagementController extends Controller
     
     public function upload()
     {
-        return view('Admin.rateMaster.manage');
+        return view('admin.rateMaster.manage');
     }
     
     public function uploadCsv(Request $request)
