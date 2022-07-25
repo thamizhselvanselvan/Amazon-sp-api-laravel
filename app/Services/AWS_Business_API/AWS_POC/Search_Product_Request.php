@@ -8,15 +8,22 @@ use Illuminate\Support\Facades\Storage;
 class Search_Product_Request
 {
 
-    public function getASIN($asin)
+    public function getASIN($data)
     {
+        $type ='';
+        $key_value = '';
+       foreach($data as $key => $value)
+       {
+        $type =$key;
+        $key_value = $value;
+       }
         date_default_timezone_set('Asia/Jakarta');
 
         // require_once('refrashToken.php');
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
         $client_secret = "80b1db8f2e3ae4b755bd50a0bcc21228694381e6a35b178efdb43799ccedd1ae";
         $refresh_token =
-        file_get_contents(Storage::path('Business/token.txt'));
+            file_get_contents(Storage::path('Business/token.txt'));
         $request_data = array(
             "client_id" => $client_id,
             "client_secret" => $client_secret,
@@ -25,7 +32,7 @@ class Search_Product_Request
         );
 
         $reqToken =
-        file_get_contents(Storage::path('Business/token.txt'));
+            file_get_contents(Storage::path('Business/token.txt'));
         // $reqToken = getToken($request_data);
 
         $host               = "na.business-api.amazon.com";
@@ -33,10 +40,19 @@ class Search_Product_Request
         $secretKey          = "zjYimrzHWwT3eA3eKkuCGxMb+OA2fibMivnnht3t";
         $region             = "us-east-1";
         $service            = "execute-api";
-        $requestUrl         = "https://na.business-api.amazon.com/products/2020-08-26/products";
-        $uri                = "/products/2020-08-26/products/$asin";
+
+        if ($type == 'asin') {
+            $query              = 'locale=en_US&productRegion=US';
+            $uri                = "/products/2020-08-26/products/$key_value";
+        } else {
+            $query              = "keywords=$key_value&locale=en_US&productRegion=US";
+            $uri                = "/products/2020-08-26/products";
+        }
+        $requestUrl         = "https://na.business-api.amazon.com$uri?$query";
         $httpRequestMethod  = 'GET';
-        $data                = '';
+        $data               =  '';
+
+
 
         function calcualteAwsSignatureAndReturnHeaders(
             $today,
@@ -50,6 +66,7 @@ class Search_Product_Request
             $service,
             $httpRequestMethod,
             $data,
+            $canonicalQueryString,
             $debug = TRUE
         ) {
 
@@ -57,22 +74,20 @@ class Search_Product_Request
             $algorithm      = 'AWS4-HMAC-SHA256';
             $phpAlgorithm       = 'sha256';
             $canonicalURI       = $uri;
-            $canonicalQueryString   = 'facets=OFFERS&locale=en_US&productRegion=US';
             $signedHeaders      = 'host;x-amz-access-token;x-amz-date;x-amz-user-email';
             $userEmail     = "nitrouspurchases@gmail.com";
+
+
 
             //AMZ date format
             $reqDate = date("Ymd");
             $reqDateTime = date("Ymd\THis\Z");
-
 
             $kSecret = $secretKey;
             $kDate = hash_hmac($phpAlgorithm, $reqDate, 'AWS4' . $kSecret, true);
             $kRegion = hash_hmac($phpAlgorithm, $region, $kDate, true);
             $kService = hash_hmac($phpAlgorithm, $service, $kRegion, true);
             $kSigning = hash_hmac($phpAlgorithm, $terminationString, $kService, true);
-
-
 
             // Create canonical headers
             $canonicalHeaders = array();
@@ -95,12 +110,6 @@ class Search_Product_Request
             $canonicalRequest[] = $requestHasedPayload;
             $requestCanonicalRequest = implode("\n", $canonicalRequest);
             $requestHasedCanonicalRequest = hash($phpAlgorithm, utf8_encode($requestCanonicalRequest));
-            // if ($debug) {
-            //     echo "<h5>Canonical to string</h5>";
-            //     echo "<pre>";
-            //     echo $requestCanonicalRequest;
-            //     echo "</pre>";
-            // }
 
             // Create scope
             $credentialScope = array();
@@ -117,12 +126,6 @@ class Search_Product_Request
             $stringToSign[] = $credentialScopeStr;
             $stringToSign[] = $requestHasedCanonicalRequest;
             $stringToSignStr = implode("\n", $stringToSign);
-            if ($debug) {
-                // echo "<h5>String to Sign</h5>";
-                // echo "<pre>";
-                // echo $stringToSignStr;
-                // echo "</pre>";
-            }
 
             // Create signature
             $signature = hash_hmac($phpAlgorithm, $stringToSignStr, $kSigning);
@@ -134,7 +137,6 @@ class Search_Product_Request
             $authorizationHeader[] = 'Signature=' . ($signature);
             $authorizationHeaderStr = $algorithm . ' ' . implode(', ', $authorizationHeader);
 
-
             // Request headers 
             $headers = array();
             $headers[] = 'Authorization:' . $authorizationHeaderStr;
@@ -145,13 +147,11 @@ class Search_Product_Request
 
             return $headers;
         }
+
         $dt = date("Y-m-d H:i:s");
         $today = date("Ymd\THis\Z");
 
         $Time = date("Ymd\THis\Z", strtotime('-7 hours', strtotime($dt)));
-
-
-
 
         $AwsSignature = calcualteAwsSignatureAndReturnHeaders(
             $Time,
@@ -165,10 +165,11 @@ class Search_Product_Request
             $service,
             $httpRequestMethod,
             $data,
+            $query,
             $debug = true
         );
-        // echo '<pre>';
-        // print_r($AwsSignature);
+
+
         $curl = curl_init();
 
         $headersFS = array(
@@ -179,10 +180,7 @@ class Search_Product_Request
             'x-amz-user-email:nitrouspurchases@gmail.com',
         );
 
-        // echo '<pre>';
-        // print_r($headersFS);
-
-        curl_setopt($curl, CURLOPT_URL, "https://na.business-api.amazon.com/products/2020-08-26/products/$asin?facets=OFFERS&locale=en_US&productRegion=US");
+        curl_setopt($curl, CURLOPT_URL, $requestUrl . '');
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headersFS);
@@ -192,13 +190,14 @@ class Search_Product_Request
 
         $server_APIoutput = curl_exec($curl);
         $JsonResponse = json_decode($server_APIoutput);
-
+        
         return $JsonResponse;
-
+        
         if (curl_errno($curl)) {
             echo 'Error:' . curl_error($curl);
         }
-
+        
         curl_close($curl);
+
     }
 }
