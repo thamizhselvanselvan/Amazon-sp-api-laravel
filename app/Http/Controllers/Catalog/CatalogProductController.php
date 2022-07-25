@@ -73,7 +73,7 @@ class CatalogProductController extends Controller
     
     public function Amazon()
     {
-        $asins = Asin_master::where('status', '=', '0')->get(['asin','source','user_id']);
+        $asins = Asin_master::get(['asin','source','user_id']);
         // dd($asins);
         $count = 0;
         $asin_source = [];
@@ -94,6 +94,7 @@ class CatalogProductController extends Controller
                 ];
                 $count ++;
             }
+            $count = 0;
         }
         jobDispatchFunc($class, $asin_source, 'default');
         
