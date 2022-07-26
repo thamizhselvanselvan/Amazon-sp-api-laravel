@@ -336,7 +336,7 @@ return [
                 ],
                 [
 
-                    'text' => 'PMS Amazon',
+                    'text' => 'Mosh Amazon Catalog',
                     'url'  => 'catalog/product',
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin'],
@@ -362,6 +362,7 @@ return [
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin']
                 ],
+                
             ],
         ],
 

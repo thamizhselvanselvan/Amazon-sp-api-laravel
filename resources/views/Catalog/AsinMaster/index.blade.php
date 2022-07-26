@@ -3,38 +3,28 @@
 @section('title', 'ASIN Master')
 
 @section('content_header')
-<h1 class="m-0 text-dark">ASIN</h1>
-@stop
-
-@section('content')
-
 <div class="row">
     <div class="col">
 
-        <div class="alert_display">
-            @if ($message = Session::get('success'))
-            <div class="alert alert-success alert-block">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>{{ $message }}</strong>
-            </div>
-            @endif
-        </div>
+        <h1 class="m-0 text-dark">ASIN Master</h1>
+    </div>
+    <div class="col ">
 
-        <h2 class="mb-4">
+        <h2 class="mb-4 float-right">
 
             <a href="import-bulk-asin">
-                <x-adminlte-button label="Asin Bulk Import" theme="primary" icon="fas fa-file-import" />
+                <x-adminlte-button label="Asin Bulk Import" theme="primary" icon="fas fa-file-import" class="btn-sm" />
             </a>
             <a href="{{route('catalog.asin.export')}}">
-                <x-adminlte-button label="Asin Export" theme="primary" icon="fas fa-file-export" />
+                <x-adminlte-button label="Asin Export" theme="primary" icon="fas fa-file-export" class="btn-sm" />
             </a>
 
             <x-adminlte-button label="Download Asin" theme="primary" icon="fas fa-file-download" data-toggle="modal"
-                data-target="#exampleModal"></x-adminlte-button>
+                data-target="#exampleModal" class="btn-sm"></x-adminlte-button>
 
             <a href="{{ route('catalog.download.template') }}">
                 <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-file-download"
-                    id="exportUniversalTextiles" />
+                    id="exportUniversalTextiles" class="btn-sm" />
             </a>
 
             <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -43,7 +33,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="exampleModalLabel">Asin Download</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -51,8 +41,6 @@
 
                             <a href="{{ route('catalog.download.asinMaster') }}">
                                 <h6>Download ASIN </h6>
-
-
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -62,9 +50,33 @@
             </div>
             </a>
             <a href="{{ route('catalog.softDelete.view') }}">
-                <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" />
+                <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" class="btn-sm" />
             </a>
         </h2>
+    </div>
+</div>
+@stop
+
+@section('content')
+
+<div class="row">
+    <div class="col">
+        <h2 class="mb-4">
+            <a href="{{ route('catalog.exchange.rate') }}">
+                <x-adminlte-button label="Get Exchange Rate" theme="primary" icon="fas fa-file-download"
+                    id="exportUniversalTextiles" class="btn-sm" />
+            </a>
+        </h2>
+        <div class="alert_display">
+            @if ($message = Session::get('success'))
+            <div class="alert alert-success alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>{{ $message }}</strong>
+            </div>
+            @endif
+        </div>
+
+
 
         <table class="table table-bordered yajra-datatable table-striped text-center table-sm">
             <thead>

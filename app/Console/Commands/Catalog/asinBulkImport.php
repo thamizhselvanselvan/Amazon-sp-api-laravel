@@ -65,7 +65,7 @@ class asinBulkImport extends Command
                 'destination_2' => $record['Destination_2'],
                 'destination_3' => $record['Destination_3'],
                 'destination_4' => $record['Destination_4'],
-                'destination_5' => $record['Destination_5']
+                'destination_5' => $record['Destination_5'],
             ];
             if($count == 1000) {
             
