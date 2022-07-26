@@ -171,4 +171,16 @@ class AsinMasterController extends Controller
         $file_path = public_path('template/Catalog-Asin-Template.csv');
         return response()->download($file_path);
     }
+
+    public function getExchangeRate()
+    {
+        $records = Asin_master::select('asin','source')->get();
+
+        foreach($records as $record)
+        {
+            $asin = $record->asin;
+            $source = $record->source;
+            
+        }
+    }
 }

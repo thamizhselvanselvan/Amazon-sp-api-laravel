@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'PDF Master')
+@section('title', 'RateMaster')
 
 @section('content_header')
 <div class="row">
@@ -8,7 +8,7 @@
 
 </div>
 <div class="row">
-    <div class="col">
+    <div class="col mt-4">
         <a href="{{ route('rateMaster.index') }}" class="btn btn-primary btn-sm">
             <i class="fas fa-long-arrow-alt-left"></i> Back
         </a>
@@ -139,7 +139,7 @@ $(function() {
         });
 
         function getBack() {
-            window.location.href = '/admin/rate-master/index';
+            window.location.href = '/admin/rate-master';
         }
     });
 });

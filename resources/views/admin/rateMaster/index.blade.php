@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'ShipNTrack')
+@section('title', 'RateMaster')
 
 @section('content_header')
 <div class="row">
@@ -28,11 +28,11 @@
             </x-adminlte-select>
             <div class="form-group ml-2 shipRow">
 
-                <a href=" upload">
+                <a href="rate-master/upload">
                     <x-adminlte-button label="Add New Records" theme="primary" icon="fas fa-file-upload"
                         class="btn-sm" />
                 </a>
-                <a href="template/download">
+                <a href="rate-master/template/download">
                     <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-download"
                         class="btn-sm" />
                 </a>
