@@ -139,7 +139,7 @@ $(function() {
         });
 
         function getBack() {
-            window.location.href = '/admin/rate-master/index';
+            window.location.href = '/admin/rate-master';
         }
     });
 });
