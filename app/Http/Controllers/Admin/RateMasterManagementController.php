@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\shipntrack;
+namespace App\Http\Controllers\Admin;
 
 use File;
 use Excel;
@@ -20,13 +20,13 @@ use App\Http\Controllers\controller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 
-class ShipntrackManagementController extends Controller
+class RateMasterManagementController extends Controller
 {
     public function Index(Request $request)
     {
          $sourcedestination = DB::connection('shipntracking')->select("SELECT source_destination FROM ratemasters group by source_destination ");
         //  po($sourcedestination);
-         return view('shipntrack.index', compact('sourcedestination'));
+         return view('admin.rateMaster.index', compact('sourcedestination'));
     }
     
     public function GetDataTable(Request $request)
@@ -34,16 +34,20 @@ class ShipntrackManagementController extends Controller
         $option = $request->option;
         if($request->ajax())
         {
-            $shipntrack_data = '';
-            $shipntrack_data = DB::connection('shipntracking')->select("SELECT * FROM ratemasters WHERE source_destination = '$option' ");
+
+            $rateMaster_data = '';
+            $rateMaster_data = DB::connection('shipntracking')->select("SELECT * FROM ratemasters WHERE source_destination = '$option' ");
         
+            return DataTables::of($rateMaster_data)
+            ->addIndexColumn()
+            ->make(true);
         }
-        return response()->json($shipntrack_data);
+        return response()->json($rateMaster_data);
     }
     
     public function upload()
     {
-        return view('shipntrack.manage');
+        return view('admin.rateMaster.manage');
     }
     
     public function uploadCsv(Request $request)
