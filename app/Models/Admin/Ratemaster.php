@@ -9,6 +9,6 @@ class Ratemaster extends Model
 {
     use HasFactory;
 
-    protected $connection = 'shipntracking';
+    protected $connection = 'web';
     protected $table = 'ratemasters';
 }

@@ -286,7 +286,7 @@ return [
                 ],
                 [
                     'text'  =>  'Rate Master',
-                    'url'   =>  'admin/rate-master/index',
+                    'url'   =>  'admin/rate-master',
                     'can'   =>  ['Admin'],
                     'icon' => 'far fa-fw fa-file',
                 ],
