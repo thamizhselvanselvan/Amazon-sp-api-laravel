@@ -44,7 +44,7 @@ class asinBulkImport extends Command
     {
         Log::warning(" pms:asin-import command executed looking for path");
         $user_id = $this->argument('user_id');
-        Log::alert($user_id);
+        // Log::alert($user_id);
 
         $path = 'AsinMaster/asin.csv';
        
@@ -69,7 +69,7 @@ class asinBulkImport extends Command
             ];
             if($count == 1000) {
             
-                Asin_master::upsert($asin, ['asin'], ['source','destination_1','destination_2','destination_3','destination_4','destination_5']);
+                Asin_master::upsert($asin, ['user_asin_source_unique'], ['source','destination_1','destination_2','destination_3','destination_4','destination_5']);
 
                 $count = 0;
                 $asin = [];
@@ -78,7 +78,7 @@ class asinBulkImport extends Command
             
         }	
             
-        Asin_master::upsert($asin, ['asin'], ['source','destination_1','destination_2','destination_3','destination_4','destination_5']); 
+        Asin_master::upsert($asin, ['user_asin_source_unique'], ['source','destination_1','destination_2','destination_3','destination_4','destination_5']); 
         Log::warning(" asin import successfully");
     }
 }
