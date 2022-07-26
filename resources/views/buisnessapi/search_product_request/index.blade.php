@@ -26,7 +26,7 @@
 <div class="row">
     <div class="col-2">
         <input type="radio" name="size" id="asinwise">
-        <label for=" entire">Search By ASIN</label>
+        <label for=" entire">Search by ASIN</label>
     </div>
     <div class="col-9">
         <input type="radio" name="size" id="keywise">
