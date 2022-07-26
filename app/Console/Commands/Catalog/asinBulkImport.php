@@ -42,23 +42,34 @@ class asinBulkImport extends Command
      */
     public function handle()
     {
-        Log::warning(" pms:asin-import command executed looking for path");
+        //source and seller id
+        $source = [
+            'AE' => 38,
+            'IN' => 39,
+            'US' => 40
+        ];
+
         $user_id = $this->argument('user_id');
-        // Log::alert($user_id);
 
         $path = 'AsinMaster/asin.csv';
-       
+
         $csv = Reader::createFromPath(Storage::path($path), 'r');
         $csv->setDelimiter(",");
         $csv->setHeaderOffset(0);
 
         $asin = [];
         $count = 0;
-        foreach($csv as $key => $record)
-        {
-            // Log::notice($user_id);
-            $asin[] = [
-                'asin' => $record['ASIN'],
+        $country_code = '';
+        $seller_id = '';
+
+        foreach ($csv as $key => $record) {
+            $country_code = strtoupper($record['Source']);
+            $seller_id = $source[$country_code];
+            $asin = $record['ASIN'];
+
+            $asin_details[] = [
+
+                'asin' => $asin,
                 'user_id' => $user_id,
                 'source' => $record['Source'],
                 'destination_1' => $record['Destination_1'],
@@ -67,18 +78,42 @@ class asinBulkImport extends Command
                 'destination_4' => $record['Destination_4'],
                 'destination_5' => $record['Destination_5'],
             ];
-            if($count == 1000) {
-            
-                Asin_master::upsert($asin, ['user_asin_source_unique'], ['source','destination_1','destination_2','destination_3','destination_4','destination_5']);
 
+            $product[] = [
+                'seller_id' => $seller_id,
+                'active' => 1,
+                'asin1' => $asin,
+            ];
+
+            $product_lowest_price[] = [
+                'asin' => $asin,
+                'import_type' => 'Seller',
+            ];
+
+            if ($count == 1000) {
+
+                Asin_master::upsert($asin_details, ['user_asin_source_unique'], ['source', 'destination_1', 'destination_2', 'destination_3', 'destination_4', 'destination_5']);
+                $bb_product = table_model_set(strtolower($country_code), 'BB_Product', 'product');
+                $bb_product->insert($product);
+
+                $bb_product_lowest_price = table_model_set(country_code: strtolower($country_code), model: 'BB_Product_lowest_price_offer', table_name: 'product_lp_offer');
+                $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin']);
                 $count = 0;
                 $asin = [];
+                $product = [];
+                $product_lowest_price = [];
             }
             $count++;
-            
-        }	
-            
-        Asin_master::upsert($asin, ['user_asin_source_unique'], ['source','destination_1','destination_2','destination_3','destination_4','destination_5']); 
+        }
+
+        Asin_master::upsert($asin_details, ['user_asin_source_unique'], ['source', 'destination_1', 'destination_2', 'destination_3', 'destination_4', 'destination_5']);
+
+        $bb_product = table_model_set(strtolower($country_code), 'BB_Product', 'product');
+        $bb_product->insert($product);
+
+        $bb_product_lowest_price = table_model_set(country_code: strtolower($country_code), model: 'BB_Product_lowest_price_offer', table_name: 'product_lp_offer');
+        $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin']);
+
         Log::warning(" asin import successfully");
     }
 }
