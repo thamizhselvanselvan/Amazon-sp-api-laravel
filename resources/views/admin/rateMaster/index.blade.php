@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'ShipNTrack')
+@section('title', 'RateMaster')
 
 @section('content_header')
 <div class="row">

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\ShipnTrack;
+namespace App\Console\Commands\RateMaster;
 
 use config;
 use RedBeanPHP\R;
@@ -9,14 +9,14 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-class shipntrackCSVUpload extends Command
+class RateMasterCSVUpload extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'pms:shipntrack-csv-upload';
+    protected $signature = 'pms:ratemaster-csv-upload';
 
     /**
      * The console command description.
@@ -44,17 +44,17 @@ class shipntrackCSVUpload extends Command
     {
         Log::warning("CSV File upload executed handle!");
 
-        $path = 'ShipnTrack/export-rate.csv';
+        $path = 'RateMaster/export-rate.csv';
         $file = Storage::path($path);
         $csv = Reader::createFromPath($file, 'r');
         $csv->setDelimiter("\t");
         $csv->setHeaderOffset(0);
         
-        $host = config('database.connections.shipntracking.host');
-        $dbname = config('database.connections.shipntracking.database');
-        $port = config('database.connections.shipntracking.port');
-        $username = config('database.connections.shipntracking.username');
-        $password = config('database.connections.shipntracking.password');
+        $host = config('database.connections.web.host');
+        $dbname = config('database.connections.web.database');
+        $port = config('database.connections.web.port');
+        $username = config('database.connections.web.username');
+        $password = config('database.connections.web.password');
         
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
         $symbols = [' ', '-'];
