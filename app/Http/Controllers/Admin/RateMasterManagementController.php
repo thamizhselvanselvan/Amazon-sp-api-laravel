@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\shipntrack;
+namespace App\Http\Controllers\Admin;
 
 use File;
 use Excel;
@@ -20,13 +20,13 @@ use App\Http\Controllers\controller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 
-class ShipntrackManagementController extends Controller
+class RateMasterManagementController extends Controller
 {
     public function Index(Request $request)
     {
-         $sourcedestination = DB::connection('shipntracking')->select("SELECT source_destination FROM ratemasters group by source_destination ");
-        //  po($sourcedestination);
-         return view('shipntrack.index', compact('sourcedestination'));
+        $sourcedestination = DB::connection('web')->select("SELECT source_destination FROM ratemasters group by source_destination ");
+        
+        return view('admin.rateMaster.index', compact('sourcedestination'));
     }
     
     public function GetDataTable(Request $request)
@@ -34,16 +34,19 @@ class ShipntrackManagementController extends Controller
         $option = $request->option;
         if($request->ajax())
         {
-            $shipntrack_data = '';
-            $shipntrack_data = DB::connection('shipntracking')->select("SELECT * FROM ratemasters WHERE source_destination = '$option' ");
+            $rateMaster_data = '';
+            $rateMaster_data = DB::connection('web')->select("SELECT * FROM ratemasters WHERE source_destination = '$option' ");
         
+            return DataTables::of($rateMaster_data)
+            ->addIndexColumn()
+            ->make(true);
         }
-        return response()->json($shipntrack_data);
+        return response()->json($rateMaster_data);
     }
     
     public function upload()
     {
-        return view('shipntrack.manage');
+        return view('admin.rateMaster.manage');
     }
     
     public function uploadCsv(Request $request)
@@ -57,7 +60,7 @@ class ShipntrackManagementController extends Controller
             }
         }
 
-        $path = 'ShipnTrack/export-rate.csv';
+        $path = 'RateMaster/export-rate.csv';
         $data= file_get_contents($value);
         if(!Storage::exists($path))
         {
@@ -68,10 +71,10 @@ class ShipntrackManagementController extends Controller
         if(App::environment(['Production', 'Staging', 'production', 'staging']))
         {
             $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:shipntrack-csv-upload > /dev/null &";
+            $command = "cd $base_path && php artisan pms:ratemaster-csv-upload > /dev/null &";
             exec($command);
         }else{
-            Artisan::call('pms:shipntrack-csv-upload');
+            Artisan::call('pms:ratemaster-csv-upload');
         }
         
         return response()->json(['success' => 'File upload successfully']);
@@ -79,7 +82,7 @@ class ShipntrackManagementController extends Controller
 
     public function templateDownload()
     {
-        return Response()->download(public_path('shipntrackCSV/Export-Rate.csv'));
+        return Response()->download(public_path('RateMasterCSV/Export-Rate.csv'));
     }
 
 }

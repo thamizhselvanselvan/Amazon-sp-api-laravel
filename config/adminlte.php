@@ -285,6 +285,12 @@ return [
                     'icon' => 'far fa-fw fa-file',
                 ],
                 [
+                    'text'  =>  'Rate Master',
+                    'url'   =>  'admin/rate-master',
+                    'can'   =>  ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
                     'text' => 'BuyBox',
                     'can' =>  ['Admin'],
                     'submenu' => [
@@ -330,7 +336,7 @@ return [
                 ],
                 [
 
-                    'text' => 'PMS Amazon',
+                    'text' => 'Mosh Amazon Catalog',
                     'url'  => 'catalog/product',
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin'],
@@ -356,6 +362,7 @@ return [
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin']
                 ],
+                
             ],
         ],
 
@@ -558,11 +565,6 @@ return [
             'text'  => 'Ship & Track',
             'can' => ['Admin'],
             'submenu' => [
-                [
-                    'text'  =>  'Rate Master',
-                    'url'   =>  'shipntrack/index',
-                    'can'   =>  ['Admin'],
-                ],
                 [
                     'text'  =>  'SMSA Tracking',
                     'url'   =>  'shipntrack/smsa',
