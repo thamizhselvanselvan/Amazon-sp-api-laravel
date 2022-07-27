@@ -21,7 +21,7 @@
 
 <div class="row mt-3">
     <div class="col">
-        <h1 class="m-0 text-dark text-center">Add  Shelves</h1>
+        <h1 class="m-0 text-dark text-center">Add Shelves</h1>
     </div>
 </div>
 
@@ -79,14 +79,14 @@
             </div>
 
             <div class="row justify-content-center">
-            <div class="col-1">
-                  
+                <div class="col-1">
+
                 </div>
                 <div class="col-5">
-                    <x-adminlte-input label="Shelve ID" name="sid" type="text" placeholder="ID" id="shelve_id" />
+                    <x-adminlte-input label="Shelve ID" name="sid" type="text" placeholder="ID" id="shelve_id" value="{{ old('sid') }}" />
                 </div>
                 <div class="col-4">
-                    <x-adminlte-input label="Shelve Name" name="name" type="text" placeholder="Name" id="shelve_name" />
+                    <x-adminlte-input label="Shelve Name" name="name" type="text" placeholder="Name" id="shelve_name" value="{{ old('name') }}" />
                 </div>
 
                 <div class="col-2" id="add">
@@ -137,7 +137,7 @@
             return false;
         }
         $("#rack_table").show();
-       
+
         let shelve_id;
         let shelve_name;
         shelve_id = $('#shelve_id').val();
