@@ -68,7 +68,7 @@
 
             <div class="row justify-content-center">
                 <div class="col-4">
-                    <x-adminlte-select name="warehouse_id" label="Select Warehouse">
+                    <x-adminlte-select name="warehouse_id" label="Select Warehouse" name="warehouse_id">
                         @foreach ($warehouse_lists as $warehouse_list)
                         @if ($warehouse_list->id == $selected_warehouse)
                         <option value="{{ $warehouse_list->id }}" selected> {{ $warehouse_list->name }}</option>
