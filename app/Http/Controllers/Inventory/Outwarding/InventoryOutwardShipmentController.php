@@ -135,7 +135,6 @@ class InventoryOutwardShipmentController extends Controller
 
         $shipment_id = random_int(1000, 9999);
 
-
         foreach ($request->asin as $key => $asin) {
 
             $items[] = [
@@ -145,7 +144,6 @@ class InventoryOutwardShipmentController extends Controller
                 "price" => $request->price[$key],
             ];
         }
-
 
         Shipment_Outward::insert([
             "Ship_id" => $shipment_id,
@@ -180,7 +178,7 @@ class InventoryOutwardShipmentController extends Controller
 
                 Inventory::where('id', $id)->update([
 
-                    'out_quantity' =>$inventory->out_quantity +$request->quantity[$key],
+                    'out_quantity' =>$inventory->out_quantity + $request->quantity[$key1],
                     'balance_quantity' => $inventory->balance_quantity - $request->quantity[$key1],
                     
                 ]);
