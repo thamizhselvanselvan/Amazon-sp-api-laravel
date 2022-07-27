@@ -14,8 +14,7 @@ class StockController extends Controller
 {
     public function dashboard()
     {
-        // $ware =  Inventory::with('warehouses')->limit(1)->get();
-        // dd($ware);
+
         $ware_lists = Shipment_Inward_Details::with('warehouses')->get()->unique('warehouses');
         return view('inventory.stock.dashboard', compact('ware_lists'));
     }
@@ -36,12 +35,12 @@ class StockController extends Controller
     {
         if ($request->ajax()) {
             $records = [];
+            
             $records = Inventory::query()
                 ->select('ship_id', 'asin', 'item_name', 'price', 'quantity', 'out_quantity', 'balance_quantity', 'created_at', 'bin')
                 ->where('warehouse_id', $request->id)
                 ->where('balance_quantity', '>', 0)
                 ->get();
-
 
             $headers = [
 
@@ -63,7 +62,7 @@ class StockController extends Controller
             $writer->insertOne($headers);
 
             $writer->insertAll($records->toArray());
-            // return Storage::download($exportFilePath);
+
         }
     }
     public function downexp($id)

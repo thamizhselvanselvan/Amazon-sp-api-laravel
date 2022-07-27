@@ -15,7 +15,6 @@
         padding: 2;
         padding-left: 5px;
     }
-
 </style>
 @stop
 
@@ -29,7 +28,8 @@
         </div>
     </div>
     <div class="col-11">
-        <form class="row" action="/inventory/export">
+        <!-- <form class="row" action="/inventory/export"> -->
+        <form class="row">
             <div class="col-2">
                 <x-adminlte-select name="ware_id" id="warehouse" label="Select Warehouse">
                     <option value=" ">Select Warehouse</option>
@@ -109,7 +109,7 @@
             },
             'dataType': 'json',
             success: function(response) {
-                console.log(response);
+                // console.log(response);
                 let html = '';
                 $.each(response, function(index, value) {
 
@@ -159,12 +159,13 @@
             },
             success: function(result) {
                 window.location.href = '/inventory/exp/' + id;
-                alert('  Downloaded  successfully');
+                alert(' Downloaded successfully');
 
 
             },
             error: function(response) {
-                console.log(response);
+                // console.log(response);
+                alert('error');
             }
         });
     });
