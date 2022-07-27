@@ -226,11 +226,11 @@ return [
 
     'menu' => [
         // Navbar items:
-        [
-            'type'         => 'navbar-search',
-            'text'         => 'search',
-            'topnav_right' => true,
-        ],
+        // [
+        //     'type'         => 'navbar-search',
+        //     'text'         => 'search',
+        //     'topnav_right' => true,
+        // ],
         [
             'type'         => 'fullscreen-widget',
             'topnav_right' => true,
@@ -285,6 +285,12 @@ return [
                     'icon' => 'far fa-fw fa-file',
                 ],
                 [
+                    'text'  =>  'Rate Master',
+                    'url'   =>  'admin/rate-master',
+                    'can'   =>  ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
                     'text' => 'BuyBox',
                     'can' =>  ['Admin'],
                     'submenu' => [
@@ -317,7 +323,7 @@ return [
             'submenu' => [
                 [
                     'text' => 'Asin Master',
-                    'url'  => 'asin-master',
+                    'url'  => 'catalog/asin-master',
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin']
                 ],
@@ -330,8 +336,8 @@ return [
                 ],
                 [
 
-                    'text' => 'PMS Amazon',
-                    'url'  => 'product/amazon_com',
+                    'text' => 'Mosh Amazon Catalog',
+                    'url'  => 'catalog/product',
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin'],
                 ],
@@ -356,6 +362,7 @@ return [
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin']
                 ],
+                
             ],
         ],
 
@@ -531,12 +538,17 @@ return [
                     'icon' => 'far fa-fw fa-file',
 
                 ],
+                // [
+                //     'text' => 'Catalog Details',
+                //     'url' => 'seller/catalog',
+                //     'can' => ['Admin', 'Seller'],
+                //     'icon' => 'far fa-fw fa-file',
+                // ],
                 [
-                    'text' => 'Catalog Details',
-                    'url' => 'seller/catalog',
+                    'text' => 'Asin Details',
+                    'url' => 'seller/price/details',
                     'can' => ['Admin', 'Seller'],
                     'icon' => 'far fa-fw fa-file',
-
                 ],
                 [
                     'text' => 'Seller Invoice',
@@ -553,11 +565,6 @@ return [
             'text'  => 'Ship & Track',
             'can' => ['Admin'],
             'submenu' => [
-                [
-                    'text'  =>  'Rate Master',
-                    'url'   =>  'shipntrack/index',
-                    'can'   =>  ['Admin'],
-                ],
                 [
                     'text'  =>  'SMSA Tracking',
                     'url'   =>  'shipntrack/smsa',
@@ -691,38 +698,52 @@ return [
         ],
         [
             'text' => 'AWS-POC',
-            'can' => ['Admin'],
+            'can' => ['Admin', 'POC'],
             'submenu' => [
                 [
-                    'text' => 'Search Product Request',
-                    'url' => 'business/search/products',
+                    'text' => 'Search Product ',
+                    'can' => ['Admin', 'POC'],
+                    'icon' => 'far fa-fw fa-file',
+                    'submenu' => [
+                        [
+                            'text' => 'Search Product Request',
+                            'url' => 'business/search/products',
+                            'can' => ['Admin', 'POC'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ],
+                        [
+                            'text' => 'Product Request',
+                            'url' => 'business/products/request',
+                            'can' => ['Admin', 'POC'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ],
+                        [
+                            'text' => 'Search Offers Request',
+                            'url' => 'business/offers',
+                            'can' => ['Admin', 'POC'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ],
+                        [
+                            'text' => 'Get Products By Asins',
+                            'url' => 'business/byasins',
+                            'can' => ['Admin', 'POC'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ]
+                    ],
+                ],
+
+                [
+                    'text' => 'Order API',
+                    'url' => 'business/orders',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
 
                 ],
-                [
-                    'text' => 'Product Request',
-                    'url' => 'business/products',
-                    'can' => ['Admin'],
-                    'icon' => 'far fa-fw fa-file',
-
-                ],
-                [
-                    'text' => 'Search Offers Request',
-                    'url' => 'business/offers',
-                    'can' => ['Admin'],
-                    'icon' => 'far fa-fw fa-file',
-
-                ],
-                [
-                    'text' => 'Get Products By Asins',
-                    'url' => 'business/byasins',
-                    'can' => ['Admin'],
-                    'icon' => 'far fa-fw fa-file',
-
-                ]
-
-            ]
+            ],
         ],
     ],
 

@@ -18,45 +18,38 @@ class AsinMasterController extends Controller
 {        //
     public function index(Request $request)
     {
-        $path = public_path() . '/storage/SellerCsvTemplate.csv';
-
         if ($request->ajax()) {
 
             $user = Auth::user();
-            $seller_id = $user->bb_seller_id;
+            $seller_id = $user->bb_seller_id ? $user->bb_seller_id : $user->id;
 
             $data = AsinMasterSeller::query()->where('seller_id', $seller_id)->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $actionBtn = '<div class="d-flex"><a href="edit-asin/' . $row->id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
-                    $actionBtn .= '<button data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
-
+                    $actionBtn = '<button data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
                     return $actionBtn;
                 })
                 ->make(true);
         }
 
-        return view('seller.asin_master.index', compact('path'));
+        return view('seller.asin_master.index');
     }
 
     public function addAsin()
     {
-
         return view('AsinMaster.addAsin');
     }
 
     public function editasin($id)
     {
-
         $asin = AsinMasterSeller::where('id', $id)->first();
         return view('AsinMaster.edit', compact('asin'));
     }
 
     public function update(Request $request, $id)
     {
-
         $validated = $request->validate([
             'asin' => 'required|min:4|max:25',
             'source' => 'required|min:2|max:15'
@@ -81,17 +74,19 @@ class AsinMasterController extends Controller
 
         $asins = AsinMasterSeller::where('id', $request->id)->get();
         $asin = $asins[0]->asin;
+        $country_code = $asins[0]->source;
+
         AsinMasterSeller::where('id', $request->id)->delete();
 
-        BB_Product::where('asin1', $asin)->where('seller_id', $seller_id)->delete();
+        $bb_product = table_model_set($country_code, 'BB_Product', 'product');
 
-        return redirect()->intended('/asin-master')->with('success', 'Asin has been pushed to Bin successfully');
+        $bb_product->where('asin1', $asin)->where('seller_id', $seller_id)->delete();
+
+        return redirect('/seller/asin-master')->with('success', 'Asin has been pushed to Bin successfully');
     }
-
 
     public function trashView(Request $request)
     {
-
         if ($request->ajax()) {
             $asins = AsinMasterSeller::onlyTrashed()->get();
 
@@ -109,16 +104,13 @@ class AsinMasterController extends Controller
 
     public function restore(Request $request)
     {
-
         AsinMasterSeller::where('id', $request->id)->restore();
-
         return response()->json(['success' => 'Asin has restored successfully']);
     }
 
 
     public function importBulkAsin()
     {
-
         return view('seller.asin_master.importAsin');
     }
 
@@ -160,13 +152,13 @@ class AsinMasterController extends Controller
 
     public function deleteAsinView()
     {
-        return view('AsinMaster.deleteAsin');
+        return view('seller.asin_master.deleteAsin');
     }
 
     public function SellerAsinRemove(Request $request)
     {
         $request->validate([
-            'asin' => 'required|mimes:csv,txt,xls,xlsx'
+            'asin' => 'required|mimes:csv'
         ]);
 
         if (!$request->hasFile('asin')) {
@@ -190,7 +182,6 @@ class AsinMasterController extends Controller
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:seller-asin-remove $seller_id > /dev/null &";
             exec($command);
-
         } else {
 
             Artisan::call('pms:seller-asin-remove ' . $seller_id);

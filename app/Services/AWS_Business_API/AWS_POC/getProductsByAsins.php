@@ -8,16 +8,16 @@ use Illuminate\Support\Facades\Storage;
 class getProductsByAsins
 {
 
-    public function getASINbyasin()
+    public function getASINbyasin($asin)
     {
-      
+    
         date_default_timezone_set('Asia/Jakarta');
 
         // require_once('refrashToken.php');
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
         $client_secret = "80b1db8f2e3ae4b755bd50a0bcc21228694381e6a35b178efdb43799ccedd1ae";
         $refresh_token =
-            file_get_contents(Storage::path('\Business\token.txt'));
+            file_get_contents(Storage::path('Business/token.txt'));
 
         $request_data = array(
             "client_id" => $client_id,
@@ -28,10 +28,11 @@ class getProductsByAsins
 
         $reqToken =
 
-            file_get_contents(Storage::path('\Business\token.txt'));
+            file_get_contents(Storage::path('Business/token.txt'));
 
         // $reqToken = getToken($request_data);
 
+   
         $host               = "na.business-api.amazon.com";
         $accessKey          = "AKIARVGPJZCJHLW5MH63";
         $secretKey          = "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";
@@ -41,7 +42,7 @@ class getProductsByAsins
         $uri                = "/products/2020-08-26/products/getProductsByAsins";
         $httpRequestMethod  = 'POST';
         $data                = json_encode([
-            'productIds' => ["B09BG96KFJ"],
+            'productIds' => ["$asin"],
             'productRegion' => 'US',
             'locale' => 'en_US'
         ]);
@@ -180,6 +181,8 @@ class getProductsByAsins
         $server_APIoutput = curl_exec($curl);
 
         $JsonResponse = json_decode($server_APIoutput);
+
+        
 
         return $JsonResponse;
 

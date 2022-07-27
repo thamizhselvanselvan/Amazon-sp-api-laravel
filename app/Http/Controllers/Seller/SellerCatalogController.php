@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\seller\AsinMasterSeller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use App\Models\seller\SellerAsinDetails;
+use Yajra\DataTables\Facades\DataTables;
 
 class SellerCatalogController extends Controller
 {
@@ -83,7 +85,7 @@ class SellerCatalogController extends Controller
     $exportFilePath = "excel/downloads/seller/" . $user_name . "/catalog";
     $fileName = Storage::path($exportFilePath . '/catalog.zip');
     if (!Storage::exists($exportFilePath . '/catalog.zip')) {
-      Storage::put($exportFilePath.'.catalog.zip', '');
+      Storage::put($exportFilePath . '.catalog.zip', '');
     }
     if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
       $path = Storage::path($exportFilePath);
@@ -91,15 +93,80 @@ class SellerCatalogController extends Controller
       foreach ($files as $key => $file) {
         if ($key > 1) {
 
-          $path_csv = $path.'/'.$file;
+          $path_csv = $path . '/' . $file;
           $relativeNameInZipFile = basename($path_csv);
           $zip->addFile($path_csv, $relativeNameInZipFile);
-
         }
       }
-     
+
       $zip->close();
     }
     return response()->download($fileName);
+  }
+
+  public function Pricing(Request $request)
+  {
+    if ($request->ajax()) {
+
+      $user = Auth::user();
+      $seller_id = $user->bb_seller_id ? $user->bb_seller_id : $user->id;
+
+      $data = SellerAsinDetails::query()->where([['seller_id', $seller_id], ['delist', '0']])->get();
+
+      return DataTables::of($data)
+        ->addIndexColumn()
+        ->make(true);
+    }
+    return view('seller.Catalog.pricing');
+  }
+
+  public function GetPrice()
+  {
+    commandExecFunc("mosh:seller-asin-get-price");
+    return redirect('/seller/price/details')->with("success", "Price is Importing");
+  }
+  public function ExportPricing()
+  {
+    $user = Auth::user();
+    $seller_id = $user->bb_seller_id ? $user->bb_seller_id : $user->id;
+
+    commandExecFunc("mosh:seller-asin-price-export --seller_id=${seller_id}");
+
+    return redirect('/seller/price/details')->with("success", "Asin Price Details Is Exporting In CSV.");
+  }
+
+  public function PriceFileDownload()
+  {
+    $user = Auth::user();
+
+    $seller_id = $user->bb_seller_id ? $user->bb_seller_id : $user->id;
+    $path = "app/excel/downloads/seller/" . $seller_id;
+
+    $path = storage_path($path);
+    $files = (scandir($path));
+
+    $filesArray = [];
+    foreach ($files as $key => $file) {
+      if ($key > 1) {
+        if (!str_contains($file, '.mosh')) {
+          $filesArray[][$file] =  date("F d Y H:i:s.", filemtime($path . '/' . $file));
+        }
+      }
+    }
+
+    return response()->json(['success' => true, "files_lists" => $filesArray]);
+  }
+
+  public function Download($id)
+  {
+    $user = Auth::user();
+    $seller_id = $user->bb_seller_id ? $user->bb_seller_id : $user->id;
+
+    $file_path = "excel/downloads/seller/" . $seller_id . '/' . $id;
+
+    if (Storage::exists($file_path)) {
+      return Storage::download($file_path);
+    }
+    return 'file not exist';
   }
 }

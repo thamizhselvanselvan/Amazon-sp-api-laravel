@@ -8,50 +8,96 @@ use App\Models\seller\SellerAsinDetails;
 use Illuminate\Support\Facades\Response;
 use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
-Route::get("samsa/test", function () {
+Route::get("test", function () {
 
-   $bb_user = User::where('bb_seller_id', '!=', NULL)->get('bb_seller_id');
+    $country_code = 'uk';
 
-   $chunk = 100;
-   foreach ($bb_user as $user_id) {
+    $data = DB::connection('buybox')
+        ->select("SELECT 
+        count(*) as cnt,
+        PP.asin1,
+        GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
+        GROUP_CONCAT(PPO.is_fulfilled_by_amazon) as is_fulfilled_by_amazon,
+        group_concat(PPO.listingprice_amount) as listingprice_amount,
+        group_concat(PP.delist) as delist ,
+        group_concat(PP.available) as available,
+        group_concat(PPO.updated_at) as updated_at
+        FROM bb_product_uks as PP
+            LEFT JOIN bb_product_lp_seller_detail_uks as PPO ON PP.asin1 = PPO.asin
+            Where PP.seller_id = 42
+            GROUP BY PP.asin1 
+            LIMIT 50
+        ");
 
-      $seller_id = $user_id->bb_seller_id;
-      AsinMasterSeller::where('seller_id', $seller_id)->chunk($chunk, function ($data) use ($seller_id) {
-         $country_code = strtolower($data[0]['source']);
-         $asin = [];
+    $pricing = [];
+    $asin_details = [];
+    foreach ($data  as  $value) {
 
-         foreach ($data as $value) {
-            $a = $value['asin'];
-            $asin[] = "'$a'";
-         }
+        $buybox_winner = explode(',', $value->is_buybox_winner);
+        $fulfilled = explode(',', $value->is_fulfilled_by_amazon);
+        $listing_price = explode(',', $value->listingprice_amount);
+        $delist = explode(',', $value->delist);
+        $available = explode(',', $value->available);
+        $updated_at = explode(',', $value->updated_at);
 
-         $product_lp = 'bb_product_lp_seller_detail_' . $country_code . 's';
-         $product = 'bb_product_' . $country_code . 's';
-         
-         $asin = implode(',', $asin);
-         $product_details = DB::connection('buybox')->select("SELECT 
-         PPO.asin, PPO.is_fulfilled_by_amazon, PPO.listingprice_amount
-         from $product as PP 
-         join $product_lp as PPO
-         ON PP.asin1 = PPO.asin
-         WHERE PP.asin1 IN ($asin)
-         AND PP.seller_id = 10 AND PPO.is_buybox_winner = 1
-         ");
-         
-         $asin_pricing = [];
-         foreach($product_details as $key => $product_value)
-         {  
-            $asin_pricing [] = [
-               'seller_id' => $seller_id,
-               'asin' => $product_value->asin,
-               'is_fulfilment_by_amazon' => $product_value->is_fulfilled_by_amazon,
-               'price' => $product_value->listingprice_amount,
-            ];
-         }
-         SellerAsinDetails::upsert($asin_pricing,
-         'seller_id_asin_unique', 
-         ['seller_id','asin','is_fulfilment_by_amazon','price','status']);
-         po($asin_pricing);
-      });
-   }
+        foreach ($buybox_winner as $key => $value1) {
+            if ($value1 == '1') {
+                $asin_details =
+                    [
+                        'asin' => $value->asin1,
+                        'source' => $country_code,
+                        'is_buybox_winner' => $value1,
+                        'is_fulfilled_by_amazon' => $fulfilled[$key],
+                        'listingprice_amount' => $listing_price[$key],
+                        'delist' => $delist[$key],
+                        'available' => $available[$key],
+                        'updated_at' => $updated_at[$key],
+                    ];
+                break 1;
+            } else {
+                $asin_details =
+                    [
+                        'asin' => $value->asin1,
+                        'source' => $country_code,
+                        'is_buybox_winner' => $value1,
+                        'is_fulfilled_by_amazon' => $fulfilled[$key],
+                        'listingprice_amount' => min($listing_price),
+                        'delist' => $delist[$key],
+                        'available' => $available[$key],
+                        'updated_at' => $updated_at[$key],
+                    ];
+            }
+        }
+        $pricing[] = $asin_details;
+    }
+
+
+    po($pricing);
+    exit;
+    $awb_no = 'US10000141';
+    $bombino_account_id = config('database.bombino_account_id');
+    $bombino_user_id = config('database.bombino_user_id');
+    $bombino_password = config('database.bombino_password');
+
+    $url = "http://api.bombinoexp.in/bombinoapi.svc/Tracking?AccountId=$bombino_account_id&UserId=$bombino_user_id&Password=$bombino_password&AwbNo=$awb_no";
+
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+    ));
+
+    $response = curl_exec($curl);
+    curl_close($curl);
+    $response = json_decode($response);
+    po($response);
 });
+
+Route::get('test/catalog/{asin}/{country}', 'TestController@getASIN');

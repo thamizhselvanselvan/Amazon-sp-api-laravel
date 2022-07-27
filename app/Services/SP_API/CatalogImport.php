@@ -5,7 +5,7 @@ namespace App\Services\SP_API;
 use helpers;
 use Exception;
 use RedBeanPHP\R as R;
-use App\Models\Asin_master;
+use App\Models\Catalog\Asin_master;
 use App\Models\Aws_credentials;
 use SellingPartnerApi\Endpoint;
 use Illuminate\Support\Facades\DB;

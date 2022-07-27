@@ -19,16 +19,23 @@ Route::prefix('seller/')->group(function () {
     Route::get('asin/delete', 'Seller\AsinMasterController@deleteAsinView');
     Route::post('asin/remove', 'Seller\AsinMasterController@SellerAsinRemove');
     Route::get('csv/template', 'Seller\AsinMasterController@DownloadCSVTemplate');
-    
+
     //catalog
     Route::get('catalog-details', 'Seller\SellerCatalogController@ImportCatalogDetails');
     Route::get('catalog', 'Seller\SellerCatalogController@index');
     Route::get('catalog/export', 'Seller\SellerCatalogController@catalogExport');
     Route::get('catalog/download', 'Seller\SellerCatalogController@catalogDownload');
 
+    //pricing
+
+    Route::get('price/details', 'Seller\SellerCatalogController@Pricing');
+    Route::get('price/get', 'Seller\SellerCatalogController@GetPrice');
+    Route::get('price/export', 'Seller\SellerCatalogController@ExportPricing');
+    Route::get('price/download', 'Seller\SellerCatalogController@PriceFileDownload');
+    Route::get('price/download/{id}', 'Seller\SellerCatalogController@Download');
     //credentials
     Route::get('credentials', 'Seller\SellerController@index');
 
     //Invoice
-    Route::get('invoice','Seller\SellerController@sellerInvoice');
+    Route::get('invoice', 'Seller\SellerController@sellerInvoice');
 });

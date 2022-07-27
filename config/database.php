@@ -17,6 +17,12 @@ return [
 
     'default' => env('DB_CONNECTION', 'mysql'),
 
+    'bombino_account_id' => env('BOMBINO_ACCOUNT_ID'),
+    'bombino_user_id' => env('BOMBINO_USER_ID'),
+    'bombino_password' => env('BOMBINO_PASSWORD'),
+
+    'smsa_password' => env('SMSA_PASSWORD'),
+
     /*
     |--------------------------------------------------------------------------
     | Database Connections
@@ -86,7 +92,7 @@ return [
             'unix_socket' => env('CATALOG_DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => env('CATALOG_DB_PREFIX') . '_',
+            'prefix' => env('CATALOG_DB_PREFIX'),
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,

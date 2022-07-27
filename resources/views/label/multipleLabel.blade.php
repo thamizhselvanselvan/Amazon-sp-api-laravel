@@ -75,7 +75,12 @@
                             <td class="pb-0 pt-2">
                                 <div class="row">
                                     <div class="col"></div>
-                                    <div class="col text-center">{!! $bar_code[$key] !!} <b> {{ $value->awb_no }} </b>
+                                    <div class="col p-0">
+                                        <img class="label-barcode-img"
+                                            src='data:image/png;base64,{!! $bar_code[$key] !!}' width="300px">
+                                        <b>
+                                            <div class="text-center">{{ $value->awb_no }}</div>
+                                        </b>
                                     </div>
                                     <div class="col"></div>
                                 </div>
@@ -158,14 +163,15 @@
                             <td class="text-center p-1">{{$details['sku']}}</td>
                             <td class="text-center p-1">{{$details['qty']}}</td>
                             <td class="text-center p-1">{{$details['order_total']->CurrencyCode}}
-                                {{$details['order_total']->Amount}}</td>
+                                {{$details['order_total']->Amount}}
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
                 <div class="mt-1 p-1 small return">
                     <div>Return Address:</div>
-                    <span>Mahzuz, Al Habtoor Warehouse No.27, Al QusaisIndustrial Area 3 Mumbai, MH, IN, 400025</span>
+                    <span>Warehouse 61, Al Habtoor Warehouses, Industrial Area 3, Al Qusias, Dubai UAE</span>
                 </div>
                 <!-- </div> -->
             </div>

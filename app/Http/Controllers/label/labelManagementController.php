@@ -8,6 +8,7 @@ use RedBeanPHP\R;
 use App\Models\Label;
 use App\Models\Mws_region;
 use Illuminate\Http\Request;
+use App\Jobs\Orders\GetOrder;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
@@ -18,9 +19,11 @@ use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
-
 use Picqer\Barcode\BarcodeGeneratorPNG;
+
 use Picqer\Barcode\BarcodeGeneratorHTML;
+use App\Models\order\OrderSellerCredentials;
+use App\Services\SP_API\API\Order\missingOrder;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 
 class labelManagementController extends Controller
@@ -117,7 +120,7 @@ class labelManagementController extends Controller
 
         // dd($result);
         $generator = new BarcodeGeneratorPNG();
-        $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_93));
+        $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39E));
         return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no'));
     }
     public function ExportLabel(Request $request)
@@ -179,8 +182,8 @@ class labelManagementController extends Controller
         foreach ($allid as $id) {
             $results = $this->labelDataFormating($id);
             $result[] = (object)$results;
-            $generator = new BarcodeGeneratorHTML();
-            $bar_code[] = $generator->getBarcode($results['awb_no'], $generator::TYPE_CODE_93);
+            $generator = new BarcodeGeneratorPNG();
+            $bar_code[] = base64_encode($generator->getBarcode($results['awb_no'], $generator::TYPE_CODE_39E));
         }
 
         return view('label.multipleLabel', compact('result', 'bar_code'));
@@ -304,6 +307,46 @@ class labelManagementController extends Controller
         return response()->json(["success" => "All file uploaded successfully"]);
     }
 
+    public function missing()
+    {
+        $selected_store = OrderSellerCredentials::where('dump_order', '1')
+            ->where('get_order_item', '1')
+            ->get(['seller_id', 'store_name', 'country_code']);
+
+        return view('label.missing', compact('selected_store'));
+    }
+
+    public function missingOrderId(Request $request)
+    {
+        $seller = explode(',', $request->seller_id);
+        $order_id = $request->order_id;
+        $seller_id = $seller[0];
+        $country_code = $seller[1];
+
+        $datas = preg_split('/[\r\n| |:|,]/', $order_id, -1, PREG_SPLIT_NO_EMPTY);
+        foreach ($datas as $amazon_order_id) {
+            if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+
+                GetOrder::dispatch(
+                    [
+                        'country_code' => $country_code,
+                        'seller_id' => $seller_id,
+                        'amazon_order_id' => $amazon_order_id
+                    ]
+                )->onConnection('redis')->onQueue('order');
+            } else {
+                GetOrder::dispatch(
+                    [
+                        'country_code' => $country_code,
+                        'seller_id' => $seller_id,
+                        'amazon_order_id' => $amazon_order_id
+                    ]
+                );
+            }
+        }
+        return redirect('/label/manage')->with("success", "Order Details Is Updating, Please Wait.");
+    }
+
     public function labelDataFormating($id)
     {
         $label = '';
@@ -414,7 +457,7 @@ class labelManagementController extends Controller
     public function deleteAllPdf()
     {
         $files = glob(Storage::path('label/*'));
-        
+
         foreach ($files as $file) {
             if (is_file($file)) {
                 unlink($file);

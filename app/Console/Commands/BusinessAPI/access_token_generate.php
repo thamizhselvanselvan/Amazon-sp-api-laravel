@@ -60,6 +60,6 @@ class access_token_generate extends Command
             Storage::put($file_path, '');
         }
         Storage::put($file_path, $token);
-        Log::alert("Acess token generated Successfully");
+        // Log::alert("Acess token generated Successfully");
     }
 }
