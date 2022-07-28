@@ -75,7 +75,7 @@ class AmazonInvoiceManagementController extends Controller
 
                     Storage::put($desinationPath,  file_get_contents($file));
 
-                    $single_file = str_replace('_Invoice.pdf', '', $fileName);
+                    $single_file = str_replace('.pdf', '', $fileName);
                     $searchPdf[] = "'$single_file'";
 
                     // $pdfList[] = $single_file;
@@ -85,7 +85,7 @@ class AmazonInvoiceManagementController extends Controller
         $whereIn = implode(',', $searchPdf);
         $data = DB::connection('b2cship')
             ->select("SELECT AWBNo, RefNo, BookingDate FROM Packet
-                    WHERE AWBNo IN ($whereIn) 
+                    WHERE RefNo IN ($whereIn) 
                 ");
         foreach ($data as $key => $value) {
 
@@ -119,7 +119,7 @@ class AmazonInvoiceManagementController extends Controller
 
         $awb = $data[0]->awb;
 
-        $do_path = 'b2cship/' . $month . '_' . $year . '/' . $awb . '/Amazon-invoice.pdf';
+        $do_path = 'b2cship/' . $month . '_' . $year . '/' . $awb . '/' . $awb . '_Invoice.pdf';
 
         $header = [
             'Content-Type' => 'application/pdf',
