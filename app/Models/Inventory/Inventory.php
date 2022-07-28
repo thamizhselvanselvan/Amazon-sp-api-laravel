@@ -24,4 +24,9 @@ class Inventory extends Model
     public function vendors() {
         return $this->hasOne(Vendor::class, 'id', 'source_id');
     }
+    public function bins()
+    {
+        return $this->hasOne(Bin::class, 'bin_id', 'bin');
+    }
+    
 }

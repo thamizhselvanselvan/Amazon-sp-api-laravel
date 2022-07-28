@@ -15,15 +15,15 @@ class StockController extends Controller
 {
     public function dashboard()
     {
-
-        $ware_lists = Shipment_Inward_Details::with('warehouses')->get()->unique('warehouses');
+    
+        $ware_lists = Inventory::with('warehouses')->get()->unique('warehouses');
         return view('inventory.stock.dashboard', compact('ware_lists'));
     }
 
     public function getlist(Request $request)
     {
         if ($request->ajax()) {
-            $ware =  Inventory::with('warehouses')
+            $ware =  Inventory::with('warehouses','bins')
                 ->where('warehouse_id', $request->id)
                 ->where('balance_quantity', '>', 0)
                 ->get();
