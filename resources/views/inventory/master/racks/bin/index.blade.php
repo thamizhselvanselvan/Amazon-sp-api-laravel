@@ -68,6 +68,11 @@
 <script type="text/javascript">
     $(function() {
 
+        $.extend($.fn.dataTable.defaults, {
+            pageLength: 50,
+        });
+        
+
         let yajra_table = $('.yajra-datatable').DataTable({
             processing: true,
             serverSide: true,

@@ -67,15 +67,18 @@ class InventoryShelveController extends Controller
         //     'name' => 'required|min:3|max:100',
         // ]);
 
+        $warehouse_exists = Warehouse::where('id', $request->ware_id)->exists();
+
+        if (!$warehouse_exists) {
+            return redirect()->route('shelves.create')->with('error', 'Selected Warehouse is invalid');
+        }
         $rack_exists = Rack::where('rack_id', $request->rack_id)->exists();
 
         if (!$rack_exists) {
             return redirect()->route('shelves.create')->with('error', 'Selected Rack is invalid');
         }
-        $warehouse_exists = Warehouse::where('id', $request->ware_id)->exists();
-
-        if (!$warehouse_exists) {
-            return redirect()->route('shelves.create')->with('error', 'Selected Warehouse is invalid');
+        if (!$request->shelve_id) {
+            return redirect()->route('shelves.create')->with('error', 'Enter Shelve ID and Shelve Name And Click Add');
         }
 
         $shelve_lists = [];

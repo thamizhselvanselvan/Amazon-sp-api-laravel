@@ -24,11 +24,11 @@ Route::resource('inventory/destinations', 'Inventory\Master\InventoryDestination
 Route::resource('inventory/disposes', 'Inventory\Master\InventoryDisposeController');
 
 
-// Route::get('inventory/stocks','Inventory\StockController@stokes')->name('inventory.stocks');
+
 Route::get('inventory/stocks', 'Inventory\StockController@dashboard')->name('inventory.stocks');
 Route::get('inventory/list', 'Inventory\StockController@getlist');
 Route::get('inventory/expo', 'Inventory\StockController@eportinv');
-Route::get('inventory/export', 'Inventory\StockController@eportinv')->name('inventory.export');
+// Route::get('inventory/export', 'Inventory\StockController@eportinv')->name('inventory.export');
 Route::get('inventory/exp/{id}', 'Inventory\StockController@downexp');
 
 
