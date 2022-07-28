@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Catalog\Asin_master;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -12,67 +13,83 @@ Route::get("test", function () {
 
     $country_code = 'uk';
 
-    $data = DB::connection('buybox')
-        ->select("SELECT 
-        count(*) as cnt,
-        PP.asin1,
-        GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
-        GROUP_CONCAT(PPO.is_fulfilled_by_amazon) as is_fulfilled_by_amazon,
-        group_concat(PPO.listingprice_amount) as listingprice_amount,
-        group_concat(PP.delist) as delist ,
-        group_concat(PP.available) as available,
-        group_concat(PPO.updated_at) as updated_at
-        FROM bb_product_uks as PP
-            LEFT JOIN bb_product_lp_seller_detail_uks as PPO ON PP.asin1 = PPO.asin
-            Where PP.seller_id = 42
-            GROUP BY PP.asin1 
-            LIMIT 50
-        ");
+    $source = buyboxCountrycode();
+
+    $chunk = 10;
+
+    foreach ($source as $country_code => $seller_id) {
+
+        $country_code_lr = strtolower('US');
+
+        $product_lp = 'bb_product_lp_seller_detail_' . $country_code_lr . 's';
+        $product = 'bb_product_' . $country_code_lr . 's';
+
+        Asin_master::where('source', $country_code)
+            ->chunk($chunk, function ($data) use ($seller_id, $country_code, $product_lp) {
+
+                foreach ($data as $value) {
+                    $a = $value['asin'];
+                    $asin_array[] = "'$a'";
+                }
+
+                $asin = implode(',', $asin_array);
+                $asin_price = DB::connection('buybox')
+                    ->select("SELECT PPO.asin,
+                GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
+                group_concat(PPO.listingprice_amount) as listingprice_amount,
+                group_concat(PPO.updated_at) as updated_at
+                FROM $product_lp as PPO
+                    WHERE PPO.asin IN ($asin)
+                    GROUP BY PPO.asin
+                ");
+
+                $pricing = [];
+                $asin_details = [];
+                $update_asin = [];
+                $pricing = [];
+
+                foreach ($asin_price as $value) {
+
+                    $buybox_winner = explode(',', $value->is_buybox_winner);
+                    $listing_price = explode(',', $value->listingprice_amount);
+                    $updated_at = explode(',', $value->updated_at);
+
+                    foreach ($buybox_winner as $key =>  $value1) {
+
+                        if ($value1 == '1') {
+                            $asin_details =
+                                [
+                                    'seller_id' => $seller_id,
+                                    'asin' => $value->asin,
+                                    'source' => $country_code,
+                                    'listingprice_amount' => $listing_price[$key],
+                                    'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
+                                ];
+                            break 1;
+                        } else {
+
+                            $asin_details =
+                                [
+                                    'seller_id' => $seller_id,
+                                    'asin' => $value->asin,
+                                    'source' => $country_code,
+                                    'listingprice_amount' => min($listing_price),
+                                    'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
+                                ];
+                        }
+                    }
+                    $pricing[] = $asin_details;
+                }
+                po($pricing);
+                echo "<hr>";
+            });
+    }
 
     $pricing = [];
     $asin_details = [];
-    foreach ($data  as  $value) {
 
-        $buybox_winner = explode(',', $value->is_buybox_winner);
-        $fulfilled = explode(',', $value->is_fulfilled_by_amazon);
-        $listing_price = explode(',', $value->listingprice_amount);
-        $delist = explode(',', $value->delist);
-        $available = explode(',', $value->available);
-        $updated_at = explode(',', $value->updated_at);
-
-        foreach ($buybox_winner as $key => $value1) {
-            if ($value1 == '1') {
-                $asin_details =
-                    [
-                        'asin' => $value->asin1,
-                        'source' => $country_code,
-                        'is_buybox_winner' => $value1,
-                        'is_fulfilled_by_amazon' => $fulfilled[$key],
-                        'listingprice_amount' => $listing_price[$key],
-                        'delist' => $delist[$key],
-                        'available' => $available[$key],
-                        'updated_at' => $updated_at[$key],
-                    ];
-                break 1;
-            } else {
-                $asin_details =
-                    [
-                        'asin' => $value->asin1,
-                        'source' => $country_code,
-                        'is_buybox_winner' => $value1,
-                        'is_fulfilled_by_amazon' => $fulfilled[$key],
-                        'listingprice_amount' => min($listing_price),
-                        'delist' => $delist[$key],
-                        'available' => $available[$key],
-                        'updated_at' => $updated_at[$key],
-                    ];
-            }
-        }
-        $pricing[] = $asin_details;
-    }
-
-
-    po($pricing);
+    $pricing[] = $asin_details;
+    // po($pricing);
     exit;
     $awb_no = 'US10000141';
     $bombino_account_id = config('database.bombino_account_id');

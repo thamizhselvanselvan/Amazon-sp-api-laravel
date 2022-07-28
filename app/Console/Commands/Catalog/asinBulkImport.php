@@ -43,11 +43,6 @@ class asinBulkImport extends Command
     public function handle()
     {
         //source and seller id
-        $source = [
-            'AE' => 38,
-            'IN' => 39,
-            'US' => 40
-        ];
 
         $user_id = $this->argument('user_id');
 
@@ -57,6 +52,7 @@ class asinBulkImport extends Command
         $csv->setDelimiter(",");
         $csv->setHeaderOffset(0);
 
+        $source = buyboxCountrycode();
         $asin = [];
         $count = 0;
         $country_code = '';
@@ -93,10 +89,10 @@ class asinBulkImport extends Command
             if ($count == 1000) {
 
                 Asin_master::upsert($asin_details, ['user_asin_source_unique'], ['source', 'destination_1', 'destination_2', 'destination_3', 'destination_4', 'destination_5']);
-                $bb_product = table_model_set(strtolower($country_code), 'BB_Product', 'product');
+                $bb_product = table_model_set($country_code, 'BB_Product', 'product');
                 $bb_product->insert($product);
 
-                $bb_product_lowest_price = table_model_set(country_code: strtolower($country_code), model: 'BB_Product_lowest_price_offer', table_name: 'product_lp_offer');
+                $bb_product_lowest_price = table_model_set(country_code: $country_code, model: 'BB_Product_lowest_price_offer', table_name: 'product_lp_offer');
                 $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin']);
                 $count = 0;
                 $asin = [];
@@ -108,10 +104,10 @@ class asinBulkImport extends Command
 
         Asin_master::upsert($asin_details, ['user_asin_source_unique'], ['source', 'destination_1', 'destination_2', 'destination_3', 'destination_4', 'destination_5']);
 
-        $bb_product = table_model_set(strtolower($country_code), 'BB_Product', 'product');
+        $bb_product = table_model_set($country_code, 'BB_Product', 'product');
         $bb_product->insert($product);
 
-        $bb_product_lowest_price = table_model_set(country_code: strtolower($country_code), model: 'BB_Product_lowest_price_offer', table_name: 'product_lp_offer');
+        $bb_product_lowest_price = table_model_set(country_code: $country_code, model: 'BB_Product_lowest_price_offer', table_name: 'product_lp_offer');
         $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin']);
 
         Log::warning(" asin import successfully");
