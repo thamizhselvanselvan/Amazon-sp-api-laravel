@@ -324,6 +324,7 @@ class labelManagementController extends Controller
         $country_code = $seller[1];
 
         $datas = preg_split('/[\r\n| |:|,]/', $order_id, -1, PREG_SPLIT_NO_EMPTY);
+
         foreach ($datas as $amazon_order_id) {
             if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
