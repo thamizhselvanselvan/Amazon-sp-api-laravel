@@ -38,7 +38,7 @@ class AmazonInvoiceUploadDO implements ShouldQueue
         $date = $this->payload['Date'];
 
         $path = 'AmazonInvoice/';
-        $file = storage_path('app/' . $path . $order_id . '.pdf');
+        $file = storage_path('app/' . $path . $AwbNo . '_Invoice.pdf');
 
         $year = date('Y', strtotime($date));
         $month = date('F', strtotime($date));

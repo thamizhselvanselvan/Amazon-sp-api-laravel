@@ -69,13 +69,15 @@ class AmazonInvoiceManagementController extends Controller
                 if ($file_extension == 'pdf') {
 
                     $fileName = $file->getClientOriginalName();
-                    // $fileName = uniqid() . ($fileName);
-                    $desinationPath = $path . $fileName;
-                    Storage::put($desinationPath,  file_get_contents($file));
-                    if ($single_file = str_replace(['_Invoice.pdf', '_invoice.pdf'], '', $fileName)) {
 
-                        $searchPdf[] = "'$single_file'";
-                    }
+
+                    $desinationPath = $path . $fileName;
+
+                    Storage::put($desinationPath,  file_get_contents($file));
+
+                    $single_file = str_replace('_Invoice.pdf', '', $fileName);
+                    $searchPdf[] = "'$single_file'";
+
                     // $pdfList[] = $single_file;
                 }
             }
