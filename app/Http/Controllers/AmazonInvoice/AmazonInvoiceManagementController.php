@@ -72,19 +72,19 @@ class AmazonInvoiceManagementController extends Controller
                     // $fileName = uniqid() . ($fileName);
                     $desinationPath = $path . $fileName;
                     Storage::put($desinationPath,  file_get_contents($file));
-                    $single_file = str_replace('.pdf', '', $fileName);
+                    if ($single_file = str_replace(['_Invoice.pdf', '_invoice.pdf'], '', $fileName)) {
+
+                        $searchPdf[] = "'$single_file'";
+                    }
                     // $pdfList[] = $single_file;
-                    $searchPdf[] = "'$single_file'";
                 }
             }
         }
-
         $whereIn = implode(',', $searchPdf);
         $data = DB::connection('b2cship')
             ->select("SELECT AWBNo, RefNo, BookingDate FROM Packet
-                    WHERE RefNo IN ($whereIn) 
+                    WHERE AWBNo IN ($whereIn) 
                 ");
-
         foreach ($data as $key => $value) {
 
             $job_data = [];
