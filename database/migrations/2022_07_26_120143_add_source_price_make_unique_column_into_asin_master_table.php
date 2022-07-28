@@ -17,8 +17,7 @@ class AddSourcePriceMakeUniqueColumnIntoAsinMasterTable extends Migration
             $table->dropUnique('asin_masters_asin_unique');
             $table->string('source_price')->after('destination_5')->nullable();
             $table->unique(["user_id", "asin", "source"], 'user_asin_source_unique');
-           
-       });
+        });
     }
 
     /**
@@ -31,8 +30,7 @@ class AddSourcePriceMakeUniqueColumnIntoAsinMasterTable extends Migration
         Schema::connection('catalog')->table('asin_masters', function (Blueprint $table) {
             $table->dropColumn('source_price');
             $table->dropUnique('user_asin_source_unique');
-            $table->unique([ "asin"], 'asin_masters_asin_unique');
-           
-       });
+            $table->unique(["asin"], 'asin_masters_asin_unique');
+        });
     }
 }

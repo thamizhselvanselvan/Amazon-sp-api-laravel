@@ -126,40 +126,52 @@ class Order
                     $update_orders->{$key} = $value;
                 }
                 $update_orders->updatedat = now();
+
                 R::store($update_orders);
+
+                $order_item_details = DB::connection('order')->select("select id from orderitemdetails where amazon_order_identifier = '$amazon_order_id'");
+
+                if (!array_key_exists(0, $order_item_details)) {
+
+                    $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode, $delay, $delay_count);
+                }
             } else {
+
                 //call orderitem details jobs
                 $orders->order_item = '0';
                 $orders->updatedat = now();
                 $orders->createdat = now();
                 // dd($orders);
-
                 R::store($orders);
-
-                if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-                    GetOrderItem::dispatch(
-                        [
-                            'order_id' => $amazon_order_id,
-                            'aws_id' => $awsId,
-                            'country_code' => $awsCountryCode,
-
-                        ]
-                    )->onConnection('redis')->onQueue('order')->delay($delay);
-
-                    $delay += $delay_count;
-                } else {
-
-                    GetOrderItem::dispatch(
-                        [
-                            'order_id' => $amazon_order_id,
-                            'aws_id' => $awsId,
-                            'country_code' => $awsCountryCode,
-
-                        ]
-                    );
-                }
+                $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode, $delay, $delay_count);
             }
         }
         // return true;
+    }
+
+    public function getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode, $delay, $delay_count)
+    {
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+            GetOrderItem::dispatch(
+                [
+                    'order_id' => $amazon_order_id,
+                    'aws_id' => $awsId,
+                    'country_code' => $awsCountryCode,
+
+                ]
+            )->onConnection('redis')->onQueue('order')->delay($delay);
+
+            $delay += $delay_count;
+        } else {
+
+            GetOrderItem::dispatch(
+                [
+                    'order_id' => $amazon_order_id,
+                    'aws_id' => $awsId,
+                    'country_code' => $awsCountryCode,
+
+                ]
+            );
+        }
     }
 }
