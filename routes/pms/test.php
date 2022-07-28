@@ -119,6 +119,7 @@ Route::get("test", function () {
 
 Route::get('test/catalog/{asin}/{country}', 'TestController@getASIN');
 Route::get('test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
+Route::get('renameamazoninvoice/', 'TestController@RenameAmazonInvoice');
 
 Route::get('test1', function () {
 });
