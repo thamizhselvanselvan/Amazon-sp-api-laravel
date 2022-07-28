@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Inventory;
 
 use League\Csv\Writer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
 use App\Http\Controllers\Controller;
-use App\Models\Inventory\Shipment_Inward_Details;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\Inventory\Shipment_Inward_Details;
 
 class StockController extends Controller
 {
@@ -37,7 +38,8 @@ class StockController extends Controller
             $records = [];
             
             $records = Inventory::query()
-                ->select('ship_id', 'asin', 'item_name', 'price', 'quantity', 'out_quantity', 'balance_quantity', 'created_at', 'bin')
+                ->select('ship_id', 'asin', 'item_name', 'price', 'quantity', 'out_quantity', 'balance_quantity', 'bin' , DB::raw('DATE_FORMAT(created_at,"%d %b %Y")'))
+
                 ->where('warehouse_id', $request->id)
                 ->where('balance_quantity', '>', 0)
                 ->get();
@@ -51,8 +53,8 @@ class StockController extends Controller
                 'Quantity',
                 'Outwarded',
                 'Quantity Left',
-                'Inwarding Date',
-                'Storage Bin'
+                'Storage Bin',
+                'Inwarding Date'
             ];
             $exportFilePath = 'Inventory/WarehouseStocks.csv'; // your file path, where u want to save
             if (!Storage::exists($exportFilePath)) {
