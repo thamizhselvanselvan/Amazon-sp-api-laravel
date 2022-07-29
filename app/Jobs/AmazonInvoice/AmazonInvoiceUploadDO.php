@@ -69,6 +69,8 @@ class AmazonInvoiceUploadDO implements ShouldQueue
             $amazon_invoice->booking_date = $date;
             $amazon_invoice->status  = '0';
             $amazon_invoice->created_at = now();
+
+            R::store($amazon_invoice);
             $year = date('Y', strtotime($date));
             $month = date('F', strtotime($date));
 
