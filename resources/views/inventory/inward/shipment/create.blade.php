@@ -78,7 +78,7 @@
         <div class="form-group">
             <label>Enter ASIN:</label>
             <div class="autocomplete" style="width:400px;">
-                <textarea name="upload_asin" rows="20" placeholder="Add Asins here..." id="" type="text" autocomplete="off" class="form-control up_asin"></textarea>
+                <textarea name="upload_asin" rows="20" placeholder="Add Asins here..." id="" type=" text" autocomplete="off" class="form-control up_asin"></textarea>
             </div>
         </div>
     </div>
@@ -99,6 +99,7 @@
         <tr>
             <th>ASIN</th>
             <th>Item Name</th>
+            <th>Tag</th>
             <th>Quantity</th>
             <th>Price/Unit</th>
             <th>Action</th>
@@ -133,29 +134,16 @@
     $("#asin").on('click', function(e) {
         $("#upload,#refresh").show();
     });
-    // $("#refresh").on('click', function(e) {
-    //     $("#report_table").hide();
-    // });
-
-    // $("#refresh").on("click", function(e) {
-    //     $("#report_table").load("http://amazon-sp-api-laravel.test/inventory/shipments/create #report_table");
-    // });
-
-
-
 
     $("#upload").on('click', function(e) {
         $("#currency,#report_table,#create").show();
     });
-    // $("#upload").on('click', function(e) {
-    //     $("#asin,#upload").hide();
-    // });
 
 
     $(".upload_asin_btn").on("click", function() {
         let uploaded = $('.up_asin').val();
 
-        if ((uploaded.length < 10)) {
+        if ((uploaded.length < 10 || upload.lenght > 10)) {
             alert('Invalid Asin');
             return false;
         }
@@ -171,12 +159,17 @@
             },
             'dataType': 'json',
             success: function(response) {
-                console.log(response);
+                console.log(response[0]);
+             
+
                 let html = '';
                 $.each(response.data, function(index, value) {
                     html += "<tr class='table_row'>";
                     html += "<td name='asin[]'>" + value[0].asin + "</td>";
                     html += "<td name='name[]'>" + value[0].item_name + "</td>";
+
+                    html += '<td> <input  name="tag[]" id="tag"> </td>'
+
                     html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
                     html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
                     html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
@@ -187,7 +180,8 @@
 
             },
             error: function(response) {
-                console.log(response);
+                // console.log(response);
+                alert('error');
             }
         });
     });
@@ -211,13 +205,16 @@
             },
             'dataType': 'json',
             success: function(response) {
-                console.log(response);
+                // console.log(response);
 
                 let html = '';
                 $.each(response.data, function(index, value) {
                     html += "<tr class='table_row'>";
                     html += "<td name='asin[]'>" + value[0].asin + "</td>";
                     html += "<td name='name[]'>" + value[0].item_name + "</td>";
+
+                    html += '<td> <input type="text" value="" name="tag[]" id="tag"> </td>'
+
                     html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
                     html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
                     html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
@@ -227,7 +224,8 @@
                 $("#report_table_body").html(html);
             },
             error: function(response) {
-                console.log(response);
+                // console.log(response);
+                alert('error');
             }
         });
     });
@@ -258,8 +256,9 @@
 
                 data.append('asin[]', td[0].innerText);
                 data.append('name[]', td[1].innerText);
-                data.append('quantity[]', td[2].children[0].value);
-                data.append('price[]', td[3].children[0].value);
+                data.append('tag[]', td[2].children[0].value);
+                data.append('quantity[]', td[3].children[0].value);
+                data.append('price[]', td[4].children[0].value);
 
             });
 
@@ -290,7 +289,8 @@
                     }
                 },
                 error: function(response) {
-                    console.log(response);
+                    // console.log(response);
+                    alert('error');
                 }
             });
         }

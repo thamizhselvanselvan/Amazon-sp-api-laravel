@@ -79,22 +79,21 @@
 
                 <th>ASIN</th>
                 <th>Item Name</th>
+                <th>Tag</th>
                 <th>Quantity</th>
                 <th>Price</th>
 
             </tr>
         </thead>
         <tbody>
-
-
             @foreach($view as $val) 
             <tr>
                 <td>{{$val['asin']}}</td>
                 <td>{{$val['item_name']}}</td>
+                <td>{{$val['tag']}}</td>
                 <td>{{$val['quantity']}}</td>
                 <td>{{$val['price']}}</td>
             </tr>
-
             @endforeach
         </tbody>
     </table>

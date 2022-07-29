@@ -16,6 +16,7 @@ class Shipment_Inward_Details extends Model
         'currency',
         'asin',
         'item_name',
+        'tag',
         'price',
         'quantity',
         'out_quantity',
