@@ -54,7 +54,7 @@ class CatalogPriceImport extends Command
             $product_lp = 'bb_product_lp_seller_detail_' . $country_code_lr . 's';
             $product = 'bb_product_' . $country_code_lr . 's';
 
-            Asin_master::where('source', $country_code)
+            Asin_master::where('source', $country_code)->unique()
                 ->chunk($chunk, function ($data) use ($seller_id, $product, $product_lp) {
 
                     foreach ($data as $value) {
