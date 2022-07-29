@@ -104,6 +104,7 @@ class InventoryRackController extends Controller
     {
 
         $validated = $request->validate([
+            'warehouse_id' => 'required',
             'name' => 'required|min:2|max:100',
             'rack_id' => 'required|min:1|max:100'
         ]);
