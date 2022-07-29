@@ -69,22 +69,24 @@ class AmazonInvoiceManagementController extends Controller
                 if ($file_extension == 'pdf') {
 
                     $fileName = $file->getClientOriginalName();
-                    // $fileName = uniqid() . ($fileName);
+
+
                     $desinationPath = $path . $fileName;
+
                     Storage::put($desinationPath,  file_get_contents($file));
+
                     $single_file = str_replace('.pdf', '', $fileName);
-                    // $pdfList[] = $single_file;
                     $searchPdf[] = "'$single_file'";
+
+                    // $pdfList[] = $single_file;
                 }
             }
         }
-
         $whereIn = implode(',', $searchPdf);
         $data = DB::connection('b2cship')
             ->select("SELECT AWBNo, RefNo, BookingDate FROM Packet
                     WHERE RefNo IN ($whereIn) 
                 ");
-
         foreach ($data as $key => $value) {
 
             $job_data = [];
@@ -117,7 +119,7 @@ class AmazonInvoiceManagementController extends Controller
 
         $awb = $data[0]->awb;
 
-        $do_path = 'b2cship/' . $month . '_' . $year . '/' . $awb . '/Amazon-invoice.pdf';
+        $do_path = 'b2cship/' . $month . '_' . $year . '/' . $awb . '/' . $awb . '_Invoice.pdf';
 
         $header = [
             'Content-Type' => 'application/pdf',

@@ -118,17 +118,8 @@ Route::get("test", function () {
 });
 
 Route::get('test/catalog/{asin}/{country}', 'TestController@getASIN');
+Route::get('test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
+Route::get('renameamazoninvoice/', 'TestController@RenameAmazonInvoice');
 
 Route::get('test1', function () {
-
-    $amazon_order_id = '407-3052005-1648317';
-    $amazon_order_id = '407-2160621-6636359';
-    $order_item_details = DB::connection('order')->select("select id, amazon_order_identifier from orderitemdetails where amazon_order_identifier = '$amazon_order_id'");
-
-    if (!array_key_exists(0, $order_item_details)) {
-
-        echo "not found";
-    } else {
-        po($order_item_details);
-    }
 });

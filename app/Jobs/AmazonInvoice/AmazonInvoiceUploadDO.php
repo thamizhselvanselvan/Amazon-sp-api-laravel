@@ -43,7 +43,7 @@ class AmazonInvoiceUploadDO implements ShouldQueue
         $year = date('Y', strtotime($date));
         $month = date('F', strtotime($date));
 
-        $do_path = 'b2cship/' . $month . '_' . $year . '/' . $AwbNo . '/Amazon-invoice.pdf';
+        $do_path = 'b2cship/' . $month . '_' . $year . '/' . $AwbNo . '/' . $AwbNo . '_Invoice.pdf';
         Storage::disk('b2cship_do_space')->put($do_path, file_get_contents($file));
 
         DB::connection('web')->update("UPDATE amazoninvoice SET status = '1' WHERE amazon_order_identifier = '$order_id' ");
