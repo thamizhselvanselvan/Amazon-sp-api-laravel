@@ -553,3 +553,11 @@ if (!function_exists('buyboxCountrycode')) {
         return $source;
     }
 }
+
+if (!function_exists('poundToKg')) {
+    function poundToKg($weight)
+    {
+        $weight_kg = $weight / 2.205;
+        return $weight_kg;
+    }
+}

@@ -234,10 +234,7 @@ class TestController extends Controller
     $chunk = 10;
     foreach ($source as $country_code => $seller_id) {
 
-      $calculated_price = [
-        'asin' => NULL,
-        'weight' => NULL,
-      ];
+      $calculated_weight = [];
 
       $country_code_lr = strtolower('US');
 
@@ -251,21 +248,13 @@ class TestController extends Controller
         ->chunk($chunk, function ($data) use ($seller_id, $country_code, $product_lp) {
 
           $pricing = [];
-
-          $asin_details = [
-            'seller_id' => NULL,
-            'asin' => NULL,
-            'source' => NULL,
-            'weigth' => NULL,
-            'listingprice_amount' => NULL,
-            'price_updated_at' => NULL,
-          ];
-          $update_asin = [];
+          $asin_details = [];
           $pricing = [];
+          $listing_price_amount = '';
 
           foreach ($data as $value) {
             $a = $value['asin'];
-            $asin_details['weight'] = $this->getWeight($value['package_dimensions']);
+            $calculated_weight[$a] = $this->getWeight($value['package_dimensions']);
             $asin_array[] = "'$a'";
           }
 
@@ -289,6 +278,7 @@ class TestController extends Controller
             foreach ($buybox_winner as $key =>  $value1) {
 
               if ($value1 == '1') {
+                $listing_price_amount = $listing_price[$key];
                 $asin_details =
                   [
                     'seller_id' => $seller_id,
@@ -296,10 +286,12 @@ class TestController extends Controller
                     'source' => $country_code,
                     'listingprice_amount' => $listing_price[$key],
                     'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
+                    'weight' => $calculated_weight[$value->asin],
                   ];
                 break 1;
               } else {
 
+                $listing_price_amount = $listing_price[$key];
                 $asin_details =
                   [
                     'seller_id' => $seller_id,
@@ -307,10 +299,17 @@ class TestController extends Controller
                     'source' => $country_code,
                     'listingprice_amount' => min($listing_price),
                     'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
+                    'weight' => $calculated_weight[$value->asin],
                   ];
               }
             }
-            $pricing[] = $asin_details;
+            $d_price = $this->USAToIND($calculated_weight[$value->asin], $listing_price_amount);
+            $destination_price_in = [
+              'destination' => 'IN',
+              'india_selling_price' => $d_price,
+            ];
+
+            $pricing[] = [...$asin_details, ...$destination_price_in];
           }
           po($pricing);
           echo "<hr>";
@@ -319,15 +318,42 @@ class TestController extends Controller
     }
   }
 
-  public function USAToIND()
+  public function USAToIND($weight, $bb_price)
   {
+    if ($weight > 0.9) {
+      $int_shipping_base_charge = (6 + ($weight - 1) * 6);
+    } else {
+      $int_shipping_base_charge = 6;
+    }
+
+    $duty_rate = 32.00 / 100;
+    $seller_commission = 10 / 100;
+    $packaging = 2;
+    $amazon_commission = 22.00 / 100;
+
+    $ex_rate = 82;
+    $duty_cost = round(($duty_rate * ($bb_price + $int_shipping_base_charge)), 2);
+
+    $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
+      (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $seller_commission);
+
+    $usd_sp = round($price_befor_amazon_fees * (1 + $amazon_commission) +
+      ($amazon_commission * $price_befor_amazon_fees * 0.12), 2);
+
+    $india_sp = $usd_sp * $ex_rate;
+    return $india_sp;
   }
 
   public function getWeight($dimensions)
   {
+    $value = (json_decode($dimensions));
+    if (isset($value->Weight)) {
 
-    po(((json_decode($dimensions))));
-    exit;
-    return true;
+      if ($value->Weight->Units == 'pounds') {
+
+        $weight_kg = poundToKg($value->Weight->value);
+        return round($weight_kg, 2);
+      }
+    }
   }
 }
