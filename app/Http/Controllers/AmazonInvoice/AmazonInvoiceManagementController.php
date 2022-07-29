@@ -50,17 +50,6 @@ class AmazonInvoiceManagementController extends Controller
 
     public function invoiceSave(Request $request)
     {
-        $host = config('database.connections.web.host');
-        $dbname = config('database.connections.web.database');
-        $port = config('database.connections.web.port');
-        $username = config('database.connections.web.username');
-        $password = config('database.connections.web.password');
-
-        if (!R::testConnection('web', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password)) {
-            R::addDatabase('web', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-            R::selectDatabase('web');
-        }
-
         $path = 'AmazonInvoice/';
         foreach ($request->files as $key => $files) {
 
@@ -69,43 +58,49 @@ class AmazonInvoiceManagementController extends Controller
                 if ($file_extension == 'pdf') {
 
                     $fileName = $file->getClientOriginalName();
-
-
                     $desinationPath = $path . $fileName;
 
                     Storage::put($desinationPath,  file_get_contents($file));
 
                     $single_file = str_replace('.pdf', '', $fileName);
-                    $searchPdf[] = "'$single_file'";
-
-                    // $pdfList[] = $single_file;
+                    $searchPdf[] = "$single_file";
                 }
             }
         }
-        $whereIn = implode(',', $searchPdf);
-        $data = DB::connection('b2cship')
-            ->select("SELECT AWBNo, RefNo, BookingDate FROM Packet
-                    WHERE RefNo IN ($whereIn) 
-                ");
-        foreach ($data as $key => $value) {
 
-            $job_data = [];
-            $amazon_invoice = R::dispense('amazoninvoice');
-            $amazon_invoice->awb = $value->AWBNo;
-            $amazon_invoice->amazon_order_identifier = $value->RefNo;
-            $amazon_invoice->booking_date = $value->BookingDate;
-            $amazon_invoice->status  = '0';
-            $amazon_invoice->created_at = now();
-            R::store($amazon_invoice);
-
-            $job_data['AwbNo'] = $value->AWBNo;
-            $job_data['Order_id'] = $value->RefNo;
-            $job_data['Date'] = $value->BookingDate;
+        foreach ($searchPdf as $order_id) {
 
             $class = 'AmazonInvoice\\AmazonInvoiceUploadDO';
-
+            $job_data['Order_id'] = $order_id;
             jobDispatchFunc($class, $job_data, 'default');
         }
+
+        // $whereIn = implode(',', $searchPdf);
+
+        // $awbData = DB::connection('b2cship')
+        //     ->select("SELECT AWBNo, RefNo, BookingDate FROM Packet
+        //             WHERE RefNo IN ($whereIn) 
+        //         ");
+
+        // foreach ($awbData as $key => $value) {
+
+        //     $job_data = [];
+        //     $amazon_invoice = R::dispense('amazoninvoice');
+        //     $amazon_invoice->awb = $value->AWBNo;
+        //     $amazon_invoice->amazon_order_identifier = $value->RefNo;
+        //     $amazon_invoice->booking_date = $value->BookingDate;
+        //     $amazon_invoice->status  = '0';
+        //     $amazon_invoice->created_at = now();
+        //     R::store($amazon_invoice);
+
+        //     $job_data['AwbNo'] = $value->AWBNo;
+        //     $job_data['Order_id'] = $value->RefNo;
+        //     $job_data['Date'] = $value->BookingDate;
+
+        //     $class = 'AmazonInvoice\\AmazonInvoiceUploadDO';
+
+        //     jobDispatchFunc($class, $job_data, 'default');
+        // }
         return response()->json(["message" => "All file uploaded successfully"]);
     }
 
