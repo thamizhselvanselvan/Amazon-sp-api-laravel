@@ -237,11 +237,12 @@ class TestController extends Controller
       if (Storage::disk('b2cship_do_space')->exists($old_file)) {
 
         Storage::disk('b2cship_do_space')->rename($old_file, $new_file);
+        Log::info($old_file);
       }
 
       //
     }
-    dd($data);
+    // dd($data);
     //
   }
 }
