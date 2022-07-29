@@ -38,43 +38,41 @@
 @section('js')
 
 <script type="text/javascript">
-        let yajra_table = $('.yajra-datatable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: "{{ url('/amazon/invoice') }}",
-            columns: [{
-                    data: 'id',
-                    name: 'id',
-                },
-                {
-                    data: 'awb',
-                    name: 'awb',
-                },
-                {
-                    data: 'amazon_order_identifier',
-                    name: 'amazon_order_identifier',
-                    orderable: false
-                },
-                {
-                    data: 'booking_date',
-                    name: 'booking_date',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'status',
-                    name: 'status',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                },
+    let yajra_table = $('.yajra-datatable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "{{ url('/amazon/invoice') }}",
+        columns: [{
+                data: 'id',
+                name: 'id',
+            },
+            {
+                data: 'awb',
+                name: 'awb',
+            },
+            {
+                data: 'amazon_order_identifier',
+                name: 'amazon_order_identifier',
+                orderable: false
+            },
+            {
+                data: 'booking_date',
+                name: 'booking_date',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'status',
+                name: 'status',
+            },
+            {
+                data: 'action',
+                name: 'action',
+                orderable: false,
+                searchable: false
+            },
 
-            ]
-        });
+        ]
+    });
 </script>
 @stop
