@@ -49,14 +49,14 @@ class Catalog
                 $token = ($mws_region['aws_verified']['auth_code']);
 
                 $seller_id = $value->seller_id;
-                $check = DB::connection('catalog')->select("SELECT asin from catalogs where asin = '$asin'");
+                // $check = DB::connection('catalog')->select("SELECT asin from catalogs where asin = '$asin'");
                 // $check = catalog::where('asin', $asin)->get();
                 // $check = [];
-                if (count($check) <= 0) {
+                // if (count($check) <= 0) {
 
                     $aws_id = NULL;
                     $this->getCatalog($country_code, $token, $asin, $seller_id, $type, $aws_id);
-                }
+                // }
             }
         } elseif ($type == 2) {
 
@@ -78,6 +78,8 @@ class Catalog
         $apiInstance = new CatalogItemsV0Api($config);
         $marketplace = $this->marketplace_id($country_code);
         // $country_code = '';
+        $country_code = strtolower($country_code);
+        $table_name = 'catalog'.$country_code.'s';
         
         $seller_id = $aws_id?$aws_id:$seller_id; 
         try {
@@ -86,7 +88,10 @@ class Catalog
             if (isset(($result->payload->AttributeSets[0]))) {
 
                 $result = (array)($result->payload->AttributeSets[0]);
-                $productcatalogs = R::dispense('catalogs');
+                $productcatalogs = R::dispense($table_name);
+
+                // Log::alert($productcatalogs);
+                // exit;
 
                 $productcatalogs->seller_id = $seller_id;
                 $productcatalogs->asin = $asin;
