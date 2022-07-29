@@ -219,29 +219,7 @@ class TestController extends Controller
   public function RenameAmazonInvoice()
   {
 
-    $data = DB::connection('web')->select("SELECT * FROM amazoninvoice limit 1");
-    foreach ($data as $details) {
-
-      $awb_no = $details->awb;
-      $booking_date = $details->booking_date;
-
-      $year = date('Y', strtotime($booking_date));
-      $month = date('F', strtotime($booking_date));
-
-
-      $old_file = 'b2cship/' . $month . '_' . $year . '/' . $awb_no . '/Amazon-invoice.pdf';
-      $new_file = 'b2cship/' . $month . '_' . $year . '/' . $awb_no . '/' . $awb_no . '_Invoice.pdf';
-
-      $new_file_name = $awb_no . '_Invoice.pdf';
-      // dd($do_path);
-      if (Storage::disk('b2cship_do_space')->exists($old_file)) {
-
-        Storage::disk('b2cship_do_space')->rename($old_file, $new_file);
-        Log::info($old_file);
-      }
-
-      //
-    }
+    commandExecFunc("mosh:rename-amazon-invoice");
     // dd($data);
     //
   }

@@ -134,6 +134,7 @@ class Order
                 if (!array_key_exists(0, $order_item_details)) {
 
                     $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode, $delay, $delay_count);
+                    $delay += $delay_count;
                 }
             } else {
 
@@ -144,6 +145,7 @@ class Order
                 // dd($orders);
                 R::store($orders);
                 $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode, $delay, $delay_count);
+                $delay += $delay_count;
             }
         }
         // return true;
@@ -160,8 +162,6 @@ class Order
 
                 ]
             )->onConnection('redis')->onQueue('order')->delay($delay);
-
-            $delay += $delay_count;
         } else {
 
             GetOrderItem::dispatch(
