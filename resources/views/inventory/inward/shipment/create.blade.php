@@ -160,24 +160,27 @@
             'dataType': 'json',
             success: function(response) {
                 console.log(response[0]);
-             
 
                 let html = '';
                 $.each(response.data, function(index, value) {
                     html += "<tr class='table_row'>";
                     html += "<td name='asin[]'>" + value[0].asin + "</td>";
                     html += "<td name='name[]'>" + value[0].item_name + "</td>";
-
-                    html += '<td> <input  name="tag[]" id="tag"> </td>'
-
-                    html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
+                    html += `<td>
+                     <x-adminlte-select name="tag[]" id="tag">>
+                      <option value=" ">Select Tag</option>
+                       @foreach ($tags as $tag)
+                       <option value="{{ $tag->id }}">{{$tag->name }}</option>
+                      @endforeach
+                    </x-adminlte-select>
+                     </td>`
+                    html += '<td><input type="text" value="1" name="quantity[]" id="quantity">  </td>'
                     html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
                     html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
                     html += "</tr>";
 
                 });
                 $("#report_table").append(html);
-
             },
             error: function(response) {
                 // console.log(response);
@@ -212,9 +215,14 @@
                     html += "<tr class='table_row'>";
                     html += "<td name='asin[]'>" + value[0].asin + "</td>";
                     html += "<td name='name[]'>" + value[0].item_name + "</td>";
-
-                    html += '<td> <input type="text" value="" name="tag[]" id="tag"> </td>'
-
+                    html += `<td> 
+                       <x-adminlte-select  name="tag[]"  id="tag">
+                     <option value=" ">Select Tag</option>
+                       @foreach ($tags as $tag)
+                       <option value="{{ $tag->id }}">{{$tag->name }}</option>
+                       @endforeach
+                    </x-adminlte-select>
+                    </td>`
                     html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
                     html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
                     html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
@@ -229,8 +237,7 @@
             }
         });
     });
-
-
+    
 
     $(".create_shipmtn_btn").on("click", function() {
         let ware_valid = $('#warehouse').val();
@@ -256,7 +263,8 @@
 
                 data.append('asin[]', td[0].innerText);
                 data.append('name[]', td[1].innerText);
-                data.append('tag[]', td[2].children[0].value);
+                data.append('tag[]', $(td[2]).find('select').val());
+
                 data.append('quantity[]', td[3].children[0].value);
                 data.append('price[]', td[4].children[0].value);
 
