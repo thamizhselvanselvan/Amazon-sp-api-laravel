@@ -23,6 +23,7 @@ Route::get('inventory/Index', 'Inventory\Master\InventorySourceController@index'
 Route::resource('inventory/destinations', 'Inventory\Master\InventoryDestinationController');
 Route::resource('inventory/disposes', 'Inventory\Master\InventoryDisposeController');
 
+Route::resource('inventory/tags', 'Inventory\Master\TagController');
 
 
 Route::get('inventory/stocks', 'Inventory\StockController@dashboard')->name('inventory.stocks');

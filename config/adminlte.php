@@ -412,6 +412,13 @@ return [
                             ],
                         ],
                         [
+                            'text' => 'Tags',
+                            'icon' => 'far fa-fw fa-file',
+                            'url'  => 'inventory/tags',
+                            'can' =>  ['Admin', 'Inventory']
+
+                        ],
+                        [
                             'text' => 'Dispose Reason',
                             'icon' => 'far fa-fw fa-file',
                             'url'  => 'inventory/features',
