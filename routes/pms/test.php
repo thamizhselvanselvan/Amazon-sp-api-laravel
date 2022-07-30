@@ -57,7 +57,12 @@ Route::get('test1', function () {
     dd($data);
 });
 
-Route::get('rate', function () {
+
+Route::get('ustoin/{weight}/{price}', 'TestController@USAToIND');
+Route::get('ustouae/{weight}/{price}', 'TestController@USAToUAE');
+Route::get('ustosg/{weight}/{price}', 'TestController@USATOSG');
+
+Route::get('ustoinprice', function () {
     $bb_price = 9.98;
     $weight = 0.27;
     if ($weight > 0.9) {

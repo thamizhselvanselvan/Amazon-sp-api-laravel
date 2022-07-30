@@ -275,6 +275,9 @@ class TestController extends Controller
             $listing_price = explode(',', $value->listingprice_amount);
             $updated_at = explode(',', $value->updated_at);
 
+            $asin_name = $value->asin;
+            $packet_weight = $calculated_weight[$asin_name];
+
             foreach ($buybox_winner as $key =>  $value1) {
 
               if ($value1 == '1') {
@@ -282,34 +285,46 @@ class TestController extends Controller
                 $asin_details =
                   [
                     'seller_id' => $seller_id,
-                    'asin' => $value->asin,
+                    'asin' =>  $asin_name,
                     'source' => $country_code,
-                    'listingprice_amount' => $listing_price[$key],
+                    'listingprice_amount' => $listing_price_amount,
                     'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
-                    'weight' => $calculated_weight[$value->asin],
+                    'weight' => $packet_weight,
                   ];
                 break 1;
               } else {
-
-                $listing_price_amount = $listing_price[$key];
+                $listing_price_amount =  min($listing_price);
                 $asin_details =
                   [
                     'seller_id' => $seller_id,
-                    'asin' => $value->asin,
+                    'asin' => $asin_name,
                     'source' => $country_code,
-                    'listingprice_amount' => min($listing_price),
+                    'listingprice_amount' => $listing_price_amount,
                     'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
-                    'weight' => $calculated_weight[$value->asin],
+                    'weight' => $packet_weight,
                   ];
               }
             }
-            $d_price = $this->USAToIND($calculated_weight[$value->asin], $listing_price_amount);
-            $destination_price_in = [
-              'destination' => 'IN',
-              'india_selling_price' => $d_price,
-            ];
+            if ($country_code == 'US' || $country_code == 'us') {
 
-            $pricing[] = [...$asin_details, ...$destination_price_in];
+              $ind_price = $this->USAToIND($packet_weight, $listing_price_amount);
+              $destination_price_in = [
+                'destination1' => 'IN',
+                'india_selling_price' => $ind_price,
+              ];
+
+              $destination_price_ae = [
+                'destination2' => "UAE",
+                'UAE_selling_price' => $this->USATOUAE($packet_weight, $listing_price_amount)
+              ];
+
+              $destination_price_sg = [
+                'destination3' => 'SG',
+                'SG_selling_price' => $this->USATOSG($packet_weight, $listing_price_amount),
+              ];
+
+              $pricing[] = [...$asin_details, ...$destination_price_in, ...$destination_price_ae, ...$destination_price_sg];
+            }
           }
           po($pricing);
           echo "<hr>";
@@ -354,6 +369,58 @@ class TestController extends Controller
         $weight_kg = poundToKg($value->Weight->value);
         return round($weight_kg, 2);
       }
+    } else {
+      return 0.5;
     }
+  }
+
+  public function USATOUAE($weight, $bb_price)
+  {
+    $duty_rate = 5 / 100;
+    $seller_commission = 10 / 100;
+    $packaging = 4;
+    $amazon_commission = 15.00 / 100;
+    $int_shipping_base_charge = $weight * 4.5;
+    $ex_rate = 3.7;
+    $duty_cost = round(($duty_rate * ($bb_price + $int_shipping_base_charge)), 2);
+
+    $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
+      (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $seller_commission);
+
+    $usd_sp = round($price_befor_amazon_fees * (1 + $amazon_commission) +
+      ($amazon_commission * $price_befor_amazon_fees * 0.12), 2);
+
+    $IED_sp = $usd_sp * $ex_rate;
+    return round($IED_sp, 2);
+  }
+
+  public function USATOSG($weight, $bb_price)
+  {
+    if ($weight > 0.9) {
+      $int_shipping_base_charge = (8 + ($weight - 1) * 4.5);
+    } else {
+      $int_shipping_base_charge = 8;
+    }
+
+    // return $int_shipping_base_charge;
+    $duty_rate = 4.00 / 100;
+    $seller_commission = 10 / 100;
+    $packaging = 3;
+    $MBM = 10.0 / 100;
+    $amazon_commission = 12.00 / 100;
+
+    $ex_rate = 1.37;
+    $duty_cost = $duty_rate * $bb_price;
+
+    $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
+      (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $MBM);
+
+    $mbm_usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
+      ($amazon_commission * $price_befor_amazon_fees * 0.12);
+
+    $sg_sp = $mbm_usd_sp * $ex_rate;
+
+    return round($sg_sp, 2);
+    //
   }
 }
