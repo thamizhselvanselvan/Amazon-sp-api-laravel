@@ -73,24 +73,24 @@ class InvoiceManagementController extends Controller
             $Invoice_date = $request->invoice_date;
             $results = '';
             // $results = DB::connection('web')->select("SELECT id, invoice_no, invoice_date, mode, channel, shipped_by, awb_no, store_name, bill_to_name, ship_to_name, sku, qty, currency, product_price FROM invoices WHERE mode = '$mode' and invoice_date BETWEEN '$date1' AND '$date2' "); 
-            $results = Invoice::when(!empty(trim($request->invoice_mode)), function ($query) use($mode){
+            $results = Invoice::when(!empty(trim($request->invoice_mode)), function ($query) use ($mode) {
                 $query->where('mode', $mode);
             })
-            ->when(!empty(trim($request->bag_no)), function ($query) use($bag_no){
-                $query->where('bag_no', $bag_no);
-            })
-            ->when(!empty(trim($request->invoice_date)), function ($query) use($Invoice_date){
-                $date = $this->split_date($Invoice_date);
-                $query->whereBetween('invoice_date', [$date[0], $date[1]]);
-            })
-            ->get();
+                ->when(!empty(trim($request->bag_no)), function ($query) use ($bag_no) {
+                    $query->where('bag_no', $bag_no);
+                })
+                ->when(!empty(trim($request->invoice_date)), function ($query) use ($Invoice_date) {
+                    $date = $this->split_date($Invoice_date);
+                    $query->whereBetween('invoice_date', [$date[0], $date[1]]);
+                })
+                ->get();
         }
         // Log::alert(json_encode($results));
         return response()->json($results);
     }
 
     public function split_date($date)
-    { 
+    {
         $newdate = explode(' - ', $date);
         return ([trim($newdate[0]), trim($newdate[1])]);
     }
@@ -181,52 +181,29 @@ class InvoiceManagementController extends Controller
     public function SelectedDownload(Request $request)
     {
         $this->deleteAllPdf();
-        
-            $passid = $request->id;
-            $currenturl = request()->getSchemeAndHttpHost();
-            
-        if(App::environment(['Production', 'Staging', 'production', 'staging']))
-        {
+
+        $passid = $request->id;
+        $currenturl = request()->getSchemeAndHttpHost();
+
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:invoice-bulk-zip-download $passid $currenturl > /dev/null &";
             exec($command);
-        }else{
-            Artisan::call('pms:invoice-bulk-zip-download'.' '.$passid.' '.$currenturl );
+        } else {
+            Artisan::call('pms:invoice-bulk-zip-download' . ' ' . $passid . ' ' . $currenturl);
         }
-        
+
         return response()->json(['success' => 'zip created successfully']);
     }
 
     public function zipDownload()
     {
-        if(!Storage::exists('invoice/zip/invoice.zip')){
+        if (!Storage::exists('invoice/zip/invoice.zip')) {
             return redirect()->intended('/invoice/search-invoice')->with('success', 'File is not available right now! Please wait.');
         }
         return Storage::download('invoice/zip/invoice.zip');
     }
 
-    // public function zipDownload($arr)
-    // {
-    //     $replace = explode(',', $arr);
-    //     $zip = new ZipArchive;
-    //     $path = 'zip/' . 'invoice.zip';
-    //     $fileName = Storage::path('zip/' . 'invoice.zip');
-    //     Storage::delete($path);
-    //     if (!Storage::exists($path)) {
-    //         Storage::put($path, '');
-    //     }
-    //     if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
-    //         foreach ($replace as $key => $value) {
-    //             $path = Storage::path('invoice/' . $value);
-    //             $relativeNameInZipFile = basename($path);
-    //             $zip->addFile($path, $relativeNameInZipFile);
-    //         }
-    //         $zip->close();
-    //     }
-    //     return response()->download($fileName);
-    // }
-
-    // end download all selected rows
 
     public function DirectDownloadPdf(Request $request, $id)
     {
@@ -251,7 +228,7 @@ class InvoiceManagementController extends Controller
     public function ExportPdf(Request $request)
     {
         $this->deleteAllPdf();
-        
+
         $id = $request->invoice_no;
         $url = $request->url;
         $file_path =  'invoice/invoice' . $id . '.pdf';
@@ -339,11 +316,12 @@ class InvoiceManagementController extends Controller
         $data = DB::connection('web')->select("SELECT * FROM invoices WHERE invoice_no = '$id' ");
         return view('invoice.edit', compact('data'));
     }
+
     public function update(Request $request, $id)
     {
         $invoice = invoice::find($id);
         $url = $request->url;
-        
+
         $invoice->invoice_no = $request->invoice_no;
         $invoice->invoice_date = $request->invoice_date;
         $invoice->mode = $request->mode;
@@ -373,24 +351,23 @@ class InvoiceManagementController extends Controller
         $invoice->charged_weight = $request->charged_weight;
         $invoice->update();
 
-        
+
         // if($request->url =='https://amazon-sp-api-laravel.app/invoice/manage'){
 
-            return redirect()->intended('/invoice/manage')->with('success', 'Invoice  has been updated successfully');
+        return redirect()->intended('/invoice/manage')->with('success', 'Invoice  has been updated successfully');
         // }
         // else{
         //     return redirect()->intended('/invoice/search-invoice')->with('success', 'Invoice  has been updated successfully');
         // }
     }
+
     public function deleteAllPdf()
     {
-        $files =glob(Storage::path('invoice/*'));
-        foreach($files as $file)
-        {
-            if(is_file($file)){
+        $files = glob(Storage::path('invoice/*'));
+        foreach ($files as $file) {
+            if (is_file($file)) {
                 unlink($file);
             }
         }
     }
-    
 }

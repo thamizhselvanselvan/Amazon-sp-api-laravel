@@ -10,81 +10,6 @@ use Illuminate\Support\Facades\Response;
 use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
 Route::get("test", function () {
-
-    $country_code = 'uk';
-
-    $source = buyboxCountrycode();
-
-    $chunk = 10;
-
-    foreach ($source as $country_code => $seller_id) {
-
-        $country_code_lr = strtolower('US');
-
-        $product_lp = 'bb_product_lp_seller_detail_' . $country_code_lr . 's';
-        $product = 'bb_product_' . $country_code_lr . 's';
-
-        Asin_master::where('source', $country_code)
-            ->chunk($chunk, function ($data) use ($seller_id, $country_code, $product_lp) {
-
-                foreach ($data as $value) {
-                    $a = $value['asin'];
-                    $asin_array[] = "'$a'";
-                }
-
-                $asin = implode(',', $asin_array);
-                $asin_price = DB::connection('buybox')
-                    ->select("SELECT PPO.asin,
-                GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
-                group_concat(PPO.listingprice_amount) as listingprice_amount,
-                group_concat(PPO.updated_at) as updated_at
-                FROM $product_lp as PPO
-                    WHERE PPO.asin IN ($asin)
-                    GROUP BY PPO.asin
-                ");
-
-                $pricing = [];
-                $asin_details = [];
-                $update_asin = [];
-                $pricing = [];
-
-                foreach ($asin_price as $value) {
-
-                    $buybox_winner = explode(',', $value->is_buybox_winner);
-                    $listing_price = explode(',', $value->listingprice_amount);
-                    $updated_at = explode(',', $value->updated_at);
-
-                    foreach ($buybox_winner as $key =>  $value1) {
-
-                        if ($value1 == '1') {
-                            $asin_details =
-                                [
-                                    'seller_id' => $seller_id,
-                                    'asin' => $value->asin,
-                                    'source' => $country_code,
-                                    'listingprice_amount' => $listing_price[$key],
-                                    'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
-                                ];
-                            break 1;
-                        } else {
-
-                            $asin_details =
-                                [
-                                    'seller_id' => $seller_id,
-                                    'asin' => $value->asin,
-                                    'source' => $country_code,
-                                    'listingprice_amount' => min($listing_price),
-                                    'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
-                                ];
-                        }
-                    }
-                    $pricing[] = $asin_details;
-                }
-                po($pricing);
-                echo "<hr>";
-            });
-    }
-
     $pricing = [];
     $asin_details = [];
 
@@ -120,13 +45,47 @@ Route::get("test", function () {
 Route::get('test/catalog/{asin}/{country}', 'TestController@getASIN');
 Route::get('test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
 Route::get('renameamazoninvoice/', 'TestController@RenameAmazonInvoice');
+Route::get('getPricing/', 'TestController@GetPricing');
 
 Route::get('test1', function () {
 
     $whereIn = '402-5523703-2980317';
     $data = DB::connection('b2cship')
         ->select("SELECT AWBNo, RefNo, BookingDate FROM Packet
-                    WHERE RefNo IN ('$whereIn') 
+                    WHERE RefNo = '$whereIn'
                 ");
     dd($data);
+});
+
+
+Route::get('ustoin/{weight}/{price}', 'TestController@USAToIND');
+Route::get('ustouae/{weight}/{price}', 'TestController@USAToUAE');
+Route::get('ustosg/{weight}/{price}', 'TestController@USATOSG');
+
+Route::get('ustoinprice', function () {
+    $bb_price = 9.98;
+    $weight = 0.27;
+    if ($weight > 0.9) {
+
+        $int_shipping_base_charge = (6 + ($weight - 1) * 6);
+    } else {
+
+        $int_shipping_base_charge = 6;
+    }
+    $duty_rate = 32.00 / 100;
+    $seller_commission = 10 / 100;
+    $packaging = 2;
+    $amazon_commission = 22.00 / 100;
+
+    $ex_rate = 82;
+    $duty_cost = round(($duty_rate * ($bb_price + $int_shipping_base_charge)), 2);
+
+    $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
+        (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $seller_commission);
+
+    $usd_sp = round($price_befor_amazon_fees * (1 + $amazon_commission) +
+        ($amazon_commission * $price_befor_amazon_fees * 0.12), 2);
+
+    $india_sp = $usd_sp * $ex_rate;
+    po($india_sp);
 });
