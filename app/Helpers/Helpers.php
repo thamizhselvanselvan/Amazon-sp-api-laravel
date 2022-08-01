@@ -546,7 +546,7 @@ if (!function_exists('buyboxCountrycode')) {
     function buyboxCountrycode()
     {
         $source = [
-            'AE' => 38,
+            // 'AE' => 38,
             'IN' => 39,
             'US' => 40
         ];
