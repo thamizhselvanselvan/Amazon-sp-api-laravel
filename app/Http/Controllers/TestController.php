@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
 use App\Models\Aws_credential;
 use App\Models\Catalog\Asin_master;
+use App\Models\Catalog\PricingUs;
 use App\Models\Mws_region;
 use Illuminate\Support\Carbon;
 use SellingPartnerApi\Endpoint;
@@ -227,16 +228,15 @@ class TestController extends Controller
 
   public function GetPricing()
   {
-    $country_code = 'uk';
-
-    $source = buyboxCountrycode();
-
+    // $source = buyboxCountrycode();
+    $source = ['IN' => 39];
     $chunk = 10;
     foreach ($source as $country_code => $seller_id) {
 
+      // echo $source;
       $calculated_weight = [];
-
-      $country_code_lr = strtolower('US');
+      echo $country_code;
+      $country_code_lr = strtolower($country_code);
 
       $product_lp = 'bb_product_lp_seller_detail_' . $country_code_lr . 's';
       $product = 'bb_product_' . $country_code_lr . 's';
@@ -245,11 +245,10 @@ class TestController extends Controller
       Asin_master::select('asin_masters.asin', "$catalog_table.package_dimensions")
         ->where('asin_masters.source', $country_code)
         ->join($catalog_table, 'asin_masters.asin', '=', "$catalog_table.asin")
-        ->chunk($chunk, function ($data) use ($seller_id, $country_code, $product_lp) {
+        ->chunk($chunk, function ($data) use ($seller_id, $country_code_lr, $product_lp) {
 
           $pricing = [];
           $asin_details = [];
-          $pricing = [];
           $listing_price_amount = '';
 
           foreach ($data as $value) {
@@ -280,50 +279,36 @@ class TestController extends Controller
 
             foreach ($buybox_winner as $key =>  $value1) {
 
+              $price = $country_code_lr . '_price';
               if ($value1 == '1') {
+
                 $listing_price_amount = $listing_price[$key];
                 $asin_details =
                   [
-                    'seller_id' => $seller_id,
                     'asin' =>  $asin_name,
-                    'source' => $country_code,
-                    'listingprice_amount' => $listing_price_amount,
-                    'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
                     'weight' => $packet_weight,
+                    $price => $listing_price_amount,
+                    'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
                   ];
                 break 1;
               } else {
                 $listing_price_amount =  min($listing_price);
                 $asin_details =
                   [
-                    'seller_id' => $seller_id,
-                    'asin' => $asin_name,
-                    'source' => $country_code,
-                    'listingprice_amount' => $listing_price_amount,
-                    'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
+                    'asin' =>  $asin_name,
                     'weight' => $packet_weight,
+                    $price => $listing_price_amount,
+                    'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
                   ];
               }
+              $pricing[] = $asin_details;
             }
-            if ($country_code == 'US' || $country_code == 'us') {
 
-              $ind_price = $this->USAToIND($packet_weight, $listing_price_amount);
-              $destination_price_in = [
-                'destination1' => 'IN',
-                'india_selling_price' => $ind_price,
-              ];
+            if ($country_code_lr == 'in') {
+              echo  $packet_weight;
+              echo $listing_price_amount;
 
-              $destination_price_ae = [
-                'destination2' => "UAE",
-                'UAE_selling_price' => $this->USATOUAE($packet_weight, $listing_price_amount)
-              ];
-
-              $destination_price_sg = [
-                'destination3' => 'SG',
-                'SG_selling_price' => $this->USATOSG($packet_weight, $listing_price_amount),
-              ];
-
-              $pricing[] = [...$asin_details, ...$destination_price_in, ...$destination_price_ae, ...$destination_price_sg];
+              //
             }
           }
           po($pricing);
@@ -422,5 +407,9 @@ class TestController extends Controller
 
     return round($sg_sp, 2);
     //
+  }
+
+  public function INDToUAE($weight, $bb_price)
+  {
   }
 }
