@@ -2,6 +2,8 @@
 
 namespace App\Services\Catalog;
 
+use App\Models\Admin\Ratemaster;
+
 class PriceConversion
 {
 
@@ -79,5 +81,9 @@ class PriceConversion
 
         return round($sg_sp, 2);
         //
+    }
+
+    public function INToUAE($weight, $bb_price)
+    {
     }
 }

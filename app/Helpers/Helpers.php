@@ -3,6 +3,7 @@
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use App\Models\Aws_credential;
+use App\Models\Admin\Ratemaster;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -576,5 +577,21 @@ if (!function_exists('getWeight')) {
         } else {
             return 0.5;
         }
+    }
+}
+if (!function_exists('GetRateChart')) {
+
+    function GetRateChart($source_destination)
+    {
+        $rate_chart = Ratemaster::where('source_destination', $source_destination)->get();
+        $rate_array = [];
+        foreach ($rate_chart as  $value) {
+            $weight = $value->weight;
+            $rate_array[$weight] = [
+                'base_rate' => $value->base_rate,
+                'lmd_cost' => $value->lmd_cost
+            ];
+        }
+        return $rate_array;
     }
 }
