@@ -51,7 +51,7 @@
                     <label>
                         <div style="margin-top: 1.8rem;">
                             Search:
-                            <input type="text" id="myInput"  class="d-inline-block" placeholder="search asin" autocomplete="off" />
+                            <input type="text" id="myInput" class="d-inline-block" placeholder="search asin" autocomplete="off" />
                     </label>
                 </div>
     </div>
@@ -131,7 +131,7 @@
             },
             'dataType': 'json',
             success: function(response) {
-             
+
                 let html = '';
                 $.each(response, function(index, value) {
 
@@ -146,12 +146,17 @@
                     html += "<td>" + value.quantity + "</td>";
                     html += "<td>" + value.out_quantity + "</td>";
                     html += "<td>" + value.balance_quantity + "</td>";
-                    html += "<td>" + value.bins.rack_id + '-' + value.bins.shelve_id + '-' + value.bins.bin_id + "</td>";
+                    if (value.bins == null) {
+                        html += "<td>" + 'Not Allocated' + "</td>"
+                    } else {
+                        html += "<td>" + value.bins.rack_id  + '-' + value.bins.shelve_id  + '-' + value.bins.bin_id  + "</td>";
+                    }
+
                     html += "<td>" + d.toDateString() + "</td>";
                     html += "</tr>";
 
                 });
-
+                // html += "<td>" + value.bin + "</td>";
 
                 $("#data_display").html(html);
 
