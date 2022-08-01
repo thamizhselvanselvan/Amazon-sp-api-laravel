@@ -76,6 +76,7 @@ class PriceConversion
         $bb_price = (float)$bb_price;
 
         if ($weight > 0.9) {
+
             $int_shipping_base_charge = (8 + ($weight - 1) * 4.5);
         } else {
             $int_shipping_base_charge = 8;
@@ -109,9 +110,10 @@ class PriceConversion
         $bb_price = (float)$bb_price;
 
         $rate_array  = $this->rate_master_in_sa;
-        $int_shipping_base_charge = '';
+        $int_shipping_base_charge = 0;
         foreach ($rate_array as $key => $value) {
 
+            $key = (float)$key;
             if ($key >= $weight) {
                 $int_shipping_base_charge = $value['lmd_cost'];
                 break;
@@ -144,9 +146,9 @@ class PriceConversion
 
         $rate_array  = $this->rate_master_in_sg;
         //India to Singapore
-        $int_shipping_base_charge = '';
+        $int_shipping_base_charge = 0;
         foreach ($rate_array as $key => $value) {
-
+            $key = (float)$key;
             if ($key >= $weight) {
                 $int_shipping_base_charge = $value['lmd_cost'];
                 break;
@@ -178,10 +180,11 @@ class PriceConversion
         $bb_price = (float)$bb_price;
 
         $rate_array = $this->rate_master_in_ae;
-        $int_shipping_base_charge = '';
+        $int_shipping_base_charge = 0;
 
         foreach ($rate_array as $key => $value) {
 
+            $key = (float)$key;
             if ($key >= $weight) {
                 $int_shipping_base_charge = $value['lmd_cost'];
                 break;
