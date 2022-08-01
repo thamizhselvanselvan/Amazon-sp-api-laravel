@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Inventory\Inwarding;
 
 use Carbon\Carbon;
+use Nette\Utils\Json;
 use App\Models\Product;
 use App\Models\Currency;
 use Illuminate\Http\Request;
 use App\Models\Inventory\Bin;
+use App\Models\Inventory\Tag;
 use App\Models\Inventory\Rack;
 use App\Models\Inventory\Shelve;
 use App\Models\Inventory\Vendor;
@@ -19,6 +21,7 @@ use App\Services\SP_API\CatalogAPI;
 use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
+use League\Glide\Manipulators\Encode;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
@@ -26,8 +29,6 @@ use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Inventory\Shipment_Inward;
 use App\Models\Inventory\Shipment_Inward_Details;
-use League\Glide\Manipulators\Encode;
-use Nette\Utils\Json;
 
 class InventoryShipmentController extends Controller
 {
@@ -35,7 +36,6 @@ class InventoryShipmentController extends Controller
     {
 
         if ($request->ajax()) {
-
 
             $data = Shipment_Inward_Details::select("ship_id", "source_id", "created_at")->distinct()->with(['vendors'])->orderby('created_at','DESC')->get();
             return DataTables::of($data)
@@ -58,7 +58,6 @@ class InventoryShipmentController extends Controller
                 ->make(true);
         }
 
-
         return view('inventory.inward.shipment.index');
     }
 
@@ -68,7 +67,8 @@ class InventoryShipmentController extends Controller
         $source_lists = Vendor::where('type', 'Source')->get();
         $ware_lists = Warehouse::get();
         $currency_lists = Currency::get();
-        return view('inventory.inward.shipment.create', compact('source_lists', 'ware_lists', 'currency_lists'));
+        $tags = Tag::get();
+        return view('inventory.inward.shipment.create', compact('source_lists', 'ware_lists', 'currency_lists','tags'));
     }
 
     public function show($id)
@@ -107,12 +107,9 @@ class InventoryShipmentController extends Controller
 
     public function autocomplete(Request $request)
     {
-
-
-
+        $tag = Tag::select("name")->get();
 
         $asins = preg_split('/[\r\n| |:|,]/', $request->asin, -1, PREG_SPLIT_NO_EMPTY);
-
 
         $data = [];
         $asinCol = [];
@@ -175,13 +172,14 @@ class InventoryShipmentController extends Controller
         }
 
 
-        return response()->json(['success' => 'Data  successfully added', 'data' =>   $filtere_data]);
+        return response()->json(['success' => 'Data  successfully added', 'data' =>   $filtere_data, $tag]);
     }
 
     public function refreshtable(Request $request)
     {
-        $asins = preg_split('/[\r\n| |:|,]/', $request->asin, -1, PREG_SPLIT_NO_EMPTY);
 
+        $tag = Tag::select("name")->get();
+        $asins = preg_split('/[\r\n| |:|,]/', $request->asin, -1, PREG_SPLIT_NO_EMPTY);
 
         $data = [];
         $asinCol = [];
@@ -190,29 +188,19 @@ class InventoryShipmentController extends Controller
 
             $data[$asin] = [
                 'asin' => $asin,
-
             ];
-
             $asinCol[] = $asin;
         }
-
-
-
-
         $catalog = Catalog::query()
             ->select("asin", "item_name")
             ->whereIn("asin", $asinCol)
             ->get()->unique('asin')->groupBy('asin');
 
-
-
-
-        return response()->json(['success' => 'Data  successfully Refreshed', 'data' => $catalog]);
+        return response()->json(['success' => 'Data  successfully Refreshed', 'data' => $catalog, $tag]);
     }
 
     public function selectView(Request $request)
     {
-
         if ($request->ajax()) {
 
             return Product::query()->where('asin1', $request->asin)->first();
@@ -228,7 +216,6 @@ class InventoryShipmentController extends Controller
         $request->validate([
             'warehouse' => 'required',
             'currency' => 'required',
-
         ]);
 
         foreach ($request->asin as $key => $asin) {
@@ -236,6 +223,7 @@ class InventoryShipmentController extends Controller
             $items[] = [
                 "asin" => $asin,
                 "item_name" => $request->name[$key],
+                "tag" => $request->tag[$key],
                 "quantity" => $request->quantity[$key],
                 "price" => $request->price[$key],
             ];
@@ -260,13 +248,13 @@ class InventoryShipmentController extends Controller
                 "currency" => $request->currency,
                 "asin" => $asin1,
                 "item_name" => $request->name[$key1],
+                "tag" => $request->tag[$key1],
                 "price" => $request->price[$key1],
                 "quantity" => $request->quantity[$key1],
                 "created_at" => now(),
                 "updated_at" => now()
             ]);
         }
-
 
         foreach ($request->asin as $key1 => $asin1) {
 
@@ -276,25 +264,13 @@ class InventoryShipmentController extends Controller
                 "asin" => $asin1,
                 "price" => $request->price[$key1],
                 "item_name" => $request->name[$key1],
+                "tag" => $request->tag[$key1],
                 "quantity" => $request->quantity[$key1],
                 "balance_quantity" => $request->quantity[$key1],
                 "created_at" => now(),
                 "updated_at" => now()
             ]);
         }
-
-
-
-        // foreach ($request->asin as $key => $asin) {
-
-        //     $createcat[] = [
-        //         "asin" => $asin,
-        //         "item_name" => $request->name[$key],
-        //         "created_at" => now(),
-        //         "updated_at" => now()
-        //     ];
-        // }
-        // Catalog::insert($createcat);
 
         return response()->json(['success' => 'Shipment has Created successfully']);
     }
