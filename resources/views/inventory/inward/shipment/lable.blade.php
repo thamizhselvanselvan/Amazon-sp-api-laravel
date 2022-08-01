@@ -20,6 +20,10 @@
 
     }
 
+    .bar_inv {
+        height: 30px;
+    }
+
     .print-label {
         border: 1px solid lightgrey;
         width: 300px;
@@ -66,9 +70,10 @@
 <div class="row">
     @php $counter = 1; @endphp
     @foreach ($lable as $key => $val)
+   
     @for($i = 1; $i<= $quant[$key]; $i++) <div class="print-label col">
         <h6>{{$val['asin']}} </h6>
-        <h4><img src="data:image/png;base64,{!! $bar_code[$key] !!}" /></h4>
+        <h4><img class="bar_inv" src="data:image/png;base64,{!! $bar_code[$key] !!}" /></h4>
         <h6>{{$val['item_name']}}</h6>
 </div>
 @php $counter++; @endphp
