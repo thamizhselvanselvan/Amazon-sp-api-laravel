@@ -12,6 +12,9 @@
             <a>
                 <x-adminlte-button label="Export Catalog Price" class="btn-sm" theme="primary" icon="fas fa-file-export" id="export_catalog_price" />
             </a>
+            <a>
+                <x-adminlte-button label='Download' class="file_download_modal_btn" theme="success" icon="fas fa-download" />
+            </a>
         </h2>
     </div>
 </div>
@@ -42,6 +45,25 @@
                     @endforeach
                 </x-adminlte-select>
 
+            </div>
+        </div>
+        <div class="modal fade" id="file_download_modal" tabindex="-1" role="dialog" aria-labelledby="FileDownloadModal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Download Catalog Price</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="file_download_display">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id='file_download_modal_close'>Close</button>
+                    </div>
+                </div>
             </div>
         </div>
         <table class="table table-bordered yajra-datatable table-striped">
