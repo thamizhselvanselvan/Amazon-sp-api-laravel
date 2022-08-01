@@ -42,9 +42,13 @@
         <input type="radio" name="size" id="entire">
         <label for=" entire"> Entire Warehouse Report</label>
     </div>
-    <div class="col-9">
+    <div class="col-2">
         <input type="radio" name="size" id="ware">
         <label for="ware"> Warehouse Wise Report</label>
+    </div>
+    <div class="col-7">
+        <input type="radio" name="size" id="tag">
+        <label for="ware"> Tag Wise Report</label>
     </div>
     <div class="col-1 justify-content-right">
         <form class="row" action="/export/daily">
@@ -67,8 +71,18 @@
 
     </div>
 </div>
+<div class="row" id="tagrep">
+    <div class="col-2">
+        <x-adminlte-select name="tag" class="tag" label="Select Tag">
+            <option value=" ">Select Tag</option>
+            @foreach ($tags as $tags)
+            <option value="{{ $tags->id }}">{{ $tags->name }}</option>
+            @endforeach
+        </x-adminlte-select>
 
-<table class="table table-bordered yajra-datatable table-striped " id ="table" >
+    </div>
+</div>
+<table class="table table-bordered yajra-datatable table-striped " id="table">
     <thead>
         <tr>
             <th id="detail">Date</th>
@@ -112,9 +126,13 @@
         $("#report_table").hide();
         $("#table").hide();
         $("#export").hide();
+        $("#tagrep").hide();
 
         $("#ware ").on('click', function(e) {
             $("#warehouse").show();
+        });
+        $("#tag ").on('click', function(e) {
+            $("#tagrep").show();
         });
         $("#warehouse ").on('change', function(e) {
             $("#table").show();
@@ -122,6 +140,15 @@
         $("#warehouse ").on('change', function(e) {
             $("#report_table").show();
         });
+
+        $("#tagrep ").on('change', function(e) {
+            $("#table").show();
+        });
+        $("#tagrep ").on('change', function(e) {
+            $("#report_table").show();
+        });
+
+
         $("#entire ").on('click', function(e) {
             $("#warehouse").hide();
         });
@@ -145,7 +172,6 @@
         e.preventDefault();
         var id = $('.demo').val();
 
-
         $.ajax({
             url: '/inventory/warewise',
             method: 'GET',
@@ -155,19 +181,53 @@
             },
             'dataType': 'json',
             success: function(response) {
-                let html = '';                    
-                    // console.log(value);
-                    html += "<tr>";
-                    html += "<td>" + response.date + "</td>";
-                    html += "<td>" + response.open_stock + "</td>";
-                    html += "<td>" + response.open_stock_amt  + "</td>";
-                    html += "<td>" + response.inwarded + "</td>";
-                    html += "<td>" + response.tdy_inv_amt + "</td>";
-                    html += "<td>" + response.outwarded + "</td>";
-                    html += "<td>" + response.tdy_out_amt + "</td>";
-                    html += "<td>" + response.closing_stock + "</td>";
-                    html += "<td>" + response.closing_amt+ "</td>";
-                    html += "</tr>";
+                let html = '';
+
+                html += "<tr>";
+                html += "<td>" + response.date + "</td>";
+                html += "<td>" + response.open_stock + "</td>";
+                html += "<td>" + response.open_stock_amt + "</td>";
+                html += "<td>" + response.inwarded + "</td>";
+                html += "<td>" + response.tdy_inv_amt + "</td>";
+                html += "<td>" + response.outwarded + "</td>";
+                html += "<td>" + response.tdy_out_amt + "</td>";
+                html += "<td>" + response.closing_stock + "</td>";
+                html += "<td>" + response.closing_amt + "</td>";
+                html += "</tr>";
+                $("#report_table").html(html);
+            },
+            error: function(response) {
+                console.log(response);
+            }
+        });
+
+    });
+
+    $("#tagrep ").on('change', function(e) {
+        var val = $('.tag').val();
+
+        $.ajax({
+            url: '/inventory/tagwise',
+            method: 'GET',
+            data: {
+                'id': val,
+                "_token": "{{ csrf_token() }}",
+            },
+            'dataType': 'json',
+            success: function(response) {
+                let html = '';
+                // console.log(value);
+                html += "<tr>";
+                html += "<td>" + response.date + "</td>";
+                html += "<td>" + response.open_stock + "</td>";
+                html += "<td>" + response.open_stock_amt + "</td>";
+                html += "<td>" + response.inwarded + "</td>";
+                html += "<td>" + response.tdy_inv_amt + "</td>";
+                html += "<td>" + response.outwarded + "</td>";
+                html += "<td>" + response.tdy_out_amt + "</td>";
+                html += "<td>" + response.closing_stock + "</td>";
+                html += "<td>" + response.closing_amt + "</td>";
+                html += "</tr>";
                 $("#report_table").html(html);
             },
             error: function(response) {

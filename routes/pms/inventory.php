@@ -84,6 +84,7 @@ Route::get('export/daily', 'Inventory\ReportController@eportdaily');
 Route::get('reports/monthly', 'Inventory\ReportController@monthlyview')->name('monthly.view');
 Route::get('export/monthly', 'Inventory\ReportController@eportinvmonthly');
 Route::get('inventory/warewise', 'Inventory\ReportController@warerepo');
+Route::get('inventory/tagwise', 'Inventory\ReportController@tagwise');
 
 
 
