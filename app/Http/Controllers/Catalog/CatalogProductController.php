@@ -19,21 +19,21 @@ use SellingPartnerApi\Api\CatalogItemsV0Api;
 
 class CatalogProductController extends Controller
 {
-    
+
     public function Index(Request $request)
     {
         $sources = Asin_master::select('source')->groupBy('source')->get();
-        
+
         if ($request->ajax()) {
             $country_code = strtolower($request->country_code);
-            $Tables = 'catalog'.$country_code.'s';
+            $Tables = 'catalog' . $country_code . 's';
             $data = DB::connection('catalog')->select("SELECT * FROM $Tables ");
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->editColumn('asin', function ($row){
-                    
-                    return '<a href="https://www.amazon.com/dp/'.$row->asin.'" target="_blank">'.$row->asin.'</a>';
+                ->editColumn('asin', function ($row) {
+
+                    return '<a href="https://www.amazon.com/dp/' . $row->asin . '" target="_blank">' . $row->asin . '</a>';
                 })
                 ->editColumn('item_dimensions', function ($row) {
                     $dimension = 'NA';
@@ -54,8 +54,8 @@ class CatalogProductController extends Controller
                 ->editColumn('amount', function ($row) {
                     $amount = 'NA';
                     $amount = json_decode($row->list_price);
-                    if(isset($amount)){
-                        $amount = "<p>".$amount->CurrencyCode."&nbsp;".$amount->Amount."</p>";
+                    if (isset($amount)) {
+                        $amount = "<p>" . $amount->CurrencyCode . "&nbsp;" . $amount->Amount . "</p>";
                     }
                     return $amount;
                 })
@@ -69,42 +69,39 @@ class CatalogProductController extends Controller
                     }
                     return $dimension;
                 })
-                ->rawColumns(['amount', 'item_dimensions', 'weight','asin'])
+                ->rawColumns(['amount', 'item_dimensions', 'weight', 'asin'])
                 ->make(true);
         }
 
         return view('Catalog.product.index', compact('sources'));
     }
-    
+
     public function Amazon()
     {
-        $asins = Asin_master::where('status', '=', 0)->get(['asin','source','user_id']);
+        $asins = Asin_master::where('status', '=', 0)->get(['asin', 'source', 'user_id']);
 
         // dd($asins);
         $count = 0;
         $asin_source = [];
-        $class= 'catalog\\AmazonCatalogImport';
-        foreach($asins as $asin){
-            
-            if($count == 10)
-            {
+        $class = 'catalog\\AmazonCatalogImport';
+        foreach ($asins as $asin) {
+
+            if ($count == 10) {
                 jobDispatchFunc($class, $asin_source, 'default');
                 $asin_source = [];
                 $count = 0;
-            }
-            else{
-                
+            } else {
+
                 $asin_source[] = [
                     'asin' => $asin->asin,
                     'source' => $asin->source,
                     'seller_id' => $asin->user_id
                 ];
-                $count ++;
+                $count++;
             }
-           
         }
         jobDispatchFunc($class, $asin_source, 'default');
-        
+
         return redirect('catalog/product');
     }
 }

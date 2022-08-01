@@ -49,7 +49,11 @@ class CatalogPriceImport extends Command
         $product_lp = '';
         $seller_id = '';
 
-        $source = buyboxCountrycode();
+        // $source = buyboxCountrycode();
+        $source = [
+            'IN' => 39,
+            'US' => 40
+        ];
         $price_convert = new PriceConversion();
         $chunk = 10;
         foreach ($source as $country_code => $seller_id) {
