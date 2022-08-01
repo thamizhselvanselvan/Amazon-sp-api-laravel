@@ -6,6 +6,7 @@ use config;
 use RedBeanPHP\R;
 use League\Csv\Reader;
 use Illuminate\Console\Command;
+use App\Models\Admin\Ratemaster;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -47,31 +48,43 @@ class RateMasterCSVUpload extends Command
         $path = 'RateMaster/export-rate.csv';
         $file = Storage::path($path);
         $csv = Reader::createFromPath($file, 'r');
-        $csv->setDelimiter("\t");
         $csv->setHeaderOffset(0);
         
-        $host = config('database.connections.web.host');
-        $dbname = config('database.connections.web.database');
-        $port = config('database.connections.web.port');
-        $username = config('database.connections.web.username');
-        $password = config('database.connections.web.password');
+        // $host = config('database.connections.web.host');
+        // $dbname = config('database.connections.web.database');
+        // $port = config('database.connections.web.port');
+        // $username = config('database.connections.web.username');
+        // $password = config('database.connections.web.password');
         
-        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-        $symbols = [' ', '-'];
+        // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+        // $symbols = [' ', '-'];
     
         foreach($csv as $data)
         {   
-            $shipntrack = R::dispense('ratemasters');
-            foreach($data as $key => $result)
-            {
-                $header = str_replace($symbols, '_', strtolower($key));
-                if($header)
-                {
-                    $shipntrack->$header = $result;
-                    R::store($shipntrack);
-                }     
-            }
+            // Log::warning($data);
+            $csv_data []= [
+                'Weight' => $data['Weight'],
+                'base_rate' => $data['Base_rate'],
+                'commission' => $data['Commission'],
+                'lmd_cost' => $data['Lmd_cost'],
+                'source_destination' => $data['Source_destination'],
+
+            ];
+            // Log::alert($asin);
+
+            // $shipntrack = R::dispense('ratemasters');
+            // foreach($data as $key => $result)
+            // {
+            //     $header = str_replace($symbols, '_', strtolower($key));
+            //     if($header)
+            //     {
+            //         $shipntrack->$header = $result;
+            //         R::store($shipntrack);
+            //     }     
+            // }
         }
+
+        Ratemaster::insert($csv_data);
         Log::warning("CSV Upload Successfully!");
     }
 }
