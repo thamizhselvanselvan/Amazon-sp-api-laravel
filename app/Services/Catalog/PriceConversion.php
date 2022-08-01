@@ -20,6 +20,9 @@ class PriceConversion
     }
     public function USAToIND($weight, $bb_price)
     {
+        $weight = (float)$weight;
+        $bb_price = (float)$bb_price;
+
         if ($weight > 0.9) {
             $int_shipping_base_charge = (6 + ($weight - 1) * 6);
         } else {
@@ -46,6 +49,9 @@ class PriceConversion
 
     public function USATOUAE($weight, $bb_price)
     {
+        $weight = (float)$weight;
+        $bb_price = (float)$bb_price;
+
         $duty_rate = 5 / 100;
         $seller_commission = 10 / 100;
         $packaging = 4;
@@ -66,6 +72,9 @@ class PriceConversion
 
     public function USATOSG($weight, $bb_price)
     {
+        $weight = (float)$weight;
+        $bb_price = (float)$bb_price;
+
         if ($weight > 0.9) {
             $int_shipping_base_charge = (8 + ($weight - 1) * 4.5);
         } else {
@@ -96,6 +105,9 @@ class PriceConversion
 
     public function INDToSA($weight, $bb_price)
     {
+        $weight = (float)$weight;
+        $bb_price = (float)$bb_price;
+
         $rate_array  = $this->rate_master_in_sa;
         $int_shipping_base_charge = '';
         foreach ($rate_array as $key => $value) {
@@ -127,6 +139,9 @@ class PriceConversion
 
     public function INDToSG($weight, $bb_price)
     {
+        $weight = (float)$weight;
+        $bb_price = (float)$bb_price;
+
         $rate_array  = $this->rate_master_in_sg;
         //India to Singapore
         $int_shipping_base_charge = '';
@@ -159,6 +174,9 @@ class PriceConversion
 
     public function INDToUAE($weight, $bb_price)
     {
+        $weight = (float)$weight;
+        $bb_price = (float)$bb_price;
+
         $rate_array = $this->rate_master_in_ae;
         $int_shipping_base_charge = '';
 

@@ -51,8 +51,8 @@ class Catalog
                 $seller_id = $value->seller_id;
                 $country_table = strtolower($country_code);
                 $countrywise_table = 'catalog' . $country_table . 's';
-                // $check = DB::connection('catalog')->select("SELECT asin from $countrywise_table where asin = '$asin'");
-                $check = [];
+                $check = DB::connection('catalog')->select("SELECT asin from $countrywise_table where asin = '$asin'");
+                // $check = [];
                 if (count($check) <= 0) {
 
                     $aws_id = NULL;
