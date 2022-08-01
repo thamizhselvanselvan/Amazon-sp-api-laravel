@@ -21,10 +21,10 @@ use SellingPartnerApi\Api\CatalogItemsV0Api;
 class Catalog
 {
     use ConfigTrait;
-    
+
     public function index($datas, $seller_id = NULL, $type)
     {
-        
+
         //$type = 1 for seller, 2 for Order, 3 for inventory
         $host = config('database.connections.catalog.host');
         $dbname = config('database.connections.catalog.database');
@@ -50,27 +50,13 @@ class Catalog
 
                 $seller_id = $value->seller_id;
                 $country_table = strtolower($country_code);
-                $countrywise_table = 'catalog'.$country_table.'s';
-                $databases = DB::connection('catalog')->select('SHOW TABLES');
+                $countrywise_table = 'catalog' . $country_table . 's';
+                // $check = DB::connection('catalog')->select("SELECT asin from $countrywise_table where asin = '$asin'");
                 $check = [];
-                foreach($databases as $key => $database)
-                {   
-                    $table = $database->Tables_in_mosh_catalog;
-                    if($table == $countrywise_table)
-                    {
-                        // echo 'working'.'<br>';
-                        // Log::notice($countrywise_table);
-                        $check = DB::connection('catalog')->select("SELECT asin from $countrywise_table where asin = '$asin'");
-                    } 
-                    // else{
-                        
-                        if (count($check) <= 0) {
-        
-                            $aws_id = NULL;
-                            $this->getCatalog($country_code, $token, $asin, $seller_id, $type, $aws_id);
-                        }
-                        
-                    // }
+                if (count($check) <= 0) {
+
+                    $aws_id = NULL;
+                    $this->getCatalog($country_code, $token, $asin, $seller_id, $type, $aws_id);
                 }
             }
         } elseif ($type == 2) {
@@ -92,11 +78,11 @@ class Catalog
         $config = $this->config($aws_id, $country_code, $auth_code);
         $apiInstance = new CatalogItemsV0Api($config);
         $marketplace = $this->marketplace_id($country_code);
-        
+
         $country_code = strtolower($country_code);
-        $table_name = 'catalog'.$country_code.'s';
-        
-        $seller_id = $aws_id?$aws_id:$seller_id; 
+        $table_name = 'catalog' . $country_code . 's';
+
+        $seller_id = $aws_id ? $aws_id : $seller_id;
         try {
             $result = $apiInstance->getCatalogItem($marketplace, $asin);
             $result = json_decode(json_encode($result));
@@ -114,7 +100,7 @@ class Catalog
 
                 foreach ($result as $key => $data) {
                     $key = lcfirst($key);
-                    
+
                     if (is_object($data)) {
 
                         $productcatalogs->{$key} = json_encode($data);
@@ -122,7 +108,6 @@ class Catalog
                         $productcatalogs->{$key} = ($data);
                     } else {
                         $productcatalogs->{$key} = json_encode($data);
-                        
                     }
                 }
                 R::store($productcatalogs);
@@ -143,7 +128,7 @@ class Catalog
 
             } elseif ($type == 4) {
                 DB::connection('catalog')
-                ->update("UPDATE asin_masters SET status = '1' WHERE status = '0'");
+                    ->update("UPDATE asin_masters SET status = '1' WHERE status = '0'");
             }
         } catch (Exception $e) {
             Log::alert($e);
