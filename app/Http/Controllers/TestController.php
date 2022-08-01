@@ -228,14 +228,15 @@ class TestController extends Controller
 
   public function GetPricing()
   {
-    $source = buyboxCountrycode();
-
+    // $source = buyboxCountrycode();
+    $source = ['IN' => 39];
     $chunk = 10;
     foreach ($source as $country_code => $seller_id) {
 
+      // echo $source;
       $calculated_weight = [];
-
-      $country_code_lr = strtolower('US');
+      echo $country_code;
+      $country_code_lr = strtolower($country_code);
 
       $product_lp = 'bb_product_lp_seller_detail_' . $country_code_lr . 's';
       $product = 'bb_product_' . $country_code_lr . 's';
@@ -300,26 +301,16 @@ class TestController extends Controller
                     'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
                   ];
               }
+              $pricing[] = $asin_details;
             }
-            if ($country_code_lr == 'us') {
 
-              $ind_price = $this->USAToIND($packet_weight, $listing_price_amount);
-              $destination_price_in = [
-                'ind_sp' => $ind_price,
-              ];
+            if ($country_code_lr == 'in') {
+              echo  $packet_weight;
+              echo $listing_price_amount;
 
-              $destination_price_ae = [
-                'uae_sp' => $this->USATOUAE($packet_weight, $listing_price_amount)
-              ];
-
-              $destination_price_sg = [
-                'sg_sp' => $this->USATOSG($packet_weight, $listing_price_amount),
-              ];
-
-              $pricing[] = [...$asin_details, ...$destination_price_in, ...$destination_price_ae, ...$destination_price_sg];
+              //
             }
           }
-          PricingUs::upsert($pricing, 'unique_asin', ['asin', 'weight', 'us_price', 'ind_sp', 'uae_sp', 'sg_sp', 'price_updated_at']);
           po($pricing);
           echo "<hr>";
           exit;
@@ -416,5 +407,9 @@ class TestController extends Controller
 
     return round($sg_sp, 2);
     //
+  }
+
+  public function INDToUAE($weight, $bb_price)
+  {
   }
 }

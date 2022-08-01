@@ -134,9 +134,20 @@ class CatalogPriceImport extends Command
                             ];
 
                             $pricing[] = [...$asin_details, ...$destination_price_in, ...$destination_price_ae, ...$destination_price_sg];
+                        } elseif ($country_code_lr == 'in') {
+
+                            //
                         }
                     }
-                    PricingUs::upsert($pricing, 'unique_asin', ['asin', 'weight', 'us_price', 'ind_sp', 'uae_sp', 'sg_sp', 'price_updated_at']);
+                    if ($country_code_lr == 'us') {
+                        PricingUs::upsert($pricing, 'unique_asin', ['asin', 'weight', 'us_price', 'ind_sp', 'uae_sp', 'sg_sp', 'price_updated_at']);
+                    }
+                    //
+                    elseif ($country_code_lr == 'in') {
+                        //
+
+
+                    }
                 });
         }
     }
