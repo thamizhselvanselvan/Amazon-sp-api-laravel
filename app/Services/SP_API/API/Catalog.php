@@ -49,14 +49,29 @@ class Catalog
                 $token = ($mws_region['aws_verified']['auth_code']);
 
                 $seller_id = $value->seller_id;
-                // $check = DB::connection('catalog')->select("SELECT asin from catalogs where asin = '$asin'");
-                // $check = catalog::where('asin', $asin)->get();
-                // $check = [];
-                // if (count($check) <= 0) {
-
-                    $aws_id = NULL;
-                    $this->getCatalog($country_code, $token, $asin, $seller_id, $type, $aws_id);
-                // }
+                $country_table = strtolower($country_code);
+                $countrywise_table = 'catalog'.$country_table.'s';
+                $databases = DB::connection('catalog')->select('SHOW TABLES');
+                $check = [];
+                foreach($databases as $key => $database)
+                {   
+                    $table = $database->Tables_in_mosh_catalog;
+                    if($table == $countrywise_table)
+                    {
+                        // echo 'working'.'<br>';
+                        // Log::notice($countrywise_table);
+                        $check = DB::connection('catalog')->select("SELECT asin from $countrywise_table where asin = '$asin'");
+                    } 
+                    // else{
+                        
+                        if (count($check) <= 0) {
+        
+                            $aws_id = NULL;
+                            $this->getCatalog($country_code, $token, $asin, $seller_id, $type, $aws_id);
+                        }
+                        
+                    // }
+                }
             }
         } elseif ($type == 2) {
 
@@ -77,7 +92,7 @@ class Catalog
         $config = $this->config($aws_id, $country_code, $auth_code);
         $apiInstance = new CatalogItemsV0Api($config);
         $marketplace = $this->marketplace_id($country_code);
-        // $country_code = '';
+        
         $country_code = strtolower($country_code);
         $table_name = 'catalog'.$country_code.'s';
         

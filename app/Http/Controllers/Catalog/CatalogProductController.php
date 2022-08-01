@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Aws_credential;
 use App\Models\Catalog\catalog;
 use SellingPartnerApi\Endpoint;
+use Illuminate\Support\Facades\DB;
 use App\Models\Catalog\Asin_master;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -21,9 +22,13 @@ class CatalogProductController extends Controller
     
     public function Index(Request $request)
     {
+        $sources = Asin_master::select('source')->groupBy('source')->get();
+        
         if ($request->ajax()) {
-            
-            $data = catalog::get();
+            $country_code = strtolower($request->country_code);
+            $Tables = 'catalog'.$country_code.'s';
+            $data = DB::connection('catalog')->select("SELECT * FROM $Tables ");
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->editColumn('asin', function ($row){
@@ -68,12 +73,13 @@ class CatalogProductController extends Controller
                 ->make(true);
         }
 
-        return view('Catalog.product.index');
+        return view('Catalog.product.index', compact('sources'));
     }
     
     public function Amazon()
     {
-        $asins = Asin_master::get(['asin','source','user_id']);
+        $asins = Asin_master::where('status', '=', 0)->get(['asin','source','user_id']);
+
         // dd($asins);
         $count = 0;
         $asin_source = [];
