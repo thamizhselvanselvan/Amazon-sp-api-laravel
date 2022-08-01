@@ -56,3 +56,36 @@ Route::get('test1', function () {
                 ");
     dd($data);
 });
+
+
+Route::get('ustoin/{weight}/{price}', 'TestController@USAToIND');
+Route::get('ustouae/{weight}/{price}', 'TestController@USAToUAE');
+Route::get('ustosg/{weight}/{price}', 'TestController@USATOSG');
+
+Route::get('ustoinprice', function () {
+    $bb_price = 9.98;
+    $weight = 0.27;
+    if ($weight > 0.9) {
+
+        $int_shipping_base_charge = (6 + ($weight - 1) * 6);
+    } else {
+
+        $int_shipping_base_charge = 6;
+    }
+    $duty_rate = 32.00 / 100;
+    $seller_commission = 10 / 100;
+    $packaging = 2;
+    $amazon_commission = 22.00 / 100;
+
+    $ex_rate = 82;
+    $duty_cost = round(($duty_rate * ($bb_price + $int_shipping_base_charge)), 2);
+
+    $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
+        (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $seller_commission);
+
+    $usd_sp = round($price_befor_amazon_fees * (1 + $amazon_commission) +
+        ($amazon_commission * $price_befor_amazon_fees * 0.12), 2);
+
+    $india_sp = $usd_sp * $ex_rate;
+    po($india_sp);
+});

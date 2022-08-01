@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
 use App\Models\Aws_credential;
 use App\Models\Catalog\Asin_master;
+use App\Models\Catalog\PricingUs;
 use App\Models\Mws_region;
 use Illuminate\Support\Carbon;
 use SellingPartnerApi\Endpoint;
@@ -227,19 +228,15 @@ class TestController extends Controller
 
   public function GetPricing()
   {
-    $country_code = 'uk';
-
-    $source = buyboxCountrycode();
-
+    // $source = buyboxCountrycode();
+    $source = ['IN' => 39];
     $chunk = 10;
     foreach ($source as $country_code => $seller_id) {
 
-      $calculated_price = [
-        'asin' => NULL,
-        'weight' => NULL,
-      ];
-
-      $country_code_lr = strtolower('US');
+      // echo $source;
+      $calculated_weight = [];
+      echo $country_code;
+      $country_code_lr = strtolower($country_code);
 
       $product_lp = 'bb_product_lp_seller_detail_' . $country_code_lr . 's';
       $product = 'bb_product_' . $country_code_lr . 's';
@@ -248,24 +245,15 @@ class TestController extends Controller
       Asin_master::select('asin_masters.asin', "$catalog_table.package_dimensions")
         ->where('asin_masters.source', $country_code)
         ->join($catalog_table, 'asin_masters.asin', '=', "$catalog_table.asin")
-        ->chunk($chunk, function ($data) use ($seller_id, $country_code, $product_lp) {
+        ->chunk($chunk, function ($data) use ($seller_id, $country_code_lr, $product_lp) {
 
           $pricing = [];
-
-          $asin_details = [
-            'seller_id' => NULL,
-            'asin' => NULL,
-            'source' => NULL,
-            'weigth' => NULL,
-            'listingprice_amount' => NULL,
-            'price_updated_at' => NULL,
-          ];
-          $update_asin = [];
-          $pricing = [];
+          $asin_details = [];
+          $listing_price_amount = '';
 
           foreach ($data as $value) {
             $a = $value['asin'];
-            $asin_details['weight'] = $this->getWeight($value['package_dimensions']);
+            $calculated_weight[$a] = $this->getWeight($value['package_dimensions']);
             $asin_array[] = "'$a'";
           }
 
@@ -286,31 +274,42 @@ class TestController extends Controller
             $listing_price = explode(',', $value->listingprice_amount);
             $updated_at = explode(',', $value->updated_at);
 
+            $asin_name = $value->asin;
+            $packet_weight = $calculated_weight[$asin_name];
+
             foreach ($buybox_winner as $key =>  $value1) {
 
+              $price = $country_code_lr . '_price';
               if ($value1 == '1') {
+
+                $listing_price_amount = $listing_price[$key];
                 $asin_details =
                   [
-                    'seller_id' => $seller_id,
-                    'asin' => $value->asin,
-                    'source' => $country_code,
-                    'listingprice_amount' => $listing_price[$key],
+                    'asin' =>  $asin_name,
+                    'weight' => $packet_weight,
+                    $price => $listing_price_amount,
                     'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
                   ];
                 break 1;
               } else {
-
+                $listing_price_amount =  min($listing_price);
                 $asin_details =
                   [
-                    'seller_id' => $seller_id,
-                    'asin' => $value->asin,
-                    'source' => $country_code,
-                    'listingprice_amount' => min($listing_price),
+                    'asin' =>  $asin_name,
+                    'weight' => $packet_weight,
+                    $price => $listing_price_amount,
                     'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
                   ];
               }
+              $pricing[] = $asin_details;
             }
-            $pricing[] = $asin_details;
+
+            if ($country_code_lr == 'in') {
+              echo  $packet_weight;
+              echo $listing_price_amount;
+
+              //
+            }
           }
           po($pricing);
           echo "<hr>";
@@ -319,15 +318,98 @@ class TestController extends Controller
     }
   }
 
-  public function USAToIND()
+  public function USAToIND($weight, $bb_price)
   {
+    if ($weight > 0.9) {
+      $int_shipping_base_charge = (6 + ($weight - 1) * 6);
+    } else {
+      $int_shipping_base_charge = 6;
+    }
+
+    $duty_rate = 32.00 / 100;
+    $seller_commission = 10 / 100;
+    $packaging = 2;
+    $amazon_commission = 22.00 / 100;
+
+    $ex_rate = 82;
+    $duty_cost = round(($duty_rate * ($bb_price + $int_shipping_base_charge)), 2);
+
+    $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
+      (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $seller_commission);
+
+    $usd_sp = round($price_befor_amazon_fees * (1 + $amazon_commission) +
+      ($amazon_commission * $price_befor_amazon_fees * 0.12), 2);
+
+    $india_sp = $usd_sp * $ex_rate;
+    return $india_sp;
   }
 
   public function getWeight($dimensions)
   {
+    $value = (json_decode($dimensions));
+    if (isset($value->Weight)) {
 
-    po(((json_decode($dimensions))));
-    exit;
-    return true;
+      if ($value->Weight->Units == 'pounds') {
+
+        $weight_kg = poundToKg($value->Weight->value);
+        return round($weight_kg, 2);
+      }
+    } else {
+      return 0.5;
+    }
+  }
+
+  public function USATOUAE($weight, $bb_price)
+  {
+    $duty_rate = 5 / 100;
+    $seller_commission = 10 / 100;
+    $packaging = 4;
+    $amazon_commission = 15.00 / 100;
+    $int_shipping_base_charge = $weight * 4.5;
+    $ex_rate = 3.7;
+    $duty_cost = round(($duty_rate * ($bb_price + $int_shipping_base_charge)), 2);
+
+    $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
+      (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $seller_commission);
+
+    $usd_sp = round($price_befor_amazon_fees * (1 + $amazon_commission) +
+      ($amazon_commission * $price_befor_amazon_fees * 0.12), 2);
+
+    $IED_sp = $usd_sp * $ex_rate;
+    return round($IED_sp, 2);
+  }
+
+  public function USATOSG($weight, $bb_price)
+  {
+    if ($weight > 0.9) {
+      $int_shipping_base_charge = (8 + ($weight - 1) * 4.5);
+    } else {
+      $int_shipping_base_charge = 8;
+    }
+
+    // return $int_shipping_base_charge;
+    $duty_rate = 4.00 / 100;
+    $seller_commission = 10 / 100;
+    $packaging = 3;
+    $MBM = 10.0 / 100;
+    $amazon_commission = 12.00 / 100;
+
+    $ex_rate = 1.37;
+    $duty_cost = $duty_rate * $bb_price;
+
+    $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
+      (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $MBM);
+
+    $mbm_usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
+      ($amazon_commission * $price_befor_amazon_fees * 0.12);
+
+    $sg_sp = $mbm_usd_sp * $ex_rate;
+
+    return round($sg_sp, 2);
+    //
+  }
+
+  public function INDToUAE($weight, $bb_price)
+  {
   }
 }
