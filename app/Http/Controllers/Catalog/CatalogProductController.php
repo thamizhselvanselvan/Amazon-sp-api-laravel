@@ -87,7 +87,7 @@ class CatalogProductController extends Controller
         foreach ($asins as $asin) {
 
             if ($count == 10) {
-                jobDispatchFunc($class, $asin_source, 'default');
+                jobDispatchFunc($class, $asin_source, 'catalog');
                 $asin_source = [];
                 $count = 0;
             } else {
@@ -100,7 +100,7 @@ class CatalogProductController extends Controller
                 $count++;
             }
         }
-        jobDispatchFunc($class, $asin_source, 'default');
+        jobDispatchFunc($class, $asin_source, 'catalog');
 
         return redirect('catalog/product');
     }

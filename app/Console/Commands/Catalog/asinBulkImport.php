@@ -111,5 +111,29 @@ class asinBulkImport extends Command
         $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin']);
 
         Log::warning(" asin import successfully");
+
+        Log::info('Catalog importing');
+
+        $asins = Asin_master::where('status', '=', 0)->get(['asin', 'source', 'user_id']);
+        $count = 0;
+        $asin_source = [];
+        $class = 'catalog\\AmazonCatalogImport';
+        foreach ($asins as $asin) {
+
+            if ($count == 10) {
+                jobDispatchFunc($class, $asin_source, 'catalog');
+                $asin_source = [];
+                $count = 0;
+            } else {
+
+                $asin_source[] = [
+                    'asin' => $asin->asin,
+                    'source' => $asin->source,
+                    'seller_id' => $asin->user_id
+                ];
+                $count++;
+            }
+        }
+        jobDispatchFunc($class, $asin_source, 'catalog');
     }
 }
