@@ -134,6 +134,16 @@
         $("#tag ").on('click', function(e) {
             $("#tagrep").show();
         });
+        $("#tag ").on('click', function(e) {
+            $("#warehouse").hide();
+        });
+
+
+        $("#ware ").on('click', function(e) {
+            $("#tagrep").hide();
+        });
+
+
         $("#warehouse ").on('change', function(e) {
             $("#table").show();
         });
@@ -151,6 +161,9 @@
 
         $("#entire ").on('click', function(e) {
             $("#warehouse").hide();
+        });
+        $("#entire ").on('click', function(e) {
+            $("#tagrep").hide();
         });
         $("#entire ").on('click', function(e) {
             $("#table").show();
