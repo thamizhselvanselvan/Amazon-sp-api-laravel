@@ -8,10 +8,10 @@ use RedBeanPHP\R;
 use League\Csv\Reader;
 use League\Csv\Statement;
 
-use App\Models\Ratemaster;
 use Illuminate\Http\Request;
-
 use Illuminate\Http\Response;
+
+use App\Models\Admin\Ratemaster;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
@@ -24,7 +24,7 @@ class RateMasterManagementController extends Controller
 {
     public function Index(Request $request)
     {
-        $sourcedestination = DB::connection('web')->select("SELECT source_destination FROM ratemasters group by source_destination ");
+        $sourcedestination = Ratemaster::groupBy('source_destination')->get('source_destination');
         
         return view('admin.rateMaster.index', compact('sourcedestination'));
     }
@@ -35,8 +35,7 @@ class RateMasterManagementController extends Controller
         if($request->ajax())
         {
             $rateMaster_data = '';
-            $rateMaster_data = DB::connection('web')->select("SELECT * FROM ratemasters WHERE source_destination = '$option' ");
-        
+            $rateMaster_data = Ratemaster::where('source_destination','=', $option)->get();
             return DataTables::of($rateMaster_data)
             ->addIndexColumn()
             ->make(true);
@@ -83,6 +82,7 @@ class RateMasterManagementController extends Controller
     public function templateDownload()
     {
         return Response()->download(public_path('RateMasterCSV/Export-Rate.csv'));
+       
     }
 
 }
