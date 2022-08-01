@@ -561,3 +561,20 @@ if (!function_exists('poundToKg')) {
         return $weight_kg;
     }
 }
+if (!function_exists('getWeight')) {
+
+    function getWeight($dimensions)
+    {
+        $value = (json_decode($dimensions));
+        if (isset($value->Weight)) {
+
+            if ($value->Weight->Units == 'pounds') {
+
+                $weight_kg = poundToKg($value->Weight->value);
+                return round($weight_kg, 2);
+            }
+        } else {
+            return 0.5;
+        }
+    }
+}

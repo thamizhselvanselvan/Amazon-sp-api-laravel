@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
 use App\Models\Aws_credential;
 use App\Models\Catalog\Asin_master;
+use App\Models\Catalog\PricingUs;
 use App\Models\Mws_region;
 use Illuminate\Support\Carbon;
 use SellingPartnerApi\Endpoint;
@@ -227,8 +228,6 @@ class TestController extends Controller
 
   public function GetPricing()
   {
-    $country_code = 'uk';
-
     $source = buyboxCountrycode();
 
     $chunk = 10;
@@ -245,11 +244,10 @@ class TestController extends Controller
       Asin_master::select('asin_masters.asin', "$catalog_table.package_dimensions")
         ->where('asin_masters.source', $country_code)
         ->join($catalog_table, 'asin_masters.asin', '=', "$catalog_table.asin")
-        ->chunk($chunk, function ($data) use ($seller_id, $country_code, $product_lp) {
+        ->chunk($chunk, function ($data) use ($seller_id, $country_code_lr, $product_lp) {
 
           $pricing = [];
           $asin_details = [];
-          $pricing = [];
           $listing_price_amount = '';
 
           foreach ($data as $value) {
@@ -280,52 +278,48 @@ class TestController extends Controller
 
             foreach ($buybox_winner as $key =>  $value1) {
 
+              $price = $country_code_lr . '_price';
               if ($value1 == '1') {
+
                 $listing_price_amount = $listing_price[$key];
                 $asin_details =
                   [
-                    'seller_id' => $seller_id,
                     'asin' =>  $asin_name,
-                    'source' => $country_code,
-                    'listingprice_amount' => $listing_price_amount,
-                    'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
                     'weight' => $packet_weight,
+                    $price => $listing_price_amount,
+                    'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
                   ];
                 break 1;
               } else {
                 $listing_price_amount =  min($listing_price);
                 $asin_details =
                   [
-                    'seller_id' => $seller_id,
-                    'asin' => $asin_name,
-                    'source' => $country_code,
-                    'listingprice_amount' => $listing_price_amount,
-                    'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
+                    'asin' =>  $asin_name,
                     'weight' => $packet_weight,
+                    $price => $listing_price_amount,
+                    'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
                   ];
               }
             }
-            if ($country_code == 'US' || $country_code == 'us') {
+            if ($country_code_lr == 'us') {
 
               $ind_price = $this->USAToIND($packet_weight, $listing_price_amount);
               $destination_price_in = [
-                'destination1' => 'IN',
-                'india_selling_price' => $ind_price,
+                'ind_sp' => $ind_price,
               ];
 
               $destination_price_ae = [
-                'destination2' => "UAE",
-                'UAE_selling_price' => $this->USATOUAE($packet_weight, $listing_price_amount)
+                'uae_sp' => $this->USATOUAE($packet_weight, $listing_price_amount)
               ];
 
               $destination_price_sg = [
-                'destination3' => 'SG',
-                'SG_selling_price' => $this->USATOSG($packet_weight, $listing_price_amount),
+                'sg_sp' => $this->USATOSG($packet_weight, $listing_price_amount),
               ];
 
               $pricing[] = [...$asin_details, ...$destination_price_in, ...$destination_price_ae, ...$destination_price_sg];
             }
           }
+          PricingUs::upsert($pricing, 'unique_asin', ['asin', 'weight', 'us_price', 'ind_sp', 'uae_sp', 'sg_sp', 'price_updated_at']);
           po($pricing);
           echo "<hr>";
           exit;
