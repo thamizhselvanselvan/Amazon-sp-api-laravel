@@ -129,21 +129,34 @@ class CatalogProductController extends Controller
         return redirect()->intended('/catalog/product');
     }
 
-    public function DownloadCatalogIntocsv(Request $request)
+    public function GetCatalogFile()
     {
-        // $files = glob(Storage::path('catalog/downloads/*'));
-        // foreach ($files as $file) {
-        //     if (is_file($file)) {
-        //         unlink($file);
-        //     }
-        // }
+        $path = (Storage::path("excel/downloads/catalog"));
+        $files = scandir($path);
+        foreach($files as $key => $file)
+        {
+            if($key >1)
+            {
+                $file_path = Storage::path("excel/downloads/catalog/".$file."/zip");
+                $file_paths = scandir($file_path);
+                foreach($file_paths as $key2 => $filename)
+                {
+                    if($key2 >1)
+                    {
+                        $catfile = basename($filename, '.zip');
+                        $catalogfiles [][$file]=date("F d Y H:i:s.", filemtime($file_path . '/' . $filename));
+                    }
+                }
+            }
+        }
+        return response()->json($catalogfiles);
+    }
+
+    public function DownloadCatalogIntocsv(Request $request, $country_code)
+    {
+        $path = "excel/downloads/catalog/".$country_code."/zip/Catalog".$country_code.".zip";
         
-        // $file_path =Storage::path("catalog/downloads/zip/Catalog".$request->country_code.".zip");
-        $file_path =Storage::path("catalog/downloads/zip/CatalogIN.zip");
-  
-        return Storage::download($file_path);
-        
-       
+        return Storage::download($path);
     }
 
     public function PriceExport(Request $request)

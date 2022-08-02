@@ -9,7 +9,7 @@
     <div class="col d-flex justify-content-end">
 
         <div>
-            <x-adminlte-select name="country" id="country" class="float-right mt-1 ">
+            <x-adminlte-select name="country" id="country" class="float-right mt-1 catalogcountry">
                 <option value="NULL">select country</option>
                 @foreach ($sources as $source)
                 <option value="{{$source->source}}">{{$source->source}}</option>
@@ -25,15 +25,13 @@
             </a>
         </h2>
         <h2 class="ml-2">
-            <!-- <a href="{{ route('catalog.export') }}"> -->
             <x-adminlte-button label="Export Catalog" theme="primary" class="btn-sm" icon="fas fa-file-export"
                 id="exportCatalog" />
-            <!-- </a> -->
         </h2>
         <h2 class="ml-2">
 
             <x-adminlte-button label="Download Catalog" theme="primary" class="btn-sm" icon="fas fa-download"
-                id="catalogdownload" data-toggle="modal" data-target="downloadModal" />
+                id="catalogdownload" data-toggle="modal" data-target="#downloadModal" />
 
         </h2>
         <h2 class="ml-2">
@@ -45,14 +43,11 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">Download Catalog</h4>
+                        <h4 class="modal-title">Download Catalog Zip</h4>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
-                    <div class="modal-body">
-                        <a href="download/csv-file">
-                            <x-adminlte-button label="Download Catalog" theme="primary" icon="fas fa-download"
-                                id="DownloadCatalog" />
-                        </a>
+                    <div class="modal-body catalogFiles">
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -216,6 +211,33 @@
                 success: function(response) {}
             });
         }
+    });
+
+    $('#catalogdownload').click(function() {
+
+        $.ajax({
+            url: "/catalog/get-file",
+            method: "GET",
+            data: {
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(response) {
+                console.log(response);
+                let files = '';
+                $.each(response, function(index, response) {
+                    let file_name = Object.keys(response)[0];
+                    let file_time = response[file_name];
+                    // alert(file_time);
+
+                    files += "<li class='p-0 m-0'>";
+                    files += "<a href='/catalog/download/csv-file/" + file_name +
+                        "' class='p-0 m-0'> Catalog " + file_name + "</a> ";
+                    files += file_time;
+                    files += "</li>";
+                });
+                $('.catalogFiles').html(files);
+            },
+        });
     });
     </script>
     @stop
