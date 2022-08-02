@@ -28,6 +28,9 @@ class Kernel extends ConsoleKernel
 
         if (app()->environment() === 'production') {
 
+            $schedule->command('backup:run')->twiceDaily();
+            $schedule->command('backup:clean')->daily()->at('01:00');
+
             $schedule->command('pms:sellers-orders-import')->everyTenMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
             $schedule->command('mosh:seller-asin-get-pricing')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
         }
