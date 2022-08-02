@@ -2,31 +2,31 @@
 
 namespace App\Console\Commands\Inventory;
 
-use App\Models\Inventory\Tag;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
+use App\Models\Inventory\Warehouse;
 use Illuminate\Support\Facades\Log;
 use App\Models\Inventory\Shipment_Inward_Details;
 use App\Models\Inventory\Shipment_Outward_Details;
 
-class tagwise_stock_track extends Command
+
+class warehouse_stock_track extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'mosh:tag-track';
-
+    protected $signature = 'mosh:warehouse-track';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Keeps Track of Inventoey Stocks Tagswise ';
+    protected $description = 'keeps track of Warehouse Wise report ';
 
     /**
      * Create a new command instance.
@@ -45,17 +45,17 @@ class tagwise_stock_track extends Command
      */
     public function handle()
     {
-        $tags = Tag::get();
-        foreach ($tags as $tag) {
+        $ware = Warehouse::get();
+        foreach ($ware as $war) {
 
-            $val = $tag->id;
-            $name = $tag->name;
+            $val = $war->id;
+            $name = $war->name;
             $date = Carbon::now()->format('d M Y');
 
             /* Inwarding count */
             $todayinward = 0;
             $dayin =  Shipment_Inward_Details::whereDate('created_at',  Carbon::today()->toDateString())
-                ->where('tag', $val)
+                ->where('warehouse_id', $val)
                 ->get();
             foreach ($dayin as $key => $item) {
 
@@ -64,7 +64,7 @@ class tagwise_stock_track extends Command
             /* Outwarding count */
             $todayoutward = 0;
             $dayout =   Shipment_Outward_Details::whereDate('created_at',  Carbon::today()->toDateString())
-                ->where('tag', $val)
+                ->where('warehouse_id', $val)
                 ->get();
             foreach ($dayout as $key => $value) {
 
@@ -77,14 +77,14 @@ class tagwise_stock_track extends Command
             $endTimeYesterday = Carbon::yesterday()->endOfDay();
 
             $open = Shipment_Inward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])
-                ->where('tag', $val)
+                ->where('warehouse_id', $val)
                 ->get();
             foreach ($open as  $data) {
                 $todayopening +=  $data['quantity'];
             }
             $todayoutstock = 0;
             $close =  Shipment_Outward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])
-                ->where('tag', $val)
+                ->where('warehouse_id', $val)
                 ->get();
             foreach ($close as  $cdata) {
                 $todayoutstock +=  $cdata['quantity'];
@@ -97,7 +97,7 @@ class tagwise_stock_track extends Command
 
             $todayclosingstock = 0;
             $close =  Inventory::whereBetween('created_at', [$startTimecls, $endTime])
-                ->where('tag', $val)
+                ->where('warehouse_id', $val)
                 ->get();
 
             foreach ($close as  $data) {
@@ -112,7 +112,7 @@ class tagwise_stock_track extends Command
             $totalopenamt = 0;
             $totalpriceout = [];
             $openamtamt =  Shipment_Inward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])
-                ->where('tag', $val)
+                ->where('warehouse_id', $val)
                 ->get();
             foreach ($openamtamt as $amt) {
                 $singlepricein[] = [
@@ -122,7 +122,7 @@ class tagwise_stock_track extends Command
                 ];
             }
             $closeamt =  Shipment_Outward_Details::whereBetween('created_at', [$startTime, $endTimeYesterday])
-                ->where('tag', $val)
+                ->where('warehouse_id', $val)
                 ->get();
             foreach ($closeamt as $amt) {
                 $singlepriceout[] = [
@@ -149,7 +149,7 @@ class tagwise_stock_track extends Command
             /* Day Inwarding Amount */
 
             $dayinamt =   Shipment_Inward_Details::whereDate('created_at',  Carbon::today()->toDateString())
-                ->where('tag', $val)
+                ->where('warehouse_id', $val)
                 ->get();
             $totaldayinvamt = 0;
 
@@ -161,7 +161,7 @@ class tagwise_stock_track extends Command
             /* Outwarding Amount */
 
             $dayoutamt =   Shipment_Outward_Details::whereDate('created_at',  Carbon::today()->toDateString())
-                ->where('tag', $val)
+                ->where('warehouse_id', $val)
                 ->get();
             $totaldayoutamt = 0;
             foreach ($dayoutamt as $key => $amtdayout) {
@@ -173,7 +173,7 @@ class tagwise_stock_track extends Command
             /* Cloasing Amount */
             $dayclosingamt = 0;
             $closeamt =   Inventory::query()
-                ->where('tag', $val)
+                ->where('warehouse_id', $val)
                 ->get();
             $closeprice = [];
             $dayclosing = [];
@@ -192,9 +192,10 @@ class tagwise_stock_track extends Command
 
 
 
-            DB::connection('inventory')->table('tag_stocks')->insert([
+
+            DB::connection('inventory')->table('warehouse_stocks')->insert([
                 'date' =>   $date,
-                'tag' => $val,
+                'Warehouse' => $val,
                 'opeaning_stock' =>   $todayopeningstock,
                 'opeaning_amount' =>  $totalopenamt,
                 'inwarding' => $todayinward,
@@ -207,8 +208,7 @@ class tagwise_stock_track extends Command
                 'updated_at' => now()
 
             ]);
-
-           
+            
         }
     }
 }

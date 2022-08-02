@@ -7,5 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tag_Stocks extends Model
 {
+    protected $connection = 'inventory';
     protected $fillable = ['date', 'tag','opeaning_stock', 'opeaning_amount', 'inwarding', 'inw_amount', 'outwarding', 'outw_amount', 'closing_stock', 'closing_amount'];
 }
