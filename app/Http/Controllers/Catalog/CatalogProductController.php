@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Catalog;
 
+use file;
 use config;
 use App\Models\Mws_region;
 use Illuminate\Http\Request;
@@ -10,9 +11,13 @@ use App\Models\Catalog\catalog;
 use SellingPartnerApi\Endpoint;
 use Illuminate\Support\Facades\DB;
 use App\Models\Catalog\Asin_master;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use SellingPartnerApi\Configuration;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use App\Services\SP_API\Config\ConfigTrait;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
@@ -80,7 +85,6 @@ class CatalogProductController extends Controller
     {
         $asins = Asin_master::where('status', '=', 0)->get(['asin','source','user_id']);
 
-        // dd($asins);
         $count = 0;
         $asin_source = [];
         $class= 'catalog\\AmazonCatalogImport';
@@ -107,4 +111,42 @@ class CatalogProductController extends Controller
         
         return redirect('catalog/product');
     }
+
+    public function ExportCatalog(Request $request)
+    {
+        $country_code = $request->country_code;
+        
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan mosh:catalog-export-csv $country_code> /dev/null &";
+            exec($command);
+
+            Log::warning("Export catalog command executed production  !!!");
+        } else {
+
+            Log::warning("Export catalog command executed local !");
+            Artisan::call('mosh:catalog-export-csv'.' '. $country_code);
+        }
+
+        return redirect()->intended('/catalog/product');
+    }
+
+    public function DownloadCatalogIntocsv(Request $request)
+    {
+        // $files = glob(Storage::path('catalog/downloads/*'));
+        // foreach ($files as $file) {
+        //     if (is_file($file)) {
+        //         unlink($file);
+        //     }
+        // }
+        
+        // $file_path =Storage::path("catalog/downloads/zip/Catalog".$request->country_code.".zip");
+        $file_path =Storage::path("catalog/downloads/zip/CatalogIN.zip");
+  
+        return Storage::download($file_path);
+        
+       
+    }
+
 }
