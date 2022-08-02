@@ -54,3 +54,4 @@ Route::get('catalog/rate-exchange', 'Catalog\AsinMasterController@getExchangeRat
 Route::get('catalog/export', 'Catalog\CatalogProductController@ExportCatalog')->name('catalog.export');
 Route::get('catalog/get-file', 'Catalog\CatalogProductController@GetCatalogFile');
 Route::get('catalog/download/csv-file/{country_code}', 'Catalog\CatalogProductController@DownloadCatalogIntocsv');
+Route::get('catalog/download/price/{country_code}', 'Catalog\CatalogProductController@DownloadCatalogPrice');

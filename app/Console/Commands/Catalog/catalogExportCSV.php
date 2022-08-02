@@ -54,7 +54,7 @@ class catalogExportCSV extends Command
        
 
         $data = DB::connection('catalog')->select(" SELECT * from $table_name ");
-        Log::alert($data);
+        // Log::alert($data);
         foreach(array_chunk($data, $chunk) as $result)
         {
             $records = [];

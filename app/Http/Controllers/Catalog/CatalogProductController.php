@@ -112,7 +112,6 @@ class CatalogProductController extends Controller
     public function ExportCatalog(Request $request)
     {
         $country_code = $request->country_code;
-        
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
             $base_path = base_path();
@@ -125,26 +124,26 @@ class CatalogProductController extends Controller
             Log::warning("Export catalog command executed local !");
             Artisan::call('mosh:catalog-export-csv'.' '. $country_code);
         }
-
         return redirect()->intended('/catalog/product');
     }
 
-    public function GetCatalogFile()
+    public function GetCatalogFile(Request $request)
     {
-        $path = (Storage::path("excel/downloads/catalog"));
+        $folder = $request->catalog;
+        $path = (Storage::path("excel/downloads/".$folder));
         $files = scandir($path);
         foreach($files as $key => $file)
         {
-            if($key >1)
+            if($key > 1)
             {
-                $file_path = Storage::path("excel/downloads/catalog/".$file."/zip");
+                $file_path = Storage::path("excel/downloads/".$folder."/".$file."/zip");
                 $file_paths = scandir($file_path);
                 foreach($file_paths as $key2 => $filename)
                 {
                     if($key2 >1)
                     {
                         $catfile = basename($filename, '.zip');
-                        $catalogfiles [][$file]=date("F d Y H:i:s.", filemtime($file_path . '/' . $filename));
+                        $catalogfiles [][$file] = date("F d Y H:i:s.", filemtime($file_path . '/' . $filename));
                     }
                 }
             }
@@ -154,8 +153,9 @@ class CatalogProductController extends Controller
 
     public function DownloadCatalogIntocsv(Request $request, $country_code)
     {
+        $folder = "catalog";
+        $this->deletefile($folder, $country_code);
         $path = "excel/downloads/catalog/".$country_code."/zip/Catalog".$country_code.".zip";
-        
         return Storage::download($path);
     }
 
@@ -165,6 +165,24 @@ class CatalogProductController extends Controller
         commandExecFunc("mosh:catalog-price-export-csv --country_code=${country_code}");
 
         return redirect('/catalog/product')->with("success", "Catalog Price is Importing");
+    }
+
+    public function DownloadCatalogPrice($country_code)
+    {
+        $folder = "catalog_price";
+        $this->deletefile($folder, $country_code);
+        $path = "excel/downloads/catalog_price/".$country_code."/zip/".$country_code."_CatalogPrice.zip";
+        return Storage::download($path);
+    }
+
+    public function deletefile($folder, $country_code)
+    {
+        $files = glob(Storage::path('excel/downloads/'.$folder.'/'.$country_code.'/*'));
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
     }
 
 }
