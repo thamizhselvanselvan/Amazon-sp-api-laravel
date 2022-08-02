@@ -51,3 +51,5 @@ Route::get('catalog/product/fetch-from-amazon', 'Catalog\CatalogProductControlle
 Route::post('catalog/price/export', 'Catalog\CatalogProductController@PriceExport')->name('catalog.price.export');
 
 Route::get('catalog/rate-exchange', 'Catalog\AsinMasterController@getExchangeRate')->name('catalog.exchange.rate');
+Route::get('catalog/export', 'Catalog\CatalogProductController@ExportCatalog')->name('catalog.export');
+Route::get('catalog/download/csv-file', 'Catalog\CatalogProductController@DownloadCatalogIntocsv');
