@@ -52,6 +52,7 @@ class CatalogPriceExportCSV extends Command
         $country_code = $this->option('country_code');
 
         $chunk = 10000;
+
         $exportFilePath = "excel/downloads/catalog_price/$country_code/" . $country_code . "_CatalogPrice";
         $deleteFilePath = "app/excel/downloads/catalog_price/" . $country_code;
 
@@ -73,65 +74,19 @@ class CatalogPriceExportCSV extends Command
         if ($country_code == 'IN') {
 
             $headers = ['asin', 'in_price', 'weight', 'uae_sp', 'sg_sp'];
-            PricingIn::select($headers)->chunk($chunk, function ($records) use ($exportFilePath, $headers, $chunk) {
+            $csv_header = ['Asin', 'India Price', 'Weight(kg)', 'UAE Selling Price', 'Singapore Selling Price'];
+            PricingIn::select($headers)->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
 
-                if ($this->count == 1) {
-                    if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv.mosh')) {
-                        Storage::put($exportFilePath . $this->fileNameOffset . '.csv.mosh', '');
-                    }
-                    $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv.mosh'), "w");
-                    $this->writer->insertOne($headers);
-                }
-
-                $records = $records->toArray();
-                $records = array_map(function ($datas) {
-                    return (array) $datas;
-                }, $records);
-
-                foreach ($records as $key => $data) {
-                    Log::alert(json_encode($data));
-                }
-                $this->writer->insertall($records);
-
-                if ($this->check == $this->count) {
-                    $this->fileNameOffset++;
-                    $this->count = 1;
-                } else {
-                    ++$this->count;
-                }
-
+                $this->CreateCsvFile($csv_header, $records, $exportFilePath);
                 //pusher
             });
         } elseif ($country_code == 'US') {
 
             $headers = ['asin', 'weight', 'us_price', 'ind_sp', 'uae_sp', 'sg_sp'];
-            PricingUs::select($headers)->chunk($chunk, function ($records) use ($exportFilePath, $headers, $chunk) {
+            $csv_header = ['Asin', 'Weight(kg)', 'US Price', 'India Selling Price', 'UAE Selling Price', 'Singapore Selling Price'];
+            PricingUs::select($headers)->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
 
-                if ($this->count == 1) {
-                    if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv.mosh')) {
-                        Storage::put($exportFilePath . $this->fileNameOffset . '.csv.mosh', '');
-                    }
-                    $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv.mosh'), "w");
-                    $this->writer->insertOne($headers);
-                }
-
-                $records = $records->toArray();
-                $records = array_map(function ($datas) {
-                    return (array) $datas;
-                }, $records);
-
-                foreach ($records as $key => $data) {
-                    Log::alert(json_encode($data));
-                }
-                $this->writer->insertall($records);
-
-                if ($this->check == $this->count) {
-                    $this->fileNameOffset++;
-                    $this->count = 1;
-                } else {
-                    ++$this->count;
-                }
-
+                $this->CreateCsvFile($csv_header, $records, $exportFilePath);
                 //pusher
             });
         }
@@ -149,5 +104,33 @@ class CatalogPriceExportCSV extends Command
                 }
             }
         }
+    }
+
+    public function CreateCsvFile($csv_header, $records, $exportFilePath)
+    {
+        if ($this->count == 1) {
+            if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv.mosh')) {
+                Storage::put($exportFilePath . $this->fileNameOffset . '.csv.mosh', '');
+            }
+            $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv.mosh'), "w");
+            $this->writer->insertOne($csv_header);
+        }
+
+        $records = $records->toArray();
+        $records = array_map(function ($datas) {
+            return (array) $datas;
+        }, $records);
+
+        $this->writer->insertall($records);
+
+        if ($this->check == $this->count) {
+            $this->fileNameOffset++;
+            $this->count = 1;
+        } else {
+            ++$this->count;
+        }
+
+        return true;
+        //
     }
 }
