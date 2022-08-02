@@ -24,21 +24,21 @@ use SellingPartnerApi\Api\CatalogItemsV0Api;
 
 class CatalogProductController extends Controller
 {
-    
+
     public function Index(Request $request)
     {
         $sources = Asin_master::select('source')->groupBy('source')->get();
-        
+
         if ($request->ajax()) {
             $country_code = strtolower($request->country_code);
-            $Tables = 'catalog'.$country_code.'s';
+            $Tables = 'catalog' . $country_code . 's';
             $data = DB::connection('catalog')->select("SELECT * FROM $Tables ");
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->editColumn('asin', function ($row){
-                    
-                    return '<a href="https://www.amazon.com/dp/'.$row->asin.'" target="_blank">'.$row->asin.'</a>';
+                ->editColumn('asin', function ($row) {
+
+                    return '<a href="https://www.amazon.com/dp/' . $row->asin . '" target="_blank">' . $row->asin . '</a>';
                 })
                 ->editColumn('item_dimensions', function ($row) {
                     $dimension = 'NA';
@@ -59,8 +59,8 @@ class CatalogProductController extends Controller
                 ->editColumn('amount', function ($row) {
                     $amount = 'NA';
                     $amount = json_decode($row->list_price);
-                    if(isset($amount)){
-                        $amount = "<p>".$amount->CurrencyCode."&nbsp;".$amount->Amount."</p>";
+                    if (isset($amount)) {
+                        $amount = "<p>" . $amount->CurrencyCode . "&nbsp;" . $amount->Amount . "</p>";
                     }
                     return $amount;
                 })
@@ -74,41 +74,38 @@ class CatalogProductController extends Controller
                     }
                     return $dimension;
                 })
-                ->rawColumns(['amount', 'item_dimensions', 'weight','asin'])
+                ->rawColumns(['amount', 'item_dimensions', 'weight', 'asin'])
                 ->make(true);
         }
 
         return view('Catalog.product.index', compact('sources'));
     }
-    
+
     public function Amazon()
     {
-        $asins = Asin_master::where('status', '=', 0)->get(['asin','source','user_id']);
+        $asins = Asin_master::where('status', '=', 0)->get(['asin', 'source', 'user_id']);
 
         $count = 0;
         $asin_source = [];
-        $class= 'catalog\\AmazonCatalogImport';
-        foreach($asins as $asin){
-            
-            if($count == 10)
-            {
-                jobDispatchFunc($class, $asin_source, 'default');
+        $class = 'catalog\\AmazonCatalogImport';
+        foreach ($asins as $asin) {
+
+            if ($count == 10) {
+                jobDispatchFunc($class, $asin_source, 'catalog');
                 $asin_source = [];
                 $count = 0;
-            }
-            else{
-                
+            } else {
+
                 $asin_source[] = [
                     'asin' => $asin->asin,
                     'source' => $asin->source,
                     'seller_id' => $asin->user_id
                 ];
-                $count ++;
+                $count++;
             }
-           
         }
-        jobDispatchFunc($class, $asin_source, 'default');
-        
+        jobDispatchFunc($class, $asin_source, 'catalog');
+
         return redirect('catalog/product');
     }
 
@@ -147,6 +144,14 @@ class CatalogProductController extends Controller
         return Storage::download($file_path);
         
        
+    }
+
+    public function PriceExport(Request $request)
+    {
+        $country_code =  $request->country_code;
+        commandExecFunc("mosh:catalog-price-export-csv --country_code=${country_code}");
+
+        return redirect('/catalog/product')->with("success", "Catalog Price is Importing");
     }
 
 }

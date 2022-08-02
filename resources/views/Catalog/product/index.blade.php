@@ -20,20 +20,25 @@
 
         <h2 class=" ml-2">
             <a href="{{ route('catalog.amazon.product') }}">
-                <x-adminlte-button label="Fetch Catalog From Amazon" theme="primary" icon="fas fa-file-export"
-                    id="exportUniversalTextiles" />
+                <x-adminlte-button label="Fetch Catalog From Amazon" class="btn-sm" theme="primary"
+                    icon="fas fa-file-export" id="exportUniversalTextiles" />
             </a>
         </h2>
         <h2 class="ml-2">
             <!-- <a href="{{ route('catalog.export') }}"> -->
-            <x-adminlte-button label="Export Catalog" theme="primary" icon="fas fa-file-export" id="exportCatalog" />
+            <x-adminlte-button label="Export Catalog" theme="primary" class="btn-sm" icon="fas fa-file-export"
+                id="exportCatalog" />
             <!-- </a> -->
         </h2>
         <h2 class="ml-2">
 
-            <x-adminlte-button label="Download Catalog" theme="primary" icon="fas fa-download" id="catalogdownload"
-                data-toggle="modal" data-target="downloadModal" />
+            <x-adminlte-button label="Download Catalog" theme="primary" class="btn-sm" icon="fas fa-download"
+                id="catalogdownload" data-toggle="modal" data-target="downloadModal" />
 
+        </h2>
+        <h2 class="ml-2">
+            <x-adminlte-button label="Export Catalog Price" class="btn-sm" theme="primary" icon="fas fa-file-export"
+                id="export_catalog_price" />
         </h2>
 
         <div class="modal" id="downloadModal">
@@ -62,165 +67,155 @@
             </a>
         </h2> -->
     </div>
+    @stop
 
-</div>
-@stop
+    @section('content')
+    @csrf
 
-@section('content')
-@csrf
+    <div class="row">
 
-<div class="row">
+        <div class="col">
 
-    <div class="col">
-
-        <div class="alert_display">
-            @if ($message = Session::get('success'))
-            <div class="alert alert-success alert-block">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>{{ $message }}</strong>
+            <div class="alert_display">
+                @if ($message = Session::get('success'))
+                <div class="alert alert-success alert-block">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <strong>{{ $message }}</strong>
+                </div>
+                @endif
             </div>
-            @endif
+            <div class="modal fade" id="file_download_modal" tabindex="-1" role="dialog"
+                aria-labelledby="FileDownloadModal" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Download Catalog Price</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="file_download_display">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                id='file_download_modal_close'>Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-bordered yajra-datatable table-striped">
+                <thead>
+                    <tr>
+                        <th>S/N</th>
+                        <th>Asin</th>
+                        <th>Source</th>
+                        <th>Name</th>
+                        <th>Dimension</th>
+                        <th>Weight</th>
+                        <th>Price</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </div>
-        <div class="row">
-
-
-
-        </div>
-        <table class="table table-bordered yajra-datatable table-striped">
-            <thead>
-                <tr>
-                    <th>S/N</th>
-                    <th>Asin</th>
-                    <th>Source</th>
-                    <th>Name</th>
-                    <th>Dimension</th>
-                    <th>Weight</th>
-                    <th>Price</th>
-
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
     </div>
-</div>
 
-@stop
+    @stop
 
-@section('js')
-<script type="text/javascript">
-$('#country').on('change', function() {
-    let country_code = $(this).val();
-    yajraTable(country_code);
-    // alert(country_code);
-});
-
-function yajraTable(country_code) {
-
-    let yajra_table = $('.yajra-datatable').DataTable({
-        processing: true,
-        serverSide: true,
-        destroy: true,
-        ajax: {
-            url: "{{ url('catalog/product') }}",
-            data: {
-                "country_code": country_code,
-                "_token": "{{ csrf_token() }}",
-            },
-        },
-        pageLength: 200,
-        lengthMenu: [50, 100, 200, 500],
-        columns: [{
-                data: 'DT_RowIndex',
-                name: 'DT_RowIndex',
-                orderable: false,
-                searchable: false
-            },
-            {
-                data: 'asin',
-                name: 'asin'
-            },
-            {
-                data: 'source',
-                name: 'source'
-            },
-            {
-                data: 'title',
-                name: 'title'
-            },
-            {
-                data: 'item_dimensions',
-                name: 'item_dimensions'
-            },
-            {
-                data: 'weight',
-                name: 'weight'
-            },
-            {
-                data: 'amount',
-                name: 'amount'
-            },
-        ]
-    });
-
-}
-
-$(document).ready(function() {
-
+    @section('js')
+    <script type="text/javascript">
     $('#country').on('change', function() {
-        if ($('#country').val() != 'NULL') {
-            var id = document.getElementById('country');
-            id.style = 'none';
-            document.getElementById('countrymsg').innerHTML = '';
-        }
+        let country_code = $(this).val();
+        yajraTable(country_code);
     });
 
-    $('#exportCatalog').on('click', function() {
-        let country_code = $('#country').val();
-        if (country_code == 'NULL') {
-            var id = document.getElementById('country');
-            var text = 'Country must filled out';
-            document.getElementById('countrymsg').innerHTML = text;
-            document.getElementById('countrymsg').style.color = "red";
-        } else {
+    $(document).ready(function() {
+        $('#exportCatalog').on('click', function() {
+            let country_code = $('#country').val();
+            if (country_code == 'NULL') {
+                var id = document.getElementById('country');
+                var text = 'Country must filled out';
+                document.getElementById('countrymsg').innerHTML = text;
+                document.getElementById('countrymsg').style.color = "red";
+            } else {
+                $.ajax({
+                    url: "{{ url('catalog/export') }}",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "country_code": country_code,
+                    },
+                });
+            }
+        });
+    });
 
-            $.ajax({
-
-                url: "{{ url('catalog/export') }}",
+    function yajraTable(country_code) {
+        let yajra_table = $('.yajra-datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            destroy: true,
+            ajax: {
+                url: "{{ url('catalog/product') }}",
                 data: {
                     "country_code": country_code,
                     "_token": "{{ csrf_token() }}",
                 },
-            });
-        }
-    });
-
-    $('#catalogdownload').on('click', function() {
+            },
+            pageLength: 200,
+            lengthMenu: [50, 100, 200, 500],
+            columns: [{
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'asin',
+                    name: 'asin'
+                },
+                {
+                    data: 'source',
+                    name: 'source'
+                },
+                {
+                    data: 'title',
+                    name: 'title'
+                },
+                {
+                    data: 'item_dimensions',
+                    name: 'item_dimensions'
+                },
+                {
+                    data: 'weight',
+                    name: 'weight'
+                },
+                {
+                    data: 'amount',
+                    name: 'amount'
+                },
+            ]
+        });
+    }
+    $('#export_catalog_price').on('click', function() {
         let country_code = $('#country').val();
-        alert(country_code);
-        if (country_code == 'NULL') {
-            var id = document.getElementById('country');
-            var text = 'Country must filled out';
-            document.getElementById('countrymsg').innerHTML = text;
-            document.getElementById('countrymsg').style.color = "red";
+        if (country_code == 'NULL' || country_code == 'AE') {
+            alert('Please Select Correct Country');
         } else {
-
             $.ajax({
-                method: 'GET',
-                url: "{{ url('catalog/download/csv-file') }}",
+                url: "/catalog/price/export",
+                type: "post",
                 data: {
-                    "country_code": country_code,
                     "_token": "{{ csrf_token() }}",
+                    "_method": 'POST',
+                    "country_code": country_code
                 },
-                success: function(response) {
-                    console.log(response);
-                    // arr += response;
-                    // window.location.href = '/invoice/zip-download/' + arr;
-                    // alert('Export pdf successfully');
-                },
+                success: function(response) {}
             });
         }
     });
-});
-</script>
-@stop
+    </script>
+    @stop

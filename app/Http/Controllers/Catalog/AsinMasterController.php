@@ -20,15 +20,14 @@ class AsinMasterController extends Controller
         if ($request->ajax()) {
 
             $data = Asin_master::query();
-            
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     $actionBtn = '<div class="d-flex"><a href="edit-asin/' . $row->id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
                     $actionBtn .= '<button data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
-                    
+
                     return $actionBtn;
-                    
                 })
                 ->make(true);
         }
@@ -69,16 +68,16 @@ class AsinMasterController extends Controller
 
     public function trash(Request $request)
     {
-       Asin_master::where('id', $request->id)->delete();
+        Asin_master::where('id', $request->id)->delete();
 
-   return redirect()->intended('/catalog/asin-master')->with('success', 'Asin has been pushed to Bin successfully');
+        return redirect()->intended('/catalog/asin-master')->with('success', 'Asin has been pushed to Bin successfully');
     }
 
 
     public function trashView(Request $request)
     {
         $asins = Asin_master::onlyTrashed()->get();
-        
+
         if ($request->ajax()) {
             return DataTables::of($asins)
                 ->addIndexColumn()
@@ -91,7 +90,8 @@ class AsinMasterController extends Controller
         return view('Catalog.AsinMaster.trash');
     }
 
-    public function restore(Request $request) {
+    public function restore(Request $request)
+    {
 
         Asin_master::where('id', $request->id)->restore();
         return response()->json(['success' => 'Asin has restored successfully']);
@@ -132,7 +132,7 @@ class AsinMasterController extends Controller
         } else {
 
             Log::warning("Export coma executed local !");
-            Artisan::call('pms:asin-import' .' '.$user_id );
+            Artisan::call('pms:asin-import' . ' ' . $user_id);
         }
 
         return redirect('catalog/import-bulk-asin')->with('success', 'All Asins uploaded successfully');
@@ -166,21 +166,20 @@ class AsinMasterController extends Controller
         return 'file not exist';
     }
 
-    public function AsinTemplateDownload(){
-        
+    public function AsinTemplateDownload()
+    {
+
         $file_path = public_path('template/Catalog-Asin-Template.csv');
         return response()->download($file_path);
     }
 
     public function getExchangeRate()
     {
-        $records = Asin_master::select('asin','source')->get();
+        $records = Asin_master::select('asin', 'source')->get();
 
-        foreach($records as $record)
-        {
+        foreach ($records as $record) {
             $asin = $record->asin;
             $source = $record->source;
-            
         }
     }
 }
