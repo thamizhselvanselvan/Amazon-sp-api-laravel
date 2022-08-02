@@ -81,8 +81,8 @@
                             <td name="ship_id[]" id="ship">{{$val['ship_id']}}</td>
                             <td name="asin[]" id="quantity">{{$val['asin']}}</td>
                             <td name="name[]">{{$val['item_name']}}</td>
-                            <td name="quantity[]" id="quantity">{{$val['quantity']}}</td>
                             <td name="price[]">{{$val['price']}}</td>
+                            <td name="quantity[]" id="quantity">{{$val['quantity']}}</td>
 
                             <td>
                                 <x-adminlte-select name="rack_id" class='rack_id'>
