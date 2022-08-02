@@ -125,6 +125,7 @@
             <th>Outwarding Price</th>
             <th>Quantity Left</th>
             <th>Quantity</th>
+            <th> Tag</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -171,6 +172,7 @@
                 data.append('name[]', td[1].innerText);
                 data.append('price[]', td[3].innerText);
                 data.append('quantity[]', td[5].children[0].value);
+                data.append('tag[]', $(td[6]).find('select').val());
 
 
             });
@@ -373,7 +375,8 @@
             method: 'GET',
             url: '/shipment/select/View/',
             data: {
-                'asin': asin, warehouse_id,
+                'asin': asin,
+                warehouse_id,
                 'id': id
             },
             success: function(arr) {
@@ -386,28 +389,36 @@
                 html += "<td name='priceo[]'>" + arr.price + "</td>";
                 html += "<td name='quantityl[]'>" + arr.balance_quantity + "</td>";
                 html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
+                html += `<td>
+                     <x-adminlte-select name="tag[]" id="tag">>
+                      <option value=" ">Select Tag</option>
+                       @foreach ($tags as $tag)
+                       <option value="{{ $tag->id }}">{{$tag->name }}</option>
+                      @endforeach
+                    </x-adminlte-select>
+                     </td>`
                 html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
                 html += "</tr>";
 
                 $("#outward_table").append(html);
-               
-                    // $("#quantity").on("change", function() {
-                    //         let out_qty = $('#quantity').val();
 
-                    //         let exist_qty = arr.balance_quantity;
+                // $("#quantity").on("change", function() {
+                //         let out_qty = $('#quantity').val();
 
-                    //         if (out_qty > exist_qty) {
-                    //             alert('Product quantity Exceeds');
-                    //             return false;
-                    //         } else if  (out_qty < exist_qty) {
-                    //             alert('item is not present In the warehouse');
-                    //             return false;
-                    //         }
-                       
-                    // });
+                //         let exist_qty = arr.balance_quantity;
+
+                //         if (out_qty > exist_qty) {
+                //             alert('Product quantity Exceeds');
+                //             return false;
+                //         } else if  (out_qty < exist_qty) {
+                //             alert('item is not present In the warehouse');
+                //             return false;
+                //         }
+
+                // });
             },
             error: function(response) {
-                 console.log(response);
+                console.log(response);
             }
         });
     }
