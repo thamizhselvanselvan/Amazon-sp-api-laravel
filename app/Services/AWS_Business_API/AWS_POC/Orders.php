@@ -10,9 +10,10 @@ class Orders
 {
     public function getOrders()
     {
-
+  $val = random_int(100,10000);
         $url = "https://https-ats.amazonsedi.com/803f01f5-11e4-47df-b868-bb908211e0ed";
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>
+        $xml =
+        '<?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE cXML SYSTEM "http://xml.cXML.org/schemas/cXML/1.2.011/cXML.dtd">
 
       <cXML timestamp="2017-06-27" payloadID="1498558305994.110967.712@amazon.com" version="1.2.011">
@@ -43,9 +44,9 @@ class Orders
                 </Total>
                 <ShipTo>
                     <Address isoCountryCode="US" addressID="Z4SEYWLA5FAVH5AB2MJMG05F1UA07299273BV7569MTU1FZPXTQ2EQA2OX24EF2">
-                        <Name xml:lang="en-US">Org Name</Name>
+                        <Name xml:lang="en-US">Nitrous Haul INC</Name>
                         <PostalAddress name="default">
-                            <DeliverTo>Nile Team, nile-team@amazon.com</DeliverTo>
+                            <DeliverTo>Test Team, epsilon.palmate@gmail.com</DeliverTo>
                             <DeliverTo>BISS</DeliverTo>
                             <DeliverTo>Nile Team</DeliverTo>
                             <Street>325 9th Ave N</Street>
@@ -54,7 +55,7 @@ class Orders
                             <PostalCode>98109</PostalCode>
                             <Country isoCountryCode="US">United States</Country>
                         </PostalAddress>
-                        <Email name="default">sram868+123@gmail.com</Email>
+                        <Email name="default">epsilon.palmate@gmail.com</Email>
                         <Phone name="work">
                             <TelephoneNumber>
                                 <CountryCode isoCountryCode="US">US</CountryCode>
@@ -82,7 +83,7 @@ class Orders
                             <PostalCode>60009</PostalCode>
                             <Country isoCountryCode="US">USA</Country>
                         </PostalAddress>
-                        <Email name="default">test@gmail.com</Email>
+                        <Email name="default">epsilon.palmate@gmail.com</Email>
                         <Phone name="work">
                             <TelephoneNumber>
                                 <CountryCode isoCountryCode="+1">US</CountryCode>

@@ -38,7 +38,6 @@ class BombinoExpressController extends Controller
             $parameters['awb_no'] = $awb_no;
             $queue_type = 'tracking';
             jobDispatchFunc(class: $class, parameters: $parameters, queue_type: $queue_type);
-
         }
 
         return redirect('/shipntrack/bombino')->with('success', 'Fetching Tracking Details');

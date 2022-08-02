@@ -6,7 +6,7 @@
 <div class="row">
     <h1 class="m-0 text-dark col">Upload AWB No.</h1>
     <h2 class="mb-4 text-right col">
-        <a href="{{route('shipntrack.smsa.gettracking')}}">
+        <a href="{{route('shipntrack.smsa')}}">
             <x-adminlte-button label="Back" theme="primary" icon="fas fa-long-arrow-alt-left" class="btn-sm" />
         </a>
     </h2>

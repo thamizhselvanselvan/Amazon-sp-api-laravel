@@ -1,13 +1,16 @@
 @extends('adminlte::page')
 
-@section('title', 'Bombino Tracking')
+@section('title', 'Forwarder Mapping')
 
 @section('content_header')
 <div class="row">
-    <h1 class="m-0 text-dark col">Bombino Tracking</h1>
+    <h1 class="m-0 text-dark col">Forwarder Mapping</h1>
     <h2 class="mb-4 text-right col">
-        <a href="{{Route('shipntrack.bombino.upload')}}">
-            <x-adminlte-button label="Add New Bombino AWB No." theme="primary" icon="fas fa-file-upload" class="btn-sm" />
+        <a href="{{Route('shipntrack.forwarder.upload')}}">
+            <x-adminlte-button label="Add New Records" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
+        </a>
+        <a href="{{Route('shipntrack.forwarder.template')}}">
+            <x-adminlte-button label="Download Templates" theme="primary" icon="fas fa-file-download" class="btn-sm" />
         </a>
     </h2>
 </div>

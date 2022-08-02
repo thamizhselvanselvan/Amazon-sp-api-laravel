@@ -73,7 +73,7 @@ class Order
         $count = 0;
 
         $delay = 0;
-        $delay_count = 18;
+        $delay_count = 25;
 
         foreach ($result_data as $resultkey => $result) {
 

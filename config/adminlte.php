@@ -362,7 +362,7 @@ return [
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin']
                 ],
-                
+
             ],
         ],
 
@@ -580,6 +580,11 @@ return [
                 [
                     'text'  =>  'Bombino Tracking',
                     'url'   =>  'shipntrack/bombino',
+                    'can'   =>  ['Admin'],
+                ],
+                [
+                    'text'  =>  'Forwarder Mapping',
+                    'url'   =>  'shipntrack/forwarder',
                     'can'   =>  ['Admin'],
                 ],
             ]
