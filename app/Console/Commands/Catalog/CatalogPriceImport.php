@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Catalog;
 
 use Illuminate\Console\Command;
+use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingUs;
 use Illuminate\Support\Facades\DB;
 use App\Models\Catalog\Asin_master;
@@ -10,6 +11,9 @@ use App\Services\Catalog\PriceConversion;
 
 class CatalogPriceImport extends Command
 {
+    public $rate_master_in_ae;
+    public $rate_master_in_sa;
+    public $rate_master_in_sg;
     /**
      * The name and signature of the console command.
      *
@@ -45,14 +49,16 @@ class CatalogPriceImport extends Command
         $product_lp = '';
         $seller_id = '';
 
-        $source = buyboxCountrycode();
+        // $source = buyboxCountrycode();
+        $source = [
+            'IN' => 39,
+            'US' => 40
+        ];
         $price_convert = new PriceConversion();
         $chunk = 10;
         foreach ($source as $country_code => $seller_id) {
 
-            $calculated_weight = [];
-
-            $country_code_lr = strtolower('US');
+            $country_code_lr = strtolower($country_code);
 
             $product_lp = 'bb_product_lp_seller_detail_' . $country_code_lr . 's';
             $product = 'bb_product_' . $country_code_lr . 's';
@@ -64,6 +70,7 @@ class CatalogPriceImport extends Command
                 ->chunk($chunk, function ($data) use ($seller_id, $country_code_lr, $product_lp, $price_convert) {
 
                     $pricing = [];
+                    $pricing_in = [];
                     $asin_details = [];
                     $listing_price_amount = '';
 
@@ -136,17 +143,24 @@ class CatalogPriceImport extends Command
                             $pricing[] = [...$asin_details, ...$destination_price_in, ...$destination_price_ae, ...$destination_price_sg];
                         } elseif ($country_code_lr == 'in') {
 
-                            //
+                            $price_saudi = $price_convert->INDToSA($packet_weight, $listing_price_amount);
+                            $price_singapore = $price_convert->INDToSG($packet_weight, $listing_price_amount);
+                            $price_uae = $price_convert->INDToUAE($packet_weight, $listing_price_amount);
+
+                            $destination_price = [
+                                'uae_sp' => $price_uae,
+                                'sg_sp' => $price_singapore,
+                                'sa_sp' => $price_saudi,
+                            ];
+                            $pricing_in[] = [...$asin_details, ...$destination_price];
                         }
                     }
                     if ($country_code_lr == 'us') {
+
                         PricingUs::upsert($pricing, 'unique_asin', ['asin', 'weight', 'us_price', 'ind_sp', 'uae_sp', 'sg_sp', 'price_updated_at']);
-                    }
-                    //
-                    elseif ($country_code_lr == 'in') {
-                        //
+                    } elseif ($country_code_lr == 'in') {
 
-
+                        PricingIn::upsert($pricing_in, 'asin_unique', ['asin', 'weight', 'in_price', 'uae_sp', 'sg_sp', 'sa_sp', 'price_updated_at']);
                     }
                 });
         }

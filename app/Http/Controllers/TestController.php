@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin\Ratemaster;
 use Exception;
 use RedBeanPHP\R;
 use App\Models\BOE;
@@ -9,6 +10,7 @@ use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
 use App\Models\Aws_credential;
 use App\Models\Catalog\Asin_master;
+use App\Models\Catalog\pricingIn;
 use App\Models\Catalog\PricingUs;
 use App\Models\Mws_region;
 use Illuminate\Support\Carbon;
@@ -23,6 +25,7 @@ use SellingPartnerApi\Api\CatalogApi;
 use App\Services\SP_API\CatalogImport;
 use Illuminate\Support\Facades\Storage;
 use App\Models\order\OrderSellerCredentials;
+use Illuminate\Cache\RateLimiting\Limit;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use SellingPartnerApi\Api\ProductPricingApi;
 
@@ -228,15 +231,22 @@ class TestController extends Controller
 
   public function GetPricing()
   {
-    // $source = buyboxCountrycode();
+
     $source = ['IN' => 39];
+
     $chunk = 10;
     foreach ($source as $country_code => $seller_id) {
 
-      // echo $source;
       $calculated_weight = [];
-      echo $country_code;
       $country_code_lr = strtolower($country_code);
+      if ($country_code_lr == 'in') {
+
+        $this->rate_master_in_ae = GetRateChart('IN-AE');
+
+        $this->rate_master_in_sa = GetRateChart('IN-SA');
+
+        $this->rate_master_in_sg = GetRateChart('IN-SG');
+      }
 
       $product_lp = 'bb_product_lp_seller_detail_' . $country_code_lr . 's';
       $product = 'bb_product_' . $country_code_lr . 's';
@@ -301,21 +311,122 @@ class TestController extends Controller
                     'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
                   ];
               }
-              $pricing[] = $asin_details;
             }
 
             if ($country_code_lr == 'in') {
-              echo  $packet_weight;
-              echo $listing_price_amount;
 
-              //
+              $price_saudi = $this->INDToSA($packet_weight, $listing_price_amount);
+              $price_singapore = $this->INDToSG($packet_weight, $listing_price_amount);
+              $price_uae = $this->INDToUAE($packet_weight, $listing_price_amount);
+
+              $destination_price = [
+                'uae_sp' => $price_uae,
+                'sg_sp' => $price_singapore,
+                'sa_sp' => $price_saudi,
+              ];
             }
+            $pricing[] = [...$asin_details, ...$destination_price];
           }
+          pricingIn::upsert($pricing, 'asin_unique', ['asin', 'weight', 'in_price', 'uae_sp', 'sg_sp', 'sa_sp', 'price_updated_at']);
           po($pricing);
           echo "<hr>";
-          exit;
+          // exit;
         });
     }
+  }
+
+  public function INDToSA($weight, $bb_price)
+  {
+    $rate_array = $this->rate_master_in_sa;
+    $int_shipping_base_charge = '';
+    foreach ($rate_array as $key => $value) {
+
+      if ($key >= $weight) {
+        $int_shipping_base_charge = $value['lmd_cost'];
+        break;
+      }
+    }
+
+    $duty_rate = 7 / 100;
+    $nitshopp = 12.0 / 100;
+    $packaging = 100.00;
+    $amazon_commission = 15.0 / 100;
+    $ex_rate = 0.051;
+
+    $duty_cost = ($bb_price + $int_shipping_base_charge) * $duty_rate;
+
+    $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
+      (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $nitshopp);
+
+    $mbm_usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
+      ($amazon_commission * $price_befor_amazon_fees * 0.14);
+
+    $uae_sa = $mbm_usd_sp * $ex_rate;
+
+    return round($uae_sa, 2);
+  }
+
+  public function INDToSG($weight, $bb_price)
+  {
+    //India to Singapore
+    $rate_array = $this->rate_master_in_sg;
+    $int_shipping_base_charge = '';
+    foreach ($rate_array as $key => $value) {
+
+      if ($key >= $weight) {
+        $int_shipping_base_charge = $value['lmd_cost'];
+        break;
+      }
+    }
+
+    $duty_rate = 7 / 100;
+    $nitshopp = 15.0 / 100;
+    $packaging = 120.00;
+    $amazon_commission = 15.0 / 100;
+    $ex_rate = 0.019;
+
+    $duty_cost = ($bb_price + $int_shipping_base_charge) * $duty_rate;
+
+    $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
+      (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $nitshopp);
+
+    $mbm_usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
+      ($amazon_commission * $price_befor_amazon_fees * 0.14);
+
+    $uae_sg = $mbm_usd_sp * $ex_rate;
+
+    return round($uae_sg, 2);
+  }
+
+  public function INDToUAE($weight, $bb_price)
+  {
+    $rate_array = $this->rate_master_in_ae;
+    $int_shipping_base_charge = '';
+
+    foreach ($rate_array as $key => $value) {
+
+      if ($key >= $weight) {
+        $int_shipping_base_charge = $value['lmd_cost'];
+        break;
+      }
+    }
+    $duty_rate = 7 / 100;
+    $nitshopp = 12.0 / 100;
+    $packaging = 180.00;
+    $amazon_commission = 15.0 / 100;
+    $ex_rate = 0.051;
+
+    $duty_cost = ($bb_price + $int_shipping_base_charge) * $duty_rate;
+
+    $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
+      (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $nitshopp);
+
+    $mbm_usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
+      ($amazon_commission * $price_befor_amazon_fees * 0.14);
+
+    $uae_sp = $mbm_usd_sp * $ex_rate;
+
+    return round($uae_sp, 2);
   }
 
   public function USAToIND($weight, $bb_price)
@@ -407,9 +518,5 @@ class TestController extends Controller
 
     return round($sg_sp, 2);
     //
-  }
-
-  public function INDToUAE($weight, $bb_price)
-  {
   }
 }
