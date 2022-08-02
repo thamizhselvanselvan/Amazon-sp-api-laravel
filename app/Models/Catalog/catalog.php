@@ -5,10 +5,10 @@ namespace App\Models\Catalog;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class catalog extends Model
-{
-    use HasFactory;
-    protected $connection = 'catalog';
+// class catalog extends Model
+// {
+//     use HasFactory;
+//     protected $connection = 'catalog';
 
-    protected $table = 'catalogs';
-}
+//     protected $table = 'catalogs';
+// }

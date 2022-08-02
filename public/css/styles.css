@@ -576,3 +576,8 @@ body {
     height: 46px;
     width: 300px;
 }
+
+.countrymsg {
+    margin-top: -10px;
+    font-size: small;
+}

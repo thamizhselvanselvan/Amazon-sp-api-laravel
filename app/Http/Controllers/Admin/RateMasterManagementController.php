@@ -24,7 +24,7 @@ class RateMasterManagementController extends Controller
 {
     public function Index(Request $request)
     {
-        $sourcedestination = Ratemaster::groupBy('source_destination')->get('source_destination');
+        $sourcedestination = Ratemaster::distinct()->get('source_destination');
         
         return view('admin.rateMaster.index', compact('sourcedestination'));
     }
