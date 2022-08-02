@@ -104,4 +104,12 @@ class CatalogProductController extends Controller
 
         return redirect('catalog/product');
     }
+
+    public function PriceExport(Request $request)
+    {
+        $country_code =  $request->country_code;
+        commandExecFunc("mosh:catalog-price-export-csv --country_code=${country_code}");
+
+        return redirect('/catalog/product')->with("success", "Catalog Price is Importing");
+    }
 }
