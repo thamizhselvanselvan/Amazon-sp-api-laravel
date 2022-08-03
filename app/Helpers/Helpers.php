@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use App\Models\Aws_credential;
 use App\Models\Admin\Ratemaster;
+use App\Models\Catalog\Catalog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
