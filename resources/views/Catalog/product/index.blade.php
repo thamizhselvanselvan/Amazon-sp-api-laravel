@@ -124,7 +124,9 @@
     <script type="text/javascript">
     $('#country').on('change', function() {
         let country_code = $(this).val();
-        yajraTable(country_code);
+        if (country_code != 'NULL') {
+            yajraTable(country_code);
+        }
     });
 
     function yajraTable(country_code) {

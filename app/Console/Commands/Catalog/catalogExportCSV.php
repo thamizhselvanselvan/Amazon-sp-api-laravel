@@ -12,6 +12,12 @@ use Illuminate\Support\Facades\Storage;
 class catalogExportCSV extends Command
 {
     private $offset = 0 ;
+    private $count = 1 ;
+    private $country_code;
+    private $remender;
+    private $writer;
+    private $csv_files = [];
+    private $file_path;
     /**
      * The name and signature of the console command.
      *
@@ -43,33 +49,28 @@ class catalogExportCSV extends Command
      */
     public function handle()
     {
-        $count = 1 ;
-        $total_csv = 50 ;
-        $chunk = 10 ;
-        $remender = $total_csv / $chunk ;
-       
-        $country_code = $this->argument('country_code');
+        $total_csv = 1000000 ;
+        $chunk = 100000 ;
+        $this->remender = $total_csv / $chunk ;
+        $this->country_code = $this->argument('country_code');
         
-        $table_name = 'catalog'.strtolower($country_code).'s';
-       
+        $table_name = 'catalog'.strtolower($this->country_code).'s';
+        $modal_table = table_model_create(country_code:$this->country_code, model:'Catalog', table_name:'catalog');
+        $modal_table->orderBy('id')->chunk($chunk, function($result){
 
-        $data = DB::connection('catalog')->select(" SELECT * from $table_name ");
-        // Log::alert($data);
-        foreach(array_chunk($data, $chunk) as $result)
-        {
-            $records = [];
-            if($count == 1 )
+            if($this->count == 1 )
             {   
-                $file_path = "excel/downloads/catalog/".$country_code."/Catalog-export".$country_code.$this->offset.".csv";
-                $csv_files [] = "Catalog-export".$country_code.$this->offset.".csv";
-                if(!Storage::exists($file_path))
+                $this->file_path = "excel/downloads/catalog/".$this->country_code."/Catalog-export".$this->country_code.$this->offset.".csv";
+                $this->csv_files [] = "Catalog-export".$this->country_code.$this->offset.".csv";
+                
+                if(!Storage::exists($this->file_path))
                 {
-                    Storage::put($file_path, '');
+                    Storage::put($this->file_path, '');
                 }
-                $writer = Writer::createFromPath(Storage::path($file_path, 'w'));
+                
+                $this->writer = Writer::createFromPath(Storage::path($this->file_path, 'w'));
                 $header = ['S/N' ,'ASIN', 'Source', 'Binding', 'Brand', 'Item-Dimensions', 'Manufacturer',];
-                $writer->insertOne($header);
-                   
+                $this->writer->insertOne($header);
             }
             foreach($result as $value)
             {
@@ -83,23 +84,24 @@ class catalogExportCSV extends Command
                     'Manufacturer' => $value->manufacturer,
                 ];
             }
-            $writer->insertAll($records);
+            $this->writer->insertAll($records);
             
-            if($remender == $count)
+            if($this->remender == $this->count)
             {
                 
-                $this->offset++;
-                $count = 1;
+                ++$this->offset;
+                $this->count = 1;
                 
             }
             else{
                 
-                $count++;
-            }   
-        }
-
+                ++$this->count;
+            }
+            
+        });
+    
         $zip = new ZipArchive;
-        $path = "excel/downloads/catalog/".$country_code."/zip/Catalog".$country_code.".zip";
+        $path = "excel/downloads/catalog/".$this->country_code."/zip/Catalog".$this->country_code.".zip";
         $file_path = Storage::path($path);
         
         if (!Storage::exists($path)) {
@@ -108,9 +110,9 @@ class catalogExportCSV extends Command
         
         if($zip->open($file_path, ZipArchive::CREATE) === TRUE)
         {
-            foreach($csv_files as $key => $value)
+            foreach($this->csv_files as $key => $value)
             {
-                $path = Storage::path('excel/downloads/catalog/'.$country_code.'/'.$value);
+                $path = Storage::path('excel/downloads/catalog/'.$this->country_code.'/'.$value);
                 $relativeNameInZipFile = basename($path);
                 $zip->addFile($path, $relativeNameInZipFile);
             }
