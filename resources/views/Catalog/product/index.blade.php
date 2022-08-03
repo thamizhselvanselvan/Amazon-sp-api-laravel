@@ -9,7 +9,7 @@
     <div class="col d-flex justify-content-end">
 
         <div>
-            <x-adminlte-select name="country" id="country" class="float-right mt-1 ">
+            <x-adminlte-select name="country" id="country" class="float-right mt-1 catalogcountry">
                 <option value="NULL">select country</option>
                 @foreach ($sources as $source)
                 <option value="{{$source->source}}">{{$source->source}}</option>
@@ -25,34 +25,33 @@
             </a>
         </h2>
         <h2 class="ml-2">
-            <!-- <a href="{{ route('catalog.export') }}"> -->
             <x-adminlte-button label="Export Catalog" theme="primary" class="btn-sm" icon="fas fa-file-export"
                 id="exportCatalog" />
-            <!-- </a> -->
         </h2>
         <h2 class="ml-2">
 
             <x-adminlte-button label="Download Catalog" theme="primary" class="btn-sm" icon="fas fa-download"
-                id="catalogdownload" data-toggle="modal" data-target="downloadModal" />
+                id="catalogdownload" data-toggle="modal" data-target="#downloadModal" />
 
         </h2>
         <h2 class="ml-2">
             <x-adminlte-button label="Export Catalog Price" class="btn-sm" theme="primary" icon="fas fa-file-export"
                 id="export_catalog_price" />
         </h2>
+        <h2 class="ml-2">
+            <x-adminlte-button label="Download Catalog Price" class="btn-sm" theme="primary" icon="fas fa-download"
+                id="download_catalog_price" data-toggle="modal" data-target="#file_download_modal" />
+        </h2>
 
         <div class="modal" id="downloadModal">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">Download Catalog</h4>
+                        <h4 class="modal-title">Download Catalog Zip</h4>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
-                    <div class="modal-body">
-                        <a href="download/csv-file">
-                            <x-adminlte-button label="Download Catalog" theme="primary" icon="fas fa-download"
-                                id="DownloadCatalog" />
-                        </a>
+                    <div class="modal-body catalogFiles">
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -84,23 +83,18 @@
                 </div>
                 @endif
             </div>
-            <div class="modal fade" id="file_download_modal" tabindex="-1" role="dialog"
-                aria-labelledby="FileDownloadModal" aria-hidden="true">
-                <div class="modal-dialog" role="document">
+            <div class="modal" id="file_download_modal">
+                <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Download Catalog Price</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <h4 class="modal-title">Download Catalog Price</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
                         </div>
-                        <div class="modal-body">
-                            <div class="file_download_display">
-                            </div>
+                        <div class="modal-body catalogPricing">
+
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary"
-                                id='file_download_modal_close'>Close</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -131,26 +125,6 @@
     $('#country').on('change', function() {
         let country_code = $(this).val();
         yajraTable(country_code);
-    });
-
-    $(document).ready(function() {
-        $('#exportCatalog').on('click', function() {
-            let country_code = $('#country').val();
-            if (country_code == 'NULL') {
-                var id = document.getElementById('country');
-                var text = 'Country must filled out';
-                document.getElementById('countrymsg').innerHTML = text;
-                document.getElementById('countrymsg').style.color = "red";
-            } else {
-                $.ajax({
-                    url: "{{ url('catalog/export') }}",
-                    data: {
-                        "_token": "{{ csrf_token() }}",
-                        "country_code": country_code,
-                    },
-                });
-            }
-        });
     });
 
     function yajraTable(country_code) {
@@ -200,6 +174,27 @@
             ]
         });
     }
+
+    $(document).ready(function() {
+        $('#exportCatalog').on('click', function() {
+            let country_code = $('#country').val();
+            if (country_code == 'NULL') {
+                var id = document.getElementById('country');
+                var text = 'Country must filled out';
+                document.getElementById('countrymsg').innerHTML = text;
+                document.getElementById('countrymsg').style.color = "red";
+            } else {
+                $.ajax({
+                    url: "{{ url('catalog/export') }}",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "country_code": country_code,
+                    },
+                });
+            }
+        });
+    });
+
     $('#export_catalog_price').on('click', function() {
         let country_code = $('#country').val();
         if (country_code == 'NULL' || country_code == 'AE') {
@@ -213,9 +208,67 @@
                     "_method": 'POST',
                     "country_code": country_code
                 },
-                success: function(response) {}
+                success: function(response) {
+                    console.log(response);
+                },
             });
         }
+    });
+
+    $('#catalogdownload').click(function() {
+
+        $.ajax({
+            url: "/catalog/get-file",
+            method: "GET",
+            data: {
+                "catalog": "catalog",
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(response) {
+                console.log(response);
+                let files = '';
+                $.each(response, function(index, response) {
+                    let file_name = Object.keys(response)[0];
+                    let file_time = response[file_name];
+                    // alert(file_time);
+
+                    files += "<li class='p-0 m-0'>";
+                    files += "<a href='/catalog/download/csv-file/" + file_name +
+                        "' class='p-0 m-0'> Catalog " + file_name + "</a> ";
+                    files += file_time;
+                    files += "</li>";
+                });
+                $('.catalogFiles').html(files);
+            },
+        });
+    });
+
+    $('#download_catalog_price').click(function() {
+        $.ajax({
+            // url: "/catalog/price/file",
+            url: "/catalog/get-file",
+            data: {
+                "method": "GET",
+                "catalog": "catalog_price",
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(result) {
+                console.log(result);
+                let files = '';
+                $.each(result, function(index, result) {
+                    let file_name = Object.keys(result)[0];
+                    let file_time = result[file_name];
+                    // alert(file_time);
+
+                    files += "<li class='p-0 m-0'>";
+                    files += "<a href='/catalog/download/price/" + file_name +
+                        "' class='p-0 m-0'> Catalog Price" + file_name + "</a> ";
+                    files += file_time;
+                    files += "</li>";
+                });
+                $('.catalogPricing').html(files);
+            },
+        });
     });
     </script>
     @stop
