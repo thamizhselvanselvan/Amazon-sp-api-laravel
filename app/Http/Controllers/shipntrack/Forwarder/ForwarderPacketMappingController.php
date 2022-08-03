@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\shipntrack\Forwarder;
 
+use League\Csv\Reader;
 use AWS\CRT\HTTP\Response;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -38,6 +39,14 @@ class ForwarderPacketMappingController extends Controller
 
         Storage::put($path, $source);
 
-        //
+        $csv = Reader::createFromPath(Storage::path($path), 'r');
+        $csv->setDelimiter(",");
+        $csv->setHeaderOffset(0);
+
+        foreach ($csv as $key => $value) {
+
+            // po($value);
+        }
+        // dd($csv);
     }
 }

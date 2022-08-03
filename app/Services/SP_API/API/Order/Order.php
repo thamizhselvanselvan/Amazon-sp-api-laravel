@@ -129,7 +129,7 @@ class Order
 
                 R::store($update_orders);
 
-                $order_item_details = DB::connection('order')->select("select id from orderitemdetails where amazon_order_identifier = '$amazon_order_id'");
+                $order_item_details = DB::connection('order')->select("select id, amazon_order_identifier from orderitemdetails where amazon_order_identifier = '$amazon_order_id'");
 
                 if (!array_key_exists(0, $order_item_details)) {
 
