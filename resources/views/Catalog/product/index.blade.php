@@ -272,7 +272,7 @@
 
                     files += "<li class='p-0 m-0'>";
                     files += "<a href='/catalog/download/price/" + file_name +
-                        "' class='p-0 m-0'> Catalog Price" + file_name + "</a> ";
+                        "' class='p-0 m-0'> Catalog Price " + file_name + "</a> ";
                     files += file_time;
                     files += "</li>";
                 });
