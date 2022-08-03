@@ -45,8 +45,7 @@ class ForwarderPacketMappingController extends Controller
 
         foreach ($csv as $key => $value) {
 
-            // po($value);
+            po($value);
         }
-        // dd($csv);
     }
 }
