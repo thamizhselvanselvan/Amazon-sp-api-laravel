@@ -69,19 +69,22 @@ class catalogExportCSV extends Command
                 }
                 
                 $this->writer = Writer::createFromPath(Storage::path($this->file_path, 'w'));
-                $header = ['S/N' ,'ASIN', 'Source', 'Binding', 'Brand', 'Item-Dimensions', 'Manufacturer',];
+                $header = ['ASIN', 'Source', 'Binding', 'Brand', 'Item-Dimensions', 'Manufacturer', 'Product-Group', 'Product-Type-Name', 'Size', 'Title'];
                 $this->writer->insertOne($header);
             }
             foreach($result as $value)
             {
                 $records []= [
-                    'S/N' => $value->id,
                     'ASIN' => $value->asin,
                     'Source' => $value->source,
                     'Binding' => $value->binding,
                     'Brand' => $value->brand,
                     'Item-Dimensions' =>$value->item_dimensions,
                     'Manufacturer' => $value->manufacturer,
+                    'Product-Group' => $value->product_group,
+                    'Product-Type-Name' => $value->product_type_name,
+                    'Size' => $value->size,
+                    'Title' => $value->title,
                 ];
             }
             $this->writer->insertAll($records);
