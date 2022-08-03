@@ -6,6 +6,7 @@ use League\Csv\Reader;
 use AWS\CRT\HTTP\Response;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\ShipNTrack\Packet\PacketForwarder;
 use Illuminate\Support\Facades\Storage;
 
 class ForwarderPacketMappingController extends Controller
@@ -43,9 +44,34 @@ class ForwarderPacketMappingController extends Controller
         $csv->setDelimiter(",");
         $csv->setHeaderOffset(0);
 
+        $forwarder_details = [];
+
+        $awb = [
+            'f1_name' => '',
+            'ft_1' => '',
+            'f2_name' => '',
+            'ft_2' => ''
+        ];
+
         foreach ($csv as $key => $value) {
 
-            po($value);
+            if ($ft_1 = $value['forwarder_1_awb']) {
+
+                $awb['f1_name'] = $value['forwarder_1'];
+                $awb['ft_1'] = $ft_1;
+            }
+            if ($ft_2 = $value['forwarder_2_awb']) {
+
+                $awb['f2_name'] = $value['forwarder_2'];
+                $awb['ft_2'] = $ft_2;
+            }
+
+            $forwarder_details[] = $awb;
+            $tracking[] =  $value;
         }
+
+        PacketForwarder::upsert($tracking, 'order_id_awb_no_unique', ['order_id', 'awb_no', 'forwarder_1', 'forwarder_1_awb', 'forwarder_2', 'forwarder_2_awb']);
+
+        //
     }
 }
