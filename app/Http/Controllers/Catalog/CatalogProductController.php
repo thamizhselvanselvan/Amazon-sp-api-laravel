@@ -28,10 +28,11 @@ class CatalogProductController extends Controller
     public function Index(Request $request)
     {
         $sources = Asin_master::select('source')->groupBy('source')->get();
+        $country_code = strtolower($request->country_code);
+        $Tables = 'catalog' . $country_code . 's';
 
         if ($request->ajax()) {
-            $country_code = strtolower($request->country_code);
-            $Tables = 'catalog' . $country_code . 's';
+            $data = '';
             $data = DB::connection('catalog')->select("SELECT * FROM $Tables ");
 
             return DataTables::of($data)

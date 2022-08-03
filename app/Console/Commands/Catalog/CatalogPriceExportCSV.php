@@ -76,8 +76,8 @@ class CatalogPriceExportCSV extends Command
 
         if ($this->country_code == 'IN') {
 
-            $headers = ['asin', 'in_price', 'weight', 'uae_sp', 'sg_sp'];
-            $csv_header = ['Asin', 'India Price', 'Weight(kg)', 'UAE Selling Price', 'Singapore Selling Price'];
+            $headers = ['asin', 'in_price', 'weight', 'uae_sp', 'sg_sp', 'sa_sp'];
+            $csv_header = ['Asin', 'India Price', 'Weight(kg)', 'UAE Selling Price', 'Singapore Selling Price', 'Saudi Selling Price'];
             PricingIn::select($headers)->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
 
                 $this->CreateCsvFile($csv_header, $records, $exportFilePath);
@@ -135,7 +135,6 @@ class CatalogPriceExportCSV extends Command
                 Storage::put($exportFilePath . $this->fileNameOffset . '.csv.mosh', '');
             }
             $this->totalFile []= $this->country_code."_CatalogPrice" . $this->fileNameOffset.'.csv';
-            Log::notice($this->totalFile);
             $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv.mosh'), "w");
             $this->writer->insertOne($csv_header);
         }

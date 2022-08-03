@@ -10,7 +10,7 @@
 
         <div>
             <x-adminlte-select name="country" id="country" class="float-right mt-1 catalogcountry">
-                <option value="NULL">select country</option>
+                <option value="NULL">Select Country</option>
                 @foreach ($sources as $source)
                 <option value="{{$source->source}}">{{$source->source}}</option>
                 @endforeach
@@ -124,7 +124,9 @@
     <script type="text/javascript">
     $('#country').on('change', function() {
         let country_code = $(this).val();
-        yajraTable(country_code);
+        if (country_code != 'NULL') {
+            yajraTable(country_code);
+        }
     });
 
     function yajraTable(country_code) {
@@ -176,6 +178,11 @@
     }
 
     $(document).ready(function() {
+
+        $('#country').change(function() {
+            document.getElementById('countrymsg').innerHTML = '';
+        });
+
         $('#exportCatalog').on('click', function() {
             let country_code = $('#country').val();
             if (country_code == 'NULL') {
@@ -198,7 +205,10 @@
     $('#export_catalog_price').on('click', function() {
         let country_code = $('#country').val();
         if (country_code == 'NULL' || country_code == 'AE') {
-            alert('Please Select Correct Country');
+            var id = document.getElementById('country');
+            var text = 'Country must filled out';
+            document.getElementById('countrymsg').innerHTML = text;
+            document.getElementById('countrymsg').style.color = "red";
         } else {
             $.ajax({
                 url: "/catalog/price/export",
@@ -262,7 +272,7 @@
 
                     files += "<li class='p-0 m-0'>";
                     files += "<a href='/catalog/download/price/" + file_name +
-                        "' class='p-0 m-0'> Catalog Price" + file_name + "</a> ";
+                        "' class='p-0 m-0'> Catalog Price " + file_name + "</a> ";
                     files += file_time;
                     files += "</li>";
                 });

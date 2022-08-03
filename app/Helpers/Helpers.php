@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use App\Models\Aws_credential;
 use App\Models\Admin\Ratemaster;
+use App\Models\Catalog\Catalog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -520,6 +521,19 @@ if (!function_exists('table_model_set')) {
         $product_model = new $namespace;
 
         return $product_model->setTable($table_name . '_' . $country_code_lr . 's');
+    }
+}
+
+if (!function_exists('table_model_create')) {
+    function table_model_create(string $country_code, string $model, string $table_name): object
+    {
+
+        $country_code_lr = strtolower($country_code);
+
+        $namespace = 'App\\Models\\Catalog\\' . $model;
+        $product_model = new $namespace;
+
+        return $product_model->setTable($table_name . $country_code_lr . 's');
     }
 }
 
