@@ -54,12 +54,13 @@ class catalogExportCSV extends Command
        
 
         $data = DB::connection('catalog')->select(" SELECT * from $table_name ");
+        // Log::alert($data);
         foreach(array_chunk($data, $chunk) as $result)
         {
             $records = [];
             if($count == 1 )
             {   
-                $file_path = "catalog/downloads/Catalog-export".$country_code.$this->offset.".csv";
+                $file_path = "excel/downloads/catalog/".$country_code."/Catalog-export".$country_code.$this->offset.".csv";
                 $csv_files [] = "Catalog-export".$country_code.$this->offset.".csv";
                 if(!Storage::exists($file_path))
                 {
@@ -98,7 +99,7 @@ class catalogExportCSV extends Command
         }
 
         $zip = new ZipArchive;
-        $path = 'catalog/downloads/zip/Catalog'.$country_code.'.zip';
+        $path = "excel/downloads/catalog/".$country_code."/zip/Catalog".$country_code.".zip";
         $file_path = Storage::path($path);
         
         if (!Storage::exists($path)) {
@@ -109,7 +110,7 @@ class catalogExportCSV extends Command
         {
             foreach($csv_files as $key => $value)
             {
-                $path = Storage::path('catalog/downloads/'.$value);
+                $path = Storage::path('excel/downloads/catalog/'.$country_code.'/'.$value);
                 $relativeNameInZipFile = basename($path);
                 $zip->addFile($path, $relativeNameInZipFile);
             }
