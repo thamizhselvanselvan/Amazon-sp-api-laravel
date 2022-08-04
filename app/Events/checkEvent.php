@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Events\checkEvent;
 use App\Models\Catalog\Catalog;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
@@ -37,8 +36,8 @@ class checkEvent implements ShouldBroadcast
         return new PrivateChannel('testing-channel');
     }
 
-    public function broadcastAs()
-    {
-        return 'test-event';
-    }
+    // public function broadcastAs()
+    // {
+    //     return 'test-event';
+    // }
 }

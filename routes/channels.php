@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Catalog\Catalog;
 use Arcanedev\LogViewer\Entities\Log;
 use Illuminate\Support\Facades\Broadcast;
 
@@ -24,8 +23,7 @@ Broadcast::channel('test-broadcast', function ($user) {
     return true;
 });
 
-Broadcast::channel('testing-channel', function($data)
+Broadcast::channel('testing-channel', function($user)
 {
-    Log::alert('working');
     return true;
 });

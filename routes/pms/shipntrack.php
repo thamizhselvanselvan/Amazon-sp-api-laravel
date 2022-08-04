@@ -15,3 +15,8 @@ Route::get('shipntrack/forwarder', 'shipntrack\Forwarder\ForwarderPacketMappingC
 Route::get('shipntrack/forwarder/template/download', 'shipntrack\Forwarder\ForwarderPacketMappingController@templateDownload')->name('shipntrack.forwarder.template');
 Route::get('shipntrack/forwarder/upload', 'shipntrack\Forwarder\ForwarderPacketMappingController@Upload')->name('shipntrack.forwarder.upload');
 Route::post('shipntrack/forwarder/save', 'shipntrack\Forwarder\ForwarderPacketMappingController@save')->name('shipntrack.forwarder.save');
+
+
+Route::get('shipntrack/event-master', 'shipntrack\EventMaster\TrackingEventMaster@index')->name('shipntrack.trackingEvent.back');
+Route::get('shipntrack/event-master/upload', 'shipntrack\EventMaster\TrackingEventMaster@upload')->name('shipntrack.trackingEvent.upload');
+Route::POST('shipntrack/event-master/save-file', 'shipntrack\EventMaster\TrackingEventMaster@TrackingEventFileSave')->name('shipntrack.eventMaster.filesave');

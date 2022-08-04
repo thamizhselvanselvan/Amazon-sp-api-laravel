@@ -15,8 +15,8 @@
 <script>
 let p_channel = window.Echo.private("testing-channel");
 
-p_channel.listen('.test-event', function(p_data) {
-    console.log('success');
+p_channel.listen('checkEvent', function(p_data) {
+    // console.log('success');
     console.log(p_data.catalog);
 })
 </script>
