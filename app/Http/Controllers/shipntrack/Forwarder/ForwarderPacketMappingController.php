@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
 use Illuminate\Support\Facades\Storage;
+use PhpParser\Node\Expr\Eval_;
 
 class ForwarderPacketMappingController extends Controller
 {
@@ -47,31 +48,43 @@ class ForwarderPacketMappingController extends Controller
         $forwarder_details = [];
 
         $awb = [
-            'f1_name' => '',
-            'ft_1' => '',
-            'f2_name' => '',
-            'ft_2' => ''
+            'Smsa' => '',
+            'Bombino' => '',
         ];
 
         foreach ($csv as $key => $value) {
-
-            if ($ft_1 = $value['forwarder_1_awb']) {
-
-                $awb['f1_name'] = $value['forwarder_1'];
-                $awb['ft_1'] = $ft_1;
+            foreach ($value as $key => $courier) {
+                if (str_contains('SMSA', strtoupper($courier))) {
+                    $smas_key = $key . '_awb';
+                    $awb['Smsa'] = $value[$smas_key];
+                } elseif (str_contains('BOMBINO', strtoupper($courier))) {
+                    $bombino_key = $key . '_awb';
+                    $awb['Bombino'] = $value[$bombino_key];
+                }
             }
-            if ($ft_2 = $value['forwarder_2_awb']) {
-
-                $awb['f2_name'] = $value['forwarder_2'];
-                $awb['ft_2'] = $ft_2;
-            }
-
             $forwarder_details[] = $awb;
             $tracking[] =  $value;
         }
-
         PacketForwarder::upsert($tracking, 'order_id_awb_no_unique', ['order_id', 'awb_no', 'forwarder_1', 'forwarder_1_awb', 'forwarder_2', 'forwarder_2_awb']);
 
-        //
+        foreach ($forwarder_details as $value) {
+            foreach ($value as $key => $awb_no) {
+
+                echo $key . '=>' . $awb;
+                echo "<hr>";
+
+                $folder_name = $key == 'Smsa' ? 'SMSA' : $key;
+            }
+        }
+
+        $class = 'ShipNTrack\\Bombino\\BombinoGetTracking';
+        $parameters['awb_no'] = $awb_no;
+        $queue_type = 'tracking';
+        jobDispatchFunc(class: $class, parameters: $parameters, queue_type: $queue_type);
+
+        $class = 'ShipNTrack\\SMSA\\SmsaGetTracking';
+        $queue_type = 'tracking';
+        $awbNo_array = [];
+        jobDispatchFunc(class: $class, parameters: $awbNo_array, queue_type: $queue_type);
     }
 }
