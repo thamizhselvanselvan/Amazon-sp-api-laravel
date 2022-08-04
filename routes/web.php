@@ -1,12 +1,12 @@
 <?php
 
-use App\Services\AWS_Business_API\Auth\AWS_Business;
 use RedBeanPHP\R;
 use Carbon\Carbon;
 use App\Models\User;
 use League\Csv\Reader;
 use App\Events\testEvent;
 use AWS\CRT\HTTP\Request;
+use App\Events\checkEvent;
 use App\Models\Mws_region;
 use Maatwebsite\Excel\Row;
 use App\Jobs\TestQueueFail;
@@ -35,6 +35,7 @@ use App\Services\Inventory\ReportWeekly;
 use Spatie\Permission\Models\Permission;
 use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
+use App\Services\AWS_Business_API\Auth\AWS_Business;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
@@ -81,6 +82,15 @@ Route::get('country',function(){
         }
 
         $countries = Country::get();
+});
+Route::get('event', function(){
+    
+      event(new testEvent($percentage));
+    event(new checkEvent('I am tring to Boradcast channel'));
+});
+
+Route::get('channel', function(){
+ return view('checkChannel');
 });
 
 Route::get('test', function (ReportWeekly $report_weekly) {
