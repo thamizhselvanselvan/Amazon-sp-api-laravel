@@ -70,21 +70,21 @@ class ForwarderPacketMappingController extends Controller
         foreach ($forwarder_details as $value) {
             foreach ($value as $key => $awb_no) {
 
-                echo $key . '=>' . $awb;
-                echo "<hr>";
+                if ($key == 'Smsa') {
 
-                $folder_name = $key == 'Smsa' ? 'SMSA' : $key;
+                    $class = 'ShipNTrack\\SMSA\\SmsaGetTracking';
+                    $queue_type = 'tracking';
+                    $awbNo_array = [$awb_no];
+                    jobDispatchFunc(class: $class, parameters: $awbNo_array, queue_type: $queue_type);
+                } elseif ($key == 'Bombino') {
+
+                    $class = "ShipNTrack\\Bombino\\BombinoGetTracking";
+                    $parameters['awb_no'] = $awb_no;
+                    $queue_type = 'tracking';
+                    jobDispatchFunc(class: $class, parameters: $parameters, queue_type: $queue_type);
+                }
             }
         }
-
-        $class = 'ShipNTrack\\Bombino\\BombinoGetTracking';
-        $parameters['awb_no'] = $awb_no;
-        $queue_type = 'tracking';
-        jobDispatchFunc(class: $class, parameters: $parameters, queue_type: $queue_type);
-
-        $class = 'ShipNTrack\\SMSA\\SmsaGetTracking';
-        $queue_type = 'tracking';
-        $awbNo_array = [];
-        jobDispatchFunc(class: $class, parameters: $awbNo_array, queue_type: $queue_type);
+        return redirect()->intended('/shipntrack/forwarder/upload')->with("success", "Tracking Details Uploaded");
     }
 }
