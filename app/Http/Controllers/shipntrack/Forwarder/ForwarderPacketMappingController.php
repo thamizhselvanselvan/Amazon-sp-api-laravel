@@ -53,11 +53,14 @@ class ForwarderPacketMappingController extends Controller
         ];
 
         foreach ($csv as $key => $value) {
+
             foreach ($value as $key => $courier) {
-                if (str_contains('SMSA', strtoupper($courier))) {
+                if (strtoupper($courier) == 'SMSA') {
+
                     $smas_key = $key . '_awb';
                     $awb['Smsa'] = $value[$smas_key];
-                } elseif (str_contains('BOMBINO', strtoupper($courier))) {
+                } elseif (strtoupper($courier) == 'BOMBINO') {
+
                     $bombino_key = $key . '_awb';
                     $awb['Bombino'] = $value[$bombino_key];
                 }
