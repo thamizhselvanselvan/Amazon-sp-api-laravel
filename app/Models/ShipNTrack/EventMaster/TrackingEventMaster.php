@@ -11,4 +11,10 @@ class TrackingEventMaster extends Model
     
     protected $connection = 'shipntracking';
     protected $table = 'tracking_event_masters';
+
+    protected $fillable = [
+        'event_code',
+        'description',
+        'active',
+    ];
 }

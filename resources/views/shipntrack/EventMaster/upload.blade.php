@@ -51,17 +51,27 @@
             @csrf
 
             <div class="col-3"></div>
-
             <div class="col-6">
-                <x-adminlte-input label="" name="tracking_event_csv" id="tracking_event_csv_file" type="file" />
+                <div class="row">
+                    <div>
+                        <x-adminlte-select label="Courier partner" name="courier_partner" class="courier_partner">
+                            <option value=""> Select a courier partner </option>
+                            <option value="master"> Master </option>
+                            <option value="bombino"> Bombino </option>
+                            <option value="samsa"> SAMSA </option>
+                            <option value="emirate"> Emirate </option>
+                        </x-adminlte-select>
+
+                        <x-adminlte-input class="ml-1" label="Choose csv file" name="tracking_event_csv"
+                            id="tracking_event_csv_file" type="file" />
+                    </div>
+                </div>
             </div>
-
             <div class="col-3"></div>
-
             <div class="col-12">
                 <div class="text-center">
-                    <x-adminlte-button label="Submit" theme="primary" class="add_forwarder_awb btn-sm"
-                        icon="fas fa-plus" type="submit" />
+                    <x-adminlte-button label="Submit" theme="primary" class="eventMaster btn-sm" icon="fas fa-plus"
+                        type="submit" />
                 </div>
             </div>
         </form>
@@ -69,4 +79,13 @@
     <div class="col"></div>
 </div>
 
+@stop
+
+@section('js')
+<script>
+$('.eventMaster').click(function() {
+    var option = $('.courier_partner').val();
+    // alert(option);
+});
+</script>
 @stop

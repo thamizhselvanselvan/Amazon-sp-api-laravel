@@ -15,14 +15,14 @@ class UploadTrackingEventMasterCSV extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:tracking-event-master';
+    protected $signature = 'mosh:tracking-event-master {courier_partner}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Upload csv file for Tracking event master';
 
     /**
      * Create a new command instance.
@@ -41,8 +41,9 @@ class UploadTrackingEventMasterCSV extends Command
      */
     public function handle()
     {
-        Log::notice("Tracking event master is working");
-
+       
+        $courier_partner = $this->argument('courier_partner');
+        Log::notice($courier_partner);
         $file_path = "CSV/import/trackingEventMaster.csv";
 
         $reader = Reader::createFromPath(Storage::path(($file_path), 'r'));
@@ -56,12 +57,13 @@ class UploadTrackingEventMasterCSV extends Command
             $eventmaster_data [] = [
                 "event_code" => $record['TrackingEventCode'],
                 "description" => htmlspecialchars($record['EventCodeDescription']),
-                "active" => $record['IsActive']
+                "active" => $record['IsActive'],
+                'created_at' => now(),
+                'updated_at' => now()
             ];
         }   
-           
-        Log::notice($eventmaster_data);
-        TrackingEventMaster::insert($eventmaster_data);
-        Log::notice("uploaded");
+         
+        TrackingEventMaster::upsert($eventmaster_data, ['event_code']);
+        
     }
 }
