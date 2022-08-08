@@ -22,6 +22,8 @@ use AmazonPHP\SellingPartner\Model\MerchantFulfillment\Length;
 use App\Models\Company\CompanyMaster;
 use App\Models\Company_master;
 use App\Services\BOE\BOEPdfReader;
+use App\Services\BOE\BOEPdefreader2018;
+use App\Services\BOE\BOEMaster;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToArray;
 
@@ -74,6 +76,8 @@ class BOEController extends Controller
 
     public function index(Request $request)
     {
+
+         
         if ($request->ajax()) {
             $user = Auth::user();
             $roles = ($user->roles->first()->name);
@@ -128,7 +132,7 @@ class BOEController extends Controller
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
 
-        $pdfReader = new BOEPdfReader();
+        $pdfReader = new BOEMaster();
         $year = date('Y');
         $month = date('F');
         $user = Auth::user();
@@ -145,7 +149,7 @@ class BOEController extends Controller
                 $pdf = $pdfParser->parseFile($storage_path);
                 $content = $pdf->getText();
 
-                $pdfReader->BOEPDFReader($content, $file_path . '/' . $file, $company_id, $user_id);
+                $pdfReader->BOEmanage($content, $file_path . '/' . $file, $company_id, $user_id);
             }
         }
     }
@@ -165,7 +169,7 @@ class BOEController extends Controller
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
 
-        $pdfReader = new BOEPdfReader();
+        $pdfReader = new BOEMaster();
         $year = date('Y');
         $month = date('F');
         $user = Auth::user();
@@ -200,7 +204,7 @@ class BOEController extends Controller
             $pdf = $pdfParser->parseFile($storage_path);
             $content = $pdf->getText();
 
-            $pdfReader->BOEPDFReader($content, $file_path . '/' . $file_name, $company_id, $user_id);
+            $pdfReader->BOEmanage($content, $file_path . '/' . $file_name, $company_id, $user_id);
         }
         return response()->json(["message" => "all file uploaded successfully"]);
         // return redirect('/BOE/index')->with('success', 'All PDF Imported successfully');
