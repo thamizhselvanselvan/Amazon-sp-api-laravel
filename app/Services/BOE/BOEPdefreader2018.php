@@ -19,6 +19,7 @@ class BOEPdefreader2018
     BOEPDFReaderold($content, $storage_path, $company_id, $user_id)
     // BOEPDFReaderold()
     {
+        Log::alert('2018');
         // $company_id = 1;
         // $user_id = 1;
         // $storage_path  = '';
@@ -30,9 +31,9 @@ class BOEPdefreader2018
         // $pdf = $pdfParser->parseFile($path);
         // $content = $pdf->getText();
         // Log::alert($content);
-        // $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
+        $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
 
-    
+
         // $host = config('database.connections.web.host');
         // $dbname = config('database.connections.web.database');
         // $port = config('database.connections.web.port');
@@ -45,10 +46,10 @@ class BOEPdefreader2018
         // unset($content[$unsetKey]);
         // $content = array_values($content);
 
-       
+
         if ($content[0] == "Form Courier Bill Of Entry -XIII (CBE-XIII)") {
             $BOEPDFMasterold = $content;
-        
+
             $courier_basic_details = [];
             $Boecheck = $BOEPDFMasterold;
             $notification_details = [];
@@ -86,7 +87,7 @@ class BOEPdefreader2018
                     $name_details = '';
                     $check_key = $key;
                     $offset = 0;
-                
+
                     while ($Boecheck[$check_key] != 'Airport of Shipment :') {
                         $check_key++;
 
@@ -652,12 +653,12 @@ class BOEPdefreader2018
                     $dateformate = $this->dateFormate($boe);
                     $boe_details->$boe_key = $dateformate;
                 } else {
-                   
+
                     $boe_details->$boe_key = $boe;
                 }
             }
         }
-    
+
         $boe_details->notificationDetails = json_encode($notification_details);
         $boe_details->chargeDetails = json_encode($charge_details);
         $boe_details->dutyDetails = json_encode($duty_details);

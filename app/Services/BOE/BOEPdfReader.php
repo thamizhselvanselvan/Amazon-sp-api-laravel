@@ -27,26 +27,14 @@ class BOEPdfReader
     public function BOEPDFReader($content, $storage_path, $company_id, $user_id)
     // public function BOEPDFReader()
     {
-        // $host = config('database.connections.web.host');
-        // $dbname = config('database.connections.web.database');
-        // $port = config('database.connections.web.port');
-        // $username = config('database.connections.web.username');
-        // $password = config('database.connections.web.password');
-
-        // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-        // $company_id = 1;
-        // $user_id = 1;
-        // $storage_path ='';
-        $pdfParser = new Parser();
         $BOEPDFMaster = [];
-        // $pdf = $pdfParser->parseFile('D:\laragon\www\amazon-sp-api-laravel\storage\app/US10000135.pdf');
-        // $content = $pdf->getText();
-        // $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
+
+        $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
 
         $unsetKey = array_search('Page 1 of 2', $content);
         unset($content[$unsetKey]);
         $content = array_values($content);
-// dd($content);
+        // dd($content);
         if ($content[0] == 'Form Courier Bill Of Entry -XIII (CBE-XIII)') {
 
             $BOEPDFMaster = $content;
@@ -635,7 +623,9 @@ class BOEPdfReader
             if ($tableCheck == 1) {
 
                 $awb_no = $courier_basic_details['HawbNumber'];
+
                 $selectAwb = DB::select("select hawb_number,id from boe where hawb_number = '$awb_no' AND company_id='$company_id'");
+                Log::warning($selectAwb);
                 if (array_key_exists(0, $selectAwb)) {
                     $dataCheck = 1;
                 }
@@ -656,10 +646,10 @@ class BOEPdfReader
             } else {
                 $id = $selectAwb[0]->id;
                 //update data
-                $update_bean = R::load('boe',$id);
+                $update_bean = R::load('boe', $id);
                 $update_bean->user_id = 1;
 
-                $boe_bean_update = $this->createbean($update_bean, $company_id, $user_id, $current_Status_of_CBE, $courier_basic_details, $igm_details, $notification_details, $charge_details, $duty_details, $payment_details);                
+                $boe_bean_update = $this->createbean($update_bean, $company_id, $user_id, $current_Status_of_CBE, $courier_basic_details, $igm_details, $notification_details, $charge_details, $duty_details, $payment_details);
                 $date = new DateTime(date('Y-m-d'));
                 $updated_at = $date->format('Y-m-d');
                 $boe_bean_update->do = 0;
@@ -721,7 +711,7 @@ class BOEPdfReader
         }
 
         $boe_details->paymentDetails = json_encode($payment_details);
-        
+
         return $boe_details;
     }
 }
