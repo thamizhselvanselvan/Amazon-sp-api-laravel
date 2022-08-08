@@ -9,17 +9,101 @@
 @stop
 
 @section('content_header')
+
 <div class="row">
     <h1 class="m-0 text-dark col">Tracking Event Master</h1>
-    <h2 class="mb-4 text-right col">
-        <a href="{{Route('shipntrack.trackingEvent.upload')}}">
-            <x-adminlte-button label="Add New Records" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
-        </a>
-        <a href="#{{Route('shipntrack.forwarder.template')}}">
-            <x-adminlte-button label="Download Templates" theme="primary" icon="fas fa-file-download" class="btn-sm" />
-        </a>
+    <!-- <a href="{{Route('shipntrack.trackingEvent.upload')}}">
+        <x-adminlte-button label="Add New Records" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
+    </a>
+    <a href="#{{Route('shipntrack.forwarder.template')}}">
+        <x-adminlte-button label="Download Templates" theme="primary" icon="fas fa-file-download" class="btn-sm" />
+    </a> -->
+</div><br>
+
+@if ($records != '')
+<form action="{{ route('shipntrack.eventMaster.update', $records->id) }}" method="POST">
+    @csrf
+    <div class="row">
+        <div class="col">
+            <div>
+                <x-adminlte-select label="Courier partner" name="courier_partner" class="courier_partner">
+                    <option value=""> Select a courier partner </option>
+                    <option value="master"> Master </option>
+                    <option value="bombino"> Bombino </option>
+                    <option value="samsa"> SAMSA </option>
+                    <option value="emirate"> Emirate </option>
+                </x-adminlte-select>
+
+                <div class="form-group ">
+                    <label for=" Active">Active</label>
+                    @if ($records->active == 1)
+                    <input type="checkbox" name="event_check" checked>
+                    @else
+                    <input type="checkbox" name="event_check">
+                    @endif
+
+                </div>
+            </div>
+        </div>
+        <div class="col">
+
+            <x-adminlte-input label="Event Code" name="event_code" type="text" placeholder="Event Code"
+                value="{{$records->event_code}}" />
+        </div>
+        <div class="col">
+            <x-adminlte-textarea label="Event Description" name="event_desc" type="text"
+                placeholder="Event Description"> {{$records->description}}
+            </x-adminlte-textarea>
+        </div>
+
+    </div>
+
+    <h2 class="mb-4 text-left col">
+        <x-adminlte-button label="Update" name="btn" type="submit" theme="primary" icon="fas fa-edit" class="btn-sm" />
     </h2>
-</div>
+
+</form>
+@else
+
+<form action="{{Route('shipntrack.trackingEvent.save')}}" method="POST">
+    @csrf
+    <div class="row">
+        <div class="col">
+            <div>
+                <x-adminlte-select label="Courier partner" name="courier_partner" class="courier_partner">
+                    <option value=""> Select a courier partner </option>
+                    <option value="master"> Master </option>
+                    <option value="bombino"> Bombino </option>
+                    <option value="samsa"> SAMSA </option>
+                    <option value="emirate"> Emirate </option>
+                </x-adminlte-select>
+
+                <div class="form-group mt-0">
+                    <label for="Active">Active</label>
+                    <input type="checkbox" name="event_check">
+                </div>
+
+            </div>
+        </div>
+        <div class="col">
+            <x-adminlte-input label="Event Code" name="event_code" type="text" placeholder="Event Code" />
+        </div>
+        <div class="col">
+            <x-adminlte-textarea label="Event Description" name="event_desc" type="text"
+                placeholder="Event Description" />
+        </div>
+    </div>
+
+    <h2 class="mb-4 text-left col">
+        <x-adminlte-button label="Save" name="btn" type="submit" theme="success" icon="fas fa-check-circle"
+            class="btn-sm" />
+    </h2>
+</form>
+
+@endif
+<hr>
+
+
 @stop
 
 @section('content')
@@ -96,5 +180,12 @@ $(function() {
         ],
     });
 });
+
+$(document).on('click', '.delete', function() {
+    let bool = confirm('Are you sure you want to delete?');
+    if (!bool) {
+        return false;
+    }
+})
 </script>
 @stop
