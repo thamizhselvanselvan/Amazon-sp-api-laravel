@@ -50,88 +50,107 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('country',function(){
- 
+
+Route::get('country', function () {
+
+
+    Log::channel('slack')->error('Hello world! for app 360');
+    exit;
+
     $path =  public_path('country.json');
-        $jsonfile = json_decode(file_get_contents($path),true);
-        $countries_list = [];
+    $jsonfile = json_decode(file_get_contents($path), true);
+    $countries_list = [];
 
-        foreach($jsonfile as $jsondata)
-        {
-            $countries_list [] = [
+    foreach ($jsonfile as $jsondata) {
+        $countries_list[] = [
 
-                "name" => $jsondata['name'],
-                "country_code" => $jsondata['iso3'],
-                "code" => $jsondata['iso2'],
-                "numeric_code" => $jsondata['numeric_code'],
-                "phone_code" => $jsondata['phone_code'],
-                "capital" => $jsondata['capital'],
-                "currency" => $jsondata['currency'],
-                "currency_name" => $jsondata['currency_name'],
-                "currency_symbol" => $jsondata['currency_symbol'],
-                "created_at" => now(),
-                "updated_at" => now(),
-            ];
-        }
-        po($countries_list);
-       
-        $country_count = Country::count();
+            "name" => $jsondata['name'],
+            "country_code" => $jsondata['iso3'],
+            "code" => $jsondata['iso2'],
+            "numeric_code" => $jsondata['numeric_code'],
+            "phone_code" => $jsondata['phone_code'],
+            "capital" => $jsondata['capital'],
+            "currency" => $jsondata['currency'],
+            "currency_name" => $jsondata['currency_name'],
+            "currency_symbol" => $jsondata['currency_symbol'],
+            "created_at" => now(),
+            "updated_at" => now(),
+        ];
+    }
+    po($countries_list);
 
-        if($country_count <= 0 )
-        {
-            Country::insert($countries_list);
-        }
+    $country_count = Country::count();
 
-        $countries = Country::get();
+    if ($country_count <= 0) {
+        Country::insert($countries_list);
+    }
+
+    $countries = Country::get();
 });
 Route::get('event', function(){
     
-    //   event(new testEvent($percentage));
-    event(new checkEvent("I am tring to Boradcast channel"));
+      event(new testEvent($percentage));
+    event(new checkEvent('I am tring to Boradcast channel'));
 });
 
-Route::get('channel', function(){
- return view('checkChannel');
+Route::get('channel', function () {
+    return view('checkChannel');
 });
 
 Route::get('test', function (ReportWeekly $report_weekly) {
 
-  $host       = "na.business-api.amazon.com";
-  $accessKey  = 'AKIARVGPJZCJHLW5MH63';
-  $secretKey  = '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';
-  $region     = "us-east-1";
-  $service    = "execute-api";
-  $requestUrl = "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
-  $uri        = 'products/2020-08-26/products/B081G4G8N8';
-  $httpRequestMethod = 'GET';
-  $data       = '';
+    $host       = "na.business-api.amazon.com";
+    $accessKey  = 'AKIARVGPJZCJHLW5MH63';
+    $secretKey  = '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';
+    $region     = "us-east-1";
+    $service    = "execute-api";
+    $requestUrl = "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
+    $uri        = 'products/2020-08-26/products/B081G4G8N8';
+    $httpRequestMethod = 'GET';
+    $data       = '';
 
-  $sign = new AWS_Business;
-  $headers = $sign->sign($host, $uri, $requestUrl,
-              $accessKey, $secretKey, $region, $service,
-              $httpRequestMethod, $data);
+    $sign = new AWS_Business;
+    $headers = $sign->sign(
+        $host,
+        $uri,
+        $requestUrl,
+        $accessKey,
+        $secretKey,
+        $region,
+        $service,
+        $httpRequestMethod,
+        $data
+    );
 
-  apiCall($headers);
+    apiCall($headers);
 
-  exit;
+    exit;
 
-  $data = '';
-  $host               = "na.business-api.amazon.com";
-  $accessKey          = "AKIARVGPJZCJHLW5MH63";
-  $secretKey          = "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";
-  $region             = "us-east-1";
-  $service            = "execute-api";
-  $requestUrl         = "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
-  $uri                = 'products/2020-08-26/products';
-  $httpRequestMethod  = 'GET';
+    $data = '';
+    $host               = "na.business-api.amazon.com";
+    $accessKey          = "AKIARVGPJZCJHLW5MH63";
+    $secretKey          = "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";
+    $region             = "us-east-1";
+    $service            = "execute-api";
+    $requestUrl         = "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
+    $uri                = 'products/2020-08-26/products';
+    $httpRequestMethod  = 'GET';
 
-  $headers = calcualteAwsSignatureAndReturnHeaders($host, $uri, $requestUrl,
-              $accessKey, $secretKey, $region, $service,
-              $httpRequestMethod, $data);
+    $headers = calcualteAwsSignatureAndReturnHeaders(
+        $host,
+        $uri,
+        $requestUrl,
+        $accessKey,
+        $secretKey,
+        $region,
+        $service,
+        $httpRequestMethod,
+        $data
+    );
 
-  apiCall($headers);
+    apiCall($headers);
 
-  exit;
+    exit;
 
     // $requestUrl = "https://na.business-api.amazon.com";
     // $httpRequestMethod = "GET";
@@ -146,48 +165,65 @@ Route::get('test', function (ReportWeekly $report_weekly) {
     $region             = "us-east-1";
     $service            = "execute-api";
     $requestUrl         = "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
-                          //?productRegion=US&locale=es_US
-                          //productRegion=US&locale=es_US
+    //?productRegion=US&locale=es_US
+    //productRegion=US&locale=es_US
     $uri                = 'products/2020-08-26/products/B081G4G8N8';
     $httpRequestMethod  = 'GET';
 
-    $headers = calcualteAwsSignatureAndReturnHeaders($host, $uri, $requestUrl,
-                $accessKey, $secretKey, $region, $service,
-                $httpRequestMethod, $data);
+    $headers = calcualteAwsSignatureAndReturnHeaders(
+        $host,
+        $uri,
+        $requestUrl,
+        $accessKey,
+        $secretKey,
+        $region,
+        $service,
+        $httpRequestMethod,
+        $data
+    );
 
-    $call = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, $debug=TRUE);
+    $call = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, $debug = TRUE);
     dd($headers, $call);
     exit;
 
-     $host = "na.business-api.amazon.com";
-     $uri = "products/2020-08-26/products/B081G4G8N8";
-     $requestUrl = "https://na.business-api.amazon.com";
-     $accessKey = "AKIARVGPJZCJHLW5MH63";
-     $secretKey = "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";
-     $region = "us-east-1";
-     $service = "execute-api";
-     $httpRequestMethod = "";
-     $data = "";
+    $host = "na.business-api.amazon.com";
+    $uri = "products/2020-08-26/products/B081G4G8N8";
+    $requestUrl = "https://na.business-api.amazon.com";
+    $accessKey = "AKIARVGPJZCJHLW5MH63";
+    $secretKey = "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";
+    $region = "us-east-1";
+    $service = "execute-api";
+    $httpRequestMethod = "";
+    $data = "";
 
-     $headers = calcualteAwsSignatureAndReturnHeaders($host, $uri, $requestUrl,
-     $accessKey, $secretKey, $region, $service,
-     $httpRequestMethod, $data, $debug = TRUE);
-
-
-     $result = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, TRUE);
-
-
-     exit;
-  $aws = new AWS_Business;
-
-  dd($aws->signTest());
-
-   exit;
+    $headers = calcualteAwsSignatureAndReturnHeaders(
+        $host,
+        $uri,
+        $requestUrl,
+        $accessKey,
+        $secretKey,
+        $region,
+        $service,
+        $httpRequestMethod,
+        $data,
+        $debug = TRUE
+    );
 
 
+    $result = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, TRUE);
 
 
-   
+    exit;
+    $aws = new AWS_Business;
+
+    dd($aws->signTest());
+
+    exit;
+
+
+
+
+
 
     exit;
 
@@ -221,19 +257,16 @@ Route::get('command', function () {
     }
 });
 
-Route::get('job', function()
-{
+Route::get('job', function () {
     TestQueueFail::dispatch();
 });
 
-Route::get('deleterole', function()
-{
+Route::get('deleterole', function () {
     $role = Role::findByName('Orders');
     $role->delete();
 });
 
-Route::get('rename', function()
-{
+Route::get('rename', function () {
     $currenturl =  request()->getSchemeAndHttpHost();
     return $currenturl;
 });
@@ -249,9 +282,9 @@ Route::get('test-queue-redis', function () {
         // $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
         // $check = [];
         // if (!array_key_exists('0', $check)) {
-            $count++;
-            // $batch++;
-            $data[] = $value;
+        $count++;
+        // $batch++;
+        $data[] = $value;
         // }
         //$type = 1 for seller, 2 for Order, 3 for inventory
         if ($count == 10) {
@@ -288,10 +321,9 @@ Route::get('test-queue-redis', function () {
     }
 });
 
-Route::get('order/item', function (){
+Route::get('order/item', function () {
 
     $order_id = '403-6898279-3539565';
-
 });
 
 Route::get('order/catalog', function () {
