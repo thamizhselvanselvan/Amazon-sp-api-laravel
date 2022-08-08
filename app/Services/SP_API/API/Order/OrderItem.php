@@ -121,7 +121,7 @@ class OrderItem
                         $asin = $value;
                     }
                 }
-                $order_detials->amazon_order_identifier = $amazon_order;
+                $order_detials->amazon_order_identifier = $order_id;
                 $order_detials->shipping_address = $order_address;
                 R::store($order_detials);
 

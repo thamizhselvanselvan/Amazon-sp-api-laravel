@@ -186,13 +186,16 @@ class TestController extends Controller
     $max_results_per_page = 100;
 
     $next_token = NULL;
-    $amazon_order_ids = NULL;
+    $amazon_order_ids = [$order_id];
     // try {
+    // $result_order_address = $apiInstance->getOrderAddress($order_id);
+    // po($result_order_address);
+    // exit;
 
     $order = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses = null, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, $next_token, $amazon_order_ids, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
 
     po($order);
-
+    exit;
     $data_element = array('buyerInfo');
     $next_token = NULL;
 
