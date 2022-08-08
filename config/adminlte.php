@@ -587,6 +587,11 @@ return [
                     'url'   =>  'shipntrack/forwarder',
                     'can'   =>  ['Admin'],
                 ],
+                [
+                    'text'  =>  'Tracking Event Master',
+                    'url'   =>  'shipntrack/event-master',
+                    'can'   =>  ['Admin'],
+                ],
             ]
         ],
 
