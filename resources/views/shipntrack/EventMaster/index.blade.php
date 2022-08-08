@@ -20,51 +20,47 @@
     </a> -->
 </div><br>
 
+<div class="card ">
+    <h3 class="card-header text-center">{{ (isset($records)) ? 'Update Event' : 'Add Event' }}</h3>
+    <form class="ml-4 mt-4 mr-4"
+        action="{{(isset($records)) ? Route('shipntrack.eventMaster.update', $records->id) : Route('shipntrack.trackingEvent.save')}}"
+        method="POST">
+        @csrf
+        <div class="row">
 
-
-
-
-<form
-    action="{{(isset($records)) ? Route('shipntrack.eventMaster.update', $records->id) : Route('shipntrack.trackingEvent.save')}}"
-    method="POST">
-    @csrf
-    <div class="row">
-
-        <div class="col">
-            <x-adminlte-input label="Event Code" name="event_code" type="text" placeholder="Event Code"
-                value="{{ (isset($records->event_code)) ? $records->event_code : '' }}" />
-            <div class="form-group mt-0">
-                <label for="Active">Active</label>
-                @if ((isset($records)) && $records->active == 1)
-                <input type="checkbox" name="event_check" checked>
-                @else
-                <input type="checkbox" name="event_check">
-                @endif
+            <div class="col">
+                <x-adminlte-input label="Event Code" name="event_code" type="text" placeholder="Event Code"
+                    value="{{ (isset($records->event_code)) ? $records->event_code : '' }}" />
+                <div class="form-group mt-0">
+                    <label for="Active">Active</label>
+                    @if ((isset($records)) && $records->active == 1)
+                    <input type="checkbox" name="event_check" checked>
+                    @else
+                    <input type="checkbox" name="event_check">
+                    @endif
+                </div>
+            </div>
+            <div class="col">
+                <x-adminlte-textarea label="Event Description" name="event_desc" type="text"
+                    placeholder="Event Description">{{ (isset($records->description)) ? $records->description : '' }}
+                </x-adminlte-textarea>
             </div>
         </div>
-        <div class="col">
-            <x-adminlte-textarea label="Event Description" name="event_desc" type="text"
-                placeholder="Event Description">{{ (isset($records->description)) ? $records->description : '' }}
-            </x-adminlte-textarea>
-        </div>
-    </div>
-    <h2 class="mb-4 text-left col">
-        @if ((isset($records)))
+        <h2 class="mb-4 text-left col">
+            @if ((isset($records)))
 
-        <a href="{{ route('shipntrack.trackingEvent.back') }}" class="btn btn-primary btn-sm">
-            <i class="fas fa-arrow-left"></i> Back
-        </a>
-        @endif
+            <a href="{{ route('shipntrack.trackingEvent.back') }}" class="btn btn-primary btn-sm">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            @endif
 
-        <x-adminlte-button label="{{ (isset($records)) ? 'Update' : 'Save' }}" name="btn" type="submit"
-            theme="{{ (isset($records)) ? 'primary' : 'success' }}"
-            icon="{{ (isset($records)) ? 'fas fa-edit' : 'fas fa-check-circle' }}" class="btn-sm" />
-    </h2>
-</form>
+            <x-adminlte-button label="{{ (isset($records)) ? 'Update' : 'Save' }}" name="btn" type="submit"
+                theme="{{ (isset($records)) ? 'primary' : 'success' }}"
+                icon="{{ (isset($records)) ? 'fas fa-edit' : 'fas fa-check-circle' }}" class="btn-sm" />
+        </h2>
+    </form>
 
-
-<hr>
-
+</div>
 
 @stop
 
