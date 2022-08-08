@@ -20,87 +20,49 @@
     </a> -->
 </div><br>
 
-@if ($records != '')
-<form action="{{ route('shipntrack.eventMaster.update', $records->id) }}" method="POST">
+
+
+
+
+<form
+    action="{{(isset($records)) ? Route('shipntrack.eventMaster.update', $records->id) : Route('shipntrack.trackingEvent.save')}}"
+    method="POST">
     @csrf
     <div class="row">
+
         <div class="col">
-            <div>
-                <x-adminlte-select label="Courier partner" name="courier_partner" class="courier_partner">
-                    <option value=""> Select a courier partner </option>
-                    <option value="master"> Master </option>
-                    <option value="bombino"> Bombino </option>
-                    <option value="samsa"> SAMSA </option>
-                    <option value="emirate"> Emirate </option>
-                </x-adminlte-select>
-
-                <div class="form-group ">
-                    <label for=" Active">Active</label>
-                    @if ($records->active == 1)
-                    <input type="checkbox" name="event_check" checked>
-                    @else
-                    <input type="checkbox" name="event_check">
-                    @endif
-
-                </div>
+            <x-adminlte-input label="Event Code" name="event_code" type="text" placeholder="Event Code"
+                value="{{ (isset($records->event_code)) ? $records->event_code : '' }}" />
+            <div class="form-group mt-0">
+                <label for="Active">Active</label>
+                @if ((isset($records)) && $records->active == 1)
+                <input type="checkbox" name="event_check" checked>
+                @else
+                <input type="checkbox" name="event_check">
+                @endif
             </div>
         </div>
         <div class="col">
-
-            <x-adminlte-input label="Event Code" name="event_code" type="text" placeholder="Event Code"
-                value="{{$records->event_code}}" />
-        </div>
-        <div class="col">
             <x-adminlte-textarea label="Event Description" name="event_desc" type="text"
-                placeholder="Event Description"> {{$records->description}}
+                placeholder="Event Description">{{ (isset($records->description)) ? $records->description : '' }}
             </x-adminlte-textarea>
         </div>
-
     </div>
-
     <h2 class="mb-4 text-left col">
-        <x-adminlte-button label="Update" name="btn" type="submit" theme="primary" icon="fas fa-edit" class="btn-sm" />
-    </h2>
+        @if ((isset($records)))
 
-</form>
-@else
+        <a href="{{ route('shipntrack.trackingEvent.back') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        @endif
 
-<form action="{{Route('shipntrack.trackingEvent.save')}}" method="POST">
-    @csrf
-    <div class="row">
-        <div class="col">
-            <div>
-                <x-adminlte-select label="Courier partner" name="courier_partner" class="courier_partner">
-                    <option value=""> Select a courier partner </option>
-                    <option value="master"> Master </option>
-                    <option value="bombino"> Bombino </option>
-                    <option value="samsa"> SAMSA </option>
-                    <option value="emirate"> Emirate </option>
-                </x-adminlte-select>
-
-                <div class="form-group mt-0">
-                    <label for="Active">Active</label>
-                    <input type="checkbox" name="event_check">
-                </div>
-
-            </div>
-        </div>
-        <div class="col">
-            <x-adminlte-input label="Event Code" name="event_code" type="text" placeholder="Event Code" />
-        </div>
-        <div class="col">
-            <x-adminlte-textarea label="Event Description" name="event_desc" type="text"
-                placeholder="Event Description" />
-        </div>
-    </div>
-
-    <h2 class="mb-4 text-left col">
-        <x-adminlte-button label="Save" name="btn" type="submit" theme="success" icon="fas fa-check-circle"
-            class="btn-sm" />
+        <x-adminlte-button label="{{ (isset($records)) ? 'Update' : 'Save' }}" name="btn" type="submit"
+            theme="{{ (isset($records)) ? 'primary' : 'success' }}"
+            icon="{{ (isset($records)) ? 'fas fa-edit' : 'fas fa-check-circle' }}" class="btn-sm" />
     </h2>
 </form>
 
-@endif
+
 <hr>
 
 
