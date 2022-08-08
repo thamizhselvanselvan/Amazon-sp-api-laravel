@@ -21,7 +21,8 @@ class TrackingEventMasterController extends Controller
         foreach($records as $record){
           return DataTables::of($records)
               ->addColumn('action', function ($record) {
-                  $action = '<div class="d-flex pl-2"><a href="/shipntrack/event-master/edit/' . $record->id . ' " class=" btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit </a>';
+                  $action = '<div class="d-flex pl-2 event-master-btn "><a href="/shipntrack/event-master/edit/' . $record->id . ' " class=" btn btn-success btn-sm "><i class="fas fa-edit"></i> Edit </a>';
+                  $action .= '<div class="d-flex pl-2 event-master-btn "><a href="/shipntrack/event-master/delete/' . $record->id . ' " class=" btn btn-danger btn-sm "><i class="fas fa-remove"></i> Remove </a>';
                   return $action;
               })
               ->rawColumns(['action'])

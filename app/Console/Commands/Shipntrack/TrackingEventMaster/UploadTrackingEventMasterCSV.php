@@ -6,6 +6,7 @@ use League\Csv\Reader;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ShipNTrack\EventMaster\TrackingEvent;
 use App\Models\ShipNTrack\EventMaster\TrackingEventMaster;
 
 class UploadTrackingEventMasterCSV extends Command
@@ -61,9 +62,10 @@ class UploadTrackingEventMasterCSV extends Command
                 'created_at' => now(),
                 'updated_at' => now()
             ];
-        }   
-         
-        TrackingEventMaster::upsert($eventmaster_data, ['event_code']);
+        }
+        
+        $model_set = table_model_change(event_partner:$courier_partner, model:'TrackingEvent', table_name:'tracking_event_');
+        $model_set->upsert($eventmaster_data, ['event_code']);
         
     }
 }

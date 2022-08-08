@@ -585,3 +585,12 @@ body {
 .catalogcountry {
     height: px;
 }
+
+.TrackingEventMaster tr {
+    height: 02px;
+    /* font-size: 12px; */
+}
+
+/* .event-master-btn { */
+/* height: 10px; */
+/* } */

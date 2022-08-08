@@ -537,6 +537,19 @@ if (!function_exists('table_model_create')) {
     }
 }
 
+if (!function_exists('table_model_change')) {
+    function table_model_change(string $event_partner, string $model, string $table_name): object
+    {
+
+        $event_partner_lr = strtolower($event_partner);
+
+        $namespace = 'App\\Models\\ShipNTrack\\EventMaster\\' . $model;
+        $product_model = new $namespace;
+
+        return $product_model->setTable($table_name . $event_partner_lr . 's');
+    }
+}
+
 if (!function_exists('commandExecFunc')) {
     function commandExecFunc(string $user_command): bool
     {

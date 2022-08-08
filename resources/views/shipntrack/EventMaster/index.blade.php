@@ -1,6 +1,12 @@
 @extends('adminlte::page')
 
 @section('title', 'Event Master')
+@section('css')
+<style>
+
+
+</style>
+@stop
 
 @section('content_header')
 <div class="row">
@@ -40,8 +46,8 @@
     </div>
 </div>
 <div class="pl-2">
-    <table class="table table-bordered yajra-datatable table-striped table-sm">
-        <thead>
+    <table class="table table-bordered yajra-datatable table-striped table-sm TrackingEventMaster">
+        <thead class="bg-info">
             <tr>
                 <th>ID</th>
                 <th>Event Code</th>
