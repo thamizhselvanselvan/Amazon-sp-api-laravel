@@ -15,6 +15,7 @@ use Smalot\PdfParser\Parser;
 use Dflydev\DotAccessData\Data;
 use SellingPartnerApi\Endpoint;
 use App\Models\Inventory\Shelve;
+use App\Models\Inventory\Country;
 use App\Models\Universal_textile;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
@@ -86,9 +87,9 @@ Route::get('country', function () {
 
     $countries = Country::get();
 });
-Route::get('event', function () {
-
-    event(new testEvent($percentage));
+Route::get('event', function(){
+    
+      event(new testEvent($percentage));
     event(new checkEvent('I am tring to Boradcast channel'));
 });
 
