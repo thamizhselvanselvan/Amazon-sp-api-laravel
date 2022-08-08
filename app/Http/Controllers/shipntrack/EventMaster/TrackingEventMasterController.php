@@ -9,20 +9,46 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
-use App\Models\ShipNTrack\EventMaster\TrackingEventMaster;
+use App\Models\ShipNTrack\EventMaster\TrackingEvent;
 
 class TrackingEventMasterController extends Controller
 {
-   public function index(Request $request)
-   {
-     if ($request->ajax()) {
+  public function TrackingEventRecordInsert(Request $request)
+  {
+      $courier_partner = $request->courier_partner;
+      $validated = $request->validate([
+        "event_code" => "required",
+        "event_desc" => "required",
+        "courier_partner" => "required"
+      ]);
       
-      $records = TrackingEventMaster::orderBy('id', 'DESC')->get();
-        foreach($records as $record){
-          return DataTables::of($records)
-              ->addColumn('action', function ($record) {
-                  $action = '<div class="d-flex pl-2 event-master-btn "><a href="/shipntrack/event-master/edit/' . $record->id . ' " class=" btn btn-success btn-sm "><i class="fas fa-edit"></i> Edit </a>';
-                  $action .= '<div class="d-flex pl-2 event-master-btn "><a href="/shipntrack/event-master/delete/' . $record->id . ' " class=" btn btn-danger btn-sm "><i class="fas fa-remove"></i> Remove </a>';
+      if($request->event_check != 'on')
+      {
+        $event_check = 0;
+      }else{
+        $event_check = 1;
+      }
+      $model_set = table_model_change(event_partner:$courier_partner, model:'TrackingEvent', table_name:'tracking_event_');
+      $model_set->insert([
+        'event_code' => $request->event_code,
+        'description' => $request->event_desc,
+        'active'  => $event_check
+      ]);
+      
+      return redirect()->intended('/shipntrack/event-master')->with('success', 'Record create successfully!');
+  }
+  
+   public function index(Request $request)
+   {  
+    $records = '';
+     if ($request->ajax()) {
+      $model_set = table_model_change(event_partner:'master', model:'TrackingEvent', table_name:'tracking_event_');
+      $results = $model_set->orderBy('id', 'DESC')->get();
+        foreach($results as $result){
+          return DataTables::of($results)
+              ->addColumn('action', function ($result) {
+                  $action = '<div class="d-flex pl-2 event-master-btn "><a href="/shipntrack/event-master/' . $result->id . ' " class=" btn btn-success btn-sm "><i class="fas fa-edit"></i></a>';
+                  $action .= '<div class="d-flex pl-2 delete event-master-btn "><a href="/shipntrack/event-master/delete/' . $result->id . ' " class=" btn btn-danger btn-sm "><i class="fa fa-trash"></i></a>';
                   return $action;
               })
               ->rawColumns(['action'])
@@ -30,7 +56,7 @@ class TrackingEventMasterController extends Controller
           }
         
       }
-        return view('shipntrack.EventMaster.index');
+        return view('shipntrack.EventMaster.index',compact('records'));
    }
 
    public function upload()
@@ -69,8 +95,9 @@ class TrackingEventMasterController extends Controller
 
    public function EventMasterEdit($id)
    {
-      $records = TrackingEventMaster::find($id);
-      return view('shipntrack.EventMaster.edit', compact('records'));
+      $model_set = table_model_change(event_partner:'master', model:'TrackingEvent', table_name:'tracking_event_');
+      $records = $model_set->find($id);
+      return view('shipntrack.EventMaster.index', compact('records'));
       
    }
 
@@ -78,15 +105,29 @@ class TrackingEventMasterController extends Controller
    {
       $validated = $request->validate([
         'event_code' => 'required',
-        'description' => 'required',
-        'status' => 'required',
+        'event_desc' => 'required',
       ]);
-      $record = TrackingEventMaster::find($id);
+      $model_set = table_model_change(event_partner:'master', model:'TrackingEvent', table_name:'tracking_event_');
+      $record = $model_set->find($id);
+      if($request->event_check != 'on')
+      {
+        $event_check = 0;
+      }else{
+        $event_check = 1;
+      }
       $record->event_code = $request->event_code;
-      $record->description = $request->description;
-      $record->active = $request->status;
+      $record->description = $request->event_desc;
+      $record->active = $event_check;
       $record->update();
       
-      return redirect()->intended('/shipntrack/event-master')->with('success', 'File update successfully!');
+      return redirect()->intended('/shipntrack/event-master')->with('success', 'Event update successfully!');
+   }
+
+   public function EventMasterDelete($id)
+   {
+    
+    $model_set = table_model_change(event_partner:'master', model:'TrackingEvent', table_name:'tracking_event_');
+    $trash = $model_set->where('id', $id)->delete();
+    return redirect()->intended('/shipntrack/event-master')->with('success', 'Event delete successfully!');
    }
 }
