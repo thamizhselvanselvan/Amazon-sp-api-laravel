@@ -43,7 +43,7 @@ class Order
 
         $apiInstance = new OrdersApi($config);
         // $startTime = Carbon::now()->subHours(6)->toISOString();
-        $startTime = Carbon::now()->subDays(10)->toISOString();
+        $startTime = Carbon::now()->subDays(2)->toISOString();
         $createdAfter = $startTime;
         $max_results_per_page = 100;
         $next_token = NULL;
@@ -140,7 +140,7 @@ class Order
 
             $order_item_details = DB::connection('order')->select("select id from orderitemdetails where amazon_order_identifier = '$amazon_order_id'");
 
-            if (!array_key_exists(0, $order_item_details)) {
+            if (count($order_item_details) <= 0) {
 
                 $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
                 $this->delay += $delay_count;
