@@ -609,3 +609,19 @@ if (!function_exists('GetRateChart')) {
         return $rate_array;
     }
 }
+
+if(!function_exists('boe_loop')) {
+    function boe_loop($key, $BOE_array, $key_tocheck, &$courier_basic_details, $main_key) {
+        $name_details = '';
+        $check_key = $key + 1;
+
+        while ($BOE_array[$check_key] != $key_tocheck) {
+            $name_details .= $BOE_array[$check_key];
+            $check_key++;
+        }
+
+        $courier_basic_details[$main_key] = $name_details;
+
+        return $courier_basic_details;
+    }
+}
