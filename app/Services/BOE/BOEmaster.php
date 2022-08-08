@@ -41,6 +41,9 @@ class BOEMaster
                     } else  if ($date_Boe == '2022') {
                         $get2022 = new BOEPdfReader;
                         $get2022->BOEPDFReader($content_txt, $storage_path, $company_id, $user_id);
+                    } else  if ($date_Boe == '2019') {
+                        $get2022 = new BOEPdfReader;
+                        $get2022->BOEPDFReader($content_txt, $storage_path, $company_id, $user_id);
                     }
 
                     break 1;

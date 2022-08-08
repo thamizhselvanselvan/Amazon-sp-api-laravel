@@ -625,7 +625,7 @@ class BOEPdfReader
                 $awb_no = $courier_basic_details['HawbNumber'];
 
                 $selectAwb = DB::select("select hawb_number,id from boe where hawb_number = '$awb_no' AND company_id='$company_id'");
-                Log::warning($selectAwb);
+                // Log::warning($selectAwb);
                 if (array_key_exists(0, $selectAwb)) {
                     $dataCheck = 1;
                 }
