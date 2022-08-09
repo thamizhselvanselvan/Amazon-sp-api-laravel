@@ -15,11 +15,10 @@ class TrackingEventMasterController extends Controller
 {
   public function TrackingEventRecordInsert(Request $request)
   {
-      $courier_partner = $request->courier_partner;
+      
       $validated = $request->validate([
         "event_code" => "required",
         "event_desc" => "required",
-        "courier_partner" => "required"
       ]);
       
       if($request->event_check != 'on')
@@ -28,7 +27,7 @@ class TrackingEventMasterController extends Controller
       }else{
         $event_check = 1;
       }
-      $model_set = table_model_change(event_partner:$courier_partner, model:'TrackingEvent', table_name:'tracking_event_');
+      $model_set = table_model_change(event_partner:'master', model:'TrackingEvent', table_name:'tracking_event_');
       $model_set->insert([
         'event_code' => $request->event_code,
         'description' => $request->event_desc,
@@ -56,7 +55,7 @@ class TrackingEventMasterController extends Controller
           }
         
       }
-        return view('shipntrack.EventMaster.index',compact('records'));
+        return view('shipntrack.EventMaster.index');
    }
 
    public function upload()
