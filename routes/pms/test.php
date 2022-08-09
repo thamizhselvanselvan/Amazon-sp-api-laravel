@@ -89,3 +89,6 @@ Route::get('ustoinprice', function () {
     $india_sp = $usd_sp * $ex_rate;
     po($india_sp);
 });
+
+Route::get('Test/Smsatracking/{awb}', 'TestController@SmsaTracking');
+Route::get('Test/Bombinotracking/{awb}', 'TestController@BombinoTracking');
