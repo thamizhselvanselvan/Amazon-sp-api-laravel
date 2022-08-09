@@ -16,8 +16,8 @@ class BOEPdefreader2018
 
 
     public function
-    BOEPDFReaderold($content, $storage_path, $company_id, $user_id)
-    // BOEPDFReaderold()
+     BOEPDFReaderold($content, $storage_path, $company_id, $user_id)
+ //   BOEPDFReaderold()
     {
 
         // $company_id = 1;
@@ -25,25 +25,25 @@ class BOEPdefreader2018
         // $storage_path  = '';
         // $pdfParser = new Parser();
 
-        // $path = 'D:\BOE\957302702.pdf';
+        // $path = 'D:\BOE\957299835.pdf';
 
-       
+
         // $pdfParser = new Parser();
         // $pdf = $pdfParser->parseFile($path);
         // $content = $pdf->getText();
 
-         $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
+        $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
 
 
-
+        // dd($content);
         foreach ($content as $key => $data) {
             if ($data == 'Page1of2') {
                 unset($content[$key]);
             }
         }
         $content = array_values($content);
-       
-// dd($content);
+
+        // dd($content);
 
 
         if ($content[0] == "Form Courier Bill Of Entry -XIII (CBE-XIII)") {
@@ -82,11 +82,11 @@ class BOEPdefreader2018
                     }
                     $courier_basic_details['AddressOfAuthorizedCourier'] = $name_details;
                     // boe_loop($key, $Boecheck, 'IGM DETAILS', $courier_basic_details, 'AddressofAuthorized');
+                    Log::alert("ok");
                 } else if ($BOEPDFData == 'IGM DETAILS') {
                     $name_details = '';
                     $check_key = $key;
                     $offset = 0;
-
                     while ($Boecheck[$check_key] != 'Airport of Shipment :') {
                         $check_key++;
 
@@ -102,7 +102,7 @@ class BOEPdefreader2018
                 } else if ($BOEPDFData == 'Airlines:') {
                     boe_loop($key, $Boecheck, 'Flight Number :', $courier_basic_details, 'Airlines');
                 } else if ($BOEPDFData == 'Flight Number :') {
-
+                    Log::alert("ok2");
                     boe_loop($key, $Boecheck, 'Airport of Arrival :', $courier_basic_details, 'FlightNo');
                 } else if ($BOEPDFData == 'Airport of Arrival :') {
 
@@ -492,20 +492,19 @@ class BOEPdefreader2018
                     boe_loop($key, $Boecheck, 'Duty(Rs.):', $courier_basic_details, 'AssessableValue');
                 } else if ($BOEPDFData == 'NOTIFICATION USED FOR THE ITEM') {
 
-                    $name_details = '';
+                    // Log::info($key);
                     $check_key = $key + 4;
                     $offset = 0;
+
                     while ($Boecheck[$check_key] != 'CHARGES USED FOR THE ITEM') {
-                        $notification_details[$offset]['SrNo'] = $Boecheck[$check_key++];
+                        $notification_details[$offset]['SrNo'] = (strlen($Boecheck[$check_key++]) > 1) ? null : $Boecheck[$check_key++];
                         $notification_details[$offset]['NotificationNumber'] = $Boecheck[$check_key++];
                         $notification_details[$offset]['SerialNumberOfNotification'] = $Boecheck[$check_key++];
-                        // $check_key += 3;
                         $offset++;
                     }
-                //    po($notification_details);
-                } else if ($BOEPDFData == 'CHARGES USED FOR THE ITEM') {
 
-                    $name_details = '';
+                    // Log::notice($notification_details);
+                } else if ($BOEPDFData == 'CHARGES USED FOR THE ITEM') {
                     $check_key = $key + 4;
                     $offset = 0;
 
@@ -516,8 +515,6 @@ class BOEPdefreader2018
                         $offset++;
                     }
                 } else if ($BOEPDFData == 'DUTY DETAILS') {
-
-                    $name_details = '';
                     $check_key = $key + 7;
                     $offset = 0;
                     while ($Boecheck[$check_key] != 'PAYMENT DETAILS') {
@@ -542,10 +539,23 @@ class BOEPdefreader2018
 
                         $offset++;
                     }
-                }
-              
+                    // Log::alert($courier_basic_details);
+                    // Log::notice($notification_details);
+                    // Log::notice($charge_details);
+                    // Log::notice($duty_details);
+                    // Log::warning($payment_details);
+                    // Log::info($igm_details);
+                    // Log::alert($courier_basic_details);
+                    // dd($courier_basic_details);
+                    // po(
+                    //     // $courier_basic_details,$notification_details,
+                    // $charge_details,
+                    // $duty_details,
+                    // $payment_details,
+                    // $igm_details);
 
-                if ($BOEPDFData == "Page2of2") {
+                } else  if ($BOEPDFData == " therefore physical signature is not required") {
+
                     $data[] = [
                         'courier_basic_details' => $courier_basic_details,
                         'notification_details' => $notification_details,
@@ -555,8 +565,8 @@ class BOEPdefreader2018
                         'igm_details' => $igm_details
                     ];
                 }
-
             }
+
 
             foreach ($data as $boe_details) {
                 $courier_basic_details = $boe_details['courier_basic_details'];

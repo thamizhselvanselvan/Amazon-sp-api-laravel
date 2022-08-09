@@ -36,14 +36,14 @@ class BOEMaster
                     $date_Boe = Carbon::createFromFormat('d/m/Y', $date)->format('Y');
 
                     if ($date_Boe == '2018') {
-                        $get = new BOEPdefreader2018;
-                        $get->BOEPDFReaderold($content_txt, $storage_path, $company_id, $user_id);
+                        $get2018 = new BOEPdefreader2018;
+                        $get2018->BOEPDFReaderold($content_txt, $storage_path, $company_id, $user_id);
                     } else  if ($date_Boe == '2022') {
                         $get2022 = new BOEPdfReader;
                         $get2022->BOEPDFReader($content_txt, $storage_path, $company_id, $user_id);
                     } else  if ($date_Boe == '2019') {
-                        $get2022 = new BOEPdfReader;
-                        $get2022->BOEPDFReader($content_txt, $storage_path, $company_id, $user_id);
+                        $get2019 = new BOEPdefreader2018;
+                        $get2019->BOEPDFReaderold($content_txt, $storage_path, $company_id, $user_id);
                     }
 
                     break 1;
