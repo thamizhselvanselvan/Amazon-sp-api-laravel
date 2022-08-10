@@ -18,16 +18,16 @@ class BOEPdefreader2018
 
     public function
     BOEPDFReaderold($content, $storage_path, $company_id, $user_id)
-    //  BOEPDFReaderold()
+    // BOEPDFReaderold()
     {
 
         // $company_id = 1;
         // $user_id = 1;
         // $storage_path  = '';
         // $pdfParser = new Parser();
-
-        // $path = 'D:\BOE\957313503.pdf';
-        // // $path = 'D:\BOE\957315706.pdf';
+        // $second_page = 1;
+        // // $path = 'D:\BOE\957313503.pdf';
+        // $path = 'D:\BOE\Test\957315706.pdf';
 
 
         // $pdfParser = new Parser();
@@ -35,24 +35,26 @@ class BOEPdefreader2018
         // $content = $pdf->getText();
 
         $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
-        //  dd($content);
-        $Boecheck = $content;
+          // dd($content);
+  
 
-
+          // Log::alert($maxkey);
+          
         foreach ($content as $key => $data) {
             if ($data == 'Page1of2' || $data == 'Page 1 of 2') {
                 unset($content[$key]);
             } else if ($data == 'NOTIFICATION USED FOR THE ITEM') {
-
+                
                 if ($content[$key + 1] != 'Sr.No.') {
                     unset($content[$key + 1]);
                 }
             }
         }
-
-
+        
+        
         $content = array_values($content);
-        // dd($content);
+        $maxkey = max(array_keys($content));
+        //  dd($content);
 
 
 
@@ -501,30 +503,31 @@ class BOEPdefreader2018
                 } else if ($BOEPDFData == 'Discount Amount :') {
 
                     boe_loop($key, $Boecheck, 'Currency of Discount :', $courier_basic_details, 'DiscountAmount');
-                } else if ($BOEPDFData == 'Currency of Discount :') {
+                }
+                 else if ($BOEPDFData == 'Currency of Discount :') {
 
                     boe_loop($key, $Boecheck, 'Assessable Value :', $courier_basic_details, 'CurrencyofDiscount');
-                } else if ($BOEPDFData == 'Assessable Value :') {
-
-                    boe_loop($key, $Boecheck, 'Duty(Rs.):', $courier_basic_details, 'AssessableValue');
-                } else if ($BOEPDFData == 'NOTIFICATION USED FOR THE ITEM') {
-
-                    // Log::info($key);
-                    $check_key = $key + 4;
-                    $offset = 0;
-
-                    while ($Boecheck[$check_key] != 'CHARGES USED FOR THE ITEM') {
-                        $notification_details[$offset]['SrNo'] = (strlen($Boecheck[$check_key++]) > 1) ? null : $Boecheck[$check_key++];
-                        $notification_details[$offset]['NotificationNumber'] = $Boecheck[$check_key++];
-                        $notification_details[$offset]['SerialNumberOfNotification'] = $Boecheck[$check_key++];
-                        $offset++;
+                } 
+                // else if ($BOEPDFData == 'Assessable Value :') {
+                //     boe_loop($key, $Boecheck, 'Duty(Rs.):', $courier_basic_details, 'AssessableValue');
+                // } 
+                else if ($BOEPDFData == 'NOTIFICATION USED FOR THE ITEM') {    
+                    $val = $key + 1;
+                    if (array_key_exists($val, $content)) {
+                        $check_key = $key + 4;
+                        $offset = 0;
+                        while ($Boecheck[$check_key] != 'CHARGES USED FOR THE ITEM') {
+                            $notification_details[$offset]['SrNo'] = (strlen($Boecheck[$check_key++]) > 1) ? null : $Boecheck[$check_key++];
+                            $notification_details[$offset]['NotificationNumber'] = $Boecheck[$check_key++];
+                            $notification_details[$offset]['SerialNumberOfNotification'] = $Boecheck[$check_key++];
+                            $offset++;
+                        }
                     }
 
-                    // Log::notice($notification_details);
                 } else if ($BOEPDFData == 'CHARGES USED FOR THE ITEM') {
                     $check_key = $key + 4;
                     $offset = 0;
-
+                    
                     while ($Boecheck[$check_key] != 'DUTY DETAILS') {
                         $charge_details[$offset]['SrNo'] = $Boecheck[$check_key++];
                         $charge_details[$offset]['ChargeType'] = $Boecheck[$check_key++];
@@ -544,7 +547,7 @@ class BOEPdefreader2018
                         $offset++;
                     }
                 } else if ($BOEPDFData == 'PAYMENT DETAILS') {
-
+                    
                     $name_details = '';
                     $check_key = $key + 5;
                     $offset = 0;
@@ -553,23 +556,25 @@ class BOEPdefreader2018
                         $payment_details[$offset]['ChallanNumber'] = $Boecheck[$check_key++];
                         $payment_details[$offset]['TotalAmount'] = $Boecheck[$check_key++];
                         $payment_details[$offset]['ChallanDate'] = $Boecheck[$check_key++];
-
+                        
                         $offset++;
                     }
-                } else  if ($BOEPDFData == " therefore physical signature is not required") {
-
-                    $data[] = [
-                        'courier_basic_details' => $courier_basic_details,
-                        'notification_details' => $notification_details,
-                        'charge_details' => $charge_details,
-                        'duty_details' => $duty_details,
-                        'payment_details' => $payment_details,
-                        'igm_details' => $igm_details
+                    
+                }
+              else  if ($BOEPDFData == "DECLARATION") {
+                  
+                  $data[] = [
+                      'courier_basic_details' => $courier_basic_details,
+                      'notification_details' => $notification_details,
+                      'charge_details' => $charge_details,
+                      'duty_details' => $duty_details,
+                      'payment_details' => $payment_details,
+                      'igm_details' => $igm_details
                     ];
                 }
+              
             }
-
-
+              
             foreach ($data as $boe_details) {
                 $courier_basic_details = $boe_details['courier_basic_details'];
                 $notification_details = $boe_details['notification_details'];
