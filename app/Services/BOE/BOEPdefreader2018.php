@@ -8,6 +8,7 @@ use Smalot\PdfParser\Parser;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+use function PHPSTORM_META\elementType;
 
 class BOEPdefreader2018
 {
@@ -16,8 +17,8 @@ class BOEPdefreader2018
 
 
     public function
-     BOEPDFReaderold($content, $storage_path, $company_id, $user_id)
- //   BOEPDFReaderold()
+    BOEPDFReaderold($content, $storage_path, $company_id, $user_id)
+    //  BOEPDFReaderold()
     {
 
         // $company_id = 1;
@@ -25,7 +26,8 @@ class BOEPdefreader2018
         // $storage_path  = '';
         // $pdfParser = new Parser();
 
-        // $path = 'D:\BOE\957299835.pdf';
+        // $path = 'D:\BOE\957313503.pdf';
+        // // $path = 'D:\BOE\957315706.pdf';
 
 
         // $pdfParser = new Parser();
@@ -33,17 +35,25 @@ class BOEPdefreader2018
         // $content = $pdf->getText();
 
         $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
+        //  dd($content);
+        $Boecheck = $content;
 
 
-        // dd($content);
         foreach ($content as $key => $data) {
-            if ($data == 'Page1of2') {
+            if ($data == 'Page1of2' || $data == 'Page 1 of 2') {
                 unset($content[$key]);
+            } else if ($data == 'NOTIFICATION USED FOR THE ITEM') {
+
+                if ($content[$key + 1] != 'Sr.No.') {
+                    unset($content[$key + 1]);
+                }
             }
         }
-        $content = array_values($content);
 
+
+        $content = array_values($content);
         // dd($content);
+
 
 
         if ($content[0] == "Form Courier Bill Of Entry -XIII (CBE-XIII)") {
@@ -82,27 +92,34 @@ class BOEPdefreader2018
                     }
                     $courier_basic_details['AddressOfAuthorizedCourier'] = $name_details;
                     // boe_loop($key, $Boecheck, 'IGM DETAILS', $courier_basic_details, 'AddressofAuthorized');
-                    Log::alert("ok");
-                } else if ($BOEPDFData == 'IGM DETAILS') {
+
+                } else if ($BOEPDFData == 'Time Of Arrival') {
+
                     $name_details = '';
                     $check_key = $key;
+                    $count = 0;
                     $offset = 0;
+                    $flight_name = '';
                     while ($Boecheck[$check_key] != 'Airport of Shipment :') {
                         $check_key++;
-
+                        $count++;
+                    }
+                    $append = $count - 6;
+                    while ($offset != $append) {
+                        $flight_name .= $Boecheck[$key + $offset + 1];
                         $check_key++;
                         $offset++;
                     }
-                    $igm_details['Airlines'] =  $Boecheck[$key + $offset + 1];
-                    $igm_details['FlightNo'] = $Boecheck[$key + $offset + 2];
-                    $igm_details['AirportOfArrival'] = $Boecheck[$key + $offset + 3];
-                    $igm_details['FirstPortOfArrival'] = 'NULL' ?? $Boecheck[$key + $offset + 4];
+                    $igm_details['Airlines'] = $flight_name;
+                    $igm_details['FlightNo'] = $Boecheck[$key + $offset + 1];
+                    $igm_details['AirportOfArrival'] = $Boecheck[$key + $offset + 2];
+                    $igm_details['FirstPortOfArrival'] = $Boecheck[$key + $offset + 3];
                     $igm_details['DateOfArrival'] = $Boecheck[$key + $offset + 4];
                     $igm_details['TimeOfArrival'] = $Boecheck[$key + $offset + 5];
                 } else if ($BOEPDFData == 'Airlines:') {
                     boe_loop($key, $Boecheck, 'Flight Number :', $courier_basic_details, 'Airlines');
                 } else if ($BOEPDFData == 'Flight Number :') {
-                    Log::alert("ok2");
+
                     boe_loop($key, $Boecheck, 'Airport of Arrival :', $courier_basic_details, 'FlightNo');
                 } else if ($BOEPDFData == 'Airport of Arrival :') {
 
@@ -539,21 +556,6 @@ class BOEPdefreader2018
 
                         $offset++;
                     }
-                    // Log::alert($courier_basic_details);
-                    // Log::notice($notification_details);
-                    // Log::notice($charge_details);
-                    // Log::notice($duty_details);
-                    // Log::warning($payment_details);
-                    // Log::info($igm_details);
-                    // Log::alert($courier_basic_details);
-                    // dd($courier_basic_details);
-                    // po(
-                    //     // $courier_basic_details,$notification_details,
-                    // $charge_details,
-                    // $duty_details,
-                    // $payment_details,
-                    // $igm_details);
-
                 } else  if ($BOEPDFData == " therefore physical signature is not required") {
 
                     $data[] = [
