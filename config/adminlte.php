@@ -592,6 +592,11 @@ return [
                     'url'   =>  'shipntrack/event-master',
                     'can'   =>  ['Admin'],
                 ],
+                [
+                    'text'  =>  'Tracking Event Mapping',
+                    'url'   =>  'shipntrack/event-mapping',
+                    'can'   =>  ['Admin'],
+                ],
             ]
         ],
 
