@@ -643,6 +643,7 @@ if (!function_exists('boe_loop')) {
         return $courier_basic_details;
     }
 }
+
 if (!function_exists('SmsaTrackingResponse')) {
 
     function SmsaTrackingResponse($awbNo)
