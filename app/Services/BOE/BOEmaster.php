@@ -8,7 +8,7 @@ use Smalot\PdfParser\Parser;
 use Illuminate\Support\Facades\Log;
 use App\Services\BOE\BOEPdefreader2018;
 
-class BOEMaster
+class BOEmaster
 {
     public function BOEmanage($content, $storage_path, $company_id, $user_id)
     {
@@ -50,8 +50,8 @@ class BOEMaster
                 }
             }
         } else {
-
             Log::notice('Invalid BOE');
+            return true;
         }
     }
 }
