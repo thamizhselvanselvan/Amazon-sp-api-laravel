@@ -19,32 +19,31 @@ class BOEPdefreader2018
     BOEPDFReaderold($content, $storage_path, $company_id, $user_id)
     // BOEPDFReaderold()
     {
-        Log::alert('2018');
+
         // $company_id = 1;
         // $user_id = 1;
         // $storage_path  = '';
         // $pdfParser = new Parser();
-        // $BOEPDFMaster = [];
-        // $path = 'D:\BOE\957302469.pdf';
-        // $path = 'D:\BOE\957299835.pdf';
+
+        // $path = 'D:\BOE\957302702.pdf';
+
+       
         // $pdfParser = new Parser();
         // $pdf = $pdfParser->parseFile($path);
         // $content = $pdf->getText();
-        // Log::alert($content);
-        $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
+
+         $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
 
 
-        // $host = config('database.connections.web.host');
-        // $dbname = config('database.connections.web.database');
-        // $port = config('database.connections.web.port');
-        // $username = config('database.connections.web.username');
-        // $password = config('database.connections.web.password');
 
-        // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-
-        // $unsetKey = array_search('Page 1 of 2', $content);
-        // unset($content[$unsetKey]);
-        // $content = array_values($content);
+        foreach ($content as $key => $data) {
+            if ($data == 'Page1of2') {
+                unset($content[$key]);
+            }
+        }
+        $content = array_values($content);
+       
+// dd($content);
 
 
         if ($content[0] == "Form Courier Bill Of Entry -XIII (CBE-XIII)") {
@@ -492,16 +491,18 @@ class BOEPdefreader2018
 
                     boe_loop($key, $Boecheck, 'Duty(Rs.):', $courier_basic_details, 'AssessableValue');
                 } else if ($BOEPDFData == 'NOTIFICATION USED FOR THE ITEM') {
-                    $name_details = '';
-                    $check_key = $key + 5;
-                    $offset = 0;
 
+                    $name_details = '';
+                    $check_key = $key + 4;
+                    $offset = 0;
                     while ($Boecheck[$check_key] != 'CHARGES USED FOR THE ITEM') {
-                        $notification_details[$offset]['SrNo'] = 'NULL' ?? $Boecheck[$check_key++];
+                        $notification_details[$offset]['SrNo'] = $Boecheck[$check_key++];
                         $notification_details[$offset]['NotificationNumber'] = $Boecheck[$check_key++];
                         $notification_details[$offset]['SerialNumberOfNotification'] = $Boecheck[$check_key++];
+                        // $check_key += 3;
                         $offset++;
                     }
+                //    po($notification_details);
                 } else if ($BOEPDFData == 'CHARGES USED FOR THE ITEM') {
 
                     $name_details = '';
@@ -542,6 +543,7 @@ class BOEPdefreader2018
                         $offset++;
                     }
                 }
+              
 
                 if ($BOEPDFData == "Page2of2") {
                     $data[] = [
@@ -553,6 +555,7 @@ class BOEPdefreader2018
                         'igm_details' => $igm_details
                     ];
                 }
+
             }
 
             foreach ($data as $boe_details) {
@@ -619,7 +622,7 @@ class BOEPdefreader2018
             }
         } else {
 
-            Log::alert('Invalid BOE file');
+            Log::alert('Invalid BOE ');
         }
     }
     public function createbean($boe_details, $company_id, $user_id, $courier_basic_details, $igm_details, $notification_details, $charge_details, $duty_details, $payment_details)
