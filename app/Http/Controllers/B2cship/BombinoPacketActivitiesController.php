@@ -58,8 +58,6 @@ class BombinoPacketActivitiesController extends Controller
             }
         }
 
-        Log::alert(json_encode($new_files_list));
-        arsort($new_files_list);
         foreach ($new_files_list as $key => $files) {
             $content = Storage::get($file_path . '/' . $key);
             $content = json_decode($content);
@@ -112,25 +110,8 @@ class BombinoPacketActivitiesController extends Controller
             $offset++;
         }
 
-
-
-        // exit;
-
-        // foreach ($pd_details as $pd_key => $pd_value) {
-
-        //     $suboffset = 0;
-        //     $pd_final_array[$offset][$suboffset] = $pd_key;
-        //     foreach ($pd_value as $pd_data) {
-
-        //         $suboffset++;
-        //         $pod_location = $pd_data->PODLocation;
-        //         $created_date = substr($pd_data->CreatedDate, 0, 10);
-        //         $statusDetails = trim($pd_data->StatusDetails);
-
-        //         $pd_final_array[$offset][$suboffset] = $statusDetails ;
-        //     }
-        //     $offset++;
-        // }
+        $column = array_column($pd_final_array, 'Awb');
+        array_multisort($column, SORT_DESC, $pd_final_array);
 
         return view('b2cship.bombinoActivities.index', compact(['pd_final_array']));
     }
@@ -141,8 +122,6 @@ class BombinoPacketActivitiesController extends Controller
         $today_ed = Carbon::now();
         $year = $today_ed->year;
 
-        // echo $year;
-        // exit;
         $current_month = $today_ed->format('m');
         // $month = 2;
         for ($month = 1; $month <= $current_month; $month++) {
@@ -165,7 +144,6 @@ class BombinoPacketActivitiesController extends Controller
 
     public function ExportToCSV()
     {
-
         $today_sd = Carbon::today();
         $today_ed = Carbon::now();
 
@@ -268,19 +246,18 @@ class BombinoPacketActivitiesController extends Controller
         $csv_insert = [];
         $count = 0;
         foreach ($pd_final_array as $values) {
-            
+
             $csv_insert = NULL;
             foreach ($values as $key => $packet_data) {
                 if ($packet_data != NULL) {
 
                     if ($key == 'Awb') {
                         $csv_insert[$count] = $packet_data;
-
                     } else {
 
                         $csv_insert[$count] = $key;
                     }
-                    $count ++;
+                    $count++;
                 }
             }
 
@@ -293,7 +270,6 @@ class BombinoPacketActivitiesController extends Controller
 
         echo "File Downloaded";
         if (Storage::exists($exportFilePath)) {
-            Log::alert("FILE EXISTS");
             return Storage::download($exportFilePath);
         }
     }

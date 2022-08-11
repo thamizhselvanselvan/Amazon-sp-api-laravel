@@ -56,6 +56,8 @@ return [
 
     'asset_url' => env('ASSET_URL', null),
 
+    'dropbox_access_token' => env('DROPBOX_ACCESS_TOKEN'),
+    
     'slack_notification_webhook' => env('SLACK_NOTIFICATION_WEBHOOK'),
 
     'aws_sp_api_client_id' => env('AWS_SP_API_CLIENT_ID'),

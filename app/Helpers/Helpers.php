@@ -787,7 +787,7 @@ if (!function_exists('bombino_tracking')) {
 
             foreach ($details->bombinoTrackingJoin as $value) {
 
-              $tracking_detials[] = [
+                $tracking_detials[] = [
                     'Date_Time' => $value->action_date . ' ' . $value->action_time,
                     'Location' => $value->location,
                     'Activity' => $value->exception,

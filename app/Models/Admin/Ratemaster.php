@@ -11,4 +11,10 @@ class Ratemaster extends Model
 
     protected $table = 'rate_masters';
 
+    protected $fillable = [
+        'weight',
+        'base_rate',
+        'commission',
+        'source_destination'
+    ];
 }
