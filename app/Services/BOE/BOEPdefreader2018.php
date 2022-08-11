@@ -26,16 +26,19 @@ class BOEPdefreader2018
         // $storage_path  = '';
         // $pdfParser = new Parser();
         // $second_page = 1;
-        // // $path = 'D:\BOE\957313503.pdf';
-        // $path = 'D:\BOE\Test\957315706.pdf';
+        // $path = 'D:\BOE\957341067.pdf';
+        // //  $path = 'D:\BOE\957344276.pdf';
+        // $path = 'D:\BOE\Test\957302469.pdf';
+        // $path = 'D:\BOE\wd\957376660.pdf';
 
 
         // $pdfParser = new Parser();
         // $pdf = $pdfParser->parseFile($path);
         // $content = $pdf->getText();
 
+        // echo $path;
         $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
-          // dd($content);
+        //   dd($content);
   
 
           // Log::alert($maxkey);
@@ -54,7 +57,7 @@ class BOEPdefreader2018
         
         $content = array_values($content);
         $maxkey = max(array_keys($content));
-        //  dd($content);
+        
 
 
 
@@ -507,6 +510,7 @@ class BOEPdefreader2018
                  else if ($BOEPDFData == 'Currency of Discount :') {
 
                     boe_loop($key, $Boecheck, 'Assessable Value :', $courier_basic_details, 'CurrencyofDiscount');
+                  
                 } 
                 // else if ($BOEPDFData == 'Assessable Value :') {
                 //     boe_loop($key, $Boecheck, 'Duty(Rs.):', $courier_basic_details, 'AssessableValue');
@@ -514,16 +518,34 @@ class BOEPdefreader2018
                 else if ($BOEPDFData == 'NOTIFICATION USED FOR THE ITEM') {    
                     $val = $key + 1;
                     if (array_key_exists($val, $content)) {
+
                         $check_key = $key + 4;
                         $offset = 0;
+                        $count = 0;
                         while ($Boecheck[$check_key] != 'CHARGES USED FOR THE ITEM') {
-                            $notification_details[$offset]['SrNo'] = (strlen($Boecheck[$check_key++]) > 1) ? null : $Boecheck[$check_key++];
-                            $notification_details[$offset]['NotificationNumber'] = $Boecheck[$check_key++];
-                            $notification_details[$offset]['SerialNumberOfNotification'] = $Boecheck[$check_key++];
+                          $count++;
+                          $check_key++;
+                        }
+
+                        $check_key = $key + 4;
+
+                        while ($Boecheck[$check_key] != 'CHARGES USED FOR THE ITEM') {
+                            if($count < 3)
+                            {
+                                $notification_details[$offset]['SrNo'] = '1';
+                                $notification_details[$offset]['NotificationNumber'] = $Boecheck[$check_key++];
+                                $notification_details[$offset]['SerialNumberOfNotification'] = $Boecheck[$check_key++];
+                            }
+                            else
+                            {
+                                $notification_details[$offset]['SrNo'] = $Boecheck[$check_key++];
+                                $notification_details[$offset]['NotificationNumber'] = $Boecheck[$check_key++];
+                                $notification_details[$offset]['SerialNumberOfNotification'] = $Boecheck[$check_key++];
+                            }
                             $offset++;
                         }
                     }
-
+                   
                 } else if ($BOEPDFData == 'CHARGES USED FOR THE ITEM') {
                     $check_key = $key + 4;
                     $offset = 0;
@@ -547,6 +569,7 @@ class BOEPdefreader2018
                         $offset++;
                     }
                 } else if ($BOEPDFData == 'PAYMENT DETAILS') {
+                   
                     
                     $name_details = '';
                     $check_key = $key + 5;
@@ -574,7 +597,7 @@ class BOEPdefreader2018
                 }
               
             }
-              
+         
             foreach ($data as $boe_details) {
                 $courier_basic_details = $boe_details['courier_basic_details'];
                 $notification_details = $boe_details['notification_details'];
@@ -610,6 +633,7 @@ class BOEPdefreader2018
                     }
                 }
 
+                
                 if ($dataCheck != 1) {
                     //add new 
                     $boe_bean_detials = $this->createbean($boe_details, $company_id, $user_id, $courier_basic_details, $igm_details, $notification_details, $charge_details, $duty_details, $payment_details);
