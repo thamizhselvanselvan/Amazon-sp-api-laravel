@@ -449,16 +449,16 @@ class TestController extends Controller
     $amazon_commission = 22.00 / 100;
 
     $ex_rate = 82;
-    $duty_cost = round(($duty_rate * ($bb_price + $int_shipping_base_charge)), 2);
+    $duty_cost = ($duty_rate * ($bb_price + $int_shipping_base_charge));
 
     $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
       (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $seller_commission);
 
-    $usd_sp = round($price_befor_amazon_fees * (1 + $amazon_commission) +
-      ($amazon_commission * $price_befor_amazon_fees * 0.12), 2);
+    $usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
+      ($amazon_commission * $price_befor_amazon_fees * 0.12);
 
     $india_sp = $usd_sp * $ex_rate;
-    return $india_sp;
+    return round($india_sp, 2);
   }
 
   public function getWeight($dimensions)
@@ -484,13 +484,13 @@ class TestController extends Controller
     $amazon_commission = 15.00 / 100;
     $int_shipping_base_charge = $weight * 4.5;
     $ex_rate = 3.7;
-    $duty_cost = round(($duty_rate * ($bb_price + $int_shipping_base_charge)), 2);
+    $duty_cost = ($duty_rate * ($bb_price + $int_shipping_base_charge));
 
     $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
       (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $seller_commission);
 
-    $usd_sp = round($price_befor_amazon_fees * (1 + $amazon_commission) +
-      ($amazon_commission * $price_befor_amazon_fees * 0.12), 2);
+    $usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
+      ($amazon_commission * $price_befor_amazon_fees * 0.12);
 
     $IED_sp = $usd_sp * $ex_rate;
     return round($IED_sp, 2);
