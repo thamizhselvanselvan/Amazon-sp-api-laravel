@@ -91,14 +91,4 @@ Route::get('ustoinprice', function () {
     po($india_sp);
 });
 
-Route::get('boe/test', function () {
-
-    $path = 'D:\BOE\Test\957299835.pdf';
-
-    $pdfParser = new Parser();
-    $pdf = $pdfParser->parseFile($path);
-    $content = $pdf->getText();
-
-
-    //
-});
+Route::get('intosa', 'TestController@INToSA');

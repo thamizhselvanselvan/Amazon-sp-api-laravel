@@ -43,48 +43,25 @@ class RateMasterCSVUpload extends Command
      */
     public function handle()
     {
-        Log::warning("CSV File upload executed handle!");
-
         $path = 'RateMaster/export-rate.csv';
         $file = Storage::path($path);
         $csv = Reader::createFromPath($file, 'r');
         $csv->setHeaderOffset(0);
-        
-        // $host = config('database.connections.web.host');
-        // $dbname = config('database.connections.web.database');
-        // $port = config('database.connections.web.port');
-        // $username = config('database.connections.web.username');
-        // $password = config('database.connections.web.password');
-        
-        // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-        // $symbols = [' ', '-'];
-    
-        foreach($csv as $data)
-        {   
-            // Log::warning($data);
-            $csv_data []= [
-                'Weight' => $data['Weight'],
+
+        $csv_data = [];
+
+        foreach ($csv as $data) {
+
+            $csv_data[] = [
+                'weight' => $data['Weight'],
                 'base_rate' => $data['Base_rate'],
                 'commission' => $data['Commission'],
                 'lmd_cost' => $data['Lmd_cost'],
                 'source_destination' => $data['Source_destination'],
 
             ];
-            // Log::alert($asin);
-
-            // $shipntrack = R::dispense('ratemasters');
-            // foreach($data as $key => $result)
-            // {
-            //     $header = str_replace($symbols, '_', strtolower($key));
-            //     if($header)
-            //     {
-            //         $shipntrack->$header = $result;
-            //         R::store($shipntrack);
-            //     }     
-            // }
         }
 
-        Ratemaster::insert($csv_data);
-        Log::warning("CSV Upload Successfully!");
+        Ratemaster::upsert($csv_data, 'unique_weight_source', ['weight', 'base_rate', 'commission', 'lmd_cost', 'source_destination']);
     }
 }

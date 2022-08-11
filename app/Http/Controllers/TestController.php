@@ -25,6 +25,7 @@ use SellingPartnerApi\Api\CatalogApi;
 use App\Services\SP_API\CatalogImport;
 use Illuminate\Support\Facades\Storage;
 use App\Models\order\OrderSellerCredentials;
+use App\Services\Catalog\PriceConversion;
 use Illuminate\Cache\RateLimiting\Limit;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use SellingPartnerApi\Api\ProductPricingApi;
@@ -523,6 +524,15 @@ class TestController extends Controller
     $sg_sp = $mbm_usd_sp * $ex_rate;
 
     return round($sg_sp, 2);
+    //
+  }
+
+  public function INToSA($weight, $bb_price)
+  {
+
+    $priceConverter = new PriceConversion();
+
+    return $priceConverter->USAToIND($weight, $bb_price);
     //
   }
 }
