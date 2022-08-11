@@ -587,16 +587,30 @@ return [
                     'url'   =>  'shipntrack/forwarder',
                     'can'   =>  ['Admin'],
                 ],
+
                 [
-                    'text'  =>  'Tracking Event Master',
-                    'url'   =>  'shipntrack/event-master',
-                    'can'   =>  ['Admin'],
+                    'text' => 'Tracking',
+                    'can' => ['Admin'],
+                    'submenu' =>
+                    [
+                        [
+                            'text'  =>  'Tracking Event Master',
+                            'url'   =>  'shipntrack/event-master',
+                            'can'   =>  ['Admin'],
+                        ],
+                        [
+                            'text'  =>  'Tracking Event Mapping',
+                            'url'   =>  'shipntrack/event-mapping',
+                            'can'   =>  ['Admin'],
+                        ],
+                        [
+                            'text'  =>  'Stop Tracking',
+                            'url'   =>  'shipntrack/stopTracking',
+                            'can'   =>  ['Admin'],
+                        ],
+                    ],
                 ],
-                [
-                    'text'  =>  'Tracking Event Mapping',
-                    'url'   =>  'shipntrack/event-mapping',
-                    'can'   =>  ['Admin'],
-                ],
+
             ]
         ],
 
