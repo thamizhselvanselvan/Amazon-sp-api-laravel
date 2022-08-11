@@ -214,6 +214,28 @@ class labelManagementController extends Controller
         return Storage::download('label/zip/label.zip');
     }
 
+    // public function zipDownload($arr)
+    // {
+    //     // po($arr);
+    //     $replace = explode(',', $arr);
+    //     $zip = new ZipArchive;
+    //     $path = 'label/zip/' . 'label.zip';
+    //     $fileName = Storage::path('label/zip/' . 'label.zip');
+    //     Storage::delete($path);
+    //     if (!Storage::exists($path)) {
+    //         Storage::put($path, '');
+    //     }
+    //     if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
+    //         foreach ($replace as $key => $value) {
+    //             $path = Storage::path('label/' . $value);
+    //             $relativeNameInZipFile = basename($path);
+    //             $zip->addFile($path, $relativeNameInZipFile);
+    //         }
+    //         $zip->close();
+    //     }
+    //     return response()->download($fileName);
+    // }
+
     public function downloadExcelTemplate()
     {
         $filepath = public_path('template/Label-Template.xlsx');
@@ -328,12 +350,6 @@ class labelManagementController extends Controller
 
     public function labelDataFormating($id)
     {
-        $ignore_title = [
-            'Spray', 'spray',
-            'Flammable', 'flammable',
-            'Aerosol', 'aerosol'
-        ];
-
         $label = '';
         $order = config('database.connections.order.database');
         $catalog = config('database.connections.catalog.database');
@@ -396,11 +412,7 @@ class labelManagementController extends Controller
                     $label_data[$key1] = $dimensions;
                 } elseif ($key1 == 'title') {
 
-                    $new_title = str_replace($ignore_title, '', $label_detials);
-
-                    $product[$key][$key1] = $new_title;
-
-                    //
+                    $product[$key][$key1] = $label_detials;
                 } elseif ($key1 == 'sku') {
 
                     $product[$key][$key1] = $label_detials;

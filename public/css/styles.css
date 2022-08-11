@@ -583,14 +583,12 @@ body {
 }
 
 .catalogcountry {
-    height: px;
+    height: 0px;
 }
-
 .TrackingEventMaster tr {
-    height: 02px;
-    /* font-size: 12px; */
+    line-height: 0.9;
 }
 
-/* .event-master-btn { */
-/* height: 10px; */
-/* } */
+.event-master-btn .btn-sm {
+    padding: 0px;
+}
