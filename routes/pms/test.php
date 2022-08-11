@@ -91,4 +91,4 @@ Route::get('ustoinprice', function () {
     po($india_sp);
 });
 
-Route::get('intosa', 'TestController@INToSA');
+Route::get('intosa/{weight}/{price}', 'TestController@INToSA');
