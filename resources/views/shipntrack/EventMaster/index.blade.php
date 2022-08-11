@@ -31,6 +31,7 @@
             <div class="col">
                 <x-adminlte-input label="Event Code" name="event_code" type="text" placeholder="Event Code"
                     value="{{ (isset($records->event_code)) ? $records->event_code : '' }}" />
+
                 <div class="form-group mt-0">
                     <label for="Active">Active</label>
                     @if ((isset($records)) && $records->active == 1)

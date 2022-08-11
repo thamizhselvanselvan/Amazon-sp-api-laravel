@@ -24,10 +24,9 @@ class CreateShipntrackTrackingEventMappingTable extends Migration
             $table->string('our_event_code', 50)->nullable();
             $table->string('our_event_description', 255)->nullable();
             $table->string('active',10)->nullable()->comment('0 = Inactive 1 = Active');
-            $table->string('mapping_event_code')->nullable();
             $table->timestamps();
             $table->unique(['source', 'our_event_code'], 'event_code_source_unique');
-            $table->foreign('mapping_event_code', 'event_code_foreign_key')->references('event_code')->on('tracking_event_masters');
+            $table->foreign('master_event_code', 'master_event_code_foreign_key')->references('event_code')->on('tracking_event_masters');
         });
     }
 

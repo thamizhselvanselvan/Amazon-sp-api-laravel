@@ -2,8 +2,9 @@
 
 namespace App\Models\ShipNTrack\EventMaster;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\ShipNTrack\EventMapping\TrackingEventMapping;
 
 class TrackingEventMaster extends Model
 {
@@ -15,4 +16,9 @@ class TrackingEventMaster extends Model
         'description',
         'active',
     ];
+
+    // public function TrackingEventMapping(){
+        
+    //     return $this->belongsTo(TrackingEventMapping::class, 'event_code', 'master_event_code');
+    // }
 }

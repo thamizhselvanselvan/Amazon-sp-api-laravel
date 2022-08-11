@@ -15,54 +15,95 @@
 
 <div class="card ">
     <!-- <h3 class="card-header text-center">{{ (isset($records)) ? 'Update Event' : 'Add Event' }}</h3> -->
-    <form class="ml-4 mt-1 mr-4" action="{{ Route('shipntrack.EventMapping.save')}}" method="POST">
+    <form class="ml-4 mt-1 mr-4"
+        action="{{ (isset($records)) ? Route('shipntrack.EventMapping.update', $records->id) : Route('shipntrack.EventMapping.save') }}"
+        method="POST">
         @csrf
         <div class="row">
 
             <div class="col">
                 <x-adminlte-select name="source" label="Select Source" id="source">
-                    <x-adminlte-options :options="['Bombino', 'Samsa', 'Emirate']" empty-option="Select Source" />
+                    <!-- <x-adminlte-options :options="['Bombino', 'Samsa', 'Emirate']" empty-option="Select Source" /> -->
+                    <option value="">Select Source</option>
+                    @if((isset($records)) )
+
+                    @foreach ($arrays as $key => $array)
+                    @if ($array == $selected_source)
+                    <option value="{{ $key }}" selected> {{ $array }} </option>
+                    @else
+                    <option value="{{ $key }}"> {{ $array }} </option>
+                    @endif
+
+                    @endforeach
+                    @else
+                    @foreach ($arrays as $key => $array)
+                    <option value="{{ $key }}"> {{ $array }} </option>
+                    @endforeach
+
+                    @endif
+
 
                 </x-adminlte-select>
 
             </div>
             <div class="col">
-
-                <x-adminlte-input label="Event Code" name="our_event_code" type="text" id="event_code"
-                    placeholder="Event Code" value="" />
+                <x-adminlte-select name="event_description" label="Event Description" id="event_desc">
+                    <option value="">Select Event Description</option>
+                    <!-- <option value="{{ (isset($records)) ? $selected_description : '' }}" selected>
+                        {{ (isset($records)) ? $selected_description : '' }}
+                    </option> -->
+                </x-adminlte-select>
 
             </div>
             <div class="col">
 
-                <x-adminlte-select name="event_source" label="Master Event Source" id="master_event_desc">
-                    <option value="">Select Master Event Source</option>
+                <x-adminlte-select name="event_source" label="Event Source" id="master_event_desc">
+                    <option value="Null">Select Event Source</option>
+                    @if((isset($records)))
+
+                    @foreach ($master_record as $record)
+
+                    @if ($record->event_code == $selected_event)
+
+                    <option value="{{$record->event_code}}" selected>{{$record->event_code}} : {{$record->description}}
+                    </option>
+                    @else
+                    <option value="{{$record->event_code}}">{{$record->event_code}} : {{$record->description}}
+                    </option>
+                    @endif
+
+                    @endforeach
+
+                    @else
+
                     @foreach ($master_record as $record)
                     <option value="{{$record->event_code}}">{{$record->event_code}} : {{$record->description}}</option>
                     @endforeach
+
+                    @endif
                 </x-adminlte-select>
 
             </div>
             <div class="col">
+                <x-adminlte-input label="Event Code" name="our_event_code" type="text" id="event_code"
+                    placeholder="Event Code" value="{{(isset($records)) ? $records->our_event_code : '' }}" readonly />
 
-                <x-adminlte-select name="event_description" label="Event Description" id="event_desc">
-                    <option value="">Select Event Description</option>
-                </x-adminlte-select>
 
             </div>
         </div>
 
         <div class="form-group mt-0">
             <label for="Active">Active</label>
-            <!-- @if ((isset($records)) && $records->active == 1) -->
+            @if ((isset($records)) && $records->active == 1)
             <input type="checkbox" name="event_check" checked>
-            <!-- @else -->
+            @else
             <input type="checkbox" name="event_check">
-            <!-- @endif -->
+            @endif
         </div>
 
         <div class="mb-1 text-left col">
             @if ((isset($records)))
-            <a href="{{ route('shipntrack.trackingEvent.back') }}" class="btn btn-primary btn-sm">
+            <a href="{{ route('shipntrack.EventMapping.back') }}" class="btn btn-primary btn-sm">
                 <i class="fas fa-arrow-left"></i> Back
             </a>
             @endif
@@ -104,10 +145,10 @@
         <thead class="bg-info">
             <tr>
                 <th>Source</th>
-                <th>Our Event Code</th>
                 <th>Our Event Description</th>
                 <th>Event Code</th>
                 <th>Description</th>
+                <th>Our Event Code</th>
                 <th>IsActive</th>
                 <th>Action</th>
             </tr>
@@ -128,9 +169,7 @@ $(function() {
         serverSide: true,
         ajax: {
             url: "{{ url('/shipntrack/event-mapping') }}",
-            data: {
-
-            },
+            data: {},
         },
         pageLength: 200,
         columns: [{
@@ -138,10 +177,6 @@ $(function() {
                 name: 'source',
                 orderable: false,
                 searchable: false
-            },
-            {
-                data: 'our_event_code',
-                name: 'our_event_code',
             },
             {
                 data: 'our_event_description',
@@ -154,6 +189,10 @@ $(function() {
             {
                 data: 'master_description',
                 name: 'master_description',
+            },
+            {
+                data: 'our_event_code',
+                name: 'our_event_code',
             },
             {
                 data: 'status',
@@ -170,9 +209,9 @@ $(function() {
     });
 });
 
-$('#source').change(function() {
-    var source = $(this).val();
-    // alert(source);
+
+function EventSourceDescription(source) {
+    // var source = $('#source').val();
     $.ajax({
         url: "{{ url('/shipntrack/event-mapping/source') }}",
         method: "POST",
@@ -182,19 +221,54 @@ $('#source').change(function() {
         },
         success: function(result) {
             console.log(result);
-            let records = '';
+            let records = "<option value=''>Select Event Description</option>";
+            $('#event_desc').empty();
             $.each(result, function(index, result) {
-                records += "<option value='" + result + "'>" + result + "</option>"
+                records += "<option value='" + result + "'>" + result +
+                    "</option>"
             });
             $('#event_desc').append(records);
+        },
+        error: function(result) {
+            $('#event_desc').empty();
+            let records = "<option value=''>Select Event Description</option>";
+            $('#event_desc').append(records);
+        }
+
+    });
+}
+
+$(document).ready(function() {
+    var source = $('#source').val();
+    EventSourceDescription(source);
+
+    $('#source').change(function() {
+        var source = $(this).val();
+        EventSourceDescription(source);
+    });
+
+
+    $('#master_event_desc').change(function() {
+        let event_code = $(this).val();
+        if (event_code != 'Null') {
+            document.getElementById('event_code').value = 'PIL_' + event_code;
+        } else {
+            document.getElementById('event_code').value = '';
+        }
+
+    });
+
+    $(document).on('click', '.delete', function() {
+        let bool = confirm('Are you sure you want to delete?');
+        if (!bool) {
+            return false;
         }
     });
-});
 
-$('#master_event_desc').change(function() {
-    let event_code = $(this).val();
-    document.getElementById('event_code').value = 'PIL_' + event_code;
-
+    // $(document).on('click', '.edit', function() {
+    //     var id = window.location;
+    //     alert(id);
+    // });
 });
 </script>
 @stop

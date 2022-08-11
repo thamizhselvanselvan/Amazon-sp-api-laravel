@@ -13,8 +13,14 @@ use App\Models\ShipNTrack\EventMapping\TrackingEventMapping;
 
 class TrackingEventMappingController extends Controller
 {
-    public function index(Request $request)
+    public function array()
     {
+        return $array = ['0'=>'Bombino', '1'=> 'SAMSA', '2'=> 'Emirate'];
+    }
+
+    public function index(Request $request)
+    {   
+        $arrays = $this->array();
         $master_record = TrackingEventMaster::select('event_code', 'description')->get();
         if($request->ajax())
         {
@@ -24,7 +30,7 @@ class TrackingEventMappingController extends Controller
             {
                 return DataTables::of($records)
                 ->addColumn('action', function ($result) {
-                      $action = '<div class="d-flex pl-2 event-master-btn "><a href="/shipntrack/event-mapping/edit/' . $result->id . ' " class=" btn btn-sm text-success" ><i class="fas fa-edit"></i></a>';
+                      $action = '<div class="d-flex pl-2 edit event-master-btn "><a href="/shipntrack/event-mapping/edit/' . $result->id . ' " class=" btn btn-sm text-success" ><i class="fas fa-edit"></i></a>';
                       $action .= '<div class="d-flex pl-2 delete event-master-btn "><a href="/shipntrack/event-mapping/delete/' . $result->id . ' " class=" btn btn-sm text-danger"><i class="fa fa-trash"></i></a>';
                       return $action;
                   })
@@ -38,7 +44,7 @@ class TrackingEventMappingController extends Controller
                   ->make(true);
             }
         }
-        return view('shipntrack.EventMapping.index', compact('master_record'));
+        return view('shipntrack.EventMapping.index', compact('master_record', 'arrays'));
     }
     public function MappingSource(Request $request)
     {
@@ -46,6 +52,7 @@ class TrackingEventMappingController extends Controller
         if($request->ajax())
         {
             $key = $request->source;
+            $records = [] ;
             $array_tables = [
                 [
                     'Table_name' => 'BombinoTrackingDetails',
@@ -109,8 +116,45 @@ class TrackingEventMappingController extends Controller
         return redirect()->intended('/shipntrack/event-mapping')->with('success', 'Record insert successfully!');
     }
 
+    public function EventMappingRecordEdit($id)
+    {
+        $arrays = $this->array();
+        $master_record = TrackingEventMaster::select('event_code', 'description')->get();
+        $records = TrackingEventMapping::find($id);
+        $selected_source = $records->source;
+        $selected_description = $records->our_event_description;
+        $selected_event = $records->master_event_code;
+        // po($selected_description);
+        return view('shipntrack.EventMapping.index', compact('records', 'arrays', 'master_record', 'selected_event', 'selected_source', 'selected_description'));
+    }
+
+    public function EventMappingRecordUpdate(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'source' => 'required',
+            'event_description' => 'required',
+            'event_source' => 'required',
+            'our_event_code' => 'required',
+        ]);
+
+        $key = $request->source;
+        $array = ['0' => 'Bombino', '1' => 'SAMSA', '2' => 'Emirate Post'];
+        $source_name = $array[$key];
+
+        $update = TrackingEventMapping::find($id);
+        $update->source = $source_name;
+        $update->master_event_code = $request->event_source;
+        $update->our_event_code = $request->our_event_code;
+        $update->our_event_description = $request->event_description;
+        $update->active = $request->event_check == 'on' ? 1 : 0 ;
+        $update->update();
+
+        return redirect()->intended('/shipntrack/event-mapping')->with('success', 'Record has been updated successfully!');
+    }
+
     public function EventMappingRecordDelete($id)
     {
-        
+        TrackingEventMapping::where('id', $id)->delete();
+        return redirect()->intended('/shipntrack/event-mapping')->with('success', 'Record has been deleted successfully!');
     }
 }
