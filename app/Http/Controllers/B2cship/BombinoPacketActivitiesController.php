@@ -58,7 +58,6 @@ class BombinoPacketActivitiesController extends Controller
             }
         }
 
-        arsort($new_files_list);
         foreach ($new_files_list as $key => $files) {
             $content = Storage::get($file_path . '/' . $key);
             $content = json_decode($content);
@@ -111,6 +110,9 @@ class BombinoPacketActivitiesController extends Controller
             $offset++;
         }
 
+        $column = array_column($pd_final_array, 'Awb');
+        array_multisort($column, SORT_DESC, $pd_final_array);
+
         return view('b2cship.bombinoActivities.index', compact(['pd_final_array']));
     }
 
@@ -142,7 +144,6 @@ class BombinoPacketActivitiesController extends Controller
 
     public function ExportToCSV()
     {
-
         $today_sd = Carbon::today();
         $today_ed = Carbon::now();
 
@@ -269,7 +270,6 @@ class BombinoPacketActivitiesController extends Controller
 
         echo "File Downloaded";
         if (Storage::exists($exportFilePath)) {
-            Log::alert("FILE EXISTS");
             return Storage::download($exportFilePath);
         }
     }
