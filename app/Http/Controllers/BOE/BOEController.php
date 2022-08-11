@@ -23,7 +23,7 @@ use App\Models\Company\CompanyMaster;
 use App\Models\Company_master;
 use App\Services\BOE\BOEPdfReader;
 use App\Services\BOE\BOEPdefreader2018;
-use App\Services\BOE\BOEMaster;
+use App\Services\BOE\BOEmaster;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToArray;
 
@@ -132,7 +132,7 @@ class BOEController extends Controller
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
 
-        $pdfReader = new BOEMaster();
+        $pdfReader = new BOEmaster();
         $year = date('Y');
         $month = date('F');
         $user = Auth::user();
@@ -169,7 +169,7 @@ class BOEController extends Controller
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
 
-        $pdfReader = new BOEMaster();
+        $pdfReader = new BOEmaster();
         $year = date('Y');
         $month = date('F');
         $user = Auth::user();

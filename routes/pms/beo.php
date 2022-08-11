@@ -33,10 +33,10 @@ Route::get("BOE/report","BOE\BOEController@boeReport");
 //      $user_id = '';
 //     $pdfReader->BOEmanage($content, $storage_path, $company_id, $user_id);
 // });
-Route::get('Boe/test', function()
-{
-    $pdfReader = new BOEPdefreader2018;
+// Route::get('Boe/test', function()
+// {
+//     $pdfReader = new BOEPdefreader2018;
   
-    $pdfReader->BOEPDFReaderold();
-});
+//     $pdfReader->BOEPDFReaderold();
+// });
 

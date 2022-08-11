@@ -25,6 +25,7 @@ Route::get('shipntrack/event-master/{id}', 'shipntrack\EventMaster\TrackingEvent
 Route::POST('shipntrack/event-master/update/{id}', 'shipntrack\EventMaster\TrackingEventMasterController@EventMasterUpdate')->name('shipntrack.eventMaster.update');
 Route::get('shipntrack/event-master/delete/{id}', 'shipntrack\EventMaster\TrackingEventMasterController@EventMasterDelete')->name('shipntrack.eventMaster.delete');
 
+Route::get('shipntrack/tracking', 'shipntrack\Tracking\TrackingController@Tracking')->name('shipntrack.tracking');
 
 Route::get('/shipntrack/event-mapping', 'shipntrack\EventMapping\TrackingEventMappingController@index');
 Route::POST('shipntrack/event-mapping/source', 'shipntrack\EventMapping\TrackingEventMappingController@MappingSource');
