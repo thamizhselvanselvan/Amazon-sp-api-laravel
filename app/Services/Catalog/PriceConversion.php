@@ -93,7 +93,7 @@ class PriceConversion
             (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $MBM);
 
         $mbm_usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
-            ($amazon_commission * $price_befor_amazon_fees * 0.12);
+            ($amazon_commission * $price_befor_amazon_fees * 0.14);
 
         $sg_sp = $mbm_usd_sp * $ex_rate;
 

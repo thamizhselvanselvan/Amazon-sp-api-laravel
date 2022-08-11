@@ -1,8 +1,9 @@
 <?php
 
-use App\Models\Catalog\Asin_master;
 use App\Models\User;
+use Smalot\PdfParser\Parser;
 use Illuminate\Support\Facades\DB;
+use App\Models\Catalog\Asin_master;
 use Illuminate\Support\Facades\Route;
 use App\Models\seller\AsinMasterSeller;
 use App\Models\seller\SellerAsinDetails;
@@ -88,4 +89,16 @@ Route::get('ustoinprice', function () {
 
     $india_sp = $usd_sp * $ex_rate;
     po($india_sp);
+});
+
+Route::get('boe/test', function () {
+
+    $path = 'D:\BOE\Test\957299835.pdf';
+
+    $pdfParser = new Parser();
+    $pdf = $pdfParser->parseFile($path);
+    $content = $pdf->getText();
+
+
+    //
 });
