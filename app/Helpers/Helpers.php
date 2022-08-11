@@ -5,6 +5,9 @@ use Carbon\CarbonInterval;
 use App\Models\Aws_credential;
 use App\Models\Admin\Ratemaster;
 use App\Models\Catalog\Catalog;
+use App\Models\ShipNTrack\Bombino\BombinoTracking;
+use App\Models\ShipNTrack\Bombino\BombinoTrackingDetails;
+use App\Models\ShipNTrack\SMSA\SmsaTrackings;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -12,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use PhpParser\Node\Expr\Eval_;
 
 if (!function_exists('ddp')) {
     function ddp($value)
@@ -623,8 +627,9 @@ if (!function_exists('GetRateChart')) {
     }
 }
 
-if(!function_exists('boe_loop')) {
-    function boe_loop($key, $BOE_array, $key_tocheck, &$courier_basic_details, $main_key) {
+if (!function_exists('boe_loop')) {
+    function boe_loop($key, $BOE_array, $key_tocheck, &$courier_basic_details, $main_key)
+    {
         $name_details = '';
         $check_key = $key + 1;
 
@@ -636,5 +641,161 @@ if(!function_exists('boe_loop')) {
         $courier_basic_details[$main_key] = $name_details;
 
         return $courier_basic_details;
+    }
+}
+
+if (!function_exists('SmsaTrackingResponse')) {
+
+    function SmsaTrackingResponse($awbNo)
+    {
+        $password = config('database.smsa_password');
+        $url = "http://track.smsaexpress.com/SECOM/SMSAwebService.asmx";
+
+        $xmlRequest = "<?xml version='1.0' encoding='utf-8'?>
+    <soap:Envelope xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
+        <soap:Body>
+            <getTracking xmlns='http://track.smsaexpress.com/secom/'>
+                <awbNo>$awbNo</awbNo>
+                <passkey>$password</passkey>
+            </getTracking>
+        </soap:Body>
+    </soap:Envelope>";
+
+        $headers = array(
+            'Content-type: text/xml',
+        );
+
+        $ch = curl_init();
+        //setting the curl options
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_POSTFIELDS,  $xmlRequest);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_VERBOSE, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $data = curl_exec($ch);
+
+        $plainXML = mungXML(trim($data));
+        $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+
+        $arrayResult = $arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram'];
+        if (array_key_exists('NewDataSet', $arrayResult)) {
+
+            return $arrayResult['NewDataSet']['Tracking'];
+        } else {
+
+            // echo "Invalid Awb No. ". $awbNo;
+        }
+    }
+}
+
+if (!function_exists('mungXML')) {
+    function mungXML($xml)
+    {
+        $obj = SimpleXML_Load_String($xml);
+        if ($obj === FALSE) return $xml;
+
+        // GET NAMESPACES, IF ANY
+        $nss = $obj->getNamespaces(TRUE);
+        if (empty($nss)) return $xml;
+
+        // CHANGE ns: INTO ns_
+        $nsm = array_keys($nss);
+        foreach ($nsm as $key) {
+            // A REGULAR EXPRESSION TO MUNG THE XML
+            $rgx
+                = '#'               // REGEX DELIMITER
+                . '('               // GROUP PATTERN 1
+                . '\<'              // LOCATE A LEFT WICKET
+                . '/?'              // MAYBE FOLLOWED BY A SLASH
+                . preg_quote($key)  // THE NAMESPACE
+                . ')'               // END GROUP PATTERN
+                . '('               // GROUP PATTERN 2
+                . ':{1}'            // A COLON (EXACTLY ONE)
+                . ')'               // END GROUP PATTERN
+                . '#'               // REGEX DELIMITER
+            ;
+            // INSERT THE UNDERSCORE INTO THE TAG NAME
+            $rep
+                = '$1'          // BACKREFERENCE TO GROUP 1
+                . '_'           // LITERAL UNDERSCORE IN PLACE OF GROUP 2
+            ;
+            // PERFORM THE REPLACEMENT
+            $xml =  preg_replace($rgx, $rep, $xml);
+        }
+
+        return $xml;
+    } // End :: mungXML()
+}
+
+if (!function_exists('BombinoTrackingResponse')) {
+    function BombinoTrackingResponse($awb_no)
+    {
+        $bombino_account_id = config('database.bombino_account_id');
+        $bombino_user_id = config('database.bombino_user_id');
+        $bombino_password = config('database.bombino_password');
+
+        $url = "http://api.bombinoexp.in/bombinoapi.svc/Tracking?AccountId=$bombino_account_id&UserId=$bombino_user_id&Password=$bombino_password&AwbNo=$awb_no";
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+        ));
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+        $response = json_decode($response);
+        return $response;
+    }
+    //
+}
+
+if (!function_exists('smsa_tracking')) {
+    function smsa_tracking($smsa_awb)
+    {
+        $tracking_detials = [];
+        $smsa_t_details = SmsaTrackings::where('awbno', $smsa_awb)->get();
+        foreach ($smsa_t_details as $details) {
+            // dd($details);
+            $tracking_detials[] = [
+                'Date_Time' => $details->date,
+                'Location' => $details->location,
+                'Activity' => $details->activity,
+            ];
+        }
+        return $tracking_detials;
+    }
+}
+
+if (!function_exists('bombino_tracking')) {
+
+    $tracking_detials = [];
+    function bombino_tracking($bombino_awb)
+    {
+        $bomino_tracking_details = BombinoTracking::with('bombinoTrackingJoin')->where('awbno', $bombino_awb)->get();
+
+        foreach ($bomino_tracking_details as $details) {
+
+            foreach ($details->bombinoTrackingJoin as $value) {
+
+                $tracking_detials[] = [
+                    'Date_Time' => $value->action_date . ' ' . $value->action_time,
+                    'Location' => $value->location,
+                    'Activity' => $value->exception,
+                ];
+            }
+        }
+        return $tracking_detials;
     }
 }

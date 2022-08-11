@@ -214,13 +214,16 @@ class TestController extends Controller
 
   public function SmsaTracking($awb_no)
   {
-
-    //
+    $details = SmsaTrackingResponse($awb_no);
+    po($details);
+    exit;
   }
 
   public function BombinoTracking($awb_no)
   {
-
+    $response = BombinoTrackingResponse($awb_no);
+    po($response);
+    exit;
     //
   }
 
