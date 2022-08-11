@@ -24,8 +24,8 @@ class TrackingEventMappingController extends Controller
             {
                 return DataTables::of($records)
                 ->addColumn('action', function ($result) {
-                      $action = '<div class="d-flex pl-2 event-master-btn "><a href="/shipntrack/event-master/' . $result->id . ' " class=" btn btn-sm text-success" ><i class="fas fa-edit"></i></a>';
-                      $action .= '<div class="d-flex pl-2 delete event-master-btn "><a href="/shipntrack/event-master/delete/' . $result->id . ' " class=" btn btn-sm text-danger"><i class="fa fa-trash"></i></a>';
+                      $action = '<div class="d-flex pl-2 event-master-btn "><a href="/shipntrack/event-mapping/edit/' . $result->id . ' " class=" btn btn-sm text-success" ><i class="fas fa-edit"></i></a>';
+                      $action .= '<div class="d-flex pl-2 delete event-master-btn "><a href="/shipntrack/event-mapping/delete/' . $result->id . ' " class=" btn btn-sm text-danger"><i class="fa fa-trash"></i></a>';
                       return $action;
                   })
                   ->addColumn('status', function($result){
@@ -107,5 +107,10 @@ class TrackingEventMappingController extends Controller
         ]);
 
         return redirect()->intended('/shipntrack/event-mapping')->with('success', 'Record insert successfully!');
+    }
+
+    public function EventMappingRecordDelete($id)
+    {
+        
     }
 }

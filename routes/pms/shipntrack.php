@@ -30,3 +30,4 @@ Route::get('shipntrack/tracking', 'shipntrack\Tracking\TrackingController@Tracki
 Route::get('/shipntrack/event-mapping', 'shipntrack\EventMapping\TrackingEventMappingController@index');
 Route::POST('shipntrack/event-mapping/source', 'shipntrack\EventMapping\TrackingEventMappingController@MappingSource');
 Route::POST('shipntrack/event-mapping/save', 'shipntrack\EventMapping\TrackingEventMappingController@EventMappingRecordInsert')->name('shipntrack.EventMapping.save');
+Route::get('shipntrack/event-mapping/delete/{id}', 'shipntrack\EventMapping\TrackingEventMappingController@EventMappingRecordDelete')->name('shipntrack.EventMapping.delete');
