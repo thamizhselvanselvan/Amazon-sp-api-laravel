@@ -15,9 +15,7 @@
 
 <div class="card ">
     <!-- <h3 class="card-header text-center">{{ (isset($records)) ? 'Update Event' : 'Add Event' }}</h3> -->
-    <form class="ml-4 mt-1 mr-4"
-        action="{{ (isset($records)) ? Route('shipntrack.EventMapping.update', $records->id) : Route('shipntrack.EventMapping.save') }}"
-        method="POST">
+    <form class="ml-4 mt-1 mr-4" action="{{ (isset($records)) ? Route('shipntrack.EventMapping.update', $records->id) : Route('shipntrack.EventMapping.save') }}" method="POST">
         @csrf
         <div class="row">
 
@@ -85,8 +83,7 @@
 
             </div>
             <div class="col">
-                <x-adminlte-input label="Event Code" name="our_event_code" type="text" id="event_code"
-                    placeholder="Event Code" value="{{(isset($records)) ? $records->our_event_code : '' }}" readonly />
+                <x-adminlte-input label="Event Code" name="our_event_code" type="text" id="event_code" placeholder="Event Code" value="{{(isset($records)) ? $records->our_event_code : '' }}" readonly />
 
 
             </div>
@@ -108,9 +105,7 @@
             </a>
             @endif
 
-            <x-adminlte-button label="{{ (isset($records)) ? 'Update' : 'Save' }}" name="btn" type="submit"
-                theme="{{ (isset($records)) ? 'primary' : 'success' }}"
-                icon="{{ (isset($records)) ? 'fas fa-edit' : 'fas fa-check-circle' }}" class="btn-sm" />
+            <x-adminlte-button label="{{ (isset($records)) ? 'Update' : 'Save' }}" name="btn" type="submit" theme="{{ (isset($records)) ? 'primary' : 'success' }}" icon="{{ (isset($records)) ? 'fas fa-edit' : 'fas fa-check-circle' }}" class="btn-sm" />
         </div>
     </form>
 
@@ -161,114 +156,114 @@
 
 @section('js')
 <script>
-$(function() {
+    $(function() {
 
 
-    let yajra_table = $('.yajra-datatable').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: "{{ url('/shipntrack/event-mapping') }}",
-            data: {},
-        },
-        pageLength: 200,
-        columns: [{
-                data: 'source',
-                name: 'source',
-                orderable: false,
-                searchable: false
+        let yajra_table = $('.yajra-datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ url('/shipntrack/event-mapping') }}",
+                data: {},
             },
-            {
-                data: 'our_event_description',
-                name: 'our_event_description',
-            },
-            {
-                data: 'master_event_code',
-                name: 'master_event_code',
-            },
-            {
-                data: 'master_description',
-                name: 'master_description',
-            },
-            {
-                data: 'our_event_code',
-                name: 'our_event_code',
-            },
-            {
-                data: 'status',
-                name: 'status',
-            },
-            {
-                data: 'action',
-                name: 'action',
-                orderable: false,
-                searchable: false
-            },
+            pageLength: 200,
+            columns: [{
+                    data: 'source',
+                    name: 'source',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'our_event_description',
+                    name: 'our_event_description',
+                },
+                {
+                    data: 'master_event_code',
+                    name: 'master_event_code',
+                },
+                {
+                    data: 'master_description',
+                    name: 'master_description',
+                },
+                {
+                    data: 'our_event_code',
+                    name: 'our_event_code',
+                },
+                {
+                    data: 'status',
+                    name: 'status',
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
+                },
 
-        ],
+            ],
+        });
     });
-});
 
 
-function EventSourceDescription(source) {
-    // var source = $('#source').val();
-    $.ajax({
-        url: "{{ url('/shipntrack/event-mapping/source') }}",
-        method: "POST",
-        data: {
-            "source": source,
-            "_token": "{{ csrf_token() }}",
-        },
-        success: function(result) {
-            console.log(result);
-            let records = "<option value=''>Select Event Description</option>";
-            $('#event_desc').empty();
-            $.each(result, function(index, result) {
-                records += "<option value='" + result + "'>" + result +
-                    "</option>"
-            });
-            $('#event_desc').append(records);
-        },
-        error: function(result) {
-            $('#event_desc').empty();
-            let records = "<option value=''>Select Event Description</option>";
-            $('#event_desc').append(records);
-        }
+    function EventSourceDescription(source) {
+        // var source = $('#source').val();
+        $.ajax({
+            url: "{{ url('/shipntrack/event-mapping/source') }}",
+            method: "POST",
+            data: {
+                "source": source,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(result) {
+                console.log(result);
+                let records = "<option value=''>Select Event Description</option>";
+                $('#event_desc').empty();
+                $.each(result, function(index, result) {
+                    records += "<option value='" + result + "'>" + result +
+                        "</option>"
+                });
+                $('#event_desc').append(records);
+            },
+            error: function(result) {
+                $('#event_desc').empty();
+                let records = "<option value=''>Select Event Description</option>";
+                $('#event_desc').append(records);
+            }
 
-    });
-}
+        });
+    }
 
-$(document).ready(function() {
-    var source = $('#source').val();
-    EventSourceDescription(source);
-
-    $('#source').change(function() {
-        var source = $(this).val();
+    $(document).ready(function() {
+        var source = $('#source').val();
         EventSourceDescription(source);
+
+        $('#source').change(function() {
+            var source = $(this).val();
+            EventSourceDescription(source);
+        });
+
+
+        $('#master_event_desc').change(function() {
+            let event_code = $(this).val();
+            if (event_code != 'Null') {
+                document.getElementById('event_code').value = 'PIL_' + event_code;
+            } else {
+                document.getElementById('event_code').value = '';
+            }
+
+        });
+
+        $(document).on('click', '.delete', function() {
+            let bool = confirm('Are you sure you want to delete?');
+            if (!bool) {
+                return false;
+            }
+        });
+
+        // $(document).on('click', '.edit', function() {
+        //     var id = window.location;
+        //     alert(id);
+        // });
     });
-
-
-    $('#master_event_desc').change(function() {
-        let event_code = $(this).val();
-        if (event_code != 'Null') {
-            document.getElementById('event_code').value = 'PIL_' + event_code;
-        } else {
-            document.getElementById('event_code').value = '';
-        }
-
-    });
-
-    $(document).on('click', '.delete', function() {
-        let bool = confirm('Are you sure you want to delete?');
-        if (!bool) {
-            return false;
-        }
-    });
-
-    // $(document).on('click', '.edit', function() {
-    //     var id = window.location;
-    //     alert(id);
-    // });
-});
 </script>
 @stop

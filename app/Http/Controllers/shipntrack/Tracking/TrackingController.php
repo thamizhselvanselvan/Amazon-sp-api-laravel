@@ -29,7 +29,7 @@ class TrackingController extends Controller
                 $order_item . '.shipping_address',
             ])
             ->first();
-
+        // dd($packet_forwarder);
         $forwarder_1 = $packet_forwarder->forwarder_1;
         $forwarder_1_awb = $packet_forwarder->forwarder_1_awb;
 
@@ -61,10 +61,15 @@ class TrackingController extends Controller
         exit;
     }
 
-    public function StopTracking()
+    public function StopTracking(Request $request)
     {
         $courier_partner = ['Bombino', 'Smsa', 'Emirates Post'];
 
+        if ($request->ajax()) {
+
+            return $request->all();
+            //
+        }
         return view('shipntrack.Tracking.stopTracking', compact('courier_partner'));
     }
 }

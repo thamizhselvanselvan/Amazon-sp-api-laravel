@@ -60,6 +60,32 @@
 
 @section('js')
 <script type="text/javascript">
+    $('#forwarder').change(function() {
 
+        let forwarder = $(this).val();
+        $.ajax({
+            url: "{{route('shipntrack.stop')}}",
+            method: "POST",
+            data: {
+                "source": forwarder,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(result) {
+                console.log(result);
+                let records = "<option value=''>Select Event Description</option>";
+                $('#event_desc').empty();
+                $.each(result, function(index, result) {
+                    records += "<option value='" + result + "'>" + result +
+                        "</option>"
+                });
+                $('#event_desc').append(records);
+            },
+            error: function(result) {
+                $('#event_desc').empty();
+                let records = "<option value=''>Select Event Description</option>";
+                $('#event_desc').append(records);
+            }
+        });
+    });
 </script>
 @stop
