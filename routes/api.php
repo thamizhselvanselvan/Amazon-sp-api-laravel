@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+// use App\Http\Controllers\shipntrack\API\AmazonTrackingAPIController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,4 +31,7 @@ Route::group(['namespace' => 'Api\App\v1', 'as' => 'v1.', 'prefix' => 'v1'], fun
         ], function() {
         });
     });
+    // Route::get('/testing', AmazonTrackingAPIController::class);
 });
+
+Route::get('testing', 'shipntrack\API\AmazonTrackingAPIController@index');
