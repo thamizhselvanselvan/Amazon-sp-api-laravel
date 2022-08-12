@@ -27,10 +27,9 @@ class TrackingController extends Controller
                 'packet_forwarders.forwarder_2_awb',
                 $order_item . '.amazon_order_identifier',
                 $order_item . '.shipping_address',
-
             ])
             ->first();
-
+        // dd($packet_forwarder);
         $forwarder_1 = $packet_forwarder->forwarder_1;
         $forwarder_1_awb = $packet_forwarder->forwarder_1_awb;
 
@@ -60,5 +59,17 @@ class TrackingController extends Controller
 
         po($tracking_details);
         exit;
+    }
+
+    public function StopTracking(Request $request)
+    {
+        $courier_partner = ['Bombino', 'Smsa', 'Emirates Post'];
+
+        if ($request->ajax()) {
+
+            return $request->all();
+            //
+        }
+        return view('shipntrack.Tracking.stopTracking', compact('courier_partner'));
     }
 }

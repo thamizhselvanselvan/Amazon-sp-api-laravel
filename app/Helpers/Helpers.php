@@ -770,6 +770,7 @@ if (!function_exists('smsa_tracking')) {
                 'Date_Time' => $details->date,
                 'Location' => $details->location,
                 'Activity' => $details->activity,
+                'forwarder' => 'Smsa'
             ];
         }
         return $tracking_detials;
@@ -791,6 +792,7 @@ if (!function_exists('bombino_tracking')) {
                     'Date_Time' => $value->action_date . ' ' . $value->action_time,
                     'Location' => $value->location,
                     'Activity' => $value->exception,
+                    'forwarder' => 'Bombino'
                 ];
             }
         }
