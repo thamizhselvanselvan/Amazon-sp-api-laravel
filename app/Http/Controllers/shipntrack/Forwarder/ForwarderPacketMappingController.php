@@ -99,19 +99,29 @@ class ForwarderPacketMappingController extends Controller
     {
         if ($request->ajax()) {
             $records = [];
-            $date_of_arrival = $request->date_of_arrival;
+            $chh = $request->res;
+            $created_at = $request->date_of_arrival;
             $records = PacketForwarder::query()
                 ->select('order_id', 'awb_no', 'forwarder_1', 'forwarder_1_awb', 'forwarder_2', 'forwarder_2_awb')
-                // ->where('created_at', 'BETWEEN', $request->date)
-                ->get();
-            // $records = PacketForwarder::when($dbheaders, function ($query) use ($dbheaders) {
-            //     $query->select($dbheaders);
-            // })
-            //     ->when(!empty(trim($request->date_of_arrival)), function ($query) use ($date_of_arrival) {
-            //         $date = $this->split_date($date_of_arrival);
-            //         $query->whereBetween('created_at', [$date[0], $date[1]]);
-            //     });
-                
+                ->where($chh,'')
+
+
+                // $records = PacketForwarder::when($dbheaders, function ($query) use ($dbheaders) {
+                //     $query->select($dbheaders);
+                // // })
+                // ->when(!empty(trim($request->date_of_arrival)), function ($query) use ($date_of_arrival) 
+                // {
+                //     $date = $this->split_date($date_of_arrival);
+                //     $query->whereBetween('created_at', [$date[0], $date[1]]);
+                // })
+                ->when(!empty(trim($request->created_at)), function ($query) use ($created_at) {
+
+                    $date = $this->split_date($created_at);
+                    $query->whereBetween('created_at', [$date[0], $date[1]]);
+                })
+            
+            ->get();
+                return response()->json($records);
             $headers = [
 
                 'order ID',
@@ -129,12 +139,18 @@ class ForwarderPacketMappingController extends Controller
             $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
             $writer->insertOne($headers);
 
-            $writer->insertAll($records->toArray());
+             $writer->insertAll($records->toArray());
         }
     }
     public function downexp()
     {
         return Storage::download('farwarder\missing.csv');
+    }
+
+    public function split_date($date_time)
+    {
+        $date = explode(' - ', $date_time);
+        return [trim($date[0]), trim($date[1])];
     }
     
 }

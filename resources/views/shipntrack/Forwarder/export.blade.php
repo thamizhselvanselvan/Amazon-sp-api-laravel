@@ -117,7 +117,7 @@
             url: '/shipntrack/missing/export',
             data: {
                 "_token": "{{ csrf_token() }}",
-                'date': date_of_arrival,
+                'date': date_of_arrival,res,
 
             },
             success: function(response) {
