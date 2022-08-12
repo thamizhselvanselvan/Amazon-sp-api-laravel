@@ -1,8 +1,9 @@
 <?php
 
-use App\Models\Catalog\Asin_master;
 use App\Models\User;
+use Smalot\PdfParser\Parser;
 use Illuminate\Support\Facades\DB;
+use App\Models\Catalog\Asin_master;
 use Illuminate\Support\Facades\Route;
 use App\Models\seller\AsinMasterSeller;
 use App\Models\seller\SellerAsinDetails;
@@ -90,5 +91,4 @@ Route::get('ustoinprice', function () {
     po($india_sp);
 });
 
-Route::get('Test/Smsatracking/{awb}', 'TestController@SmsaTracking');
-Route::get('Test/Bombinotracking/{awb}', 'TestController@BombinoTracking');
+Route::get('intosa/{weight}/{price}', 'TestController@INToSA');

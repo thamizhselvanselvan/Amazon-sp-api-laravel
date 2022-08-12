@@ -11,18 +11,18 @@
 @section('content_header')
 
 <div class="row">
-    <h1 class="m-0 text-dark col">Tracking Event Master</h1>
+    <h1 class="mb-2 text-dark col">Tracking Event Master</h1>
     <!-- <a href="{{Route('shipntrack.trackingEvent.upload')}}">
         <x-adminlte-button label="Add New Records" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
     </a>
     <a href="#{{Route('shipntrack.forwarder.template')}}">
         <x-adminlte-button label="Download Templates" theme="primary" icon="fas fa-file-download" class="btn-sm" />
     </a> -->
-</div><br>
+</div>
 
 <div class="card ">
-    <h3 class="card-header text-center">{{ (isset($records)) ? 'Update Event' : 'Add Event' }}</h3>
-    <form class="ml-4 mt-4 mr-4"
+    <!-- <h3 class="card-header text-center">{{ (isset($records)) ? 'Update Event' : 'Add Event' }}</h3> -->
+    <form class="ml-4 mt-1 mr-4"
         action="{{(isset($records)) ? Route('shipntrack.eventMaster.update', $records->id) : Route('shipntrack.trackingEvent.save')}}"
         method="POST">
         @csrf
@@ -31,6 +31,7 @@
             <div class="col">
                 <x-adminlte-input label="Event Code" name="event_code" type="text" placeholder="Event Code"
                     value="{{ (isset($records->event_code)) ? $records->event_code : '' }}" />
+
                 <div class="form-group mt-0">
                     <label for="Active">Active</label>
                     @if ((isset($records)) && $records->active == 1)
@@ -46,7 +47,7 @@
                 </x-adminlte-textarea>
             </div>
         </div>
-        <h2 class="mb-4 text-left col">
+        <h2 class="text-left col">
             @if ((isset($records)))
 
             <a href="{{ route('shipntrack.trackingEvent.back') }}" class="btn btn-primary btn-sm">
@@ -91,9 +92,10 @@
     <table class="table table-bordered yajra-datatable table-striped table-sm TrackingEventMaster">
         <thead class="bg-info">
             <tr>
-                <th>ID</th>
+                <!-- <th>ID</th> -->
                 <th>Event Code</th>
                 <th>Description</th>
+                <th>IsActive</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -116,12 +118,13 @@ $(function() {
 
         },
         pageLength: 200,
-        columns: [{
-                data: 'id',
-                name: 'id',
-                orderable: false,
-                searchable: false
-            },
+        columns: [
+            // {
+            //     // data: 'id',
+            //     // name: 'id',
+            //     orderable: false,
+            //     searchable: false
+            // },
             {
                 data: 'event_code',
                 name: 'event_code',
@@ -131,8 +134,14 @@ $(function() {
                 name: 'description',
             },
             {
+                data: 'status',
+                name: 'status',
+            },
+            {
                 data: 'action',
                 name: 'action',
+                orderable: false,
+                searchable: false
             },
 
         ],

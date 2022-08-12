@@ -15,8 +15,21 @@ class TrackingController extends Controller
         $bombino_t_details  = [];
         $smsa_t_detials = [];
 
-        $packet_forwarder = PacketForwarder::where('awb_no', $tracking_no)->get()->first();
-
+        $order = config('database.connections.order.database');
+        $order_item = $order . '.orderitemdetails';
+        $packet_forwarder = PacketForwarder::where('awb_no', $tracking_no)
+            ->join($order_item, 'packet_forwarders.order_id', '=', $order_item . '.amazon_order_identifier')
+            ->get([
+                'packet_forwarders.status',
+                'packet_forwarders.forwarder_1',
+                'packet_forwarders.forwarder_2',
+                'packet_forwarders.forwarder_1_awb',
+                'packet_forwarders.forwarder_2_awb',
+                $order_item . '.amazon_order_identifier',
+                $order_item . '.shipping_address',
+            ])
+            ->first();
+        // dd($packet_forwarder);
         $forwarder_1 = $packet_forwarder->forwarder_1;
         $forwarder_1_awb = $packet_forwarder->forwarder_1_awb;
 
@@ -46,5 +59,17 @@ class TrackingController extends Controller
 
         po($tracking_details);
         exit;
+    }
+
+    public function StopTracking(Request $request)
+    {
+        $courier_partner = ['Bombino', 'Smsa', 'Emirates Post'];
+
+        if ($request->ajax()) {
+
+            return $request->all();
+            //
+        }
+        return view('shipntrack.Tracking.stopTracking', compact('courier_partner'));
     }
 }

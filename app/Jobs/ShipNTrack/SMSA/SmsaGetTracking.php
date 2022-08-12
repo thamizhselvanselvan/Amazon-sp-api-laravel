@@ -40,6 +40,7 @@ class SmsaGetTracking implements ShouldQueue
             foreach ($details as $key => $value) {
 
                 $tracking_details[] = [
+
                     "awbno" => $value['awbNo'],
                     "date" => date('Y-m-d H:i:s', strtotime($value['Date'])),
                     "activity" => $value['Activity'],

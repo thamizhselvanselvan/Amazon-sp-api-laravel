@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use PhpParser\Node\Expr\Eval_;
 
+
 if (!function_exists('ddp')) {
     function ddp($value)
     {
@@ -542,15 +543,12 @@ if (!function_exists('table_model_create')) {
 }
 
 if (!function_exists('table_model_change')) {
-    function table_model_change(string $event_partner, string $model, string $table_name): object
+    function table_model_change(string $model_path, string $table_name): object
     {
+        $namespace = 'App\\Models\\ShipNTrack\\' . $model_path . $table_name;
+        $table_model = new $namespace;
 
-        $event_partner_lr = strtolower($event_partner);
-
-        $namespace = 'App\\Models\\ShipNTrack\\EventMaster\\' . $model;
-        $product_model = new $namespace;
-
-        return $product_model->setTable($table_name . $event_partner_lr . 's');
+        return $table_model->setTable($table_name);
     }
 }
 
@@ -643,6 +641,7 @@ if (!function_exists('boe_loop')) {
         return $courier_basic_details;
     }
 }
+
 if (!function_exists('SmsaTrackingResponse')) {
 
     function SmsaTrackingResponse($awbNo)
@@ -771,6 +770,7 @@ if (!function_exists('smsa_tracking')) {
                 'Date_Time' => $details->date,
                 'Location' => $details->location,
                 'Activity' => $details->activity,
+                'forwarder' => 'Smsa'
             ];
         }
         return $tracking_detials;
@@ -792,6 +792,7 @@ if (!function_exists('bombino_tracking')) {
                     'Date_Time' => $value->action_date . ' ' . $value->action_time,
                     'Location' => $value->location,
                     'Activity' => $value->exception,
+                    'forwarder' => 'Bombino'
                 ];
             }
         }

@@ -25,6 +25,7 @@ use SellingPartnerApi\Api\CatalogApi;
 use App\Services\SP_API\CatalogImport;
 use Illuminate\Support\Facades\Storage;
 use App\Models\order\OrderSellerCredentials;
+use App\Services\Catalog\PriceConversion;
 use Illuminate\Cache\RateLimiting\Limit;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use SellingPartnerApi\Api\ProductPricingApi;
@@ -214,16 +215,13 @@ class TestController extends Controller
 
   public function SmsaTracking($awb_no)
   {
-    $details = SmsaTrackingResponse($awb_no);
-    po($details);
-    exit;
+
+    //
   }
 
   public function BombinoTracking($awb_no)
   {
-    $response = BombinoTrackingResponse($awb_no);
-    po($response);
-    exit;
+
     //
   }
 
@@ -449,16 +447,16 @@ class TestController extends Controller
     $amazon_commission = 22.00 / 100;
 
     $ex_rate = 82;
-    $duty_cost = round(($duty_rate * ($bb_price + $int_shipping_base_charge)), 2);
+    $duty_cost = ($duty_rate * ($bb_price + $int_shipping_base_charge));
 
     $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
       (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $seller_commission);
 
-    $usd_sp = round($price_befor_amazon_fees * (1 + $amazon_commission) +
-      ($amazon_commission * $price_befor_amazon_fees * 0.12), 2);
+    $usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
+      ($amazon_commission * $price_befor_amazon_fees * 0.12);
 
     $india_sp = $usd_sp * $ex_rate;
-    return $india_sp;
+    return round($india_sp, 2);
   }
 
   public function getWeight($dimensions)
@@ -484,13 +482,13 @@ class TestController extends Controller
     $amazon_commission = 15.00 / 100;
     $int_shipping_base_charge = $weight * 4.5;
     $ex_rate = 3.7;
-    $duty_cost = round(($duty_rate * ($bb_price + $int_shipping_base_charge)), 2);
+    $duty_cost = ($duty_rate * ($bb_price + $int_shipping_base_charge));
 
     $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
       (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $seller_commission);
 
-    $usd_sp = round($price_befor_amazon_fees * (1 + $amazon_commission) +
-      ($amazon_commission * $price_befor_amazon_fees * 0.12), 2);
+    $usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
+      ($amazon_commission * $price_befor_amazon_fees * 0.12);
 
     $IED_sp = $usd_sp * $ex_rate;
     return round($IED_sp, 2);
@@ -498,6 +496,7 @@ class TestController extends Controller
 
   public function USATOSG($weight, $bb_price)
   {
+
     if ($weight > 0.9) {
       $int_shipping_base_charge = (8 + ($weight - 1) * 4.5);
     } else {
@@ -514,15 +513,26 @@ class TestController extends Controller
     $ex_rate = 1.37;
     $duty_cost = $duty_rate * $bb_price;
 
+
     $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
       (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $MBM);
 
     $mbm_usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
-      ($amazon_commission * $price_befor_amazon_fees * 0.12);
+      ($amazon_commission * $price_befor_amazon_fees * 0.14);
 
+    // return $mbm_usd_sp;
     $sg_sp = $mbm_usd_sp * $ex_rate;
 
     return round($sg_sp, 2);
+    //
+  }
+
+  public function INToSA($weight, $bb_price)
+  {
+
+    $priceConverter = new PriceConversion();
+
+    return $priceConverter->USAToIND($weight, $bb_price);
     //
   }
 }

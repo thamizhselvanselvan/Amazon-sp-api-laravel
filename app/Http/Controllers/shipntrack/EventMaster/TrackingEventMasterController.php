@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\ShipNTrack\EventMaster\TrackingEvent;
+use App\Models\ShipNTrack\EventMaster\TrackingEventMaster;
 
 class TrackingEventMasterController extends Controller
 {
@@ -27,8 +28,8 @@ class TrackingEventMasterController extends Controller
       }else{
         $event_check = 1;
       }
-      $model_set = table_model_change(event_partner:'master', model:'TrackingEvent', table_name:'tracking_event_');
-      $model_set->insert([
+      
+      TrackingEventMaster::insert([
         'event_code' => $request->event_code,
         'description' => $request->event_desc,
         'active'  => $event_check
@@ -39,18 +40,26 @@ class TrackingEventMasterController extends Controller
   
    public function index(Request $request)
    {  
-    $records = '';
      if ($request->ajax()) {
-      $model_set = table_model_change(event_partner:'master', model:'TrackingEvent', table_name:'tracking_event_');
-      $results = $model_set->orderBy('id', 'DESC')->get();
+      
+      $results = TrackingEventMaster::orderBy('id', 'DESC')->get();
         foreach($results as $result){
           return DataTables::of($results)
               ->addColumn('action', function ($result) {
-                  $action = '<div class="d-flex pl-2 event-master-btn "><a href="/shipntrack/event-master/' . $result->id . ' " class=" btn btn-success btn-sm "><i class="fas fa-edit"></i></a>';
-                  $action .= '<div class="d-flex pl-2 delete event-master-btn "><a href="/shipntrack/event-master/delete/' . $result->id . ' " class=" btn btn-danger btn-sm "><i class="fa fa-trash"></i></a>';
+                  $action = '<div class="d-flex pl-2 event-master-btn "><a href="/shipntrack/event-master/' . $result->id . ' " class=" btn btn-sm text-success" ><i class="fas fa-edit"></i></a>';
+                  $action .= '<div class="d-flex pl-2 delete event-master-btn "><a href="/shipntrack/event-master/delete/' . $result->id . ' " class=" btn btn-sm text-danger"><i class="fa fa-trash"></i></a>';
                   return $action;
               })
-              ->rawColumns(['action'])
+              ->addColumn('status', function($result){
+                if($result->active == 1)
+                {
+                  return 'YES';
+                }else{
+                  
+                  return "NO";
+                }
+              })
+              ->rawColumns(['action','status'])
               ->make(true);
           }
         
@@ -94,8 +103,8 @@ class TrackingEventMasterController extends Controller
 
    public function EventMasterEdit($id)
    {
-      $model_set = table_model_change(event_partner:'master', model:'TrackingEvent', table_name:'tracking_event_');
-      $records = $model_set->find($id);
+     
+      $records = TrackingEventMaster::find($id);
       return view('shipntrack.EventMaster.index', compact('records'));
       
    }
@@ -106,8 +115,8 @@ class TrackingEventMasterController extends Controller
         'event_code' => 'required',
         'event_desc' => 'required',
       ]);
-      $model_set = table_model_change(event_partner:'master', model:'TrackingEvent', table_name:'tracking_event_');
-      $record = $model_set->find($id);
+      
+      $record = TrackingEventMaster::find($id);
       if($request->event_check != 'on')
       {
         $event_check = 0;
@@ -124,9 +133,8 @@ class TrackingEventMasterController extends Controller
 
    public function EventMasterDelete($id)
    {
-    
-    $model_set = table_model_change(event_partner:'master', model:'TrackingEvent', table_name:'tracking_event_');
-    $trash = $model_set->where('id', $id)->delete();
+    $trash = TrackingEventMaster::where('id', $id)->delete();
     return redirect()->intended('/shipntrack/event-master')->with('success', 'Event delete successfully!');
+    
    }
 }
