@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\shipntrack\Forwarder;
 
+use League\Csv\Writer;
 use League\Csv\Reader;
 use AWS\CRT\HTTP\Response;
 use Illuminate\Http\Request;
@@ -90,4 +91,50 @@ class ForwarderPacketMappingController extends Controller
         }
         return redirect()->intended('/shipntrack/forwarder/upload')->with("success", "Tracking Details Uploaded");
     }
+    public function missingexpview()
+    {
+        return view('shipntrack.Forwarder.export');
+    }
+    public function missexport(Request $request)
+    {
+        if ($request->ajax()) {
+            $records = [];
+            $date_of_arrival = $request->date_of_arrival;
+            $records = PacketForwarder::query()
+                ->select('order_id', 'awb_no', 'forwarder_1', 'forwarder_1_awb', 'forwarder_2', 'forwarder_2_awb')
+                // ->where('created_at', 'BETWEEN', $request->date)
+                ->get();
+            // $records = PacketForwarder::when($dbheaders, function ($query) use ($dbheaders) {
+            //     $query->select($dbheaders);
+            // })
+            //     ->when(!empty(trim($request->date_of_arrival)), function ($query) use ($date_of_arrival) {
+            //         $date = $this->split_date($date_of_arrival);
+            //         $query->whereBetween('created_at', [$date[0], $date[1]]);
+            //     });
+                
+            $headers = [
+
+                'order ID',
+                'AWB no',
+                'forwarder 1',
+                'forwarder_1_awb',
+                'forwarder_2',
+                'forwarder_2_awb'
+
+            ];
+            $exportFilePath = 'farwarder\missing.csv';
+            if (!Storage::exists($exportFilePath)) {
+                Storage::put($exportFilePath, '');
+            }
+            $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
+            $writer->insertOne($headers);
+
+            $writer->insertAll($records->toArray());
+        }
+    }
+    public function downexp()
+    {
+        return Storage::download('farwarder\missing.csv');
+    }
+    
 }

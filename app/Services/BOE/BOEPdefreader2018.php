@@ -662,8 +662,7 @@ class BOEPdefreader2018
                 }
             }
         } else {
-
-            Log::alert('Invalid BOE ');
+            return false;
         }
     }
     public function createbean($boe_details, $company_id, $user_id, $courier_basic_details, $igm_details, $notification_details, $charge_details, $duty_details, $payment_details)
