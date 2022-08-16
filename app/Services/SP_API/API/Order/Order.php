@@ -42,8 +42,8 @@ class Order
         $marketplace_ids = [$marketplace_ids];
 
         $apiInstance = new OrdersApi($config);
-        // $startTime = Carbon::now()->subHours(6)->toISOString();
-        $startTime = Carbon::now()->subDays(10)->toISOString();
+        $startTime = Carbon::now()->subHours(6)->toISOString();
+        // $startTime = Carbon::now()->subDays(10)->toISOString();
         $createdAfter = $startTime;
         $max_results_per_page = 100;
         $next_token = NULL;
@@ -138,7 +138,8 @@ class Order
                 R::store($orders);
             }
 
-            $order_item_details = DB::connection('order')->select("select id from orderitemdetails where amazon_order_identifier = '$amazon_order_id'");
+            $order_item_details = DB::connection('order')->select("SELECT id FROM orders 
+            WHERE amazon_order_identifier = '$amazon_order_id' AND order_item = '0' ");
 
             if (count($order_item_details) <= 0) {
 
@@ -146,7 +147,6 @@ class Order
                 $this->delay += $delay_count;
             }
         }
-        // return true;
     }
 
     public function getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode)
