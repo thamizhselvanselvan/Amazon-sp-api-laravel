@@ -215,7 +215,7 @@
                 "_token": "{{ csrf_token() }}",
             },
             success: function(result) {
-                console.log(result);
+
                 let records = "<option value=''>Select Event Description</option>";
                 $('#event_desc').empty();
                 $.each(result, function(index, result) {

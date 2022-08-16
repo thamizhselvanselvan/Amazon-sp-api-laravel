@@ -45,7 +45,7 @@
         </div>
 
         <div class="col">
-            <x-adminlte-select name="status" id='status' label="Tracking Status">
+            <x-adminlte-select name='tracing_status' id='tracking_status' label='Tracking Status'>
 
             </x-adminlte-select>
         </div>
@@ -71,14 +71,17 @@
                 "_token": "{{ csrf_token() }}",
             },
             success: function(result) {
-                console.log(result);
-                let records = "<option value=''>Select Event Description</option>";
+                $('#tracking_status').empty();
+                let records = '';
+
+                records += "<option value=''>-- Select Event Description --</option>";
                 $('#event_desc').empty();
                 $.each(result, function(index, result) {
                     records += "<option value='" + result + "'>" + result +
                         "</option>"
                 });
-                $('#event_desc').append(records);
+
+                $('#tracking_status').append(records);
             },
             error: function(result) {
                 $('#event_desc').empty();
