@@ -681,16 +681,15 @@ if (!function_exists('SmsaTrackingResponse')) {
         $plainXML = mungXML(trim($data));
         $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
 
-        return $arrayResult;
-        // $arrayResult = $arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram'];
+        $arrayResult = $arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram'];
 
-        // if (array_key_exists('NewDataSet', $arrayResult)) {
+        if (array_key_exists('NewDataSet', $arrayResult)) {
 
-        //     return $arrayResult['NewDataSet']['Tracking'];
-        // } else {
+            return $arrayResult['NewDataSet']['Tracking'];
+        } else {
 
-        //     // echo "Invalid Awb No. ". $awbNo;
-        // }
+            // echo "Invalid Awb No. ". $awbNo;
+        }
     }
 }
 
