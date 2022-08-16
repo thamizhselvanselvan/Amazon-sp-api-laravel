@@ -15,7 +15,7 @@ class BOEmaster
         $content_txt = $content;
         $content_array = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
 
-        if (str_contains($content_array[0], 'Form Courier Bill Of Entry')) {
+        if (isset($content_array[0]) && str_contains($content_array[0], 'Form Courier Bill Of Entry')) {
 
             $BOEPDFMasterold = $content_array;
             $Boecheck = $BOEPDFMasterold;
