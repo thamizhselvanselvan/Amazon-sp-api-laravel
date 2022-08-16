@@ -681,14 +681,16 @@ if (!function_exists('SmsaTrackingResponse')) {
         $plainXML = mungXML(trim($data));
         $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
 
-        $arrayResult = $arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram'];
-        if (array_key_exists('NewDataSet', $arrayResult)) {
+        return $arrayResult;
+        // $arrayResult = $arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram'];
 
-            return $arrayResult['NewDataSet']['Tracking'];
-        } else {
+        // if (array_key_exists('NewDataSet', $arrayResult)) {
 
-            // echo "Invalid Awb No. ". $awbNo;
-        }
+        //     return $arrayResult['NewDataSet']['Tracking'];
+        // } else {
+
+        //     // echo "Invalid Awb No. ". $awbNo;
+        // }
     }
 }
 
@@ -775,7 +777,7 @@ if (!function_exists('smsa_tracking')) {
                 'forwarder' => 'Smsa'
             ];
         }
-        Log::alert($tracking_details);
+
         return $tracking_details;
     }
 }

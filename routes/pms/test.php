@@ -92,3 +92,11 @@ Route::get('ustoinprice', function () {
 });
 
 Route::get('intosa/{weight}/{price}', 'TestController@INToSA');
+
+Route::get('smsatracking/{awb}', function ($awb_no) {
+
+
+    return SmsaTrackingResponse($awb_no);
+
+    //
+});
