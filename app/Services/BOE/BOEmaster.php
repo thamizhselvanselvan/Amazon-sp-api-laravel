@@ -51,7 +51,7 @@ class BOEmaster
             }
         } else {
             Log::notice('Invalid BOE');
-            return true;
+            return false;
         }
     }
 }

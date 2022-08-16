@@ -10,13 +10,16 @@ class Orders
 {
     public function getOrders()
     {
-  $val = random_int(100,10000);
+        $val = random_int(100, 10000);
+        $random = substr(md5(mt_rand()), 0, 7);
+        $uniq = $random . $val;
+
         $url = "https://https-ats.amazonsedi.com/803f01f5-11e4-47df-b868-bb908211e0ed";
         $xml =
         '<?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE cXML SYSTEM "http://xml.cXML.org/schemas/cXML/1.2.011/cXML.dtd">
 
-      <cXML timestamp="2017-06-27" payloadID="1498558305994.110967.712@amazon.com" version="1.2.011">
+      <cXML timestamp="2022-08-12" payloadID="'. $uniq. '" version="1.2.011">
   <Header>
         <From>
             <Credential domain="networkid">
@@ -25,7 +28,7 @@ class Orders
         </From>
         <To>
             <Credential domain="networkid">
-                <Identity>NitrousTest5528363391</Identity>
+                <Identity>epsilon.palmate@gmail.com</Identity>
             </Credential>
         </To>
         <Sender>
@@ -35,10 +38,12 @@ class Orders
             </Credential>
             <UserAgent>Amazon Business cXML Application</UserAgent>
         </Sender>
+        <Punchout>https://www.amazon.com/eprocurement/punchout</Punchout> 
+
     </Header>
     <Request deploymentMode="test">
         <OrderRequest>
-            <OrderRequestHeader orderDate="2022-07-25" orderID="TMHTZXLDFN" type="new" orderType="regular">
+            <OrderRequestHeader orderDate="2022-08-12" orderID="TMHTZXLDFN" type="new" orderType="regular">
                 <Total>
                     <Money currency="USD">59.99</Money>
                 </Total>
@@ -47,33 +52,32 @@ class Orders
                         <Name xml:lang="en-US">Nitrous Haul INC</Name>
                         <PostalAddress name="default">
                             <DeliverTo>Test Team, epsilon.palmate@gmail.com</DeliverTo>
-                            <DeliverTo>BISS</DeliverTo>
-                            <DeliverTo>Nile Team</DeliverTo>
+                            
                             <Street>325 9th Ave N</Street>
                             <City>Seattle</City>
-                            <State>WA</State>
+                            <State>Washington</State>
                             <PostalCode>98109</PostalCode>
-                            <Country isoCountryCode="US">United States</Country>
+                            <Country isoCountryCode="USA">United States</Country>
                         </PostalAddress>
                         <Email name="default">epsilon.palmate@gmail.com</Email>
                         <Phone name="work">
                             <TelephoneNumber>
-                                <CountryCode isoCountryCode="US">US</CountryCode>
+                                <CountryCode isoCountryCode="USA">US</CountryCode>
                                 <AreaOrCityCode>213</AreaOrCityCode>
-                                <Number>1234567890</Number>
+                                <Number>8748842380</Number>
                             </TelephoneNumber>
                         </Phone>
                         <Fax name="default">
                             <TelephoneNumber>
-                                <CountryCode isoCountryCode="Code">Country Code</CountryCode>
+                                <CountryCode isoCountryCode="US">USa</CountryCode>
                                 <AreaOrCityCode>Area Code</AreaOrCityCode>
-                                <Number>098765432</Number>
+                                <Number>8748842380</Number>
                             </TelephoneNumber>
                         </Fax>
                     </Address>
                 </ShipTo>
                 <BillTo>
-                    <Address isoCountryCode="+1" addressID="Z4SEYWLA5FAVH5AB2MJMG05F1UA07299273BV7569MTU1FZPXTQ2EQA2OX24EF2">
+                    <Address isoCountryCode="US" addressID="Z4SEYWLA5FAVH5AB2MJMG05F1UA07299273BV7569MTU1FZPXTQ2EQA2OX24EF2">
                         <Name xml:lang="en-US">Worldwey</Name>
                         <PostalAddress name="default">
                             <DeliverTo>no 7</DeliverTo>
@@ -83,25 +87,25 @@ class Orders
                             <PostalCode>60009</PostalCode>
                             <Country isoCountryCode="US">USA</Country>
                         </PostalAddress>
-                        <Email name="default">epsilon.palmate@gmail.com</Email>
+                        <Email name="default">buisnesan@gmail.com</Email>
                         <Phone name="work">
                             <TelephoneNumber>
-                                <CountryCode isoCountryCode="+1">US</CountryCode>
+                                <CountryCode isoCountryCode="US">USA</CountryCode>
                                 <AreaOrCityCode>217</AreaOrCityCode>
-                                <Number>123456788</Number>
+                                <Number>8748842380</Number>
                             </TelephoneNumber>
                         </Phone>
                         <Fax name="default">
                             <TelephoneNumber>
-                                <CountryCode isoCountryCode="+1">US</CountryCode>
+                                <CountryCode isoCountryCode="US">USA</CountryCode>
                                 <AreaOrCityCode>217</AreaOrCityCode>
-                                <Number>1234567899</Number>
+                                <Number>8748842380</Number>
                             </TelephoneNumber>
                         </Fax>
                     </Address>
                 </BillTo>
                 <Shipping>
-                    <Money currency="USD">0</Money>
+                    <Money currency="USD">59.99</Money>
                     <Description xml:lang="en">std-us</Description>
                 </Shipping>
                 <Tax>
@@ -112,6 +116,7 @@ class Orders
                 <Extrinsic name="Name">Value for Header Level Extrinsic</Extrinsic>
             </OrderRequestHeader>
             <ItemOut quantity="1" lineNumber="1">
+            <Requested Delivery Date>2022-08-28</Requested>
                 <ItemID>
                     <SupplierPartID>B01LWRTRZU</SupplierPartID>
                     <SupplierPartAuxiliaryID>144-6522680-6556620,1</SupplierPartAuxiliaryID>
