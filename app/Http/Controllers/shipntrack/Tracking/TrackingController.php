@@ -4,6 +4,7 @@ namespace App\Http\Controllers\shipntrack\Tracking;
 
 use App\Http\Controllers\Controller;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
+use App\Models\ShipNTrack\Packet\StopPacketTracking;
 use App\Models\ShipNTrack\SMSA\SmsaTrackings;
 use Illuminate\Http\Request;
 
@@ -20,7 +21,7 @@ class TrackingController extends Controller
 
     public function StopTracking(Request $request)
     {
-        $courier_partner = ['Bombino', 'Smsa', 'Emirates Post'];
+        $courier_partner = ['Bombino', 'Smsa'];
 
         if ($request->ajax()) {
 
@@ -41,5 +42,21 @@ class TrackingController extends Controller
             return response()->json($records);
         }
         return view('shipntrack.Tracking.stopTracking', compact('courier_partner'));
+    }
+
+    public function StopTrackingUpdate(Request $request)
+    {
+        $forwarder = $request->forwarder;
+        $tracking_status = $request->tracking_status;
+
+        StopPacketTracking::upsert(
+            [
+                'forwarder' => $forwarder,
+                'tracking_status' => $tracking_status
+            ],
+            'forwarder_status_unique'
+        );
+
+        return redirect()->back()->with('success', 'Stop Tracking Updated');
     }
 }
