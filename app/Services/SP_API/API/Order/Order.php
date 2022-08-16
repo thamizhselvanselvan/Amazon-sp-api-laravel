@@ -141,7 +141,7 @@ class Order
             $order_item_details = DB::connection('order')->select("SELECT id FROM orders 
             WHERE amazon_order_identifier = '$amazon_order_id' AND order_item = '0' ");
 
-            if (count($order_item_details) <= 0) {
+            if (count($order_item_details) > 0) {
 
                 $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
                 $this->delay += $delay_count;
