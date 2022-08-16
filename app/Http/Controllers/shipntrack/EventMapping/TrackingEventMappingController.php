@@ -84,15 +84,15 @@ class TrackingEventMappingController extends Controller
             $event_check = 1;
         }
 
-        TrackingEventMapping::insert([
+        $value =  [
             'master_event_code' => $request->event_source,
             'source' => $source_name,
             'our_event_code' => $request->our_event_code,
             'our_event_description' => $request->event_description,
             'active' => $event_check,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        ];
+
+        TrackingEventMapping::upsert($value,'event_code_source_unique');
 
         return redirect()->intended('/shipntrack/event-mapping')->with('success', 'Record insert successfully!');
     }

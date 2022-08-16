@@ -851,6 +851,7 @@ if (!function_exists('getTrackingDetails')) {
             ])
             ->first();
 
+            // Log::alert($packet_forwarder);
         $forwarder_1 = $packet_forwarder->forwarder_1;
         $forwarder_1_awb = $packet_forwarder->forwarder_1_awb;
 
@@ -874,10 +875,14 @@ if (!function_exists('getTrackingDetails')) {
         }
 
         $tracking_details = [...$bombino_t_details, ...$smsa_t_detials];
-
         $column = array_column($tracking_details, 'Date_Time');
         array_multisort($column, SORT_DESC, $tracking_details);
 
-        return $tracking_details;
+        $result  = [
+            'tracking_details'  => $tracking_details,
+            'shipping_address'  => $packet_forwarder->shipping_address,
+        ] ;
+        // Log::notice($result);
+        return $result;
     }
 }

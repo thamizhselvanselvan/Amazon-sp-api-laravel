@@ -25,4 +25,6 @@ class BombinoTracking extends Model
     {
         return $this->hasMany(BombinoTrackingDetails::class, 'awbno', 'awbno');
     }
+
+    
 }
