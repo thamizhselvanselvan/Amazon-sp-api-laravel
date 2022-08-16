@@ -100,32 +100,27 @@
     $('#export_missing').on('click', function() {
 
         let date_of_arrival = $('#date_of_arrival').val();
-        var f1 = document.getElementById("first");
-        var f2 = document.getElementById("second");
-        var res = "";
-        if (f1.checked == true) {
-            var pl1 = document.getElementById("first").value;
-            res = pl1;
+        let first_forwarder = $('#first').is(':checked');
+        let second_forwarder = $('#second').is(':checked');
+        let selected_details = '';
 
-        } else if (f2.checked == true) {
-            var pl2 = document.getElementById("second").value;
-            res = res+' ' + pl2;
-        }
-       
+
+        selected_details = date_of_arrival + '!=' + first_forwarder + '!=' + second_forwarder;
+
         $.ajax({
             method: 'get',
             url: '/shipntrack/missing/export',
             data: {
                 "_token": "{{ csrf_token() }}",
-                'date': date_of_arrival,res,
-
+                'selected': selected_details,
             },
             success: function(response) {
                 window.location.href = '/shipntrack/missing/download';
-                alert(' Downloaded successfully');
+                alert('Downloaded successfully');
             },
             error: function(response) {
                 alert('Error');
+
             }
         })
     });

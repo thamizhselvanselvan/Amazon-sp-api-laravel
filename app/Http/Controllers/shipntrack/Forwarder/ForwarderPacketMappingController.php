@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\shipntrack\Forwarder;
 
-use League\Csv\Writer;
 use League\Csv\Reader;
+use League\Csv\Writer;
 use AWS\CRT\HTTP\Response;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Models\ShipNTrack\Packet\PacketForwarder;
-use Illuminate\Support\Facades\Storage;
 use PhpParser\Node\Expr\Eval_;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
+use App\Models\ShipNTrack\Packet\PacketForwarder;
 
 class ForwarderPacketMappingController extends Controller
 {
@@ -91,37 +92,43 @@ class ForwarderPacketMappingController extends Controller
         }
         return redirect()->intended('/shipntrack/forwarder/upload')->with("success", "Tracking Details Uploaded");
     }
+
     public function missingexpview()
     {
         return view('shipntrack.Forwarder.export');
     }
+
     public function missexport(Request $request)
     {
         if ($request->ajax()) {
             $records = [];
-            $chh = $request->res;
-            $created_at = $request->date_of_arrival;
-            $records = PacketForwarder::query()
-                ->select('order_id', 'awb_no', 'forwarder_1', 'forwarder_1_awb', 'forwarder_2', 'forwarder_2_awb')
-                ->where($chh, '')
 
+            $filter  = explode('!=', $request->selected);
 
-                // $records = PacketForwarder::when($dbheaders, function ($query) use ($dbheaders) {
-                //     $query->select($dbheaders);
-                // // })
-                // ->when(!empty(trim($request->date_of_arrival)), function ($query) use ($date_of_arrival) 
-                // {
-                //     $date = $this->split_date($date_of_arrival);
-                //     $query->whereBetween('created_at', [$date[0], $date[1]]);
-                // })
-                ->when(!empty(trim($request->created_at)), function ($query) use ($created_at) {
+            $date = $filter[0];
+            $first_forwarder = $filter[1];
+            $second_forwarder = $filter[2];
 
-                    $date = $this->split_date($created_at);
+            $first_forwarder  = $first_forwarder == 'false' ? NULL : $first_forwarder;
+            $second_forwarder  = $second_forwarder == 'false' ? NULL : $second_forwarder;
+
+            $dbheaders = ['order_id', 'awb_no', 'forwarder_1', 'forwarder_1_awb', 'forwarder_2', 'forwarder_2_awb'];
+
+            $records = PacketForwarder::select($dbheaders)
+                ->when(!empty(trim($date)), function ($query) use ($date) {
+                    $date = $this->split_date($date);
                     $query->whereBetween('created_at', [$date[0], $date[1]]);
                 })
+                ->when(!is_null($first_forwarder), function ($query) {
 
+                    $query->where('forwarder_1', '');
+                })
+                ->when(!is_null($second_forwarder), function ($query) {
+
+                    $query->where('forwarder_2', '');
+                })
                 ->get();
-            return response()->json($records);
+
             $headers = [
 
                 'order ID',
@@ -147,9 +154,9 @@ class ForwarderPacketMappingController extends Controller
         return Storage::download('farwarder\missing.csv');
     }
 
-    public function split_date($date_time)
+    public function split_date($date)
     {
-        $date = explode(' - ', $date_time);
+        $date = explode(' - ', $date);
         return [trim($date[0]), trim($date[1])];
     }
 }
