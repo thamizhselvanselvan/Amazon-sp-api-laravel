@@ -37,6 +37,7 @@ class SmsaGetTracking implements ShouldQueue
 
             $tracking_details = [];
             $details = SmsaTrackingResponse($awbNo);
+
             foreach ($details as $key => $value) {
 
                 $tracking_details[] = [

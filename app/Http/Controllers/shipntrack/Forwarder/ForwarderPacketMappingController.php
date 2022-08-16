@@ -103,7 +103,7 @@ class ForwarderPacketMappingController extends Controller
             $created_at = $request->date_of_arrival;
             $records = PacketForwarder::query()
                 ->select('order_id', 'awb_no', 'forwarder_1', 'forwarder_1_awb', 'forwarder_2', 'forwarder_2_awb')
-                ->where($chh,'')
+                ->where($chh, '')
 
 
                 // $records = PacketForwarder::when($dbheaders, function ($query) use ($dbheaders) {
@@ -119,9 +119,9 @@ class ForwarderPacketMappingController extends Controller
                     $date = $this->split_date($created_at);
                     $query->whereBetween('created_at', [$date[0], $date[1]]);
                 })
-            
-            ->get();
-                return response()->json($records);
+
+                ->get();
+            return response()->json($records);
             $headers = [
 
                 'order ID',
@@ -139,7 +139,7 @@ class ForwarderPacketMappingController extends Controller
             $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
             $writer->insertOne($headers);
 
-             $writer->insertAll($records->toArray());
+            $writer->insertAll($records->toArray());
         }
     }
     public function downexp()
@@ -152,5 +152,4 @@ class ForwarderPacketMappingController extends Controller
         $date = explode(' - ', $date_time);
         return [trim($date[0]), trim($date[1])];
     }
-    
 }

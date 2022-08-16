@@ -648,6 +648,7 @@ if (!function_exists('SmsaTrackingResponse')) {
     function SmsaTrackingResponse($awbNo)
     {
         $password = config('database.smsa_password');
+        Log::alert('Password ->' . $password);
         $url = "http://track.smsaexpress.com/SECOM/SMSAwebService.asmx";
 
         $xmlRequest = "<?xml version='1.0' encoding='utf-8'?>
@@ -763,24 +764,25 @@ if (!function_exists('BombinoTrackingResponse')) {
 if (!function_exists('smsa_tracking')) {
     function smsa_tracking($smsa_awb)
     {
-        $tracking_detials = [];
+        $tracking_details = [];
         $smsa_t_details = SmsaTrackings::where('awbno', $smsa_awb)->get();
         foreach ($smsa_t_details as $details) {
             // dd($details);
-            $tracking_detials[] = [
+            $tracking_details[] = [
                 'Date_Time' => $details->date,
                 'Location' => $details->location,
                 'Activity' => $details->activity,
                 'forwarder' => 'Smsa'
             ];
         }
-        return $tracking_detials;
+        Log::alert($tracking_details);
+        return $tracking_details;
     }
 }
 
 if (!function_exists('bombino_tracking')) {
 
-    $tracking_detials = [];
+    $tracking_details = [];
     function bombino_tracking($bombino_awb)
     {
         $bomino_tracking_details = BombinoTracking::with('bombinoTrackingJoin')->where('awbno', $bombino_awb)->get();
@@ -789,7 +791,7 @@ if (!function_exists('bombino_tracking')) {
 
             foreach ($details->bombinoTrackingJoin as $value) {
 
-                $tracking_detials[] = [
+                $tracking_details[] = [
                     'Date_Time' => $value->action_date . ' ' . $value->action_time,
                     'Location' => $value->location,
                     'Activity' => $value->exception,
@@ -797,7 +799,8 @@ if (!function_exists('bombino_tracking')) {
                 ];
             }
         }
-        return $tracking_detials;
+        Log::alert($tracking_details);
+        return $tracking_details;
     }
 }
 
@@ -851,7 +854,7 @@ if (!function_exists('getTrackingDetails')) {
             ])
             ->first();
 
-            // Log::alert($packet_forwarder);
+        // Log::alert($packet_forwarder);
         $forwarder_1 = $packet_forwarder->forwarder_1;
         $forwarder_1_awb = $packet_forwarder->forwarder_1_awb;
 
@@ -881,7 +884,7 @@ if (!function_exists('getTrackingDetails')) {
         $result  = [
             'tracking_details'  => $tracking_details,
             'shipping_address'  => $packet_forwarder->shipping_address,
-        ] ;
+        ];
         // Log::notice($result);
         return $result;
     }
