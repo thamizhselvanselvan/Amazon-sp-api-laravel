@@ -3,11 +3,9 @@
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use App\Models\Aws_credential;
-use App\Models\Admin\Ratemaster;
+use PhpParser\Node\Expr\Eval_;
 use App\Models\Catalog\Catalog;
-use App\Models\ShipNTrack\Bombino\BombinoTracking;
-use App\Models\ShipNTrack\Bombino\BombinoTrackingDetails;
-use App\Models\ShipNTrack\SMSA\SmsaTrackings;
+use App\Models\Admin\Ratemaster;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +13,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
-use PhpParser\Node\Expr\Eval_;
+use App\Models\ShipNTrack\SMSA\SmsaTrackings;
+use App\Models\ShipNTrack\Packet\PacketForwarder;
+use App\Models\ShipNTrack\Bombino\BombinoTracking;
+use App\Models\ShipNTrack\Bombino\BombinoTrackingDetails;
 
 
 if (!function_exists('ddp')) {
@@ -797,5 +798,86 @@ if (!function_exists('bombino_tracking')) {
             }
         }
         return $tracking_detials;
+    }
+}
+
+if (!function_exists('forwarderTrackingEvent')) {
+    function forwarderTrackingEvent($key)
+    {
+        $array_tables = [
+            [
+                'Table_name' => 'BombinoTrackingDetails',
+                'Table_column' => 'exception',
+                'Model_path' => 'Bombino\\'
+            ],
+            [
+                'Table_name' => 'SmsaTrackings',
+                'Table_column' => 'activity',
+                'Model_path' => 'SMSA\\'
+            ],
+        ];
+
+        $table_name = $array_tables[$key]['Table_name'];
+        $table_column = $array_tables[$key]['Table_column'];
+        $model_path = $array_tables[$key]['Model_path'];
+
+        $table_model = table_model_change(model_path: $model_path, table_name: $table_name);
+
+        return [
+            $table_model,
+            $table_column
+        ];
+    }
+}
+
+if (!function_exists('getTrackingDetails')) {
+    function getTrackingDetails($awb_no)
+    {
+        $bombino_t_details  = [];
+        $smsa_t_detials = [];
+
+        $order = config('database.connections.order.database');
+        $order_item = $order . '.orderitemdetails';
+        $packet_forwarder = PacketForwarder::where('awb_no', $awb_no)
+            ->join($order_item, 'packet_forwarders.order_id', '=', $order_item . '.amazon_order_identifier')
+            ->get([
+                'packet_forwarders.status',
+                'packet_forwarders.forwarder_1',
+                'packet_forwarders.forwarder_2',
+                'packet_forwarders.forwarder_1_awb',
+                'packet_forwarders.forwarder_2_awb',
+                $order_item . '.amazon_order_identifier',
+                $order_item . '.shipping_address',
+            ])
+            ->first();
+
+        $forwarder_1 = $packet_forwarder->forwarder_1;
+        $forwarder_1_awb = $packet_forwarder->forwarder_1_awb;
+
+        $forwarder_2 = $packet_forwarder->forwarder_2;
+        $forwarder_2_awb = $packet_forwarder->forwarder_2_awb;
+
+        if (strtoupper($forwarder_1) == 'BOMBINO') {
+
+            $bombino_t_details = bombino_tracking($forwarder_1_awb);
+        } elseif (strtoupper($forwarder_1) == "SMSA") {
+
+            $smsa_t_detials = smsa_tracking($forwarder_1_awb);
+        }
+
+        if (strtoupper($forwarder_2) == 'BOMBINO') {
+
+            $bombino_t_details = bombino_tracking($forwarder_2_awb);
+        } elseif (strtoupper($forwarder_2_awb) == "SMSA") {
+
+            $smsa_t_detials = smsa_tracking($forwarder_2_awb);
+        }
+
+        $tracking_details = [...$bombino_t_details, ...$smsa_t_detials];
+
+        $column = array_column($tracking_details, 'Date_Time');
+        array_multisort($column, SORT_DESC, $tracking_details);
+
+        return $tracking_details;
     }
 }

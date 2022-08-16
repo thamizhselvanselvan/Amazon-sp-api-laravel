@@ -15,68 +15,50 @@ class TrackingEventMappingController extends Controller
 {
     public function array()
     {
-        return $array = ['0'=>'Bombino', '1'=> 'SAMSA', '2'=> 'Emirate'];
+        return $array = ['0' => 'Bombino', '1' => 'SAMSA', '2' => 'Emirate'];
     }
 
     public function index(Request $request)
-    {   
+    {
         $arrays = $this->array();
         $master_record = TrackingEventMaster::select('event_code', 'description')->get();
-        if($request->ajax())
-        {
-            
+        if ($request->ajax()) {
+
             $records = TrackingEventMapping::with(['TrackingEventMaster'])->orderBy('our_event_code', 'ASC')->get();
-            foreach($records as $record)
-            {
+            foreach ($records as $record) {
                 return DataTables::of($records)
-                ->addColumn('action', function ($result) {
-                      $action = '<div class="d-flex pl-2 edit event-master-btn "><a href="/shipntrack/event-mapping/edit/' . $result->id . ' " class=" btn btn-sm text-success" ><i class="fas fa-edit"></i></a>';
-                      $action .= '<div class="d-flex pl-2 delete event-master-btn "><a href="/shipntrack/event-mapping/delete/' . $result->id . ' " class=" btn btn-sm text-danger"><i class="fa fa-trash"></i></a>';
-                      return $action;
-                  })
-                  ->addColumn('status', function($result){
-                    return $result->active == 1 ? 'Yes': 'No';
-                  })
-                  ->addColumn('master_description', function($result){
-                    return $result->TrackingEventMaster->description;
-                  })
-                  ->rawColumns(['action','status', 'master_description'])
-                  ->make(true);
+                    ->addColumn('action', function ($result) {
+                        $action = '<div class="d-flex pl-2 edit event-master-btn "><a href="/shipntrack/event-mapping/edit/' . $result->id . ' " class=" btn btn-sm text-success" ><i class="fas fa-edit"></i></a>';
+                        $action .= '<div class="d-flex pl-2 delete event-master-btn "><a href="/shipntrack/event-mapping/delete/' . $result->id . ' " class=" btn btn-sm text-danger"><i class="fa fa-trash"></i></a>';
+                        return $action;
+                    })
+                    ->addColumn('status', function ($result) {
+                        return $result->active == 1 ? 'Yes' : 'No';
+                    })
+                    ->addColumn('master_description', function ($result) {
+                        return $result->TrackingEventMaster->description;
+                    })
+                    ->rawColumns(['action', 'status', 'master_description'])
+                    ->make(true);
             }
         }
         return view('shipntrack.EventMapping.index', compact('master_record', 'arrays'));
     }
     public function MappingSource(Request $request)
     {
-        
-        if($request->ajax())
-        {
+
+        if ($request->ajax()) {
             $key = $request->source;
-            $records = [] ;
-            $array_tables = [
-                [
-                    'Table_name' => 'BombinoTrackingDetails',
-                    'Table_column' => 'exception',
-                    'Model_path'=> 'Bombino\\'
-                ],
-                [
-                    'Table_name' => 'SmsaTrackings',
-                    'Table_column' => 'activity',
-                    'Model_path'=> 'SMSA\\'
-                ],
-                ];
-            
-            $table_name = $array_tables[$key]['Table_name'];
-            $table_column = $array_tables[$key]['Table_column'];
-            $model_path = $array_tables[$key]['Model_path'];
-            
-            $table_model = table_model_change(model_path:$model_path, table_name:$table_name);
-            
+            $records = [];
+            $details =  forwarderTrackingEvent($key);
+
+            $table_model = $details[0];
+            $table_column = $details[1];
+
             $data = $table_model::get()->unique($table_column);
-            foreach($data as  $value)
-            {
-    
-                $records []= $value->$table_column;
+            foreach ($data as  $value) {
+
+                $records[] = $value->$table_column;
             }
             return response()->json($records);
         }
@@ -95,14 +77,13 @@ class TrackingEventMappingController extends Controller
         $key = $request->source;
         $array = ['0' => 'Bombino', '1' => 'SAMSA', '2' => 'Emirate Post'];
         $source_name = $array[$key];
-        
-        if($request->event_check != 'on')
-        {
-         $event_check = 0;
-        }else{
+
+        if ($request->event_check != 'on') {
+            $event_check = 0;
+        } else {
             $event_check = 1;
         }
-        
+
         TrackingEventMapping::insert([
             'master_event_code' => $request->event_source,
             'source' => $source_name,
@@ -146,7 +127,7 @@ class TrackingEventMappingController extends Controller
         $update->master_event_code = $request->event_source;
         $update->our_event_code = $request->our_event_code;
         $update->our_event_description = $request->event_description;
-        $update->active = $request->event_check == 'on' ? 1 : 0 ;
+        $update->active = $request->event_check == 'on' ? 1 : 0;
         $update->update();
 
         return redirect()->intended('/shipntrack/event-mapping')->with('success', 'Record has been updated successfully!');
