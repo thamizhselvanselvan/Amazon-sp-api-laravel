@@ -12,26 +12,52 @@ class AmazonTrackingAPIController extends Controller
 {
     function B2cShipTrackingResponse(Request $request)
     {
-        $apidata = bombino_tracking($request->awbNo);
+       $final_data = getTrackingDetails($request->awbNo);
+        // return $shipping = json_decode($final_data['shipping_address'])->CountryCode;
+        $results = [];
+        $results = '<APIVersion>1</APIVersion>
+                    <PackageTrackingInfo>
+                        <PackageDeliveryDate>
+                            <ReScheduleDeliveryDate/>
+                            <ScheduleDeliveryDate/> 
+                        </PackageDeliveryDate>
+                        <PackageDestinationLocation>
+                            <City></City>
+                            <CountryCode>'.json_decode($final_data['shipping_address'])->CountryCode.'</CountryCode>
+                        </PackageDestinationLocation>';
 
-        $apidata2 = smsa_tracking($request->awbNo);
-        $final_data = array_merge($apidata, $apidata2);
-        // return $final_data;
-        // exit;
-        
-        foreach($final_data as $key => $value)
-        {
-            $records = TrackingEventMapping::where('our_event_description', $value['Activity'])->get();
-           foreach($records as $record)
-           {
-               $result [] = [
-                'Event_description' => $record->our_event_description,
-                'Event_code' => $record->our_event_code,
-                'Time_zone' => date("Y-m-d\TH:i:s\Z", strtotime($value['Date_Time'])),
-                'Location' => $value['Location'],
-               ];
+            foreach($final_data['tracking_details'] as $value)
+            {
+                $records = TrackingEventMapping::where('our_event_description', $value['Activity'])->get();
+                foreach($records as $record)
+                {
+                    // $result [] = [
+                    //     'count' => $count,
+                    //     'Event_description' => $record->our_event_description,
+                    //     'Event_code' => $record->our_event_code,
+                    //     'Time_zone' => date("Y-m-d\TH:i:s\Z", strtotime($value['Date_Time'])),
+                    //     'Location' => $value['Location'],
+                    // ];
+                    
+
+                    $results  .= '<TrackingEventHistory>
+                        <TrackingEventDetail>
+                            <EventDateTime>'.date("Y-m-d\TH:i:s\Z", strtotime($value['Date_Time'])).'</EventDateTime>
+                            <EventLocation>
+                                <City>'."Bangaluru".'</City>
+                                <CountryCode>'."INDIA".'</CountryCode>
+                                <PostalCode></PostalCode>
+                                <StateProvince>'."BLG".'</StateProvince>
+                            </EventLocation>
+                            <EventReason>'.$record->our_event_description.'</EventReason>
+                            <EventStatus>'.$record->our_event_code.'</EventStatus>
+                            <SignedForByName/>
+                        </TrackingEventDetail>
+                    </TrackingEventHistory>';
+                }
             }
-        }
-        return ($result);
+            $results .= '</PackageTrackingInfo>';
+           return $results;
+        
     }
 }

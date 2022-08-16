@@ -87,10 +87,26 @@ Route::get('country', function () {
 
     $countries = Country::get();
 });
-Route::get('event', function(){
+Route::get('TrackingApi', function(){
     
-      event(new testEvent($percentage));
-    event(new checkEvent('I am tring to Boradcast channel'));
+    $curl = curl_init();
+    
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://catalog-manager-mosh.com/api/testing?awbNo=US30000002',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'GET',
+    ));
+    
+    $response = curl_exec($curl);
+    
+    curl_close($curl);
+    echo $response;
+    
 });
 
 Route::get('channel', function () {
