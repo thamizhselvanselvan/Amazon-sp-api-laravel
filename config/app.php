@@ -178,10 +178,7 @@ return [
         * Package Service Providers...
         */
 
-        App\Providers\DropboxServiceProvider::class,
-       
-    // ...
-
+        
         /*
         * Application Service Providers...
         */
@@ -194,6 +191,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+		App\Providers\DropboxServiceProvider::class,
         Arcanedev\LogViewer\LogViewerServiceProvider::class,
 
     ],
