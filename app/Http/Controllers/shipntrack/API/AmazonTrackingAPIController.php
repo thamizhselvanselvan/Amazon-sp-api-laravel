@@ -5,6 +5,7 @@ namespace App\Http\Controllers\shipntrack\API;
 use DateTime;
 use DateTimeZone;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\ShipNTrack\EventMapping\TrackingEventMapping;
 
@@ -12,7 +13,7 @@ class AmazonTrackingAPIController extends Controller
 {
     function B2cShipTrackingResponse(Request $request)
     {
-       $final_data = getTrackingDetails($request->awbNo);
+        $final_data = getTrackingDetails($request->awbNo);
         // return $shipping = json_decode($final_data['shipping_address'])->CountryCode;
         $results = [];
         $results = '<APIVersion>1</APIVersion>
