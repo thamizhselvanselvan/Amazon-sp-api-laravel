@@ -608,8 +608,14 @@ return [
                             'url'   =>  'shipntrack/stopTracking',
                             'can'   =>  ['Admin'],
                         ],
+                        [
+                            'text'  =>  'Tracking Listing',
+                            'url'   =>  'shipntrack/trackingList',
+                            'can'   =>  ['Admin'],
+                        ],
                     ],
                 ],
+                
 
             ]
         ],
