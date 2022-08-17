@@ -77,7 +77,7 @@ class OrderItem
             R::selectDatabase('order');
         }
 
-        Log::info("redbean Connection done");
+        Log::info("$host - $dbname - $port - $username - $password | redbean Connection done");
 
         $order_address = '';
         $amazon_order = '';
@@ -120,7 +120,7 @@ class OrderItem
                     $detailsKey = lcfirst($key);
                     $id = substr($detailsKey, -2);
                     $ids = substr($detailsKey, -3);
-                    // echo $id;
+
                     if ($id == 'id' || $id == 'Id' || $ids == 'ids') {
                         $detailsKey = str_replace(["id", 'Id', 'ids'], "identifier", $detailsKey);
                     }
@@ -139,6 +139,7 @@ class OrderItem
                 }
                 $order_detials->amazon_order_identifier = $order_id;
                 $order_detials->shipping_address = $order_address;
+                Log::alert(json_encode($order_detials));
                 R::store($order_detials);
                 Log::warning('working final');
             }
