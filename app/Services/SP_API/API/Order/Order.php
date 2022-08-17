@@ -117,8 +117,10 @@ class Order
             $data = DB::connection('order')
                 ->select("SELECT id, amazon_order_identifier FROM orders 
             WHERE amazon_order_identifier = '$amazon_order_id'");
+
             //   $data = [];
             if (array_key_exists(0, $data)) {
+
                 $count++;
                 $dataCheck = 1;
                 $id = $data[0]->id;
@@ -137,6 +139,8 @@ class Order
 
                 if (count($order_item_details) > 0) {
 
+                    Log::alert($amazon_order_id);
+
                     $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
                     $this->delay += $delay_count;
                 }
@@ -149,6 +153,8 @@ class Order
                 // dd($orders);
                 R::store($orders);
 
+                Log::alert('new Data' . $amazon_order_id);
+
                 $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
                 $this->delay += $delay_count;
             }
@@ -157,7 +163,6 @@ class Order
 
     public function getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode)
     {
-        Log::warning('Order Queue  ' . $amazon_order_id . 'aws id ->  ' . $awsId . 'country-> ' . $awsCountryCode);
 
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
             GetOrderItem::dispatch(

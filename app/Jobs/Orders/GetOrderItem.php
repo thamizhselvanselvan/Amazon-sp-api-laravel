@@ -37,8 +37,6 @@ class GetOrderItem implements ShouldQueue
         $aws_id = $this->payload['aws_id'];
         $country_code = $this->payload['country_code'];
 
-        Log::info("$order_id, $aws_id, $country_code");
-
         $order_item = new OrderItem();
         $order_item->OrderItemDetails($order_id, $aws_id, $country_code);
     }
