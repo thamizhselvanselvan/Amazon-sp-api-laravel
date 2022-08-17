@@ -823,56 +823,61 @@ if (!function_exists('BombinoTrackingResponse')) { function BombinoTrackingRespo
     if (!function_exists('getTrackingDetails')) {
     function getTrackingDetails($awb_no)
     {
-    $bombino_t_details = [];
-    $smsa_t_detials = [];
+        $bombino_t_details  = [];
+        $smsa_t_detials = [];
 
-    $order = config('database.connections.order.database');
-    $order_item = $order . '.orderitemdetails';
-    $packet_forwarder = PacketForwarder::where('awb_no', $awb_no)
-    ->join($order_item, 'packet_forwarders.order_id', '=', $order_item . '.amazon_order_identifier')
-    ->get([
-    'packet_forwarders.status',
-    'packet_forwarders.forwarder_1',
-    'packet_forwarders.forwarder_2',
-    'packet_forwarders.forwarder_1_awb',
-    'packet_forwarders.forwarder_2_awb',
-    $order_item . '.amazon_order_identifier',
-    $order_item . '.shipping_address',
-    ])
-    ->first();
+        $order = config('database.connections.order.database');
+        $order_item = $order . '.orderitemdetails';
+        $packet_forwarder = PacketForwarder::where('awb_no', $awb_no)
+            ->join($order_item, 'packet_forwarders.order_id', '=', $order_item . '.amazon_order_identifier')
+            ->get([
+                'packet_forwarders.status',
+                'packet_forwarders.forwarder_1',
+                'packet_forwarders.forwarder_2',
+                'packet_forwarders.forwarder_1_awb',
+                'packet_forwarders.forwarder_2_awb',
+                $order_item . '.amazon_order_identifier',
+                $order_item . '.shipping_address',
+            ])
+            ->first();
 
-    // Log::alert($packet_forwarder);
-    $forwarder_1 = $packet_forwarder->forwarder_1;
-    $forwarder_1_awb = $packet_forwarder->forwarder_1_awb;
+        if (!empty($packet_forwarder)) {
 
-    $forwarder_2 = $packet_forwarder->forwarder_2;
-    $forwarder_2_awb = $packet_forwarder->forwarder_2_awb;
+            // Log::alert($packet_forwarder);
+            $forwarder_1 = $packet_forwarder->forwarder_1;
+            $forwarder_1_awb = $packet_forwarder->forwarder_1_awb;
 
-    if (strtoupper($forwarder_1) == 'BOMBINO') {
+            $forwarder_2 = $packet_forwarder->forwarder_2;
+            $forwarder_2_awb = $packet_forwarder->forwarder_2_awb;
 
-    $bombino_t_details = bombino_tracking($forwarder_1_awb);
-    } elseif (strtoupper($forwarder_1) == "SMSA") {
+            if (strtoupper($forwarder_1) == 'BOMBINO') {
 
-    $smsa_t_detials = smsa_tracking($forwarder_1_awb);
-    }
+                $bombino_t_details = bombino_tracking($forwarder_1_awb);
+            } elseif (strtoupper($forwarder_1) == "SMSA") {
 
-    if (strtoupper($forwarder_2) == 'BOMBINO') {
+                $smsa_t_detials = smsa_tracking($forwarder_1_awb);
+            }
 
-    $bombino_t_details = bombino_tracking($forwarder_2_awb);
-    } elseif (strtoupper($forwarder_2_awb) == "SMSA") {
+            if (strtoupper($forwarder_2) == 'BOMBINO') {
 
-    $smsa_t_detials = smsa_tracking($forwarder_2_awb);
-    }
+                $bombino_t_details = bombino_tracking($forwarder_2_awb);
+            } elseif (strtoupper($forwarder_2_awb) == "SMSA") {
 
-    $tracking_details = [...$bombino_t_details, ...$smsa_t_detials];
-    $column = array_column($tracking_details, 'Date_Time');
-    array_multisort($column, SORT_DESC, $tracking_details);
+                $smsa_t_detials = smsa_tracking($forwarder_2_awb);
+            }
 
-    $result = [
-    'tracking_details' => $tracking_details,
-    'shipping_address' => $packet_forwarder->shipping_address,
-    ] ;
-    // Log::notice($result);
-    return ($result);
-    }
+            $tracking_details = [...$bombino_t_details, ...$smsa_t_detials];
+            $column = array_column($tracking_details, 'Date_Time');
+            array_multisort($column, SORT_DESC, $tracking_details);
+
+            $result  = [
+                'tracking_details'  => $tracking_details,
+                'shipping_address'  => $packet_forwarder->shipping_address,
+            ];
+            // Log::notice($result);
+            return $result;
+        } else {
+            echo 'Invalid AWB';
+            return false;
+        }
     }
