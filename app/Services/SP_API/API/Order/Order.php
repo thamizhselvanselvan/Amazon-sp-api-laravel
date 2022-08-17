@@ -42,8 +42,8 @@ class Order
         $marketplace_ids = [$marketplace_ids];
 
         $apiInstance = new OrdersApi($config);
-        // $startTime = Carbon::now()->subHours(6)->toISOString();
-        $startTime = Carbon::now()->subDays(10)->toISOString();
+        $startTime = Carbon::now()->subHours(9)->toISOString();
+        // $startTime = Carbon::now()->subDays(2)->toISOString();
         $createdAfter = $startTime;
         $max_results_per_page = 100;
         $next_token = NULL;
@@ -114,7 +114,9 @@ class Order
 
             //$amazon_order_id = '407-0297568-739477566';.01
 
-            $data = DB::connection('order')->select("select id, amazon_order_identifier from orders where amazon_order_identifier = '$amazon_order_id'");
+            $data = DB::connection('order')
+                ->select("SELECT id, amazon_order_identifier FROM orders 
+            WHERE amazon_order_identifier = '$amazon_order_id'");
             //   $data = [];
             if (array_key_exists(0, $data)) {
                 $count++;
@@ -129,7 +131,8 @@ class Order
 
                 R::store($update_orders);
 
-                $order_item_details = DB::connection('order')->select("SELECT id FROM orders 
+                $order_item_details = DB::connection('order')
+                    ->select("SELECT id FROM orders 
                 WHERE amazon_order_identifier = '$amazon_order_id' AND order_item = '0' ");
 
                 if (count($order_item_details) > 0) {
@@ -154,13 +157,14 @@ class Order
 
     public function getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode)
     {
+        Log::warning('Order Queue  ' . $amazon_order_id . 'aws id ->  ' . $awsId . 'country-> ' . $awsCountryCode);
+
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
             GetOrderItem::dispatch(
                 [
                     'order_id' => $amazon_order_id,
                     'aws_id' => $awsId,
                     'country_code' => $awsCountryCode,
-
                 ]
             )->onConnection('redis')->onQueue('order')->delay($this->delay);
         } else {
@@ -170,7 +174,6 @@ class Order
                     'order_id' => $amazon_order_id,
                     'aws_id' => $awsId,
                     'country_code' => $awsCountryCode,
-
                 ]
             );
         }
