@@ -61,12 +61,7 @@
 
 <div class="row">
     <div class="col">
-        <h2 class="mb-4">
-            <a href="{{ route('catalog.exchange.rate') }}">
-                <x-adminlte-button label="Get Exchange Rate" theme="primary" icon="fas fa-file-download"
-                    id="exportUniversalTextiles" class="btn-sm" />
-            </a>
-        </h2>
+        
         <div class="alert_display">
             @if ($message = Session::get('success'))
             <div class="alert alert-success alert-block">
