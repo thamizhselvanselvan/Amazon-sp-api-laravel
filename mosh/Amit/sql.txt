@@ -1,0 +1,7 @@
+Delete Duplicate from table and keep latest
+
+DELETE s1 FROM table_name s1,
+    table_name s2 
+WHERE
+    s1.id > s2.id
+    AND s1.column_name = s2.column_name;

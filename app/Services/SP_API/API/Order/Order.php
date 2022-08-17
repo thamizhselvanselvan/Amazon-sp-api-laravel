@@ -128,6 +128,15 @@ class Order
                 $update_orders->updatedat = now();
 
                 R::store($update_orders);
+
+                $order_item_details = DB::connection('order')->select("SELECT id FROM orders 
+                WHERE amazon_order_identifier = '$amazon_order_id' AND order_item = '0' ");
+
+                if (count($order_item_details) > 0) {
+
+                    $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
+                    $this->delay += $delay_count;
+                }
             } else {
 
                 //call orderitem details jobs
@@ -136,17 +145,11 @@ class Order
                 $orders->createdat = now();
                 // dd($orders);
                 R::store($orders);
-            }
-
-            $order_item_details = DB::connection('order')->select("select id from orderitemdetails where amazon_order_identifier = '$amazon_order_id'");
-
-            if (count($order_item_details) <= 0) {
 
                 $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
                 $this->delay += $delay_count;
             }
         }
-        // return true;
     }
 
     public function getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode)

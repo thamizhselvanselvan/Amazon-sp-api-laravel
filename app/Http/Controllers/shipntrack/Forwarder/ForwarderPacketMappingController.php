@@ -92,10 +92,12 @@ class ForwarderPacketMappingController extends Controller
         }
         return redirect()->intended('/shipntrack/forwarder/upload')->with("success", "Tracking Details Uploaded");
     }
+
     public function missingexpview()
     {
         return view('shipntrack.Forwarder.export');
     }
+
     public function missexport(Request $request)
     {
         if ($request->ajax()) {
