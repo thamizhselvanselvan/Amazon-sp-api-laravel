@@ -42,8 +42,8 @@ class Order
         $marketplace_ids = [$marketplace_ids];
 
         $apiInstance = new OrdersApi($config);
-        $startTime = Carbon::now()->subHours(6)->toISOString();
-        // $startTime = Carbon::now()->subDays(10)->toISOString();
+        // $startTime = Carbon::now()->subHours(6)->toISOString();
+        $startTime = Carbon::now()->subDays(10)->toISOString();
         $createdAfter = $startTime;
         $max_results_per_page = 100;
         $next_token = NULL;
@@ -128,6 +128,15 @@ class Order
                 $update_orders->updatedat = now();
 
                 R::store($update_orders);
+
+                $order_item_details = DB::connection('order')->select("SELECT id FROM orders 
+                WHERE amazon_order_identifier = '$amazon_order_id' AND order_item = '0' ");
+
+                if (count($order_item_details) > 0) {
+
+                    $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
+                    $this->delay += $delay_count;
+                }
             } else {
 
                 //call orderitem details jobs
@@ -136,12 +145,6 @@ class Order
                 $orders->createdat = now();
                 // dd($orders);
                 R::store($orders);
-            }
-
-            $order_item_details = DB::connection('order')->select("SELECT id FROM orders 
-            WHERE amazon_order_identifier = '$amazon_order_id' AND order_item = '0' ");
-
-            if (count($order_item_details) > 0) {
 
                 $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
                 $this->delay += $delay_count;
