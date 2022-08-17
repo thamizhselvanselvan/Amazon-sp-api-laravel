@@ -19,14 +19,8 @@ class AmazonTrackingAPIController extends Controller
         if (!empty($requestContent)) {
 
             $xmlObject = simplexml_load_string($requestContent);
-
             $json = json_encode($xmlObject);
             $phpArray = json_decode($json, true);
-
-            if (!isset($request->awbNo)) {
-                echo 'AWB Missing';
-                die();
-            }
 
             $final_data = getTrackingDetails($phpArray['TrackingNumber']);
 
@@ -48,23 +42,15 @@ class AmazonTrackingAPIController extends Controller
                 foreach ($final_data['tracking_details'] as $value) {
                     $records = TrackingEventMapping::where('our_event_description', $value['Activity'])->get();
                     foreach ($records as $record) {
-                        // $result [] = [
-                        //     'count' => $count,
-                        //     'Event_description' => $record->our_event_description,
-                        //     'Event_code' => $record->our_event_code,
-                        //     'Time_zone' => date("Y-m-d\TH:i:s\Z", strtotime($value['Date_Time'])),
-                        //     'Location' => $value['Location'],
-                        // ];
-
-
+                        
                         $results  .= '<TrackingEventHistory>
                         <TrackingEventDetail>
                             <EventDateTime>' . date("Y-m-d\TH:i:s\Z", strtotime($value['Date_Time'])) . '</EventDateTime>
                             <EventLocation>
-                                <City>' . "Bangaluru" . '</City>
-                                <CountryCode>' . "INDIA" . '</CountryCode>
+                                <City></City>
+                                <CountryCode></CountryCode>
                                 <PostalCode></PostalCode>
-                                <StateProvince>' . "BLG" . '</StateProvince>
+                                <StateProvince></StateProvince>
                             </EventLocation>
                             <EventReason>' . $record->our_event_description . '</EventReason>
                             <EventStatus>' . $record->our_event_code . '</EventStatus>

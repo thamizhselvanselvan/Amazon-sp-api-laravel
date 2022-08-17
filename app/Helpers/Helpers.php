@@ -820,7 +820,7 @@ if (!function_exists('BombinoTrackingResponse')) { function BombinoTrackingRespo
     }
     }
 
-    if (!function_exists('getTrackingDetails')) {
+if (!function_exists('getTrackingDetails')) {
     function getTrackingDetails($awb_no)
     {
         $bombino_t_details  = [];
@@ -880,4 +880,6 @@ if (!function_exists('BombinoTrackingResponse')) { function BombinoTrackingRespo
             echo 'Invalid AWB';
             return false;
         }
+
     }
+}
