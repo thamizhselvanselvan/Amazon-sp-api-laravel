@@ -42,8 +42,9 @@ class Order
         $marketplace_ids = [$marketplace_ids];
 
         $apiInstance = new OrdersApi($config);
-        $startTime = Carbon::now()->subHours(9)->toISOString();
-        // $startTime = Carbon::now()->subDays(2)->toISOString();
+        // $startTime = Carbon::now()->subHours(9)->toISOString();
+        $startTime = Carbon::now()->subDays(10)->toISOString();
+        // Log::alert($startTime);
         $createdAfter = $startTime;
         $max_results_per_page = 100;
         $next_token = NULL;
