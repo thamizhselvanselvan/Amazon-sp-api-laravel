@@ -71,22 +71,14 @@
             @endif
         </div>
 
-
-
         <table class="table table-bordered yajra-datatable table-striped text-center table-sm">
             <thead>
                 <tr class="length">
                     <th>S/N</th>
                     <th>ASIN</th>
                     <th>Source</th>
-                    <th>Destination 1</th>
-                    <th>Destination 2</th>
-                    <th>Destination 3</th>
-                    <th>Destination 4</th>
-                    <th>Destination 5</th>
                     <th>Action</th>
                 </tr>
-
             </thead>
             <tbody>
             </tbody>
@@ -97,6 +89,7 @@
 
 @section('js')
 <script type="text/javascript">
+
 $(function() {
     yajra_datatable();
 });
@@ -108,7 +101,7 @@ function yajra_datatable() {
         serverSide: true,
         destroy: true,
         pageLength: 50,
-        ajax: "{{ url('catalog/asin-master') }}",
+        ajax: "{{ url('catalog/asin-source') }}",
         columns: [{
                 data: 'id',
                 name: 'id',
@@ -123,31 +116,6 @@ function yajra_datatable() {
             {
                 data: 'source',
                 name: 'source',
-                orderable: false
-            },
-            {
-                data: 'destination_1',
-                name: 'destination_1',
-                orderable: false
-            },
-            {
-                data: 'destination_2',
-                name: 'destination_2',
-                orderable: false
-            },
-            {
-                data: 'destination_3',
-                name: 'destination_3',
-                orderable: false
-            },
-            {
-                data: 'destination_4',
-                name: 'destination_4',
-                orderable: false
-            },
-            {
-                data: 'destination_5',
-                name: 'destination_5',
                 orderable: false
             },
             {
@@ -188,5 +156,6 @@ $(document).on('click', ".delete", function(e) {
     });
 
 });
+
 </script>
 @stop

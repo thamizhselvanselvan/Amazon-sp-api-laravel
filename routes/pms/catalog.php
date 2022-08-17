@@ -33,7 +33,7 @@ Route::post('other-product/asin_save_in', 'otherProduct\OtherAmazonInProductCont
 Route::post('other-product/add_bulk_asin_in', 'otherProduct\OtherAmazonInProductController@asinTxtSave');
 
 
-Route::get('catalog/asin-master', 'Catalog\AsinMasterController@index')->name('catalog.asin.master');
+Route::get('catalog/asin-source', 'Catalog\AsinMasterController@index')->name('catalog.asin.master');
 Route::get('catalog/add-asin', 'Catalog\AsinMasterController@addAsin');
 Route::get('catalog/import-bulk-asin', 'Catalog\AsinMasterController@importBulkAsin');
 Route::get('catalog/asin-export', 'Catalog\AsinMasterController@exportAsinToCSV')->name('catalog.asin.export');

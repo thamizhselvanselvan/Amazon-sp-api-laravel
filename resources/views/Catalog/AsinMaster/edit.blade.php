@@ -38,7 +38,7 @@
 
 <div class="row">
     <div class="col"></div>
-    <div class="col-8">
+    <div class="col">
 
         @if (session()->has('success'))
         <div class="alert alert-success">
@@ -68,9 +68,9 @@
 
             <div class="row">
                 <div class="col-6">
-                    {{-- <x-adminlte-input label="Asin" name="asin" id="asin" type="text" placeholder="Asin"  />
+                     <!-- <x-adminlte-input label="Asin" name="asin" id="asin" type="text" placeholder="Asin"  />
                 <x-adminlte-input label="Country Code" name="country_code" id="country_code" type="text" placeholder="Country Code" value="{{ $asin->country_code }}"
-                    /> --}}
+                    />  -->
 
                     <x-adminlte-input label="Asin" name="asin" id="" value="{{ $asin->asin }}" type="text"
                         placeholder="Asin" />
@@ -80,28 +80,28 @@
                         placeholder="Source" />
                 </div>
 
-                <div class="col-6">
+                <!-- <div class="col-6">
                     <x-adminlte-input label="destination 1" name="destination_1" id=""
                         value="{{ $asin->destination_1 }}" type="text" placeholder="Destination 1" />
 
-                </div>
+                </div> -->
 
-                <div class="col-6">
+                <!-- <div class="col-6">
                     <x-adminlte-input label="Destination 2" name="destination_2" id=""
                         value="{{ $asin->destination_2 }}" type="text" placeholder="Destination 2" />
                 </div>
                 <div class="col-6">
                     <x-adminlte-input label="Destination 3" name="destination_3" id=""
                         value="{{ $asin->destination_3 }}" type="text" placeholder="Destination 3" />
-                </div>
-                <div class="col-6">
+                </div> -->
+                <!-- <div class="col-6">
                     <x-adminlte-input label="Destination 4" name="destination_4" id=""
                         value="{{ $asin->destination_4 }}" type="text" placeholder="Destination 4" />
                 </div>
                 <div class="col-6">
                     <x-adminlte-input label="Destination 5" name="destination_5" id=""
                         value="{{ $asin->destination_5 }}" type="text" placeholder="Destination 5" />
-                </div>
+                </div> -->
 
             </div>
     </div>
