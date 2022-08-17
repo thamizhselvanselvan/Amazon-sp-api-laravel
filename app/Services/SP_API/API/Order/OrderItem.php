@@ -21,6 +21,11 @@ class OrderItem
 {
     use ConfigTrait;
 
+    public function __construct()
+    {
+        Log::info("Order Item Details Construct");
+    }
+
     public function OrderItemDetails($order_id, $aws_id, $country_code)
     {
         Log::info('1st' . $order_id . 'aws_id ->  ' . $aws_id . 'country code -> ' . $country_code);
