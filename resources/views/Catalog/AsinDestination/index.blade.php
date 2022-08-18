@@ -2,17 +2,21 @@
 
 @section('title', 'ASIN Source')
 
+@section('css')
+<link rel="stylesheet" href="/css/styles.css">
+@stop
+
 @section('content_header')
 <div class="row">
     <div class="col">
 
-        <h1 class="m-0 text-dark">ASIN Source</h1>
+        <h1 class="m-0 text-dark"> ASIN Destination </h1>
     </div>
     <div class="col ">
 
         <h2 class="mb-4 float-right">
 
-            <a href="import-bulk-asin">
+            <a href="import-asin-destination">
                 <x-adminlte-button label="Asin Bulk Import" theme="primary" icon="fas fa-file-import" class="btn-sm" />
             </a>
             <a href="{{route('catalog.asin.export')}}">
@@ -22,7 +26,7 @@
             <x-adminlte-button label="Download Asin" theme="primary" icon="fas fa-file-download" data-toggle="modal"
                 data-target="#exampleModal" class="btn-sm"></x-adminlte-button>
 
-            <a href="{{ route('catalog.download.template') }}">
+            <a href="{{ route('catalog.destination.download.template') }}">
                 <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-file-download"
                     id="exportUniversalTextiles" class="btn-sm" />
             </a>
@@ -49,7 +53,7 @@
                 </div>
             </div>
             </a>
-            <a href="{{ route('catalog.softDelete.view') }}">
+            <a href="{{ route('catalog.asin.destination.bin') }}">
                 <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" class="btn-sm" />
             </a>
         </h2>
@@ -73,10 +77,10 @@
 
         <table class="table table-bordered yajra-datatable table-striped text-center table-sm">
             <thead>
-                <tr class="length">
+                <tr class="bg-info">
                     <th>S/N</th>
                     <th>ASIN</th>
-                    <th>Source</th>
+                    <th>Destination</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -100,8 +104,8 @@ function yajra_datatable() {
         processing: true,
         serverSide: true,
         destroy: true,
-        pageLength: 50,
-        ajax: "{{ url('catalog/asin-source') }}",
+        pageLength: 200,
+        ajax: "{{ url('catalog/asin-destination') }}",
         columns: [{
                 data: 'id',
                 name: 'id',
@@ -114,8 +118,8 @@ function yajra_datatable() {
                 orderable: false
             },
             {
-                data: 'source',
-                name: 'source',
+                data: 'destination',
+                name: 'destination',
                 orderable: false
             },
             {
@@ -128,34 +132,40 @@ function yajra_datatable() {
         ]
     });
 }
+$(document).on('click', '.trash', function() {
+            let bool = confirm('Are you sure you want to delete?');
+            if (!bool) {
+                return false;
+            }
+        });
 
-$(document).on('click', ".delete", function(e) {
-    e.preventDefault();
-    let bool = confirm('Are you sure you want to push this asin to Bin?');
+// $(document).on('click', ".delete", function(e) {
+//     e.preventDefault();
+//     let bool = confirm('Are you sure you want to push this asin to Bin?');
 
-    if (!bool) {
-        return false;
-    }
-    let self = $(this);
-    let id = self.attr('data-id');
+//     if (!bool) {
+//         return false;
+//     }
+//     let self = $(this);
+//     let id = self.attr('data-id');
 
-    self.prop('disable', true);
+//     self.prop('disable', true);
 
-    $.ajax({
-        method: 'post',
-        url: '/catalog/remove/asin/' + id,
-        data: {
-            "_token": "{{ csrf_token() }}",
-        },
-        response: 'json',
-        success: function(response) {
-            alert('Delete successfully');
-            // location.reload()
-            yajra_datatable();
-        },
-    });
+//     $.ajax({
+//         method: 'post',
+//         url: '/catalog/remove/asin/' + id,
+//         data: {
+//             "_token": "{{ csrf_token() }}",
+//         },
+//         response: 'json',
+//         success: function(response) {
+//             alert('Delete successfully');
+//             // location.reload()
+//             yajra_datatable();
+//         },
+//     });
 
-});
+// });
 
 </script>
 @stop

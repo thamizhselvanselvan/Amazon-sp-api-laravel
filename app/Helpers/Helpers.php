@@ -648,191 +648,177 @@ if (!function_exists('SmsaTrackingResponse')) {
     function SmsaTrackingResponse($awbNo)
     {
         $password = config('database.smsa_password');
-        Log::alert('Password ->' . $password);
         $url = "http://track.smsaexpress.com/SECOM/SMSAwebService.asmx";
 
         $xmlRequest = "<?xml version='1.0' encoding='utf-8'?>
-    <soap:Envelope xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-        <soap:Body>
-            <getTracking xmlns='http://track.smsaexpress.com/secom/'>
-                <awbNo>$awbNo</awbNo>
-                <passkey>$password</passkey>
-            </getTracking>
-        </soap:Body>
-    </soap:Envelope>";
+<soap:Envelope xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema'
+    xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
+    <soap:Body>
+        <getTracking xmlns='http://track.smsaexpress.com/secom/'>
+            <awbNo>$awbNo</awbNo>
+            <passkey>$password</passkey>
+        </getTracking>
+    </soap:Body>
+</soap:Envelope>";
 
-        $headers = array(
-            'Content-type: text/xml',
-        );
+$headers = array(
+'Content-type: text/xml',
+);
 
-        $ch = curl_init();
-        //setting the curl options
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_POSTFIELDS,  $xmlRequest);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_VERBOSE, 0);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+$ch = curl_init();
+//setting the curl options
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlRequest);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_VERBOSE, 0);
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-        $data = curl_exec($ch);
+$data = curl_exec($ch);
 
-        $plainXML = mungXML(trim($data));
-        $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+$plainXML = mungXML(trim($data));
+$arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
 
-        $arrayResult = $arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram'];
+$arrayResult = $arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram'];
+if (array_key_exists('NewDataSet', $arrayResult)) {
 
-        if (array_key_exists('NewDataSet', $arrayResult)) {
+return $arrayResult['NewDataSet']['Tracking'];
+} else {
 
-            return $arrayResult['NewDataSet']['Tracking'];
-        } else {
-
-            // echo "Invalid Awb No. ". $awbNo;
-        }
-    }
+// echo "Invalid Awb No. ". $awbNo;
+}
+}
 }
 
 if (!function_exists('mungXML')) {
-    function mungXML($xml)
-    {
-        $obj = SimpleXML_Load_String($xml);
-        if ($obj === FALSE) return $xml;
+function mungXML($xml)
+{
+$obj = SimpleXML_Load_String($xml);
+if ($obj === FALSE) return $xml;
 
-        // GET NAMESPACES, IF ANY
-        $nss = $obj->getNamespaces(TRUE);
-        if (empty($nss)) return $xml;
+// GET NAMESPACES, IF ANY
+$nss = $obj->getNamespaces(TRUE);
+if (empty($nss)) return $xml;
 
-        // CHANGE ns: INTO ns_
-        $nsm = array_keys($nss);
-        foreach ($nsm as $key) {
-            // A REGULAR EXPRESSION TO MUNG THE XML
-            $rgx
-                = '#'               // REGEX DELIMITER
-                . '('               // GROUP PATTERN 1
-                . '\<'              // LOCATE A LEFT WICKET
-                . '/?'              // MAYBE FOLLOWED BY A SLASH
-                . preg_quote($key)  // THE NAMESPACE
-                . ')'               // END GROUP PATTERN
-                . '('               // GROUP PATTERN 2
-                . ':{1}'            // A COLON (EXACTLY ONE)
-                . ')'               // END GROUP PATTERN
-                . '#'               // REGEX DELIMITER
-            ;
-            // INSERT THE UNDERSCORE INTO THE TAG NAME
-            $rep
-                = '$1'          // BACKREFERENCE TO GROUP 1
-                . '_'           // LITERAL UNDERSCORE IN PLACE OF GROUP 2
-            ;
-            // PERFORM THE REPLACEMENT
-            $xml =  preg_replace($rgx, $rep, $xml);
-        }
+// CHANGE ns: INTO ns_
+$nsm = array_keys($nss);
+foreach ($nsm as $key) {
+// A REGULAR EXPRESSION TO MUNG THE XML
+$rgx
+= '#' // REGEX DELIMITER
+. '(' // GROUP PATTERN 1
+. '\<' // LOCATE A LEFT WICKET 
+. '/?' // MAYBE FOLLOWED BY A SLASH 
+. preg_quote($key) // THE NAMESPACE 
+. ')' // ENDGROUP PATTERN 
+. '(' // GROUP PATTERN 2 
+. ':{1}' // A COLON (EXACTLY ONE) 
+. ')' // END GROUP PATTERN 
+. '#' // REGEXDELIMITER 
+; 
+// INSERT THE UNDERSCORE INTO THE TAG NAME 
+$rep
+='$1' // BACKREFERENCE TO GROUP 1 
+. '_' // LITERAL UNDERSCORE IN PLACE OF GROUP 2 
+; 
+// PERFORM THE REPLACEMENT 
+$xml=preg_replace($rgx, $rep, $xml); 
+} return $xml; 
+} //End :: mungXML() 
+} 
+if (!function_exists('BombinoTrackingResponse')) { function BombinoTrackingResponse($awb_no) {
+    $bombino_account_id=config('database.bombino_account_id'); $bombino_user_id=config('database.bombino_user_id');
+    $bombino_password=config('database.bombino_password');
+    $url="http://api.bombinoexp.in/bombinoapi.svc/Tracking?AccountId=$bombino_account_id&UserId=$bombino_user_id&Password=$bombino_password&AwbNo=$awb_no"
+    ; $curl=curl_init(); curl_setopt_array($curl, array( CURLOPT_URL=> $url,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'GET',
+    ));
 
-        return $xml;
-    } // End :: mungXML()
-}
-
-if (!function_exists('BombinoTrackingResponse')) {
-    function BombinoTrackingResponse($awb_no)
-    {
-        $bombino_account_id = config('database.bombino_account_id');
-        $bombino_user_id = config('database.bombino_user_id');
-        $bombino_password = config('database.bombino_password');
-
-        $url = "http://api.bombinoexp.in/bombinoapi.svc/Tracking?AccountId=$bombino_account_id&UserId=$bombino_user_id&Password=$bombino_password&AwbNo=$awb_no";
-
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-        ));
-
-        $response = curl_exec($curl);
-        curl_close($curl);
-        $response = json_decode($response);
-        return $response;
+    $response = curl_exec($curl);
+    curl_close($curl);
+    $response = json_decode($response);
+    return $response;
     }
     //
-}
+    }
 
-if (!function_exists('smsa_tracking')) {
+    if (!function_exists('smsa_tracking')) {
     function smsa_tracking($smsa_awb)
     {
-        $tracking_details = [];
-        $smsa_t_details = SmsaTrackings::where('awbno', $smsa_awb)->get();
-        foreach ($smsa_t_details as $details) {
-            // dd($details);
-            $tracking_details[] = [
-                'Date_Time' => $details->date,
-                'Location' => $details->location,
-                'Activity' => $details->activity,
-                'forwarder' => 'Smsa'
-            ];
-        }
-
-        return $tracking_details;
+    $tracking_detials = [];
+    $smsa_t_details = SmsaTrackings::where('awbno', $smsa_awb)->get();
+    foreach ($smsa_t_details as $details) {
+    // dd($details);
+    $tracking_detials[] = [
+    'Date_Time' => $details->date,
+    'Location' => $details->location,
+    'Activity' => $details->activity,
+    'forwarder' => 'Smsa'
+    ];
     }
-}
+    return $tracking_detials;
+    }
+    }
 
-if (!function_exists('bombino_tracking')) {
+    if (!function_exists('bombino_tracking')) {
 
-    $tracking_details = [];
+    $tracking_detials = [];
     function bombino_tracking($bombino_awb)
     {
-        $bomino_tracking_details = BombinoTracking::with('bombinoTrackingJoin')->where('awbno', $bombino_awb)->get();
+    $bomino_tracking_details = BombinoTracking::with('bombinoTrackingJoin')->where('awbno', $bombino_awb)->get();
 
-        foreach ($bomino_tracking_details as $details) {
+    foreach ($bomino_tracking_details as $details) {
 
-            foreach ($details->bombinoTrackingJoin as $value) {
+    foreach ($details->bombinoTrackingJoin as $value) {
 
-                $tracking_details[] = [
-                    'Date_Time' => $value->action_date . ' ' . $value->action_time,
-                    'Location' => $value->location,
-                    'Activity' => $value->exception,
-                    'forwarder' => 'Bombino'
-                ];
-            }
-        }
-        Log::alert($tracking_details);
-        return $tracking_details;
+    $tracking_detials[] = [
+    'Date_Time' => $value->action_date . ' ' . $value->action_time,
+    'Location' => $value->location,
+    'Activity' => $value->exception,
+    'forwarder' => 'Bombino'
+    ];
     }
-}
+    }
+    return $tracking_detials;
+    }
+    }
 
-if (!function_exists('forwarderTrackingEvent')) {
+    if (!function_exists('forwarderTrackingEvent')) {
     function forwarderTrackingEvent($key)
     {
-        $array_tables = [
-            [
-                'Table_name' => 'BombinoTrackingDetails',
-                'Table_column' => 'exception',
-                'Model_path' => 'Bombino\\'
-            ],
-            [
-                'Table_name' => 'SmsaTrackings',
-                'Table_column' => 'activity',
-                'Model_path' => 'SMSA\\'
-            ],
-        ];
+    $array_tables = [
+    [
+    'Table_name' => 'BombinoTrackingDetails',
+    'Table_column' => 'exception',
+    'Model_path' => 'Bombino\\'
+    ],
+    [
+    'Table_name' => 'SmsaTrackings',
+    'Table_column' => 'activity',
+    'Model_path' => 'SMSA\\'
+    ],
+    ];
 
-        $table_name = $array_tables[$key]['Table_name'];
-        $table_column = $array_tables[$key]['Table_column'];
-        $model_path = $array_tables[$key]['Model_path'];
+    $table_name = $array_tables[$key]['Table_name'];
+    $table_column = $array_tables[$key]['Table_column'];
+    $model_path = $array_tables[$key]['Model_path'];
 
-        $table_model = table_model_change(model_path: $model_path, table_name: $table_name);
+    $table_model = table_model_change(model_path: $model_path, table_name: $table_name);
 
-        return [
-            $table_model,
-            $table_column
-        ];
+    return [
+    $table_model,
+    $table_column
+    ];
     }
-}
+    }
 
 if (!function_exists('getTrackingDetails')) {
     function getTrackingDetails($awb_no)
@@ -894,5 +880,6 @@ if (!function_exists('getTrackingDetails')) {
             echo 'Invalid AWB';
             return false;
         }
+
     }
 }

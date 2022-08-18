@@ -51,18 +51,13 @@ class AsinMasterController extends Controller
         $validated = $request->validate([
             'asin' => 'required|min:4|max:25',
             'source' => 'required|min:2|max:15',
-            'destination_1' => 'nullable|min:2|max:15',
-            'destination_2' => 'nullable|min:2|max:15',
-            'destination_3' => 'nullable|min:2|max:15',
-            'destination_4' => 'nullable|min:2|max:15',
-            'destination_5' => 'nullable|min:2|max:15'
         ]);
 
         $validated['source'] = strtoupper($validated['source']);
 
         Asin_master::where('id', $id)->update($validated);
 
-        return redirect()->intended('/catalog/asin-master')->with('success', 'Asin has been updated successfully');
+        return redirect()->intended('/catalog/asin-source')->with('success', 'Asin has been updated successfully');
     }
 
 
@@ -70,7 +65,7 @@ class AsinMasterController extends Controller
     {
         Asin_master::where('id', $request->id)->delete();
 
-        return redirect()->intended('/catalog/asin-master')->with('success', 'Asin has been pushed to Bin successfully');
+        return redirect()->intended('/catalog/asin-source')->with('success', 'Asin has been pushed to Bin successfully');
     }
 
 
@@ -154,7 +149,7 @@ class AsinMasterController extends Controller
             Artisan::call('pms:asin-export');
         }
 
-        return redirect()->intended('/catalog/asin-master');
+        return redirect()->intended('/catalog/asin-source');
     }
 
     public function download_asin_master()

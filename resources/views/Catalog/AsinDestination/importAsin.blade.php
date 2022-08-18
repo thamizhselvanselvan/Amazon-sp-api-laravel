@@ -1,12 +1,12 @@
 @extends('adminlte::page')
 
-@section('title', 'ASIN Master')
+@section('title', 'ASIN Destiation')
 
 @section('content_header')
 
 <div class="row">
     <div class="col">
-        <a href="/catalog/asin-source" class="btn btn-primary">
+        <a href="{{route('Asin.destination.index')}}" class="btn btn-primary">
             <i class="fas fa-long-arrow-alt-left"></i> Back
         </a>
     </div>
@@ -14,7 +14,7 @@
 
 <div class="row mt-3">
     <div class="col">
-        <h1 class="m-0 text-dark text-center ">Add Asin</h1>
+        <h1 class="m-0 text-dark text-center ">Add ASIN Destination</h1>
     </div>
 </div>
 
@@ -46,7 +46,7 @@
         </x-adminlte-alert>
         @endif
 
-        <form class="row" action="{{ route('catalog.asin.import')}}" method="POST" enctype="multipart/form-data">
+        <form class="row" action="{{ route('catalog.asin.destination.file')}}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="col-3"></div>
