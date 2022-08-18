@@ -43,7 +43,7 @@ class Order
 
         $apiInstance = new OrdersApi($config);
         // $startTime = Carbon::now()->subHours(9)->toISOString();
-        $startTime = Carbon::now()->subDays(10)->toISOString();
+        $startTime = Carbon::now()->subDays(5)->toISOString();
         // Log::alert($startTime);
         $createdAfter = $startTime;
         $max_results_per_page = 100;
@@ -118,7 +118,7 @@ class Order
             $data = DB::connection('order')
                 ->select("SELECT id, amazon_order_identifier FROM orders 
             WHERE amazon_order_identifier = '$amazon_order_id'");
-            sleep(2);
+            // sleep(2);
             //   $data = [];
             if (array_key_exists(0, $data)) {
 
@@ -133,7 +133,7 @@ class Order
                 $update_orders->updatedat = now();
 
                 R::store($update_orders);
-                sleep(2);
+                // sleep(2);
                 $order_item_details = DB::connection('order')
                     ->select("SELECT id FROM orders 
                 WHERE amazon_order_identifier = '$amazon_order_id' AND order_item = '0' ");
