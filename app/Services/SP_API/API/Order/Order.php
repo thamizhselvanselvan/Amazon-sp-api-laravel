@@ -15,7 +15,7 @@ use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
-
+use Symfony\Component\Messenger\Stamp\DelayStamp;
 
 class Order
 {
@@ -118,7 +118,7 @@ class Order
             $data = DB::connection('order')
                 ->select("SELECT id, amazon_order_identifier FROM orders 
             WHERE amazon_order_identifier = '$amazon_order_id'");
-
+            sleep(2);
             //   $data = [];
             if (array_key_exists(0, $data)) {
 
@@ -133,7 +133,7 @@ class Order
                 $update_orders->updatedat = now();
 
                 R::store($update_orders);
-
+                sleep(2);
                 $order_item_details = DB::connection('order')
                     ->select("SELECT id FROM orders 
                 WHERE amazon_order_identifier = '$amazon_order_id' AND order_item = '0' ");
