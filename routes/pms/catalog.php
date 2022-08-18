@@ -55,3 +55,13 @@ Route::get('catalog/export', 'Catalog\CatalogProductController@ExportCatalog')->
 Route::get('catalog/get-file', 'Catalog\CatalogProductController@GetCatalogFile');
 Route::get('catalog/download/csv-file/{country_code}', 'Catalog\CatalogProductController@DownloadCatalogIntocsv');
 Route::get('catalog/download/price/{country_code}', 'Catalog\CatalogProductController@DownloadCatalogPrice');
+
+Route::get('catalog/asin-destination', 'Catalog\AsinDestinationController@index')->name('Asin.destination.index');
+Route::get('catalog/import-asin-destination', 'Catalog\AsinDestinationController@AsinDestinationImport');
+Route::post('catalog/asin-destination-file', 'Catalog\AsinDestinationController@AsinDestinationFile')->name('catalog.asin.destination.file');
+Route::get('catalog/edit-asin-destination/{id}', 'Catalog\AsinDestinationController@AsinDestinationEdit');
+Route::post('catalog/update-asin-destination/{id}', 'Catalog\AsinDestinationController@AsinDestinationUpdate')->name('catalog.update.asin.destination');
+Route::get('catalog/trash-asin-destination/{id}', 'Catalog\AsinDestinationController@AsinDestinationTrash');
+Route::get('catalog/asin-destination/bin', 'Catalog\AsinDestinationController@AsinDestinationTrashView')->name('catalog.asin.destination.bin');
+Route::get('catalog/asin-destination/restore/{id}', 'Catalog\AsinDestinationController@AsinDestinationTrashRestore');
+Route::get('catalog/asin-destination/download-template', 'Catalog\AsinDestinationController@AsinDestinationDownloadTemplate')->name('catalog.destination.download.template');
