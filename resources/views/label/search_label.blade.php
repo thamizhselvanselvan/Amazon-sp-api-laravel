@@ -152,21 +152,27 @@
                                     "<td><input class='check_options' type='checkbox' value=" +
                                     response.id + " name='options[]' id='checkid" + response
                                     .id + "'></td>";
+                            } else {
+
+                                table += "<td>  </td>"
                             }
 
                             table += "<td>" + response.store_name + "</td><td>" +
                                 response
                                 .order_no + "</td>";
 
+                            table += "<td>" + response.awb_no + "</td><td>" + change_date + "</td><td>" + response.seller_sku + "</td><td>" + t_name + "</td>";
+                            if (t_name != '') {
+                                table += "<td><div class='d-flex'><a href=/label/pdf-template/" +
+                                    response.id +
+                                    " class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/label/download-direct/" +
+                                    response.id +
+                                    "  class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a></td> </tr>";
 
-                            table += "<td>" + response.awb_no + "</td><td>" +
-                                change_date +
-                                "</td><td>" + response.seller_sku + "</td><td>" + t_name +
-                                "</td><td><div class='d-flex'><a href=/label/pdf-template/" +
-                                response.id +
-                                " class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/label/download-direct/" +
-                                response.id +
-                                "  class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a></td> </tr>";
+                            } else {
+
+                                table += "<td> </td></tr>";
+                            }
                         });
                         $('#checkTable').html(table);
                         // alert('Export pdf successfully');
