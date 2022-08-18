@@ -4,10 +4,8 @@
 @section('content_header')
 <div class="label-company text-inverse f-w-600">
     <span class="pull-right hidden-print">
-        <a href="javascript:void(0);" class="btn btn-sm btn-white m-b-10 p-l-5" id="Export_to_pdf"><i
-                class="fa fa-file t-plus-1 text-danger fa-fw fa-lg"></i> Export as PDF</a>
-        <a href="javascript:;" onclick="window.print()" class="btn btn-sm btn-white m-b-10 p-l-5"><i
-                class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
+        <a href="javascript:void(0);" class="btn btn-sm btn-white m-b-10 p-l-5" id="Export_to_pdf"><i class="fa fa-file t-plus-1 text-danger fa-fw fa-lg"></i> Export as PDF</a>
+        <a href="javascript:;" onclick="window.print()" class="btn btn-sm btn-white m-b-10 p-l-5"><i class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
 
     </span>
     <br>
@@ -17,36 +15,35 @@
 @section('css')
 
 <style type="text/css">
-@media print {
+    @media print {
 
-    @page {
-        size: 4in 6in;
-        margin: 0px;
-        padding: 0px;
+        @page {
+            size: 4in 6in;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .container-fluid {
+            size: 4in 6in;
+            width: 384px;
+            height: 576px;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #label-container {
+            margin: 0px;
+            padding: 0px;
+            /* padding-top: 5px; */
+            transform-origin: 0 0;
+            transform: scale(1.4);
+        }
+
+        #label-container .label {
+            margin: 0px;
+            padding: 0px;
+        }
     }
-
-    .container-fluid {
-        size: 4in 6in;
-        width: 384px;
-        height: 576px;
-        margin: 0px;
-        padding: 0px;
-    }
-
-    #label-container {
-        margin: 0px;
-        padding: 0px;
-        /* padding-top: 5px; */
-        transform-origin: 0 0;
-        transform: scale(1.4);
-    }
-
-    #label-container .label {
-        margin: 0px;
-        padding: 0px;
-    }
-}
-
 </style>
 @stop
 
@@ -150,7 +147,8 @@
                         <td class="text-center p-1">{{$value['sku']}}</td>
                         <td class="text-center p-1">{{$value['qty']}}</td>
                         <td class="text-center p-1">{{$value['order_total']->CurrencyCode}}
-                            {{$value['order_total']->Amount}}</td>
+                            {{$value['order_total']->Amount}}
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -170,27 +168,27 @@
 
     @section('js')
     <script>
-    $(document).ready(function() {
-        $('#Export_to_pdf').click(function(e) {
-            e.preventDefault();
-            var url = $(location).attr('href');
-            var awb_no = $('#awb_no').val();
-            // alert(url);
-            $.ajax({
-                method: 'POST',
-                url: "{{ url('/label/export-pdf')}}",
-                data: {
-                    'url': url,
-                    'awb_no': awb_no,
-                    "_token": "{{ csrf_token() }}",
-                },
-                success: function(response) {
+        $(document).ready(function() {
+            $('#Export_to_pdf').click(function(e) {
+                e.preventDefault();
+                var url = $(location).attr('href');
+                var awb_no = $('#awb_no').val();
+                // alert(url);
+                $.ajax({
+                    method: 'POST',
+                    url: "{{ url('/label/export-pdf')}}",
+                    data: {
+                        'url': url,
+                        'awb_no': awb_no,
+                        "_token": "{{ csrf_token() }}",
+                    },
+                    success: function(response) {
 
-                    window.location.href = '/label/download/' + awb_no;
-                    alert('Download pdf successfully');
-                }
+                        window.location.href = '/label/download/' + awb_no;
+                        alert('Download pdf successfully');
+                    }
+                });
             });
         });
-    });
     </script>
     @stop
