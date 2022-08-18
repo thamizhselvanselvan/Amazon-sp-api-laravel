@@ -150,13 +150,12 @@
                             table += "<td>" + response.store_name + "</td><td>" +
                                 response
                                 .order_no + "</td>";
-                            let t = isJsonString(response.shipping_address) ? JSON.parse(response.shipping_address) : {};
-
+                            let t = isJsonString(response.shipping_address) ? JSON.parse(response.shipping_address) : null;
+                            let t_name = (t) ? t['Name'] : '';
 
                             table += "<td>" + response.awb_no + "</td><td>" +
                                 change_date +
-                                "</td><td>" + response.seller_sku + "</td><td>" + t[
-                                    'Name'] ?? '' +
+                                "</td><td>" + response.seller_sku + "</td><td>" + t_name +
                                 "</td><td><div class='d-flex'><a href=/label/pdf-template/" +
                                 response.id +
                                 " class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/label/download-direct/" +
