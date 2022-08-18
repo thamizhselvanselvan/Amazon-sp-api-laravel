@@ -143,15 +143,21 @@
                                 .format('YYYY-MM-DD');
 
                             table += "<tr class='" + label_id + "'>";
-                            table +=
-                                "<td><input class='check_options' type='checkbox' value=" +
-                                response.id + " name='options[]' id='checkid" + response
-                                .id + "'></td>";
+
+                            let t = isJsonString(response.shipping_address) ? JSON.parse(response.shipping_address) : null;
+                            let t_name = (t) ? t['Name'] : '';
+                            if (t_name != '') {
+
+                                table +=
+                                    "<td><input class='check_options' type='checkbox' value=" +
+                                    response.id + " name='options[]' id='checkid" + response
+                                    .id + "'></td>";
+                            }
+
                             table += "<td>" + response.store_name + "</td><td>" +
                                 response
                                 .order_no + "</td>";
-                            let t = isJsonString(response.shipping_address) ? JSON.parse(response.shipping_address) : null;
-                            let t_name = (t) ? t['Name'] : '';
+
 
                             table += "<td>" + response.awb_no + "</td><td>" +
                                 change_date +
