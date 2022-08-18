@@ -39,35 +39,58 @@ class AsinDestinationController extends Controller
 
     public function AsinDestinationFile(Request $request)
     {
-        $user_id = Auth::user()->id;
-        $request->validate([
-            'asin' => 'required|mimes:csv',
-        ]);
-
-        if(!$request->hasFile('asin'))
+        if($request->form_type == 'text_area')
         {
-            return back()->with('error', "Please upload file to import it to the database");
+            $request->validate([
+                'text_area' => 'required',
+                'source'    => 'required',
+            ]);
+            $user_id = Auth::user()->id;
+            $value = $request->text_area;
+            $source = $request->source;
+            $asins = preg_split('/[\r\n| |:|,]/', $value, -1, PREG_SPLIT_NO_EMPTY);
+            foreach($asins as $asin)
+            {
+                $records [] = [
+                    'asin'  => $asin,
+                    'user_id'   => $user_id,
+                    'destination'   => $source,
+                    
+                ];
+            }
+            AsinDestination::upsert($records, ['user_asin_destination_unique'], ['asin',]);
         }
+        elseif($request->form_type == 'file_upload')
+        {
+            $user_id = Auth::user()->id;
+            $validation = $request->validate([
+                'asin' => 'required|mimes:csv',
+            ]);
     
-        $file = file_get_contents($request->asin);
+            if(!$validation){
+                return back()->with('error', "Please upload file to import it to the database");
+            }
         
-        $path = 'AsinDestination/asin.csv';
-        // if(!Storage::exists($path)){
-            Storage::put($path, $file);
-        // }
-
-        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-
-            Log::warning("asin production executed");
-
-            $base_path = base_path();
-            $command = "cd $base_path && php artisan mosh:Asin-destination-upload ${user_id} > /dev/null &";
-            exec($command);
-            Log::warning("asin production command executed");
-        } else {
-
-            Log::warning("Export coma executed local !");
-            Artisan::call('mosh:Asin-destination-upload' . ' ' . $user_id);
+            $file = file_get_contents($request->asin);
+            
+            $path = 'AsinDestination/asin.csv';
+            // if(!Storage::exists($path)){
+                Storage::put($path, $file);
+            // }
+    
+            if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+    
+                Log::warning("asin production executed");
+    
+                $base_path = base_path();
+                $command = "cd $base_path && php artisan mosh:Asin-destination-upload ${user_id} > /dev/null &";
+                exec($command);
+                Log::warning("asin production command executed");
+            } else {
+    
+                Log::warning("Export coma executed local !");
+                Artisan::call('mosh:Asin-destination-upload' . ' ' . $user_id);
+            }
         }
         return redirect('catalog/import-asin-destination')->with('success', 'File has been uploaded successfully');
     }
