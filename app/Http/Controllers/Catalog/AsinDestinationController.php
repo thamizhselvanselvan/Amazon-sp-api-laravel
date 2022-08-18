@@ -69,7 +69,6 @@ class AsinDestinationController extends Controller
             Log::warning("Export coma executed local !");
             Artisan::call('mosh:Asin-destination-upload' . ' ' . $user_id);
         }
-
         return redirect('catalog/import-asin-destination')->with('success', 'File has been uploaded successfully');
     }
 
@@ -100,7 +99,6 @@ class AsinDestinationController extends Controller
     public function AsinDestinationTrashView(Request $request)
     {
         $asins = AsinDestination::onlyTrashed()->get();
-
         if ($request->ajax()) {
             
             $data = AsinDestination::orderBy('id', 'DESC')->get();
@@ -125,5 +123,31 @@ class AsinDestinationController extends Controller
     {
         $downloadFile = public_path('template/Catalog-asin-destination.csv');
         return response()->download($downloadFile);
+    }
+
+    public function AsinDestinationAsinExport(Request $request)
+    {
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan mosh:asin-destination-csv-export > /dev/null &";
+            exec($command);
+
+            Log::warning("Export asin command executed production  !!!");
+        } else {
+
+            Log::warning("Export asin command executed local !");
+            Artisan::call('mosh:asin-destination-csv-export');
+        }
+        return redirect()->intended('/catalog/asin-destination');
+    }
+
+    public function AsinDestinationDownloadCsvZip()
+    {
+        $file = 'excel/downloads/asin_destination/zip/CatalogAsinDestination.zip';
+        if(Storage::exists($file)){
+            return Storage::download($file);
+        }
+        return 'File is not available right now!';
     }
 }

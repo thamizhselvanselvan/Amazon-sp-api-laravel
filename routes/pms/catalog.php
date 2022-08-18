@@ -65,3 +65,5 @@ Route::get('catalog/trash-asin-destination/{id}', 'Catalog\AsinDestinationContro
 Route::get('catalog/asin-destination/bin', 'Catalog\AsinDestinationController@AsinDestinationTrashView')->name('catalog.asin.destination.bin');
 Route::get('catalog/asin-destination/restore/{id}', 'Catalog\AsinDestinationController@AsinDestinationTrashRestore');
 Route::get('catalog/asin-destination/download-template', 'Catalog\AsinDestinationController@AsinDestinationDownloadTemplate')->name('catalog.destination.download.template');
+Route::get('catalog/asin-destination/asin-export', 'Catalog\AsinDestinationController@AsinDestinationAsinExport')->name('catalog.asin.dastination.export');
+Route::get('catalog/asin-destination/download-csv', 'Catalog\AsinDestinationController@AsinDestinationDownloadCsvZip')->name('catalog.download.asin.destination');

@@ -5,33 +5,33 @@ namespace App\Console\Commands\Catalog;
 use ZipArchive;
 use League\Csv\Writer;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use App\Models\Catalog\Asin_master;
 use Illuminate\Support\Facades\Log;
+use App\Models\Catalog\AsinDestination;
 use Illuminate\Support\Facades\Storage;
 
-class asinExport extends Command
+class AsinDestinationCSVExport extends Command
 {
     private $offset = 0;
     private $count = 1;
     private $mode ;
     private $writer;
     private $file_path;
-    private $total = [];
+    private $Total = [];
     protected $Files = [];
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'pms:asin-export';
+    protected $signature = 'mosh:asin-destination-csv-export';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Export Asin from DB to CSV';
+    protected $description = 'Export asin-destination form DB to CSV file';
 
     /**
      * Create a new command instance.
@@ -49,35 +49,36 @@ class asinExport extends Command
      * @return int
      */
     public function handle()
-    { 
+    {
         // log::alert(gettype($this->Files));
         $total_csv = 1000000;
         $chunk = 100000;
         $this->mode = $total_csv / $chunk;
 
-        Asin_master::orderBy('id')->chunk($chunk, function ($records) {
+        AsinDestination::orderBy('id')->chunk($chunk, function ($records) {
             
             if($this->count == 1 ){
 
-                $this->file_path = "excel/downloads/asins/asinExport".$this->offset.".csv";
-                $this->Files []= 'asinExport'.$this->offset.'.csv';
+                $this->file_path = "excel/downloads/asin_destination/asinDestinationExport".$this->offset.".csv";
+                $this->Files [] = 'asinDestinationExport'.$this->offset.'.csv';
                 if(!Storage::exists($this->file_path)) {
                     Storage::put($this->file_path, '');
                     }
                 $this->writer = Writer::createFromPath(Storage::path($this->file_path), "w"); 
-                $header = ['Asin', 'Source'];
+                $header = ['Asin', 'Destination'];
                 $this->writer->insertOne($header);
 
             }
             foreach($records as $record)
             {
-                $this->total [] = [
-                    'Asin'  => $record['asin'],
-                    'Source'    => $record['source'],
-                ];
+            $this->Total [] = [
+            'Asin' => $record['asin'],
+            'Destination' => $record['destination'],
+            ];
             }
+        
             $records = $records->toArray();
-            $this->writer->insertall($this->total);
+            $this->writer->insertall($this->Total);
 
             if($this->mode == $this->count){
                 $this->offset++;
@@ -85,11 +86,12 @@ class asinExport extends Command
             }
             else{
                 $this->count++;
-            } 
+            }
+            
         });
         
         $zip = new ZipArchive;
-        $path = 'excel/downloads/asins/zip/CatalogAsin.zip';
+        $path = 'excel/downloads/asin_destination/zip/CatalogAsinDestination.zip';
         $file_path = Storage::path($path);
         
         if (!Storage::exists($path)) {
@@ -100,7 +102,7 @@ class asinExport extends Command
         {
             foreach($this->Files as $key => $value)
             {
-                $path = Storage::path('excel/downloads/asins/'.$value);
+                $path = Storage::path('excel/downloads/asin_destination/'.$value);
                 $relativeNameInZipFile = basename($path);
                 $zip->addFile($path, $relativeNameInZipFile);
             }
