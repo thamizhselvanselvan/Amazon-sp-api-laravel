@@ -59,7 +59,7 @@
                 <div class="col-3"></div>
     
                 <div class="col-6 ">
-                <x-adminlte-select name="source" label="Select Source" id="source">
+                <x-adminlte-select name="destination" label="Select Source" id="source">
                     
                     <option value="">Select Source</option>
                     <option value="IN">IN</option>

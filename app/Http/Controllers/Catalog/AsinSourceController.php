@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Catalog;
 
 use Illuminate\Http\Request;
+use App\Services\BB\PushAsin;
 use Yajra\DataTables\DataTables;
 use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\App;
@@ -94,6 +95,7 @@ class AsinSourceController extends Controller
 
     public function addBulkAsin(Request $request)
     {
+        
         if($request->form_type == 'text_area')
         {
             $validate = $request->validate([
@@ -105,7 +107,11 @@ class AsinSourceController extends Controller
             $record = $request->text_area;
             $source = $request->source;
             $asins = preg_split('/[\r\n| |:|,|.]/', $record, -1, PREG_SPLIT_NO_EMPTY);
-            
+            $country_code = buyboxCountrycode();
+
+            if($source == 'UK'){
+                return redirect('catalog/import-bulk-asin')->with('error', 'Seller not available');
+            }
             foreach($asins as $asin_details)
             {
                 $allData [] = [
@@ -113,8 +119,22 @@ class AsinSourceController extends Controller
                     'user_id'   =>  $user_id,
                     'source'    =>  $source,
                 ];
+
+                $product [] = [
+                    'seller_id' => $country_code[$source],
+                    'active'   =>  1,
+                    'asin1' => $asin_details,
+                ];
+
+                $product_lowest_price [] = [
+                    'asin'  => $asin_details,
+                    'import_type'   => 'Seller'
+                ];
             }
+
             AsinSource::upsert($allData,['user_asin_source_unique'], ['asin']);
+            $push_to_bb = new PushAsin();
+            $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $source);
         }
         elseif($request->form_type == 'file_upload')
         {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Catalog;
 
 use Illuminate\Http\Request;
+use App\Services\BB\PushAsin;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -43,22 +44,40 @@ class AsinDestinationController extends Controller
         {
             $request->validate([
                 'text_area' => 'required',
-                'source'    => 'required',
+                'destination'    => 'required',
             ]);
             $user_id = Auth::user()->id;
             $value = $request->text_area;
-            $source = $request->source;
+            $destination = $request->destination;
             $asins = preg_split('/[\r\n| |:|,]/', $value, -1, PREG_SPLIT_NO_EMPTY);
+
+            $country_code = buyboxCountrycode();
+            if($destination == 'UK'){
+                return redirect('catalog/import-asin-destination')->with('error', 'Seller not available!');
+            }
             foreach($asins as $asin)
             {
                 $records [] = [
                     'asin'  => $asin,
                     'user_id'   => $user_id,
-                    'destination'   => $source,
+                    'destination'   => $destination,
                     
+                ];
+
+                $product [] = [
+                    'seller_id' => $country_code[$destination],
+                    'active'   =>  1,
+                    'asin1' => $asin,
+                ];
+                
+                $product_lowest_price [] = [
+                    'asin'  => $asin,
+                    'import_type'   => 'Seller'
                 ];
             }
             AsinDestination::upsert($records, ['user_asin_destination_unique'], ['asin',]);
+            $push_to_bb = new PushAsin();
+            $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination);
         }
         elseif($request->form_type == 'file_upload')
         {
