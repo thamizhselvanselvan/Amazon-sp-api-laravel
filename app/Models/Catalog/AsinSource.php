@@ -2,18 +2,14 @@
 
 namespace App\Models\Catalog;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class Asin_master extends Model
+class AsinSource extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $connection = 'catalog';
-    
-    protected $table = 'asin_masters';
-
     protected $fillable = [
         'asin',
         'user_id',

@@ -42,3 +42,6 @@ Route::POST('shipntrack/event-mapping/update/{id}', 'shipntrack\EventMapping\Tra
 Route::get('shipntrack/tracking', 'shipntrack\Tracking\TrackingController@Tracking')->name('shipntrack.tracking');
 Route::match($method, 'shipntrack/stopTracking', 'shipntrack\Tracking\TrackingController@StopTracking')->name('shipntrack.stop');
 Route::post('shipntrack/stopTrackingUpadate', 'shipntrack\Tracking\TrackingController@StopTrackingUpdate')->name('shipntrack.stop.update');
+
+// Route::get('shipntrack/trackingList', 'shipntrack\TrackingList\TrackingListController@index');
+// Route::get('shipntrack/trackingList/search', 'shipntrack\TrackingList\TrackingListController@SearchByAwbNo');

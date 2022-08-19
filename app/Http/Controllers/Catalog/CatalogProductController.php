@@ -10,7 +10,7 @@ use App\Models\Aws_credential;
 use App\Models\Catalog\catalog;
 use SellingPartnerApi\Endpoint;
 use Illuminate\Support\Facades\DB;
-use App\Models\Catalog\Asin_master;
+use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -27,7 +27,7 @@ class CatalogProductController extends Controller
 
     public function Index(Request $request)
     {
-        $sources = Asin_master::select('source')->groupBy('source')->get();
+        $sources = AsinSource::select('source')->groupBy('source')->get();
         $country_code = strtolower($request->country_code);
         $Tables = 'catalog' . $country_code . 's';
 
@@ -84,7 +84,7 @@ class CatalogProductController extends Controller
 
     public function Amazon()
     {
-        $asins = Asin_master::where('status', '=', 0)->get(['asin', 'source', 'user_id']);
+        $asins = AsinSource::where('status', '=', 0)->get(['asin', 'source', 'user_id']);
 
         $count = 0;
         $asin_source = [];

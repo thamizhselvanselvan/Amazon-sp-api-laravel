@@ -15,6 +15,7 @@ class GetOrder implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     private $payload;
+    private $timeout = 100;
     /**
      * Create a new job instance.
      *

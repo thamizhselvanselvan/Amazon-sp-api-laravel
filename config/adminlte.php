@@ -323,9 +323,23 @@ return [
             'submenu' => [
                 [
                     'text' => 'Asin Master',
-                    'url'  => 'catalog/asin-master',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin']
+                    'can' =>  ['Admin'],
+                    'submenu' => [
+                        [
+                        'text'  => 'Asin Source',
+                        'url'  => 'catalog/asin-source',
+                        'icon' => 'far fa-fw fa-file',
+                        'can' =>  ['Admin']
+                        ],
+
+                        [
+                        'text'  => 'Asin Destination',
+                        'url'  => 'catalog/asin-destination',
+                        'icon' => 'far fa-fw fa-file',
+                        'can' =>  ['Admin']
+                        ],
+                    ],
                 ],
 
                 [
@@ -608,8 +622,14 @@ return [
                             'url'   =>  'shipntrack/stopTracking',
                             'can'   =>  ['Admin'],
                         ],
+                        [
+                            // 'text'  =>  'Tracking Listing',
+                            // 'url'   =>  'shipntrack/trackingList',
+                            // 'can'   =>  ['Admin'],
+                        ],
                     ],
                 ],
+                
 
             ]
         ],

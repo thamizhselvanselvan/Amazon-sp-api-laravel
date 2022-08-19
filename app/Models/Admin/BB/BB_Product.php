@@ -16,6 +16,7 @@ class BB_Product extends Model
         'cyclic',
         'delist',
         'active',
+        'available',
         'priority',
         'seller_sku',
         'price',

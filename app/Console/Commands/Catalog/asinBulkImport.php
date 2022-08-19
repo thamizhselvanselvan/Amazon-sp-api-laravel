@@ -5,7 +5,8 @@ namespace App\Console\Commands\Catalog;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use Illuminate\Console\Command;
-use App\Models\Catalog\Asin_master;
+use App\Models\Catalog\AsinSource;
+use App\Services\BB\PushAsin;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -43,6 +44,7 @@ class asinBulkImport extends Command
     public function handle()
     {
         //source and seller id
+        $push_to_bb = new PushAsin();
 
         $user_id = $this->argument('user_id');
 
@@ -55,8 +57,6 @@ class asinBulkImport extends Command
         $source = buyboxCountrycode();
         $asin = [];
         $count = 0;
-        $country_code = '';
-        $seller_id = '';
 
         foreach ($csv as $key => $record) {
             $country_code = strtoupper($record['Source']);
@@ -68,53 +68,22 @@ class asinBulkImport extends Command
                 'asin' => $asin,
                 'user_id' => $user_id,
                 'source' => $record['Source'],
-                'destination_1' => $record['Destination_1'],
-                'destination_2' => $record['Destination_2'],
-                'destination_3' => $record['Destination_3'],
-                'destination_4' => $record['Destination_4'],
-                'destination_5' => $record['Destination_5'],
-            ];
-
-            $product[] = [
-                'seller_id' => $seller_id,
-                'active' => 1,
-                'asin1' => $asin,
-            ];
-
-            $product_lowest_price[] = [
-                'asin' => $asin,
-                'import_type' => 'Seller',
             ];
 
             if ($count == 1000) {
 
-                Asin_master::upsert($asin_details, ['user_asin_source_unique'], ['source', 'destination_1', 'destination_2', 'destination_3', 'destination_4', 'destination_5']);
-                $bb_product = table_model_set($country_code, 'BB_Product', 'product');
-                $bb_product->insert($product);
-
-                $bb_product_lowest_price = table_model_set(country_code: $country_code, model: 'BB_Product_lowest_price_offer', table_name: 'product_lp_offer');
-                $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin']);
+                AsinSource::upsert($asin_details, ['user_asin_source_unique'], ['source']);
                 $count = 0;
                 $asin = [];
-                $product = [];
-                $product_lowest_price = [];
             }
             $count++;
         }
 
-        Asin_master::upsert($asin_details, ['user_asin_source_unique'], ['source', 'destination_1', 'destination_2', 'destination_3', 'destination_4', 'destination_5']);
+        AsinSource::upsert($asin_details, ['user_asin_source_unique'], ['source']);
 
-        $bb_product = table_model_set($country_code, 'BB_Product', 'product');
-        $bb_product->insert($product);
+        // $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $country_code);
 
-        $bb_product_lowest_price = table_model_set(country_code: $country_code, model: 'BB_Product_lowest_price_offer', table_name: 'product_lp_offer');
-        $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin']);
-
-        Log::warning(" asin import successfully");
-
-        Log::info('Catalog importing');
-
-        $asins = Asin_master::where('status', '=', 0)->get(['asin', 'source', 'user_id']);
+        $asins = AsinSource::where('status', '=', 0)->get(['asin', 'source', 'user_id']);
         $count = 0;
         $asin_source = [];
         $class = 'catalog\\AmazonCatalogImport';

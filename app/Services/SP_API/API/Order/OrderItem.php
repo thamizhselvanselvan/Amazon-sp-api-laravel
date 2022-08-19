@@ -24,22 +24,12 @@ class OrderItem
     public function OrderItemDetails($order_id, $aws_id, $country_code)
     {
 
-        $host = config('database.connections.order.host');
-        $dbname = config('database.connections.order.database');
-        $port = config('database.connections.order.port');
-        $username = config('database.connections.order.username');
-        $password = config('database.connections.order.password');
-
-        if (!R::testConnection('order', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password)) {
-            R::addDatabase('order', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-            R::selectDatabase('order');
-        }
         $config = $this->config($aws_id, $country_code);
         $marketplace_ids = $this->marketplace_id($country_code);
         $marketplace_ids = [$marketplace_ids];
 
         $apiInstance = new OrdersApi($config);
-        $this->SelectedSellerOrderItem($apiInstance, $country_code, $order_id, $aws_id);
+        $tem = $this->SelectedSellerOrderItem($apiInstance, $country_code, $order_id, $aws_id);
     }
 
     public function SelectedSellerOrderItem($apiInstance, $awsCountryCode, $order_id, $aws_id)
@@ -52,17 +42,27 @@ class OrderItem
             $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
             $result_order_address = $apiInstance->getOrderAddress($order_id);
 
-            $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id);
+            $tem = $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id);
         } catch (Exception $e) {
 
             Log::warning($e->getMessage());
         }
-        // sleep(45);
-        // }
+        return true;
     }
 
     public function OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id)
     {
+        $host = config('database.connections.order.host');
+        $dbname = config('database.connections.order.database');
+        $port = config('database.connections.order.port');
+        $username = config('database.connections.order.username');
+        $password = config('database.connections.order.password');
+
+        if (!R::testConnection('order', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password)) {
+            R::addDatabase('order', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+            R::selectDatabase('order');
+        }
+
         $order_address = '';
         $amazon_order = '';
         $data  = [];
@@ -104,7 +104,7 @@ class OrderItem
                     $detailsKey = lcfirst($key);
                     $id = substr($detailsKey, -2);
                     $ids = substr($detailsKey, -3);
-                    // echo $id;
+
                     if ($id == 'id' || $id == 'Id' || $ids == 'ids') {
                         $detailsKey = str_replace(["id", 'Id', 'ids'], "identifier", $detailsKey);
                     }
@@ -123,10 +123,14 @@ class OrderItem
                 }
                 $order_detials->amazon_order_identifier = $order_id;
                 $order_detials->shipping_address = $order_address;
+
                 R::store($order_detials);
             }
         }
+
         DB::connection('order')
             ->update("UPDATE orders SET order_item = '1' where amazon_order_identifier = '$order_id'");
+
+        return true;
     }
 }
