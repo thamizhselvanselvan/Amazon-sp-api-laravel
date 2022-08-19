@@ -83,7 +83,12 @@ class CatalogPriceImport extends Command
                         $weight = json_decode($value->packageweight);
 
                         $a = $value->asin;
-                        $calculated_weight[$a] = poundToKg($weight->value);
+                        $weight_value = 0.5;
+                        if (isset($weight->value)) {
+
+                            $weight_value = $weight->value;
+                        }
+                        $calculated_weight[$a] = poundToKg($weight_value);
                         $asin_array[] = "'$a'";
                     }
 
