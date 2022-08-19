@@ -100,3 +100,5 @@ Route::get('smsatracking/{awb}', function ($awb_no) {
 
     //
 });
+
+Route::get('export_catalog', 'TestController@ExportCatalog');
