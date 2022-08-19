@@ -7,6 +7,7 @@ use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingUs;
 use Illuminate\Support\Facades\DB;
 use App\Models\Catalog\Asin_master;
+use Illuminate\Support\Facades\Log;
 use App\Models\Catalog\AsinDestination;
 use App\Services\Catalog\PriceConversion;
 
@@ -52,7 +53,7 @@ class CatalogPriceImport extends Command
 
         // $source = buyboxCountrycode();
         $source = [
-            'IN' => 39,
+            // 'IN' => 39,
             'US' => 40
         ];
         $price_convert = new PriceConversion();
@@ -61,16 +62,13 @@ class CatalogPriceImport extends Command
 
             $country_code_lr = strtolower($country_code);
 
-            // $product_lp = 'bb_product_' . $country_code_lr . 'lp_seller_details';
-
+            $product_lp = 'bb_product_' . $country_code_lr . 's_seller_details';
             $product = 'bb_product_' . $country_code_lr . 's';
+
             $catalog_table = 'catalog' . $country_code_lr . 's';
-
-
-            $product_lp = "product_${country_code_lr}s_lp_offer";
-
-            AsinDestination::select('asin')
-                ->where('destination', $country_code)
+            AsinDestination::select('asin_destinations.asin', "$catalog_table.packageweight")
+                ->where('asin_destinations.destination', $country_code)
+                ->join($catalog_table, 'asin_destinations.asin', '=', "$catalog_table.asin")
                 ->chunk($chunk, function ($data) use ($seller_id, $country_code_lr, $product_lp, $price_convert) {
 
                     $pricing = [];
@@ -78,14 +76,18 @@ class CatalogPriceImport extends Command
                     $asin_details = [];
                     $listing_price_amount = '';
 
+                    Log::info($data);
+                    $asin_array = [];
                     foreach ($data as $value) {
-                        $a = $value['asin'];
-                        $calculated_weight[$a] = getWeight($value['package_dimensions']);
+
+                        $weight = json_decode($value->packageweight);
+
+                        $a = $value->asin;
+                        $calculated_weight[$a] = poundToKg($weight->value);
                         $asin_array[] = "'$a'";
                     }
 
                     $asin = implode(',', $asin_array);
-
                     $asin_price = DB::connection('buybox')
                         ->select("SELECT PPO.asin,
                     GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
@@ -167,6 +169,7 @@ class CatalogPriceImport extends Command
 
                         PricingIn::upsert($pricing_in, 'asin_unique', ['asin', 'weight', 'in_price', 'uae_sp', 'sg_sp', 'sa_sp', 'price_updated_at']);
                     }
+                    // exit;
                 });
         }
     }
