@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Catalog;
 
 use League\Csv\Reader;
+use App\Services\BB\PushAsin;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use App\Models\Catalog\AsinDestination;
@@ -41,24 +42,57 @@ class AsinDestinationUpload extends Command
      */
     public function handle()
     {
+        $push_to_bb = new PushAsin();
+
         $user_id = $this->argument('user_id');
         $path = 'AsinDestination/asin.csv';
         $asins = Reader::createFromPath(Storage::path($path), 'r');
         $asins->setHeaderOffset(0);
-        
+
+        $source = buyboxCountrycode();
+
         $Asin_record = [];
-        foreach($asins as $key => $asin)
-        {
+        $product = [];
+        $product_lowest_price = [];
 
-         $Asin_record [] = [
+        $count = 0;
+        foreach ($asins as  $asin_details) {
 
-            'asin'  => $asin['ASIN'],
-            'user_id'   => $user_id,
-            'destination' => $asin['Destination'],
-         ];
+            $count = 0;
+            $asin = $asin_details['ASIN'];
+            $destination =  $asin_details['Destination'];
 
+            $Asin_record[] = [
+                'asin'  => $asin,
+                'user_id'   => $user_id,
+                'destination' => $destination,
+            ];
+
+            $product[] = [
+                'seller_id' => $source[$destination],
+                'active' => 1,
+                'asin1' => $asin,
+            ];
+
+            $product_lowest_price[] = [
+                'asin' => $asin,
+                'import_type' => 'Seller',
+            ];
+
+            if ($count == 1000) {
+
+                AsinDestination::upsert($Asin_record, ['user_asin_destination_unique'], ['destination']);
+                $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination);
+
+                $Asin_record = [];
+                $product = [];
+                $product_lowest_price = [];
+            }
+            $count++;
         }
+
         AsinDestination::upsert($Asin_record, ['user_asin_destination_unique'], ['destination']);
-        // log::alert($Asin_record);
+        $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination);
+
     }
 }

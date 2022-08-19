@@ -7,6 +7,7 @@ use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingUs;
 use Illuminate\Support\Facades\DB;
 use App\Models\Catalog\Asin_master;
+use App\Models\Catalog\AsinDestination;
 use App\Services\Catalog\PriceConversion;
 
 class CatalogPriceImport extends Command
@@ -60,13 +61,16 @@ class CatalogPriceImport extends Command
 
             $country_code_lr = strtolower($country_code);
 
-            $product_lp = 'bb_product_' . $country_code_lr . 'lp_seller_details';
-            $product = 'bb_product_' . $country_code_lr . 's';
+            // $product_lp = 'bb_product_' . $country_code_lr . 'lp_seller_details';
 
+            $product = 'bb_product_' . $country_code_lr . 's';
             $catalog_table = 'catalog' . $country_code_lr . 's';
-            Asin_master::select('asin_masters.asin', "$catalog_table.package_dimensions")
-                ->where('asin_masters.source', $country_code)
-                ->join($catalog_table, 'asin_masters.asin', '=', "$catalog_table.asin")
+
+
+            $product_lp = "product_${country_code_lr}s_lp_offer";
+
+            AsinDestination::select('asin')
+                ->where('destination', $country_code)
                 ->chunk($chunk, function ($data) use ($seller_id, $country_code_lr, $product_lp, $price_convert) {
 
                     $pricing = [];
@@ -81,6 +85,7 @@ class CatalogPriceImport extends Command
                     }
 
                     $asin = implode(',', $asin_array);
+
                     $asin_price = DB::connection('buybox')
                         ->select("SELECT PPO.asin,
                     GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
