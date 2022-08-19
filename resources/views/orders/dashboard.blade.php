@@ -2,10 +2,10 @@
 @section('title', 'Orders Details Dashboard')
 
 @section('content_header')
-<div class= 'row'>
+<div class='row'>
 
     <h1 class="m-0 text-dark">Order Details Dashboard</h1>
-    <h2 class = 'text-right col'>
+    <h2 class='text-right col'>
         <a href="{{route('getOrder.list')}}">
             <x-adminlte-button label="Refresh" theme="primary" icon="fas fa-sync" />
         </a>
@@ -53,6 +53,7 @@
         <tr>
             <th>Store Name</th>
             <th>Last Update</th>
+            <th>Partially Shipped</th>
             <th>Unshipped</th>
             <th>Pending</th>
             <th>Cancelled</th>
