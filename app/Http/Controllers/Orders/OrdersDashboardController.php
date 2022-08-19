@@ -14,7 +14,7 @@ class OrdersDashboardController extends Controller
     {
         $startTime = Carbon::now();
         $endTime = Carbon::now()->subDays(30);
-        
+
         $order_sql = DB::connection('order')->select("select order_status, our_seller_identifier,COUNT(order_status) as count, os.store_name, os.country_code from orders 
         join ord_order_seller_credentials as os 
         where os.seller_id = orders.our_seller_identifier 
@@ -33,7 +33,7 @@ class OrdersDashboardController extends Controller
 
         $store_latest = [];
         foreach ($latest_update_collect as $key => $value) {
-            
+
             $updatedat = $value[0]->updatedat;
             $store_latest[$key] = $updatedat;
         }
@@ -42,6 +42,7 @@ class OrdersDashboardController extends Controller
         foreach ($order_groupby as $key => $value) {
             $order_status = [
                 'LastUpdate' => 0,
+                'PartiallyShipped' => 0,
                 'Unshipped' => 0,
                 'Pending' => 0,
                 'Canceled' => 0,

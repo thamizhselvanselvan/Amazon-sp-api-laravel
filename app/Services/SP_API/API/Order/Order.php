@@ -15,7 +15,7 @@ use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
-
+use Symfony\Component\Messenger\Stamp\DelayStamp;
 
 class Order
 {
@@ -42,8 +42,9 @@ class Order
         $marketplace_ids = [$marketplace_ids];
 
         $apiInstance = new OrdersApi($config);
-        $startTime = Carbon::now()->subHours(9)->toISOString();
-        // $startTime = Carbon::now()->subDays(2)->toISOString();
+        // $startTime = Carbon::now()->subHours(9)->toISOString();
+        $startTime = Carbon::now()->subDays(5)->toISOString();
+        // Log::alert($startTime);
         $createdAfter = $startTime;
         $max_results_per_page = 100;
         $next_token = NULL;
@@ -117,8 +118,10 @@ class Order
             $data = DB::connection('order')
                 ->select("SELECT id, amazon_order_identifier FROM orders 
             WHERE amazon_order_identifier = '$amazon_order_id'");
+            // sleep(2);
             //   $data = [];
             if (array_key_exists(0, $data)) {
+
                 $count++;
                 $dataCheck = 1;
                 $id = $data[0]->id;
@@ -130,12 +133,14 @@ class Order
                 $update_orders->updatedat = now();
 
                 R::store($update_orders);
-
+                // sleep(2);
                 $order_item_details = DB::connection('order')
                     ->select("SELECT id FROM orders 
                 WHERE amazon_order_identifier = '$amazon_order_id' AND order_item = '0' ");
 
                 if (count($order_item_details) > 0) {
+
+                    Log::alert($amazon_order_id);
 
                     $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
                     $this->delay += $delay_count;
@@ -149,6 +154,8 @@ class Order
                 // dd($orders);
                 R::store($orders);
 
+                Log::alert('new Data' . $amazon_order_id);
+
                 $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
                 $this->delay += $delay_count;
             }
@@ -157,7 +164,6 @@ class Order
 
     public function getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode)
     {
-        Log::warning('Order Queue  ' . $amazon_order_id . 'aws id ->  ' . $awsId . 'country-> ' . $awsCountryCode);
 
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
             GetOrderItem::dispatch(

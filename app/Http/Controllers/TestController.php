@@ -17,7 +17,7 @@ use Illuminate\Support\Carbon;
 use SellingPartnerApi\Endpoint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Services\Config\ConfigTrait;
+use App\Services\SP_API\Config\ConfigTrait;
 use Illuminate\Support\Facades\Auth;
 use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
@@ -182,26 +182,22 @@ class TestController extends Controller
     $marketplace_ids = [$marketplace_ids];
 
     $apiInstance = new OrdersApi($config);
-    $startTime = Carbon::now()->subDays(10)->toISOString();
+    $startTime = Carbon::now()->subDays(30)->toISOString();
     $createdAfter = $startTime;
     $max_results_per_page = 100;
 
     $next_token = NULL;
     $amazon_order_ids = [$order_id];
-    // try {
-    // $result_order_address = $apiInstance->getOrderAddress($order_id);
-    // po($result_order_address);
-    // exit;
-
+    echo '<hr>';
+    echo 'Order Details';
     $order = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses = null, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, $next_token, $amazon_order_ids, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
-
     po($order);
-    exit;
-    $data_element = array('buyerInfo');
-    $next_token = NULL;
 
     echo '<hr>';
     echo 'Order item details';
+
+    $data_element = array('buyerInfo');
+    $next_token = NULL;
     $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
 
     po($result_orderItems);
@@ -211,6 +207,8 @@ class TestController extends Controller
     $result_order_address = $apiInstance->getOrderAddress($order_id);
 
     po($result_order_address);
+
+    exit;
   }
 
   public function SmsaTracking($awb_no)

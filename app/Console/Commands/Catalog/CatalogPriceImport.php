@@ -60,7 +60,7 @@ class CatalogPriceImport extends Command
 
             $country_code_lr = strtolower($country_code);
 
-            $product_lp = 'bb_product_lp_seller_detail_' . $country_code_lr . 's';
+            $product_lp = 'bb_product_' . $country_code_lr . 'lp_seller_details';
             $product = 'bb_product_' . $country_code_lr . 's';
 
             $catalog_table = 'catalog' . $country_code_lr . 's';
