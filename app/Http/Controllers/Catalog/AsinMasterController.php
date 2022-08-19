@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Catalog;
 
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
-use App\Models\Catalog\Asin_master;
+use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -19,7 +19,7 @@ class AsinMasterController extends Controller
 
         if ($request->ajax()) {
 
-            $data = Asin_master::query();
+            $data = AsinSource::query();
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -42,7 +42,7 @@ class AsinMasterController extends Controller
     public function editasin($id)
     {
 
-        $asin = Asin_master::where('id', $id)->first();
+        $asin = AsinSource::where('id', $id)->first();
         return view('Catalog.AsinMaster.edit', compact('asin'));
     }
     public function update(Request $request, $id)
@@ -55,7 +55,7 @@ class AsinMasterController extends Controller
 
         $validated['source'] = strtoupper($validated['source']);
 
-        Asin_master::where('id', $id)->update($validated);
+        AsinSource::where('id', $id)->update($validated);
 
         return redirect()->intended('/catalog/asin-source')->with('success', 'Asin has been updated successfully');
     }
@@ -63,7 +63,7 @@ class AsinMasterController extends Controller
 
     public function trash(Request $request)
     {
-        Asin_master::where('id', $request->id)->delete();
+        AsinSource::where('id', $request->id)->delete();
 
         return redirect()->intended('/catalog/asin-source')->with('success', 'Asin has been pushed to Bin successfully');
     }
@@ -71,7 +71,7 @@ class AsinMasterController extends Controller
 
     public function trashView(Request $request)
     {
-        $asins = Asin_master::onlyTrashed()->get();
+        $asins = AsinSource::onlyTrashed()->get();
 
         if ($request->ajax()) {
             return DataTables::of($asins)
@@ -88,7 +88,7 @@ class AsinMasterController extends Controller
     public function restore(Request $request)
     {
 
-        Asin_master::where('id', $request->id)->restore();
+        AsinSource::where('id', $request->id)->restore();
         return response()->json(['success' => 'Asin has restored successfully']);
     }
 
@@ -170,7 +170,7 @@ class AsinMasterController extends Controller
 
     public function getExchangeRate()
     {
-        $records = Asin_master::select('asin', 'source')->get();
+        $records = AsinSource::select('asin', 'source')->get();
 
         foreach ($records as $record) {
             $asin = $record->asin;

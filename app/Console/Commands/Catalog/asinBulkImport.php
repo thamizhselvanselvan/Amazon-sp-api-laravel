@@ -5,7 +5,7 @@ namespace App\Console\Commands\Catalog;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use Illuminate\Console\Command;
-use App\Models\Catalog\Asin_master;
+use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -83,7 +83,7 @@ class asinBulkImport extends Command
 
             if ($count == 1000) {
 
-                Asin_master::upsert($asin_details, ['user_asin_source_unique'], ['source', 'destination_1', 'destination_2', 'destination_3', 'destination_4', 'destination_5']);
+                AsinSource::upsert($asin_details, ['user_asin_source_unique'], ['source']);
                 $bb_product = table_model_set($country_code, 'BB_Product', 'product');
                 $bb_product->insert($product);
 
@@ -97,7 +97,7 @@ class asinBulkImport extends Command
             $count++;
         }
 
-        Asin_master::upsert($asin_details, ['user_asin_source_unique'], ['source', 'destination_1', 'destination_2', 'destination_3', 'destination_4', 'destination_5']);
+        AsinSource::upsert($asin_details, ['user_asin_source_unique'], ['source']);
 
         $bb_product = table_model_set($country_code, 'BB_Product', 'product');
         $bb_product->insert($product);
@@ -109,7 +109,7 @@ class asinBulkImport extends Command
 
         Log::info('Catalog importing');
 
-        $asins = Asin_master::where('status', '=', 0)->get(['asin', 'source', 'user_id']);
+        $asins = AsinSource::where('status', '=', 0)->get(['asin', 'source', 'user_id']);
         $count = 0;
         $asin_source = [];
         $class = 'catalog\\AmazonCatalogImport';
