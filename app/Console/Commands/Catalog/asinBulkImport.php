@@ -68,11 +68,6 @@ class asinBulkImport extends Command
                 'asin' => $asin,
                 'user_id' => $user_id,
                 'source' => $record['Source'],
-                'destination_1' => $record['Destination_1'],
-                'destination_2' => $record['Destination_2'],
-                'destination_3' => $record['Destination_3'],
-                'destination_4' => $record['Destination_4'],
-                'destination_5' => $record['Destination_5'],
             ];
 
             $product[] = [

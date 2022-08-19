@@ -6,7 +6,7 @@
 
 <div class="row">
     <div class="col">
-        <a href="/catalog/asin-master" class="btn btn-primary">
+        <a href="/catalog/asin-source" class="btn btn-primary">
             <i class="fas fa-long-arrow-alt-left"></i> Back
         </a>
     </div>

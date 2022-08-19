@@ -12,7 +12,7 @@
 
 <div class="row">
     <div class="col">
-        <a href="{{ Route('catalog.asin.master') }}" class="btn btn-primary">
+        <a href="{{route('Asin.destination.index')}}" class="btn btn-primary">
 
             <i class="fas fa-long-arrow-alt-left"></i> Back
         </a>
@@ -62,10 +62,9 @@
         </div>
         @endif
 
-        <form class="row" action="{{Route('catalog.update.asin', $asin->id) }}" method="POST" id="">
+        <form class="row" action="{{Route('catalog.update.asin.destination', $asin->id) }}" method="POST" >
             @csrf
-            @method('PUT')
-
+            
             <div class="row">
                 <div class="col-6">
                      <!-- <x-adminlte-input label="Asin" name="asin" id="asin" type="text" placeholder="Asin"  />
@@ -76,8 +75,8 @@
                         placeholder="Asin" />
                 </div>
                 <div class="col-6">
-                    <x-adminlte-input label="source" name="source" id="" value="{{ $asin->source }}" type="text"
-                        placeholder="Source" />
+                    <x-adminlte-input label="Destination" name="destination" id="" value="{{ $asin->destination }}" type="text"
+                        placeholder="Destination" />
                 </div>
 
                 <!-- <div class="col-6">

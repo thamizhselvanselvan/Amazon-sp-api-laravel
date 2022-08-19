@@ -35,4 +35,4 @@ Route::group(['namespace' => 'Api\App\v1', 'as' => 'v1.', 'prefix' => 'v1'], fun
 });
 
 Route::post('testing', 'shipntrack\API\AmazonTrackingAPIController@B2cShipTrackingResponse');
-Route::get('testing', 'shipntrack\API\AmazonTrackingAPIController@B2cShipTrackingResponse');
+// Route::get('testing', 'shipntrack\API\AmazonTrackingAPIController@B2cShipTrackingResponse');
