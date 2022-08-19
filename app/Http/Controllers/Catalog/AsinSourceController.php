@@ -32,18 +32,18 @@ class AsinSourceController extends Controller
                 })
                 ->make(true);
         }
-        return view('Catalog.AsinMaster.index');
+        return view('Catalog.AsinSource.index');
     }
 
     public function addAsin()
     {
-        return view('Catalog.AsinMaster.addAsin');
+        return view('Catalog.AsinSource.addAsin');
     }
 
     public function editasin($id)
     {
         $asin = AsinSource::where('id', $id)->first();
-        return view('Catalog.AsinMaster.edit', compact('asin'));
+        return view('Catalog.AsinSource.edit', compact('asin'));
     }
 
     public function update(Request $request, $id)
@@ -78,7 +78,7 @@ class AsinSourceController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('Catalog.AsinMaster.trash');
+        return view('Catalog.AsinSource.trash');
     }
 
     public function restore(Request $request)
@@ -90,7 +90,7 @@ class AsinSourceController extends Controller
 
     public function importBulkAsin()
     {
-        return view('Catalog.AsinMaster.importAsin');
+        return view('Catalog.AsinSource.importAsin');
     }
 
     public function addBulkAsin(Request $request)
