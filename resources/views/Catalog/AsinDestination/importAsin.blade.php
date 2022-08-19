@@ -76,7 +76,7 @@
     
                 <div class="col-12">
                     <div class="text-center">
-                        <x-adminlte-button label="Upload Asin" theme="primary" class="add_asin" icon="fas fa-plus"
+                        <x-adminlte-button label="Upload" theme="primary" class="add_asin" icon="fas fa-plus"
                             type="submit" />
                     </div>
                 </div>
@@ -88,7 +88,7 @@
                 <div class="col-3"></div>
 
                 <div class="col-6 ">
-                    <x-adminlte-input label="Upload Asin File" name="asin" id="asin" type="file" />
+                    <x-adminlte-input label="Upload ASIN File" name="asin" id="asin" type="file" />
                     <input type="hidden" name="form_type" value="file_upload">
                     
                 </div>
@@ -97,7 +97,7 @@
 
                 <div class="col-12">
                     <div class="text-center">
-                        <x-adminlte-button label="Upload Asin" theme="primary" class="add_asin" icon="fas fa-plus"
+                        <x-adminlte-button label="Upload" theme="primary" class="add_asin" icon="fas fa-plus"
                             type="submit" />
                     </div>
                 </div>

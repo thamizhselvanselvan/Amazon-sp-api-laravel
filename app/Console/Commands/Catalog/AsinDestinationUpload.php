@@ -59,6 +59,6 @@ class AsinDestinationUpload extends Command
 
         }
         AsinDestination::upsert($Asin_record, ['user_asin_destination_unique'], ['destination']);
-        log::alert($Asin_record);
+        // log::alert($Asin_record);
     }
 }

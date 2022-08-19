@@ -14,7 +14,11 @@
 
 <div class="row mt-3">
     <div class="col">
-        <h1 class="m-0 text-dark text-center ">Add Asin</h1>
+        <input type="radio" name="Asin-destination" id="text-area" checked />
+        <label for="Text-area" class="ml-1">Text-Area</label>
+        <input type="radio" name="Asin-destination" id="bulk-asin" class="ml-2" />
+        <label for="Text-area" class="ml-1">Bulk Asin Import</label>
+        <h1 class="m-0 text-dark text-center ">Add ASIN</h1>
     </div>
 </div>
 
@@ -45,27 +49,78 @@
             {{ session()->get('error') }}
         </x-adminlte-alert>
         @endif
+        <div class="text-area ">
+            <form class="row" action="{{ route('catalog.asin.import')}}" method="POST" enctype="multipart/form-data">
+                @csrf
+    
+                <div class="col-3"></div>
+    
+                <div class="col-6">
+                    <x-adminlte-select name="source" label="Select Source" id="source">
+                        
+                        <option value="">Select Source</option>
+                        <option value="IN">IN</option>
+                        <option value="AE">AE</option>
+                        <option value="US">US</option>
+                        <option value="UK">UK</option>
 
-        <form class="row" action="{{ route('catalog.asin.import')}}" method="POST" enctype="multipart/form-data">
-            @csrf
-
-            <div class="col-3"></div>
-
-            <div class="col-6">
-                <x-adminlte-input label="Aisn Lists" name="asin" id="asin" type="file" />
-            </div>
-
-            <div class="col-3"></div>
-
-            <div class="col-12">
-                <div class="text-center">
-                    <x-adminlte-button label="Upload Asin" theme="primary" class="add_asin" icon="fas fa-plus"
-                        type="submit" />
+                    </x-adminlte-select>
+                    <x-adminlte-textarea label="ASIN by text-area" name="text_area" id="asin" type="text" rows="6" placeholder="Enter ASIN" />
+                    <input type="hidden" name="form_type" value="text_area" />
                 </div>
-            </div>
-        </form>
+    
+                <div class="col-3"></div>
+    
+                <div class="col-12">
+                    <div class="text-center">
+                        <x-adminlte-button label="Upload" theme="primary" class="add_asin" icon="fas fa-plus"
+                            type="submit" />
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="bulk-asin d-none">
+            <form class="row" action="{{ route('catalog.asin.import')}}" method="POST" enctype="multipart/form-data">
+                @csrf
+    
+                <div class="col-3"></div>
+    
+                <div class="col-6">
+                    <x-adminlte-input label="Upload ASIN File" name="asin" id="asin" type="file" />
+                    <input type="hidden" name="form_type" value="file_upload" />
+                </div>
+    
+                <div class="col-3"></div>
+    
+                <div class="col-12">
+                    <div class="text-center">
+                        <x-adminlte-button label="Upload" theme="primary" class="add_asin" icon="fas fa-plus"
+                            type="submit" />
+                            
+                    </div>
+                </div>
+            </form>
+        </div>
+        
     </div>
     <div class="col"></div>
 </div>
 
+@stop
+
+@section('js')
+<script>
+
+    $('#text-area').click(function(){
+        $('.bulk-asin').addClass('d-none');
+        $('.text-area').removeClass('d-none');
+    });
+
+    $('#bulk-asin').click(function(){
+        $('.bulk-asin').removeClass('d-none');
+        $('.text-area').addClass('d-none');
+    });
+
+</script>
 @stop

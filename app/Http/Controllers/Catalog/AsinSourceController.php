@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 
-class AsinMasterController extends Controller
+class AsinSourceController extends Controller
 {
     public function index(Request $request)
     {
@@ -36,18 +36,17 @@ class AsinMasterController extends Controller
 
     public function addAsin()
     {
-
         return view('Catalog.AsinMaster.addAsin');
     }
+
     public function editasin($id)
     {
-
         $asin = AsinSource::where('id', $id)->first();
         return view('Catalog.AsinMaster.edit', compact('asin'));
     }
+
     public function update(Request $request, $id)
     {
-
         $validated = $request->validate([
             'asin' => 'required|min:4|max:25',
             'source' => 'required|min:2|max:15',
@@ -60,19 +59,15 @@ class AsinMasterController extends Controller
         return redirect()->intended('/catalog/asin-source')->with('success', 'Asin has been updated successfully');
     }
 
-
     public function trash(Request $request)
     {
         AsinSource::where('id', $request->id)->delete();
-
         return redirect()->intended('/catalog/asin-source')->with('success', 'Asin has been pushed to Bin successfully');
     }
-
 
     public function trashView(Request $request)
     {
         $asins = AsinSource::onlyTrashed()->get();
-
         if ($request->ajax()) {
             return DataTables::of($asins)
                 ->addIndexColumn()
@@ -87,7 +82,6 @@ class AsinMasterController extends Controller
 
     public function restore(Request $request)
     {
-
         AsinSource::where('id', $request->id)->restore();
         return response()->json(['success' => 'Asin has restored successfully']);
     }
@@ -100,36 +94,60 @@ class AsinMasterController extends Controller
 
     public function addBulkAsin(Request $request)
     {
-        $user_id = Auth::user()->id;
-        Log::alert($user_id);
-        $request->validate([
-            'asin' => 'required|mimes:csv'
-        ]);
+        if($request->form_type == 'text_area')
+        {
+            $validate = $request->validate([
+                'text_area' => 'required',
+                'source'    =>  'required',
+            ]);
 
-        if (!$request->hasFile('asin')) {
-            return back()->with('error', "Please upload file to import it to the database");
+            $user_id = Auth::user()->id;
+            $record = $request->text_area;
+            $source = $request->source;
+            $asins = preg_split('/[\r\n| |:|,|.]/', $record, -1, PREG_SPLIT_NO_EMPTY);
+            
+            foreach($asins as $asin_details)
+            {
+                $allData [] = [
+                    'asin'  =>  $asin_details,
+                    'user_id'   =>  $user_id,
+                    'source'    =>  $source,
+                ];
+            }
+            AsinSource::upsert($allData,['user_asin_source_unique'], ['asin']);
         }
-
-        $msg = "Asin import has been completed!";
-
-        $source = file_get_contents($request->asin);
-        $path = 'AsinMaster/asin.csv';
-        Storage::put($path, $source);
-
-        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-
-            Log::warning("asin production executed");
-
-            $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:asin-import ${user_id} > /dev/null &";
-            exec($command);
-            Log::warning("asin production command executed");
-        } else {
-
-            Log::warning("Export coma executed local !");
-            Artisan::call('pms:asin-import' . ' ' . $user_id);
+        elseif($request->form_type == 'file_upload')
+        {
+            $user_id = Auth::user()->id;
+            
+            $request->validate([
+                'asin' => 'required|mimes:csv'
+            ]);
+    
+            if (!$request->hasFile('asin')) {
+                return back()->with('error', "Please upload file to import it to the database");
+            }
+    
+            $msg = "Asin import has been completed!";
+    
+            $source = file_get_contents($request->asin);
+            $path = 'AsinMaster/asin.csv';
+            Storage::put($path, $source);
+    
+            if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+    
+                Log::warning("asin production executed");
+    
+                $base_path = base_path();
+                $command = "cd $base_path && php artisan pms:asin-import ${user_id} > /dev/null &";
+                exec($command);
+                Log::warning("asin production command executed");
+            } else {
+    
+                Log::warning("Export coma executed local !");
+                Artisan::call('pms:asin-import' . ' ' . $user_id);
+            } 
         }
-
         return redirect('catalog/import-bulk-asin')->with('success', 'All Asins uploaded successfully');
     }
 
@@ -148,7 +166,6 @@ class AsinMasterController extends Controller
             Log::warning("Export asin command executed local !");
             Artisan::call('pms:asin-export');
         }
-
         return redirect()->intended('/catalog/asin-source');
     }
 
@@ -163,7 +180,6 @@ class AsinMasterController extends Controller
 
     public function AsinTemplateDownload()
     {
-
         $file_path = public_path('template/Catalog-Asin-Template.csv');
         return response()->download($file_path);
     }
@@ -171,7 +187,6 @@ class AsinMasterController extends Controller
     public function getExchangeRate()
     {
         $records = AsinSource::select('asin', 'source')->get();
-
         foreach ($records as $record) {
             $asin = $record->asin;
             $source = $record->source;
