@@ -3,6 +3,7 @@
 namespace App\Services\AWS_Business_API\AWS_POC;
 
 use Exception;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -12,14 +13,91 @@ class Orders
     {
         $val = random_int(100, 10000);
         $random = substr(md5(mt_rand()), 0, 7);
-        $uniq = $random . $val;
+        $uniq = $random . $val . '@moshecom.com';
+        $date = Carbon::now()->format('d-m-Y');
+        $countrycode = 'US';
+        $country = 'USA';
+        $country_name = 'Unite States';
+        $email = 'tec@moshecom.com';
+        $name = 'mr.kate';
+
+        /* ship and bill details  */
+
+        $money  = 50.00;
+        $orderID = random_int(100, 10000);
+        $org_name = 'nitrous';
+        $deli1 = 'Tec Team, tec@moshecom.com';
+        $deli2 = 'bliss';
+        $deli3 = 'Tec TEAM';
+        $street = '325 9th Ave N';
+        $city = 'Seattle';
+        $state = 'Washington';
+        $postcode = '98109';
+        $area_code = '213';
+        $ph_no = '87488423820';
+        // $addressID = "[Bill To Code]";
+        $fax_name = 'nitrous';
+        $comments = 'Deliveery as soon as possible';
+        $extrinsic = 'Nitrous';
+        $supplierPartAuxiliaryID = random_int(10000, 1000000);
+        $tax = '1';
+        $currency = 'USD';
+        /* item details  */
+        $asin = 'B072QYBXYV';
+        $item_description = 'Alex Vando Mens Dress Shirts Regular Fit Long Sleeve Men Shirt';
+        $unit = 'EA';
+        $class = '';
+        $manuname = ' ';
+        $manu_id = '';
+        $subcatagory = '';
+        $catagory = 'Clothing';
+        $line = '1';
+        $qty = '1';
+
+        $base[] = [
+            'payload' => $uniq,
+            'order_date' => $date,
+            'country_code' => $countrycode,
+            'country_name' => $country_name,
+            'e_mail' => $email,
+            'name' => $name,
+            'price' => $money,
+            'order_id' => $orderID,
+            'organization_name' => $org_name,
+            'delivery_1' => $deli1,
+            'delivery_2' => $deli2,
+            'delivery_3' => $deli3,
+            'street' => $street,
+            'city' => $city,
+            'state' => $state,
+            'post_code' => $postcode,
+            'area_code' => $area_code,
+            'phone_no' => $ph_no,
+            //    'address_id' => $addressID,
+            'fax_name' => $fax_name,
+            'comments' => $comments,
+            'exen' => $extrinsic,
+            'aux_id' => $supplierPartAuxiliaryID,
+
+
+            'asin' => $asin,
+            'item_description' => $item_description,
+            'unit' => $unit,
+            'class' => $class,
+            'ManufacturerName' => $manuname,
+            'ManufacturerPartID' => $manu_id,
+            'line' => $line,
+            'quantity' => $qty,
+            'category' => $catagory,
+            'sub_category' => $subcatagory,
+        ];
 
         $url = "https://https-ats.amazonsedi.com/803f01f5-11e4-47df-b868-bb908211e0ed";
         $xml =
-        '<?xml version="1.0" encoding="UTF-8"?>
+            '<?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE cXML SYSTEM "http://xml.cXML.org/schemas/cXML/1.2.011/cXML.dtd">
 
-      <cXML timestamp="2022-08-12" payloadID="'. $uniq. '" version="1.2.011">
+      <cXML timestamp="2022-08-12" payloadID="' . $uniq . '" version="1.2.011">
   <Header>
         <From>
             <Credential domain="networkid">
@@ -28,7 +106,7 @@ class Orders
         </From>
         <To>
             <Credential domain="networkid">
-                <Identity>epsilon.palmate@gmail.com</Identity>
+                <Identity>Amazon</Identity>
             </Credential>
         </To>
         <Sender>
@@ -43,97 +121,97 @@ class Orders
     </Header>
     <Request deploymentMode="test">
         <OrderRequest>
-            <OrderRequestHeader orderDate="2022-08-12" orderID="TMHTZXLDFN" type="new" orderType="regular">
+            <OrderRequestHeader orderDate="' . $date . '" orderID=' . $orderID . ' type="new" orderType="regular">
                 <Total>
-                    <Money currency="USD">59.99</Money>
+                    <Money currency="' . $currency . '">' . $money . '</Money>
                 </Total>
                 <ShipTo>
-                    <Address isoCountryCode="US" addressID="Z4SEYWLA5FAVH5AB2MJMG05F1UA07299273BV7569MTU1FZPXTQ2EQA2OX24EF2">
-                        <Name xml:lang="en-US">Nitrous Haul INC</Name>
-                        <PostalAddress name="default">
-                            <DeliverTo>Test Team, epsilon.palmate@gmail.com</DeliverTo>
-                            
-                            <Street>325 9th Ave N</Street>
-                            <City>Seattle</City>
-                            <State>Washington</State>
-                            <PostalCode>98109</PostalCode>
-                            <Country isoCountryCode="USA">United States</Country>
+                    <Address ' . $countrycode . ' addressID="Z4SEYWLA5FAVH5AB2MJMG05F1UA07299273BV7569MTU1FZPXTQ2EQA2OX24EF2">
+                        <Name xml:lang="en-US">' . $org_name . '</Name>
+                        <PostalAddress name=' . $name . '>
+                            <DeliverTo>' . $deli1 . '</DeliverTo>
+                              <DeliverTo>' . $deli2 . '</DeliverTo>
+                            <DeliverTo>' . $deli3 . '</DeliverTo>
+                            <Street>' . $street . '</Street>
+                            <City>' . $city . '</City>
+                            <State>' . $state . '</State>
+                            <PostalCode>' . $postcode . '</PostalCode>
+                            <Country ' . $countrycode . '">' . $country_name . '</Country>
                         </PostalAddress>
-                        <Email name="default">epsilon.palmate@gmail.com</Email>
-                        <Phone name="work">
+                        <Email name=' . $name . '>' . $email . '</Email>
+                        <Phone name=' . $name . '>
                             <TelephoneNumber>
-                                <CountryCode isoCountryCode="USA">US</CountryCode>
-                                <AreaOrCityCode>213</AreaOrCityCode>
-                                <Number>8748842380</Number>
+                                <CountryCode ' . $countrycode . '">' . $country . '</CountryCode>
+                                <AreaOrCityCode>' . $area_code . '</AreaOrCityCode>
+                                <Number>' . $ph_no . '</Number>
                             </TelephoneNumber>
                         </Phone>
-                        <Fax name="default">
+                        <Fax name=' . $fax_name . '>
                             <TelephoneNumber>
-                                <CountryCode isoCountryCode="US">USa</CountryCode>
-                                <AreaOrCityCode>Area Code</AreaOrCityCode>
-                                <Number>8748842380</Number>
+                                <CountryCode ' . $countrycode . '>' . $country . '</CountryCode>
+                                <AreaOrCityCode>' . $area_code . '</AreaOrCityCode>
+                                <Number>' . $ph_no . '</Number>
                             </TelephoneNumber>
                         </Fax>
                     </Address>
                 </ShipTo>
                 <BillTo>
-                    <Address isoCountryCode="US" addressID="Z4SEYWLA5FAVH5AB2MJMG05F1UA07299273BV7569MTU1FZPXTQ2EQA2OX24EF2">
+                    <Address ' . $countrycode . ' addressID="Z4SEYWLA5FAVH5AB2MJMG05F1UA07299273BV7569MTU1FZPXTQ2EQA2OX24EF2">
                         <Name xml:lang="en-US">Worldwey</Name>
-                        <PostalAddress name="default">
-                            <DeliverTo>no 7</DeliverTo>
-                            <Street>2nd street</Street>
-                            <City>Chicago</City>
-                            <State>IL</State>
-                            <PostalCode>60009</PostalCode>
-                            <Country isoCountryCode="US">USA</Country>
-                        </PostalAddress>
-                        <Email name="default">buisnesan@gmail.com</Email>
-                        <Phone name="work">
+                        <PostalAddress name=' . $name . '>
+                             <DeliverTo>' . $deli1 . '</DeliverTo>
+                            <Street>' . $street . '</Street>
+                            <City>' . $city . '</City>
+                            <State>' . $state . '</State>
+                            <PostalCode>' . $postcode . '</PostalCode>
+                            <Country ' . $countrycode . '>' . $country . '</Country>
+                            <Email name=' . $name . '>' . $email . '</Email>
+                            <Phone name="work">
                             <TelephoneNumber>
-                                <CountryCode isoCountryCode="US">USA</CountryCode>
-                                <AreaOrCityCode>217</AreaOrCityCode>
-                                <Number>8748842380</Number>
+                                <CountryCode ' . $countrycode . '>' . $country . '</CountryCode>
+                               <AreaOrCityCode>' . $area_code . '</AreaOrCityCode>
+                                <Number>' . $ph_no . '</Number>
                             </TelephoneNumber>
                         </Phone>
-                        <Fax name="default">
+                        <Fax name=' . $fax_name . '>
                             <TelephoneNumber>
-                                <CountryCode isoCountryCode="US">USA</CountryCode>
-                                <AreaOrCityCode>217</AreaOrCityCode>
-                                <Number>8748842380</Number>
+                                <CountryCode ' . $countrycode . '>' . $country . '</CountryCode>
+                                 <AreaOrCityCode>' . $area_code . '</AreaOrCityCode>
+                                <Number>' . $ph_no . '</Number>
                             </TelephoneNumber>
                         </Fax>
                     </Address>
                 </BillTo>
                 <Shipping>
-                    <Money currency="USD">59.99</Money>
+                    <Money currency="' . $currency . '">' . $money . '</Money>
                     <Description xml:lang="en">std-us</Description>
                 </Shipping>
                 <Tax>
-                    <Money currency="USD">1.00</Money>
+                    <Money currency="' . $currency . '">' . $tax . '</Money>
                     <Description xml:lang="en">Included</Description>
                 </Tax>
-                <Comments>something inside nothing</Comments>
-                <Extrinsic name="Name">Value for Header Level Extrinsic</Extrinsic>
+                <Comments>' . $comments . '</Comments>
+                <Extrinsic name="Name">' . $extrinsic . '</Extrinsic>
             </OrderRequestHeader>
-            <ItemOut quantity="1" lineNumber="1">
+            <ItemOut quantity=' . $qty . ' lineNumber=' . $line . '>
             <Requested Delivery Date>2022-08-28</Requested>
                 <ItemID>
-                    <SupplierPartID>B01LWRTRZU</SupplierPartID>
-                    <SupplierPartAuxiliaryID>144-6522680-6556620,1</SupplierPartAuxiliaryID>
+                    <SupplierPartID>' . $asin . '</SupplierPartID>
+                    <SupplierPartAuxiliaryID>' . $supplierPartAuxiliaryID . '</SupplierPartAuxiliaryID>
                 </ItemID>
                 <ItemDetail>
                     <UnitPrice>
-                        <Money currency="USD">59.99</Money>
+                        <Money currency="' . $currency . '">59.99</Money>
                     </UnitPrice>
-                    <Description xml:lang="en-US">Seagate Firecuda Gaming 1TB 2.5-Inch SATA 6GB/s 5400rpm 128 MB Cache Internal Hard Drive (ST1000LX015)</Description>
-                    <UnitOfMeasure>EA</UnitOfMeasure>
+                    <Description xml:lang="en-US">' . $item_description . '</Description>
+                    <UnitOfMeasure>' . $unit . '</UnitOfMeasure>
                     <Classification domain="UNSPSC">43201803</Classification>
-                    <ManufacturerPartID>UPC-763649069073</ManufacturerPartID>
-                    <ManufacturerName>Seagate</ManufacturerName>
+                    <ManufacturerPartID>' . $manu_id . '</ManufacturerPartID>
+                    <ManufacturerName>' . $manuname . '</ManufacturerName>
                     <Extrinsic name="soldBy">Amazon</Extrinsic>
                     <Extrinsic name="fulfilledBy">Amazon</Extrinsic>
-                    <Extrinsic name="category">gl_pc</Extrinsic>
-                    <Extrinsic name="subCategory">COMPUTER_DRIVE_OR_STORAGE</Extrinsic>
+                    <Extrinsic name="category">' . $catagory . '</Extrinsic>
+                    <Extrinsic name="subCategory"> ' . $subcatagory . '</Extrinsic>
                     <Extrinsic name="itemCondition">New</Extrinsic>
                     <Extrinsic name="qualifiedOffer">true</Extrinsic>
                     <Extrinsic name="preference">default</Extrinsic>
@@ -158,7 +236,9 @@ class Orders
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         $data = curl_exec($ch);
-        return $data;
+        $send = [$data, $base];
+
+        return $send;
         if (curl_errno($ch))
             print curl_error($ch);
         else
