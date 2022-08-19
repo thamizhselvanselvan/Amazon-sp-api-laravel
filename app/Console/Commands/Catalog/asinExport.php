@@ -6,7 +6,7 @@ use ZipArchive;
 use League\Csv\Writer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use App\Models\Catalog\Asin_master;
+use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -55,7 +55,7 @@ class asinExport extends Command
         $chunk = 100000;
         $this->mode = $total_csv / $chunk;
 
-        Asin_master::orderBy('id')->chunk($chunk, function ($records) {
+        AsinSource::orderBy('id')->chunk($chunk, function ($records) {
             
             if($this->count == 1 ){
 

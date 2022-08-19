@@ -9,7 +9,7 @@ use App\Models\BOE;
 use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
 use App\Models\Aws_credential;
-use App\Models\Catalog\Asin_master;
+use App\Models\Catalog\AsinSource;
 use App\Models\Catalog\pricingIn;
 use App\Models\Catalog\PricingUs;
 use App\Models\Mws_region;
@@ -254,9 +254,9 @@ class TestController extends Controller
       $product = 'bb_product_' . $country_code_lr . 's';
 
       $catalog_table = 'catalog' . $country_code_lr . 's';
-      Asin_master::select('asin_masters.asin', "$catalog_table.package_dimensions")
-        ->where('asin_masters.source', $country_code)
-        ->join($catalog_table, 'asin_masters.asin', '=', "$catalog_table.asin")
+      AsinSource::select('AsinSource.asin', "$catalog_table.package_dimensions")
+        ->where('AsinSource.source', $country_code)
+        ->join($catalog_table, 'AsinSource.asin', '=', "$catalog_table.asin")
         ->chunk($chunk, function ($data) use ($seller_id, $country_code_lr, $product_lp) {
 
           $pricing = [];
