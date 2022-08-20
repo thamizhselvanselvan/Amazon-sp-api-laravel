@@ -188,10 +188,11 @@ class labelManagementController extends Controller
             $results = $this->labelDataFormating($id);
             $result[] = (object)$results;
             $generator = new BarcodeGeneratorPNG();
-            $barcode_awb = $result['awb_no'];
 
-            if ($barcode_awb == '' || $barcode_awb == NULL) {
-                $awb_no = 'Awb Missing';
+            $barcode_awb = 'Awb Missing';
+
+            if (isset($result['awb_no'])) {
+                $barcode_awb = $result['awb_no'];
             }
 
             $bar_code[] = base64_encode($generator->getBarcode($barcode_awb, $generator::TYPE_CODE_39E));
