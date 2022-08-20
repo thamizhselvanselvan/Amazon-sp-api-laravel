@@ -116,10 +116,10 @@ class labelManagementController extends Controller
         //Single view
         $result = $this->labelDataFormating($id);
 
-        $awb_no = 'Awb Missing';
-        if (isset($result['awb_no'])) {
+        $awb_no = $result['awb_no'];
 
-            $awb_no = $result['awb_no'];
+        if ($awb_no == '' || $awb_no == NULL) {
+            $awb_no = 'Awb Missing';
         }
         $result = (object)$result;
 
@@ -188,11 +188,12 @@ class labelManagementController extends Controller
             $results = $this->labelDataFormating($id);
             $result[] = (object)$results;
             $generator = new BarcodeGeneratorPNG();
-            $barcode_awb = 'Awb Missing';
-            if (isset($result['awb_no'])) {
+            $barcode_awb = $result['awb_no'];
 
-                $barcode_awb = $result['awb_no'];
+            if ($barcode_awb == '' || $barcode_awb == NULL) {
+                $awb_no = 'Awb Missing';
             }
+
             $bar_code[] = base64_encode($generator->getBarcode($barcode_awb, $generator::TYPE_CODE_39E));
         }
 
