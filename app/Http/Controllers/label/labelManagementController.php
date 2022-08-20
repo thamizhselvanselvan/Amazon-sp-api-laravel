@@ -116,7 +116,7 @@ class labelManagementController extends Controller
         //Single view
         $result = $this->labelDataFormating($id);
 
-        $awb_no = 'NULL';
+        $awb_no = 'Awb Missing';
         if (isset($result['awb_no'])) {
 
             $awb_no = $result['awb_no'];
@@ -188,7 +188,7 @@ class labelManagementController extends Controller
             $results = $this->labelDataFormating($id);
             $result[] = (object)$results;
             $generator = new BarcodeGeneratorPNG();
-            $barcode_awb = 'NULL';
+            $barcode_awb = 'Awb Missing';
             if (isset($result['awb_no'])) {
 
                 $barcode_awb = $result['awb_no'];
