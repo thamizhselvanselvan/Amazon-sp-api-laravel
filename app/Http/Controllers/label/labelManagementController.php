@@ -183,7 +183,12 @@ class labelManagementController extends Controller
             $results = $this->labelDataFormating($id);
             $result[] = (object)$results;
             $generator = new BarcodeGeneratorPNG();
-            $bar_code[] = base64_encode($generator->getBarcode($results['awb_no'], $generator::TYPE_CODE_39E));
+            $barcode_awb = 'Invalid Awb';
+            if (isset($result['awb_no'])) {
+
+                $barcode_awb = $result['awb_no'];
+            }
+            $bar_code[] = base64_encode($generator->getBarcode($barcode_awb, $generator::TYPE_CODE_39E));
         }
 
         return view('label.multipleLabel', compact('result', 'bar_code'));
