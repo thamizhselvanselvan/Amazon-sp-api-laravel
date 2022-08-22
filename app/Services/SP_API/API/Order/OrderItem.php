@@ -123,7 +123,8 @@ class OrderItem
                 }
                 $order_detials->amazon_order_identifier = $order_id;
                 $order_detials->shipping_address = $order_address;
-
+                $order_detials->created_at = now();
+                $order_detials->updated_at = now();
                 R::store($order_detials);
             }
         }
