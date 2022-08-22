@@ -85,7 +85,7 @@ class AmazonTrackingAPIController extends Controller
                 <AmazonTrackingRequest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
                 <APIVersion>1.0</APIVersion>
-                <TrackingNumberError>Invalid AWB: US30000006</TrackingNumberError>
+                <TrackingNumberError>Invalid AWB: ' . $phpArray['TrackingNumber'] . '</TrackingNumberError>
                 </AmazonTrackingRequest>';
                 return false;
             }
