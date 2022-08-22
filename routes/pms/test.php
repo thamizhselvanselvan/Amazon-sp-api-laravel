@@ -44,6 +44,7 @@ Route::get("test", function () {
 });
 
 Route::get('test/catalog/{asin}/{country}', 'TestController@getASIN');
+Route::get('test/seller/order/{seller_id}/{country_code}', 'TestController@getSellerOrder');
 Route::get('test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
 Route::get('renameamazoninvoice/', 'TestController@RenameAmazonInvoice');
 Route::get('getPricing/', 'TestController@GetPricing');
@@ -100,3 +101,5 @@ Route::get('smsatracking/{awb}', function ($awb_no) {
 
     //
 });
+
+Route::get('export_catalog', 'TestController@ExportCatalog');

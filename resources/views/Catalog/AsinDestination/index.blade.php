@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'ASIN Source')
+@section('title', 'ASIN Destination')
 
 @section('css')
 <link rel="stylesheet" href="/css/styles.css">

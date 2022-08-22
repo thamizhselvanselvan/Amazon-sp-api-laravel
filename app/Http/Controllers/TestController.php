@@ -2,31 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Admin\Ratemaster;
 use Exception;
 use RedBeanPHP\R;
 use App\Models\BOE;
+use League\Csv\Writer;
+use App\Models\Mws_region;
 use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
 use App\Models\Aws_credential;
-use App\Models\Catalog\AsinSource;
-use App\Models\Catalog\pricingIn;
-use App\Models\Catalog\PricingUs;
-use App\Models\Mws_region;
 use Illuminate\Support\Carbon;
 use SellingPartnerApi\Endpoint;
+use App\Models\Admin\Ratemaster;
+use App\Models\Catalog\pricingIn;
+use App\Models\Catalog\PricingUs;
+use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Services\SP_API\Config\ConfigTrait;
 use Illuminate\Support\Facades\Auth;
 use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\CatalogApi;
 use App\Services\SP_API\CatalogImport;
 use Illuminate\Support\Facades\Storage;
-use App\Models\order\OrderSellerCredentials;
-use App\Services\Catalog\PriceConversion;
 use Illuminate\Cache\RateLimiting\Limit;
+use App\Services\Catalog\PriceConversion;
+use App\Services\SP_API\Config\ConfigTrait;
+use App\Models\order\OrderSellerCredentials;
+use AWS\CRT\HTTP\Response;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use SellingPartnerApi\Api\ProductPricingApi;
 
@@ -172,6 +174,47 @@ class TestController extends Controller
     } catch (Exception $e) {
       echo 'Exception when calling ProductPricingApi->getPricing: ', $e->getMessage(), PHP_EOL;
     }
+  }
+
+  public function getSellerOrder($seller_id, $country_code)
+  {
+    echo "Order List";
+
+    $token = NULL;
+    $config = $this->config($seller_id, $country_code, $token);
+    $marketplace_ids = $this->marketplace_id($country_code);
+    $marketplace_ids = [$marketplace_ids];
+
+    $apiInstance = new OrdersApi($config);
+    $startTime = Carbon::now()->subDays(5)->toISOString();
+    $createdAfter = $startTime;
+    $max_results_per_page = 100;
+
+    $next_token = NULL;
+    $amazon_order_ids = NULL;
+
+    $order = $apiInstance->getOrders(
+      $marketplace_ids,
+      $createdAfter,
+      $created_before = null,
+      $last_updated_after = null,
+      $last_updated_before = null,
+      $order_statuses = null,
+      $fulfillment_channels = null,
+      $payment_methods = null,
+      $buyer_email = null,
+      $seller_order_id = null,
+      $max_results_per_page,
+      $easy_ship_shipment_statuses = null,
+      $next_token,
+      $amazon_order_ids,
+      $actual_fulfillment_supply_source_id = null,
+      $is_ispu = null,
+      $store_chain_store_id = null,
+      $data_elements = null
+    )->getPayload();
+    po($order);
+    //
   }
 
   public function getOrder($order_id, $seller_id, $country_code)
@@ -531,6 +574,40 @@ class TestController extends Controller
     $priceConverter = new PriceConversion();
 
     return $priceConverter->USAToIND($weight, $bb_price);
+    //
+  }
+
+  public function ExportCatalog()
+  {
+
+    $columns = DB::connection('catalog')->select("SHOW COLUMNS from cataloguss");
+    $header = [];
+    foreach ($columns as $columns_name) {
+
+      $header[] = $columns_name->Field;
+    }
+    natsort($header);
+
+    $db_header = implode(',', $header);
+
+    $data = DB::connection('catalog')->select("SELECT $db_header from cataloguss limit 1");
+
+    $file_path = 'catalog/US_catalog.csv';
+    if (!Storage::exists($file_path)) {
+      Storage::put($file_path, '');
+    }
+
+    $writer = Writer::createFromPath(Storage::path($file_path, 'w'));
+
+    $data = array_map(function ($datas) {
+      return (array) $datas;
+    }, $data);
+
+    $writer->insertOne($header);
+    $writer->insertAll($data);
+
+    return Storage::download($file_path);
+    dd($data);
     //
   }
 }

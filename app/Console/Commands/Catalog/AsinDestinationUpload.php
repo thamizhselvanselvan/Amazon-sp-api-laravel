@@ -93,5 +93,6 @@ class AsinDestinationUpload extends Command
 
         AsinDestination::upsert($Asin_record, ['user_asin_destination_unique'], ['destination']);
         $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination);
+
     }
 }

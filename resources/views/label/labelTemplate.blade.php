@@ -63,7 +63,14 @@
                                 <div class="col p-0">
                                     <img class="label-barcode-img" src='data:image/png;base64,{!! $bar_code !!}'>
                                     <b>
-                                        <div class="text-center">{{ $result->awb_no }}</div>
+                                        <div class="text-center">
+                                            @if($result->awb_no =='' || $result->awb_no == NULL)
+                                            Awb Missing
+                                            @else
+
+                                            {{ $result->awb_no }}
+                                            @endif
+                                        </div>
                                     </b>
                                 </div>
                                 <div class="col p-0"></div>
