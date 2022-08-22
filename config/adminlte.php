@@ -538,10 +538,22 @@ return [
             'submenu' => [
                 [
                     'text' => 'Dashboard',
-                    'url' => 'orders/dashboard',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
-
+                    'submenu'   => [
+                        [
+                            'text' => 'Order Details',
+                        'url' => 'orders/dashboard',
+                        'can' => ['Admin'],
+                        'icon' => 'far fa-fw fa-file',
+                        ],
+                        [
+                            'text' => 'Order Item Details',
+                        'url' => 'orders/item/dashboard',
+                        'can' => ['Admin'],
+                        'icon' => 'far fa-fw fa-file',
+                        ],
+                    ],
                 ],
             ],
         ],
