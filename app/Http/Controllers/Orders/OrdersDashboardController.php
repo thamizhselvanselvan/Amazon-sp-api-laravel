@@ -84,14 +84,14 @@ class OrdersDashboardController extends Controller
         GROUP BY country, orderitemdetails.updated_at, orsc.store_name");
         
         $groupby = collect($latest);
-        $store = $groupby->groupBy('store_name');
-        foreach($store as $key => $value)
+        $store_name = $groupby->groupBy('store_name');
+        foreach($store_name as $key => $value)
         {
             foreach($latest as $date)
             {
                 $store_time = $date->updated_at;
                 $country_name = $date->country;
-                $age[$key.'['.$country_name.']'] = $this->CarbonGetDateDiff($store_time. '.000');
+                $age[$key.' ['.$country_name.']'] = $this->CarbonGetDateDiff($store_time. '.000');
             }
         }
         
