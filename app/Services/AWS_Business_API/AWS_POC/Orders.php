@@ -23,7 +23,7 @@ class Orders
 
         /* ship and bill details  */
 
-        $money  = 50.00;
+       
         $orderID = random_int(100, 10000);
         $org_name = 'nitrous';
         $deli1 = 'Tec Team, tec@moshecom.com';
@@ -43,14 +43,15 @@ class Orders
         $tax = '1';
         $currency = 'USD';
         /* item details  */
-        $asin = 'B072QYBXYV';
-        $item_description = 'Alex Vando Mens Dress Shirts Regular Fit Long Sleeve Men Shirt';
+        $money  = 2.91;
+        $asin = 'B09542G9ZN';
+        $item_description = 'Amazon Basics Cotton Rounds, 100ct, 1-Pack (Previously Solimo)';
         $unit = 'EA';
         $class = '';
-        $manuname = ' ';
+        $manuname = 'Amazon.com Services, Inc.';
         $manu_id = '';
         $subcatagory = '';
-        $catagory = 'Clothing';
+        $catagory = 'Plastic';
         $line = '1';
         $qty = '1';
 
@@ -236,7 +237,7 @@ class Orders
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         $data = curl_exec($ch);
-        $send = [$data, $base];
+        $send = [$data, $base,$xml];
 
         return $send;
         if (curl_errno($ch))
