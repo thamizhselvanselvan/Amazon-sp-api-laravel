@@ -25,7 +25,16 @@ class B2CShipTrackingAPIController extends Controller
 
             if ($user_id != 'Amazon' || $password != 'AcZmraDzLoxA4NxLUcyrWnSiEaXxRQkfJ9B5hCbiK5M=') {
 
-                echo "Invalid User And Password";
+                echo '<?xml version="1.0" encoding="UTF-8"?>
+                <AmazonTrackingRequest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
+                <ValidationError>
+                    <UserIDError>Invalid</UserIDError>
+                    <PasswordError>Invalid</PasswordError>
+                </ValidationError>
+                </AmazonTrackingRequest>';
+
+                return false;
             }
             $final_data = getTrackingDetails($phpArray['TrackingNumber']);
             if ($final_data != 'Invalid AWB') {
@@ -55,13 +64,20 @@ class B2CShipTrackingAPIController extends Controller
                 return json_encode($final_array);
             } else {
 
-                echo $final_data;
+                echo '<?xml version="1.0" encoding="UTF-8"?>
+                <AmazonTrackingRequest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
+                <APIVersion>1.0</APIVersion>
+                <TrackingNumberError>Invalid AWB: ' . $phpArray['TrackingNumber'] . '</TrackingNumberError>
+                </AmazonTrackingRequest>';
                 return false;
-                //
             }
         } catch (Exception $e) {
-
-            echo $e;
+            echo '<?xml version="1.0" encoding="UTF-8"?>
+            <AmazonTrackingRequestError xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
+            Invalid Request
+            </AmazonTrackingRequestError>';
             return false;
         }
     }
