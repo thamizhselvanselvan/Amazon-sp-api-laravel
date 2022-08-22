@@ -44,20 +44,24 @@ class AmazonTrackingAPIController extends Controller
                 foreach ($final_data['tracking_details'] as $value) {
 
                     $record = TrackingEventMapping::where('our_event_description', $value['Activity'])->orderby('updated_at', 'desc')->first();
-                    $results  .= '<TrackingEventHistory>
-                            <TrackingEventDetail>
-                                <EventDateTime>' . date("Y-m-d\TH:i:s\Z", strtotime($value['Date_Time'])) . '</EventDateTime>
-                                <EventLocation>
-                                    <City></City>
-                                    <CountryCode></CountryCode>
-                                    <PostalCode></PostalCode>
-                                    <StateProvince></StateProvince>
-                                </EventLocation>
-                                <EventReason>' . $record->our_event_description . '</EventReason>
-                                <EventStatus>' . $record->our_event_code . '</EventStatus>
-                                <SignedForByName/>
-                            </TrackingEventDetail>
-                        </TrackingEventHistory>';
+
+                    if (isset($record->our_event_description) && isset($record->our_event_code)) {
+
+                        $results  .= '<TrackingEventHistory>
+                                <TrackingEventDetail>
+                                    <EventDateTime>' . date("Y-m-d\TH:i:s\Z", strtotime($value['Date_Time'])) . '</EventDateTime>
+                                    <EventLocation>
+                                        <City></City>
+                                        <CountryCode></CountryCode>
+                                        <PostalCode></PostalCode>
+                                        <StateProvince></StateProvince>
+                                    </EventLocation>
+                                    <EventReason>' . $record->our_event_description . '</EventReason>
+                                    <EventStatus>' . $record->our_event_code . '</EventStatus>
+                                    <SignedForByName/>
+                                </TrackingEventDetail>
+                            </TrackingEventHistory>';
+                    }
                 }
                 $results .= '</PackageTrackingInfo>';
 
