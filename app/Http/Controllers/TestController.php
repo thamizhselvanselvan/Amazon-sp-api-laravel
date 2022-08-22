@@ -176,6 +176,47 @@ class TestController extends Controller
     }
   }
 
+  public function getSellerOrder($seller_id, $country_code)
+  {
+    echo "Order List";
+
+    $token = NULL;
+    $config = $this->config($seller_id, $country_code, $token);
+    $marketplace_ids = $this->marketplace_id($country_code);
+    $marketplace_ids = [$marketplace_ids];
+
+    $apiInstance = new OrdersApi($config);
+    $startTime = Carbon::now()->subDays(5)->toISOString();
+    $createdAfter = $startTime;
+    $max_results_per_page = 100;
+
+    $next_token = NULL;
+    $amazon_order_ids = NULL;
+
+    $order = $apiInstance->getOrders(
+      $marketplace_ids,
+      $createdAfter,
+      $created_before = null,
+      $last_updated_after = null,
+      $last_updated_before = null,
+      $order_statuses = null,
+      $fulfillment_channels = null,
+      $payment_methods = null,
+      $buyer_email = null,
+      $seller_order_id = null,
+      $max_results_per_page,
+      $easy_ship_shipment_statuses = null,
+      $next_token,
+      $amazon_order_ids,
+      $actual_fulfillment_supply_source_id = null,
+      $is_ispu = null,
+      $store_chain_store_id = null,
+      $data_elements = null
+    )->getPayload();
+    po($order);
+    //
+  }
+
   public function getOrder($order_id, $seller_id, $country_code)
   {
     $token = NULL;
