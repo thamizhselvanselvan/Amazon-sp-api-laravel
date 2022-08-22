@@ -850,7 +850,6 @@ if (!function_exists('getTrackingDetails')) {
 
         if (!empty($packet_forwarder)) {
 
-            // Log::alert($packet_forwarder);
             $forwarder_1 = $packet_forwarder->forwarder_1;
             $forwarder_1_awb = $packet_forwarder->forwarder_1_awb;
 
@@ -881,11 +880,10 @@ if (!function_exists('getTrackingDetails')) {
                 'tracking_details'  => $tracking_details,
                 'shipping_address'  => $packet_forwarder->shipping_address,
             ];
-            // Log::notice($result);
+
             return $result;
         } else {
-            echo 'Invalid AWB';
-            return false;
+            return 'Invalid AWB';
         }
     }
 }

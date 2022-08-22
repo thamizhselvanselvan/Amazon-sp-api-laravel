@@ -26,9 +26,22 @@ class AmazonTrackingAPIController extends Controller
             $user_id = $phpArray['Validation']['UserID'];
             $password = $phpArray['Validation']['Password'];
 
+            if ($user_id != 'Amazon' || $password != 'AcZmraDzLoxA4NxLUcyrWnSiEaXxRQkfJ9B5hCbiK5M=') {
+
+                echo '<?xml version="1.0" encoding="UTF-8"?>
+                <AmazonTrackingRequest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
+                <ValidationError>
+                    <UserIDError>Invalid</UserIDError>
+                    <PasswordError>Invalid</PasswordError>
+                </ValidationError>
+                </AmazonTrackingRequest>';
+                return false;
+            }
+
             $final_data = getTrackingDetails($phpArray['TrackingNumber']);
 
-            if (!empty(($final_data))) {
+            if ($final_data != 'Invalid AWB') {
 
                 $results = '<APIVersion>1</APIVersion>
                         <PackageTrackingInfo>
@@ -63,13 +76,26 @@ class AmazonTrackingAPIController extends Controller
                             </TrackingEventHistory>';
                     }
                 }
-                $results .= '</PackageTrackingInfo>';
 
+                $results .= '</PackageTrackingInfo>';
                 return $results;
+            } else {
+
+                echo '<?xml version="1.0" encoding="UTF-8"?>
+                <AmazonTrackingRequest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
+                <APIVersion>1.0</APIVersion>
+                <TrackingNumberError>Invalid AWB: US30000006</TrackingNumberError>
+                </AmazonTrackingRequest>';
+                return false;
             }
         } catch (Exception $e) {
 
-            echo 'Invalid Request';
+            echo '<?xml version="1.0" encoding="UTF-8"?>
+            <AmazonTrackingRequestError xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
+            Invalid Request
+            </AmazonTrackingRequestError>';
             return false;
         }
     }
