@@ -66,7 +66,7 @@ class CatalogPriceImport extends Command
             $product = 'bb_product_' . $country_code_lr . 's';
 
             $catalog_table = 'catalog' . $country_code_lr . 's';
-            AsinDestination::select('asin_destinations.asin', "$catalog_table.packageweight")
+            AsinDestination::select('asin_destinations.asin', "$catalog_table.package_dimensions")
                 ->where('asin_destinations.destination', $country_code)
                 ->join($catalog_table, 'asin_destinations.asin', '=', "$catalog_table.asin")
                 ->chunk($chunk, function ($data) use ($seller_id, $country_code_lr, $product_lp, $price_convert) {
@@ -76,22 +76,22 @@ class CatalogPriceImport extends Command
                     $asin_details = [];
                     $listing_price_amount = '';
 
-                    Log::info($data);
                     $asin_array = [];
                     foreach ($data as $value) {
 
-                        $weight = json_decode($value->packageweight);
+                        $dimension = ($value->package_dimensions);
 
                         $a = $value->asin;
                         $weight_value = 0.5;
-                        if (isset($weight->value)) {
+                        // if (isset($weight->value)) {
 
-                            $weight_value = $weight->value;
-                        }
-                        $calculated_weight[$a] = poundToKg($weight_value);
+                        //     $weight_value = $weight->value;
+                        // }
+                        $calculated_weight[$a] = getWeight($dimension);
                         $asin_array[] = "'$a'";
+                        Log::info($calculated_weight[$a]);
                     }
-
+                    exit;
                     $asin = implode(',', $asin_array);
                     $asin_price = DB::connection('buybox')
                         ->select("SELECT PPO.asin,
