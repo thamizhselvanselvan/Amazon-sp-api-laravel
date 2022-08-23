@@ -45,12 +45,11 @@ Route::post('catalog/remove/asin/{id}', 'Catalog\AsinSourceController@trash');
 Route::get('catalog/asin/bin', 'Catalog\AsinSourceController@trashView')->name('catalog.softDelete.view');
 Route::post('catalog/asin/restore/{id}', 'Catalog\AsinSourceController@restore')->name('catalog.restore.view');
 Route::get('catalog/asin-template-download', 'Catalog\AsinSourceController@AsinTemplateDownload')->name('catalog.download.template');
+Route::get('catalog/rate-exchange', 'Catalog\AsinSourceController@getExchangeRate')->name('catalog.exchange.rate');
+
 Route::get('catalog/product', 'Catalog\CatalogProductController@Index');
 Route::get('catalog/product/fetch-from-amazon', 'Catalog\CatalogProductController@Amazon')->name('catalog.amazon.product');
-
 Route::post('catalog/price/export', 'Catalog\CatalogProductController@PriceExport')->name('catalog.price.export');
-
-Route::get('catalog/rate-exchange', 'Catalog\AsinSourceController@getExchangeRate')->name('catalog.exchange.rate');
 Route::get('catalog/export', 'Catalog\CatalogProductController@ExportCatalog')->name('catalog.export');
 Route::get('catalog/get-file', 'Catalog\CatalogProductController@GetCatalogFile');
 Route::get('catalog/download/csv-file/{country_code}', 'Catalog\CatalogProductController@DownloadCatalogIntocsv');
