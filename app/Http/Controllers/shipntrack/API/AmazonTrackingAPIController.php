@@ -18,8 +18,8 @@ class AmazonTrackingAPIController extends Controller
     {
         $requestContent = $request->getContent();
 
-        $test = new AmazonTrackingRequest();
+        $tracking_request = new AmazonTrackingRequest();
 
-        return $test->TrackingMaster($requestContent);
+        return $tracking_request->TrackingMaster($requestContent);
     }
 }

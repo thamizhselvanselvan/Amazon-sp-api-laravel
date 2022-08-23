@@ -42,6 +42,7 @@ class AsinDestinationUpload extends Command
      */
     public function handle()
     {
+
         $push_to_bb = new PushAsin();
 
         $user_id = $this->argument('user_id');
@@ -58,7 +59,6 @@ class AsinDestinationUpload extends Command
         $count = 0;
         foreach ($asins as  $asin_details) {
 
-            $count = 0;
             $asin = $asin_details['ASIN'];
             $destination =  $asin_details['Destination'];
 
@@ -81,18 +81,18 @@ class AsinDestinationUpload extends Command
 
             if ($count == 1000) {
 
-                AsinDestination::upsert($Asin_record, ['user_asin_destination_unique'], ['destination']);
+                AsinDestination::upsert($Asin_record, ['user_asin_destination_unique'], ['asin', 'destination']);
                 $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination);
 
                 $Asin_record = [];
                 $product = [];
                 $product_lowest_price = [];
+                $count = 0;
             }
             $count++;
         }
 
-        AsinDestination::upsert($Asin_record, ['user_asin_destination_unique'], ['destination']);
+        AsinDestination::upsert($Asin_record, ['user_asin_destination_unique'], ['asin', 'destination']);
         $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination);
-
     }
 }
