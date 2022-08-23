@@ -89,9 +89,8 @@ class CatalogPriceImport extends Command
                         // }
                         $calculated_weight[$a] = getWeight($dimension);
                         $asin_array[] = "'$a'";
-                        Log::info($calculated_weight[$a]);
                     }
-                    exit;
+
                     $asin = implode(',', $asin_array);
                     $asin_price = DB::connection('buybox')
                         ->select("SELECT PPO.asin,
