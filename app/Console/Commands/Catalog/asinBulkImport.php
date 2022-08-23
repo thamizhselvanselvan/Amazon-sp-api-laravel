@@ -55,7 +55,7 @@ class asinBulkImport extends Command
         $csv->setHeaderOffset(0);
 
         $source = buyboxCountrycode();
-        $asin = [];
+        $asin_details = [];
         $count = 0;
 
         foreach ($csv as $key => $record) {
@@ -74,7 +74,7 @@ class asinBulkImport extends Command
 
                 AsinSource::upsert($asin_details, ['user_asin_source_unique'], ['source']);
                 $count = 0;
-                $asin = [];
+                $asin_details = [];
             }
             $count++;
         }
