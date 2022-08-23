@@ -74,7 +74,7 @@ class asinBulkImport extends Command
 
                 AsinSource::upsert($asin_details, ['user_asin_source_unique'], ['source']);
                 $count = 0;
-                $asin = [];
+                $asin_details = [];
             }
             $count++;
         }
