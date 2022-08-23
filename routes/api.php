@@ -34,5 +34,6 @@ Route::group(['namespace' => 'Api\App\v1', 'as' => 'v1.', 'prefix' => 'v1'], fun
     // Route::get('/testing', AmazonTrackingAPIController::class);
 });
 
-Route::match(['get', 'post'], 'trackingAmazon', 'shipntrack\API\AmazonTrackingAPIController@B2cShipTrackingResponse');
-// Route::get('testing', 'shipntrack\API\AmazonTrackingAPIController@B2cShipTrackingResponse');
+$method = ['get', 'post'];
+Route::match($method, 'trackingAmazon', 'shipntrack\API\AmazonTrackingAPIController@AmazonTrackingResponse');
+Route::match($method, 'trackingb2cship', 'shipntrack\API\B2CShipTrackingAPIController@B2CshipTrackingResponse');

@@ -12,7 +12,7 @@ use App\Models\ShipNTrack\EventMapping\TrackingEventMapping;
 
 class AmazonTrackingAPIController extends Controller
 {
-    function B2cShipTrackingResponse(Request $request)
+    function AmazonTrackingResponse(Request $request)
     {
         $requestContent = $request->getContent();
         $results = '';
@@ -36,6 +36,7 @@ class AmazonTrackingAPIController extends Controller
                     <PasswordError>Invalid</PasswordError>
                 </ValidationError>
                 </AmazonTrackingRequest>';
+
                 return false;
             }
 
