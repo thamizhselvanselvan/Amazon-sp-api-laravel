@@ -1,11 +1,9 @@
 @extends('adminlte::page')
 
 @section('title', 'Event Master')
+
 @section('css')
-<style>
-
-
-</style>
+<link rel="stylesheet" href="/css/styles.css">
 @stop
 
 @section('content_header')

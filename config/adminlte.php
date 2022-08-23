@@ -539,19 +539,19 @@ return [
                 [
                     'text' => 'Dashboard',
                     'can' => ['Admin'],
-                    'icon' => 'far fa-fw fa-file',
+                    'icon' => 'fa fa-dashboard',
                     'submenu'   => [
                         [
                             'text' => 'Order Details',
                         'url' => 'orders/dashboard',
                         'can' => ['Admin'],
-                        'icon' => 'far fa-fw fa-file',
+                        'icon' => 'fa fa-dashboard',
                         ],
                         [
                             'text' => 'Order Item Details',
                         'url' => 'orders/item/dashboard',
                         'can' => ['Admin'],
-                        'icon' => 'far fa-fw fa-file',
+                        'icon' => 'fa fa-dashboard',
                         ],
                     ],
                 ],
