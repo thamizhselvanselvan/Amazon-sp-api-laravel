@@ -590,7 +590,7 @@ class TestController extends Controller
 
     $db_header = implode(',', $header);
 
-    $data = DB::connection('catalog')->select("SELECT $db_header from cataloguss limit 1");
+    $data = DB::connection('catalog')->select("SELECT $db_header from cataloguss");
 
     $file_path = 'catalog/US_catalog.csv';
     if (!Storage::exists($file_path)) {
