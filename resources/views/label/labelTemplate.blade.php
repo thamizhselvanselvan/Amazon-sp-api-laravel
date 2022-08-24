@@ -27,11 +27,12 @@
         font-size: 14px;
     }
 
-    .table-bordered td,
-    .table-bordered th,
-    .table thead th,
+    .table_border th,
+    .table_border td,
+    .table_border td,
+    .table_border thead th,
     .return {
-        border: 1px solid black;
+        border: 1px solid black !important;
     }
 
     .mb-1,
@@ -55,6 +56,19 @@
             size: 4in 6in;
             margin: 0px;
             padding: 0px;
+        }
+
+        .table_border th,
+        .table_border td,
+        .table_border tr,
+        .table_border thead th,
+        .return {
+            border: 1px solid black !important;
+        }
+
+        .return,
+        .prduct-details thead tr th {
+            border-top: 0px !important;
         }
 
         .container-fluid {
@@ -88,7 +102,7 @@
     <div class="label p-1">
         <div class="label-content">
             <!-- <div class="table-responsive"> -->
-            <table class="table table-label table-bordered table-bordered-dark<td pt-1 pb-0 mb-1">
+            <table class="table table-label table-bordered table-bordered-dark<td pt-1 pb-0 mb-1 table_border">
                 <tbody>
                     <tr>
                         <td class="pb-0">
@@ -170,7 +184,7 @@
                     </tr>
                 </tbody>
             </table>
-            <table class="table table-bordered table-bordered-dark product pt-0 mb-0 prduct-details">
+            <table class="table table-bordered table-bordered-dark product pt-0 mb-0 prduct-details table_border">
                 <thead>
                     <tr>
                         <th class="text-left">Sr</th>
