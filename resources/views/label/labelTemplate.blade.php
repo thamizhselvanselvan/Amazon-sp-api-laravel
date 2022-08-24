@@ -27,6 +27,28 @@
         font-size: 14px;
     }
 
+    .table-bordered td,
+    .table-bordered th,
+    .table thead th,
+    .return {
+        border: 1px solid black;
+    }
+
+    .mb-1,
+    .my-1 {
+        margin-bottom: 0px !important;
+    }
+
+    .mt-1,
+    .my-1 {
+        margin-top: 0px !important;
+    }
+
+    .return,
+    .prduct-details thead tr th {
+        border-top: 0px !important;
+    }
+
     @media print {
 
         @page {
@@ -148,7 +170,7 @@
                     </tr>
                 </tbody>
             </table>
-            <table class="table table-bordered table-bordered-dark product pt-0">
+            <table class="table table-bordered table-bordered-dark product pt-0 mb-0 prduct-details">
                 <thead>
                     <tr>
                         <th class="text-left">Sr</th>
