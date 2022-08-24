@@ -15,6 +15,18 @@
 @section('css')
 
 <style type="text/css">
+    body div strong {
+        font-family: "Lato";
+        font-weight: 900;
+        font-size: 12px;
+    }
+
+    body * {
+        font-family: "Lato";
+        font-weight: 700;
+        font-size: 14px;
+    }
+
     @media print {
 
         @page {
@@ -62,12 +74,12 @@
                                 <div class="col p-0"></div>
                                 <div class="col p-0">
                                     <img class="label-barcode-img" src='data:image/png;base64,{!! $bar_code !!}'>
+                                    <!-- {!! $bar_code !!} -->
                                     <b>
                                         <div class="text-center">
                                             @if($result->awb_no =='' || $result->awb_no == NULL)
-                                            Awb Missing
+                                            AWB is missing
                                             @else
-
                                             {{ $result->awb_no }}
                                             @endif
                                         </div>
@@ -164,7 +176,7 @@
             </table>
 
             <div class="mt-1 p-1 small return">
-                <div>Return Address:</div>
+                <div><strong>Return Address:<strong></div>
                 <span>Warehouse 61, Al Habtoor Warehouses, Industrial Area 3, Al Qusias, Dubai UAE</span>
             </div>
             <!-- </div> -->
