@@ -16,7 +16,7 @@ class AmazonCatalogImport implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     private $payload;
-  
+
     /**
      * Create a new job instance.
      *
@@ -34,9 +34,18 @@ class AmazonCatalogImport implements ShouldQueue
      */
     public function handle()
     {
-        $asin_source = $this->payload;
-        $type = 4;
-        $catalog =  new Catalog();
-        $catalog->index($asin_source, $seller_id = NULL, $type);        
+        $api_type = 'old';
+
+        if ($api_type == 'new') {
+
+
+            //new catalog api 
+        } else {
+
+            $asin_source = $this->payload;
+            $type = 4;
+            $catalog =  new Catalog();
+            $catalog->index($asin_source, $seller_id = NULL, $type);
+        }
     }
 }

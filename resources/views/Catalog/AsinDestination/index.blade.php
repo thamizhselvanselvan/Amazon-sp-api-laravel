@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'ASIN Source')
+@section('title', 'ASIN Destination')
 
 @section('css')
 <link rel="stylesheet" href="/css/styles.css">
@@ -19,7 +19,7 @@
             <a href="import-asin-destination">
                 <x-adminlte-button label="Asin Bulk Import" theme="primary" icon="fas fa-file-import" class="btn-sm" />
             </a>
-            <a href="{{route('catalog.asin.export')}}">
+            <a href="{{route('catalog.asin.dastination.export')}}">
                 <x-adminlte-button label="Asin Export" theme="primary" icon="fas fa-file-export" class="btn-sm" />
             </a>
 
@@ -43,7 +43,7 @@
                         </div>
                         <div class="modal-body">
 
-                            <a href="{{ route('catalog.download.asinMaster') }}">
+                            <a href="{{ route('catalog.download.asin.destination') }}">
                                 <h6>Download ASIN </h6>
                         </div>
                         <div class="modal-footer">

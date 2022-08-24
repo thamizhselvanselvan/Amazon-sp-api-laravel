@@ -12,8 +12,8 @@ class AsinDestination extends Model
     protected $connection = 'catalog';
     protected $fillable = [
         'asin',
+        'destination',
         'user_id',
         'status',
-        'destination',
     ];
 }

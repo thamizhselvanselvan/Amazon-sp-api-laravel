@@ -142,7 +142,7 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-        ],    
+        ],
 
         'seller' => [
             'driver' => 'mysql',
@@ -162,7 +162,7 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-        ],        
+        ],
 
         'buybox' => [
             'driver' => 'mysql',
@@ -182,8 +182,8 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-        ],      
-        
+        ],
+
         'aws' => [
             'driver' => 'mysql',
             'read' => [
@@ -223,7 +223,7 @@ return [
             'password' => env('MSSQL_DB_PASSWORD', ''),
             'charset' => 'utf8',
         ],
-        
+
         'shipntracking' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
@@ -243,7 +243,7 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
-        
+
     ],
 
     /*

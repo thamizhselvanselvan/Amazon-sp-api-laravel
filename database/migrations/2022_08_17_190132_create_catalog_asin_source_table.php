@@ -13,6 +13,7 @@ class CreateCatalogAsinSourceTable extends Migration
      */
     public function up()
     {
+        Schema::connection('catalog')->dropIfExists('asin_masters');
         Schema::connection('catalog')->create('asin_sources', function (Blueprint $table) {
             $table->id();
             $table->string('asin', 20);

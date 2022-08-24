@@ -8,6 +8,7 @@ use App\Models\Mws_region;
 use App\Models\Aws_credential;
 use SellingPartnerApi\Endpoint;
 use App\Models\Admin\BB\BB_User;
+use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -127,8 +128,16 @@ class Catalog
                 //inventory
 
             } elseif ($type == 4) {
-                DB::connection('catalog')
-                    ->update("UPDATE asin_masters SET status = '1' WHERE status = '0'");
+                AsinSource::upsert(
+                    [
+                        'asin' => $asin,
+                        'source' => $country_code,
+                        'user_id' => $seller_id,
+                        'status' => 1
+                    ],
+                    ['user_asin_source_unique'],
+                    ['status']
+                );
             }
         } catch (Exception $e) {
             Log::alert($e);

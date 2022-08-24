@@ -44,6 +44,7 @@ Route::get("test", function () {
 });
 
 Route::get('test/catalog/{asin}/{country}', 'TestController@getASIN');
+Route::get('test/seller/order/{seller_id}/{country_code}', 'TestController@getSellerOrder');
 Route::get('test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
 Route::get('renameamazoninvoice/', 'TestController@RenameAmazonInvoice');
 Route::get('getPricing/', 'TestController@GetPricing');
@@ -100,3 +101,46 @@ Route::get('smsatracking/{awb}', function ($awb_no) {
 
     //
 });
+
+Route::get('test/api', function () {
+
+
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://uat-api.b2cship.us/PacificAmazonAPI.svc/TrackingAmazon',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_SSL_VERIFYHOST => 0,
+        CURLOPT_SSL_VERIFYPEER => 0,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => '<?xml version="1.0" encoding="UTF-8"?>
+<AmazonTrackingRequest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
+<Validation>
+<UserID>Amazon</UserID>
+<Password>AcZmraDzLoxA4NxLUcyrWnSiEaXxRQkfJ9B5hCbiK5M=</Password>
+</Validation>
+<APIVersion>1.0</APIVersion>
+<TrackingNumber>US10000142</TrackingNumber>
+</AmazonTrackingRequest>
+',
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: text/plain'
+        ),
+    ));
+
+    $response = curl_exec($curl);
+
+    if ($response === false) {
+        echo 'Curl error: ' . curl_error($curl);
+    }
+
+    curl_close($curl);
+    echo $response;
+});
+Route::get('export_catalog', 'TestController@ExportCatalog');

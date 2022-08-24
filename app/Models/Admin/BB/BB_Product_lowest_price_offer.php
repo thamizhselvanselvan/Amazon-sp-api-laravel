@@ -10,7 +10,7 @@ class BB_Product_lowest_price_offer extends Model
     use HasFactory;
     protected $connection = 'buybox';
     // protected $table = 'product_lowest_priced_offers';
-    
+
     protected $fillable = [
         'asin',
         'cyclic_status',
@@ -37,5 +37,4 @@ class BB_Product_lowest_price_offer extends Model
         'offers',
         'is_buybox_winner'
     ];
-
 }

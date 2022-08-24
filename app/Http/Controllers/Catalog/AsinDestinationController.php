@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Catalog;
 
 use Illuminate\Http\Request;
+use App\Services\BB\PushAsin;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -17,7 +18,7 @@ class AsinDestinationController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            
+
             $data = AsinDestination::orderBy('id', 'DESC')->get();
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -39,37 +40,73 @@ class AsinDestinationController extends Controller
 
     public function AsinDestinationFile(Request $request)
     {
-        $user_id = Auth::user()->id;
-        $request->validate([
-            'asin' => 'required|mimes:csv',
-        ]);
+        if ($request->form_type == 'text_area') {
+            $request->validate([
+                'text_area' => 'required',
+                'destination'    => 'required',
+            ]);
+            $user_id = Auth::user()->id;
+            $value = $request->text_area;
+            $destination = $request->destination;
+            $asins = preg_split('/[\r\n| |:|,]/', $value, -1, PREG_SPLIT_NO_EMPTY);
 
-        if(!$request->hasFile('asin'))
-        {
-            return back()->with('error', "Please upload file to import it to the database");
-        }
-    
-        $file = file_get_contents($request->asin);
-        
-        $path = 'AsinDestination/asin.csv';
-        // if(!Storage::exists($path)){
+            $country_code = buyboxCountrycode();
+            if ($destination == 'UK') {
+                return redirect('catalog/import-asin-destination')->with('error', 'Seller not available!');
+            }
+            foreach ($asins as $asin) {
+                $records[] = [
+                    'asin'  => $asin,
+                    'user_id'   => $user_id,
+                    'destination'   => $destination,
+
+                ];
+
+                $product[] = [
+                    'seller_id' => $country_code[$destination],
+                    'active'   =>  1,
+                    'asin1' => $asin,
+                ];
+
+                $product_lowest_price[] = [
+                    'asin'  => $asin,
+                    'import_type'   => 'Seller'
+                ];
+            }
+            AsinDestination::upsert($records, ['user_asin_destination_unique'], ['asin',]);
+            $push_to_bb = new PushAsin();
+            $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination);
+        } elseif ($request->form_type == 'file_upload') {
+            $user_id = Auth::user()->id;
+            $validation = $request->validate([
+                'asin' => 'required|mimes:csv',
+            ]);
+
+            if (!$validation) {
+                return back()->with('error', "Please upload file to import it to the database");
+            }
+
+            $file = file_get_contents($request->asin);
+
+            $path = 'AsinDestination/asin.csv';
+            // if(!Storage::exists($path)){
             Storage::put($path, $file);
-        // }
+            // }
 
-        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+            if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
-            Log::warning("asin production executed");
+                Log::warning("asin production executed");
 
-            $base_path = base_path();
-            $command = "cd $base_path && php artisan mosh:Asin-destination-upload ${user_id} > /dev/null &";
-            exec($command);
-            Log::warning("asin production command executed");
-        } else {
+                $base_path = base_path();
+                $command = "cd $base_path && php artisan mosh:Asin-destination-upload ${user_id} > /dev/null &";
+                exec($command);
+                Log::warning("asin production command executed");
+            } else {
 
-            Log::warning("Export coma executed local !");
-            Artisan::call('mosh:Asin-destination-upload' . ' ' . $user_id);
+                Log::warning("Export coma executed local !");
+                Artisan::call('mosh:Asin-destination-upload' . ' ' . $user_id);
+            }
         }
-
         return redirect('catalog/import-asin-destination')->with('success', 'File has been uploaded successfully');
     }
 
@@ -100,9 +137,8 @@ class AsinDestinationController extends Controller
     public function AsinDestinationTrashView(Request $request)
     {
         $asins = AsinDestination::onlyTrashed()->get();
-
         if ($request->ajax()) {
-            
+
             $data = AsinDestination::orderBy('id', 'DESC')->get();
             return DataTables::of($asins)
                 ->addIndexColumn()
@@ -125,5 +161,31 @@ class AsinDestinationController extends Controller
     {
         $downloadFile = public_path('template/Catalog-asin-destination.csv');
         return response()->download($downloadFile);
+    }
+
+    public function AsinDestinationAsinExport(Request $request)
+    {
+        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+
+            $base_path = base_path();
+            $command = "cd $base_path && php artisan mosh:asin-destination-csv-export > /dev/null &";
+            exec($command);
+
+            Log::warning("Export asin command executed production  !!!");
+        } else {
+
+            Log::warning("Export asin command executed local !");
+            Artisan::call('mosh:asin-destination-csv-export');
+        }
+        return redirect()->intended('/catalog/asin-destination');
+    }
+
+    public function AsinDestinationDownloadCsvZip()
+    {
+        $file = 'excel/downloads/asin_destination/zip/CatalogAsinDestination.zip';
+        if (Storage::exists($file)) {
+            return Storage::download($file);
+        }
+        return 'File is not available right now!';
     }
 }
