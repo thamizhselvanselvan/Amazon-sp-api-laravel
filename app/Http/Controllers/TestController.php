@@ -588,6 +588,7 @@ class TestController extends Controller
     }
     natsort($header);
 
+    dd($header);
     $db_header = implode(',', $header);
 
     $data = DB::connection('catalog')->select("SELECT $db_header from cataloguss");
