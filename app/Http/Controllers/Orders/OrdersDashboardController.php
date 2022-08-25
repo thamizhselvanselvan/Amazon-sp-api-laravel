@@ -72,6 +72,32 @@ class OrdersDashboardController extends Controller
         return view('orders.dashboard', compact(['order_status_count']));
     }
 
+    public function OrderItemDashboard()
+    {
+        $today = Carbon::now();
+        $month = Carbon::now()->subMonth();
+        
+        $latest = DB::connection('order')->select("SELECT country, orderitemdetails.updated_at, orsc.store_name FROM orderitemdetails 
+        JOIN ord_order_seller_credentials as orsc 
+        WHERE orderitemdetails.seller_identifier = orsc.seller_id
+        AND orderitemdetails.updated_at BETWEEN '$month' AND '$today' 
+        GROUP BY country, orderitemdetails.updated_at, orsc.store_name");
+        
+        $groupby = collect($latest);
+        $store_name = $groupby->groupBy('store_name');
+        foreach($store_name as $key => $value)
+        {
+            foreach($latest as $date)
+            {
+                $store_time = $date->updated_at;
+                $country_name = $date->country;
+                $age[$key.' ['.$country_name.']'] = $this->CarbonGetDateDiff($store_time. '.000');
+            }
+        }
+        
+        return view('orders.orderItemDashboard', compact('age'));
+    }
+
     public function CarbonGetDateDiff($date)
     {
         $date_details_array = ['Year', 'Month', 'Day', 'Hour', 'Minute', 'Second'];

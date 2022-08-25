@@ -244,6 +244,26 @@ return [
             ]) : [],
         ],
 
+        'business' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('BUSINESS_ORDER_DB_HOST', '127.0.0.1'),
+            'port' => env('BUSINESS_ORDER_DB_PORT', '3306'),
+            'database' => env('BUSINESS_ORDER_DB_DATABASE', 'forge'),
+            'username' => env('BUSINESS_ORDER_DB_USERNAME', 'forge'),
+            'password' => env('BUSINESS_ORDER_DB_PASSWORD', ''),
+            'unix_socket' => env('BUSINESS_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => env('BUSINESS_ORDER_DB_PREFIX') . '_',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
     ],
 
     /*
