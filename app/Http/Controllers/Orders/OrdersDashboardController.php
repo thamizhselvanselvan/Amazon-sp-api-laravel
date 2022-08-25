@@ -71,7 +71,7 @@ class OrdersDashboardController extends Controller
             // $time = str_replace(' ','.',$store_latest[$key]);
             $order_status_count[$country] = $order_status;
         }
-        dd($order_status_count);
+        // dd($order_status_count);
         return view('orders.dashboard', compact(['order_status_count']));
     }
 
