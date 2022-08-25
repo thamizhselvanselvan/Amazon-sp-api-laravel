@@ -191,13 +191,10 @@ class labelManagementController extends Controller
 
             $barcode_awb = 'AWB-MISSING';
 
-            if (isset($result['awb_no'])) {
-                $barcode_awb = $result['awb_no'];
+            if (($results['awb_no'])) {
+                $barcode_awb = $results['awb_no'];
             }
-            // dd($results);
             $bar_code[] = base64_encode($generator->getBarcode($barcode_awb, $generator::TYPE_CODE_39));
-            // $bar_code;
-            // exit;
         }
 
         return view('label.multipleLabel', compact('result', 'bar_code'));
