@@ -2,6 +2,10 @@
 
 @section('title', 'ASIN Source')
 
+@section('css')
+<link rel="stylesheet" href="/css/styles.css">
+@stop
+
 @section('content_header')
 <div class="row">
     <div class="col">
