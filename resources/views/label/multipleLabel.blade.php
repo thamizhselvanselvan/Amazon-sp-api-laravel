@@ -7,11 +7,60 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
 <style type="text/css">
+    body div strong {
+        font-family: "Lato";
+        font-weight: 900;
+        font-size: 12px;
+    }
+
+    body * {
+        font-family: "Lato";
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .table_border th,
+    .table_border td,
+    .table_border tr,
+    .table_border thead th,
+    .return {
+        border: 1px solid black;
+    }
+
+    .mb-1,
+    .my-1 {
+        margin-bottom: 0px !important;
+    }
+
+    .mt-1,
+    .my-1 {
+        margin-top: 0px !important;
+    }
+
+    .return,
+    .prduct-details thead tr th {
+        border-top: 0px !important;
+    }
+
     @media print {
         @page {
             size: 4in 6in;
             margin: 0 !important;
             padding: 0 !important;
+
+        }
+
+        .table_border th,
+        .table_border td,
+        .table_border td,
+        .table_border thead th,
+        .return {
+            border: 1px solid black !important;
+        }
+
+        .return,
+        .prduct-details thead tr th {
+            border-top: 0px !important;
         }
 
         .container-fluid {
@@ -67,7 +116,7 @@
         <div class="label p-1">
             <div class="label-content mb-0">
                 <!-- <div class="table-responsive"> -->
-                <table class="table table-label table-bordered table-bordered-dark ">
+                <table class="table table-label table-bordered table-bordered-dark pt-1 pb-0 mb-1 table_border">
                     <tbody>
                         <tr>
                             <td class="pb-0 pt-2">
@@ -148,7 +197,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <table class="table table-bordered table-bordered-dark product">
+                <table class="table table-bordered table-bordered-dark product pt-0 mb-0 prduct-details table_border">
                     <thead>
                         <tr>
                             <th class="text-left">Sr</th>
