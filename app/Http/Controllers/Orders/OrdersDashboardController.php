@@ -92,17 +92,17 @@ class OrdersDashboardController extends Controller
         FROM orderitemdetails as od
         JOIN ord_order_seller_credentials as orsc
         where od.seller_identifier = orsc.seller_id
-        AND od.updated_at BETWEEN '$month' AND '$today' 
         GROUP BY seller_identifier
         ");
 
         // $groupby = collect($latest);
         // $store_name = $groupby->groupBy('store_name');
         // dd($latest);
+
         foreach ($latest as $key => $value) {
             foreach ($latest as $date) {
                 $store_name = $date->store_name;
-                $store_time = $date->latest;
+                $store_time = $date->latest != '' ? $date->latest : $month;
                 $country_name = $date->country_code;
                 $age[$store_name . ' [' . $country_name . ']'] = $this->CarbonGetDateDiff($store_time . '.000');
             }
