@@ -119,13 +119,13 @@ class labelManagementController extends Controller
         $awb_no = $result['awb_no'];
 
         if ($awb_no == '' || $awb_no == NULL) {
-            $awb_no = 'Awb Missing';
+            $awb_no = 'AWB-MISSING';
         }
         $result = (object)$result;
 
         // dd($result);
         $generator = new BarcodeGeneratorPNG();
-        $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39E));
+        $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39));
         return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no'));
     }
     public function ExportLabel(Request $request)
@@ -184,18 +184,20 @@ class labelManagementController extends Controller
     public function PrintSelected($id)
     {
         $allid = explode('-', $id);
+        $generator = new BarcodeGeneratorPNG();
         foreach ($allid as $id) {
             $results = $this->labelDataFormating($id);
             $result[] = (object)$results;
-            $generator = new BarcodeGeneratorPNG();
 
-            $barcode_awb = 'Awb Missing';
+            $barcode_awb = 'AWB-MISSING';
 
             if (isset($result['awb_no'])) {
                 $barcode_awb = $result['awb_no'];
             }
-
-            $bar_code[] = base64_encode($generator->getBarcode($barcode_awb, $generator::TYPE_CODE_39E));
+            // dd($results);
+            $bar_code[] = base64_encode($generator->getBarcode($barcode_awb, $generator::TYPE_CODE_39));
+            // $bar_code;
+            // exit;
         }
 
         return view('label.multipleLabel', compact('result', 'bar_code'));

@@ -126,10 +126,10 @@
                                         <img class="label-barcode-img" src='data:image/png;base64,{!! $bar_code[$key] !!}' width="300px">
                                         <b>
                                             <div class="text-center">
-                                                @if ($value->awb_no == NULL || $value->awb_no == '')
-                                                Awb Missing
+                                                @if($value->awb_no)
+                                                {{$value->awb_no}}
                                                 @else
-                                                {{ $value->awb_no }}
+                                                AWB is missing
                                                 @endif
                                             </div>
                                         </b>
