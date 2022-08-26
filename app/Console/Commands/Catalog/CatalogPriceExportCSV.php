@@ -76,8 +76,8 @@ class CatalogPriceExportCSV extends Command
 
         if ($this->country_code == 'IN') {
 
-            $headers = ['asin', 'in_price', 'weight', 'uae_sp', 'sg_sp', 'sa_sp'];
-            $csv_header = ['Asin', 'India Price', 'Weight(kg)', 'UAE Selling Price', 'Singapore Selling Price', 'Saudi Selling Price'];
+            $headers = ['asin', 'available', 'in_price', 'weight', 'ind_to_uae', 'ind_to_sg', 'ind_to_sa', 'price_updated_at'];
+            $csv_header = ['Asin', 'Available', 'India Price', 'Weight(kg)', 'IND To UAE', 'IND To Singapore ', 'IND To Saudi', 'Updated At'];
             PricingIn::select($headers)->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
 
                 $this->CreateCsvFile($csv_header, $records, $exportFilePath);
@@ -85,8 +85,8 @@ class CatalogPriceExportCSV extends Command
             });
         } elseif ($this->country_code == 'US') {
 
-            $headers = ['asin', 'weight', 'us_price', 'ind_sp', 'uae_sp', 'sg_sp'];
-            $csv_header = ['Asin', 'Weight(kg)', 'US Price', 'India Selling Price', 'UAE Selling Price', 'Singapore Selling Price'];
+            $headers = ['asin', 'available', 'weight', 'us_price', 'usa_to_in_b2b', 'usa_to_in_b2c', 'usa_to_uae', 'usa_to_sg', 'price_updated_at'];
+            $csv_header = ['Asin', 'Available', 'Weight', 'US Price', 'USA To IND B2B', 'USA To IND B2C', 'USA To UAE', 'USA To Singapore', 'Updated At'];
             PricingUs::select($headers)->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
 
                 $this->CreateCsvFile($csv_header, $records, $exportFilePath);
@@ -107,34 +107,32 @@ class CatalogPriceExportCSV extends Command
                 }
             }
         }
-        
+
         $zip = new ZipArchive;
-        $path = "excel/downloads/catalog_price/".$this->country_code."/zip/".$this->country_code."_CatalogPrice.zip";
+        $path = "excel/downloads/catalog_price/" . $this->country_code . "/zip/" . $this->country_code . "_CatalogPrice.zip";
         $file_path = Storage::path($path);
-        
+
         if (!Storage::exists($path)) {
             Storage::put($path, '');
         }
-        
-        if($zip->open($file_path, ZipArchive::CREATE) === TRUE)
-        {
-            foreach($this->totalFile as $key => $value)
-            {
-                $path = Storage::path('excel/downloads/catalog_price/'.$this->country_code.'/'.$value);
+
+        if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
+            foreach ($this->totalFile as $key => $value) {
+                $path = Storage::path('excel/downloads/catalog_price/' . $this->country_code . '/' . $value);
                 $relativeNameInZipFile = basename($path);
                 $zip->addFile($path, $relativeNameInZipFile);
             }
             $zip->close();
         }
     }
-    
+
     public function CreateCsvFile($csv_header, $records, $exportFilePath)
     {
         if ($this->count == 1) {
             if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv.mosh')) {
                 Storage::put($exportFilePath . $this->fileNameOffset . '.csv.mosh', '');
             }
-            $this->totalFile []= $this->country_code."_CatalogPrice" . $this->fileNameOffset.'.csv';
+            $this->totalFile[] = $this->country_code . "_CatalogPrice" . $this->fileNameOffset . '.csv';
             $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv.mosh'), "w");
             $this->writer->insertOne($csv_header);
         }

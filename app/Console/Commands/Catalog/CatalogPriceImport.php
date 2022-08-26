@@ -86,7 +86,7 @@ class CatalogPriceImport extends Command
                         // if (isset($weight->value)) {
 
                         //     $weight_value = $weight->value;
-                        // }
+                        // }s
 
                         $calculated_weight[$a] =  getWeight($dimension);
                         $asin_array[] = "'$a'";
@@ -95,14 +95,14 @@ class CatalogPriceImport extends Command
                     $asin = implode(',', $asin_array);
 
                     $asin_price = DB::connection('buybox')
-                        ->select("SELECT PPO.asin, LP.asin
+                        ->select("SELECT PPO.asin, LP.available
                     GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
                     group_concat(PPO.listingprice_amount) as listingprice_amount,
                     group_concat(PPO.updated_at) as updated_at
                     FROM $product_seller_details as PPO
                     JOIN $product_lp as LP
-                        WHERE PPO.asin IN ($asin)
-                        AND PPO.asin = LP.asin
+                        WHERE PPO.asin = LP.asin
+                        AND PPO.asin IN ($asin)
                         GROUP BY PPO.asin
                     ");
 
@@ -113,6 +113,7 @@ class CatalogPriceImport extends Command
                         $updated_at = explode(',', $value->updated_at);
 
                         $asin_name = $value->asin;
+                        $available = $value->available;
                         $packet_weight = $calculated_weight[$asin_name];
 
                         foreach ($buybox_winner as $key =>  $value1) {
@@ -125,7 +126,7 @@ class CatalogPriceImport extends Command
                                 $asin_details =
                                     [
                                         'asin' =>  $asin_name,
-                                        // 'weight' => $packet_weight,
+                                        'available' => $available,
                                         $price => $listing_price_amount,
                                         'price_updated_at' => max($updated_at),
                                     ];
@@ -136,7 +137,7 @@ class CatalogPriceImport extends Command
                                 $asin_details =
                                     [
                                         'asin' =>  $asin_name,
-                                        // 'weight' => $packet_weight,
+                                        'available' => $available,
                                         $price => $listing_price_amount,
                                         'price_updated_at' =>  max($updated_at),
                                     ];
