@@ -50,13 +50,6 @@ Route::get('renameamazoninvoice/', 'TestController@RenameAmazonInvoice');
 Route::get('getPricing/', 'TestController@GetPricing');
 
 Route::get('test1', function () {
-
-    $whereIn = '402-5523703-2980317';
-    $data = DB::connection('b2cship')
-        ->select("SELECT AWBNo, RefNo, BookingDate FROM Packet
-                    WHERE RefNo = '$whereIn'
-                ");
-    dd($data);
 });
 
 

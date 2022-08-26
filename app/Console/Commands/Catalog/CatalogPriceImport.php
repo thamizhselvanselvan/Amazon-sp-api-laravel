@@ -120,34 +120,25 @@ class CatalogPriceImport extends Command
 
                                 $listing_price_amount = $listing_price[$key];
 
-                                $price_updated = NULL;
-                                if (array_key_exists($updated_at[$key], $updated_at)) {
 
-                                    $price_updated = $updated_at[$key];
-                                }
                                 $asin_details =
                                     [
                                         'asin' =>  $asin_name,
                                         'weight' => $packet_weight,
                                         $price => $listing_price_amount,
-                                        'price_updated_at' => $price_updated,
+                                        'price_updated_at' => max($updated_at),
                                     ];
                                 break 1;
                             } else {
 
                                 $listing_price_amount =  min($listing_price);
-                                $price_updated = NULL;
-                                if (array_key_exists($updated_at[$key], $updated_at)) {
-
-                                    $price_updated = $updated_at[$key];
-                                }
 
                                 $asin_details =
                                     [
                                         'asin' =>  $asin_name,
                                         'weight' => $packet_weight,
                                         $price => $listing_price_amount,
-                                        'price_updated_at' => $price_updated,
+                                        'price_updated_at' =>  max($updated_at),
                                     ];
                             }
                         }
