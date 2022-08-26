@@ -51,16 +51,46 @@ Route::get('getPricing/', 'TestController@GetPricing');
 
 Route::get('test1', function () {
 
-    $whereIn = '402-5523703-2980317';
-    $data = DB::connection('b2cship')
-        ->select("SELECT AWBNo, RefNo, BookingDate FROM Packet
-                    WHERE RefNo = '$whereIn'
-                ");
-    dd($data);
+    $asin = "'B000008J4T',
+    'B00000JHQ0',
+    'B00004R9W5',
+    'B00004TMFE',
+    'B00004Z5LR',
+    'B000050B6Y',
+    'B000052WTG',
+    'B000052WVA',
+    'B000052XB5',
+    'B000052XHI',
+    'B000052XIA',
+    'B000052XPU',
+    'B000052XZP',
+    'B000052XZQ',
+    'B000052XZZ',
+    'B000052Y0B',
+    'B000052Y0S',
+    'B000052Y65',
+    'B000052YAI',
+    'B000052YBV'";
+
+    $product_lp = 'bb_product_uss_lp_offers';
+    $product_seller_details = 'bb_product_uss_seller_details';
+    $asin_price = DB::connection('buybox')
+        ->select("SELECT PPO.asin, LP.available,
+GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
+group_concat(PPO.listingprice_amount) as listingprice_amount,
+group_concat(PPO.updated_at) as updated_at
+FROM $product_seller_details as PPO
+JOIN $product_lp as LP
+WHERE PPO.asin = LP.asin
+     AND PPO.asin IN ($asin)
+    GROUP BY PPO.asin
+");
+    po($asin_price);
 });
 
 
-Route::get('ustoin/{weight}/{price}', 'TestController@USAToIND');
+Route::get('ustoinb2c/{weight}/{price}', 'TestController@USAToINDb2c');
+Route::get('ustoinb2b/{weight}/{price}', 'TestController@USAToINDb2b');
 Route::get('ustouae/{weight}/{price}', 'TestController@USAToUAE');
 Route::get('ustosg/{weight}/{price}', 'TestController@USATOSG');
 

@@ -474,8 +474,38 @@ class TestController extends Controller
     return round($uae_sp, 2);
   }
 
-  public function USAToIND($weight, $bb_price)
+  public function USAToINDb2c($weight, $bb_price)
   {
+
+    if ($weight > 0.9) {
+      $int_shipping_base_charge = (7.5 + ($weight - 1) * 4.5);
+    } else {
+      $int_shipping_base_charge = 4.5;
+    }
+
+    // return $int_shipping_base_charge;
+    $duty_rate = 56.00 / 100;
+    $packaging = 2;
+    $seller_commission = ($bb_price + $int_shipping_base_charge + $packaging) * (15 / 100);
+    // $amazon_commission = 22.00 / 100;
+
+    // return $seller_commission;
+    $price_before_duty = $bb_price + $int_shipping_base_charge + $packaging + $seller_commission;
+    $ex_rate = 82;
+    $duty_cost = ($price_before_duty * $duty_rate);
+
+    // return $duty_cost;
+
+
+    $usd_sp = ($price_before_duty + $duty_cost) + ($price_before_duty + $duty_cost) * (20 / 100);
+
+    $india_sp = $usd_sp * $ex_rate;
+    return round($india_sp, 2);
+  }
+
+  public function USAToINDb2b($weight, $bb_price)
+  {
+
     if ($weight > 0.9) {
       $int_shipping_base_charge = (6 + ($weight - 1) * 6);
     } else {
@@ -498,6 +528,9 @@ class TestController extends Controller
 
     $india_sp = $usd_sp * $ex_rate;
     return round($india_sp, 2);
+
+
+    //
   }
 
   public function getWeight($dimensions)
@@ -573,7 +606,7 @@ class TestController extends Controller
 
     $priceConverter = new PriceConversion();
 
-    return $priceConverter->USAToIND($weight, $bb_price);
+    // return $priceConverter->USAToIND($weight, $bb_price);
     //
   }
 

@@ -602,8 +602,8 @@ if (!function_exists('getWeight')) {
 
             if ($value->Weight->Units == 'pounds') {
 
-                $weight_kg = poundToKg($value->Weight->value);
-                return round($weight_kg, 2);
+                $weight_pound = ($value->Weight->value);
+                return round($weight_pound, 2);
             }
         } else {
             return 0.5;

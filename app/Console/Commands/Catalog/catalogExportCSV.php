@@ -151,7 +151,7 @@ class catalogExportCSV extends Command
                     'binding' => $value->binding,
                     'brand' => $value->brand,
                     'color' => $value->color,
-                    'item_dimensions' => $value->item_dimensions,
+                    'item_weight' => getWeight($value->item_dimensions),
                     'is_adult_product' => $value->is_adult_product,
                     'is_autographed' => $value->is_autographed,
                     'is_memorabilia' => $value->is_memorabilia,
