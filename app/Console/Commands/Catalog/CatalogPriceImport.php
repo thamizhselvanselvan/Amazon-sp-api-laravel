@@ -134,13 +134,20 @@ class CatalogPriceImport extends Command
                                     ];
                                 break 1;
                             } else {
+
                                 $listing_price_amount =  min($listing_price);
+                                $price_updated = NULL;
+                                if (array_key_exists($updated_at[$key], $updated_at)) {
+
+                                    $price_updated = $updated_at[$key];
+                                }
+
                                 $asin_details =
                                     [
                                         'asin' =>  $asin_name,
                                         'weight' => $packet_weight,
                                         $price => $listing_price_amount,
-                                        'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
+                                        'price_updated_at' => $price_updated,
                                     ];
                             }
                         }
