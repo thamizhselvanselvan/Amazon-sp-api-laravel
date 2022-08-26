@@ -87,8 +87,8 @@ class CatalogPriceImport extends Command
 
                         //     $weight_value = $weight->value;
                         // }
-                        $weight_pound = getWeight($dimension);
-                        $calculated_weight[$a] = poundToKg($weight_pound);
+
+                        $calculated_weight[$a] =  getWeight($dimension);
                         $asin_array[] = "'$a'";
                     }
 
@@ -114,17 +114,15 @@ class CatalogPriceImport extends Command
 
                         foreach ($buybox_winner as $key =>  $value1) {
 
-                            Log::alert($buybox_winner);
                             $price = $country_code_lr . '_price';
                             if ($value1 == '1') {
 
                                 $listing_price_amount = $listing_price[$key];
 
-
                                 $asin_details =
                                     [
                                         'asin' =>  $asin_name,
-                                        'weight' => $packet_weight,
+                                        // 'weight' => $packet_weight,
                                         $price => $listing_price_amount,
                                         'price_updated_at' => max($updated_at),
                                     ];
@@ -132,11 +130,10 @@ class CatalogPriceImport extends Command
                             } else {
 
                                 $listing_price_amount =  min($listing_price);
-
                                 $asin_details =
                                     [
                                         'asin' =>  $asin_name,
-                                        'weight' => $packet_weight,
+                                        // 'weight' => $packet_weight,
                                         $price => $listing_price_amount,
                                         'price_updated_at' =>  max($updated_at),
                                     ];
@@ -144,30 +141,33 @@ class CatalogPriceImport extends Command
                         }
                         if ($country_code_lr == 'us') {
 
-                            $ind_price = $price_convert->USAToIND($packet_weight, $listing_price_amount);
-                            $destination_price_in = [
-                                'ind_sp' => $ind_price,
+                            $price_in = $price_convert->USAToIND($packet_weight, $listing_price_amount);
+
+                            $price_ae = $price_convert->USATOUAE($packet_weight, $listing_price_amount);
+
+                            $price_sg =  $price_convert->USATOSG($packet_weight, $listing_price_amount);
+
+                            $price_us_source = [
+                                'ind_sp' => $price_in,
+                                'uae_sp' => $price_ae,
+                                'sg_sp' => $price_sg,
+                                'weight' => $packet_weight
                             ];
 
-                            $destination_price_ae = [
-                                'uae_sp' => $price_convert->USATOUAE($packet_weight, $listing_price_amount)
-                            ];
-
-                            $destination_price_sg = [
-                                'sg_sp' => $price_convert->USATOSG($packet_weight, $listing_price_amount),
-                            ];
-
-                            $pricing[] = [...$asin_details, ...$destination_price_in, ...$destination_price_ae, ...$destination_price_sg];
+                            $pricing[] = [...$asin_details, ...$price_us_source];
                         } elseif ($country_code_lr == 'in') {
 
-                            $price_saudi = $price_convert->INDToSA($packet_weight, $listing_price_amount);
-                            $price_singapore = $price_convert->INDToSG($packet_weight, $listing_price_amount);
-                            $price_uae = $price_convert->INDToUAE($packet_weight, $listing_price_amount);
+                            $packet_weight_kg = poundToKg($packet_weight);
+
+                            $price_saudi = $price_convert->INDToSA($packet_weight_kg, $listing_price_amount);
+                            $price_singapore = $price_convert->INDToSG($packet_weight_kg, $listing_price_amount);
+                            $price_uae = $price_convert->INDToUAE($packet_weight_kg, $listing_price_amount);
 
                             $destination_price = [
                                 'uae_sp' => $price_uae,
                                 'sg_sp' => $price_singapore,
                                 'sa_sp' => $price_saudi,
+                                'weight' => $packet_weight_kg
                             ];
                             $pricing_in[] = [...$asin_details, ...$destination_price];
                         }
