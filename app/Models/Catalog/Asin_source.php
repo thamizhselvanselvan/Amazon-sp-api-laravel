@@ -2,24 +2,21 @@
 
 namespace App\Models\Catalog;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class AsinSource extends Model
+class Asin_source extends Model
 {
-    use HasFactory, SoftDeletes;
-
+    use HasFactory;
     protected $connection = 'catalog';
     protected $fillable = [
         'asin',
-        'user_id',
-        // 'source',
+        'user_id'
     ];
 
     public function mws_region()
     {
-        return $this->hasOne(Mws_region::class, 'region_code', 'country_code');
+        return $this->hasOne(Mws_region::class, 'region_code', 'destination_1');
     }
 
     public function aws_credential()

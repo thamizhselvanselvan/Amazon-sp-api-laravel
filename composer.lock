@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e44af3276b36fe88e91898182d0cdc03",
+    "content-hash": "908ef5cd4a14f1ce878a20fb9a50bc0a",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -3360,16 +3360,16 @@
         },
         {
             "name": "jlevers/selling-partner-api",
-            "version": "4.3.11",
+            "version": "5.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jlevers/selling-partner-api.git",
-                "reference": "e30bf3c42774a2656a2c8ef7ac5b7ca391d3bbaa"
+                "reference": "130004acda21f0706f6abc3890337bc65774372d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jlevers/selling-partner-api/zipball/e30bf3c42774a2656a2c8ef7ac5b7ca391d3bbaa",
-                "reference": "e30bf3c42774a2656a2c8ef7ac5b7ca391d3bbaa",
+                "url": "https://api.github.com/repos/jlevers/selling-partner-api/zipball/130004acda21f0706f6abc3890337bc65774372d",
+                "reference": "130004acda21f0706f6abc3890337bc65774372d",
                 "shasum": ""
             },
             "require": {
@@ -3414,9 +3414,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jlevers/selling-partner-api/issues",
-                "source": "https://github.com/jlevers/selling-partner-api/tree/v4.3.11"
+                "source": "https://github.com/jlevers/selling-partner-api/tree/v5.3.0"
             },
-            "time": "2022-04-18T02:31:32+00:00"
+            "time": "2022-08-18T01:25:11+00:00"
         },
         {
             "name": "justinrainbow/json-schema",

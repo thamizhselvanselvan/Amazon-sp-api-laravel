@@ -4,18 +4,20 @@ namespace App\Http\Controllers\Catalog;
 
 use file;
 use config;
+use RedBeanPHP\R;
 use App\Models\Mws_region;
 use Illuminate\Http\Request;
 use App\Models\Aws_credential;
 use App\Models\Catalog\catalog;
 use SellingPartnerApi\Endpoint;
-use Illuminate\Support\Facades\DB;
 use App\Models\Catalog\AsinSource;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use SellingPartnerApi\Configuration;
+use App\Services\SP_API\API\NewCatalog;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
@@ -82,9 +84,18 @@ class CatalogProductController extends Controller
         return view('Catalog.product.index', compact('sources'));
     }
 
-    public function Amazon()
+    public function Amazon(Request $request)
     {
-        $asins = AsinSource::where('status', '=', 0)->get(['asin', 'source', 'user_id']);
+        $country_code = $request->country_code;
+        // $model_name = table_model_create(country_code:$country_code, model:'Asin_source', table_name:'asin_source_');
+        // $asins = $model_name->where('status', 0)->get(['asin', 'user_id']);
+        $asins = AsinSource::where('status', 0)->get(['asin', 'source', 'user_id']);
+
+        $redbean = new NewCatalog();
+        $redbean->RedBeanConnection();
+        $NewCatalogs = R::dispense('catalognews');
+        $NewCatalogs->asin = '';
+        R::store($NewCatalogs);
 
         $count = 0;
         $asin_source = [];
@@ -95,19 +106,18 @@ class CatalogProductController extends Controller
                 jobDispatchFunc($class, $asin_source, 'catalog');
                 $asin_source = [];
                 $count = 0;
-            } else {
-
-                $asin_source[] = [
-                    'asin' => $asin->asin,
-                    'source' => $asin->source,
-                    'seller_id' => $asin->user_id
-                ];
-                $count++;
             }
+            $asin_source[] = [
+                'asin' => $asin->asin,
+                // 'source' => $country_code,
+                'source' => $asin->source,
+                'seller_id' => $asin->user_id
+            ];
+            $count++;
         }
         jobDispatchFunc($class, $asin_source, 'catalog');
 
-        return redirect('catalog/product');
+        return redirect()->intended('/catalog/product');
     }
 
     public function ExportCatalog(Request $request)
