@@ -18,7 +18,7 @@ class AsinDestinationController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            
+
             $data = AsinDestination::orderBy('id', 'DESC')->get();
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -40,8 +40,7 @@ class AsinDestinationController extends Controller
 
     public function AsinDestinationFile(Request $request)
     {
-        if($request->form_type == 'text_area')
-        {
+        if ($request->form_type == 'text_area') {
             $request->validate([
                 'text_area' => 'required',
                 'destination'    => 'required',
@@ -52,25 +51,24 @@ class AsinDestinationController extends Controller
             $asins = preg_split('/[\r\n| |:|,]/', $value, -1, PREG_SPLIT_NO_EMPTY);
 
             $country_code = buyboxCountrycode();
-            if($destination == 'UK'){
+            if ($destination == 'UK') {
                 return redirect('catalog/import-asin-destination')->with('error', 'Seller not available!');
             }
-            foreach($asins as $asin)
-            {
-                $records [] = [
+            foreach ($asins as $asin) {
+                $records[] = [
                     'asin'  => $asin,
                     'user_id'   => $user_id,
                     'destination'   => $destination,
-                    
+
                 ];
 
-                $product [] = [
+                $product[] = [
                     'seller_id' => $country_code[$destination],
                     'active'   =>  1,
                     'asin1' => $asin,
                 ];
-                
-                $product_lowest_price [] = [
+
+                $product_lowest_price[] = [
                     'asin'  => $asin,
                     'import_type'   => 'Seller'
                 ];
@@ -78,35 +76,33 @@ class AsinDestinationController extends Controller
             AsinDestination::upsert($records, ['user_asin_destination_unique'], ['asin',]);
             $push_to_bb = new PushAsin();
             $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination);
-        }
-        elseif($request->form_type == 'file_upload')
-        {
+        } elseif ($request->form_type == 'file_upload') {
             $user_id = Auth::user()->id;
             $validation = $request->validate([
                 'asin' => 'required|mimes:csv',
             ]);
-    
-            if(!$validation){
+
+            if (!$validation) {
                 return back()->with('error', "Please upload file to import it to the database");
             }
-        
+
             $file = file_get_contents($request->asin);
-            
+
             $path = 'AsinDestination/asin.csv';
             // if(!Storage::exists($path)){
-                Storage::put($path, $file);
+            Storage::put($path, $file);
             // }
-    
+
             if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-    
+
                 Log::warning("asin production executed");
-    
+
                 $base_path = base_path();
                 $command = "cd $base_path && php artisan mosh:Asin-destination-upload ${user_id} > /dev/null &";
                 exec($command);
                 Log::warning("asin production command executed");
             } else {
-    
+
                 Log::warning("Export coma executed local !");
                 Artisan::call('mosh:Asin-destination-upload' . ' ' . $user_id);
             }
@@ -142,7 +138,7 @@ class AsinDestinationController extends Controller
     {
         $asins = AsinDestination::onlyTrashed()->get();
         if ($request->ajax()) {
-            
+
             $data = AsinDestination::orderBy('id', 'DESC')->get();
             return DataTables::of($asins)
                 ->addIndexColumn()
@@ -187,7 +183,7 @@ class AsinDestinationController extends Controller
     public function AsinDestinationDownloadCsvZip()
     {
         $file = 'excel/downloads/asin_destination/zip/CatalogAsinDestination.zip';
-        if(Storage::exists($file)){
+        if (Storage::exists($file)) {
             return Storage::download($file);
         }
         return 'File is not available right now!';

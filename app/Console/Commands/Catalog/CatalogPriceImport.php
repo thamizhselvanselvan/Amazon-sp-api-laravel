@@ -66,7 +66,7 @@ class CatalogPriceImport extends Command
             $product = 'bb_product_' . $country_code_lr . 's';
 
             $catalog_table = 'catalog' . $country_code_lr . 's';
-            AsinDestination::select('asin_destinations.asin', "$catalog_table.packageweight")
+            AsinDestination::select('asin_destinations.asin', "$catalog_table.package_dimensions")
                 ->where('asin_destinations.destination', $country_code)
                 ->join($catalog_table, 'asin_destinations.asin', '=', "$catalog_table.asin")
                 ->chunk($chunk, function ($data) use ($seller_id, $country_code_lr, $product_lp, $price_convert) {
@@ -76,19 +76,18 @@ class CatalogPriceImport extends Command
                     $asin_details = [];
                     $listing_price_amount = '';
 
-                    Log::info($data);
                     $asin_array = [];
                     foreach ($data as $value) {
 
-                        $weight = json_decode($value->packageweight);
+                        $dimension = ($value->package_dimensions);
 
                         $a = $value->asin;
                         $weight_value = 0.5;
-                        if (isset($weight->value)) {
+                        // if (isset($weight->value)) {
 
-                            $weight_value = $weight->value;
-                        }
-                        $calculated_weight[$a] = poundToKg($weight_value);
+                        //     $weight_value = $weight->value;
+                        // }
+                        $calculated_weight[$a] = getWeight($dimension);
                         $asin_array[] = "'$a'";
                     }
 
@@ -114,16 +113,23 @@ class CatalogPriceImport extends Command
 
                         foreach ($buybox_winner as $key =>  $value1) {
 
+                            Log::alert($buybox_winner);
                             $price = $country_code_lr . '_price';
                             if ($value1 == '1') {
 
                                 $listing_price_amount = $listing_price[$key];
+
+                                $price_updated = NULL;
+                                if (array_key_exists($updated_at[$key], $updated_at)) {
+
+                                    $price_updated = $updated_at[$key];
+                                }
                                 $asin_details =
                                     [
                                         'asin' =>  $asin_name,
                                         'weight' => $packet_weight,
                                         $price => $listing_price_amount,
-                                        'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
+                                        'price_updated_at' => $price_updated,
                                     ];
                                 break 1;
                             } else {

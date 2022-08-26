@@ -15,7 +15,7 @@ class OrdersDashboardController extends Controller
         $startTime = Carbon::now();
         $endTime = Carbon::now()->subDays(30);
 
-        $order_sql = DB::connection('order')->select("select order_status, our_seller_identifier,COUNT(order_status) as count, os.store_name, os.country_code from orders 
+        $order_sql = DB::connection('order')->select("SELECT order_status, our_seller_identifier,COUNT(order_status) as count, os.store_name, os.country_code from orders 
         join ord_order_seller_credentials as os 
         where os.seller_id = orders.our_seller_identifier 
         AND orders.updatedat BETWEEN '$endTime' AND '$startTime' 
@@ -23,8 +23,11 @@ class OrdersDashboardController extends Controller
 
         // dd($order_sql);
 
-        $latest_update = DB::connection('order')->select('select updatedat, our_seller_identifier, os.store_name from orders join ord_order_seller_credentials as os where os.seller_id = orders.our_seller_identifier group by updatedat, our_seller_identifier order by updatedat DESC');
-
+        $latest_update = DB::connection('order')->select("SELECT updatedat, our_seller_identifier, os.store_name FROM orders 
+        join ord_order_seller_credentials as os where os.seller_id = orders.our_seller_identifier 
+        group by updatedat, our_seller_identifier 
+        order by updatedat DESC");
+        // dd($latest_update);
         $order_collect = collect($order_sql);
         $order_groupby = $order_collect->groupBy('store_name');
 
@@ -76,25 +79,36 @@ class OrdersDashboardController extends Controller
     {
         $today = Carbon::now();
         $month = Carbon::now()->subMonth();
-        
-        $latest = DB::connection('order')->select("SELECT country, orderitemdetails.updated_at, orsc.store_name FROM orderitemdetails 
-        JOIN ord_order_seller_credentials as orsc 
-        WHERE orderitemdetails.seller_identifier = orsc.seller_id
-        AND orderitemdetails.updated_at BETWEEN '$month' AND '$today' 
-        GROUP BY country, orderitemdetails.updated_at, orsc.store_name");
-        
-        $groupby = collect($latest);
-        $store_name = $groupby->groupBy('store_name');
-        foreach($store_name as $key => $value)
-        {
-            foreach($latest as $date)
-            {
-                $store_time = $date->updated_at;
-                $country_name = $date->country;
-                $age[$key.' ['.$country_name.']'] = $this->CarbonGetDateDiff($store_time. '.000');
+
+
+        // $latest = DB::connection('order')->select("SELECT 
+        // country, orderitemdetails.updated_at, orsc.store_name FROM orderitemdetails 
+        // JOIN ord_order_seller_credentials as orsc 
+        // WHERE orderitemdetails.seller_identifier = orsc.seller_id
+        // AND orderitemdetails.updated_at BETWEEN '$month' AND '$today' 
+        // GROUP BY country, orderitemdetails.updated_at, orsc.store_name");
+
+        $latest = DB::connection('order')->select("SELECT seller_identifier, max(od.updated_at) as latest, orsc.store_name, orsc.country_code 
+        FROM orderitemdetails as od
+        JOIN ord_order_seller_credentials as orsc
+        where od.seller_identifier = orsc.seller_id
+        GROUP BY seller_identifier
+        ");
+
+        // $groupby = collect($latest);
+        // $store_name = $groupby->groupBy('store_name');
+        // dd($latest);
+
+        foreach ($latest as $key => $value) {
+            foreach ($latest as $date) {
+                $store_name = $date->store_name;
+                $store_time = $date->latest != '' ? $date->latest : $month;
+                $country_name = $date->country_code;
+                $age[$store_name . ' [' . $country_name . ']'] = $this->CarbonGetDateDiff($store_time . '.000');
             }
         }
-        
+
+        // dd($age);
         return view('orders.orderItemDashboard', compact('age'));
     }
 
