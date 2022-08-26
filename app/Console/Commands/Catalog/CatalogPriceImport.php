@@ -113,16 +113,23 @@ class CatalogPriceImport extends Command
 
                         foreach ($buybox_winner as $key =>  $value1) {
 
+                            Log::alert($buybox_winner);
                             $price = $country_code_lr . '_price';
                             if ($value1 == '1') {
 
                                 $listing_price_amount = $listing_price[$key];
+
+                                $price_updated = NULL;
+                                if (array_key_exists($updated_at[$key], $updated_at)) {
+
+                                    $price_updated = $updated_at[$key];
+                                }
                                 $asin_details =
                                     [
                                         'asin' =>  $asin_name,
                                         'weight' => $packet_weight,
                                         $price => $listing_price_amount,
-                                        'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
+                                        'price_updated_at' => $price_updated,
                                     ];
                                 break 1;
                             } else {
