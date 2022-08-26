@@ -87,7 +87,8 @@ class CatalogPriceImport extends Command
 
                         //     $weight_value = $weight->value;
                         // }
-                        $calculated_weight[$a] = getWeight($dimension);
+                        $weight_pound = getWeight($dimension);
+                        $calculated_weight[$a] = poundToKg($weight_pound);
                         $asin_array[] = "'$a'";
                     }
 
