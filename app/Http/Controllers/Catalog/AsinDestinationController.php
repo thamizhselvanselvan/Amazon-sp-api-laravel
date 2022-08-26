@@ -44,38 +44,49 @@ class AsinDestinationController extends Controller
             $request->validate([
                 'text_area' => 'required',
                 'destination'    => 'required',
+                'priority'  => 'required',
             ]);
             $user_id = Auth::user()->id;
             $value = $request->text_area;
-            $destination = $request->destination;
-            $asins = preg_split('/[\r\n| |:|,]/', $value, -1, PREG_SPLIT_NO_EMPTY);
-
-            $country_code = buyboxCountrycode();
-            if ($destination == 'UK') {
-                return redirect('catalog/import-asin-destination')->with('error', 'Seller not available!');
+            $destinations = $request->destination;
+            $priorities = $request->priority;
+            // po($priorities);
+            // exit;
+            foreach($destinations as $destination)
+            {
+                $asins = preg_split('/[\r\n| |:|,]/', $value, -1, PREG_SPLIT_NO_EMPTY);
+                $country_code = buyboxCountrycode();
+                // if ($destination == 'UK') {
+                //     return redirect('catalog/import-asin-destination')->with('error', 'Seller not available!');
+                // }
+                foreach ($asins as $asin) {
+                    $records[] = [
+                        'asin'  => $asin,
+                        'user_id'   => $user_id,
+                    ];
+    
+                    $product[] = [
+                        'seller_id' => $country_code[$destination],
+                        'active'   =>  1,
+                        'asin1' => $asin,
+                    ];
+    
+                    $product_lowest_price[] = [
+                        'asin'  => $asin,
+                        'import_type'   => 'Seller'
+                    ];
+                }
+                po($records);
+                po($product);
+                po($product_lowest_price);
+                AsinDestination::upsert($records, ['user_asin_destination_unique'], ['asin',]);
+                $push_to_bb = new PushAsin();
+                $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination);
+                $records = [];
+                $product = [];
+                $product_lowest_price = [];
             }
-            foreach ($asins as $asin) {
-                $records[] = [
-                    'asin'  => $asin,
-                    'user_id'   => $user_id,
-                    'destination'   => $destination,
 
-                ];
-
-                $product[] = [
-                    'seller_id' => $country_code[$destination],
-                    'active'   =>  1,
-                    'asin1' => $asin,
-                ];
-
-                $product_lowest_price[] = [
-                    'asin'  => $asin,
-                    'import_type'   => 'Seller'
-                ];
-            }
-            AsinDestination::upsert($records, ['user_asin_destination_unique'], ['asin',]);
-            $push_to_bb = new PushAsin();
-            $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination);
         } elseif ($request->form_type == 'file_upload') {
             $user_id = Auth::user()->id;
             $validation = $request->validate([
@@ -107,7 +118,7 @@ class AsinDestinationController extends Controller
                 Artisan::call('mosh:Asin-destination-upload' . ' ' . $user_id);
             }
         }
-        return redirect('catalog/import-asin-destination')->with('success', 'File has been uploaded successfully');
+        // return redirect('catalog/import-asin-destination')->with('success', 'File has been uploaded successfully');
     }
 
     public function AsinDestinationEdit($id)
