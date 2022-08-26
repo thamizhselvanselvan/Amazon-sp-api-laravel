@@ -62,44 +62,47 @@ class CatalogPriceImport extends Command
 
             $country_code_lr = strtolower($country_code);
 
-            $product_lp = 'bb_product_' . $country_code_lr . 's_seller_details';
-            $product = 'bb_product_' . $country_code_lr . 's';
+            $product_seller_details = 'bb_product_' . $country_code_lr . 's_seller_details';
+            $product_lp = 'bb_product_' . $country_code_lr . 'lp_offfers';
 
             $catalog_table = 'catalog' . $country_code_lr . 's';
-            AsinDestination::select('asin_destinations.asin', "$catalog_table.packageweight")
+            AsinDestination::select('asin_destinations.asin', "$catalog_table.package_dimensions")
                 ->where('asin_destinations.destination', $country_code)
                 ->join($catalog_table, 'asin_destinations.asin', '=', "$catalog_table.asin")
-                ->chunk($chunk, function ($data) use ($seller_id, $country_code_lr, $product_lp, $price_convert) {
+                ->chunk($chunk, function ($data) use ($seller_id, $country_code_lr, $product_seller_details, $product_lp, $price_convert) {
 
                     $pricing = [];
                     $pricing_in = [];
                     $asin_details = [];
                     $listing_price_amount = '';
 
-                    Log::info($data);
                     $asin_array = [];
                     foreach ($data as $value) {
 
-                        $weight = json_decode($value->packageweight);
+                        $dimension = ($value->package_dimensions);
 
                         $a = $value->asin;
                         $weight_value = 0.5;
-                        if (isset($weight->value)) {
+                        // if (isset($weight->value)) {
 
-                            $weight_value = $weight->value;
-                        }
-                        $calculated_weight[$a] = poundToKg($weight_value);
+                        //     $weight_value = $weight->value;
+                        // }
+
+                        $calculated_weight[$a] =  getWeight($dimension);
                         $asin_array[] = "'$a'";
                     }
 
                     $asin = implode(',', $asin_array);
+
                     $asin_price = DB::connection('buybox')
-                        ->select("SELECT PPO.asin,
+                        ->select("SELECT PPO.asin, LP.asin
                     GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
                     group_concat(PPO.listingprice_amount) as listingprice_amount,
                     group_concat(PPO.updated_at) as updated_at
-                    FROM $product_lp as PPO
+                    FROM $product_seller_details as PPO
+                    JOIN $product_lp as LP
                         WHERE PPO.asin IN ($asin)
+                        AND PPO.asin = LP.asin
                         GROUP BY PPO.asin
                     ");
 
@@ -118,51 +121,59 @@ class CatalogPriceImport extends Command
                             if ($value1 == '1') {
 
                                 $listing_price_amount = $listing_price[$key];
+
                                 $asin_details =
                                     [
                                         'asin' =>  $asin_name,
-                                        'weight' => $packet_weight,
+                                        // 'weight' => $packet_weight,
                                         $price => $listing_price_amount,
-                                        'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
+                                        'price_updated_at' => max($updated_at),
                                     ];
                                 break 1;
                             } else {
+
                                 $listing_price_amount =  min($listing_price);
                                 $asin_details =
                                     [
                                         'asin' =>  $asin_name,
-                                        'weight' => $packet_weight,
+                                        // 'weight' => $packet_weight,
                                         $price => $listing_price_amount,
-                                        'price_updated_at' => $updated_at[$key] ? $updated_at[$key] : NULL,
+                                        'price_updated_at' =>  max($updated_at),
                                     ];
                             }
                         }
                         if ($country_code_lr == 'us') {
 
-                            $ind_price = $price_convert->USAToIND($packet_weight, $listing_price_amount);
-                            $destination_price_in = [
-                                'ind_sp' => $ind_price,
+                            $price_in_b2c = $price_convert->USAToINDB2C($packet_weight, $listing_price_amount);
+
+                            $price_in_b2b = $price_convert->USAToINDB2B($packet_weight, $listing_price_amount);
+
+                            $price_ae = $price_convert->USATOUAE($packet_weight, $listing_price_amount);
+
+                            $price_sg =  $price_convert->USATOSG($packet_weight, $listing_price_amount);
+
+                            $price_us_source = [
+                                'usa_to_in_b2c' => $price_in_b2c,
+                                'usa_to_in_b2b' => $price_in_b2b,
+                                'usa_to_uae' => $price_ae,
+                                'usa_to_sg' => $price_sg,
+                                'weight' => $packet_weight
                             ];
 
-                            $destination_price_ae = [
-                                'uae_sp' => $price_convert->USATOUAE($packet_weight, $listing_price_amount)
-                            ];
-
-                            $destination_price_sg = [
-                                'sg_sp' => $price_convert->USATOSG($packet_weight, $listing_price_amount),
-                            ];
-
-                            $pricing[] = [...$asin_details, ...$destination_price_in, ...$destination_price_ae, ...$destination_price_sg];
+                            $pricing[] = [...$asin_details, ...$price_us_source];
                         } elseif ($country_code_lr == 'in') {
 
-                            $price_saudi = $price_convert->INDToSA($packet_weight, $listing_price_amount);
-                            $price_singapore = $price_convert->INDToSG($packet_weight, $listing_price_amount);
-                            $price_uae = $price_convert->INDToUAE($packet_weight, $listing_price_amount);
+                            $packet_weight_kg = poundToKg($packet_weight);
+
+                            $price_saudi = $price_convert->INDToSA($packet_weight_kg, $listing_price_amount);
+                            $price_singapore = $price_convert->INDToSG($packet_weight_kg, $listing_price_amount);
+                            $price_uae = $price_convert->INDToUAE($packet_weight_kg, $listing_price_amount);
 
                             $destination_price = [
-                                'uae_sp' => $price_uae,
-                                'sg_sp' => $price_singapore,
-                                'sa_sp' => $price_saudi,
+                                'ind_to_uae' => $price_uae,
+                                'ind_to_sg' => $price_singapore,
+                                'ind_to_sa' => $price_saudi,
+                                'weight' => $packet_weight_kg
                             ];
                             $pricing_in[] = [...$asin_details, ...$destination_price];
                         }

@@ -15,12 +15,60 @@
 @section('css')
 
 <style type="text/css">
+    body div strong {
+        font-family: "Lato";
+        font-weight: 900;
+        font-size: 12px;
+    }
+
+    body * {
+        font-family: "Lato";
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .table_border th,
+    .table_border td,
+    .table_border td,
+    .table_border thead th,
+    .return {
+        border: 1px solid black !important;
+    }
+
+    .mb-1,
+    .my-1 {
+        margin-bottom: 0px !important;
+    }
+
+    .mt-1,
+    .my-1 {
+        margin-top: 0px !important;
+    }
+
+    .return,
+    .prduct-details thead tr th {
+        border-top: 0px !important;
+    }
+
     @media print {
 
         @page {
             size: 4in 6in;
             margin: 0px;
             padding: 0px;
+        }
+
+        .table_border th,
+        .table_border td,
+        .table_border tr,
+        .table_border thead th,
+        .return {
+            border: 1px solid black !important;
+        }
+
+        .return,
+        .prduct-details thead tr th {
+            border-top: 0px !important;
         }
 
         .container-fluid {
@@ -54,7 +102,7 @@
     <div class="label p-1">
         <div class="label-content">
             <!-- <div class="table-responsive"> -->
-            <table class="table table-label table-bordered table-bordered-dark<td pt-1 pb-0 mb-1">
+            <table class="table table-label table-bordered table-bordered-dark<td pt-1 pb-0 mb-1 table_border">
                 <tbody>
                     <tr>
                         <td class="pb-0">
@@ -62,12 +110,12 @@
                                 <div class="col p-0"></div>
                                 <div class="col p-0">
                                     <img class="label-barcode-img" src='data:image/png;base64,{!! $bar_code !!}'>
+                                    <!-- {!! $bar_code !!} -->
                                     <b>
                                         <div class="text-center">
                                             @if($result->awb_no =='' || $result->awb_no == NULL)
-                                            Awb Missing
+                                            AWB is missing
                                             @else
-
                                             {{ $result->awb_no }}
                                             @endif
                                         </div>
@@ -136,7 +184,7 @@
                     </tr>
                 </tbody>
             </table>
-            <table class="table table-bordered table-bordered-dark product pt-0">
+            <table class="table table-bordered table-bordered-dark product pt-0 mb-0 prduct-details table_border">
                 <thead>
                     <tr>
                         <th class="text-left">Sr</th>
@@ -164,7 +212,7 @@
             </table>
 
             <div class="mt-1 p-1 small return">
-                <div>Return Address:</div>
+                <div><strong>Return Address:<strong></div>
                 <span>Warehouse 61, Al Habtoor Warehouses, Industrial Area 3, Al Qusias, Dubai UAE</span>
             </div>
             <!-- </div> -->

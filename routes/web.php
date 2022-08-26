@@ -200,37 +200,36 @@ Route::get('country', function () {
 
     $countries = Country::get();
 });
-Route::get('TrackingApi', function(){
+Route::get('TrackingApi', function () {
 
     // return $awbNo;
     // $url = "https://amazon-sp-api-laravel.app/api/testing?awbNo=US30000002";
     // $awbNo = 'US30000002';
     $curl = curl_init();
 
-curl_setopt_array($curl, array(
-  CURLOPT_URL => "https://amazon-sp-api-laravel.app/api/testing/awbNo=US30000002",
-  CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_ENCODING => '',
-  CURLOPT_MAXREDIRS => 10,
-  CURLOPT_TIMEOUT => 0,
-  CURLOPT_FOLLOWLOCATION => true,
-  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-  CURLOPT_CUSTOMREQUEST => 'GET',
-  CURLOPT_POSTFIELDS =>"<?xml version='1.0' encoding='UTF-8'?>
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => "https://amazon-sp-api-laravel.app/api/testing/awbNo=US30000002",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_POSTFIELDS => "<?xml version='1.0' encoding='UTF-8'?>
 <AmazonTrackingRequest xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' 
 xsi:noNamespaceSchemaLocation='AmazonTrackingRequest.xsd'>
 </AmazonTrackingRequest>",
-  CURLOPT_HTTPHEADER => array(
-    'Content-Type: text/plain',
-    
-  ),
-));
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: text/plain',
 
-$response = curl_exec($curl);
+        ),
+    ));
 
-curl_close($curl);
-return $response;
+    $response = curl_exec($curl);
 
+    curl_close($curl);
+    return $response;
 });
 
 Route::get('channel', function () {
