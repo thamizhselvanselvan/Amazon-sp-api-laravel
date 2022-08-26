@@ -62,14 +62,14 @@ class CatalogPriceImport extends Command
 
             $country_code_lr = strtolower($country_code);
 
-            $product_lp = 'bb_product_' . $country_code_lr . 's_seller_details';
-            $product = 'bb_product_' . $country_code_lr . 's';
+            $product_seller_details = 'bb_product_' . $country_code_lr . 's_seller_details';
+            $product_lp = 'bb_product_' . $country_code_lr . 'lp_offfers';
 
             $catalog_table = 'catalog' . $country_code_lr . 's';
             AsinDestination::select('asin_destinations.asin', "$catalog_table.package_dimensions")
                 ->where('asin_destinations.destination', $country_code)
                 ->join($catalog_table, 'asin_destinations.asin', '=', "$catalog_table.asin")
-                ->chunk($chunk, function ($data) use ($seller_id, $country_code_lr, $product_lp, $price_convert) {
+                ->chunk($chunk, function ($data) use ($seller_id, $country_code_lr, $product_seller_details, $product_lp, $price_convert) {
 
                     $pricing = [];
                     $pricing_in = [];
@@ -93,13 +93,16 @@ class CatalogPriceImport extends Command
                     }
 
                     $asin = implode(',', $asin_array);
+
                     $asin_price = DB::connection('buybox')
-                        ->select("SELECT PPO.asin,
+                        ->select("SELECT PPO.asin, LP.asin
                     GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
                     group_concat(PPO.listingprice_amount) as listingprice_amount,
                     group_concat(PPO.updated_at) as updated_at
-                    FROM $product_lp as PPO
+                    FROM $product_seller_details as PPO
+                    JOIN $product_lp as LP
                         WHERE PPO.asin IN ($asin)
+                        AND PPO.asin = LP.asin
                         GROUP BY PPO.asin
                     ");
 
@@ -141,16 +144,19 @@ class CatalogPriceImport extends Command
                         }
                         if ($country_code_lr == 'us') {
 
-                            $price_in = $price_convert->USAToIND($packet_weight, $listing_price_amount);
+                            $price_in_b2c = $price_convert->USAToINDB2C($packet_weight, $listing_price_amount);
+
+                            $price_in_b2b = $price_convert->USAToINDB2B($packet_weight, $listing_price_amount);
 
                             $price_ae = $price_convert->USATOUAE($packet_weight, $listing_price_amount);
 
                             $price_sg =  $price_convert->USATOSG($packet_weight, $listing_price_amount);
 
                             $price_us_source = [
-                                'ind_sp' => $price_in,
-                                'uae_sp' => $price_ae,
-                                'sg_sp' => $price_sg,
+                                'usa_to_in_b2c' => $price_in_b2c,
+                                'usa_to_in_b2b' => $price_in_b2b,
+                                'usa_to_uae' => $price_ae,
+                                'usa_to_sg' => $price_sg,
                                 'weight' => $packet_weight
                             ];
 
@@ -164,9 +170,9 @@ class CatalogPriceImport extends Command
                             $price_uae = $price_convert->INDToUAE($packet_weight_kg, $listing_price_amount);
 
                             $destination_price = [
-                                'uae_sp' => $price_uae,
-                                'sg_sp' => $price_singapore,
-                                'sa_sp' => $price_saudi,
+                                'ind_to_uae' => $price_uae,
+                                'ind_to_sg' => $price_singapore,
+                                'ind_to_sa' => $price_saudi,
                                 'weight' => $packet_weight_kg
                             ];
                             $pricing_in[] = [...$asin_details, ...$destination_price];
