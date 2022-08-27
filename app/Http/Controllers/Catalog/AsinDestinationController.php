@@ -49,9 +49,8 @@ class AsinDestinationController extends Controller
             $user_id = Auth::user()->id;
             $value = $request->text_area;
             $destinations = $request->destination;
-            $priorities = $request->priority;
-            // po($priorities);
-            // exit;
+            $priority = $request->priority;
+            
             foreach($destinations as $destination)
             {
                 $asins = preg_split('/[\r\n| |:|,]/', $value, -1, PREG_SPLIT_NO_EMPTY);
@@ -63,6 +62,7 @@ class AsinDestinationController extends Controller
                     $records[] = [
                         'asin'  => $asin,
                         'user_id'   => $user_id,
+                        'priority'  => $priority,
                     ];
     
                     $product[] = [
@@ -73,13 +73,16 @@ class AsinDestinationController extends Controller
     
                     $product_lowest_price[] = [
                         'asin'  => $asin,
-                        'import_type'   => 'Seller'
+                        'import_type'   => 'Seller',
+                        'priority'  => $priority,
+
                     ];
                 }
-                po($records);
-                po($product);
-                po($product_lowest_price);
-                AsinDestination::upsert($records, ['user_asin_destination_unique'], ['asin',]);
+                // po($records);
+                // po($product);
+                // po($product_lowest_price);
+                $table_name = table_model_create(country_code:$destination, model:'Asin_destionation', table_name:'asin_destination_');
+                $table_name->upsert($records, ['user_asin_unique'], ['asin', 'priority']);
                 $push_to_bb = new PushAsin();
                 $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination);
                 $records = [];
@@ -89,8 +92,12 @@ class AsinDestinationController extends Controller
 
         } elseif ($request->form_type == 'file_upload') {
             $user_id = Auth::user()->id;
+            $priority = $request->priority;
+            $destination = implode(',', $request->destination);
             $validation = $request->validate([
                 'asin' => 'required|mimes:csv',
+                'destination' => 'required',
+                'priority' => 'required',
             ]);
 
             if (!$validation) {
@@ -98,27 +105,26 @@ class AsinDestinationController extends Controller
             }
 
             $file = file_get_contents($request->asin);
-
             $path = 'AsinDestination/asin.csv';
-            // if(!Storage::exists($path)){
             Storage::put($path, $file);
+
+            commandExecFunc("mosh:Asin-destination-upload ${user_id} ${priority} --destination=${destination} ");
+
+            // if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+
+            //     Log::warning("asin production executed");
+
+            //     $base_path = base_path();
+            //     $command = "cd $base_path && php artisan mosh:Asin-destination-upload ${user_id} > /dev/null &";
+            //     exec($command);
+            //     Log::warning("asin production command executed");
+            // } else {
+
+            //     Log::warning("Export coma executed local !");
+            //     Artisan::call('mosh:Asin-destination-upload' . ' ' . $user_id);
             // }
-
-            if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-
-                Log::warning("asin production executed");
-
-                $base_path = base_path();
-                $command = "cd $base_path && php artisan mosh:Asin-destination-upload ${user_id} > /dev/null &";
-                exec($command);
-                Log::warning("asin production command executed");
-            } else {
-
-                Log::warning("Export coma executed local !");
-                Artisan::call('mosh:Asin-destination-upload' . ' ' . $user_id);
-            }
         }
-        // return redirect('catalog/import-asin-destination')->with('success', 'File has been uploaded successfully');
+        return redirect('catalog/import-asin-destination')->with('success', 'File has been uploaded successfully');
     }
 
     public function AsinDestinationEdit($id)

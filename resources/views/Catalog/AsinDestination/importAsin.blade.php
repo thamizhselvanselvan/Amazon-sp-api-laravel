@@ -88,15 +88,15 @@
                     <div class="row ">
                         <div class="col-2">
                             <label for="P1">P1</label>
-                            <input type="radio" class="destination-priority" name="priority[]" value="P1"  >
+                            <input type="radio" class="destination-priority" name="priority" value="1"  >
                         </div>
                         <div class="col-2">
                             <label for="P2">P2</label>
-                            <input type="radio" class="destination-priority" name="priority[]" value="P2"  >
+                            <input type="radio" class="destination-priority" name="priority" value="2"  >
                         </div>
                         <div class="col-2 ">
                             <label for="P3">P3</label>
-                            <input type="radio" class="destination-priority" name="priority[]" value="P3"  >
+                            <input type="radio" class="destination-priority" name="priority" value="3"  >
                         </div>
                     </div>
                     <x-adminlte-textarea label="ASIN By Text-area" name="text_area" type="text" rows="6" placeholder="Enter ASIN " id="textarea" />
@@ -123,7 +123,7 @@
                     <div class="row ">
                         <div class="col-2">
                             <label for="IN">IN</label>
-                            <input type="checkbox" class="destinationCheck" id="destinationCheck" name="destination[]" value="IN"  >
+                            <input type="checkbox" class="destinationCheck" name="destination[]" value="IN"  >
                         </div>
                         <div class="col-2">
                             <label for="US">US</label>
@@ -138,15 +138,15 @@
                     <div class="row ">
                         <div class="col-2">
                             <label for="P1">P1</label>
-                            <input type="radio" class="destination-priority" name="priority[]" value="P1"  >
+                            <input type="radio" class="destination-priority" name="priority" value="1"  >
                         </div>
                         <div class="col-2">
                             <label for="P2">P2</label>
-                            <input type="radio" class="destination-priority" name="priority[]" value="P2"  >
+                            <input type="radio" class="destination-priority" name="priority" value="2"  >
                         </div>
                         <div class="col-2 ">
                             <label for="P3">P3</label>
-                            <input type="radio" class="destination-priority" name="priority[]" value="P3"  >
+                            <input type="radio" class="destination-priority" name="priority" value="3"  >
                         </div>
                     </div>
                     <x-adminlte-input label="Upload ASIN File" name="asin" id="asin" type="file" />
