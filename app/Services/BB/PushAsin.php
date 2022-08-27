@@ -11,11 +11,12 @@ class PushAsin
         // Log::alert($country_code);
         $country_code = strtolower($country_code);
         $bb_product = table_model_set($country_code, 'BB_Product', 'product');
+        // log::alert($bb_product->getTable());
         $bb_product->insert($product);
 
         $lp_table = "product_${country_code}s_lp_offer";
 
         $bb_product_lowest_price = table_model_set(country_code: $country_code, model: 'BB_Product_lowest_price_offer', table_name: $lp_table);
-        $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin']);
+        $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin', 'priority']);
     }
 }

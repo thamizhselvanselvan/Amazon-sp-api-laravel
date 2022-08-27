@@ -103,8 +103,6 @@ class AsinSourceController extends Controller
         
         if($request->form_type == 'text_area')
         {
-            // po($request->source);
-            // exit;
             $validate = $request->validate([
                 'text_area' => 'required',
                 'source'    =>  ['required'],
@@ -131,56 +129,41 @@ class AsinSourceController extends Controller
                     $allData [] = [
                         'asin'  =>  $asin_details,
                         'user_id'   =>  $user_id,
-                        // 'source'    =>  $source,
                     ];
-                    
-                    // $product [] = [
-                    //     'seller_id' => $country_code[$source],
-                    //     'active'   =>  1,
-                    //     'asin1' => $asin_details,
-                    // ];
-                    
-                    // $product_lowest_price [] = [
-                    //     'asin'  => $asin_details,
-                    //     'import_type'   => 'Seller'
-                    // ];
                 }
                 
                 $table_name = table_model_create(country_code:$source, model:'Asin_source', table_name:'asin_source_');
-                
                 $table_name->upsert($allData,['user_asin_unique'], ['asin']);
-                // $push_to_bb = new PushAsin();
-                // $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $source);
-                
                 $allData = [];
 
                 //queue start;
-                $table_name = table_model_create(country_code:$source, model:'Asin_source', table_name:'asin_source_');
-                $asins = $table_name->where('status', 0)->get(['asin', 'user_id']);
+                // $table_name = table_model_create(country_code:$source, model:'Asin_source', table_name:'asin_source_');
+                // $asins = $table_name->where('status', 0)->get(['asin', 'user_id']);
                 
-                $count = 0;
-                $asin_source = [];
-                $class = 'catalog\AmazonCatalogImport';
+                // $count = 0;
+                // $asin_source = [];
+                // $class = 'catalog\AmazonCatalogImport';
 
-                foreach ($asins as $asin) {
-                    if ($count == 10) {
-                        jobDispatchFunc($class, $asin_source, 'catalog');
+                // foreach ($asins as $asin) {
+                //     if ($count == 10) {
+                //         jobDispatchFunc($class, $asin_source, 'catalog');
 
-                        $asin_source = [];
-                        $count = 0;
-                    } 
-                    $asin_source[] = [
-                        'asin' => $asin->asin,
-                        'source' => $source,
-                        'seller_id' => $asin->user_id
-                    ];
-                    $count++;
-                } 
+                //         $asin_source = [];
+                //         $count = 0;
+                //     } 
+                //     $asin_source[] = [
+                //         'asin' => $asin->asin,
+                //         'source' => $source,
+                //         'seller_id' => $asin->user_id
+                //     ];
+                //     $count++;
+                // } 
                 
-                jobDispatchFunc($class, $asin_source, 'catalog');
-                }
+                // jobDispatchFunc($class, $asin_source, 'catalog');
+                // }
 
                 //queue end;
+            }
         }
         elseif($request->form_type == 'file_upload')
         {
