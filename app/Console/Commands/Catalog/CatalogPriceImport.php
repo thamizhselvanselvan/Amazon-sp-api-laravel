@@ -71,7 +71,7 @@ class CatalogPriceImport extends Command
             //     ->join($catalog_table, 'asin_destinations.asin', '=', "$catalog_table.asin")
 
             $table_name = 'catalog' . $country_code_lr . 's';
-            $modal_table = table_model_create(country_code: $this->country_code, model: 'Catalog', table_name: 'catalognew');
+            $modal_table = table_model_create(country_code: $country_code, model: 'Catalog', table_name: 'catalognew');
 
             $modal_table->select(['asin', 'dimensioins'])->chunk($chunk, function ($data) use ($seller_id, $country_code_lr, $product_seller_details, $product_lp, $price_convert) {
 
