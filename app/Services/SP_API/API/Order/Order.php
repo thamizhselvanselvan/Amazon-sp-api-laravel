@@ -2,17 +2,17 @@
 
 namespace App\Services\SP_API\API\Order;
 
-use App\Jobs\Orders\GetOrderItem;
 use Exception;
 use RedBeanPHP\R;
 use Carbon\Carbon;
 use App\Models\Aws_credential;
 use SellingPartnerApi\Endpoint;
+use App\Jobs\Orders\GetOrderItem;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
-use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
+use SellingPartnerApi\Api\OrdersV0Api;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
@@ -41,7 +41,7 @@ class Order
         $marketplace_ids = $this->marketplace_id($awsCountryCode);
         $marketplace_ids = [$marketplace_ids];
 
-        $apiInstance = new OrdersApi($config);
+        $apiInstance = new OrdersV0Api($config);
         // $startTime = Carbon::now()->subHours(9)->toISOString();
         $startTime = Carbon::now()->subDays(5)->toISOString();
         // Log::alert($startTime);
