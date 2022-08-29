@@ -67,6 +67,13 @@ class NewCatalog
                 }
             }
             R::store($NewCatalogs);
+            $table_name = table_model_create(country_code:$country_code, model:'Asin_source', table_name:'asin_source_');
+            $table_name->upsert([
+                'asin' => $asin,
+                'user_id' => $seller_id,
+                'status' => 1,
+            ],['user_asin_unique'], ['asin', 'status']);
+
         } catch (Exception $e) {
             Log::critical($e);
         }
