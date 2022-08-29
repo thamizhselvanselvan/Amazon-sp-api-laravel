@@ -53,8 +53,8 @@ class CatalogPriceImport extends Command
 
         // $source = buyboxCountrycode();
         $source = [
+            'US' => 40,
             'IN' => 39
-            // 'US' => 40
         ];
         $price_convert = new PriceConversion();
         $chunk = 10;
@@ -65,15 +65,9 @@ class CatalogPriceImport extends Command
             $product_seller_details = 'bb_product_' . $country_code_lr . 's_seller_details';
             $product_lp = 'bb_product_' . $country_code_lr . 's_lp_offers';
 
-            // $catalog_table = 'catalog' . $country_code_lr . 's';
-            // AsinDestination::select('asin_destinations.asin', "$catalog_table.package_dimensions")
-            //     ->where('asin_destinations.destination', $country_code)
-            //     ->join($catalog_table, 'asin_destinations.asin', '=', "$catalog_table.asin")
-
-            $table_name = 'catalog' . $country_code_lr . 's';
             $modal_table = table_model_create(country_code: $country_code, model: 'Catalog', table_name: 'catalognew');
 
-            $modal_table->select(['asin', 'dimensioins'])->chunk($chunk, function ($data) use ($seller_id, $country_code_lr, $product_seller_details, $product_lp, $price_convert) {
+            $modal_table->select(['asin', 'dimensions'])->chunk($chunk, function ($data) use ($seller_id, $country_code_lr, $product_seller_details, $product_lp, $price_convert) {
 
                 $pricing = [];
                 $pricing_in = [];
