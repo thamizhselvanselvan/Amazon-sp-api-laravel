@@ -137,33 +137,32 @@ class AsinSourceController extends Controller
                 $allData = [];
 
                 //queue start;
-                // $table_name = table_model_create(country_code:$source, model:'Asin_source', table_name:'asin_source_');
-                // $asins = $table_name->where('status', 0)->get(['asin', 'user_id']);
+                $table_name = table_model_create(country_code:$source, model:'Asin_source', table_name:'asin_source_');
+                $asins = $table_name->where('status', 0)->get(['asin', 'user_id']);
                 
-                // $count = 0;
-                // $asin_source = [];
-                // $class = 'catalog\AmazonCatalogImport';
+                $count = 0;
+                $asin_source = [];
+                $class = 'catalog\AmazonCatalogImport';
 
-                // foreach ($asins as $asin) {
-                //     if ($count == 10) {
-                //         jobDispatchFunc($class, $asin_source, 'catalog');
+                foreach ($asins as $asin) {
+                    if ($count == 10) {
+                        jobDispatchFunc($class, $asin_source, 'catalog');
 
-                //         $asin_source = [];
-                //         $count = 0;
-                //     } 
-                //     $asin_source[] = [
-                //         'asin' => $asin->asin,
-                //         'source' => $source,
-                //         'seller_id' => $asin->user_id
-                //     ];
-                //     $count++;
-                // } 
+                        $asin_source = [];
+                        $count = 0;
+                    } 
+                    $asin_source[] = [
+                        'asin' => $asin->asin,
+                        'source' => $source,
+                        'seller_id' => $asin->user_id
+                    ];
+                    $count++;
+                } 
                 
-                // jobDispatchFunc($class, $asin_source, 'catalog');
-                // }
-
-                //queue end;
+                jobDispatchFunc($class, $asin_source, 'catalog');
             }
+                //queue end;
+            
         }
         elseif($request->form_type == 'file_upload')
         {
