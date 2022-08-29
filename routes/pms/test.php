@@ -58,9 +58,33 @@ Route::get('test1', function () {
     $modal_table->orderBy('id')->chunk(
         $chunk,
         function ($result) {
+            // $result = json_encode(json_decode($result));
+            $records = [];
+            foreach ($result as $value) {
+                $dem = $value->dimensions;
+                $dem = json_decode($dem)[0]->package->weight->value;
+                $product_type = json_decode($value->product_types)[0]->productType;
+                $images1 = json_decode($value->images)[0]->images[0]->link;
+                $images2 = json_decode($value->images)[0]->images[1]->link;
 
-            dd((json_decode($result[1]->attributes)));
-            exit;
+                $records[] = [
+                    'asin' => $value->asin,
+                    'source' => $value->source,
+                    'dimensioins' => $dem,
+                    'images1' => $images1,
+                    'images2' => $images2,
+                    'product_types' => $product_type,
+                    'brand' => $value->brand,
+                    'color' => $value->color,
+                    'item_classifications' => $value->item_classifications,
+                    'item_name' => $value->item_name,
+                    'style' => $value->style,
+                    'website_display_group' => $value->website_display_group,
+                    'manufacturer' => $value->manufacture,
+                ];
+                // exit;
+            }
+            po($records);
             //
         }
     );

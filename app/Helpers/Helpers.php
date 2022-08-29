@@ -531,6 +531,7 @@ if (!function_exists('table_model_set')) {
     }
 }
 
+
 if (!function_exists('table_model_create')) {
     function table_model_create(string $country_code, string $model, string $table_name): object
     {
