@@ -36,6 +36,7 @@ use App\Services\Inventory\ReportWeekly;
 use Spatie\Permission\Models\Permission;
 use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
+use SellingPartnerApi\Api\CatalogItemsV20220401Api;
 use App\Services\AWS_Business_API\Auth\AWS_Business;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
@@ -50,6 +51,118 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 | contains the "web" middleware group. Now create something great!
 |
 */
+// use ConfigTrait;
+
+// route::get('newcatalog/{asin}', function($asin){
+
+
+//     $host = config('database.connections.catalog.host');
+//         $dbname = config('database.connections.catalog.database');
+//         $port = config('database.connections.catalog.port');
+//         $username = config('database.connections.catalog.username');
+//         $password = config('database.connections.catalog.password');
+
+//         if (!R::testConnection('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password)) {
+//             R::addDatabase('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+//             R::selectDatabase('catalog');
+//         }
+
+//     // $token = 'Atzr|IwEBIJbccmvWhc6q6XrigE6ja7nyYj962XdxoK8AHhgYvfi-WKo3MsrbTSLWFo79My_xmmT48DSVh2e_6w8nxgaeza9XZ9HtNnk7l4Rl_nWhhO6xzEdfIfU7Ev4hktjvU8CjMvYnRn_Cw5JveEqZSggp961Sg7CoBEDpwXZbAE3SYXSdeNxfP2Nu84y2ZzlsP3CNZqcTvXMWflLk1qqY6ittwlGAXpL0BwGxPCBRmjbXOy5xsZqwCPAQhW6l9AJtLPhwOlSSDjcxxvCTH9-LEPSWHLRP1wV3fRgosOlCsQgmuET0pm5SO7FVJTRWux8h2k5hnnM';
+//     $token = 'Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg';
+//     $country_code = 'IN';
+//     $aws_id = NULL;
+   
+//     $config = new Configuration([
+//         "lwaClientId" => "amzn1.application-oa2-client.0167f1a848ae4cf0aabeeb1abbeaf8cf",
+//         "lwaClientSecret" => "5bf9add9576f83d33293b0e9e2ed5e671000a909f161214a77b93d26e7082765",
+//         "lwaRefreshToken" => $token,
+//         "awsAccessKeyId" => "AKIAZTIHMXYBD5SRG5IZ",
+//         "awsSecretAccessKey" => "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",
+//         "endpoint" => Endpoint::NA,  // or another endpoint from lib/Endpoints.php
+//         "roleArn" => 'arn:aws:iam::659829865986:role/Mosh-E-Com-SP-API-Role'
+//     ]);
+//         $apiInstance = new CatalogItemsV20220401Api($config);
+//         // po($apiInstance);
+//         // exit;
+//         // $marketplace_id = 'A21TJRUUN4KGV';
+//         $marketplace_id = 'ATVPDKIKX0DER';
+//         // $asin = 'B00000JHQ0';
+
+//         $incdata= ['attributes','dimensions', 'identifiers', 'images', 'productTypes', 'relationships', 'salesRanks', 'summaries'];
+//         echo"<pre>";
+//         try {
+//             $result = $apiInstance->getCatalogItem($asin, $marketplace_id,$incdata);
+//             po($result);
+//             exit;
+//             $result = json_decode(json_encode($result));
+//             $NewCatalogs = R::dispense('catalogussnew');
+//             if($result != NULL)
+//             {
+
+//                 foreach($result as $key => $value)
+//                 {
+//                     if($key == 'attributes')
+//                     {
+//                         foreach($value as $key1 => $value1)
+//                         {
+//                             // $key3 [] = $key1;
+//                             // $ignore_key =['is_expiration_dated_product', 'generic_keyword','externally_assigned_product_identifier', 'recommended_uses_for_product', 'battery', 'supplier_declared_dg_hz_regulation', 'num_batteries', 'batteries_required', 'product_site_launch_date', 'vendor_return_serial_number_required', 'batteries_included', 'product_expiration_type', 'cpsia_cautionary_statement', 'fc_shelf_life', 'warranty_description'];
+//                             // $result = array_diff($key3, $ignore_key);
+//                             // $NewCatalogs->$key1 = returnType($value1);
+//                             echo $key.' sub_key_1 -> '.$key1; 
+//                             $data = returnType($value1);
+//                             po($data);
+//                             echo "<hr>";
+    
+                            
+//                         }
+//                         // po($result);
+                        
+//                     }
+//                     elseif($key == 'summaries')
+//                     {
+//                         foreach((array)$value[0] as $key2 => $value2)
+//                         {
+//                             // $key2 = str_replace('marketplaceId', 'marketplace', $key2);
+//                             // $NewCatalogs->$key2 = returnType($value2);
+                                
+//                             echo $key.' sub_key_2 -> '.$key2; 
+//                             $data = returnType($value2);
+//                             po($data);
+//                             echo "<hr>";
+//                         }
+//                     }
+//                     else{
+//                         // $NewCatalogs->$key = returnType($value);
+//                         echo $key;
+//                         $data = returnType($value);
+//                         po($data);
+//                         echo "<hr>";
+//                     }
+//                 }      
+//             }
+//             R::store($NewCatalogs);      
+//         } catch (Exception $e) {
+//             echo 'Exception when calling CatalogItemsV20220401Api->getCatalogItem: ', $e->getMessage(), PHP_EOL;
+//         }
+// }
+
+// );
+
+// function returnType($type){
+//     if(is_object($type)){
+//         $data = json_encode($type);
+//     }
+//     elseif(is_string($type))
+//     {
+//         $data = $type;
+//     }else{
+//         $data = json_encode($type);
+//     }
+//     return $data;
+// }
+
+
 
 Route::get('country', function () {
 

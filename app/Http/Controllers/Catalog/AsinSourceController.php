@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Catalog;
 
+use RedBeanPHP\R;
+use App\Models\Catalog;
 use Illuminate\Http\Request;
 use App\Services\BB\PushAsin;
 use Yajra\DataTables\DataTables;
@@ -9,7 +11,9 @@ use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\Catalog\AsinSourcein;
 use Illuminate\Support\Facades\Auth;
+use App\Services\SP_API\API\NewCatalog;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 
@@ -96,45 +100,70 @@ class AsinSourceController extends Controller
     public function addBulkAsin(Request $request)
     {
         
+        
         if($request->form_type == 'text_area')
         {
             $validate = $request->validate([
                 'text_area' => 'required',
-                'source'    =>  'required',
+                'source'    =>  ['required'],
             ]);
-
+            
             $user_id = Auth::user()->id;
             $record = $request->text_area;
-            $source = $request->source;
-            $asins = preg_split('/[\r\n| |:|,|.]/', $record, -1, PREG_SPLIT_NO_EMPTY);
-            $country_code = buyboxCountrycode();
+            $sources = $request->source;
+            foreach($sources as $key => $source){
+                $asins = preg_split('/[\r\n| |:|,|.]/', $record, -1, PREG_SPLIT_NO_EMPTY);
+                $country_code = buyboxCountrycode();
+                
+                $redbean = new NewCatalog();
+                $redbean->RedBeanConnection();
+                $catalog_table = 'catalognew'.strtolower($source).'s';
+                $NewCatalogs = R::dispense($catalog_table);
+                $NewCatalogs->asin = '';
+                R::store($NewCatalogs);
+                // if($source == 'UK'){
+                //     // return redirect('catalog/import-bulk-asin')->with('error', 'Seller not available');
+                // }
+                foreach($asins as $asin_details)
+                {
+                    $allData [] = [
+                        'asin'  =>  $asin_details,
+                        'user_id'   =>  $user_id,
+                    ];
+                }
+                
+                $table_name = table_model_create(country_code:$source, model:'Asin_source', table_name:'asin_source_');
+                $table_name->upsert($allData,['user_asin_unique'], ['asin']);
+                $allData = [];
 
-            if($source == 'UK'){
-                return redirect('catalog/import-bulk-asin')->with('error', 'Seller not available');
+                //queue start;
+                // $table_name = table_model_create(country_code:$source, model:'Asin_source', table_name:'asin_source_');
+                // $asins = $table_name->where('status', 0)->get(['asin', 'user_id']);
+                
+                // $count = 0;
+                // $asin_source = [];
+                // $class = 'catalog\AmazonCatalogImport';
+
+                // foreach ($asins as $asin) {
+                //     if ($count == 10) {
+                //         jobDispatchFunc($class, $asin_source, 'catalog');
+
+                //         $asin_source = [];
+                //         $count = 0;
+                //     } 
+                //     $asin_source[] = [
+                //         'asin' => $asin->asin,
+                //         'source' => $source,
+                //         'seller_id' => $asin->user_id
+                //     ];
+                //     $count++;
+                // } 
+                
+                // jobDispatchFunc($class, $asin_source, 'catalog');
+                // }
+
+                //queue end;
             }
-            foreach($asins as $asin_details)
-            {
-                $allData [] = [
-                    'asin'  =>  $asin_details,
-                    'user_id'   =>  $user_id,
-                    'source'    =>  $source,
-                ];
-
-                $product [] = [
-                    'seller_id' => $country_code[$source],
-                    'active'   =>  1,
-                    'asin1' => $asin_details,
-                ];
-
-                $product_lowest_price [] = [
-                    'asin'  => $asin_details,
-                    'import_type'   => 'Seller'
-                ];
-            }
-
-            AsinSource::upsert($allData,['user_asin_source_unique'], ['asin']);
-            $push_to_bb = new PushAsin();
-            $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $source);
         }
         elseif($request->form_type == 'file_upload')
         {
@@ -149,24 +178,30 @@ class AsinSourceController extends Controller
             }
     
             $msg = "Asin import has been completed!";
-    
-            $source = file_get_contents($request->asin);
+
+            $source = $request->source;
+            $source = implode(',', $source);
+            
+            $file = file_get_contents($request->asin);
             $path = 'AsinMaster/asin.csv';
-            Storage::put($path, $source);
+            Storage::put($path, $file);
+
+            commandExecFunc("pms:asin-import ${user_id} --source=${source} ");
+            // exit;
     
-            if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+            // if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
     
-                Log::warning("asin production executed");
+            //     Log::warning("asin production executed");
     
-                $base_path = base_path();
-                $command = "cd $base_path && php artisan pms:asin-import ${user_id} > /dev/null &";
-                exec($command);
-                Log::warning("asin production command executed");
-            } else {
+            //     $base_path = base_path();
+            //     $command = "cd $base_path && php artisan pms:asin-import ${user_id} ${source} > /dev/null &";
+            //     exec($command);
+            //     Log::warning("asin production command executed");
+            // } else {
     
-                Log::warning("Export coma executed local !");
-                Artisan::call('pms:asin-import' . ' ' . $user_id);
-            } 
+            //     Log::warning("Export coma executed local !");
+            //     Artisan::call('pms:asin-import' . ' ' . $user_id . ' ' . $source );
+            // } 
         }
         return redirect('catalog/import-bulk-asin')->with('success', 'All Asins uploaded successfully');
     }

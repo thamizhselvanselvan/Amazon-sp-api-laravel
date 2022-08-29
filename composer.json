@@ -17,7 +17,7 @@
         "graham-campbell/digitalocean": "^8.4",
         "guzzlehttp/guzzle": "^7.4",
         "jeroennoten/laravel-adminlte": "^3.7",
-        "jlevers/selling-partner-api": "^4.3",
+        "jlevers/selling-partner-api": "^5.3",
         "laravel/framework": "^8.75",
         "laravel/horizon": "^5.9",
         "laravel/sanctum": "^2.11",

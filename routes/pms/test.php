@@ -51,41 +51,22 @@ Route::get('getPricing/', 'TestController@GetPricing');
 
 Route::get('test1', function () {
 
-    $asin = "'B000008J4T',
-    'B00000JHQ0',
-    'B00004R9W5',
-    'B00004TMFE',
-    'B00004Z5LR',
-    'B000050B6Y',
-    'B000052WTG',
-    'B000052WVA',
-    'B000052XB5',
-    'B000052XHI',
-    'B000052XIA',
-    'B000052XPU',
-    'B000052XZP',
-    'B000052XZQ',
-    'B000052XZZ',
-    'B000052Y0B',
-    'B000052Y0S',
-    'B000052Y65',
-    'B000052YAI',
-    'B000052YBV'";
+    $chunk = 5;
+    $table_name = 'catalognew';
+    $country_code = 'in';
+    $modal_table = table_model_create(country_code: $country_code, model: 'Catalog', table_name: $table_name);
+    $modal_table->orderBy('id')->chunk(
+        $chunk,
+        function ($result) {
 
-    $product_lp = 'bb_product_uss_lp_offers';
-    $product_seller_details = 'bb_product_uss_seller_details';
-    $asin_price = DB::connection('buybox')
-        ->select("SELECT PPO.asin, LP.available,
-GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
-group_concat(PPO.listingprice_amount) as listingprice_amount,
-group_concat(PPO.updated_at) as updated_at
-FROM $product_seller_details as PPO
-JOIN $product_lp as LP
-WHERE PPO.asin = LP.asin
-     AND PPO.asin IN ($asin)
-    GROUP BY PPO.asin
-");
-    po($asin_price);
+            dd((json_decode($result[1]->attributes)));
+            exit;
+            //
+        }
+    );
+
+
+    //
 });
 
 

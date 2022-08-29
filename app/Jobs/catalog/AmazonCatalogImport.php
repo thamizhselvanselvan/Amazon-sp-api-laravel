@@ -2,11 +2,13 @@
 
 namespace App\Jobs\catalog;
 
+use RedBeanPHP\R;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Log;
 use App\Services\SP_API\API\Catalog;
 use App\Services\SP_API\CatalogImport;
 use Illuminate\Queue\SerializesModels;
+use App\Services\SP_API\API\NewCatalog;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -34,18 +36,23 @@ class AmazonCatalogImport implements ShouldQueue
      */
     public function handle()
     {
-        $api_type = 'old';
+        $api_type = 'new';
 
         if ($api_type == 'new') {
+            
+            //new catalog api
+            
+            $catalog_asin = $this->payload;
+            $catalog = new NewCatalog();
+            $catalog->Catalog($catalog_asin, $seller_id= NULL);
 
-
-            //new catalog api 
-        } else {
-
-            $asin_source = $this->payload;
-            $type = 4;
-            $catalog =  new Catalog();
-            $catalog->index($asin_source, $seller_id = NULL, $type);
         }
+        //  else {
+
+        //     $asin_source = $this->payload;
+        //     $type = 4;
+        //     $catalog =  new Catalog();
+        //     $catalog->index($asin_source, $seller_id = NULL, $type);
+        // }
     }
 }
