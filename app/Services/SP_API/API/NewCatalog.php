@@ -59,7 +59,6 @@ class NewCatalog
             $NewCatalogs [] = R::dispense($catalog_table);
             foreach($value as $key => $data)
             {
-                // log::notice($value);
                 $NewCatalogs[$key1]->$key = $data;
             }
         }
@@ -89,12 +88,11 @@ class NewCatalog
                 if ($key == 'summaries') {
                     foreach ((array)$value[0] as $key2 => $value2) {
                         $key2 = str_replace('marketplaceId', 'marketplace', $key2);
-                    
                         $queue_data[$key2] = $this->returnDataType($value2);
                     }
                 } else {
-                    $queue_data[$key]= $this->returnDataType($value);
-             }
+                    $queue_data[$key] = $this->returnDataType($value);
+                }
             }
 
         return $queue_data;
