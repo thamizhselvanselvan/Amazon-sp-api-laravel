@@ -19,61 +19,85 @@ class NewCatalog
     public function Catalog($records, $seller_id = NULL)
     {
         $this->RedBeanConnection();
+        $queue_data =[];
+        $upsert_asin = [];
+        $country_code1 = '';
+
         foreach ($records as $record) {
             $asin = $record['asin'];
             $country_code = $record['source'];
+            $country_code1 = $country_code;
             $seller_id = $record['seller_id'];
+            
+            $upsert_asin[]= [
+                'asin'  => $asin,
+                'user_id' => $seller_id,
+                'status'   => 1,
+            ];
 
             $mws_region = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->first();
             $token = $mws_region['aws_verified']['auth_code'];
             $country_code = strtolower($country_code);
             $catalog_table = 'catalog' . $country_code . 's';
-            $tables = [];
-            $count = 1;
-            // log::alert($country_code);
+            
             $found = DB::connection('catalog')->select("SELECT asin FROM $catalog_table WHERE asin = '$asin' ");
             if (count($found) == 0) {
                 $aws_id = NULL;
-                $this->FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id);
+                $catalog_details = $this->FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id);
+                if($catalog_details)
+                {
+                    $queue_data []= $catalog_details;
+                }
             }
         }
+       
+        $NewCatalogs =[];
+        $country_code1 = strtolower($country_code1);
+        $catalog_table = 'catalognew' . $country_code1 . 's';
+        foreach($queue_data as $key1 => $value)
+        {
+            $NewCatalogs [] = R::dispense($catalog_table);
+            foreach($value as $key => $data)
+            {
+                // log::notice($value);
+                $NewCatalogs[$key1]->$key = $data;
+            }
+        }
+        R::storeALL($NewCatalogs);
+
+        $table_name = table_model_create(country_code:$country_code1, model:'Asin_source', table_name:'asin_source_');
+        $table_name->upsert($upsert_asin, ['user_asin_unique'], ['asin', 'user_id', 'status']);
     }
 
     public function FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id)
     {
-
         $country_code = strtoupper($country_code);
         $config =   $this->config($aws_id, $country_code, $token);
         $apiInstance = new CatalogItemsV20220401Api($config);
         $marketplace_id = $this->marketplace_id($country_code);
-        // $incdata= ['attributes','dimensions', 'identifiers', 'images', 'productTypes', 'relationships', 'salesRanks', 'summaries'];
         $incdata = ['attributes', 'dimensions', 'productTypes', 'images', 'summaries'];
-        $country_code = strtolower($country_code);
-        $catalog_table = 'catalognew' . $country_code . 's';
+
         try {
             $result = $apiInstance->getCatalogItem($asin, $marketplace_id, $incdata);
             $result = json_decode(json_encode($result));
-            $NewCatalogs = R::dispense($catalog_table);
-            $NewCatalogs->seller_id = $seller_id;
-            $NewCatalogs->source = $country_code;
+           
+           $queue_data = [];
+            $queue_data['seller_id'] = $seller_id;
+            $queue_data['source'] = $country_code;
             foreach ($result as $key => $value) {
+                    
                 if ($key == 'summaries') {
                     foreach ((array)$value[0] as $key2 => $value2) {
                         $key2 = str_replace('marketplaceId', 'marketplace', $key2);
-                        $NewCatalogs->$key2 = $this->returnDataType($value2);
+                    
+                        $queue_data[$key2] = $this->returnDataType($value2);
                     }
                 } else {
-                    $NewCatalogs->$key = $this->returnDataType($value);
-                }
+                    $queue_data[$key]= $this->returnDataType($value);
+             }
             }
-            R::store($NewCatalogs);
-            $table_name = table_model_create(country_code:$country_code, model:'Asin_source', table_name:'asin_source_');
-            $table_name->upsert([
-                'asin' => $asin,
-                'user_id' => $seller_id,
-                'status' => 1,
-            ],['user_asin_unique'], ['asin', 'status']);
 
+        return $queue_data;
         } catch (Exception $e) {
             Log::critical($e);
         }
