@@ -811,6 +811,13 @@ return [
                     'icon' => 'far fa-fw fa-file',
 
                 ],
+                [
+                    'text' => 'View Details',
+                    'url' => 'business/details',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
             ],
         ],
     ],

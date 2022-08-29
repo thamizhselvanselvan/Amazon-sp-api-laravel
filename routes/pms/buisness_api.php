@@ -21,6 +21,10 @@ Route::resource('business/byasins', 'BuisnessAPI\GetProductsByAsinsController');
 Route::resource('business/orders', 'BuisnessAPI\OrdersController');
 
 
+
+Route::resource('business/details', 'BuisnessAPI\ProductDetailsController');
+
+
 Route::get('product/test', function()
 {
      $asin = '';
