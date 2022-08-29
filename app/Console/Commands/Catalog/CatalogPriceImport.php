@@ -60,6 +60,12 @@ class CatalogPriceImport extends Command
         $chunk = 10;
         foreach ($source as $country_code => $seller_id) {
 
+            if ($country_code == "US") {
+                PricingUs::truncate();
+            } elseif ($country_code == 'IN') {
+                PricingIn::truncate();
+            }
+
             $country_code_lr = strtolower($country_code);
 
             $product_seller_details = 'bb_product_' . $country_code_lr . 's_seller_details';
