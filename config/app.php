@@ -57,7 +57,7 @@ return [
     'asset_url' => env('ASSET_URL', null),
 
     'dropbox_access_token' => env('DROPBOX_ACCESS_TOKEN'),
-    
+
     'slack_notification_webhook' => env('SLACK_NOTIFICATION_WEBHOOK'),
 
     'aws_sp_api_client_id' => env('AWS_SP_API_CLIENT_ID'),
@@ -177,8 +177,11 @@ return [
         /*
         * Package Service Providers...
         */
+        Yajra\DataTables\DataTablesServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
+        App\Providers\DropboxServiceProvider::class,
+        Arcanedev\LogViewer\LogViewerServiceProvider::class,
 
-        
         /*
         * Application Service Providers...
         */
@@ -189,11 +192,6 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\HorizonServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        Yajra\DataTables\DataTablesServiceProvider::class,
-        Maatwebsite\Excel\ExcelServiceProvider::class,
-		App\Providers\DropboxServiceProvider::class,
-        Arcanedev\LogViewer\LogViewerServiceProvider::class,
-
     ],
 
     /*
