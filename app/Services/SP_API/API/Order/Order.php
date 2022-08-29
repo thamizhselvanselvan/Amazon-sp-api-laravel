@@ -140,8 +140,6 @@ class Order
 
                 if (count($order_item_details) > 0) {
 
-                    Log::alert($amazon_order_id);
-
                     $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
                     $this->delay += $delay_count;
                 }
@@ -153,8 +151,6 @@ class Order
                 $orders->createdat = now();
                 // dd($orders);
                 R::store($orders);
-
-                Log::alert('new Data' . $amazon_order_id);
 
                 $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
                 $this->delay += $delay_count;
