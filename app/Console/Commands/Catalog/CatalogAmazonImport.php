@@ -48,12 +48,13 @@ class CatalogAmazonImport extends Command
             $asin_table_name = 'asin_source_'.$source.'s';
             $catalog_table_name = 'catalognew'.$source.'s';
             
-            $asins = DB::connection('catalog')->select("SELECT source.asin, source.status, source.user_id 
+            $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id 
             FROM $asin_table_name as source
             LEFT JOIN $catalog_table_name as cat
             ON cat.asin = source.asin
-            WHERE cat.asin IS NULL
-            LIMIT 10");
+            WHERE cat.asin IS NULL 
+            LIMIT 1000
+            ");
             
             foreach($asins as $asin)
             {

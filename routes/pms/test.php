@@ -19,9 +19,12 @@ Route::get("test", function () {
     FROM asin_source_uss as source
     LEFT JOIN catalognewuss as cat
     on cat.asin = source.asin
-    WHERE cat.asin IS NULL");
+    WHERE cat.asin IS NULL
+    LIMIT 20
+    ");
 
-// po($catalog_data);
+po($catalog_data);
+exit;
 foreach($catalog_data as $data)
 {
    echo $data->asin;
