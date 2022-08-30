@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Catalog;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CatalogAmazonImport extends Command
@@ -38,32 +39,37 @@ class CatalogAmazonImport extends Command
      */
     public function handle()
     {
-        // log::alert('command is working');
-        $sources = ['IN', 'US'];
+        $sources = ['in', 'us'];
         foreach($sources as $source){
             $asin_source = [] ;
             $count = 0;
             $queue = 'catalog';
             $class =  'catalog\AmazonCatalogImport';
-            $table_name = table_model_create(country_code: $source, model: 'Asin_source', table_name: 'asin_source_');
-            $asins  = $table_name->where('status', 0)->limit(1000)->get();
-            foreach($asins as $asin){
+            $asin_table_name = 'asin_source_'.$source.'s';
+            $catalog_table_name = 'catalognew'.$source.'s';
+            
+            $asins = DB::connection('catalog')->select("SELECT source.asin, source.status, source.user_id 
+            FROM $asin_table_name as source
+            LEFT JOIN $catalog_table_name as cat
+            ON cat.asin = source.asin
+            WHERE cat.asin IS NULL
+            LIMIT 10");
+            
+            foreach($asins as $asin)
+            {
                 if($count == 10){
-                    
                     jobDispatchFunc($class, $asin_source, $queue);
                     $asin_source = [];
                     $count = 0;
                 }
                 $asin_source [] = [
-                    'asin' => $asin['asin'],
-                    'seller_id' => $asin['user_id'],
+                    'asin' => $asin->asin,
+                    'seller_id' => $asin->user_id,
                     'source' => $source,
                 ];
                 $count++;
             }
-            
             jobDispatchFunc($class, $asin_source, $queue);
-            
         }
     }
 }

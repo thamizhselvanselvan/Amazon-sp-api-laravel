@@ -94,10 +94,13 @@ class NewCatalog
                     $queue_data[$key] = $this->returnDataType($value);
                 }
             }
-
         return $queue_data;
         } catch (Exception $e) {
-            Log::critical($e);
+            $country_code = strtolower($country_code);
+            $catalog_table = 'catalognew' . $country_code . 's';
+            $NewCatalogs = R::dispense($catalog_table);
+            $NewCatalogs->asin = $asin;
+            R::store($NewCatalogs);
         }
     }
 
