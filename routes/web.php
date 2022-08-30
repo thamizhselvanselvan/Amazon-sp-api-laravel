@@ -54,19 +54,11 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 // use ConfigTrait;
 
 Route::get('data', function (){
-    $sources = ['IN', 'US'];
-    foreach($sources as $source){
-        $table_data = [] ;
-        $table_name = table_model_create(country_code: $source, model: 'Asin_source', table_name: 'asin_source_');
-        $asins  = $table_name->where('status', 0)->limit(10)->get();
-        foreach($asins as $asin){
-            $table_data [] = [
-                'asin' => $asin['asin'],
-                'seller_id' => $asin['user_id'],
-                'source' => $source,
-            ];
-        }
-        po($table_data);
+    $today = date('H:i:s');
+    // echo $today;
+    if($today >= '19:23:00' && $today <= '19:24:00')
+    {
+        echo 'working';
     }
     
 });

@@ -53,8 +53,10 @@ class CatalogAmazonImport extends Command
             LEFT JOIN $catalog_table_name as cat
             ON cat.asin = source.asin
             WHERE cat.asin IS NULL 
-            LIMIT 200
+            LIMIT 100
             ");
+
+            // $asins = DB::connection('catalog')->select("SELECT ")
 
             $country_code_up = strtoupper($source);
             if ($country_code_up == 'IN') {
@@ -62,7 +64,7 @@ class CatalogAmazonImport extends Command
             }
 
             foreach ($asins as $asin) {
-                if ($count == 10) {
+                if ($count == 5) {
                     jobDispatchFunc($class, $asin_source, $queue);
                     $asin_source = [];
                     $count = 0;

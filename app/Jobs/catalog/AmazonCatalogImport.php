@@ -18,6 +18,7 @@ class AmazonCatalogImport implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     private $payload;
+    private $timeout = 60*2;
 
     /**
      * Create a new job instance.
