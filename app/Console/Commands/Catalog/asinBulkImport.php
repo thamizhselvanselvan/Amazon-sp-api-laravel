@@ -93,19 +93,19 @@ class asinBulkImport extends Command
             }
             $class = 'catalog\AmazonCatalogImport';
 
-            $table_name->where('status', 0)->chunk(10, function ($asins) use ($class,  $queue) {
+            // $table_name->where('status', 0)->chunk(10, function ($asins) use ($class,  $queue) {
 
-                $asin_source = [];
-                foreach ($asins as $asin) {
+            //     $asin_source = [];
+            //     foreach ($asins as $asin) {
 
-                    $asin_source[] = [
-                        'asin' => $asin->asin,
-                        'source' => $this->country,
-                        'seller_id' => $asin->user_id
-                    ];
-                }
-                jobDispatchFunc($class, $asin_source, $queue);
-            });
+            //         $asin_source[] = [
+            //             'asin' => $asin->asin,
+            //             'source' => $this->country,
+            //             'seller_id' => $asin->user_id
+            //         ];
+            //     }
+            //     jobDispatchFunc($class, $asin_source, $queue);
+            // });
         }
     }
 }

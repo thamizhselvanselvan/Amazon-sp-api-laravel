@@ -55,7 +55,12 @@ class CatalogAmazonImport extends Command
             WHERE cat.asin IS NULL 
             LIMIT 1000
             ");
-            
+
+            $country_code_up = strtoupper($source);
+            if ($country_code_up == 'IN') {
+                $queue = 'catalog_IN';
+            }
+
             foreach($asins as $asin)
             {
                 if($count == 10){
