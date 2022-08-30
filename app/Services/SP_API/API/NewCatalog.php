@@ -60,9 +60,6 @@ class NewCatalog
             }
         }
         R::storeALL($NewCatalogs);
-
-        $table_name = table_model_create(country_code: $country_code1, model: 'Asin_source', table_name: 'asin_source_');
-        $table_name->upsert($upsert_asin, ['user_asin_unique'], ['asin', 'user_id', 'status']);
     }
 
     public function FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id)

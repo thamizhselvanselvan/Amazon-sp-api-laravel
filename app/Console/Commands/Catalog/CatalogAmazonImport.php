@@ -53,7 +53,7 @@ class CatalogAmazonImport extends Command
             LEFT JOIN $catalog_table_name as cat
             ON cat.asin = source.asin
             WHERE cat.asin IS NULL 
-            LIMIT 500
+            LIMIT 200
             ");
 
             $country_code_up = strtoupper($source);
