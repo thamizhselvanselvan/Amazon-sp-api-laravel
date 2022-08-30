@@ -54,7 +54,7 @@ class CatalogAmazonImport extends Command
             FROM $asin_table_name as source
             LEFT JOIN $catalog_table_name as cat
             ON cat.asin = source.asin
-            WHERE cat.seller_id IS NULL");
+            WHERE cat.seller_id IS NULL ");
 
             }else{
 
@@ -63,14 +63,8 @@ class CatalogAmazonImport extends Command
             LEFT JOIN $catalog_table_name as cat
             ON cat.asin = source.asin
             WHERE cat.asin IS NULL 
-            LIMIT 100
-            ");
+            LIMIT 100 ");
             }
-
-
-
-            log::alert($asins);
-            exit;
 
             $country_code_up = strtoupper($source);
             if ($country_code_up == 'IN') {
