@@ -17,19 +17,19 @@ class AsinDestinationController extends Controller
 {
     public function index(Request $request)
     {
-        if ($request->ajax()) {
+        // if ($request->ajax()) {
 
-            $data = AsinDestination::orderBy('id', 'DESC')->get();
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function ($row) {
-                    $actionBtn = '<div class="d-flex"><a href="edit-asin-destination/' . $row->id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
-                    $actionBtn .= '<div class="d-flex pl-2 trash"><a href="trash-asin-destination/' . $row->id . ' " class=" btn btn-sm btn-danger "><i class="fa fa-trash"></i> Remove</a>';
+        //     $data = AsinDestination::orderBy('id', 'DESC')->get();
+        //     return DataTables::of($data)
+        //         ->addIndexColumn()
+        //         ->addColumn('action', function ($row) {
+        //             $actionBtn = '<div class="d-flex"><a href="edit-asin-destination/' . $row->id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
+        //             $actionBtn .= '<div class="d-flex pl-2 trash"><a href="trash-asin-destination/' . $row->id . ' " class=" btn btn-sm btn-danger "><i class="fa fa-trash"></i> Remove</a>';
 
-                    return $actionBtn;
-                })
-                ->make(true);
-        }
+        //             return $actionBtn;
+        //         })
+        //         ->make(true);
+        // }
         return view('Catalog.AsinDestination.index');
     }
 

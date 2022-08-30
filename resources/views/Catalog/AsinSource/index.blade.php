@@ -53,9 +53,9 @@
                 </div>
             </div>
             </a>
-            <a href="{{ route('catalog.softDelete.view') }}">
+            <!-- <a href="{{ route('catalog.softDelete.view') }}">
                 <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" class="btn-sm" />
-            </a>
+            </a> -->
         </h2>
     </div>
 </div>
@@ -75,7 +75,7 @@
             @endif
         </div>
 
-        <table class="table table-bordered yajra-datatable table-striped text-center table-sm">
+        <!-- <table class="table table-bordered yajra-datatable table-striped text-center table-sm">
             <thead>
                 <tr class="length">
                     <th>S/N</th>
@@ -86,7 +86,7 @@
             </thead>
             <tbody>
             </tbody>
-        </table>
+        </table> -->
     </div>
 </div>
 @stop
@@ -100,37 +100,37 @@ $(function() {
 
 function yajra_datatable() {
 
-    let yajra_table = $('.yajra-datatable').DataTable({
-        processing: true,
-        serverSide: true,
-        destroy: true,
-        pageLength: 50,
-        ajax: "{{ url('catalog/asin-source') }}",
-        columns: [{
-                data: 'id',
-                name: 'id',
-                orderable: false,
-                searchable: false
-            },
-            {
-                data: 'asin',
-                name: 'asin',
-                orderable: false
-            },
-            {
-                data: 'source',
-                name: 'source',
-                orderable: false
-            },
-            {
-                data: 'action',
-                name: 'action',
-                orderable: false,
-                searchable: false
-            },
+    // let yajra_table = $('.yajra-datatable').DataTable({
+    //     processing: true,
+    //     serverSide: true,
+    //     destroy: true,
+    //     pageLength: 50,
+    //     ajax: "{{ url('catalog/asin-source') }}",
+    //     columns: [{
+    //             data: 'id',
+    //             name: 'id',
+    //             orderable: false,
+    //             searchable: false
+    //         },
+    //         {
+    //             data: 'asin',
+    //             name: 'asin',
+    //             orderable: false
+    //         },
+    //         {
+    //             data: 'source',
+    //             name: 'source',
+    //             orderable: false
+    //         },
+    //         {
+    //             data: 'action',
+    //             name: 'action',
+    //             orderable: false,
+    //             searchable: false
+    //         },
 
-        ]
-    });
+    //     ]
+    // });
 }
 
 $(document).on('click', ".delete", function(e) {

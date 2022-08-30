@@ -86,37 +86,37 @@ class CatalogProductController extends Controller
 
     public function Amazon(Request $request)
     {
-        $country_code = $request->country_code;
-        // $model_name = table_model_create(country_code:$country_code, model:'Asin_source', table_name:'asin_source_');
-        // $asins = $model_name->where('status', 0)->get(['asin', 'user_id']);
-        $asins = AsinSource::where('status', 0)->get(['asin', 'source', 'user_id']);
+        // $country_code = $request->country_code;
+        // // $model_name = table_model_create(country_code:$country_code, model:'Asin_source', table_name:'asin_source_');
+        // // $asins = $model_name->where('status', 0)->get(['asin', 'user_id']);
+        // $asins = AsinSource::where('status', 0)->get(['asin', 'source', 'user_id']);
 
-        $redbean = new NewCatalog();
-        $redbean->RedBeanConnection();
-        $NewCatalogs = R::dispense('catalognews');
-        $NewCatalogs->asin = '';
-        R::store($NewCatalogs);
+        // $redbean = new NewCatalog();
+        // $redbean->RedBeanConnection();
+        // $NewCatalogs = R::dispense('catalognews');
+        // $NewCatalogs->asin = '';
+        // R::store($NewCatalogs);
 
-        $count = 0;
-        $asin_source = [];
-        $class = 'catalog\\AmazonCatalogImport';
-        foreach ($asins as $asin) {
+        // $count = 0;
+        // $asin_source = [];
+        // $class = 'catalog\\AmazonCatalogImport';
+        // foreach ($asins as $asin) {
 
-            if ($count == 10) {
-                jobDispatchFunc($class, $asin_source, 'catalog');
-                $asin_source = [];
-                $count = 0;
-            }
-            $asin_source[] = [
-                'asin' => $asin->asin,
-                // 'source' => $country_code,
-                'source' => $asin->source,
-                'seller_id' => $asin->user_id
-            ];
-            $count++;
-        }
-        jobDispatchFunc($class, $asin_source, 'catalog');
-
+        //     if ($count == 10) {
+        //         jobDispatchFunc($class, $asin_source, 'catalog');
+        //         $asin_source = [];
+        //         $count = 0;
+        //     }
+        //     $asin_source[] = [
+        //         'asin' => $asin->asin,
+        //         // 'source' => $country_code,
+        //         'source' => $asin->source,
+        //         'seller_id' => $asin->user_id
+        //     ];
+        //     $count++;
+        // }
+        // jobDispatchFunc($class, $asin_source, 'catalog');
+        commandExecFunc("mosh:catalog-amazon-import");
         return redirect()->intended('/catalog/product');
     }
 

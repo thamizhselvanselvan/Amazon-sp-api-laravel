@@ -38,7 +38,7 @@ class NewCatalog
             $mws_region = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->first();
             $token = $mws_region['aws_verified']['auth_code'];
             $country_code = strtolower($country_code);
-            $catalog_table = 'catalog' . $country_code . 's';
+            $catalog_table = 'catalognew' . $country_code . 's';
             
             $found = DB::connection('catalog')->select("SELECT asin FROM $catalog_table WHERE asin = '$asin' ");
             if (count($found) == 0) {
