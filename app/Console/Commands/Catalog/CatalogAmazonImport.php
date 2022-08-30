@@ -40,20 +40,20 @@ class CatalogAmazonImport extends Command
     public function handle()
     {
         $sources = ['in', 'us'];
-        foreach($sources as $source){
-            $asin_source = [] ;
+        foreach ($sources as $source) {
+            $asin_source = [];
             $count = 0;
             $queue = 'catalog';
             $class =  'catalog\AmazonCatalogImport';
-            $asin_table_name = 'asin_source_'.$source.'s';
-            $catalog_table_name = 'catalognew'.$source.'s';
-            
+            $asin_table_name = 'asin_source_' . $source . 's';
+            $catalog_table_name = 'catalognew' . $source . 's';
+
             $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id 
             FROM $asin_table_name as source
             LEFT JOIN $catalog_table_name as cat
             ON cat.asin = source.asin
             WHERE cat.asin IS NULL 
-            LIMIT 1000
+            LIMIT 10
             ");
 
             $country_code_up = strtoupper($source);
@@ -61,14 +61,13 @@ class CatalogAmazonImport extends Command
                 $queue = 'catalog_IN';
             }
 
-            foreach($asins as $asin)
-            {
-                if($count == 10){
+            foreach ($asins as $asin) {
+                if ($count == 5) {
                     jobDispatchFunc($class, $asin_source, $queue);
                     $asin_source = [];
                     $count = 0;
                 }
-                $asin_source [] = [
+                $asin_source[] = [
                     'asin' => $asin->asin,
                     'seller_id' => $asin->user_id,
                     'source' => $source,

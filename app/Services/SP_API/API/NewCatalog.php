@@ -19,7 +19,7 @@ class NewCatalog
     public function Catalog($records, $seller_id = NULL)
     {
         $this->RedBeanConnection();
-        $queue_data =[];
+        $queue_data = [];
         $upsert_asin = [];
         $country_code1 = '';
 
@@ -28,8 +28,8 @@ class NewCatalog
             $country_code = $record['source'];
             $country_code1 = $country_code;
             $seller_id = $record['seller_id'];
-            
-            $upsert_asin[]= [
+
+            $upsert_asin[] = [
                 'asin'  => $asin,
                 'user_id' => $seller_id,
                 'status'   => 1,
@@ -39,32 +39,29 @@ class NewCatalog
             $token = $mws_region['aws_verified']['auth_code'];
             $country_code = strtolower($country_code);
             $catalog_table = 'catalognew' . $country_code . 's';
-            
+
             $found = DB::connection('catalog')->select("SELECT asin FROM $catalog_table WHERE asin = '$asin' ");
             if (count($found) == 0) {
                 $aws_id = NULL;
                 $catalog_details = $this->FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id);
-                if($catalog_details)
-                {
-                    $queue_data []= $catalog_details;
+                if ($catalog_details) {
+                    $queue_data[] = $catalog_details;
                 }
             }
         }
-       
-        $NewCatalogs =[];
+
+        $NewCatalogs = [];
         $country_code1 = strtolower($country_code1);
         $catalog_table = 'catalognew' . $country_code1 . 's';
-        foreach($queue_data as $key1 => $value)
-        {
-            $NewCatalogs [] = R::dispense($catalog_table);
-            foreach($value as $key => $data)
-            {
+        foreach ($queue_data as $key1 => $value) {
+            $NewCatalogs[] = R::dispense($catalog_table);
+            foreach ($value as $key => $data) {
                 $NewCatalogs[$key1]->$key = $data;
             }
         }
         R::storeALL($NewCatalogs);
 
-        $table_name = table_model_create(country_code:$country_code1, model:'Asin_source', table_name:'asin_source_');
+        $table_name = table_model_create(country_code: $country_code1, model: 'Asin_source', table_name: 'asin_source_');
         $table_name->upsert($upsert_asin, ['user_asin_unique'], ['asin', 'user_id', 'status']);
     }
 
@@ -79,12 +76,12 @@ class NewCatalog
         try {
             $result = $apiInstance->getCatalogItem($asin, $marketplace_id, $incdata);
             $result = json_decode(json_encode($result));
-           
-           $queue_data = [];
+
+            $queue_data = [];
             $queue_data['seller_id'] = $seller_id;
             $queue_data['source'] = $country_code;
             foreach ($result as $key => $value) {
-                    
+
                 if ($key == 'summaries') {
                     foreach ((array)$value[0] as $key2 => $value2) {
                         $key2 = str_replace('marketplaceId', 'marketplace', $key2);
@@ -94,7 +91,7 @@ class NewCatalog
                     $queue_data[$key] = $this->returnDataType($value);
                 }
             }
-        return $queue_data;
+            return $queue_data;
         } catch (Exception $e) {
             $country_code = strtolower($country_code);
             $catalog_table = 'catalognew' . $country_code . 's';
