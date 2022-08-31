@@ -39,6 +39,7 @@ class Order
 
         $config = $this->config($awsId, $awsCountryCode, $awsAuth_code);
         $marketplace_ids = $this->marketplace_id($awsCountryCode);
+
         $marketplace_ids = [$marketplace_ids];
 
         $apiInstance = new OrdersV0Api($config);
@@ -48,9 +49,7 @@ class Order
         $createdAfter = $startTime;
         $max_results_per_page = 100;
         $next_token = NULL;
-        Log::info('created after ->  ' . $createdAfter);
-        Log::info('Marketplace ->' . $marketplace_ids);
-        Log::info('max result ->' . $max_results_per_page);
+
         $amazon_order_ids = $amazon_order_id ? [$amazon_order_id] : NULL;
         try {
             next_token_exist:
