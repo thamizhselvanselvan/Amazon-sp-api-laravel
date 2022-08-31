@@ -19,19 +19,61 @@
             <a href="import-asin-destination">
                 <x-adminlte-button label="Asin Bulk Import" theme="primary" icon="fas fa-file-import" class="btn-sm" />
             </a>
-            <a href="{{route('catalog.asin.dastination.export')}}">
+
+            <!-- <a href="{{route('catalog.asin.dastination.export')}}">
                 <x-adminlte-button label="Asin Export" theme="primary" icon="fas fa-file-export" class="btn-sm" />
             </a>
 
             <x-adminlte-button label="Download Asin" theme="primary" icon="fas fa-file-download" data-toggle="modal"
-                data-target="#exampleModal" class="btn-sm"></x-adminlte-button>
+                data-target="#exampleModal" class="btn-sm"></x-adminlte-button> -->
 
             <a href="{{ route('catalog.destination.download.template') }}">
                 <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-file-download"
                     id="exportUniversalTextiles" class="btn-sm" />
             </a>
 
-            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    
+            <x-adminlte-button label="Asin Truncate" theme="primary" icon="fas fa-trash text-danger"
+                 class="btn-sm" data-toggle="modal" data-target="#destinationTruncate"></x-adminlte-button>
+            
+            <div class="modal fade" id="destinationTruncate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">ASIN Table Truncate</h5>
+                            <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" style="font-size:15px">
+                            <h5>Select Destination</h5><br>
+                            <form action="{{ route('catalog.asin.destination.truncate') }}">
+                                <div class="row">
+                                    <div class="col-2">
+                                        <label for="IN">IN</label>
+                                        <input type="checkbox" name="destination[]" value="IN" >
+                                    </div>
+                                    <div class="col-2">
+                                        <label for="US">US</label>
+                                        <input type="checkbox" name="destination[]" value="US" >
+                                    </div>
+                                    
+                                </div><br>
+                                <div class="col-12 float-left">
+                                    <x-adminlte-button label="Truncate" theme="danger" class="btn btn-sm truncate" icon="fas fa-trash " type="submit" />
+                                </div>
+                            </form>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary btn-danger" data-dismiss="modal"  >Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -51,7 +93,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
             </a>
             <!-- <a href="{{ route('catalog.asin.destination.bin') }}">
                 <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" class="btn-sm" />
@@ -134,11 +176,22 @@ function yajra_datatable() {
     // });
 }
 $(document).on('click', '.trash', function() {
-            let bool = confirm('Are you sure you want to delete?');
-            if (!bool) {
-                return false;
-            }
-        });
+
+    let bool = confirm('Are you sure you want to delete?');
+    if (!bool) {
+        return false;
+    }
+    
+});
+
+$(document).on('click', '.truncate', function() {
+
+    let bool = confirm('Are you sure you want to truncate this selected table ?');
+    if (!bool) {
+        return false;
+    }
+
+});
 
 // $(document).on('click', ".delete", function(e) {
 //     e.preventDefault();

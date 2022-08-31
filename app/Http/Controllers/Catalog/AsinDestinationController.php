@@ -81,7 +81,7 @@ class AsinDestinationController extends Controller
                 // po($records);
                 // po($product);
                 // po($product_lowest_price);
-                $table_name = table_model_create(country_code:$destination, model:'Asin_destionation', table_name:'asin_destination_');
+                $table_name = table_model_create(country_code:$destination, model:'Asin_destination', table_name:'asin_destination_');
                 $table_name->upsert($records, ['user_asin_unique'], ['asin', 'priority']);
                 $push_to_bb = new PushAsin();
                 $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination);
@@ -109,20 +109,6 @@ class AsinDestinationController extends Controller
             Storage::put($path, $file);
 
             commandExecFunc("mosh:Asin-destination-upload ${user_id} ${priority} --destination=${destination} ");
-
-            // if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-
-            //     Log::warning("asin production executed");
-
-            //     $base_path = base_path();
-            //     $command = "cd $base_path && php artisan mosh:Asin-destination-upload ${user_id} > /dev/null &";
-            //     exec($command);
-            //     Log::warning("asin production command executed");
-            // } else {
-
-            //     Log::warning("Export coma executed local !");
-            //     Artisan::call('mosh:Asin-destination-upload' . ' ' . $user_id);
-            // }
         }
         return redirect('catalog/import-asin-destination')->with('success', 'File has been uploaded successfully');
     }
@@ -204,5 +190,24 @@ class AsinDestinationController extends Controller
             return Storage::download($file);
         }
         return 'File is not available right now!';
+    }
+
+    public function AsinDestinationBBTruncate(Request $request)
+    {
+        $destinations = $request->destination;
+        foreach($destinations as $destination)
+        {
+            $country_code = strtolower($destination);
+            $bb_table = "product_${country_code}s_lp_offer";
+            $table_name = table_model_create(country_code:$country_code, model:'Asin_destination', table_name:'asin_destination_');
+            $destination_data = $table_name->get();
+            foreach($destination_data as $desti_value)
+            {
+                $bb_product_lowest_price = table_model_set(country_code: $country_code, model: 'BB_Product_lowest_price_offer', table_name: $bb_table);
+                $bb_product_lowest_price->where('asin', $desti_value->asin)->delete();
+            }
+            $table_name->truncate();
+        }
+        return redirect('catalog/asin-destination')->with('success', 'Table Truncate successfully');
     }
 }

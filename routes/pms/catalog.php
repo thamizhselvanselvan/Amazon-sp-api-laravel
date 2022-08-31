@@ -46,7 +46,7 @@ Route::get('catalog/asin/bin', 'Catalog\AsinSourceController@trashView')->name('
 Route::post('catalog/asin/restore/{id}', 'Catalog\AsinSourceController@restore')->name('catalog.restore.view');
 Route::get('catalog/asin-template-download', 'Catalog\AsinSourceController@AsinTemplateDownload')->name('catalog.download.template');
 Route::get('catalog/rate-exchange', 'Catalog\AsinSourceController@getExchangeRate')->name('catalog.exchange.rate');
-Route::get('catalog/asin-truncate', 'Catalog\AsinSourceController@AsinTruncate')->name('catalog.asin.truncate');
+Route::get('catalog/asin-truncate', 'Catalog\AsinSourceController@AsinTruncate')->name('catalog.asin.source.truncate');
 
 Route::get('catalog/product', 'Catalog\CatalogProductController@Index');
 Route::get('catalog/product/fetch-from-amazon', 'Catalog\CatalogProductController@Amazon')->name('catalog.amazon.product');
@@ -67,3 +67,4 @@ Route::get('catalog/asin-destination/restore/{id}', 'Catalog\AsinDestinationCont
 Route::get('catalog/asin-destination/download-template', 'Catalog\AsinDestinationController@AsinDestinationDownloadTemplate')->name('catalog.destination.download.template');
 Route::get('catalog/asin-destination/asin-export', 'Catalog\AsinDestinationController@AsinDestinationAsinExport')->name('catalog.asin.dastination.export');
 Route::get('catalog/asin-destination/download-csv', 'Catalog\AsinDestinationController@AsinDestinationDownloadCsvZip')->name('catalog.download.asin.destination');
+Route::get('catalog/asin-destination/truncate', 'Catalog\AsinDestinationController@AsinDestinationBBTruncate')->name('catalog.asin.destination.truncate');
