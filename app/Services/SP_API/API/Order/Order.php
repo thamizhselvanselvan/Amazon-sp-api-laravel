@@ -44,15 +44,36 @@ class Order
         $apiInstance = new OrdersV0Api($config);
         // $startTime = Carbon::now()->subHours(9)->toISOString();
         $startTime = Carbon::now()->subDays(5)->toISOString();
-        // Log::alert($startTime);
+
         $createdAfter = $startTime;
         $max_results_per_page = 100;
         $next_token = NULL;
-
+        Log::info('created after ->  ' . $createdAfter);
+        Log::info('Marketplace ->' . $marketplace_ids);
+        Log::info('max result ->' . $max_results_per_page);
         $amazon_order_ids = $amazon_order_id ? [$amazon_order_id] : NULL;
         try {
             next_token_exist:
-            $results = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses = null, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, $next_token, $amazon_order_ids, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
+            $results = $apiInstance->getOrders(
+                $marketplace_ids,
+                $createdAfter,
+                $created_before = null,
+                $last_updated_after = null,
+                $last_updated_before = null,
+                $order_statuses = null,
+                $fulfillment_channels = null,
+                $payment_methods = null,
+                $buyer_email = null,
+                $seller_order_id = null,
+                $max_results_per_page,
+                $easy_ship_shipment_statuses = null,
+                $next_token,
+                $amazon_order_ids,
+                $actual_fulfillment_supply_source_id = null,
+                $is_ispu = null,
+                $store_chain_store_id = null,
+                $data_elements = null
+            )->getPayload();
             $next_token = $results['next_token'];
             $this->OrderDataFormating($results, $awsCountryCode, $awsId);
 
