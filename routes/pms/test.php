@@ -15,21 +15,11 @@ Route::get("test", function () {
 
 
 
-    $catalog_data = DB::connection('catalog')->select("SELECT source.asin, source.user_id 
-    FROM asin_source_uss as source
-    LEFT JOIN catalognewuss as cat
-    on cat.asin = source.asin
-    WHERE cat.asin IS NULL
-    LIMIT 20
-    ");
+    $found = DB::connection('catalog')->select("SELECT id, asin FROM catalognewuss 
+    WHERE asin = 'B07PCHQ8H2' ");
 
-po($catalog_data);
-exit;
-foreach($catalog_data as $data)
-{
-   echo $data->asin;
-   echo "<hr>";
-}
+    po($found[0]->id);
+
     exit;
     $pricing = [];
     $asin_details = [];
