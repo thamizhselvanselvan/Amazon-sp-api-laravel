@@ -109,8 +109,11 @@ class AsinSourceController extends Controller
                 $check_table = DB::connection('catalog')->select('SHOW TABLES');
                 foreach($check_table as $key => $table_name)
                 {
-                    if($table_name->Tables_in_mosh_catalog == 'catalognew'.strtolower($source).'s'){
-                        $source_key_exists = 1;
+                    foreach($table_name as $name_of_table)
+                    {
+                        if($name_of_table == 'catalognew'.strtolower($source).'s'){
+                            $source_key_exists = 1;
+                        }
                     }
                 }
                 if($source_key_exists == 0){

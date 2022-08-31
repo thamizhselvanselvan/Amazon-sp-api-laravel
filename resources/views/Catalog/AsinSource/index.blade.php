@@ -16,11 +16,15 @@
 
         <h2 class="mb-4 float-right">
 
+            <a href="catalog.asin.truncate">
+                <x-adminlte-button label="Asin Truncate" theme="primary" icon="fas fa-trash " class="btn-sm " />
+            </a>
+
             <a href="import-bulk-asin">
                 <x-adminlte-button label="Asin Bulk Import" theme="primary" icon="fas fa-file-import" class="btn-sm" />
             </a>
             <a href="{{route('catalog.asin.export')}}">
-                <x-adminlte-button label="Asin Export" theme="primary" icon="fas fa-file-export" class="btn-sm" />
+                <x-adminlte-button label="Asin Export" theme="primary" icon="fas fa-file-export" class="btn-sm " />
             </a>
 
             <x-adminlte-button label="Download Asin" theme="primary" icon="fas fa-file-download" data-toggle="modal"
