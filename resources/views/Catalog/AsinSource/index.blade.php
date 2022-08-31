@@ -16,7 +16,6 @@
 
         <h2 class="mb-4 float-right">
 
-
             <a href="import-bulk-asin">
                 <x-adminlte-button label="Asin Bulk Import" theme="primary" icon="fas fa-file-import" class="btn-sm" />
             </a>
@@ -30,6 +29,10 @@
             <a href="{{ route('catalog.download.template') }}">
                 <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-file-download"
                     id="exportUniversalTextiles" class="btn-sm" />
+            </a>
+
+            <a href="#">
+                <x-adminlte-button label="Asin Truncate" theme="primary" icon="fas fa-trash text-danger" class="btn-sm" />
             </a>
 
             <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"

@@ -39,6 +39,8 @@ class CatalogAmazonImport extends Command
      */
     public function handle()
     {
+        Log::info('mosh:catalog-amazon-import is woking every hour');
+
         $sources = ['in', 'us'];
         foreach ($sources as $source) {
             $asin_source = [];
@@ -56,14 +58,13 @@ class CatalogAmazonImport extends Command
             ON cat.asin = source.asin
             WHERE cat.seller_id IS NULL ");
             } else {
-                Log::alert('working else');
-
+                
                 $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id 
             FROM $asin_table_name as source
             LEFT JOIN $catalog_table_name as cat
             ON cat.asin = source.asin
             WHERE cat.asin IS NULL 
-            LIMIT 100 ");
+            LIMIT 1000 ");
             }
 
             $country_code_up = strtoupper($source);
