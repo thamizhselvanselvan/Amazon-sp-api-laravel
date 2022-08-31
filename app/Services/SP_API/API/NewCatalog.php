@@ -47,9 +47,10 @@ class NewCatalog
 
                 $found = DB::connection('catalog')->select("SELECT id, asin FROM $catalog_table 
                 WHERE asin = '$asin' ");
+
                 if (count($found) == 0) {
                     //new details
-                    Log::info('asin new details -> ' . $asin);
+
                     $queue_data[] = $catalog_details;
                 } else {
                     //update
@@ -61,6 +62,7 @@ class NewCatalog
 
                         $asin_details->$key = $key_value;
                     }
+                    $asin_details->updated_at = now();
                     R::store($asin_details);
                 }
             }
@@ -74,6 +76,8 @@ class NewCatalog
             foreach ($value as $key => $data) {
                 $NewCatalogs[$key1]->$key = $data;
             }
+            $NewCatalogs[$key1]->created_at = now();
+            $NewCatalogs[$key1]->updated_at = now();
         }
         R::storeALL($NewCatalogs);
     }
