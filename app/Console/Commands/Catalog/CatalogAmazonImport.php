@@ -48,17 +48,17 @@ class CatalogAmazonImport extends Command
             $asin_table_name = 'asin_source_' . $source . 's';
             $catalog_table_name = 'catalognew' . $source . 's';
             $current_data = date('H:i:s');
-            if($current_data >= '01:00:00' && $current_data <= '01:05:00'){
+            if ($current_data >= '01:00:00' && $current_data <= '01:05:00') {
 
-            $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id
+                $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id
             FROM $asin_table_name as source
             LEFT JOIN $catalog_table_name as cat
             ON cat.asin = source.asin
             WHERE cat.seller_id IS NULL ");
+            } else {
+                Log::alert('working else');
 
-            }else{
-
-            $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id 
+                $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id 
             FROM $asin_table_name as source
             LEFT JOIN $catalog_table_name as cat
             ON cat.asin = source.asin
