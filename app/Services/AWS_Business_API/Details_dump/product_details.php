@@ -3,77 +3,114 @@
 namespace App\Services\AWS_Business_API\Details_dump;
 
 use RedBeanPHP\R;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\AWS_Business_API\AWS_POC\ProductsRequest;
 
 class product_details
 {
 
-    public function savedetails($fetched)
+    public function savedetails($asin)
     {
-        $host = config('database.connections.business.host');
-        $dbname = config('database.connections.business.database');
-        $port = config('database.connections.business.port');
-        $username = config('database.connections.business.username');
-        $password = config('database.connections.business.password');
 
-        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
         $ApiCall = new ProductsRequest();
 
-        foreach ($fetched as $data) {
-            $asin = $data;
+        // foreach ($fetched as $data) {
+        //     $asin = $data;
 
-            $data = $ApiCall->getASINpr($asin);
-            // $data = json_decode(json_encode($res));
+        $data = $ApiCall->getASINpr($asin);
+
+        if (property_exists($data, "errors") && $data->errors[0]->code == "PRODUCT_NOT_FOUND") {
+            $asin = 'Not Found';
+            $asin_type = 'Not Found';
+            $signedProductId  = 'Not Found';
+            $offers = 'Not Found';
+            $availability = 'Not Found';
+            $buyingGuidance = 'Not Found';
+            $fulfillmentType = 'Not Found';
+            $merchant = 'Not Found';
+            $offerId = 'Not Found';
+            $price = 'Not Found';
+            $listPrice = 'Not Found';
+            $productCondition = 'Not Found';
+            $condition = 'Not Found';
+            $quantityLimits = 'Not Found';
+            $deliveryInformation = 'Not Found';
+            $features = 'Not Found';
+            $taxonomies = 'Not Found';
+            $title = 'Not Found';
+            $url = 'Not Found';
+            $productOverview = 'Not Found';
+            $productVariations = 'Not Found';
+        } else {
 
             $asin = ($data->asin);
             $asin_type = ($data->asinType);
             $signedProductId  = ($data->signedProductId);
-            $offers = json_decode(json_encode($data->includedDataTypes->OFFERS[0]));
-            $availability = ($offers->availability);
-            $buyingGuidance = ($offers->buyingGuidance);
-            $fulfillmentType = ($offers->fulfillmentType);
-            $merchant = json_encode($offers->merchant);
-            $offerId = ($offers->offerId);
-            $price = json_encode($offers->price);
-            $listPrice = json_encode($offers->listPrice);
-            $productCondition = ($offers->productCondition);
-            $condition = json_encode($offers->condition);
-            $quantityLimits = json_encode($offers->quantityLimits);
-            $deliveryInformation = ($offers->deliveryInformation);
+            if ($data->includedDataTypes->OFFERS == []) {
+                $offers = 'null';
+                $availability = 'null';
+                $buyingGuidance = 'null';
+                $fulfillmentType = 'null';
+                $merchant = 'null';
+                $offerId = 'null';
+                $price = 'null';
+                $listPrice = 'null';
+                $productCondition = 'null';
+                $condition = 'null';
+                $quantityLimits = 'null';
+                $deliveryInformation = 'null';
+            } else {
+                $offers = json_decode(json_encode($data->includedDataTypes->OFFERS[0]));
+                $availability = ($offers->availability);
+                $buyingGuidance = ($offers->buyingGuidance);
+                $fulfillmentType = ($offers->fulfillmentType);
+                $merchant = json_encode($offers->merchant);
+                $offerId = ($offers->offerId);
+                $price = json_encode($offers->price);
+                $listPrice = json_encode($offers->listPrice);
+                $productCondition = ($offers->productCondition);
+                $condition = json_encode($offers->condition);
+                $quantityLimits = json_encode($offers->quantityLimits);
+                $deliveryInformation = ($offers->deliveryInformation);
+            }
             $features = json_encode($data->features);
             $taxonomies = json_encode($data->taxonomies);
             $title = ($data->title);
             $url = ($data->url);
             $productOverview = json_encode($data->productOverview);
             $productVariations = json_encode($data->productVariations);
-
-
-            $data = R::dispense('uscatalog');
-
-            $data->asin = $asin;
-            $data->asin_type = $asin_type;
-            $data->signedProductid_ =  $signedProductId;
-            $data->availability = $availability;
-            $data->buyingGuidance = $buyingGuidance;
-            $data->fulfillmentType =  $fulfillmentType;
-            $data->merchant   =  $merchant;
-            $data->offerid_ =  $offerId;
-            $data->price =   $price;
-            $data->listPrice = $listPrice;
-            $data->productCondition = $productCondition;
-            $data->condition =   $condition;
-            $data->quantityLimits =  $quantityLimits;
-            $data->deliveryInformation =  $deliveryInformation;
-            $data->features =     $features;
-            $data->taxonomies = $taxonomies;
-            $data->title = $title;
-            $data->url = $url;
-            $data->productOverview =  $productOverview;
-            $data->productOverview =  $productVariations;
-
-            R::store($data);
-            po($asin);
         }
+
+        DB::connection('mongodb')->table('product_details')->where('asin', $asin)->update(
+            [
+                'asin' => $asin,
+                'asin_type' => $asin_type,
+                'signedProductId ' => $signedProductId,
+                'offers' => $offers,
+                'availability' => $availability,
+                'buyingGuidance' => $buyingGuidance,
+                'fulfillmentType' => $fulfillmentType,
+                'merchant' => $merchant,
+                'offerId' => $offerId,
+                'price' => $price,
+                'listPrice' => $listPrice,
+                'productCondition' => $productCondition,
+                'condition' => $condition,
+                'quantityLimits' => $quantityLimits,
+                'deliveryInformation' => $deliveryInformation,
+                'features' => $features,
+                'taxonomies' => $taxonomies,
+                'title' => $title,
+                'url' => $url,
+                'productOverview' => $productOverview,
+                'productVariations' => $productVariations,
+                'created_at' => now()->format('Y-m-d H:i:s'),
+                'updated_at'  => now()->format('Y-m-d H:i:s')
+            ],
+            ["upsert" => true]
+        );
+
+
     }
 }
