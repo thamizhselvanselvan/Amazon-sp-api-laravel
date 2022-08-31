@@ -124,7 +124,7 @@ class AsinSourceController extends Controller
                     $NewCatalogs->asin = '';
                     R::store($NewCatalogs);
                 }
-                
+
                 foreach($asins as $asin_details)
                 {
                     $allData [] = [
@@ -201,5 +201,17 @@ class AsinSourceController extends Controller
             $asin = $record->asin;
             $source = $record->source;
         }
+    }
+
+    public function AsinTruncate(Request $request)
+    {
+        $sources = $request->source;
+        foreach($sources as $source)
+        {
+            $country_code = strtolower($source);
+            $table_name = table_model_create(country_code:$country_code, model:'Asin_source', table_name:'asin_source_');
+            $table_name->truncate();
+        }
+        return redirect('catalog/asin-source')->with('success', 'Table Truncate successfully');
     }
 }
