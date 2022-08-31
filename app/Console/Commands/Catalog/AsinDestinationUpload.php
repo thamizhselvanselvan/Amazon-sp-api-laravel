@@ -88,7 +88,7 @@ class AsinDestinationUpload extends Command
     
                 if ($count == 999) {
                     
-                    $table_name = table_model_create(country_code:$this->destination, model:'Asin_destionation', table_name:'asin_destination_');
+                    $table_name = table_model_create(country_code:$this->destination, model:'Asin_destination', table_name:'asin_destination_');
                     $table_name->upsert($Asin_record, ['user_asin_unique'], ['asin', 'priority']);
                     $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $this->destination);
     
@@ -101,7 +101,7 @@ class AsinDestinationUpload extends Command
             }
             // log::alert($product);
             // Log::alert($product_lowest_price);
-            $table_name = table_model_create(country_code:$this->destination, model:'Asin_destionation', table_name:'asin_destination_');
+            $table_name = table_model_create(country_code:$this->destination, model:'Asin_destination', table_name:'asin_destination_');
             $table_name->upsert($Asin_record, ['user_asin_unique'], ['asin', 'priority']);
             $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $this->destination);
         }

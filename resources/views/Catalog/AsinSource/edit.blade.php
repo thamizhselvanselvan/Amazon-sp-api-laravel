@@ -80,29 +80,6 @@
                         placeholder="Source" />
                 </div>
 
-                <!-- <div class="col-6">
-                    <x-adminlte-input label="destination 1" name="destination_1" id=""
-                        value="{{ $asin->destination_1 }}" type="text" placeholder="Destination 1" />
-
-                </div> -->
-
-                <!-- <div class="col-6">
-                    <x-adminlte-input label="Destination 2" name="destination_2" id=""
-                        value="{{ $asin->destination_2 }}" type="text" placeholder="Destination 2" />
-                </div>
-                <div class="col-6">
-                    <x-adminlte-input label="Destination 3" name="destination_3" id=""
-                        value="{{ $asin->destination_3 }}" type="text" placeholder="Destination 3" />
-                </div> -->
-                <!-- <div class="col-6">
-                    <x-adminlte-input label="Destination 4" name="destination_4" id=""
-                        value="{{ $asin->destination_4 }}" type="text" placeholder="Destination 4" />
-                </div>
-                <div class="col-6">
-                    <x-adminlte-input label="Destination 5" name="destination_5" id=""
-                        value="{{ $asin->destination_5 }}" type="text" placeholder="Destination 5" />
-                </div> -->
-
             </div>
     </div>
     <div class="col-3"></div>
