@@ -42,7 +42,7 @@ class CatalogAmazonImport extends Command
         Log::info('mosh:catalog-amazon-import is woking every hour');
 
         $sources = ['in', 'us'];
-        $limit_array = ['in' => 1500, 'us' => 1300];
+        $limit_array = ['in' => 800, 'us' => 700];
         foreach ($sources as $source) {
 
             $limit = $limit_array[$source];
