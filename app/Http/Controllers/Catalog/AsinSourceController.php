@@ -124,9 +124,7 @@ class AsinSourceController extends Controller
                     $NewCatalogs->asin = '';
                     R::store($NewCatalogs);
                 }
-                // if($source == 'UK'){
-                //     // return redirect('catalog/import-bulk-asin')->with('error', 'Seller not available');
-                // }
+                
                 foreach($asins as $asin_details)
                 {
                     $allData [] = [
@@ -137,29 +135,9 @@ class AsinSourceController extends Controller
                 $table_name = table_model_create(country_code:$source, model:'Asin_source', table_name:'asin_source_');
                 $table_name->upsert($allData,['user_asin_unique'], ['asin']);
                 $allData = [];
-                //queue start;
-                $table_name = table_model_create(country_code:$source, model:'Asin_source', table_name:'asin_source_');
-                $asins = $table_name->where('status', 0)->get(['asin', 'user_id']);
-                
-                $count = 0;
-                $asin_source = [];
-                $class = 'catalog\AmazonCatalogImport';
-                foreach ($asins as $asin) {
-                    if ($count == 10) {
-                        jobDispatchFunc($class, $asin_source, 'catalog');
-                        $asin_source = [];
-                        $count = 0;
-                    } 
-                    $asin_source[] = [
-                        'asin' => $asin->asin,
-                        'source' => $source,
-                        'seller_id' => $asin->user_id
-                    ];
-                    $count++;
-                } 
-                jobDispatchFunc($class, $asin_source, 'catalog'); 
+                commandExecFunc(" mosh:catalog-amazon-import ");
             }
-            //queue end;
+           
         }
         elseif($request->form_type == 'file_upload')
         {
