@@ -194,6 +194,9 @@ return [
 		App\Providers\DropboxServiceProvider::class,
         Arcanedev\LogViewer\LogViewerServiceProvider::class,
 
+        Jenssegers\Mongodb\MongodbServiceProvider::class,
+
+
     ],
 
     /*
