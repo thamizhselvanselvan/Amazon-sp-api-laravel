@@ -53,9 +53,9 @@
                 </div>
             </div>
             </a>
-            <a href="{{ route('catalog.asin.destination.bin') }}">
+            <!-- <a href="{{ route('catalog.asin.destination.bin') }}">
                 <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" class="btn-sm" />
-            </a>
+            </a> -->
         </h2>
     </div>
 </div>
@@ -75,7 +75,7 @@
             @endif
         </div>
 
-        <table class="table table-bordered yajra-datatable table-striped text-center table-sm">
+        <!-- <table class="table table-bordered yajra-datatable table-striped text-center table-sm">
             <thead>
                 <tr class="bg-info">
                     <th>S/N</th>
@@ -86,7 +86,8 @@
             </thead>
             <tbody>
             </tbody>
-        </table>
+        </table> -->
+
     </div>
 </div>
 @stop
@@ -100,37 +101,37 @@ $(function() {
 
 function yajra_datatable() {
 
-    let yajra_table = $('.yajra-datatable').DataTable({
-        processing: true,
-        serverSide: true,
-        destroy: true,
-        pageLength: 200,
-        ajax: "{{ url('catalog/asin-destination') }}",
-        columns: [{
-                data: 'id',
-                name: 'id',
-                orderable: false,
-                searchable: false
-            },
-            {
-                data: 'asin',
-                name: 'asin',
-                orderable: false
-            },
-            {
-                data: 'destination',
-                name: 'destination',
-                orderable: false
-            },
-            {
-                data: 'action',
-                name: 'action',
-                orderable: false,
-                searchable: false
-            },
+    // let yajra_table = $('.yajra-datatable').DataTable({
+    //     processing: true,
+    //     serverSide: true,
+    //     destroy: true,
+    //     pageLength: 200,
+    //     ajax: "{{ url('catalog/asin-destination') }}",
+    //     columns: [{
+    //             data: 'id',
+    //             name: 'id',
+    //             orderable: false,
+    //             searchable: false
+    //         },
+    //         {
+    //             data: 'asin',
+    //             name: 'asin',
+    //             orderable: false
+    //         },
+    //         {
+    //             data: 'destination',
+    //             name: 'destination',
+    //             orderable: false
+    //         },
+    //         {
+    //             data: 'action',
+    //             name: 'action',
+    //             orderable: false,
+    //             searchable: false
+    //         },
 
-        ]
-    });
+    //     ]
+    // });
 }
 $(document).on('click', '.trash', function() {
             let bool = confirm('Are you sure you want to delete?');

@@ -20,7 +20,7 @@
                 <x-adminlte-button label="Asin Bulk Import" theme="primary" icon="fas fa-file-import" class="btn-sm" />
             </a>
             <a href="{{route('catalog.asin.export')}}">
-                <x-adminlte-button label="Asin Export" theme="primary" icon="fas fa-file-export" class="btn-sm" />
+                <x-adminlte-button label="Asin Export" theme="primary" icon="fas fa-file-export" class="btn-sm " />
             </a>
 
             <x-adminlte-button label="Download Asin" theme="primary" icon="fas fa-file-download" data-toggle="modal"
@@ -29,6 +29,10 @@
             <a href="{{ route('catalog.download.template') }}">
                 <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-file-download"
                     id="exportUniversalTextiles" class="btn-sm" />
+            </a>
+
+            <a href="#">
+                <x-adminlte-button label="Asin Truncate" theme="primary" icon="fas fa-trash text-danger" class="btn-sm" />
             </a>
 
             <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -53,9 +57,9 @@
                 </div>
             </div>
             </a>
-            <a href="{{ route('catalog.softDelete.view') }}">
+            <!-- <a href="{{ route('catalog.softDelete.view') }}">
                 <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" class="btn-sm" />
-            </a>
+            </a> -->
         </h2>
     </div>
 </div>
@@ -75,7 +79,7 @@
             @endif
         </div>
 
-        <table class="table table-bordered yajra-datatable table-striped text-center table-sm">
+        <!-- <table class="table table-bordered yajra-datatable table-striped text-center table-sm">
             <thead>
                 <tr class="length">
                     <th>S/N</th>
@@ -86,7 +90,7 @@
             </thead>
             <tbody>
             </tbody>
-        </table>
+        </table> -->
     </div>
 </div>
 @stop
@@ -100,37 +104,37 @@ $(function() {
 
 function yajra_datatable() {
 
-    let yajra_table = $('.yajra-datatable').DataTable({
-        processing: true,
-        serverSide: true,
-        destroy: true,
-        pageLength: 50,
-        ajax: "{{ url('catalog/asin-source') }}",
-        columns: [{
-                data: 'id',
-                name: 'id',
-                orderable: false,
-                searchable: false
-            },
-            {
-                data: 'asin',
-                name: 'asin',
-                orderable: false
-            },
-            {
-                data: 'source',
-                name: 'source',
-                orderable: false
-            },
-            {
-                data: 'action',
-                name: 'action',
-                orderable: false,
-                searchable: false
-            },
+    // let yajra_table = $('.yajra-datatable').DataTable({
+    //     processing: true,
+    //     serverSide: true,
+    //     destroy: true,
+    //     pageLength: 50,
+    //     ajax: "{{ url('catalog/asin-source') }}",
+    //     columns: [{
+    //             data: 'id',
+    //             name: 'id',
+    //             orderable: false,
+    //             searchable: false
+    //         },
+    //         {
+    //             data: 'asin',
+    //             name: 'asin',
+    //             orderable: false
+    //         },
+    //         {
+    //             data: 'source',
+    //             name: 'source',
+    //             orderable: false
+    //         },
+    //         {
+    //             data: 'action',
+    //             name: 'action',
+    //             orderable: false,
+    //             searchable: false
+    //         },
 
-        ]
-    });
+    //     ]
+    // });
 }
 
 $(document).on('click', ".delete", function(e) {

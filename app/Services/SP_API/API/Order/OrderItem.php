@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
+use SellingPartnerApi\Api\OrdersV0Api;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
 use App\Jobs\Seller\Seller_catalog_import_job;
-
 
 class OrderItem
 {
@@ -28,7 +28,7 @@ class OrderItem
         $marketplace_ids = $this->marketplace_id($country_code);
         $marketplace_ids = [$marketplace_ids];
 
-        $apiInstance = new OrdersApi($config);
+        $apiInstance = new OrdersV0Api($config);
         $tem = $this->SelectedSellerOrderItem($apiInstance, $country_code, $order_id, $aws_id);
     }
 

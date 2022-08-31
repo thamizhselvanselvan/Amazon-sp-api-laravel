@@ -74,6 +74,23 @@ class catalogExportCSV extends Command
         $modal_table->orderBy('id')->select($header)->chunk($chunk, function ($result) use ($header) {
 
             if ($this->count == 1) {
+
+                $csv_header = [
+                    'asin',
+                    'source',
+                    'weight',
+                    'images1',
+                    'images2',
+                    'product_types',
+                    'brand',
+                    'color',
+                    'item_classifications',
+                    'item_name',
+                    'style',
+                    'website_display_group',
+                    'manufacturer'
+                ];
+
                 $this->file_path = "excel/downloads/catalog/" . $this->country_code . "/Catalog-export" . $this->country_code . $this->offset . ".csv";
                 $this->csv_files[] = "Catalog-export" . $this->country_code . $this->offset . ".csv";
 

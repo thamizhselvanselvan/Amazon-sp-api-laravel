@@ -13,6 +13,7 @@ use App\Models\Company\CompanyMaster;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\order\OrderSellerCredentials;
 use App\Models\Aws_credential;
+
 class AdminManagementController extends Controller
 {
     function index(Request $request)
@@ -21,10 +22,10 @@ class AdminManagementController extends Controller
         $user = Auth::user();
         $login_id = $user->id;
         $role = $user->roles->first()->name;
-        $users = User::latest()->where('id','>', '1')->orderBy('id', 'DESC')->get();
+        $users = User::latest()->where('id', '>', '1')->orderBy('id', 'DESC')->get();
         // dd($users[0]->roles);
         if ($request->ajax()) {
-            
+
             return DataTables::of($users)
                 ->addIndexColumn()
                 ->addColumn('action', function ($user)  use ($login_id, $role) {
@@ -218,12 +219,19 @@ class AdminManagementController extends Controller
 
             $store_status_array = [];
             $store_order_item = [];
+            $shipntrack = [];
             $store_status = OrderSellerCredentials::where('dump_order', 1)->get();
             foreach ($store_status as $key => $value) {
                 $seller = $value['seller_id'];
                 $store_status_array[$seller] = 1;
+
                 if ($value['get_order_item'] == 1) {
+
                     $store_order_item[$seller] = 1;
+                }
+                if ($value['enable_shipntrack']) {
+
+                    $shipntrack[$seller] = 1;
                 }
             }
             $aws_credential = Aws_Credential::with('mws_region')->where('api_type', 1)->get();
@@ -249,7 +257,15 @@ class AdminManagementController extends Controller
                     }
                     return $action;
                 })
-                ->rawColumns(['region', 'order', 'order_item'])
+                ->addColumn('enable_snt', function ($id) use ($shipntrack) {
+                    if (array_key_exists($id['seller_id'], $shipntrack)) {
+                        $action = '<div class="pl-2"><input class="shipntrack" type="checkbox" checked value=' . $id['id'] . ' id="shipntrack' . $id['id'] . '" name="shipntrack[]" ></div>';
+                    } else {
+                        $action = '<div class="pl-2"><input class="shipntrack" type="checkbox" disabled value=' . $id['id'] . ' id="shipntrack' . $id['id'] . '" name="shipntrack[]" ></div>';
+                    }
+                    return $action;
+                })
+                ->rawColumns(['region', 'order', 'order_item', 'enable_snt'])
                 ->make(true);;
         }
 
@@ -260,11 +276,23 @@ class AdminManagementController extends Controller
     {
         // return $request->all();
         $order_items = explode('-', $request->order_item);
+        $selected_store = explode('-', $request->selected_store);
+        $shipntrack = explode('-', $request->shipntrack);
+        $shipntrack_array = [];
+
         foreach ($order_items as $key => $value) {
             $order_item[$value] = 1;
         }
-        $selected_store = explode('-', $request->selected_store);
-        OrderSellerCredentials::query()->update(['dump_order' => 0, 'get_order_item' => 0]);
+
+        foreach ($shipntrack as $key => $shipntrack_value) {
+            $shipntrack_array[$shipntrack_value] = 1;
+        }
+
+        OrderSellerCredentials::query()->update([
+            'dump_order' => 0,
+            'get_order_item' => 0,
+            'enable_shipntrack' => 0
+        ]);
 
         foreach ($selected_store as $key => $id) {
 
@@ -279,12 +307,19 @@ class AdminManagementController extends Controller
             if (array_key_exists($id, $order_item)) {
                 $aws_cred_array['get_order_item'] = 1;
             }
-
+            if (array_key_exists($id, $shipntrack_array)) {
+                $aws_cred_array['enable_shipntrack'] = 1;
+            }
             // return $aws_cred_array;
-            OrderSellerCredentials::upsert([$aws_cred_array], ['seller_id'], ['seller_id', 'store_name', 'country_code', 'dump_order', 'get_order_item']);
+            OrderSellerCredentials::upsert([$aws_cred_array], ['seller_id'], [
+                'seller_id',
+                'store_name',
+                'country_code',
+                'dump_order',
+                'get_order_item',
+                'enable_shipntrack'
+            ]);
         }
-
-
 
         return response()->json(['success' => 'Store Selected']);
     }

@@ -53,6 +53,15 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 */
 // use ConfigTrait;
 
+Route::get('data', function (){
+    $today = date('H:i:s');
+    // echo $today;
+    if($today >= '19:23:00' && $today <= '19:24:00')
+    {
+        echo 'working';
+    }
+    
+});
 // route::get('newcatalog/{asin}', function($asin){
 
 
@@ -92,13 +101,10 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 //         echo"<pre>";
 //         try {
 //             $result = $apiInstance->getCatalogItem($asin, $marketplace_id,$incdata);
-//             po($result);
-//             exit;
+//             // po($result);
+//             // exit;
 //             $result = json_decode(json_encode($result));
-//             $NewCatalogs = R::dispense('catalogussnew');
-//             if($result != NULL)
-//             {
-
+//             // $NewCatalogs = R::dispense('catalogussnew');
 //                 foreach($result as $key => $value)
 //                 {
 //                     if($key == 'attributes')
@@ -109,10 +115,11 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 //                             // $ignore_key =['is_expiration_dated_product', 'generic_keyword','externally_assigned_product_identifier', 'recommended_uses_for_product', 'battery', 'supplier_declared_dg_hz_regulation', 'num_batteries', 'batteries_required', 'product_site_launch_date', 'vendor_return_serial_number_required', 'batteries_included', 'product_expiration_type', 'cpsia_cautionary_statement', 'fc_shelf_life', 'warranty_description'];
 //                             // $result = array_diff($key3, $ignore_key);
 //                             // $NewCatalogs->$key1 = returnType($value1);
-//                             echo $key.' sub_key_1 -> '.$key1; 
-//                             $data = returnType($value1);
-//                             po($data);
-//                             echo "<hr>";
+//                             // echo $key.' sub_key_1 -> '.$key1;
+                            
+//                             // $data = $this->returnType($value1);
+//                             // po($data);
+//                             // echo "<hr>";
     
                             
 //                         }
@@ -126,30 +133,45 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 //                             // $key2 = str_replace('marketplaceId', 'marketplace', $key2);
 //                             // $NewCatalogs->$key2 = returnType($value2);
                                 
-//                             echo $key.' sub_key_2 -> '.$key2; 
-//                             $data = returnType($value2);
-//                             po($data);
-//                             echo "<hr>";
+//                             // echo $key.' sub_key_2 -> '.$key2;
+//                             $queue [] = [
+//                                 $key2 => returnType($value2),
+//                             ];
+//                             // $data = $this->returnType($value2);
+//                             // po($data);
+//                             // echo "<hr>";
 //                         }
 //                     }
 //                     else{
 //                         // $NewCatalogs->$key = returnType($value);
-//                         echo $key;
-//                         $data = returnType($value);
-//                         po($data);
-//                         echo "<hr>";
+//                         // echo $key;
+//                         $queue [] = [
+//                             $key => returnType($value),
+//                         ];
+//                         // $data = $this->returnType($value);
+//                         // po($data);
+//                         // echo "<hr>";
 //                     }
-//                 }      
-//             }
-//             R::store($NewCatalogs);      
+//                 }
+//                 foreach($queue as $data){
+//                     foreach($data as $key3 => $cat){
+
+//                         echo $key3;
+//                         po($cat);
+//                         echo '<hr>';
+//                     }
+//                 }
+//             // R::store($NewCatalogs);      
 //         } catch (Exception $e) {
-//             echo 'Exception when calling CatalogItemsV20220401Api->getCatalogItem: ', $e->getMessage(), PHP_EOL;
+//             echo $e;
+//             // echo 'Exception when calling CatalogItemsV20220401Api->getCatalogItem: ', $e->getMessage(), PHP_EOL;
 //         }
 // }
 
 // );
 
 // function returnType($type){
+//     $data = '';
 //     if(is_object($type)){
 //         $data = json_encode($type);
 //     }

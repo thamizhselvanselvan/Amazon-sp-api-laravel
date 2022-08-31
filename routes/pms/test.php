@@ -11,6 +11,26 @@ use Illuminate\Support\Facades\Response;
 use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
 Route::get("test", function () {
+
+
+
+
+    $catalog_data = DB::connection('catalog')->select("SELECT source.asin, source.user_id 
+    FROM asin_source_uss as source
+    LEFT JOIN catalognewuss as cat
+    on cat.asin = source.asin
+    WHERE cat.asin IS NULL
+    LIMIT 20
+    ");
+
+po($catalog_data);
+exit;
+foreach($catalog_data as $data)
+{
+   echo $data->asin;
+   echo "<hr>";
+}
+    exit;
     $pricing = [];
     $asin_details = [];
 
