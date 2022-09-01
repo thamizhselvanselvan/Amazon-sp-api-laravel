@@ -10,7 +10,7 @@ class PushAsin
     {
         $country_code = strtolower($country_code);
         $bb_product = table_model_set($country_code, 'BB_Product', 'product');
-        $bb_product->upsert($product, ['asin1'], ['asin1', 'active']);
+        $bb_product->insert($product);
 
         $lp_table = "product_${country_code}s_lp_offer";
 
