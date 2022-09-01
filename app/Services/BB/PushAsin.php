@@ -8,10 +8,8 @@ class PushAsin
 {
     public function PushAsinToBBTable($product, $product_lowest_price, $country_code)
     {
-        // Log::alert($country_code);
         $country_code = strtolower($country_code);
         $bb_product = table_model_set($country_code, 'BB_Product', 'product');
-        // log::alert($bb_product->getTable());
         $bb_product->insert($product);
 
         $lp_table = "product_${country_code}s_lp_offer";

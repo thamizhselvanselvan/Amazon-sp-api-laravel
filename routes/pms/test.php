@@ -12,10 +12,38 @@ use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
 Route::get("test/{country_code}", function ($country_code) {
 
+
+
+    $joint_data = DB::connection('catalog')->select("SELECT source.asin FROM asin_destination_ins as source
+    JOIN catalognewins as cat
+    ON source.asin = cat.asin
+    WHERE source.priority = 1
+    ");
+    $country_code = 'us';
+    $asin_desti = 'asin_destination_'.$country_code.'s';
+    $asin_cat = 'catalognew'.$country_code.'s';
+
+
+     $modal_table = table_model_create(country_code: 'us', model: 'Asin_destination', table_name: 'asin_destination_');
+    $joint_data = $modal_table->where('priority', 2)
+    ->join($asin_cat, $asin_desti.'.asin' ,'=', $asin_cat.'.asin')
+    ->chunk(10, function($data)
+    {
+        
+    });
+// po(count($joint_data));
+exit;
+
+    $found = DB::connection('catalog')->select("SELECT id, asin FROM catalognewuss 
+    WHERE asin = 'B07PCHQ8H2' ");
+
+    po($found[0]->id);
+
     $table_name = "catalognew${country_code}s";
     $test = DB::connection('catalog')->select("DELETE s1 from $table_name s1, $table_name s2 where s1.id > s2.id and s1.asin = s2.asin");
     return $test;
     exit;
+
 
     exit;
     $pricing = [];
