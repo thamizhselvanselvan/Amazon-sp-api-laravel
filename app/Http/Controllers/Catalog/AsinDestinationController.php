@@ -94,7 +94,7 @@ class AsinDestinationController extends Controller
             $priority = $request->priority;
             $destination = implode(',', $request->destination);
             $validation = $request->validate([
-                'asin' => 'required|mimes:csv',
+                'asin' => 'required|mimes:txt,csv',
                 'destination' => 'required',
                 'priority' => 'required',
             ]);
