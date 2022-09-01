@@ -36,17 +36,14 @@ class CatalogProductController extends Controller
         if ($request->ajax()) {
             $data = '';
             $data = DB::connection('catalog')->select("SELECT * FROM $Tables ");
-
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->editColumn('asin', function ($row) {
-
-                    return '<a href="https://www.amazon.com/dp/' . $row->asin . '" target="_blank">' . $row->asin . '</a>';
+                 return '<a href="https://www.amazon.com/dp/' . $row->asin . '" target="_blank">' . $row->asin . '</a>';
                 })
                 ->editColumn('item_dimensions', function ($row) {
                     $dimension = 'NA';
                     $data = json_decode($row->item_dimensions);
-
                     if (isset($data->Height)) {
                         $dimension = '<p class="m-0 p-0">Height: ' . $data->Height->value . ' ' . $data->Height->Units . '</p>';
                     }
@@ -68,7 +65,6 @@ class CatalogProductController extends Controller
                     return $amount;
                 })
                 ->addColumn('weight', function ($row) {
-
                     $data = json_decode($row->item_dimensions);
                     if (isset($data->Weight)) {
                         $dimension = '<p class="m-0 p-0">Weight: ' . $data->Weight->value . ' ' . $data->Weight->Units . '</p>';

@@ -47,9 +47,13 @@
                             </button>
                         </div>
                         <div class="modal-body" style="font-size:15px">
-                            <h5>Select Destination</h5><br>
                             <form action="{{ route('catalog.asin.destination.truncate') }}">
-                                <div class="row">
+                                <h5>Select Destination</h5>
+                                <div class="row ">
+                                    <div class="col-2">
+                                        <label for="AE">AE</label>
+                                        <input type="checkbox" name="destination[]" value="AE" >
+                                    </div>
                                     <div class="col-2">
                                         <label for="IN">IN</label>
                                         <input type="checkbox" name="destination[]" value="IN" >
@@ -58,9 +62,24 @@
                                         <label for="US">US</label>
                                         <input type="checkbox" name="destination[]" value="US" >
                                     </div>
-                                    
                                 </div><br>
-                                <div class="col-12 float-left">
+
+                                <h5>Select Priority</h5>
+                                <div class="row ">
+                                    <div class="col-2">
+                                        <label for="P1">P1</label>
+                                        <input type="radio" class="destination-priority" name="priority" value="1"  >
+                                    </div>
+                                    <div class="col-2">
+                                        <label for="P2">P2</label>
+                                        <input type="radio" class="destination-priority" name="priority" value="2"  >
+                                    </div>
+                                    <div class="col-2 ">
+                                        <label for="P3">P3</label>
+                                        <input type="radio" class="destination-priority" name="priority" value="3"  >
+                                    </div>
+                                </div>
+                                <div class="col-12 float-left mt-2">
                                     <x-adminlte-button label="Truncate" theme="danger" class="btn btn-sm truncate" icon="fas fa-trash " type="submit" />
                                 </div>
                             </form>

@@ -143,7 +143,7 @@ class AsinSourceController extends Controller
         {
             $user_id = Auth::user()->id;
             $request->validate([
-                'asin' => 'required|mimes:csv'
+                'asin' => 'required|mimes:txt,csv'
             ]);
             if (!$request->hasFile('asin')) {
                 return back()->with('error', "Please upload file to import it to the database");
