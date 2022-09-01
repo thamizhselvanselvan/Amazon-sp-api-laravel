@@ -76,42 +76,11 @@ class CatalogProductController extends Controller
                 ->rawColumns(['amount', 'item_dimensions', 'weight', 'asin'])
                 ->make(true);
         }
-
         return view('Catalog.product.index', compact('sources'));
     }
 
     public function Amazon(Request $request)
     {
-        // $country_code = $request->country_code;
-        // // $model_name = table_model_create(country_code:$country_code, model:'Asin_source', table_name:'asin_source_');
-        // // $asins = $model_name->where('status', 0)->get(['asin', 'user_id']);
-        // $asins = AsinSource::where('status', 0)->get(['asin', 'source', 'user_id']);
-
-        // $redbean = new NewCatalog();
-        // $redbean->RedBeanConnection();
-        // $NewCatalogs = R::dispense('catalognews');
-        // $NewCatalogs->asin = '';
-        // R::store($NewCatalogs);
-
-        // $count = 0;
-        // $asin_source = [];
-        // $class = 'catalog\\AmazonCatalogImport';
-        // foreach ($asins as $asin) {
-
-        //     if ($count == 10) {
-        //         jobDispatchFunc($class, $asin_source, 'catalog');
-        //         $asin_source = [];
-        //         $count = 0;
-        //     }
-        //     $asin_source[] = [
-        //         'asin' => $asin->asin,
-        //         // 'source' => $country_code,
-        //         'source' => $asin->source,
-        //         'seller_id' => $asin->user_id
-        //     ];
-        //     $count++;
-        // }
-        // jobDispatchFunc($class, $asin_source, 'catalog');
         commandExecFunc("mosh:catalog-amazon-import");
         return redirect()->intended('/catalog/product');
     }
@@ -159,8 +128,9 @@ class CatalogProductController extends Controller
 
     public function PriceExport(Request $request)
     {
-        $country_code =  $request->country_code;
-        commandExecFunc("mosh:catalog-price-export-csv --country_code=${country_code}");
+        $priority = $request->priority;
+        $country_code = $request->source;
+        commandExecFunc("mosh:catalog-price-export-csv ${priority} ${country_code}");
 
         return redirect('/catalog/product')->with("success", "Catalog Price is Importing");
     }

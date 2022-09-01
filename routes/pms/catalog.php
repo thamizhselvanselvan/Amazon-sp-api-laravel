@@ -50,7 +50,7 @@ Route::get('catalog/asin-truncate', 'Catalog\AsinSourceController@AsinTruncate')
 
 Route::get('catalog/product', 'Catalog\CatalogProductController@Index');
 Route::get('catalog/product/fetch-from-amazon', 'Catalog\CatalogProductController@Amazon')->name('catalog.amazon.product');
-Route::post('catalog/price/export', 'Catalog\CatalogProductController@PriceExport')->name('catalog.price.export');
+Route::get('catalog/price/export', 'Catalog\CatalogProductController@PriceExport')->name('catalog.price.export');
 Route::get('catalog/export', 'Catalog\CatalogProductController@ExportCatalog')->name('catalog.export');
 Route::get('catalog/get-file', 'Catalog\CatalogProductController@GetCatalogFile');
 Route::get('catalog/download/csv-file/{country_code}', 'Catalog\CatalogProductController@DownloadCatalogIntocsv');

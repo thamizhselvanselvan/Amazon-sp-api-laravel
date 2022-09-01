@@ -28,12 +28,10 @@
         </h2>
 
         <h2 class="ml-2">
-
             <x-adminlte-button label="Download Catalog" theme="primary" class="btn-sm" icon="fas fa-download" id="catalogdownload" data-toggle="modal" data-target="#downloadModal" />
-
         </h2>
         <h2 class="ml-2">
-            <x-adminlte-button label="Export Catalog Price" class="btn-sm" theme="primary" icon="fas fa-file-export" id="export_catalog_price" />
+            <x-adminlte-button label="Export Catalog Price" class="btn-sm" theme="primary" icon="fas fa-file-export" id="export_catalog_price" data-toggle="modal" data-target="#catalogPriceExport" />
         </h2>
         <h2 class="ml-2">
             <x-adminlte-button label="Download Catalog Price" class="btn-sm" theme="primary" icon="fas fa-download" id="download_catalog_price" data-toggle="modal" data-target="#file_download_modal" />
@@ -49,9 +47,7 @@
                         </button>
                     </div>
                     <div class="modal-body" style="font-size:15px">
-
                         <form action="{{ route('catalog.export') }}">
-
                             <h5>Select Source</h5>
                             <div class="row border">
                                 <div class="col-2">
@@ -62,7 +58,6 @@
                                     <label for="US">US</label>
                                     <input type="radio" name="source" value="US">
                                 </div>
-
                             </div><br>
 
                             <h5>Select Priority</h5>
@@ -85,7 +80,58 @@
                                 <x-adminlte-button label="Export" theme="danger" class="btn btn-sm " icon="fas fa-file-export " type="submit" />
                             </div>
                         </form>
+                    </div>
 
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="catalogPriceExport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Export Catalog Price</h5>
+                        <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="font-size:15px">
+                        <form action="{{ route('catalog.price.export') }}" method="GET" >
+                            <h5>Select Source</h5>
+                            <div class="row border">
+                                <div class="col-2">
+                                    <label for="IN">IN</label>
+                                    <input type="radio" name="source" value="IN">
+                                </div>
+                                <div class="col-2">
+                                    <label for="US">US</label>
+                                    <input type="radio" name="source" value="US">
+                                </div>
+                            </div><br>
+
+                            <h5>Select Priority</h5>
+                            <div class="row border">
+                                <div class="col-2">
+                                    <label for="P1">P1</label>
+                                    <input type="radio" class="destination-priority" name="priority" value="1">
+                                </div>
+                                <div class="col-2">
+                                    <label for="P2">P2</label>
+                                    <input type="radio" class="destination-priority" name="priority" value="2">
+                                </div>
+                                <div class="col-2 ">
+                                    <label for="P3">P3</label>
+                                    <input type="radio" class="destination-priority" name="priority" value="3">
+                                </div>
+                            </div>
+
+                            <div class="col-12 float-left mt-2">
+                                <x-adminlte-button label="Export" theme="success" class="btn btn-sm " icon="fas fa-file-export " type="submit" />
+                            </div>
+                        </form>
                     </div>
 
                     <div class="modal-footer">
@@ -236,28 +282,28 @@
             });
         });
 
-        $('#export_catalog_price').on('click', function() {
-            let country_code = $('#country').val();
-            if (country_code == 'NULL' || country_code == 'AE') {
-                var id = document.getElementById('country');
-                var text = 'Country must filled out';
-                document.getElementById('countrymsg').innerHTML = text;
-                document.getElementById('countrymsg').style.color = "red";
-            } else {
-                $.ajax({
-                    url: "/catalog/price/export",
-                    type: "post",
-                    data: {
-                        "_token": "{{ csrf_token() }}",
-                        "_method": 'POST',
-                        "country_code": country_code
-                    },
-                    success: function(response) {
-                        console.log(response);
-                    },
-                });
-            }
-        });
+        // $('#export_catalog_price').on('click', function() {
+        //     let country_code = $('#country').val();
+        //     if (country_code == 'NULL' || country_code == 'AE') {
+        //         var id = document.getElementById('country');
+        //         var text = 'Country must filled out';
+        //         document.getElementById('countrymsg').innerHTML = text;
+        //         document.getElementById('countrymsg').style.color = "red";
+        //     } else {
+        //         $.ajax({
+        //             url: "/catalog/price/export",
+        //             type: "post",
+        //             data: {
+        //                 "_token": "{{ csrf_token() }}",
+        //                 "_method": 'POST',
+        //                 "country_code": country_code
+        //             },
+        //             success: function(response) {
+        //                 console.log(response);
+        //             },
+        //         });
+        //     }
+        // });
 
         $('#catalogdownload').click(function() {
 
