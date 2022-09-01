@@ -13,12 +13,9 @@ use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 Route::get("test", function () {
 
 
+    DB::connection('catalog')->select("DELETE s1 from catalognewuss s1, catalognewuss s2 where s1.id > s2.id and s1.asin = s2.asin");
 
-
-    $found = DB::connection('catalog')->select("SELECT id, asin FROM catalognewuss 
-    WHERE asin = 'B07PCHQ8H2' ");
-
-    po($found[0]->id);
+    exit;
 
     exit;
     $pricing = [];
