@@ -10,11 +10,11 @@ use App\Models\seller\SellerAsinDetails;
 use Illuminate\Support\Facades\Response;
 use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
-Route::get("test", function () {
+Route::get("test/{country_code}", function ($country_code) {
 
-
-    DB::connection('catalog')->select("DELETE s1 from catalognewuss s1, catalognewuss s2 where s1.id > s2.id and s1.asin = s2.asin");
-
+    $table_name = "catalognew${country_code}s";
+    $test = DB::connection('catalog')->select("DELETE s1 from $table_name s1, $table_name s2 where s1.id > s2.id and s1.asin = s2.asin");
+    return $test;
     exit;
 
     exit;
