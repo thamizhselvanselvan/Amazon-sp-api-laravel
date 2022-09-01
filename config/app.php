@@ -192,6 +192,14 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\HorizonServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+
+        Yajra\DataTables\DataTablesServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
+		App\Providers\DropboxServiceProvider::class,
+        Arcanedev\LogViewer\LogViewerServiceProvider::class,
+
+
+
     ],
 
     /*

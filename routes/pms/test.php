@@ -28,21 +28,16 @@ Route::get("test", function () {
     ->join($asin_cat, $asin_desti.'.asin' ,'=', $asin_cat.'.asin')
     ->chunk(10, function($data)
     {
-        foreach($data as $value)
-        {
-
-            po($data);
-            // exit;
-        }
-        // exit;
+        
     });
 // po(count($joint_data));
 exit;
-foreach($catalog_data as $data)
-{
-   echo $data->asin;
-   echo "<hr>";
-}
+
+    $found = DB::connection('catalog')->select("SELECT id, asin FROM catalognewuss 
+    WHERE asin = 'B07PCHQ8H2' ");
+
+    po($found[0]->id);
+
     exit;
     $pricing = [];
     $asin_details = [];

@@ -23,19 +23,20 @@ Route::resource('business/orders', 'BuisnessAPI\OrdersController');
 
 
 Route::resource('business/details', 'BuisnessAPI\ProductDetailsController');
+Route::get('buisness/details', 'BuisnessAPI\ProductDetailsController@viewpro');
 
 
-Route::get('product/test', function()
-{
-     $asin = '';
-     $tes = new product_details;
-     $tes->savedetails($asin);
-     return 'ok';
-});
+// Route::get('product/test', function()
+// {
+//      $asin = 'B0000531II';
+//      $tes = new product_details;
+//      $tes->savedetails($asin);
+//      return 'ok';
+// });
 
-Route::get('product/imp', function () {
-     $tes = new ProductsRequestController;
-     $tes->fetchusasin();
+// Route::get('product/imp', function () {
+//      $tes = new ProductsRequestController;
+//      $tes->fetchusasin();
     
-});
+// });
 

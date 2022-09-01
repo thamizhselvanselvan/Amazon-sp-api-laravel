@@ -18,7 +18,7 @@ class Orders
         $countrycode = 'US';
         $country = 'USA';
         $country_name = 'Unite States';
-        $email = 'tec@moshecom.com';
+        $email = 'tech@moshecom.com';
         $name = 'mr.kate';
 
         /* ship and bill details  */
@@ -26,9 +26,9 @@ class Orders
        
         $orderID = random_int(100, 10000);
         $org_name = 'nitrous';
-        $deli1 = 'Tec Team, tec@moshecom.com';
+        $deli1 = 'Tech Team, tech@moshecom.com';
         $deli2 = 'bliss';
-        $deli3 = 'Tec TEAM';
+        $deli3 = 'Tech TEAM';
         $street = '325 9th Ave N';
         $city = 'Seattle';
         $state = 'Washington';

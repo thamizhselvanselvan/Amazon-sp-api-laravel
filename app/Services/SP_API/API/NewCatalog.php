@@ -40,12 +40,30 @@ class NewCatalog
             $country_code = strtolower($country_code);
             $catalog_table = 'catalognew' . $country_code . 's';
 
-            $found = DB::connection('catalog')->select("SELECT asin FROM $catalog_table WHERE asin = '$asin' ");
-            if (count($found) == 0) {
-                $aws_id = NULL;
-                $catalog_details = $this->FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id);
-                if ($catalog_details) {
+            $aws_id = NULL;
+            $catalog_details = $this->FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id);
+
+            if ($catalog_details) {
+
+                $found = DB::connection('catalog')->select("SELECT id, asin FROM $catalog_table 
+                WHERE asin = '$asin' ");
+
+                if (count($found) == 0) {
+                    //new details
+
                     $queue_data[] = $catalog_details;
+                } else {
+                    //update
+                    Log::info('asin details updating -> ' . $asin);
+
+                    $asin_id = $found[0]->id;
+                    $asin_details = R::load($catalog_table, $asin_id);
+                    foreach ($catalog_details as $key => $key_value) {
+
+                        $asin_details->$key = $key_value;
+                    }
+                    $asin_details->updated_at = now();
+                    R::store($asin_details);
                 }
             }
         }
@@ -58,6 +76,8 @@ class NewCatalog
             foreach ($value as $key => $data) {
                 $NewCatalogs[$key1]->$key = $data;
             }
+            $NewCatalogs[$key1]->created_at = now();
+            $NewCatalogs[$key1]->updated_at = now();
         }
         R::storeALL($NewCatalogs);
     }
