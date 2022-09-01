@@ -192,8 +192,7 @@ class TestController extends Controller
     $createdAfter = $startTime;
     $max_results_per_page = 1;
 
-    $next_token = 'hM124xZ+LlKaJqJYLDm0ZAmQazDrhw3C42KwwQyR9e+POBbzDtB3vUhr+1eGaP6UxqXyQLkGMBs8VhF73Xgy+6+TtJlDlUR5CW7Is1RGzI/hhzC687eVK0UGB/dyN1vXInTAy+XKVmRZBY+oaVuycwQFure81U/CLO2dUPBSQxilyQ72z0JxVRGYf8mRmMfZf2GLmUGyr9UGnxD0RJmrryegoU0IPZxXe+wf438PxScr8H+l8cWojXcGpQcLYSdXMBO/reDY2s8X+G/WxAkd4Fo++pAnAbakpMzWaPWrWIu7EbcPNB+bB6Hzx3wYc8HkVHr6/v7aqUE6gx0WW4bluJnycMd/XRCQtaCzShpAkLDCGa9/OIokc7y+2SsVDFxBBjgRo8azclmG7IAjOAiBEK1m813MprO0T6B1SgezW1etTshJEF7OfL1sEmL1IXjWNXLo6O/IwT0=';
-    $next_token = str_replace(['/', '+', '-'], '', $next_token);
+    $next_token = 'Nz0eSs51UK+aJqJYLDm0ZAmQazDrhw3C42KwwQyR9e/L6UHaBK1qlqaqZ6TcljqaxqXyQLkGMBs8VhF73Xgy+6+TtJlDlUR56p8S6xVccYWSkB8HgnURuo2teiazVgkyInTAy+XKVmRZBY+oaVuycwQFure81U/CSOnRa9h35auYeATp5zAOhzgKA0lggjg0f2GLmUGyr9UGnxD0RJmrryegoU0IPZxXuDhY0Mlg+b9axYTTEsJ5Nkzyjn+QzAQYMBO/reDY2s8X+G/WxAkd4Fo++pAnAbakpMzWaPWrWIu7EbcPNB+bB6Hzx3wYc8HkVHr6/v7aqUE6gx0WW4bluJnycMd/XRCQ3VVGVsnIXDuwRGD7sGc+vvNIww18kAHE3toQYgtSWoW8GvFjc507ZCZ4zjikEy7+rToAsYN83sHgkdZPXhcRcM4Geo6I62Nv5h8v0uN9IxQ=';
     // $next_token = iconv("UTF-8", "UTF-8//IGNORE", $next_token);
     $amazon_order_ids = NULL;
     // $next_token = NULL;
@@ -211,6 +210,7 @@ class TestController extends Controller
       $seller_order_id = null,
       $max_results_per_page,
       $easy_ship_shipment_statuses = null,
+      $electronic_invoice_statuses = null,
       $next_token,
       $amazon_order_ids,
       $actual_fulfillment_supply_source_id = null,
