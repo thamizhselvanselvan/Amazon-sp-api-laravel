@@ -23,7 +23,7 @@ class catalogExportCSV extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:catalog-export-csv {country_code}';
+    protected $signature = 'mosh:catalog-export-csv {priority} {country_code}';
 
     /**
      * The console command description.
@@ -54,11 +54,14 @@ class catalogExportCSV extends Command
         $this->remender = $total_csv / $chunk;
         $this->country_code = $this->argument('country_code');
 
+        $priority = $this->argument('priority');
+
         $header = [
             'asin',
             'source',
             'dimensions',
-            'images',
+            'image1',
+            'image2',
             'product_types',
             'brand',
             'color',
@@ -69,12 +72,15 @@ class catalogExportCSV extends Command
             'manufacturer'
         ];
 
-        $modal_table = table_model_create(country_code: $this->country_code, model: 'Catalog', table_name: 'catalognew');
+        $asin_desti = 'asin_destination_'.strtolower($this->country_code). 's';
+        $asin_cat = 'catalognew'. strtolower($this->country_code). 's';
 
-        $modal_table->orderBy('id')->select($header)->chunk($chunk, function ($result) use ($header) {
+        $table_name = table_model_create(country_code:$this->country_code, model:'Asin_destination', table_name:'asin_destination_');
+        $joint_data = $table_name->where('priority', $priority)
+            ->join($asin_cat, $asin_desti.'.asin' ,'=', $asin_cat.'.asin')
+            ->chunk($chunk, function ($result) use ($header) {
 
             if ($this->count == 1) {
-
                 $csv_header = [
                     'asin',
                     'source',
@@ -99,18 +105,15 @@ class catalogExportCSV extends Command
                 }
 
                 $this->writer = Writer::createFromPath(Storage::path($this->file_path, 'w'));
-
                 $this->writer->insertOne($header);
             }
 
             foreach ($result as $value) {
-
                 $weight = '0.5';
                 $product_type  = '';
                 $images1  = '';
                 $images2  = '';
-                Log::alert(($value));
-
+                
                 if (isset(json_decode($value->dimensions)[0]->package->weight->value)) {
 
                     $weight = json_decode($value->dimensions)[0]->package->weight->value;
@@ -145,11 +148,9 @@ class catalogExportCSV extends Command
             $this->writer->insertAll($records);
 
             if ($this->remender == $this->count) {
-
                 ++$this->offset;
                 $this->count = 1;
             } else {
-
                 ++$this->count;
             }
         });
@@ -161,7 +162,6 @@ class catalogExportCSV extends Command
         if (!Storage::exists($path)) {
             Storage::put($path, '');
         }
-
         if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
             foreach ($this->csv_files as $key => $value) {
                 $path = Storage::path('excel/downloads/catalog/' . $this->country_code . '/' . $value);

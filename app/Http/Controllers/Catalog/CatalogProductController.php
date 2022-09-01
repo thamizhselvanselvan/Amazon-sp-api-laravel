@@ -122,19 +122,10 @@ class CatalogProductController extends Controller
 
     public function ExportCatalog(Request $request)
     {
-        $country_code = $request->country_code;
-        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-
-            $base_path = base_path();
-            $command = "cd $base_path && php artisan mosh:catalog-export-csv $country_code> /dev/null &";
-            exec($command);
-
-            Log::warning("Export catalog command executed production  !!!");
-        } else {
-
-            Log::warning("Export catalog command executed local !");
-            Artisan::call('mosh:catalog-export-csv'.' '. $country_code);
-        }
+        $priority = $request->priority;
+        $country_code = $request->source;
+        commandExecFunc("mosh:catalog-export-csv ${priority} ${country_code} ");
+        
         return redirect()->intended('/catalog/product');
     }
 

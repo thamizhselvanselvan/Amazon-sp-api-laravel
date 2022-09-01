@@ -535,9 +535,7 @@ if (!function_exists('table_model_set')) {
 if (!function_exists('table_model_create')) {
     function table_model_create(string $country_code, string $model, string $table_name): object
     {
-
         $country_code_lr = strtolower($country_code);
-
         $namespace = 'App\\Models\\Catalog\\' . $model;
         $product_model = new $namespace;
 

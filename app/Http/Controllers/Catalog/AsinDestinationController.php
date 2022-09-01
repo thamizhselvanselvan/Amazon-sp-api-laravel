@@ -203,6 +203,8 @@ class AsinDestinationController extends Controller
             $destination_data = $table_name->get();
             foreach($destination_data as $desti_value)
             {
+                $bb_product = table_model_set($country_code, 'BB_Product', 'product');
+                $bb_product->where('asin1', $desti_value->asin)->delete();
                 $bb_product_lowest_price = table_model_set(country_code: $country_code, model: 'BB_Product_lowest_price_offer', table_name: $bb_table);
                 $bb_product_lowest_price->where('asin', $desti_value->asin)->delete();
             }

@@ -13,17 +13,30 @@ use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 Route::get("test", function () {
 
 
-
-
-    $catalog_data = DB::connection('catalog')->select("SELECT source.asin, source.user_id 
-    FROM asin_source_uss as source
-    LEFT JOIN catalognewuss as cat
-    on cat.asin = source.asin
-    WHERE cat.asin IS NULL
-    LIMIT 20
+    $joint_data = DB::connection('catalog')->select("SELECT source.asin FROM asin_destination_ins as source
+    JOIN catalognewins as cat
+    ON source.asin = cat.asin
+    WHERE source.priority = 1
     ");
+    $country_code = 'us';
+    $asin_desti = 'asin_destination_'.$country_code.'s';
+    $asin_cat = 'catalognew'.$country_code.'s';
 
-po($catalog_data);
+
+     $modal_table = table_model_create(country_code: 'us', model: 'Asin_destination', table_name: 'asin_destination_');
+    $joint_data = $modal_table->where('priority', 2)
+    ->join($asin_cat, $asin_desti.'.asin' ,'=', $asin_cat.'.asin')
+    ->chunk(10, function($data)
+    {
+        foreach($data as $value)
+        {
+
+            po($data);
+            // exit;
+        }
+        // exit;
+    });
+// po(count($joint_data));
 exit;
 foreach($catalog_data as $data)
 {
