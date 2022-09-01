@@ -110,11 +110,19 @@ class NewCatalog
             }
             return $queue_data;
         } catch (Exception $e) {
+
             $country_code = strtolower($country_code);
             $catalog_table = 'catalognew' . $country_code . 's';
-            $NewCatalogs = R::dispense($catalog_table);
-            $NewCatalogs->asin = $asin;
-            R::store($NewCatalogs);
+
+            $found = DB::connection('catalog')->select("SELECT id, asin FROM $catalog_table 
+            WHERE asin = '$asin' ");
+
+            if (count($found) == 0) {
+
+                $NewCatalogs = R::dispense($catalog_table);
+                $NewCatalogs->asin = $asin;
+                R::store($NewCatalogs);
+            }
         }
     }
 
