@@ -53,9 +53,9 @@ class CatalogPriceExportCSV extends Command
     public function handle()
     {
         $this->country_code = $this->argument('country_code');
-        $priority = $this->argument('priority');
-        Log::alert($priority);
-        exit;
+        // $priority = $this->argument('priority');
+        // Log::alert($priority);
+        // exit;
         $chunk = 10000;
 
         $exportFilePath = "excel/downloads/catalog_price/$this->country_code/" . $this->country_code . "_CatalogPrice";

@@ -39,9 +39,9 @@ class PacketTracking extends Command
     public function handle()
     {
 
-        $table_name = "catalognewuss";
-        $test = DB::connection('catalog')->select("DELETE s1 from $table_name s1, $table_name s2 where s1.id > s2.id and s1.asin = s2.asin");
-        return $test;
-        exit;
+
+
+
+        //
     }
 }
