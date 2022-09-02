@@ -128,34 +128,7 @@ class BusinessasinDetails implements ShouldQueue
             }
             $end_time = endTime($start_time);
              Log::alert("Before  Query - $end_time");
-            // DB::connection('mongodb')->table('product_details')->where('asin', $asin)->update(
-            //     [
-            //         'asin' => $asin,
-            //         'asin_type' => $asin_type,
-            //         'signedProductId ' => $signedProductId,
-            //         'offers' => $offers,
-            //         'availability' => $availability,
-            //         'buyingGuidance' => $buyingGuidance,
-            //         'fulfillmentType' => $fulfillmentType,
-            //         'merchant' => $merchant,
-            //         'offerId' => $offerId,
-            //         'price' => $price,
-            //         'listPrice' => $listPrice,
-            //         'productCondition' => $productCondition,
-            //         'condition' => $condition,
-            //         'quantityLimits' => $quantityLimits,
-            //         'deliveryInformation' => $deliveryInformation,
-            //         'features' => $features,
-            //         'taxonomies' => $taxonomies,
-            //         'title' => $title,
-            //         'url' => $url,
-            //         'productOverview' => $productOverview,
-            //         'productVariations' => $productVariations,
-            //         'created_at' => now()->format('Y-m-d H:i:s'),
-            //         'updated_at'  => now()->format('Y-m-d H:i:s')
-            //     ],
-            //     ["upsert" => true]
-            // );
+           
 
             $data = R::dispense('uscatalog');
             $data->asin = $asin;
