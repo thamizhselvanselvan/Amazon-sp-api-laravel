@@ -44,15 +44,17 @@ class business_product_dump extends Command
      */
     public function handle()
     {
-        $delay = 10;
+        $delay = 0;
         $start_time = startTime();
         $end_time = endTime($start_time);
         //  Log::warning("Before Select Query - $end_time");
 
         $records = table_model_create(country_code: 'US', model: 'Asin_source', table_name: 'asin_source_')
             ->select('asin')
-             ->limit(100)->get();
+             ->limit(10)->get()->pluck('asin');
             // ->chunk(100, function ($records) use ($delay, $start_time) {
+
+Log::alert($records);
 
 
                 if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
