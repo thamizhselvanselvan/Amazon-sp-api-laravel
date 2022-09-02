@@ -65,7 +65,7 @@ class AsinDestinationUpload extends Command
                     'asin'  => $asin,
                     'user_id'   => $user_id,
                     'priority' => $priority,
-                    'cyclic' => 0
+                    
                 ];
 
                 $product[] = [
@@ -78,6 +78,7 @@ class AsinDestinationUpload extends Command
                     'asin' => $asin,
                     'import_type' => 'Seller',
                     'priority'  => $priority,
+                    'cyclic' => 0,
                 ];
 
                 if ($count == 999) {

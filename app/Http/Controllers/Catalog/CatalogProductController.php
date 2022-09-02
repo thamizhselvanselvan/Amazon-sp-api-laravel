@@ -101,7 +101,6 @@ class CatalogProductController extends Controller
         $priority = $request->priority;
         $country_code = $request->source;
         commandExecFunc("mosh:catalog-price-export-csv ${priority} ${country_code}");
-
         return redirect('/catalog/product')->with("success", "Catalog Price is Importing");
     }
 
@@ -122,5 +121,4 @@ class CatalogProductController extends Controller
             }
         }
     }
-
 }

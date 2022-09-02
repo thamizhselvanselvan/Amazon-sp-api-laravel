@@ -116,7 +116,6 @@ class CatalogPriceExportCSV extends Command
         if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
             foreach ($this->totalFile as $key => $value) {
                 $path = Storage::path('excel/downloads/catalog_price/' . $this->country_code . '/Priority'.$this->priority. '/' . $value);
-                Log::alert($path);
                 $relativeNameInZipFile = basename($path);
                 $zip->addFile($path, $relativeNameInZipFile);
             }
