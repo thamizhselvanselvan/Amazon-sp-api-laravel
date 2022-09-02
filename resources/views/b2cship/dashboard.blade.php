@@ -20,7 +20,7 @@
     <div class="row">
         <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" id="TrackingAPI" data-target="#Tracking"  href="">Tracking API</a>
+                <a class="nav-link active" data-toggle="tab" id="TrackingAPI" data-target="#Tracking" href="">Tracking API</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" id="BombinoStatus" data-target="#Bombinotab" href="">Bombino Status</a>
@@ -38,31 +38,31 @@
         <div class="tab-pane active" id="Tracking">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" id="TrackingActive" href="">Active</a>
+                    <a class="nav-link active" data-toggle="tab" id="TrackingActive" href="">Active</a>
                 </li>
                 <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" id="TrackingInactive"  href="" >Inactive</a>
+                    <a class="nav-link" data-toggle="tab" id="TrackingInactive" href="">Inactive</a>
                 </li>
             </ul>
         </div>
-        
+
         <div class="tab-pane " id="Bombinotab">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" id="BombinoActive" href="">Active</a>
+                    <a class="nav-link active" data-toggle="tab" id="BombinoActive" href="">Active</a>
                 </li>
                 <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" id="BombinoInactive"  href="" >Inactive</a>
+                    <a class="nav-link" data-toggle="tab" id="BombinoInactive" href="">Inactive</a>
                 </li>
             </ul>
         </div>
         <div class="tab-pane " id="Deliverytab">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" id="DeliveryActive" href="">Active</a>
+                    <a class="nav-link active" data-toggle="tab" id="DeliveryActive" href="">Active</a>
                 </li>
                 <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" id="DeliveryInactive"  href="" >Inactive</a>
+                    <a class="nav-link" data-toggle="tab" id="DeliveryInactive" href="">Inactive</a>
                 </li>
             </ul>
         </div>
@@ -236,138 +236,136 @@
 
 @section('js')
 <script>
-$(document).ready(function(){
+    $(document).ready(function() {
 
-    $("#bombinoStatus").hide();
-    $('#deliveryStatus').hide();
-    $('#MiscStatus').hide();
-
-    $('#TrackingAPI').on('click', function(){
-        $('#TrackingAPIActiveShow').show();
         $("#bombinoStatus").hide();
         $('#deliveryStatus').hide();
         $('#MiscStatus').hide();
-        $('#bombinoInactiveShow').hide();
-        $('#deliveryInactiveShow').hide();
-        $('#TrackingAPInActiveShow').hide(); 
-        $('.tab-content').show();
-        $('#TrackingActive').addClass('active');
-        $('#TrackingInactive').removeClass('active');
+
+        $('#TrackingAPI').on('click', function() {
+            $('#TrackingAPIActiveShow').show();
+            $("#bombinoStatus").hide();
+            $('#deliveryStatus').hide();
+            $('#MiscStatus').hide();
+            $('#bombinoInactiveShow').hide();
+            $('#deliveryInactiveShow').hide();
+            $('#TrackingAPInActiveShow').hide();
+            $('.tab-content').show();
+            $('#TrackingActive').addClass('active');
+            $('#TrackingInactive').removeClass('active');
+        });
+
+        $('#TrackingActive').on('click', function() {
+            $('#TrackingAPIActiveShow').show();
+            $("#bombinoStatus").hide();
+            $('#deliveryStatus').hide();
+            $('#MiscStatus').hide();
+            $('#bombinoInactiveShow').hide();
+            $('#deliveryInactiveShow').hide();
+            $('#TrackingAPInActiveShow').hide();
+            $('.tab-content').show();
+            $('#TrackingActive').addClass('active');
+            $('#TrackingInactive').removeClass('active');
+        });
+
+        $('#TrackingInactive').on('click', function() {
+            $('#TrackingAPInActiveShow').show();
+            $('#TrackingAPIActiveShow').hide();
+            $("#bombinoStatus").hide();
+            $('#deliveryStatus').hide();
+            $('#MiscStatus').hide();
+            $('#bombinoInactiveShow').hide();
+            $('#deliveryInactiveShow').hide();
+            $('.tab-content').show();
+        });
+
+        $('#BombinoStatus').on('click', function() {
+            $("#bombinoStatus").show();
+            $('#TrackingAPIActiveShow').hide();
+            $('#deliveryStatus').hide();
+            $('#MiscStatus').hide();
+            $("#bombinoInactiveShow").hide();
+            $('#deliveryStatus').hide();
+            $('#deliveryInactiveShow').hide();
+            $('#TrackingAPIActiveShow').hide();
+            $('#TrackingAPInActiveShow').hide();
+            $('#BombinoActive').addClass('active');
+            $('#BombinoInactive').removeClass('active');
+            $('.tab-content').show();
+        });
+
+        $('#BombinoActive').on('click', function() {
+            $("#bombinoStatus").show();
+            $('#TrackingAPIActiveShow').hide();
+            $('#deliveryStatus').hide();
+            $('#MiscStatus').hide();
+            $("#bombinoInactiveShow").hide();
+            $('#TrackingAPIActiveShow').hide();
+            $('#TrackingAPInActiveShow').hide();
+        });
+
+        $('#BombinoInactive').on('click', function() {
+            $("#bombinoInactiveShow").show();
+            $('#bombinoStatus').hide();
+            $('#TrackingAPIActiveShow').hide();
+            $('#deliveryStatus').hide();
+            $('#MiscStatus').hide();
+            $('#TrackingAPIActiveShow').hide();
+            $('#TrackingAPInActiveShow').hide();
+        });
+
+        $('#DeliveryStatus').on('click', function() {
+
+            $('#deliveryStatus').show();
+            $('#TrackingAPIActiveShow').hide();
+            $("#bombinoStatus").hide();
+            $('#MiscStatus').hide();
+            $('#bombinoStatus').hide();
+            $("#bombinoInactiveShow").hide();
+            $('#deliveryInactiveShow').hide();
+            $('#TrackingAPIActiveShow').hide();
+            $('#TrackingAPInActiveShow').hide();
+            $('#DeliveryActive').addClass('active');
+            $('#DeliveryInactive').removeClass('active');
+            $('.tab-content').show();
+        });
+
+        $('#DeliveryActive').on('click', function() {
+
+            $('#deliveryStatus').show();
+            $('#TrackingAPIActiveShow').hide();
+            $("#bombinoStatus").hide();
+            $('#MiscStatus').hide();
+            $('#bombinoStatus').hide();
+            $("#bombinoInactiveShow").hide();
+            $('#deliveryInactiveShow').hide();
+            $('#TrackingAPIActiveShow').hide();
+            $('#TrackingAPInActiveShow').hide();
+        });
+
+        $('#DeliveryInactive').on('click', function() {
+
+            $('#deliveryInactiveShow').show();
+            $('#TrackingAPIActiveShow').hide();
+            $("#bombinoStatus").hide();
+            $('#MiscStatus').hide();
+            $('#bombinoStatus').hide();
+            $("#bombinoInactiveShow").hide();
+            $('#deliveryStatus').hide();
+            $('#TrackingAPIActiveShow').hide();
+            $('#TrackingAPInActiveShow').hide();
+        });
+
+        $('#Misc').on('click', function() {
+            $('#MiscStatus').show();
+            $('#TrackingAPIActiveShow').hide();
+            $("#bombinoStatus").hide();
+            $('#deliveryStatus').hide();
+            $('.tab-content').hide();
+            $('#TrackingAPIActiveShow').hide();
+            $('#TrackingAPInActiveShow').hide();
+        });
+
     });
-
-    $('#TrackingActive').on('click', function(){
-        $('#TrackingAPIActiveShow').show();
-        $("#bombinoStatus").hide();
-        $('#deliveryStatus').hide();
-        $('#MiscStatus').hide();
-        $('#bombinoInactiveShow').hide();
-        $('#deliveryInactiveShow').hide();
-        $('#TrackingAPInActiveShow').hide();  
-        $('.tab-content').show();
-        $('#TrackingActive').addClass('active');
-        $('#TrackingInactive').removeClass('active');
-    });
-
-    $('#TrackingInactive').on('click', function(){
-        $('#TrackingAPInActiveShow').show();
-        $('#TrackingAPIActiveShow').hide();
-        $("#bombinoStatus").hide();
-        $('#deliveryStatus').hide();
-        $('#MiscStatus').hide();
-        $('#bombinoInactiveShow').hide();
-        $('#deliveryInactiveShow').hide(); 
-        $('.tab-content').show();
-    });
-
-    $('#BombinoStatus').on('click', function(){
-        $("#bombinoStatus").show();
-        $('#TrackingAPIActiveShow').hide();
-        $('#deliveryStatus').hide();
-        $('#MiscStatus').hide();
-        $("#bombinoInactiveShow").hide();
-        $('#deliveryStatus').hide();
-        $('#deliveryInactiveShow').hide();
-        $('#TrackingAPIActiveShow').hide();
-        $('#TrackingAPInActiveShow').hide(); 
-        $('#BombinoActive').addClass('active');
-        $('#BombinoInactive').removeClass('active');
-        $('.tab-content').show();
-    });
-
-    $('#BombinoActive').on('click', function(){
-        $("#bombinoStatus").show();
-        $('#TrackingAPIActiveShow').hide();
-        $('#deliveryStatus').hide();
-        $('#MiscStatus').hide();
-        $("#bombinoInactiveShow").hide();
-        $('#TrackingAPIActiveShow').hide();
-        $('#TrackingAPInActiveShow').hide(); 
-    });
-
-    $('#BombinoInactive').on('click',function(){
-        $("#bombinoInactiveShow").show();
-        $('#bombinoStatus').hide();
-        $('#TrackingAPIActiveShow').hide();
-        $('#deliveryStatus').hide();
-        $('#MiscStatus').hide();
-        $('#TrackingAPIActiveShow').hide();
-        $('#TrackingAPInActiveShow').hide(); 
-    });
-
-    $('#DeliveryStatus').on('click', function(){
-
-        $('#deliveryStatus').show();
-        $('#TrackingAPIActiveShow').hide();
-        $("#bombinoStatus").hide();
-        $('#MiscStatus').hide();
-        $('#bombinoStatus').hide();
-        $("#bombinoInactiveShow").hide();
-        $('#deliveryInactiveShow').hide();
-        $('#TrackingAPIActiveShow').hide();
-        $('#TrackingAPInActiveShow').hide(); 
-        $('#DeliveryActive').addClass('active');
-        $('#DeliveryInactive').removeClass('active');
-        $('.tab-content').show();
-    });
-
-    $('#DeliveryActive').on('click', function(){
-
-        $('#deliveryStatus').show();
-        $('#TrackingAPIActiveShow').hide();
-        $("#bombinoStatus").hide();
-        $('#MiscStatus').hide();
-        $('#bombinoStatus').hide();
-        $("#bombinoInactiveShow").hide();
-        $('#deliveryInactiveShow').hide();
-        $('#TrackingAPIActiveShow').hide();
-        $('#TrackingAPInActiveShow').hide(); 
-    });
-
-    $('#DeliveryInactive').on('click', function(){
-
-        $('#deliveryInactiveShow').show();
-        $('#TrackingAPIActiveShow').hide();
-        $("#bombinoStatus").hide();
-        $('#MiscStatus').hide();
-        $('#bombinoStatus').hide();
-        $("#bombinoInactiveShow").hide();
-        $('#deliveryStatus').hide();
-        $('#TrackingAPIActiveShow').hide();
-        $('#TrackingAPInActiveShow').hide(); 
-    });
-
-    $('#Misc').on('click', function(){
-        $('#MiscStatus').show();
-        $('#TrackingAPIActiveShow').hide();
-        $("#bombinoStatus").hide();
-        $('#deliveryStatus').hide();
-        $('.tab-content').hide();
-        $('#TrackingAPIActiveShow').hide();
-        $('#TrackingAPInActiveShow').hide(); 
-    });
-    
-});
-
 </script>
 @stop
-

@@ -66,13 +66,15 @@ class BombinoGetTracking implements ShouldQueue
         $awb_details = [];
         foreach ($result->TrackPoints as $key => $value) {
 
+            $exception = $value->Exception;
+
             $awb_details[]  = [
                 'awbno' => $awb_no,
                 'action_date' =>  date('Y-m-d', strtotime($value->ActionDate)),
                 'action_time' => date('H:i:s', strtotime($value->ActionTime)),
                 'event_code' => $value->EventCode,
                 'event_details' => $value->EventDetail,
-                'exception' => $value->Exception,
+                'exception' => $exception,
                 'location' => $value->Location,
             ];
         }

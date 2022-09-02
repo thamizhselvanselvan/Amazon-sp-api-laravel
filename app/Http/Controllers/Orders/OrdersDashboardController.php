@@ -80,24 +80,12 @@ class OrdersDashboardController extends Controller
         $today = Carbon::now();
         $month = Carbon::now()->subMonth();
 
-
-        // $latest = DB::connection('order')->select("SELECT 
-        // country, orderitemdetails.updated_at, orsc.store_name FROM orderitemdetails 
-        // JOIN ord_order_seller_credentials as orsc 
-        // WHERE orderitemdetails.seller_identifier = orsc.seller_id
-        // AND orderitemdetails.updated_at BETWEEN '$month' AND '$today' 
-        // GROUP BY country, orderitemdetails.updated_at, orsc.store_name");
-
         $latest = DB::connection('order')->select("SELECT seller_identifier, max(od.updated_at) as latest, orsc.store_name, orsc.country_code 
         FROM orderitemdetails as od
         JOIN ord_order_seller_credentials as orsc
         where od.seller_identifier = orsc.seller_id
         GROUP BY seller_identifier
         ");
-
-        // $groupby = collect($latest);
-        // $store_name = $groupby->groupBy('store_name');
-        // dd($latest);
 
         foreach ($latest as $key => $value) {
             foreach ($latest as $date) {
@@ -108,7 +96,6 @@ class OrdersDashboardController extends Controller
             }
         }
 
-        // dd($age);
         return view('orders.orderItemDashboard', compact('age'));
     }
 
@@ -132,5 +119,106 @@ class OrdersDashboardController extends Controller
         $time = rtrim($final_date, ' ,') . ' Before';
         $date =  $differnce->days > 1 ? $differnce->days . ' Days' : 'Today';
         return $date . ', ' . $time;
+    }
+
+    public function AwsOrderDashboard()
+    {
+
+        $endTime = Carbon::now();
+        $startTime = Carbon::now()->subDays(5);
+
+        $nitrous_zoho = DB::connection('aws')
+            ->select("SELECT amazon_order_id, purchase_date
+            FROM nitrous_amazon_order_details
+            where zoho_order_id = ''
+            AND purchase_date BETWEEN '$startTime' AND '$endTime'  
+            ORDER BY purchase_date DESC");
+
+        $ckshop = DB::connection('aws')
+            ->select("SELECT amazon_order_id, purchase_date
+            FROM ckshop_amazon_order_details
+            where zoho_order_id = ''
+            AND purchase_date BETWEEN '$startTime' AND '$endTime'  
+            ORDER BY purchase_date DESC");
+
+        $gotech = DB::connection('aws')
+            ->select("SELECT amazon_order_id, purchase_date
+            FROM gotech_amazon_order_details
+            where zoho_order_id = ''
+            AND purchase_date BETWEEN '$startTime' AND '$endTime'  
+            ORDER BY purchase_date DESC");
+
+        $gotech_uae = DB::connection('aws')
+            ->select("SELECT amazon_order_id, purchase_date
+            FROM gotech_uae_amazon_order_details
+            where zoho_order_id = ''
+            AND purchase_date BETWEEN '$startTime' AND '$endTime'  
+            ORDER BY purchase_date DESC");
+
+        $in_mbm = DB::connection('aws')
+            ->select("SELECT amazon_order_id, purchase_date
+            FROM in_mbm_amazon_order_details
+            where zoho_order_id = ''
+            AND purchase_date BETWEEN '$startTime' AND '$endTime'  
+            ORDER BY purchase_date DESC");
+
+        $mahzuz_uae = DB::connection('aws')
+            ->select("SELECT amazon_order_id, purchase_date
+            FROM mahzuz_uae_amazon_order_details
+            where zoho_order_id = ''
+            AND purchase_date BETWEEN '$startTime' AND '$endTime'  
+            ORDER BY purchase_date DESC");
+
+        $mbm = DB::connection('aws')
+            ->select("SELECT amazon_order_id, purchase_date
+            FROM mbm_amazon_order_details
+            where zoho_order_id = ''
+            AND purchase_date BETWEEN '$startTime' AND '$endTime'  
+            ORDER BY purchase_date DESC");
+
+        $mbm_saudi = DB::connection('aws')
+            ->select("SELECT amazon_order_id, purchase_date
+            FROM mbm_saudi_amazon_order_details
+            where zoho_order_id = ''
+            AND purchase_date BETWEEN '$startTime' AND '$endTime'  
+            ORDER BY purchase_date DESC");
+
+        $nitshopp = DB::connection('aws')
+            ->select("SELECT amazon_order_id, purchase_date
+            FROM nitshopp_in_amazon_order_details
+            where zoho_order_id = ''
+            AND purchase_date BETWEEN '$startTime' AND '$endTime'  
+            ORDER BY purchase_date DESC");
+
+        $pram = DB::connection('aws')
+            ->select("SELECT amazon_order_id, purchase_date
+            FROM pram_amazon_order_details
+            where zoho_order_id = ''
+            AND purchase_date BETWEEN '$startTime' AND '$endTime'  
+            ORDER BY purchase_date DESC");
+
+        $pram_uae = DB::connection('aws')
+            ->select("SELECT amazon_order_id, purchase_date
+            FROM pram_uae_amazon_order_details
+            where zoho_order_id = ''
+            AND purchase_date BETWEEN '$startTime' AND '$endTime'  
+            ORDER BY purchase_date DESC");
+
+        $all_store_details = [
+            'Nitrous' => $nitrous_zoho,
+            'CliQKart' => $ckshop,
+            'Gotech' => $gotech,
+            'Gotech_UAE' => $gotech_uae,
+            'MBM_IN' => $in_mbm,
+            'MBM' => $mbm,
+            'Mahzuz_UAE' => $mahzuz_uae,
+            'MBM_Saudi' => $mbm_saudi,
+            'Nitshopp' => $nitshopp,
+            'Pram' => $pram,
+            'Pram_UAE' => $pram_uae
+        ];
+
+        // dd($all_store_details);
+        return view('orders.AwsOrderDashboard', compact('all_store_details'));
     }
 }

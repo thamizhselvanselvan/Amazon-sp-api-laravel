@@ -57,6 +57,7 @@ class ForwarderPacketMappingController extends Controller
         foreach ($csv as $key => $value) {
 
             foreach ($value as $key => $courier) {
+
                 if (strtoupper($courier) == 'SMSA') {
 
                     $smas_key = $key . '_awb';
@@ -67,10 +68,22 @@ class ForwarderPacketMappingController extends Controller
                     $awb['Bombino'] = $value[$bombino_key];
                 }
             }
+
             $forwarder_details[] = $awb;
             $tracking[] =  $value;
         }
-        PacketForwarder::upsert($tracking, 'order_id_awb_no_unique', ['order_id', 'awb_no', 'forwarder_1', 'forwarder_1_awb', 'forwarder_2', 'forwarder_2_awb']);
+        PacketForwarder::upsert(
+            $tracking,
+            'order_id_awb_no_unique',
+            [
+                'order_id',
+                'awb_no',
+                'forwarder_1',
+                'forwarder_1_awb',
+                'forwarder_2',
+                'forwarder_2_awb'
+            ]
+        );
 
         foreach ($forwarder_details as $value) {
             foreach ($value as $key => $awb_no) {

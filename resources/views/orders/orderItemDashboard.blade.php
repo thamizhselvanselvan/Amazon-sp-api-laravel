@@ -36,10 +36,10 @@
     </thead>
     <thead>
         @foreach ($age as $key => $value)
-            <tr>
-                <td>{{$key}}</td>
-                <td>{{ $value }}</td>
-            </tr>
+        <tr>
+            <td>{{$key}}</td>
+            <td>{{ $value }}</td>
+        </tr>
         @endforeach
     </thead>
 </table>
