@@ -58,7 +58,7 @@ class business_product_dump extends Command
                 if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
                     BusinessasinDetails::dispatch([
                         'data' => $records
-                    ])->connection('redis')->delay($delay);
+                    ])->onconnection('redis')->delay($delay);
                 } else {
                     BusinessasinDetails::dispatch(
 

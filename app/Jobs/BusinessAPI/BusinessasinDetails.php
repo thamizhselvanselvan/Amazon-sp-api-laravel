@@ -150,7 +150,7 @@ class BusinessasinDetails implements ShouldQueue
             $data->title = $title;
             $data->url = $url;
             $data->productOverview =  $productOverview;
-            $data->productOverview =  $productVariations;
+            $data->productvariations =  $productVariations;
 
             R::store($data);
 
