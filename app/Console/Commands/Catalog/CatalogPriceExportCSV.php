@@ -26,7 +26,7 @@ class CatalogPriceExportCSV extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:catalog-price-export-csv {--country_code=}';
+    protected $signature = 'mosh:catalog-price-export-csv {priority} {country_code}';
 
     /**
      * The console command description.
@@ -52,8 +52,10 @@ class CatalogPriceExportCSV extends Command
      */
     public function handle()
     {
-        $this->country_code = $this->option('country_code');
-
+        $this->country_code = $this->argument('country_code');
+        // $priority = $this->argument('priority');
+        // Log::alert($priority);
+        // exit;
         $chunk = 10000;
 
         $exportFilePath = "excel/downloads/catalog_price/$this->country_code/" . $this->country_code . "_CatalogPrice";

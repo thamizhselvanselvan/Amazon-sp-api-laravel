@@ -7,6 +7,7 @@ use RedBeanPHP\R;
 use App\Models\BOE;
 use League\Csv\Writer;
 use App\Models\Mws_region;
+use AWS\CRT\HTTP\Response;
 use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
 use App\Models\Aws_credential;
@@ -23,12 +24,12 @@ use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\CatalogApi;
 use App\Services\SP_API\CatalogImport;
+use SellingPartnerApi\Api\OrdersV0Api;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Cache\RateLimiting\Limit;
 use App\Services\Catalog\PriceConversion;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
-use AWS\CRT\HTTP\Response;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use SellingPartnerApi\Api\ProductPricingApi;
 
@@ -182,16 +183,19 @@ class TestController extends Controller
 
     $token = NULL;
     $config = $this->config($seller_id, $country_code, $token);
+
     $marketplace_ids = $this->marketplace_id($country_code);
     $marketplace_ids = [$marketplace_ids];
 
-    $apiInstance = new OrdersApi($config);
+    $apiInstance = new OrdersV0Api($config);
     $startTime = Carbon::now()->subDays(5)->toISOString();
     $createdAfter = $startTime;
-    $max_results_per_page = 100;
+    $max_results_per_page = 1;
 
-    $next_token = NULL;
+    $next_token = 'Nz0eSs51UK+aJqJYLDm0ZAmQazDrhw3C42KwwQyR9e/L6UHaBK1qlqaqZ6TcljqaxqXyQLkGMBs8VhF73Xgy+6+TtJlDlUR56p8S6xVccYWSkB8HgnURuo2teiazVgkyInTAy+XKVmRZBY+oaVuycwQFure81U/CSOnRa9h35auYeATp5zAOhzgKA0lggjg0f2GLmUGyr9UGnxD0RJmrryegoU0IPZxXuDhY0Mlg+b9axYTTEsJ5Nkzyjn+QzAQYMBO/reDY2s8X+G/WxAkd4Fo++pAnAbakpMzWaPWrWIu7EbcPNB+bB6Hzx3wYc8HkVHr6/v7aqUE6gx0WW4bluJnycMd/XRCQ3VVGVsnIXDuwRGD7sGc+vvNIww18kAHE3toQYgtSWoW8GvFjc507ZCZ4zjikEy7+rToAsYN83sHgkdZPXhcRcM4Geo6I62Nv5h8v0uN9IxQ=';
+    // $next_token = iconv("UTF-8", "UTF-8//IGNORE", $next_token);
     $amazon_order_ids = NULL;
+    // $next_token = NULL;
 
     $order = $apiInstance->getOrders(
       $marketplace_ids,
@@ -206,6 +210,7 @@ class TestController extends Controller
       $seller_order_id = null,
       $max_results_per_page,
       $easy_ship_shipment_statuses = null,
+      $electronic_invoice_statuses = null,
       $next_token,
       $amazon_order_ids,
       $actual_fulfillment_supply_source_id = null,
@@ -224,7 +229,7 @@ class TestController extends Controller
     $marketplace_ids = $this->marketplace_id($country_code);
     $marketplace_ids = [$marketplace_ids];
 
-    $apiInstance = new OrdersApi($config);
+    $apiInstance = new OrdersV0Api($config);
     $startTime = Carbon::now()->subDays(30)->toISOString();
     $createdAfter = $startTime;
     $max_results_per_page = 100;

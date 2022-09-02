@@ -23,7 +23,7 @@ class catalogExportCSV extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:catalog-export-csv {country_code}';
+    protected $signature = 'mosh:catalog-export-csv {priority} {country_code}';
 
     /**
      * The console command description.
@@ -54,11 +54,14 @@ class catalogExportCSV extends Command
         $this->remender = $total_csv / $chunk;
         $this->country_code = $this->argument('country_code');
 
+        $priority = $this->argument('priority');
+
         $header = [
             'asin',
             'source',
             'dimensions',
-            'images',
+            'image1',
+            'image2',
             'product_types',
             'brand',
             'color',
@@ -69,90 +72,89 @@ class catalogExportCSV extends Command
             'manufacturer'
         ];
 
-        $modal_table = table_model_create(country_code: $this->country_code, model: 'Catalog', table_name: 'catalognew');
+        $asin_desti = 'asin_destination_' . strtolower($this->country_code) . 's';
+        $asin_cat = 'catalognew' . strtolower($this->country_code) . 's';
 
-        $modal_table->orderBy('id')->select($header)->chunk($chunk, function ($result) use ($header) {
+        $table_name = table_model_create(country_code: $this->country_code, model: 'Asin_destination', table_name: 'asin_destination_');
 
-            if ($this->count == 1) {
+        $table_name->where('priority', $priority)
+            ->join($asin_cat, $asin_desti . '.asin', '=', $asin_cat . '.asin')
+            ->chunk($chunk, function ($result) use ($header) {
 
-                $csv_header = [
-                    'asin',
-                    'source',
-                    'weight',
-                    'images1',
-                    'images2',
-                    'product_types',
-                    'brand',
-                    'color',
-                    'item_classifications',
-                    'item_name',
-                    'style',
-                    'website_display_group',
-                    'manufacturer'
-                ];
+                if ($this->count == 1) {
+                    $csv_header = [
+                        'Asin',
+                        'Source',
+                        'Weight',
+                        'Images_1',
+                        'Images_2',
+                        'Product_types',
+                        'Brand',
+                        'Color',
+                        'Item_classifications',
+                        'Item_name',
+                        'Style',
+                        'Website_display_group',
+                        'Manufacturer'
+                    ];
 
-                $this->file_path = "excel/downloads/catalog/" . $this->country_code . "/Catalog-export" . $this->country_code . $this->offset . ".csv";
-                $this->csv_files[] = "Catalog-export" . $this->country_code . $this->offset . ".csv";
+                    $this->file_path = "excel/downloads/catalog/" . $this->country_code . "/Catalog-export" . $this->country_code . $this->offset . ".csv";
+                    $this->csv_files[] = "Catalog-export" . $this->country_code . $this->offset . ".csv";
 
-                if (!Storage::exists($this->file_path)) {
-                    Storage::put($this->file_path, '');
+                    if (!Storage::exists($this->file_path)) {
+                        Storage::put($this->file_path, '');
+                    }
+
+                    $this->writer = Writer::createFromPath(Storage::path($this->file_path, 'w'));
+                    $this->writer->insertOne($csv_header);
                 }
 
-                $this->writer = Writer::createFromPath(Storage::path($this->file_path, 'w'));
+                foreach ($result as $value) {
+                    $weight = '0.5';
+                    $product_type  = '';
+                    $images1  = '';
+                    $images2  = '';
 
-                $this->writer->insertOne($header);
-            }
+                    if (isset(json_decode($value->dimensions)[0]->package->weight->value)) {
 
-            foreach ($result as $value) {
+                        $weight = json_decode($value->dimensions)[0]->package->weight->value;
+                    }
 
-                $weight = '0.5';
-                $product_type  = '';
-                $images1  = '';
-                $images2  = '';
-                Log::alert(($value));
+                    if (isset(json_decode($value->product_types)[0]->productType)) {
+                        $product_type = json_decode($value->product_types)[0]->productType;
+                    }
+                    if (isset(json_decode($value->images)[0]->images[0]->link)) {
+                        $images1 = json_decode($value->images)[0]->images[0]->link;
+                    }
+                    if (isset(json_decode($value->images)[0]->images[1]->link)) {
+                        $images2 = json_decode($value->images)[0]->images[1]->link;
+                    }
 
-                if (isset(json_decode($value->dimensions)[0]->package->weight->value)) {
-
-                    $weight = json_decode($value->dimensions)[0]->package->weight->value;
+                    $records[] = [
+                        'asin' => $value->asin,
+                        'source' => $value->source,
+                        'weight' => $weight,
+                        'images1' => $images1,
+                        'images2' => $images2,
+                        'product_types' => $product_type,
+                        'brand' => $value->brand,
+                        'color' => $value->color,
+                        'item_classifications' => $value->item_classifications,
+                        'item_name' => $value->item_name,
+                        'style' => $value->style,
+                        'website_display_group' => $value->website_display_group,
+                        'manufacturer' => $value->manufacture,
+                    ];
                 }
+                $this->writer->insertAll($records);
 
-                if (isset(json_decode($value->product_types)[0]->productType)) {
-                    $product_type = json_decode($value->product_types)[0]->productType;
+                if ($this->remender == $this->count) {
+                    ++$this->offset;
+                    $this->count = 1;
+                } else {
+                    ++$this->count;
                 }
-                if (isset(json_decode($value->images)[0]->images[0]->link)) {
-                    $images1 = json_decode($value->images)[0]->images[0]->link;
-                }
-                if (isset(json_decode($value->images)[0]->images[1]->link)) {
-                    $images2 = json_decode($value->images)[0]->images[1]->link;
-                }
-
-                $records[] = [
-                    'asin' => $value->asin,
-                    'source' => $value->source,
-                    'weight' => $weight,
-                    'images1' => $images1,
-                    'images2' => $images2,
-                    'product_types' => $product_type,
-                    'brand' => $value->brand,
-                    'color' => $value->color,
-                    'item_classifications' => $value->item_classifications,
-                    'item_name' => $value->item_name,
-                    'style' => $value->style,
-                    'website_display_group' => $value->website_display_group,
-                    'manufacturer' => $value->manufacture,
-                ];
-            }
-            $this->writer->insertAll($records);
-
-            if ($this->remender == $this->count) {
-
-                ++$this->offset;
-                $this->count = 1;
-            } else {
-
-                ++$this->count;
-            }
-        });
+            });
 
         $zip = new ZipArchive;
         $path = "excel/downloads/catalog/" . $this->country_code . "/zip/Catalog" . $this->country_code . ".zip";
@@ -161,7 +163,6 @@ class catalogExportCSV extends Command
         if (!Storage::exists($path)) {
             Storage::put($path, '');
         }
-
         if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
             foreach ($this->csv_files as $key => $value) {
                 $path = Storage::path('excel/downloads/catalog/' . $this->country_code . '/' . $value);

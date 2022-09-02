@@ -36,17 +36,14 @@ class CatalogProductController extends Controller
         if ($request->ajax()) {
             $data = '';
             $data = DB::connection('catalog')->select("SELECT * FROM $Tables ");
-
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->editColumn('asin', function ($row) {
-
-                    return '<a href="https://www.amazon.com/dp/' . $row->asin . '" target="_blank">' . $row->asin . '</a>';
+                 return '<a href="https://www.amazon.com/dp/' . $row->asin . '" target="_blank">' . $row->asin . '</a>';
                 })
                 ->editColumn('item_dimensions', function ($row) {
                     $dimension = 'NA';
                     $data = json_decode($row->item_dimensions);
-
                     if (isset($data->Height)) {
                         $dimension = '<p class="m-0 p-0">Height: ' . $data->Height->value . ' ' . $data->Height->Units . '</p>';
                     }
@@ -68,7 +65,6 @@ class CatalogProductController extends Controller
                     return $amount;
                 })
                 ->addColumn('weight', function ($row) {
-
                     $data = json_decode($row->item_dimensions);
                     if (isset($data->Weight)) {
                         $dimension = '<p class="m-0 p-0">Weight: ' . $data->Weight->value . ' ' . $data->Weight->Units . '</p>';
@@ -80,61 +76,21 @@ class CatalogProductController extends Controller
                 ->rawColumns(['amount', 'item_dimensions', 'weight', 'asin'])
                 ->make(true);
         }
-
         return view('Catalog.product.index', compact('sources'));
     }
 
     public function Amazon(Request $request)
     {
-        // $country_code = $request->country_code;
-        // // $model_name = table_model_create(country_code:$country_code, model:'Asin_source', table_name:'asin_source_');
-        // // $asins = $model_name->where('status', 0)->get(['asin', 'user_id']);
-        // $asins = AsinSource::where('status', 0)->get(['asin', 'source', 'user_id']);
-
-        // $redbean = new NewCatalog();
-        // $redbean->RedBeanConnection();
-        // $NewCatalogs = R::dispense('catalognews');
-        // $NewCatalogs->asin = '';
-        // R::store($NewCatalogs);
-
-        // $count = 0;
-        // $asin_source = [];
-        // $class = 'catalog\\AmazonCatalogImport';
-        // foreach ($asins as $asin) {
-
-        //     if ($count == 10) {
-        //         jobDispatchFunc($class, $asin_source, 'catalog');
-        //         $asin_source = [];
-        //         $count = 0;
-        //     }
-        //     $asin_source[] = [
-        //         'asin' => $asin->asin,
-        //         // 'source' => $country_code,
-        //         'source' => $asin->source,
-        //         'seller_id' => $asin->user_id
-        //     ];
-        //     $count++;
-        // }
-        // jobDispatchFunc($class, $asin_source, 'catalog');
         commandExecFunc("mosh:catalog-amazon-import");
         return redirect()->intended('/catalog/product');
     }
 
     public function ExportCatalog(Request $request)
     {
-        $country_code = $request->country_code;
-        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-
-            $base_path = base_path();
-            $command = "cd $base_path && php artisan mosh:catalog-export-csv $country_code> /dev/null &";
-            exec($command);
-
-            Log::warning("Export catalog command executed production  !!!");
-        } else {
-
-            Log::warning("Export catalog command executed local !");
-            Artisan::call('mosh:catalog-export-csv'.' '. $country_code);
-        }
+        $priority = $request->priority;
+        $country_code = $request->source;
+        commandExecFunc("mosh:catalog-export-csv ${priority} ${country_code} ");
+        
         return redirect()->intended('/catalog/product');
     }
 
@@ -172,8 +128,9 @@ class CatalogProductController extends Controller
 
     public function PriceExport(Request $request)
     {
-        $country_code =  $request->country_code;
-        commandExecFunc("mosh:catalog-price-export-csv --country_code=${country_code}");
+        $priority = $request->priority;
+        $country_code = $request->source;
+        commandExecFunc("mosh:catalog-price-export-csv ${priority} ${country_code}");
 
         return redirect('/catalog/product')->with("success", "Catalog Price is Importing");
     }

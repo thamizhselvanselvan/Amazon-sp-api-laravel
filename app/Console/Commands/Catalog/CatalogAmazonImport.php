@@ -39,10 +39,8 @@ class CatalogAmazonImport extends Command
      */
     public function handle()
     {
-        Log::info('mosh:catalog-amazon-import is woking every hour');
-
-        $sources = ['in', 'us'];
-        $limit_array = ['in' => 700, 'us' => 560];
+        $sources = ['us', 'in'];
+        $limit_array = ['in' => 600, 'us' => 500];
 
         foreach ($sources as $source) {
 
@@ -56,13 +54,13 @@ class CatalogAmazonImport extends Command
             $catalog_table_name = 'catalognew' . $source . 's';
             $current_data = date('H:i:s');
             if ($current_data >= '01:00:00' && $current_data <= '01:05:00') {
-                Log::info('UnAvaliable catalog asin dump');
+                // Log::info('UnAvaliable catalog asin dump');
 
-                $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id
-                    FROM $asin_table_name as source
-                    LEFT JOIN $catalog_table_name as cat
-                    ON cat.asin = source.asin
-                    WHERE cat.seller_id IS NULL ");
+                // $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id
+                //     FROM $asin_table_name as source
+                //     LEFT JOIN $catalog_table_name as cat
+                //     ON cat.asin = source.asin
+                //     WHERE cat.seller_id IS NULL ");
             } else {
 
                 $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id 

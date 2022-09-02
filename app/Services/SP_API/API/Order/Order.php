@@ -66,6 +66,7 @@ class Order
                 $seller_order_id = null,
                 $max_results_per_page,
                 $easy_ship_shipment_statuses = null,
+                $electronic_invoice_statuses = null,
                 $next_token,
                 $amazon_order_ids,
                 $actual_fulfillment_supply_source_id = null,
