@@ -4,7 +4,6 @@
 @section('content_header')
 
 <div class="row">
-
     <h1 class="m-0 text-dark">Amazon Data</h1>
     <div class="col d-flex justify-content-end">
 
@@ -168,9 +167,7 @@
 
     @section('content')
     @csrf
-
     <div class="row">
-
         <div class="col">
 
             <div class="alert_display">
@@ -207,7 +204,6 @@
                         <th>Dimension</th>
                         <th>Weight</th>
                         <th>Price</th>
-
                     </tr>
                 </thead>
                 <tbody>
@@ -276,37 +272,12 @@
         }
 
         $(document).ready(function() {
-
             $('#country').change(function() {
                 document.getElementById('countrymsg').innerHTML = '';
             });
         });
 
-        // $('#export_catalog_price').on('click', function() {
-        //     let country_code = $('#country').val();
-        //     if (country_code == 'NULL' || country_code == 'AE') {
-        //         var id = document.getElementById('country');
-        //         var text = 'Country must filled out';
-        //         document.getElementById('countrymsg').innerHTML = text;
-        //         document.getElementById('countrymsg').style.color = "red";
-        //     } else {
-        //         $.ajax({
-        //             url: "/catalog/price/export",
-        //             type: "post",
-        //             data: {
-        //                 "_token": "{{ csrf_token() }}",
-        //                 "_method": 'POST',
-        //                 "country_code": country_code
-        //             },
-        //             success: function(response) {
-        //                 console.log(response);
-        //             },
-        //         });
-        //     }
-        // });
-
         $('#catalogdownload').click(function() {
-
             $.ajax({
                 url: "/catalog/get-file",
                 method: "GET",
@@ -320,8 +291,7 @@
                     $.each(response, function(index, response) {
                         let file_name = Object.keys(response)[0];
                         let file_time = response[file_name];
-                        // alert(file_time);
-
+                      
                         files += "<li class='p-0 m-0'>";
                         files += "<a href='/catalog/download/csv-file/" + file_name +
                             "' class='p-0 m-0'> Catalog " + file_name + "</a> ";
@@ -335,7 +305,6 @@
 
         $('#download_catalog_price').click(function() {
             $.ajax({
-                // url: "/catalog/price/file",
                 url: "/catalog/get-file",
                 data: {
                     "method": "GET",
@@ -348,8 +317,6 @@
                     $.each(result, function(index, result) {
                         let file_name = Object.keys(result)[0];
                         let file_time = result[file_name];
-                        // alert(file_time);
-
                         files += "<li class='p-0 m-0'>";
                         files += "<a href='/catalog/download/price/" + file_name +
                             "' class='p-0 m-0'> Catalog Price " + file_name + "</a> ";
