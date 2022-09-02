@@ -73,7 +73,7 @@ class CatalogPriceImport extends Command
 
             $catalog_modal = table_model_create(country_code: $country_code, model: 'Catalog', table_name: 'catalognew');
 
-            $destination_table = "asin_destination_${country_code_lr}_s";
+            $destination_table = "asin_destination_${country_code_lr}s";
 
             $header = [
                 "catalognew${country_code_lr}s.asin",

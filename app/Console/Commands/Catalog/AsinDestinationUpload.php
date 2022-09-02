@@ -47,7 +47,7 @@ class AsinDestinationUpload extends Command
         $user_id = $this->argument('user_id');
         $priority = $this->argument('priority');
         $destinations = explode(',', $this->option('destination'));
-       
+
         $path = 'AsinDestination/asin.csv';
         $asins = Reader::createFromPath(Storage::path($path), 'r');
         $asins->setHeaderOffset(0);
@@ -57,35 +57,35 @@ class AsinDestinationUpload extends Command
         $product = [];
         $product_lowest_price = [];
         $count = 0;
-        foreach($destinations as $this->destination)
-        {
+        foreach ($destinations as $this->destination) {
             foreach ($asins as  $asin_details) {
                 $asin = $asin_details['ASIN'];
-                
+
                 $Asin_record[] = [
                     'asin'  => $asin,
                     'user_id'   => $user_id,
                     'priority' => $priority,
+                    'cyclic' => 0
                 ];
-    
+
                 $product[] = [
                     'seller_id' => $source[$this->destination],
                     'active' => 1,
                     'asin1' => $asin,
                 ];
-    
+
                 $product_lowest_price[] = [
                     'asin' => $asin,
                     'import_type' => 'Seller',
                     'priority'  => $priority,
                 ];
-    
+
                 if ($count == 999) {
-                    
-                    $table_name = table_model_create(country_code:$this->destination, model:'Asin_destination', table_name:'asin_destination_');
+
+                    $table_name = table_model_create(country_code: $this->destination, model: 'Asin_destination', table_name: 'asin_destination_');
                     $table_name->upsert($Asin_record, ['user_asin_unique'], ['asin', 'priority']);
                     $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $this->destination);
-    
+
                     $Asin_record = [];
                     $product = [];
                     $product_lowest_price = [];
@@ -93,10 +93,9 @@ class AsinDestinationUpload extends Command
                 }
                 $count++;
             }
-            $table_name = table_model_create(country_code:$this->destination, model:'Asin_destination', table_name:'asin_destination_');
+            $table_name = table_model_create(country_code: $this->destination, model: 'Asin_destination', table_name: 'asin_destination_');
             $table_name->upsert($Asin_record, ['user_asin_unique'], ['asin', 'priority']);
             $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $this->destination);
         }
-
     }
 }
