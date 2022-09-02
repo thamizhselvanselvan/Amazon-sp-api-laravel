@@ -21,6 +21,7 @@ class CatalogPriceExportCSV extends Command
     private $headers_default;
     private $totalFile = [];
     private $country_code;
+    private $priority;
     /**
      * The name and signature of the console command.
      *
@@ -53,12 +54,10 @@ class CatalogPriceExportCSV extends Command
     public function handle()
     {
         $this->country_code = $this->argument('country_code');
-        // $priority = $this->argument('priority');
-        // Log::alert($priority);
-        // exit;
-        $chunk = 10000;
+        $this->priority = $this->argument('priority');
 
-        $exportFilePath = "excel/downloads/catalog_price/$this->country_code/" . $this->country_code . "_CatalogPrice";
+        $chunk = 10000;
+        $exportFilePath = "excel/downloads/catalog_price/$this->country_code/Priority".$this->priority.'/' . $this->country_code . "_CatalogPrice";
         $deleteFilePath = "app/excel/downloads/catalog_price/" . $this->country_code;
 
         // if (file_exists(storage_path($deleteFilePath))) {
@@ -73,9 +72,7 @@ class CatalogPriceExportCSV extends Command
 
         $record_per_csv = 1000000;
         $chunk = 100000;
-
         $this->check = $record_per_csv / $chunk;
-
         if ($this->country_code == 'IN') {
 
             $headers = ['asin', 'available', 'in_price', 'weight', 'ind_to_uae', 'ind_to_sg', 'ind_to_sa', 'price_updated_at'];
@@ -96,7 +93,7 @@ class CatalogPriceExportCSV extends Command
             });
         }
 
-        $path = "excel/downloads/catalog_price/" . $this->country_code;
+        $path = "excel/downloads/catalog_price/" . $this->country_code.'/Priority'.$this->priority;
         $path = Storage::path($path);
         $files = (scandir($path));
 
@@ -111,16 +108,15 @@ class CatalogPriceExportCSV extends Command
         }
 
         $zip = new ZipArchive;
-        $path = "excel/downloads/catalog_price/" . $this->country_code . "/zip/" . $this->country_code . "_CatalogPrice.zip";
+        $path = "excel/downloads/catalog_price/" . $this->country_code. '/Priority'.$this->priority.'/' . "/zip/" . $this->country_code . "_CatalogPrice.zip";
         $file_path = Storage::path($path);
-
         if (!Storage::exists($path)) {
             Storage::put($path, '');
         }
-
         if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
             foreach ($this->totalFile as $key => $value) {
-                $path = Storage::path('excel/downloads/catalog_price/' . $this->country_code . '/' . $value);
+                $path = Storage::path('excel/downloads/catalog_price/' . $this->country_code . '/Priority'.$this->priority. '/' . $value);
+                Log::alert($path);
                 $relativeNameInZipFile = basename($path);
                 $zip->addFile($path, $relativeNameInZipFile);
             }
@@ -143,7 +139,6 @@ class CatalogPriceExportCSV extends Command
         $records = array_map(function ($datas) {
             return (array) $datas;
         }, $records);
-
         $this->writer->insertall($records);
 
         if ($this->check == $this->count) {
@@ -152,8 +147,6 @@ class CatalogPriceExportCSV extends Command
         } else {
             ++$this->count;
         }
-
         return true;
-        //
     }
 }
