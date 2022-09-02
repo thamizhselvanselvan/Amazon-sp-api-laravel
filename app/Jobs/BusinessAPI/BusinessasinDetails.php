@@ -127,10 +127,10 @@ class BusinessasinDetails implements ShouldQueue
                 $productVariations = json_encode($data->productVariations);
             }
             $end_time = endTime($start_time);
-             Log::alert("Before  Query - $end_time");
+            //  Log::alert("Before  Query - $end_time");
            
 
-            $data = R::dispense('uscatalog');
+            $data = R::dispense('usacatalog');
             $data->asin = $asin;
             $data->asin_type = $asin_type;
             $data->signedProductid_ =  $signedProductId;
@@ -155,10 +155,10 @@ class BusinessasinDetails implements ShouldQueue
             R::store($data);
 
             $end_time = endTime($start_time);
-            //  Log::alert("After Update Query - $end_time");
+            //   Log::alert("After Update Query - $end_time");
             $counter++;
         }
         $finished_loop = endTime($start_time);
-        // Log::alert("FInal Query Time $finished_loop");
+        Log::info("FInal Query Time and finished at $finished_loop");
     }
 }

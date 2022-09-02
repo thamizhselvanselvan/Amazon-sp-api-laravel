@@ -54,8 +54,6 @@ class business_product_dump extends Command
              ->limit(10)->get()->pluck('asin');
             // ->chunk(100, function ($records) use ($delay, $start_time) {
 
-Log::alert($records);
-
 
                 if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
                     BusinessasinDetails::dispatch([
@@ -75,6 +73,6 @@ Log::alert($records);
             // });
         $end_time = endTime($start_time);
         // Log::warning("After 100 process Select Query - $end_time");
-        Log::info($delay);
+        // Log::info($delay);
     }
 }
