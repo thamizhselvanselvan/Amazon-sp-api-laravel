@@ -42,6 +42,8 @@ class BusinessasinDetails implements ShouldQueue
         $password = config('database.connections.business.password');
 
         R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+
+        
         $start_time = startTime();
         $end_time = endTime($start_time);
         $rec =   $this->payload['data'];
@@ -60,7 +62,7 @@ class BusinessasinDetails implements ShouldQueue
 
             if (property_exists($data, "errors") && $data->errors[0]->code == "PRODUCT_NOT_FOUND") {
 
-                $asin = 'Not Found';
+                $asin = $asin;
                 $asin_type = 'Not Found';
                 $signedProductId  = 'Not Found';
                 $offers = 'Not Found';
@@ -125,7 +127,7 @@ class BusinessasinDetails implements ShouldQueue
                 $productVariations = json_encode($data->productVariations);
             }
             $end_time = endTime($start_time);
-            // Log::alert("Before Update Query - $end_time");
+             Log::alert("Before  Query - $end_time");
             // DB::connection('mongodb')->table('product_details')->where('asin', $asin)->update(
             //     [
             //         'asin' => $asin,
