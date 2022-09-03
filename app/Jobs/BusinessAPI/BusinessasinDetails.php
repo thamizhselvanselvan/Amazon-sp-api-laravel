@@ -2,6 +2,7 @@
 
 namespace App\Jobs\BusinessAPI;
 
+use App\Models\Business\Catalog;
 use RedBeanPHP\R;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\DB;
@@ -35,15 +36,15 @@ class BusinessasinDetails implements ShouldQueue
      */
     public function handle()
     {
-        $host = config('database.connections.business.host');
-        $dbname = config('database.connections.business.database');
-        $port = config('database.connections.business.port');
-        $username = config('database.connections.business.username');
-        $password = config('database.connections.business.password');
+        // $host = config('database.connections.business.host');
+        // $dbname = config('database.connections.business.database');
+        // $port = config('database.connections.business.port');
+        // $username = config('database.connections.business.username');
+        // $password = config('database.connections.business.password');
 
-        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+        // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
 
-        
+
         $start_time = startTime();
         $end_time = endTime($start_time);
         $rec =   $this->payload['data'];
@@ -51,14 +52,14 @@ class BusinessasinDetails implements ShouldQueue
         foreach ($rec as $val) {
             $fetched[] = ($val);
         }
-    
+
         $ApiCall = new ProductsRequest();
         $counter = 1;
         foreach ($fetched as $data) {
             $asin = $data;
 
             $data = $ApiCall->getASINpr($asin);
-             Log::notice([$data]);
+            Log::notice([$data]);
 
             if (property_exists($data, "errors") && $data->errors[0]->code == "PRODUCT_NOT_FOUND") {
 
@@ -86,7 +87,7 @@ class BusinessasinDetails implements ShouldQueue
             } else {
 
                 $asin = ($data->asin);
-              
+
                 $asin_type = ($data->asinType);
                 $signedProductId  = ($data->signedProductId);
                 if ($data->includedDataTypes->OFFERS == []) {
@@ -128,31 +129,53 @@ class BusinessasinDetails implements ShouldQueue
             }
             $end_time = endTime($start_time);
             //  Log::alert("Before  Query - $end_time");
-           
 
-            $data = R::dispense('usacatalog');
-            $data->asin = $asin;
-            $data->asin_type = $asin_type;
-            $data->signedProductid_ =  $signedProductId;
-            $data->availability = $availability;
-            $data->buyingGuidance = $buyingGuidance;
-            $data->fulfillmentType =  $fulfillmentType;
-            $data->merchant   =  $merchant;
-            $data->offerid_ =  $offerId;
-            $data->price =   $price;
-            $data->listPrice = $listPrice;
-            $data->productCondition = $productCondition;
-            $data->condition =   $condition;
-            $data->quantityLimits =  $quantityLimits;
-            $data->deliveryInformation =  $deliveryInformation;
-            $data->features =     $features;
-            $data->taxonomies = $taxonomies;
-            $data->title = $title;
-            $data->url = $url;
-            $data->productOverview =  $productOverview;
-            $data->productvariations =  $productVariations;
 
-            R::store($data);
+            // $data = R::dispense('usacatalog');
+            // $data->asin = $asin;
+            // $data->asin_type = $asin_type;
+            // $data->signedProductid_ =  $signedProductId;
+            // $data->availability = $availability;
+            // $data->buyingGuidance = $buyingGuidance;
+            // $data->fulfillmentType =  $fulfillmentType;
+            // $data->merchant   =  $merchant;
+            // $data->offerid_ =  $offerId;
+            // $data->price =   $price;
+            // $data->listPrice = $listPrice;
+            // $data->productCondition = $productCondition;
+            // $data->condition =   $condition;
+            // $data->quantityLimits =  $quantityLimits;
+            // $data->deliveryInformation =  $deliveryInformation;
+            // $data->features =     $features;
+            // $data->taxonomies = $taxonomies;
+            // $data->title = $title;
+            // $data->url = $url;
+            // $data->productOverview =  $productOverview;
+            // $data->productvariations =  $productVariations;
+
+            // R::store($data);
+            DB::connection('business')->table('catalog_business')->insert([
+                'asin' =>      $asin,
+                'asin_type' => $asin_type,
+                // 'signedProductid' =>$signedProductId,
+                'availability' => $availability,
+                'buyingGuidance' => $buyingGuidance,
+                'fulfillmentType' =>  $fulfillmentType,
+                'merchant' => $merchant,
+                // 'offerid' =>  $offerId,
+                'price' =>      $price,
+                'listPrice' =>   $listPrice,
+                'productCondition' =>  $productCondition,
+                'condition' => $condition,
+                // 'quantityLimits' =>  $quantityLimits,
+                'deliveryInformation' =>  $deliveryInformation,
+                // 'features' =>$features,
+                // 'taxonomies' =>$taxonomies,
+                'title' =>    $title,
+                'url' =>    $url,
+                // 'productOverview' =>   $productOverview,
+                // 'productvariations' =>   $productVariations,
+            ]);
 
             $end_time = endTime($start_time);
             //   Log::alert("After Update Query - $end_time");
