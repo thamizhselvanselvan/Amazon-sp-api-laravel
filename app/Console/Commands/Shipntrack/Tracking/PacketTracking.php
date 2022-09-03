@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Shipntrack\Tracking;
 
+use App\Models\ShipNTrack\Packet\PacketForwarder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -38,7 +39,7 @@ class PacketTracking extends Command
      */
     public function handle()
     {
-
+        PacketForwarder::get();
 
 
 

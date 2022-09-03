@@ -334,17 +334,17 @@ return [
                     'can' =>  ['Admin'],
                     'submenu' => [
                         [
-                        'text'  => 'Asin Source',
-                        'url'  => 'catalog/asin-source',
-                        'icon' => 'far fa-fw fa-file',
-                        'can' =>  ['Admin']
+                            'text'  => 'Asin Source',
+                            'url'  => 'catalog/asin-source',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin']
                         ],
 
                         [
-                        'text'  => 'Asin Destination',
-                        'url'  => 'catalog/asin-destination',
-                        'icon' => 'far fa-fw fa-file',
-                        'can' =>  ['Admin']
+                            'text'  => 'Asin Destination',
+                            'url'  => 'catalog/asin-destination',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin']
                         ],
                     ],
                 ],
@@ -550,17 +550,24 @@ return [
                     'submenu'   => [
                         [
                             'text' => 'Order Details',
-                        'url' => 'orders/dashboard',
-                        'can' => ['Admin'],
-                        'icon' => 'fa fa-dashboard',
+                            'url' => 'orders/dashboard',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-dashboard',
                         ],
                         [
                             'text' => 'Order Item Details',
-                        'url' => 'orders/item/dashboard',
-                        'can' => ['Admin'],
-                        'icon' => 'fa fa-dashboard',
+                            'url' => 'orders/item/dashboard',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-dashboard',
                         ],
                     ],
+                ],
+                [
+                    'text' => 'AWS Order Dashboard',
+                    'can' => ['Admin'],
+                    'icon' => 'fa fa-dashboard',
+                    'url' => "orders/aws/dashboard",
+
                 ],
             ],
         ],
@@ -648,7 +655,7 @@ return [
                         ],
                     ],
                 ],
-                
+
 
             ]
         ],
