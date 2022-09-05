@@ -54,14 +54,22 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 // use ConfigTrait;
 
 Route::get('data', function (){
-    $today = date('H:i:s');
-    // echo $today;
-    if($today >= '19:23:00' && $today <= '19:24:00')
-    {
-        echo 'working';
-    }
-    
+    $value = [];
+   $datas = ['B00014DZL6',
+   'B00014E9W0',
+   'B01DBQIIGC',
+   'B01DGIKD1I',
+   'B01DNYGMZ6',
+   'B01DPEGT4S',
+];
+foreach($datas as $data){
+    $value [] = $data;
+
+}
+
+po($value);
 });
+
 // route::get('newcatalog/{asin}', function($asin){
 
 
@@ -94,74 +102,44 @@ Route::get('data', function (){
 //         // po($apiInstance);
 //         // exit;
 //         // $marketplace_id = 'A21TJRUUN4KGV';
-//         $marketplace_id = 'ATVPDKIKX0DER';
+//         $marketplace_id = ['ATVPDKIKX0DER'];
 //         // $asin = 'B00000JHQ0';
-
-//         $incdata= ['attributes','dimensions', 'identifiers', 'images', 'productTypes', 'relationships', 'salesRanks', 'summaries'];
+//         $asins = [
+//             'B00014DZL6',
+//             'B00014E9W0',
+//             'B000WA6KFW',
+//             'B000WH10SW',
+//             'B000WNAP6O',
+//             'B000XAL2F4',
+//             'B000ZHJS0G',
+//         ];
+//         $identifiers_type = 'ASIN';
+        
+//         $includedData= ['attributes','dimensions', 'images', 'productTypes', 'summaries'];
 //         echo"<pre>";
 //         try {
-//             $result = $apiInstance->getCatalogItem($asin, $marketplace_id,$incdata);
+//             $data = [];
+//             $result = $apiInstance->searchCatalogItems ($marketplace_id, $asins, $identifiers_type, $includedData);
+//             $result = json_decode(json_encode($result));
 //             // po($result);
 //             // exit;
-//             $result = json_decode(json_encode($result));
-//             // $NewCatalogs = R::dispense('catalogussnew');
-//                 foreach($result as $key => $value)
+//             foreach($result->items as $key1 => $value)
+//             {   
+//                 foreach($value as $key2 => $value1)
 //                 {
-//                     if($key == 'attributes')
+//                     if($key2 == 'summaries')
 //                     {
-//                         foreach($value as $key1 => $value1)
+//                         foreach($value1[0] as $key3 => $value2)
 //                         {
-//                             // $key3 [] = $key1;
-//                             // $ignore_key =['is_expiration_dated_product', 'generic_keyword','externally_assigned_product_identifier', 'recommended_uses_for_product', 'battery', 'supplier_declared_dg_hz_regulation', 'num_batteries', 'batteries_required', 'product_site_launch_date', 'vendor_return_serial_number_required', 'batteries_included', 'product_expiration_type', 'cpsia_cautionary_statement', 'fc_shelf_life', 'warranty_description'];
-//                             // $result = array_diff($key3, $ignore_key);
-//                             // $NewCatalogs->$key1 = returnType($value1);
-//                             // echo $key.' sub_key_1 -> '.$key1;
-                            
-//                             // $data = $this->returnType($value1);
-//                             // po($data);
-//                             // echo "<hr>";
-    
-                            
-//                         }
-//                         // po($result);
-                        
-//                     }
-//                     elseif($key == 'summaries')
-//                     {
-//                         foreach((array)$value[0] as $key2 => $value2)
-//                         {
-//                             // $key2 = str_replace('marketplaceId', 'marketplace', $key2);
-//                             // $NewCatalogs->$key2 = returnType($value2);
-                                
-//                             // echo $key.' sub_key_2 -> '.$key2;
-//                             $queue [] = [
-//                                 $key2 => returnType($value2),
-//                             ];
-//                             // $data = $this->returnType($value2);
-//                             // po($data);
-//                             // echo "<hr>";
+//                             $data[$key1][$key3] = returnType($value2);
 //                         }
 //                     }
 //                     else{
-//                         // $NewCatalogs->$key = returnType($value);
-//                         // echo $key;
-//                         $queue [] = [
-//                             $key => returnType($value),
-//                         ];
-//                         // $data = $this->returnType($value);
-//                         // po($data);
-//                         // echo "<hr>";
+//                         $data[$key1][$key2] = returnType($value1);
 //                     }
-//                 }
-//                 foreach($queue as $data){
-//                     foreach($data as $key3 => $cat){
-
-//                         echo $key3;
-//                         po($cat);
-//                         echo '<hr>';
-//                     }
-//                 }
-//             // R::store($NewCatalogs);      
+//                 }  
+//             }
+//             po($data);
 //         } catch (Exception $e) {
 //             echo $e;
 //             // echo 'Exception when calling CatalogItemsV20220401Api->getCatalogItem: ', $e->getMessage(), PHP_EOL;
@@ -239,282 +217,287 @@ Route::get('TrackingApi', function () {
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => 'GET',
         CURLOPT_POSTFIELDS => "<?xml version='1.0' encoding='UTF-8'?>
-<AmazonTrackingRequest xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' 
-xsi:noNamespaceSchemaLocation='AmazonTrackingRequest.xsd'>
+<AmazonTrackingRequest xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xsi:noNamespaceSchemaLocation='AmazonTrackingRequest.xsd'>
 </AmazonTrackingRequest>",
-        CURLOPT_HTTPHEADER => array(
-            'Content-Type: text/plain',
+CURLOPT_HTTPHEADER => array(
+'Content-Type: text/plain',
 
-        ),
-    ));
+),
+));
 
-    $response = curl_exec($curl);
+$response = curl_exec($curl);
 
-    curl_close($curl);
-    return $response;
+curl_close($curl);
+return $response;
 });
 
 Route::get('channel', function () {
-    return view('checkChannel');
+return view('checkChannel');
 });
 
 Route::get('test', function (ReportWeekly $report_weekly) {
 
-    $host       = "na.business-api.amazon.com";
-    $accessKey  = 'AKIARVGPJZCJHLW5MH63';
-    $secretKey  = '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';
-    $region     = "us-east-1";
-    $service    = "execute-api";
-    $requestUrl = "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
-    $uri        = 'products/2020-08-26/products/B081G4G8N8';
-    $httpRequestMethod = 'GET';
-    $data       = '';
+$host = "na.business-api.amazon.com";
+$accessKey = 'AKIARVGPJZCJHLW5MH63';
+$secretKey = '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';
+$region = "us-east-1";
+$service = "execute-api";
+$requestUrl =
+"https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
+$uri = 'products/2020-08-26/products/B081G4G8N8';
+$httpRequestMethod = 'GET';
+$data = '';
 
-    $sign = new AWS_Business;
-    $headers = $sign->sign(
-        $host,
-        $uri,
-        $requestUrl,
-        $accessKey,
-        $secretKey,
-        $region,
-        $service,
-        $httpRequestMethod,
-        $data
-    );
+$sign = new AWS_Business;
+$headers = $sign->sign(
+$host,
+$uri,
+$requestUrl,
+$accessKey,
+$secretKey,
+$region,
+$service,
+$httpRequestMethod,
+$data
+);
 
-    apiCall($headers);
+apiCall($headers);
 
-    exit;
+exit;
 
-    $data = '';
-    $host               = "na.business-api.amazon.com";
-    $accessKey          = "AKIARVGPJZCJHLW5MH63";
-    $secretKey          = "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";
-    $region             = "us-east-1";
-    $service            = "execute-api";
-    $requestUrl         = "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
-    $uri                = 'products/2020-08-26/products';
-    $httpRequestMethod  = 'GET';
+$data = '';
+$host = "na.business-api.amazon.com";
+$accessKey = "AKIARVGPJZCJHLW5MH63";
+$secretKey = "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";
+$region = "us-east-1";
+$service = "execute-api";
+$requestUrl =
+"https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
+$uri = 'products/2020-08-26/products';
+$httpRequestMethod = 'GET';
 
-    $headers = calcualteAwsSignatureAndReturnHeaders(
-        $host,
-        $uri,
-        $requestUrl,
-        $accessKey,
-        $secretKey,
-        $region,
-        $service,
-        $httpRequestMethod,
-        $data
-    );
+$headers = calcualteAwsSignatureAndReturnHeaders(
+$host,
+$uri,
+$requestUrl,
+$accessKey,
+$secretKey,
+$region,
+$service,
+$httpRequestMethod,
+$data
+);
 
-    apiCall($headers);
+apiCall($headers);
 
-    exit;
+exit;
 
-    // $requestUrl = "https://na.business-api.amazon.com";
-    // $httpRequestMethod = "GET";
-    // $headers = calcualteAwsSignatureAndReturnHeaders();
-    $data = '';
+// $requestUrl = "https://na.business-api.amazon.com";
+// $httpRequestMethod = "GET";
+// $headers = calcualteAwsSignatureAndReturnHeaders();
+$data = '';
 
-    $host               = "na.business-api.amazon.com";
-    // $accessKey          = ACCESS_KEY;
-    // $secretKey          = SECRET_KEY;
-    $accessKey          = "AKIARVGPJZCJHLW5MH63";
-    $secretKey          = "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";
-    $region             = "us-east-1";
-    $service            = "execute-api";
-    $requestUrl         = "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
-    //?productRegion=US&locale=es_US
-    //productRegion=US&locale=es_US
-    $uri                = 'products/2020-08-26/products/B081G4G8N8';
-    $httpRequestMethod  = 'GET';
+$host = "na.business-api.amazon.com";
+// $accessKey = ACCESS_KEY;
+// $secretKey = SECRET_KEY;
+$accessKey = "AKIARVGPJZCJHLW5MH63";
+$secretKey = "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";
+$region = "us-east-1";
+$service = "execute-api";
+$requestUrl =
+"https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
+//?productRegion=US&locale=es_US
+//productRegion=US&locale=es_US
+$uri = 'products/2020-08-26/products/B081G4G8N8';
+$httpRequestMethod = 'GET';
 
-    $headers = calcualteAwsSignatureAndReturnHeaders(
-        $host,
-        $uri,
-        $requestUrl,
-        $accessKey,
-        $secretKey,
-        $region,
-        $service,
-        $httpRequestMethod,
-        $data
-    );
+$headers = calcualteAwsSignatureAndReturnHeaders(
+$host,
+$uri,
+$requestUrl,
+$accessKey,
+$secretKey,
+$region,
+$service,
+$httpRequestMethod,
+$data
+);
 
-    $call = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, $debug = TRUE);
-    dd($headers, $call);
-    exit;
+$call = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, $debug = TRUE);
+dd($headers, $call);
+exit;
 
-    $host = "na.business-api.amazon.com";
-    $uri = "products/2020-08-26/products/B081G4G8N8";
-    $requestUrl = "https://na.business-api.amazon.com";
-    $accessKey = "AKIARVGPJZCJHLW5MH63";
-    $secretKey = "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";
-    $region = "us-east-1";
-    $service = "execute-api";
-    $httpRequestMethod = "";
-    $data = "";
+$host = "na.business-api.amazon.com";
+$uri = "products/2020-08-26/products/B081G4G8N8";
+$requestUrl = "https://na.business-api.amazon.com";
+$accessKey = "AKIARVGPJZCJHLW5MH63";
+$secretKey = "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";
+$region = "us-east-1";
+$service = "execute-api";
+$httpRequestMethod = "";
+$data = "";
 
-    $headers = calcualteAwsSignatureAndReturnHeaders(
-        $host,
-        $uri,
-        $requestUrl,
-        $accessKey,
-        $secretKey,
-        $region,
-        $service,
-        $httpRequestMethod,
-        $data,
-        $debug = TRUE
-    );
-
-
-    $result = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, TRUE);
-
-
-    exit;
-    $aws = new AWS_Business;
-
-    dd($aws->signTest());
-
-    exit;
+$headers = calcualteAwsSignatureAndReturnHeaders(
+$host,
+$uri,
+$requestUrl,
+$accessKey,
+$secretKey,
+$region,
+$service,
+$httpRequestMethod,
+$data,
+$debug = TRUE
+);
 
 
+$result = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, TRUE);
+
+
+exit;
+$aws = new AWS_Business;
+
+dd($aws->signTest());
+
+exit;
 
 
 
 
-    exit;
 
-    $url = 'https://amazon-sp-api-laravel.test/admin/rolespermissions';
-    $file_path = 'product/label.pdf';
 
-    if (!Storage::exists($file_path)) {
-        Storage::put($file_path, '');
-    }
+exit;
 
-    $exportToPdf = Storage::path($file_path);
-    Browsershot::url($url)
-        ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
-        ->showBackground()
-        ->savePdf($exportToPdf);
+$url = 'https://amazon-sp-api-laravel.test/admin/rolespermissions';
+$file_path = 'product/label.pdf';
 
-    return Storage::download($exportToPdf);
+if (!Storage::exists($file_path)) {
+Storage::put($file_path, '');
+}
+
+$exportToPdf = Storage::path($file_path);
+Browsershot::url($url)
+->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+->showBackground()
+->savePdf($exportToPdf);
+
+return Storage::download($exportToPdf);
 });
 
 Route::get('command', function () {
 
-    if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
-        Log::warning("Export asin command executed local !");
-        $base_path = base_path();
-        $command = "cd $base_path && php artisan pms:seller-order-item-import > /dev/null &";
-        exec($command);
-    } else {
+Log::warning("Export asin command executed local !");
+$base_path = base_path();
+$command = "cd $base_path && php artisan pms:seller-order-item-import > /dev/null &";
+exec($command);
+} else {
 
-        Artisan::call('pms:seller-order-item-import ');
-    }
+Artisan::call('pms:seller-order-item-import ');
+}
 });
 
 Route::get('job', function () {
-    TestQueueFail::dispatch();
+TestQueueFail::dispatch();
 });
 
 Route::get('deleterole', function () {
-    $role = Role::findByName('Orders');
-    $role->delete();
+$role = Role::findByName('Orders');
+$role->delete();
 });
 
 Route::get('rename', function () {
-    $currenturl =  request()->getSchemeAndHttpHost();
-    return $currenturl;
+$currenturl = request()->getSchemeAndHttpHost();
+return $currenturl;
 });
 
 Route::get('test-queue-redis', function () {
 
-    $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails where status = 0 ");
-    $count = 0;
-    $batch = 0;
-    $asinList = [];
-    foreach ($order_item_details as $key => $value) {
-        $asin = $value->asin;
-        // $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
-        // $check = [];
-        // if (!array_key_exists('0', $check)) {
-        $count++;
-        // $batch++;
-        $data[] = $value;
-        // }
-        //$type = 1 for seller, 2 for Order, 3 for inventory
-        if ($count == 10) {
+$order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails
+where status = 0 ");
+$count = 0;
+$batch = 0;
+$asinList = [];
+foreach ($order_item_details as $key => $value) {
+$asin = $value->asin;
+// $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
+// $check = [];
+// if (!array_key_exists('0', $check)) {
+$count++;
+// $batch++;
+$data[] = $value;
+// }
+//$type = 1 for seller, 2 for Order, 3 for inventory
+if ($count == 10) {
 
-            if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-                Seller_catalog_import_job::dispatch(
-                    [
-                        'seller_id' => NULL,
-                        'datas' => $data,
-                        'type' => 1
-                    ]
-                )->onConnection('redis')->onQueue('default');
-            } else {
+if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+Seller_catalog_import_job::dispatch(
+[
+'seller_id' => NULL,
+'datas' => $data,
+'type' => 1
+]
+)->onConnection('redis')->onQueue('default');
+} else {
 
-                Seller_catalog_import_job::dispatch(
-                    [
-                        'seller_id' => NULL,
-                        'datas' => $data,
-                        'type' => 1
-                    ]
-                );
-            }
-            // $count = 0;
-            // $type = 2;
-            // $catalog = new Catalog();
-            // $catalog->index($data, NULL, $type, $batch);
-            // Log::alert('10 asin imported');
-            // $data = [];
-        }
-    }
+Seller_catalog_import_job::dispatch(
+[
+'seller_id' => NULL,
+'datas' => $data,
+'type' => 1
+]
+);
+}
+// $count = 0;
+// $type = 2;
+// $catalog = new Catalog();
+// $catalog->index($data, NULL, $type, $batch);
+// Log::alert('10 asin imported');
+// $data = [];
+}
+}
 
-    if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-    } else {
-    }
+if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+} else {
+}
 });
 
 Route::get('order/item', function () {
 
-    $order_id = '403-6898279-3539565';
+$order_id = '403-6898279-3539565';
 });
 
 Route::get('order/catalog', function () {
 
-    $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails where status = 0 ");
-    $count = 0;
-    $batch = 0;
-    $asinList = [];
-    foreach ($order_item_details as $key => $value) {
-        $asin = $value->asin;
-        $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
-        // $check = [];
-        if (!array_key_exists('0', $check)) {
-            // $asinList[$count]->asin = $asin;
-            $count++;
-            $batch++;
-            $data[] = $value;
-        }
+$order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails
+where status = 0 ");
+$count = 0;
+$batch = 0;
+$asinList = [];
+foreach ($order_item_details as $key => $value) {
+$asin = $value->asin;
+$check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
+// $check = [];
+if (!array_key_exists('0', $check)) {
+// $asinList[$count]->asin = $asin;
+$count++;
+$batch++;
+$data[] = $value;
+}
 
-        //$type = 1 for seller, 2 for Order, 3 for inventory
-        if ($count == 10) {
-            $count = 0;
-            $type = 2;
-            $catalog = new Catalog();
-            $catalog->index($data, NULL, $type, $batch);
-            Log::alert('10 asin imported');
-            $data = [];
-            // exit;
-        }
-    }
+//$type = 1 for seller, 2 for Order, 3 for inventory
+if ($count == 10) {
+$count = 0;
+$type = 2;
+$catalog = new Catalog();
+$catalog->index($data, NULL, $type, $batch);
+Log::alert('10 asin imported');
+$data = [];
+// exit;
+}
+}
 });
 
 Route::get('/', 'Auth\LoginController@showLoginForm')->name('/');
