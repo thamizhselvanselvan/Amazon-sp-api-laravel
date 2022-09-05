@@ -6,10 +6,26 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Catalog\Asin_master;
 use Illuminate\Support\Facades\Route;
 use App\Models\seller\AsinMasterSeller;
+use Illuminate\Support\Facades\Storage;
 use App\Models\seller\SellerAsinDetails;
 use Illuminate\Support\Facades\Response;
 use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
+
+Route::get('in', function () {
+    // $file_path = public_path('template/Catalog-Asin-Template.csv');
+    // return response()->download($file_path);
+
+    $path = Storage::path('excel/downloads/catalog_price/IN/Priority1/IN_CatalogPrice0.csv');
+    return response()->download($path);
+});
+
+Route::get('us', function () {
+
+    $path = Storage::path('excel/downloads/catalog_price/US/Priority1/US_CatalogPrice0.csv');
+    return response()->download($path);
+    // return Storage::download('excel\downloads\catalog_price\US\Priority1\US_CatalogPrice0.csv');
+});
 Route::get("test/{country_code}", function ($country_code) {
 
 
