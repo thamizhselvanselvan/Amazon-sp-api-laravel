@@ -48,7 +48,8 @@ class CatalogAmazonImport extends Command
 
             $asin_source = [];
             $count = 0;
-            $queue = 'catalog';
+            $queue_name = 'catalog';
+            $queue_delay = 1;
             $class =  'catalog\AmazonCatalogImport';
             $asin_table_name = 'asin_source_' . $source . 's';
             $catalog_table_name = 'catalognew' . $source . 's';
@@ -68,17 +69,20 @@ class CatalogAmazonImport extends Command
                     LEFT JOIN $catalog_table_name as cat
                     ON cat.asin = source.asin
                     WHERE cat.asin IS NULL 
-                    LIMIT $limit ");
+                    -- LIMIT $limit 
+                    ");
             }
+            // Log::alert($asins);
 
+            // exit;
             $country_code_up = strtoupper($source);
             if ($country_code_up == 'IN') {
-                $queue = 'catalog_IN';
+                $queue_name = 'catalog_IN';
             }
 
             foreach ($asins as $asin) {
-                if ($count == 5) {
-                    jobDispatchFunc($class, $asin_source, $queue);
+                if ($count == 20) {
+                    jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
                     $asin_source = [];
                     $count = 0;
                 }
@@ -89,7 +93,7 @@ class CatalogAmazonImport extends Command
                 ];
                 $count++;
             }
-            jobDispatchFunc($class, $asin_source, $queue);
+            jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
         }
     }
 }
