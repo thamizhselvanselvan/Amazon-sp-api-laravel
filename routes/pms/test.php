@@ -13,12 +13,18 @@ use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
 
 Route::get('in', function () {
-    return Storage::download('excel\downloads\catalog_price\IN\Priority1\IN_CatalogPrice0.csv');
+    // $file_path = public_path('template/Catalog-Asin-Template.csv');
+    // return response()->download($file_path);
+
+    $path = Storage::path('excel/downloads/catalog_price/IN/Priority1/IN_CatalogPrice0.csv');
+    return response()->download($path);
 });
 
 Route::get('us', function () {
 
-    return Storage::download('excel\downloads\catalog_price\US\Priority1\US_CatalogPrice0.csv');
+    $path = Storage::path('excel/downloads/catalog_price/US/Priority1/US_CatalogPrice0.csv');
+    return response()->download($path);
+    // return Storage::download('excel\downloads\catalog_price\US\Priority1\US_CatalogPrice0.csv');
 });
 Route::get("test/{country_code}", function ($country_code) {
 
