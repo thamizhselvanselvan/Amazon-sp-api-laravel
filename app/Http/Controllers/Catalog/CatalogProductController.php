@@ -61,14 +61,14 @@ class CatalogProductController extends Controller
         {
             if($key > 1)
             {
-                $file_path = Storage::path("excel/downloads/".$folder."/".$file);
+                $file_path = Storage::path('excel/downloads/'.$folder.'/'.$file);
                 $file_paths = scandir($file_path);
                 
                 foreach($file_paths as $key2 => $filename)
                 {
                     if($key2 >1)
                     {
-                        $final_path = Storage::path("excel/downloads/".$folder."/".$file."/".$filename);
+                        $final_path = Storage::path('excel/downloads/'.$folder.'/'.$file.'/'.$filename);
                         $final_paths = scandir($final_path);
                         foreach($final_paths as $key3 => $final_file)
                         {
