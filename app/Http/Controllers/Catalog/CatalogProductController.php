@@ -108,7 +108,7 @@ class CatalogProductController extends Controller
     {
         $folder = "catalog_price";
         $this->deletefile($folder, $country_code);
-        $path = "excel/downloads/catalog_price/".$country_code."/$priority"."/zip/".$country_code."_CatalogPrice.zip";
+        $path = "excel/downloads/catalog_price/".$country_code.'/'.$priority.'/zip/'.$country_code."_CatalogPrice.zip";
         return Storage::download($path);
     }
 
