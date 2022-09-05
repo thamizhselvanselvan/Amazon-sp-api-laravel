@@ -322,6 +322,13 @@ return [
             'can' =>   ['Admin', 'Catalog'],
             'submenu' => [
                 [
+                    // 'text'  => 'Metrics',
+                    // 'url'  => 'catalog/metrics',
+                    // 'icon' => 'fa fa-bar-chart',
+                    // 'can' =>  ['Admin']
+                ],
+
+                [
                     'text' => 'Asin Master',
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin'],

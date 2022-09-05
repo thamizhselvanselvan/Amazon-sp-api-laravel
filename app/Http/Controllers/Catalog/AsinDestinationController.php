@@ -75,7 +75,7 @@ class AsinDestinationController extends Controller
                         'asin'  => $asin,
                         'import_type'   => 'Seller',
                         'priority'  => $priority,
-
+                        'cyclic' => 0,
                     ];
                 }
               

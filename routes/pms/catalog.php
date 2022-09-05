@@ -3,6 +3,7 @@
 use App\Http\Controllers\PMSPHPUnitTestController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('catalog/metrics', 'Catalog\CatalogMetricsController@Metrics');
 
 Route::resource('textiles', 'textilesController');
 Route::post('import-csv', 'textilesController@importTextiles')->name('import.csv');
@@ -54,7 +55,7 @@ Route::get('catalog/price/export', 'Catalog\CatalogProductController@PriceExport
 Route::get('catalog/export', 'Catalog\CatalogProductController@ExportCatalog')->name('catalog.export');
 Route::get('catalog/get-file', 'Catalog\CatalogProductController@GetCatalogFile');
 Route::get('catalog/download/csv-file/{country_code}', 'Catalog\CatalogProductController@DownloadCatalogIntocsv');
-Route::get('catalog/download/price/{country_code}', 'Catalog\CatalogProductController@DownloadCatalogPrice');
+Route::get('catalog/download/price/{country_code}/{priority}', 'Catalog\CatalogProductController@DownloadCatalogPrice');
 
 Route::get('catalog/asin-destination', 'Catalog\AsinDestinationController@index')->name('Asin.destination.index');
 Route::get('catalog/import-asin-destination', 'Catalog\AsinDestinationController@AsinDestinationImport');
