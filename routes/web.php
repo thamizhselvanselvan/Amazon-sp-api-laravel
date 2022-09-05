@@ -69,97 +69,98 @@ foreach($datas as $data){
 
 po($value);
 });
-route::get('newcatalog/{asin}', function($asin){
+
+// route::get('newcatalog/{asin}', function($asin){
 
 
-    $host = config('database.connections.catalog.host');
-        $dbname = config('database.connections.catalog.database');
-        $port = config('database.connections.catalog.port');
-        $username = config('database.connections.catalog.username');
-        $password = config('database.connections.catalog.password');
+//     $host = config('database.connections.catalog.host');
+//         $dbname = config('database.connections.catalog.database');
+//         $port = config('database.connections.catalog.port');
+//         $username = config('database.connections.catalog.username');
+//         $password = config('database.connections.catalog.password');
 
-        if (!R::testConnection('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password)) {
-            R::addDatabase('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-            R::selectDatabase('catalog');
-        }
+//         if (!R::testConnection('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password)) {
+//             R::addDatabase('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+//             R::selectDatabase('catalog');
+//         }
 
-    // $token = 'Atzr|IwEBIJbccmvWhc6q6XrigE6ja7nyYj962XdxoK8AHhgYvfi-WKo3MsrbTSLWFo79My_xmmT48DSVh2e_6w8nxgaeza9XZ9HtNnk7l4Rl_nWhhO6xzEdfIfU7Ev4hktjvU8CjMvYnRn_Cw5JveEqZSggp961Sg7CoBEDpwXZbAE3SYXSdeNxfP2Nu84y2ZzlsP3CNZqcTvXMWflLk1qqY6ittwlGAXpL0BwGxPCBRmjbXOy5xsZqwCPAQhW6l9AJtLPhwOlSSDjcxxvCTH9-LEPSWHLRP1wV3fRgosOlCsQgmuET0pm5SO7FVJTRWux8h2k5hnnM';
-    $token = 'Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg';
-    $country_code = 'IN';
-    $aws_id = NULL;
+//     // $token = 'Atzr|IwEBIJbccmvWhc6q6XrigE6ja7nyYj962XdxoK8AHhgYvfi-WKo3MsrbTSLWFo79My_xmmT48DSVh2e_6w8nxgaeza9XZ9HtNnk7l4Rl_nWhhO6xzEdfIfU7Ev4hktjvU8CjMvYnRn_Cw5JveEqZSggp961Sg7CoBEDpwXZbAE3SYXSdeNxfP2Nu84y2ZzlsP3CNZqcTvXMWflLk1qqY6ittwlGAXpL0BwGxPCBRmjbXOy5xsZqwCPAQhW6l9AJtLPhwOlSSDjcxxvCTH9-LEPSWHLRP1wV3fRgosOlCsQgmuET0pm5SO7FVJTRWux8h2k5hnnM';
+//     $token = 'Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg';
+//     $country_code = 'IN';
+//     $aws_id = NULL;
    
-    $config = new Configuration([
-        "lwaClientId" => "amzn1.application-oa2-client.0167f1a848ae4cf0aabeeb1abbeaf8cf",
-        "lwaClientSecret" => "5bf9add9576f83d33293b0e9e2ed5e671000a909f161214a77b93d26e7082765",
-        "lwaRefreshToken" => $token,
-        "awsAccessKeyId" => "AKIAZTIHMXYBD5SRG5IZ",
-        "awsSecretAccessKey" => "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",
-        "endpoint" => Endpoint::NA,  // or another endpoint from lib/Endpoints.php
-        "roleArn" => 'arn:aws:iam::659829865986:role/Mosh-E-Com-SP-API-Role'
-    ]);
-        $apiInstance = new CatalogItemsV20220401Api($config);
-        // po($apiInstance);
-        // exit;
-        // $marketplace_id = 'A21TJRUUN4KGV';
-        $marketplace_id = ['ATVPDKIKX0DER'];
-        // $asin = 'B00000JHQ0';
-        $asins = [
-            'B00014DZL6',
-            'B00014E9W0',
-            'B000WA6KFW',
-            'B000WH10SW',
-            'B000WNAP6O',
-            'B000XAL2F4',
-            'B000ZHJS0G',
-        ];
-        $identifiers_type = 'ASIN';
+//     $config = new Configuration([
+//         "lwaClientId" => "amzn1.application-oa2-client.0167f1a848ae4cf0aabeeb1abbeaf8cf",
+//         "lwaClientSecret" => "5bf9add9576f83d33293b0e9e2ed5e671000a909f161214a77b93d26e7082765",
+//         "lwaRefreshToken" => $token,
+//         "awsAccessKeyId" => "AKIAZTIHMXYBD5SRG5IZ",
+//         "awsSecretAccessKey" => "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",
+//         "endpoint" => Endpoint::NA,  // or another endpoint from lib/Endpoints.php
+//         "roleArn" => 'arn:aws:iam::659829865986:role/Mosh-E-Com-SP-API-Role'
+//     ]);
+//         $apiInstance = new CatalogItemsV20220401Api($config);
+//         // po($apiInstance);
+//         // exit;
+//         // $marketplace_id = 'A21TJRUUN4KGV';
+//         $marketplace_id = ['ATVPDKIKX0DER'];
+//         // $asin = 'B00000JHQ0';
+//         $asins = [
+//             'B00014DZL6',
+//             'B00014E9W0',
+//             'B000WA6KFW',
+//             'B000WH10SW',
+//             'B000WNAP6O',
+//             'B000XAL2F4',
+//             'B000ZHJS0G',
+//         ];
+//         $identifiers_type = 'ASIN';
         
-        $includedData= ['attributes','dimensions', 'images', 'productTypes', 'summaries'];
-        echo"<pre>";
-        try {
-            $data = [];
-            $result = $apiInstance->searchCatalogItems ($marketplace_id, $asins, $identifiers_type, $includedData);
-            $result = json_decode(json_encode($result));
-            // po($result);
-            // exit;
-            foreach($result->items as $key1 => $value)
-            {   
-                foreach($value as $key2 => $value1)
-                {
-                    if($key2 == 'summaries')
-                    {
-                        foreach($value1[0] as $key3 => $value2)
-                        {
-                            $data[$key1][$key3] = returnType($value2);
-                        }
-                    }
-                    else{
-                        $data[$key1][$key2] = returnType($value1);
-                    }
-                }  
-            }
-            po($data);
-        } catch (Exception $e) {
-            echo $e;
-            // echo 'Exception when calling CatalogItemsV20220401Api->getCatalogItem: ', $e->getMessage(), PHP_EOL;
-        }
-}
+//         $includedData= ['attributes','dimensions', 'images', 'productTypes', 'summaries'];
+//         echo"<pre>";
+//         try {
+//             $data = [];
+//             $result = $apiInstance->searchCatalogItems ($marketplace_id, $asins, $identifiers_type, $includedData);
+//             $result = json_decode(json_encode($result));
+//             // po($result);
+//             // exit;
+//             foreach($result->items as $key1 => $value)
+//             {   
+//                 foreach($value as $key2 => $value1)
+//                 {
+//                     if($key2 == 'summaries')
+//                     {
+//                         foreach($value1[0] as $key3 => $value2)
+//                         {
+//                             $data[$key1][$key3] = returnType($value2);
+//                         }
+//                     }
+//                     else{
+//                         $data[$key1][$key2] = returnType($value1);
+//                     }
+//                 }  
+//             }
+//             po($data);
+//         } catch (Exception $e) {
+//             echo $e;
+//             // echo 'Exception when calling CatalogItemsV20220401Api->getCatalogItem: ', $e->getMessage(), PHP_EOL;
+//         }
+// }
 
-);
+// );
 
-function returnType($type){
-    $data = '';
-    if(is_object($type)){
-        $data = json_encode($type);
-    }
-    elseif(is_string($type))
-    {
-        $data = $type;
-    }else{
-        $data = json_encode($type);
-    }
-    return $data;
-}
+// function returnType($type){
+//     $data = '';
+//     if(is_object($type)){
+//         $data = json_encode($type);
+//     }
+//     elseif(is_string($type))
+//     {
+//         $data = $type;
+//     }else{
+//         $data = json_encode($type);
+//     }
+//     return $data;
+// }
 
 
 
