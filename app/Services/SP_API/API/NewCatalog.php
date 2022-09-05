@@ -77,15 +77,18 @@ class NewCatalog
         $NewCatalogs = [];
         $country_code1 = strtolower($country_code1);
         $catalog_table = 'catalognew' . $country_code1 . 's';
-    
-        foreach ($queue_data[0] as $key1 => $value) {
-            
-            $NewCatalogs[] = R::dispense($catalog_table);
-            foreach ($value as $key => $data) {
-                $NewCatalogs[$key1]->$key = $data;
+        foreach($queue_data as $record)
+        {
+
+            foreach ($record as $key1 => $value) {
+                
+                $NewCatalogs[] = R::dispense($catalog_table);
+                foreach ($value as $key => $data) {
+                    $NewCatalogs[$key1]->$key = $data;
+                }
+                $NewCatalogs[$key1]->created_at = now();
+                $NewCatalogs[$key1]->updated_at = now();
             }
-            $NewCatalogs[$key1]->created_at = now();
-            $NewCatalogs[$key1]->updated_at = now();
         }
         R::storeALL($NewCatalogs);
     }
@@ -134,9 +137,9 @@ class NewCatalog
 
             // if (count($found) == 0) {
 
-                $NewCatalogs = R::dispense($catalog_table);
-                $NewCatalogs->asin = $asin;
-                R::store($NewCatalogs);
+                // $NewCatalogs = R::dispense($catalog_table);
+                // $NewCatalogs->asin = $asin;
+                // R::store($NewCatalogs);
             // }
         }
     }
