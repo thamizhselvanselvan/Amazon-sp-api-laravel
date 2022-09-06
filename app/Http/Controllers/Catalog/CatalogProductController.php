@@ -49,7 +49,7 @@ class CatalogProductController extends Controller
         $country_code = $request->source;
         commandExecFunc("mosh:catalog-export-csv ${priority} ${country_code} ");
         
-        return redirect()->intended('/catalog/product');
+        return redirect('/catalog/product')->with("success", "Catalog is Exporting");;
     }
 
     public function GetCatalogFile(Request $request)
