@@ -18,7 +18,6 @@ class NewCatalog
 
     public function Catalog($records, $seller_id = NULL)
     {
-        $this->RedBeanConnection();
         $queue_data = [];
         $upsert_asin = [];
         $country_code1 = '';
@@ -77,6 +76,9 @@ class NewCatalog
         $NewCatalogs = [];
         $country_code1 = strtolower($country_code1);
         $catalog_table = 'catalognew' . $country_code1 . 's';
+
+        $this->RedBeanConnection();
+
         foreach ($queue_data as $record) {
 
             foreach ($record as $key1 => $value) {
