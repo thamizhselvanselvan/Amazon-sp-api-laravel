@@ -61,19 +61,19 @@ class NewCatalog
         $country_code1 = strtolower($country_code1);
         $catalog_table = 'catalognew' . $country_code1 . 's';
         foreach ($queue_data as $record) {
+            if ($record) {
+                foreach ($record as $key1 => $value) {
+                    $NewCatalogs[] = R::dispense($catalog_table);
+                    foreach ($value as $key => $data) {
 
-            foreach ($record as $key1 => $value) {
+                        if ($key != '0') {
 
-                $NewCatalogs[] = R::dispense($catalog_table);
-                foreach ($value as $key => $data) {
-
-                    if ($key != '0') {
-
-                        $NewCatalogs[$key1]->$key = $data;
+                            $NewCatalogs[$key1]->$key = $data;
+                        }
                     }
+                    $NewCatalogs[$key1]->created_at = now();
+                    $NewCatalogs[$key1]->updated_at = now();
                 }
-                $NewCatalogs[$key1]->created_at = now();
-                $NewCatalogs[$key1]->updated_at = now();
             }
         }
         R::storeALL($NewCatalogs);
@@ -87,13 +87,37 @@ class NewCatalog
         $apiInstance = new CatalogItemsV20220401Api($config);
         $marketplace_id = $this->marketplace_id($country_code);
         $marketplace_id = [$marketplace_id];
+
         $identifiers_type = 'ASIN';
+        $page_size = 10;
+        $locale = null;
+        $seller_id = null;
+        $keywords = null;
+        $brand_names = null;
+        $classification_ids = null;
+        $page_size = 20;
+        $page_token = null;
+        $keywords_locale = null;
+
         $incdata = ['attributes', 'dimensions', 'productTypes', 'images', 'summaries'];
 
         try {
-            $result = $apiInstance->searchCatalogItems($marketplace_id, $asins, $identifiers_type, $incdata);
+            $result = $apiInstance->searchCatalogItems(
+                $marketplace_id,
+                $asins,
+                $identifiers_type,
+                $incdata,
+                $locale,
+                $seller_id,
+                $keywords,
+                $brand_names,
+                $classification_ids,
+                $page_size,
+                $page_token,
+                $keywords_locale
+            );
             $result = (array) json_decode(json_encode($result));
-            // Log::warning($result);
+
             $queue_data = [];
 
             foreach ($result['items'] as $key => $record) {

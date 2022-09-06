@@ -190,3 +190,4 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
     echo $response;
 });
 Route::get('export_catalog', 'TestController@ExportCatalog');
+Route::get('search_catalog/{country_code}', 'TestController@searchCatalog');
