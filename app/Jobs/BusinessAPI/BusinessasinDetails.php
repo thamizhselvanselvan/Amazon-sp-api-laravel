@@ -50,7 +50,7 @@ class BusinessasinDetails implements ShouldQueue
         $rec =   $this->payload['data'];
 
         foreach ($rec as $val) {
-            $fetched[] = ($val);
+            $fetched[] = ($val->asin);
         }
 
         $ApiCall = new ProductsRequest();

@@ -19,7 +19,7 @@ class Orders
         $country = 'USA';
         $country_name = 'Unite States';
         $email = 'tech@moshecom.com';
-        $name = 'mr.kate';
+        $name = 'mr.Robert';
 
         /* ship and bill details  */
 
@@ -34,12 +34,13 @@ class Orders
         $state = 'Washington';
         $postcode = '98109';
         $area_code = '213';
-        $ph_no = '87488423820';
-        // $addressID = "[Bill To Code]";
+        $ph_no = '9110674543';
+
+         $addressID = substr(md5(mt_rand()), 0, 9);
         $fax_name = 'nitrous';
-        $comments = 'Deliveery as soon as possible';
+        $comments = 'nitrous,Tech Team, tech@moshecom.com,Washington ';
         $extrinsic = 'Nitrous';
-        $supplierPartAuxiliaryID = random_int(10000, 1000000);
+        $supplierPartAuxiliaryID  = substr(md5(mt_rand()), 0, 9);
         $tax = '1';
         $currency = 'USD';
         /* item details  */
@@ -74,7 +75,7 @@ class Orders
             'post_code' => $postcode,
             'area_code' => $area_code,
             'phone_no' => $ph_no,
-            //    'address_id' => $addressID,
+            'address_id' => $addressID,
             'fax_name' => $fax_name,
             'comments' => $comments,
             'exen' => $extrinsic,
@@ -122,14 +123,14 @@ class Orders
     </Header>
     <Request deploymentMode="test">
         <OrderRequest>
-            <OrderRequestHeader orderDate="' . $date . '" orderID=' . $orderID . ' type="new" orderType="regular">
+            <OrderRequestHeader orderDate="' . $date . '" orderID="' . $orderID . '" type="new" orderType="regular">
                 <Total>
                     <Money currency="' . $currency . '">' . $money . '</Money>
                 </Total>
                 <ShipTo>
-                    <Address ' . $countrycode . ' addressID="Z4SEYWLA5FAVH5AB2MJMG05F1UA07299273BV7569MTU1FZPXTQ2EQA2OX24EF2">
+                    <Address isoCountryCode=" ' . $countrycode . '" addressID="'. $addressID.'">
                         <Name xml:lang="en-US">' . $org_name . '</Name>
-                        <PostalAddress name=' . $name . '>
+                        <PostalAddress name="' . $name . '">
                             <DeliverTo>' . $deli1 . '</DeliverTo>
                               <DeliverTo>' . $deli2 . '</DeliverTo>
                             <DeliverTo>' . $deli3 . '</DeliverTo>
@@ -137,19 +138,19 @@ class Orders
                             <City>' . $city . '</City>
                             <State>' . $state . '</State>
                             <PostalCode>' . $postcode . '</PostalCode>
-                            <Country ' . $countrycode . '">' . $country_name . '</Country>
+                            <Country  isoCountryCode=" '. $countrycode . '">' . $country_name . '</Country>
                         </PostalAddress>
-                        <Email name=' . $name . '>' . $email . '</Email>
-                        <Phone name=' . $name . '>
+                        <Email name="' . $name . '">' . $email . '</Email>
+                        <Phone name="' . $name . '">
                             <TelephoneNumber>
-                                <CountryCode ' . $countrycode . '">' . $country . '</CountryCode>
+                                <CountryCode isoCountryCode=" ' . $countrycode . '">' . $country . '</CountryCode>
                                 <AreaOrCityCode>' . $area_code . '</AreaOrCityCode>
                                 <Number>' . $ph_no . '</Number>
                             </TelephoneNumber>
                         </Phone>
-                        <Fax name=' . $fax_name . '>
+                        <Fax name="' . $fax_name . '">
                             <TelephoneNumber>
-                                <CountryCode ' . $countrycode . '>' . $country . '</CountryCode>
+                                <CountryCode isoCountryCode=" ' . $countrycode . '">' . $country . '</CountryCode>
                                 <AreaOrCityCode>' . $area_code . '</AreaOrCityCode>
                                 <Number>' . $ph_no . '</Number>
                             </TelephoneNumber>
@@ -157,32 +158,36 @@ class Orders
                     </Address>
                 </ShipTo>
                 <BillTo>
-                    <Address ' . $countrycode . ' addressID="Z4SEYWLA5FAVH5AB2MJMG05F1UA07299273BV7569MTU1FZPXTQ2EQA2OX24EF2">
+                    <Address isoCountryCode=" ' . $countrycode . '" addressID="' . $addressID . '">
                         <Name xml:lang="en-US">Worldwey</Name>
-                        <PostalAddress name=' . $name . '>
+                        <PostalAddress name="' . $name . '">
                              <DeliverTo>' . $deli1 . '</DeliverTo>
                             <Street>' . $street . '</Street>
                             <City>' . $city . '</City>
                             <State>' . $state . '</State>
                             <PostalCode>' . $postcode . '</PostalCode>
-                            <Country ' . $countrycode . '>' . $country . '</Country>
-                            <Email name=' . $name . '>' . $email . '</Email>
+                            <Country isoCountryCode=" ' . $countrycode . '">' . $country . '</Country>
+                            <Email name="Email">' . $email . '</Email>
                             <Phone name="work">
                             <TelephoneNumber>
-                                <CountryCode ' . $countrycode . '>' . $country . '</CountryCode>
+                                <CountryCode isoCountryCode=" ' . $countrycode . '">' . $country . '</CountryCode>
                                <AreaOrCityCode>' . $area_code . '</AreaOrCityCode>
                                 <Number>' . $ph_no . '</Number>
                             </TelephoneNumber>
-                        </Phone>
-                        <Fax name=' . $fax_name . '>
+                          </Phone>
+                        </PostalAddress>
+                        <Fax name="' . $fax_name . '">
                             <TelephoneNumber>
-                                <CountryCode ' . $countrycode . '>' . $country . '</CountryCode>
+                                <CountryCode isoCountryCode=" ' . $countrycode . '">' . $country . '</CountryCode>
                                  <AreaOrCityCode>' . $area_code . '</AreaOrCityCode>
                                 <Number>' . $ph_no . '</Number>
                             </TelephoneNumber>
                         </Fax>
                     </Address>
                 </BillTo>
+                <Contact>
+               <Email name="Email">' . $email . '</Email>
+                </Contact>
                 <Shipping>
                     <Money currency="' . $currency . '">' . $money . '</Money>
                     <Description xml:lang="en">std-us</Description>
@@ -192,10 +197,11 @@ class Orders
                     <Description xml:lang="en">Included</Description>
                 </Tax>
                 <Comments>' . $comments . '</Comments>
-                <Extrinsic name="Name">' . $extrinsic . '</Extrinsic>
+                <Extrinsic name="Email">' . $email. '</Extrinsic>
+                <Email>tech@moshecom.com</Email>
             </OrderRequestHeader>
-            <ItemOut quantity=' . $qty . ' lineNumber=' . $line . '>
-            <Requested Delivery Date>2022-08-28</Requested>
+            <ItemOut quantity="' . $qty . '" lineNumber="' . $line . '">
+          
                 <ItemID>
                     <SupplierPartID>' . $asin . '</SupplierPartID>
                     <SupplierPartAuxiliaryID>' . $supplierPartAuxiliaryID . '</SupplierPartAuxiliaryID>

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\BuisnessAPI;
 
+use Nette\Utils\Json;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use App\Services\AWS_Business_API\AWS_POC\Orders;
-use Nette\Utils\Json;
 
 class OrdersController extends Controller
 {
@@ -15,6 +16,11 @@ class OrdersController extends Controller
         $ApiCall = new Orders();
         $data = $ApiCall->getOrders();
 
+        $resultxml = $data[2];
+         Storage::disk('local')->put('xml.txt', $resultxml);
+
+
+        
         $responce = ($data[0]);
 
         $parse = simplexml_load_string($responce);
@@ -87,7 +93,8 @@ class OrdersController extends Controller
         ];
 
         DB::connection('business')->table('orders')->insert([
-            'xml_sent' => json_encode($xml),
+            // 'xml_sent' => json_encode($xml),
+            'xml_sent' => '',
             'sent_payload' => $sent_payload,
             'organization_name' => $org_name,
             'order_date' => $order_date,
