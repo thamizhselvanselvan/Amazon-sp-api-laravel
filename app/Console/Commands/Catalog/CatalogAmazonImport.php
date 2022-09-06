@@ -46,10 +46,12 @@ class CatalogAmazonImport extends Command
 
             $limit = $limit_array[$source];
 
+            $asin_upsert_source = [];
+            $seller_id = '';
             $asin_source = [];
             $count = 0;
             $queue_name = 'catalog';
-            $queue_delay = 1;
+            $queue_delay = 0;
             $class =  'catalog\AmazonCatalogImport';
             $asin_table_name = 'asin_source_' . $source . 's';
             $catalog_table_name = 'catalognew' . $source . 's';
@@ -69,23 +71,32 @@ class CatalogAmazonImport extends Command
                     LEFT JOIN $catalog_table_name as cat
                     ON cat.asin = source.asin
                     WHERE cat.asin IS NULL 
+                    AND source.status = '0'
                     LIMIT $limit 
                     ");
             }
-            // Log::alert($asins);
 
-            // exit;
             $country_code_up = strtoupper($source);
             if ($country_code_up == 'IN') {
                 $queue_name = 'catalog_IN';
             }
 
             foreach ($asins as $asin) {
+
+                $seller_id  =  $asin->user_id;
+                $asin_upsert_source[] = [
+                    'asin' => $asin->asin,
+                    'user_id' => $seller_id,
+                    'status' => '1'
+                ];
+
                 if ($count == 20) {
                     jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
                     $asin_source = [];
                     $count = 0;
                 }
+
+
                 $asin_source[] = [
                     'asin' => $asin->asin,
                     'seller_id' => $asin->user_id,
@@ -94,6 +105,13 @@ class CatalogAmazonImport extends Command
                 $count++;
             }
             jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
+
+
+            $model = 'Asin_source';
+            $table_name = "asin_source_";
+            $source_mode = table_model_create($source, $model, $table_name);
+
+            $source_mode->upsert($asin_upsert_source, 'user_asin_unique', 'status');
         }
     }
 }
