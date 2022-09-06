@@ -40,7 +40,7 @@ class CatalogAmazonImport extends Command
     public function handle()
     {
         $sources = ['us', 'in'];
-        $limit_array = ['in' => 600, 'us' => 500];
+        $limit_array = ['in' => 2000, 'us' => 2000];
 
         foreach ($sources as $source) {
 
@@ -69,7 +69,7 @@ class CatalogAmazonImport extends Command
                     LEFT JOIN $catalog_table_name as cat
                     ON cat.asin = source.asin
                     WHERE cat.asin IS NULL 
-                    -- LIMIT $limit 
+                    LIMIT $limit 
                     ");
             }
             // Log::alert($asins);
