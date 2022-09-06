@@ -56,7 +56,9 @@ class catalogExportCSV extends Command
         $this->country_code = $this->argument('country_code');
 
         $this->priority = $this->argument('priority');
-        
+
+        Log::alert($this->priority);
+
         $header = [
             'asin',
             'source',
@@ -82,7 +84,10 @@ class catalogExportCSV extends Command
             ->join($asin_cat, $asin_desti . '.asin', '=', $asin_cat . '.asin')
             ->chunk($chunk, function ($result) use ($header) {
 
+                Log::info(json_encode($result));
+
                 if ($this->count == 1) {
+
                     $csv_header = [
                         'Asin',
                         'Source',
@@ -99,7 +104,7 @@ class catalogExportCSV extends Command
                         'Manufacturer'
                     ];
 
-                    $this->file_path = "excel/downloads/catalog/" . $this->country_code ."/Priority".$this->priority. "/Catalog-export" . $this->country_code . $this->offset . ".csv";
+                    $this->file_path = "excel/downloads/catalog/" . $this->country_code . "/Priority" . $this->priority . "/Catalog-export" . $this->country_code . $this->offset . ".csv";
                     $this->csv_files[] = "Catalog-export" . $this->country_code . $this->offset . ".csv";
 
                     if (!Storage::exists($this->file_path)) {
@@ -158,7 +163,7 @@ class catalogExportCSV extends Command
             });
 
         $zip = new ZipArchive;
-        $path = "excel/downloads/catalog/" . $this->country_code ."/Priority".$this->priority. "/zip/Catalog" . $this->country_code . ".zip";
+        $path = "excel/downloads/catalog/" . $this->country_code . "/Priority" . $this->priority . "/zip/Catalog" . $this->country_code . ".zip";
         $file_path = Storage::path($path);
 
         if (!Storage::exists($path)) {
@@ -166,7 +171,7 @@ class catalogExportCSV extends Command
         }
         if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
             foreach ($this->csv_files as $key => $value) {
-                $path = Storage::path('excel/downloads/catalog/' . $this->country_code .'/Priority'.$this->priority. '/' . $value);
+                $path = Storage::path('excel/downloads/catalog/' . $this->country_code . '/Priority' . $this->priority . '/' . $value);
                 $relativeNameInZipFile = basename($path);
                 $zip->addFile($path, $relativeNameInZipFile);
             }
