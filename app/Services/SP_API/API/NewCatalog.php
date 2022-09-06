@@ -86,7 +86,9 @@ class NewCatalog
 
                     $NewCatalogs[] = R::dispense($catalog_table);
                     foreach ($value as $key => $data) {
-                        $NewCatalogs[$key1]->$key = $data;
+                        if ($key != '0') {
+                            $NewCatalogs[$key1]->$key = $data;
+                        }
                     }
                     $NewCatalogs[$key1]->created_at = now();
                     $NewCatalogs[$key1]->updated_at = now();
