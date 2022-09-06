@@ -82,13 +82,15 @@ class NewCatalog
         foreach ($queue_data as $record) {
 
             foreach ($record as $key1 => $value) {
+                if ($value) {
 
-                $NewCatalogs[] = R::dispense($catalog_table);
-                foreach ($value as $key => $data) {
-                    $NewCatalogs[$key1]->$key = $data;
+                    $NewCatalogs[] = R::dispense($catalog_table);
+                    foreach ($value as $key => $data) {
+                        $NewCatalogs[$key1]->$key = $data;
+                    }
+                    $NewCatalogs[$key1]->created_at = now();
+                    $NewCatalogs[$key1]->updated_at = now();
                 }
-                $NewCatalogs[$key1]->created_at = now();
-                $NewCatalogs[$key1]->updated_at = now();
             }
         }
         R::storeALL($NewCatalogs);
