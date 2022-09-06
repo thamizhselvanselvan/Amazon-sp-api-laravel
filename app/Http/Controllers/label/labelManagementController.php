@@ -115,8 +115,8 @@ class labelManagementController extends Controller
     {
         //Single view
         $result = $this->labelDataFormating($id);
-
         $awb_no = $result['awb_no'];
+        $forwarder = $result['forwarder'];
 
         if ($awb_no == '' || $awb_no == NULL) {
             $awb_no = 'AWB-MISSING';
@@ -126,7 +126,7 @@ class labelManagementController extends Controller
         // dd($result);
         $generator = new BarcodeGeneratorPNG();
         $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39));
-        return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no'));
+        return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder'));
     }
     public function ExportLabel(Request $request)
     {
@@ -187,6 +187,7 @@ class labelManagementController extends Controller
         $generator = new BarcodeGeneratorPNG();
         foreach ($allid as $id) {
             $results = $this->labelDataFormating($id);
+            
             $result[] = (object)$results;
 
             $barcode_awb = 'AWB-MISSING';
@@ -369,6 +370,7 @@ class labelManagementController extends Controller
         $label = DB::select("SELECT ordetail.asin,
         GROUP_CONCAT(DISTINCT web.order_no)as order_no,
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
+        GROUP_CONCAT(DISTINCT web.forwarder) as forwarder,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
         GROUP_CONCAT(DISTINCT ordetail.shipping_address) as shipping_address,
         GROUP_CONCAT(DISTINCT ordetail.item_price) as order_total,
@@ -469,7 +471,6 @@ class labelManagementController extends Controller
     public function deleteAllPdf()
     {
         $files = glob(Storage::path('label/*'));
-
         foreach ($files as $file) {
             if (is_file($file)) {
                 unlink($file);
