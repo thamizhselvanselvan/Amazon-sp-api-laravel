@@ -111,7 +111,7 @@ class CatalogAmazonImport extends Command
             $table_name = "asin_source_";
             $source_mode = table_model_create($source, $model, $table_name);
 
-            $source_mode->upsert($asin_upsert_source, 'user_asin_unique', 'status');
+            $source_mode->upsert($asin_upsert_source, ['user_asin_unique'], ['status']);
         }
     }
 }
