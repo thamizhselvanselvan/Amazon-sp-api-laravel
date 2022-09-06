@@ -84,11 +84,11 @@ class CatalogProductController extends Controller
         return response()->json($catalogfiles);
     }
 
-    public function DownloadCatalogIntocsv(Request $request, $country_code)
+    public function DownloadCatalogIntocsv(Request $request, $country_code, $priority)
     {
         $folder = "catalog";
         $this->deletefile($folder, $country_code);
-        $path = "excel/downloads/catalog/".$country_code."/zip/Catalog".$country_code.".zip";
+        $path = "excel/downloads/catalog/".$country_code."/".$priority."/zip/Catalog".$country_code.".zip";
         return Storage::download($path);
     }
 
@@ -101,7 +101,7 @@ class CatalogProductController extends Controller
         $priority = $request->priority;
         $country_code = $request->source;
         commandExecFunc("mosh:catalog-price-export-csv ${priority} ${country_code}");
-        return redirect('/catalog/product')->with("success", "Catalog Price is Importing");
+        return redirect('/catalog/product')->with("success", "Catalog Price is Exporting");
     }
 
     public function DownloadCatalogPrice($country_code, $priority)

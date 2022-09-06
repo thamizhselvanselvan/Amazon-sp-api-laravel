@@ -218,14 +218,18 @@
                 console.log(response);
                 let files = '';
                 $.each(response, function(index, response) {
+                    let data = response;
+                    $.each(data, function(key, data){
+                        
+                        files += "<li class='p-0 m-0'>";
+                        files += "<a href='/catalog/download/csv-file/" + index + "/"+ key +
+                            "' class='p-0 m-0'> Catalog " + index + '&nbsp;' + key +"</a> ";
+                        files += data;
+                        files += "</li>";
+                    });
                     let file_name = Object.keys(response)[0];
                     let file_time = response[file_name];
 
-                    files += "<li class='p-0 m-0'>";
-                    files += "<a href='/catalog/download/csv-file/" + file_name +
-                        "' class='p-0 m-0'> Catalog " + file_name + "</a> ";
-                    files += file_time;
-                    files += "</li>";
                 });
                 $('.catalogFiles').html(files);
             },
