@@ -18,6 +18,7 @@ class NewCatalog
 
     public function Catalog($records, $seller_id = NULL)
     {
+        $this->RedBeanConnection();
         $queue_data = [];
         $upsert_asin = [];
         $country_code1 = '';
@@ -45,54 +46,34 @@ class NewCatalog
             $aws_id = NULL;
             if ($count == 19) {
 
-                // Log::alert($asins);
-                $catalog_details = $this->FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id);
-
-                if ($catalog_details) {
-                    $found = DB::connection('catalog')->select("SELECT id, asin FROM $catalog_table 
-                    WHERE asin = '$asin' ");
-                    if (count($found) == 0) {
-                        //new details
-                        $queue_data[] = $catalog_details;
-                    } else {
-                        //update
-                        Log::info('asin details updating -> ' . $asin);
-
-                        $asin_id = $found[0]->id;
-                        $asin_details = R::load($catalog_table, $asin_id);
-                        foreach ($catalog_details as $key => $key_value) {
-
-                            $asin_details->$key = $key_value;
-                        }
-                        $asin_details->updated_at = now();
-                        R::store($asin_details);
-                    }
-                }
+                $queue_data[] = $this->FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id);
                 $count = 0;
+                $asins = [];
             }
-            // $catalog_details = $this->FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id);
             $count++;
         }
+
+        if ($asins) {
+            $queue_data[] = $this->FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id);
+        }
+
         $NewCatalogs = [];
         $country_code1 = strtolower($country_code1);
         $catalog_table = 'catalognew' . $country_code1 . 's';
-
-        $this->RedBeanConnection();
-
         foreach ($queue_data as $record) {
 
             foreach ($record as $key1 => $value) {
-                if ($value) {
 
-                    $NewCatalogs[] = R::dispense($catalog_table);
-                    foreach ($value as $key => $data) {
-                        if ($key != '0') {
-                            $NewCatalogs[$key1]->$key = $data;
-                        }
+                $NewCatalogs[] = R::dispense($catalog_table);
+                foreach ($value as $key => $data) {
+
+                    if ($key != '0') {
+
+                        $NewCatalogs[$key1]->$key = $data;
                     }
-                    $NewCatalogs[$key1]->created_at = now();
-                    $NewCatalogs[$key1]->updated_at = now();
                 }
+                $NewCatalogs[$key1]->created_at = now();
+                $NewCatalogs[$key1]->updated_at = now();
             }
         }
         R::storeALL($NewCatalogs);
