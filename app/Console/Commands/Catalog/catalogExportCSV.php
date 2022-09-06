@@ -57,25 +57,24 @@ class catalogExportCSV extends Command
 
         $this->priority = $this->argument('priority');
 
-        Log::alert($this->priority);
+        $asin_cat = 'catalognew' . strtolower($this->country_code) . 's';
 
         $header = [
-            'asin',
-            'source',
-            'dimensions',
-            'images',
-            'product_types',
-            'brand',
-            'color',
-            'item_classification',
-            'item_name',
-            'style',
-            'website_display_group',
-            'manufacturer'
+            $asin_cat . '.asin',
+            $asin_cat . '.source',
+            $asin_cat . '.dimensions',
+            $asin_cat . '.images',
+            $asin_cat . '.product_types',
+            $asin_cat . '.brand',
+            $asin_cat . '.color',
+            $asin_cat . '.item_classification',
+            $asin_cat . '.item_name',
+            $asin_cat . '.style',
+            $asin_cat . '.website_display_group',
+            $asin_cat . '.manufacturer'
         ];
 
         $asin_desti = 'asin_destination_' . strtolower($this->country_code) . 's';
-        $asin_cat = 'catalognew' . strtolower($this->country_code) . 's';
 
         $table_name = table_model_create(country_code: $this->country_code, model: 'Asin_destination', table_name: 'asin_destination_');
 
@@ -83,8 +82,6 @@ class catalogExportCSV extends Command
             ->where('priority', $this->priority)
             ->join($asin_cat, $asin_desti . '.asin', '=', $asin_cat . '.asin')
             ->chunk($chunk, function ($result) use ($header) {
-
-                Log::info(json_encode($result));
 
                 if ($this->count == 1) {
 
