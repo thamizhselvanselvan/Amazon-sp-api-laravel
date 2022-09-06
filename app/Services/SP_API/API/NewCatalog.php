@@ -89,13 +89,12 @@ class NewCatalog
         $marketplace_id = [$marketplace_id];
 
         $identifiers_type = 'ASIN';
-        $page_size = 10;
+        $page_size = 20;
         $locale = null;
         $seller_id = null;
         $keywords = null;
         $brand_names = null;
         $classification_ids = null;
-        $page_size = 20;
         $page_token = null;
         $keywords_locale = null;
 
@@ -134,6 +133,8 @@ class NewCatalog
                     }
                 }
             }
+            Log::info($asins);
+            Log::info($queue_data);
             return $queue_data;
         } catch (Exception $e) {
 
