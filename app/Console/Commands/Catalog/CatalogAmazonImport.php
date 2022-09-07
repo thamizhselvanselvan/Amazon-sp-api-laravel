@@ -95,8 +95,6 @@ class CatalogAmazonImport extends Command
                     $asin_source = [];
                     $count = 0;
                 }
-
-
                 $asin_source[] = [
                     'asin' => $asin->asin,
                     'seller_id' => $asin->user_id,
