@@ -49,4 +49,78 @@
         </div>
     </div>
 </div>
+
+<div class="row">
+    <div class="col">
+        <h2> IN Asin Priority Wise</h2>
+        <div class="row">
+            <div class="col">
+                <div class="small-box bg-gradient-success text-center">
+                    <div class="inner">
+                        <div class="row">
+                            <h3 class="ml-2">{{ $total_asin }}</h3>
+                            <p class="mt-2 ml-4">Priority 1</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="small-box bg-gradient-warning text-center">
+                    <div class="inner">
+                        <div class="row">
+                            <h3 class="ml-2">{{ $total_asin }}</h3>
+                            <p class="mt-2 ml-4">Priority 2</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="small-box bg-gradient-info text-center">
+                    <div class="inner">
+                        <div class="row">
+                            <h3 class="ml-2">{{ $total_asin }}</h3>
+                            <p class="mt-2 ml-4">Priority 3</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <h2>USA Asin Priority Wise</h2>
+        <div class="row">
+        <div class="col">
+                <div class="small-box bg-gradient-success text-center">
+                    <div class="inner">
+                        <div class="row">
+                            <h3 class="ml-2">{{ $total_asin }}</h3>
+                            <p class="mt-2 ml-4">Priority 1</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="small-box bg-gradient-warning text-center">
+                    <div class="inner">
+                        <div class="row">
+                            <h3 class="ml-2">{{ $total_asin }}</h3>
+                            <p class="mt-2 ml-4">Priority 2</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="small-box bg-gradient-info text-center">
+                    <div class="inner">
+                        <div class="row">
+                            <h3 class="ml-2">{{ $total_asin }}</h3>
+                            <p class="mt-2 ml-4">Priority 3</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @stop
