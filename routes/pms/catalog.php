@@ -54,7 +54,7 @@ Route::get('catalog/product/fetch-from-amazon', 'Catalog\CatalogProductControlle
 Route::get('catalog/price/export', 'Catalog\CatalogProductController@PriceExport')->name('catalog.price.export');
 Route::get('catalog/export', 'Catalog\CatalogProductController@ExportCatalog')->name('catalog.export');
 Route::get('catalog/get-file', 'Catalog\CatalogProductController@GetCatalogFile');
-Route::get('catalog/download/csv-file/{country_code}', 'Catalog\CatalogProductController@DownloadCatalogIntocsv');
+Route::get('catalog/download/csv-file/{country_code}/{priority}', 'Catalog\CatalogProductController@DownloadCatalogIntocsv');
 Route::get('catalog/download/price/{country_code}/{priority}', 'Catalog\CatalogProductController@DownloadCatalogPrice');
 
 Route::get('catalog/asin-destination', 'Catalog\AsinDestinationController@index')->name('Asin.destination.index');

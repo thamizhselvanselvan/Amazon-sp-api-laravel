@@ -58,6 +58,8 @@ class CatalogPriceImport extends Command
         ];
         $price_convert = new PriceConversion();
         $chunk = 10;
+        $start = startTime();
+
         foreach ($source as $country_code => $seller_id) {
 
             if ($country_code == "US") {
@@ -74,26 +76,36 @@ class CatalogPriceImport extends Command
             $catalog_modal = table_model_create(country_code: $country_code, model: 'Catalog', table_name: 'catalognew');
 
             $destination_table = "asin_destination_${country_code_lr}s";
+            $catalog_new_table = "catalognew${country_code_lr}s";
 
             $header = [
-                "catalognew${country_code_lr}s.asin",
-                "catalognew${country_code_lr}s.dimensions",
+                "${catalog_new_table}.id",
+                "${catalog_new_table}.asin",
+                "${catalog_new_table}.dimensions",
             ];
 
+            Log::notice("Select Query Before Chunk - 
+            
+            " . endTime($start));
+
             $catalog_modal->select($header)
-                ->join($destination_table, $destination_table . '.asin', '=', "catalognew${country_code_lr}s.asin")
-                ->chunk($chunk, function ($data) use (
+                ->join($destination_table,  "${destination_table}.asin", '=', "${catalog_new_table}.asin")
+                ->chunkById($chunk, function ($data) use (
                     $seller_id,
                     $country_code_lr,
                     $product_seller_details,
                     $product_lp,
-                    $price_convert
+                    $price_convert,
+                    $start
                 ) {
+
+                    Log::notice("Select Query After Chunk - " . endTime($start));
 
                     $pricing = [];
                     $pricing_in = [];
                     $asin_details = [];
                     $listing_price_amount = '';
+
 
                     $asin_array = [];
                     foreach ($data as $value) {
@@ -110,17 +122,20 @@ class CatalogPriceImport extends Command
 
                     $asin = implode(',', $asin_array);
 
+                    Log::notice("Before BB Select Query - " . endTime($start));
+
                     $asin_price = DB::connection('buybox')
                         ->select("SELECT PPO.asin, LP.available,
                     GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
                     group_concat(PPO.listingprice_amount) as listingprice_amount,
                     group_concat(PPO.updated_at) as updated_at
                     FROM $product_seller_details as PPO
-                    JOIN $product_lp as LP
-                        WHERE PPO.asin = LP.asin
-                        AND PPO.asin IN ($asin)
+                    JOIN $product_lp as LP On PPO.asin = LP.asin
+                        WHERE PPO.asin IN ($asin)
                         GROUP BY PPO.asin
                     ");
+
+                    Log::notice("After BB Select Query - " . endTime($start));
 
                     foreach ($asin_price as $value) {
 
@@ -202,8 +217,10 @@ class CatalogPriceImport extends Command
 
                         PricingIn::upsert($pricing_in, 'asin_unique', ['asin', 'available', 'in_price', 'weight', 'ind_to_uae', 'ind_to_sg', 'ind_to_sa', 'price_updated_at']);
                     }
+
+                    Log::notice("Entire Process Finish - " . endTime($start));
                     // exit;
-                });
+                }, $column = 'id');
         }
     }
 }

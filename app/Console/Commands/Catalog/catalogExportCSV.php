@@ -18,6 +18,7 @@ class catalogExportCSV extends Command
     private $writer;
     private $csv_files = [];
     private $file_path;
+    private $priority;
     /**
      * The name and signature of the console command.
      *
@@ -54,34 +55,36 @@ class catalogExportCSV extends Command
         $this->remender = $total_csv / $chunk;
         $this->country_code = $this->argument('country_code');
 
-        $priority = $this->argument('priority');
+        $this->priority = $this->argument('priority');
+
+        $asin_cat = 'catalognew' . strtolower($this->country_code) . 's';
 
         $header = [
-            'asin',
-            'source',
-            'dimensions',
-            'image1',
-            'image2',
-            'product_types',
-            'brand',
-            'color',
-            'item_classification',
-            'item_name',
-            'style',
-            'website_display_group',
-            'manufacturer'
+            $asin_cat . '.asin',
+            $asin_cat . '.source',
+            $asin_cat . '.dimensions',
+            $asin_cat . '.images',
+            $asin_cat . '.product_types',
+            $asin_cat . '.brand',
+            $asin_cat . '.color',
+            $asin_cat . '.item_classification',
+            $asin_cat . '.item_name',
+            $asin_cat . '.style',
+            $asin_cat . '.website_display_group',
+            $asin_cat . '.manufacturer'
         ];
 
         $asin_desti = 'asin_destination_' . strtolower($this->country_code) . 's';
-        $asin_cat = 'catalognew' . strtolower($this->country_code) . 's';
 
         $table_name = table_model_create(country_code: $this->country_code, model: 'Asin_destination', table_name: 'asin_destination_');
 
-        $table_name->where('priority', $priority)
+        $table_name->select($header)
+            ->where('priority', $this->priority)
             ->join($asin_cat, $asin_desti . '.asin', '=', $asin_cat . '.asin')
             ->chunk($chunk, function ($result) use ($header) {
 
                 if ($this->count == 1) {
+
                     $csv_header = [
                         'Asin',
                         'Source',
@@ -98,7 +101,7 @@ class catalogExportCSV extends Command
                         'Manufacturer'
                     ];
 
-                    $this->file_path = "excel/downloads/catalog/" . $this->country_code . "/Catalog-export" . $this->country_code . $this->offset . ".csv";
+                    $this->file_path = "excel/downloads/catalog/" . $this->country_code . "/Priority" . $this->priority . "/Catalog-export" . $this->country_code . $this->offset . ".csv";
                     $this->csv_files[] = "Catalog-export" . $this->country_code . $this->offset . ".csv";
 
                     if (!Storage::exists($this->file_path)) {
@@ -157,7 +160,7 @@ class catalogExportCSV extends Command
             });
 
         $zip = new ZipArchive;
-        $path = "excel/downloads/catalog/" . $this->country_code . "/zip/Catalog" . $this->country_code . ".zip";
+        $path = "excel/downloads/catalog/" . $this->country_code . "/Priority" . $this->priority . "/zip/Catalog" . $this->country_code . ".zip";
         $file_path = Storage::path($path);
 
         if (!Storage::exists($path)) {
@@ -165,7 +168,7 @@ class catalogExportCSV extends Command
         }
         if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
             foreach ($this->csv_files as $key => $value) {
-                $path = Storage::path('excel/downloads/catalog/' . $this->country_code . '/' . $value);
+                $path = Storage::path('excel/downloads/catalog/' . $this->country_code . '/Priority' . $this->priority . '/' . $value);
                 $relativeNameInZipFile = basename($path);
                 $zip->addFile($path, $relativeNameInZipFile);
             }

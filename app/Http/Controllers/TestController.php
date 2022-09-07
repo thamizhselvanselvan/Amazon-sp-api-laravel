@@ -32,6 +32,7 @@ use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use SellingPartnerApi\Api\ProductPricingApi;
+use SellingPartnerApi\Api\CatalogItemsV20220401Api;
 
 class TestController extends Controller
 {
@@ -43,8 +44,6 @@ class TestController extends Controller
    */
   public function getASIN($asin, $country_code)
   {
-
-
     $asins = array($asin);
     $token = '';
     $marketplace = '';
@@ -94,87 +93,6 @@ class TestController extends Controller
       "endpoint" => $endpoint,  // or another endpoint from lib/Endpoints.php
       "roleArn" => 'arn:aws:iam::659829865986:role/Mosh-E-Com-SP-API-Role'
     ]);
-
-
-    $item_type = 'Asin'; // string | Indicates whether ASIN values or seller SKU values are used to identify items. If you specify Asin, the information in the response will be dependent on the list of Asins you provide in the Asins parameter. If you specify Sku, the information in the response will be dependent on the list of Skus you provide in the Skus parameter.
-    $skus = array(); // string[] | A list of up to twenty seller SKU values used to identify items in the given marketplace.
-    $item_condition = 'New'; // string | Filters the offer listings based on item condition. Possible values: New, Used, Collectible, Refurbished, Club.
-    $offer_type = 'B2C'; // string | Indicates whether to request pricing information for the seller's B2C or B2B offers. Default is B2C.
-
-    echo 'Catalog Items API v2020-12-01/ getCatalogItem';
-    echo "<hr>";
-    $apiInstance = new CatalogItemsV0Api($config);
-    echo "<pre>";
-
-    try {
-      $result = $apiInstance->getCatalogItem($marketplace, $asin);
-      $result = json_decode(json_encode($result));
-      po($result);
-    } catch (Exception $e) {
-      echo 'Exception when calling CatalogApi->getCatalogItem: ', $e->getMessage(), PHP_EOL;
-    }
-
-    echo 'Product Pricing Api / getCompetitivePricing';
-    echo "<hr>";
-
-    exit;
-    $apiInstance = new ProductPricingApi($config);
-    try {
-      $result = $apiInstance->getCompetitivePricing($marketplace, $item_type, $asins);
-      $result = json_decode(json_encode($result));
-      po($result);
-      echo 'landed price';
-      $pricing = $result[0]->Product->CompetitivePricing->CompetitivePrices[0]->Price->LandedPrice;
-      print_r($pricing->CurrencyCode);
-      print_r($pricing->Amount);
-      //   $result = (array)($result->payload->AttributeSets[0]);
-    } catch (Exception $e) {
-      echo 'Exception when calling ProductPricingApi->getCompetitivePricing: ', $e->getMessage(), PHP_EOL;
-    }
-
-    echo "<hr>";
-    echo 'Product Pricing Api / getItemOffers';
-    echo "<hr>";
-    echo "<pre>";
-    try {
-      $result = $apiInstance->getItemOffers($marketplace, $item_condition, $asin)->getPayload();
-      $result = json_decode(json_encode($result));
-      print_r($result);
-    } catch (Exception $e) {
-      echo 'Exception when calling ProductPricingApi->getItemOffers: ', $e->getMessage(), PHP_EOL;
-    }
-
-    echo "<hr>";
-    echo 'Product Pricing Api / getPricing';
-    echo "<hr>";
-
-    try {
-      $result = $apiInstance->getPricing($marketplace, $item_type, $asins)->getPayload();
-      // po($result);
-      $result = json_decode(json_encode($result));
-      print_r($result);
-    } catch (Exception $e) {
-      echo 'Exception when calling ProductPricingApi->getPricing: ', $e->getMessage(), PHP_EOL;
-    }
-
-
-
-
-
-    echo "<hr>";
-
-    echo "<hr>";
-    echo 'Product Pricing Api / getListingOffers';
-    echo "<hr>";
-
-    try {
-      $result = $apiInstance->getListingOffers($marketplace, $item_type, $asins)->getPayload();
-      // po($result);
-      $result = json_decode(json_encode($result));
-      print_r($result);
-    } catch (Exception $e) {
-      echo 'Exception when calling ProductPricingApi->getPricing: ', $e->getMessage(), PHP_EOL;
-    }
   }
 
   public function getSellerOrder($seller_id, $country_code)
@@ -648,5 +566,62 @@ class TestController extends Controller
     return Storage::download($file_path);
     dd($data);
     //
+  }
+
+  public function searchCatalog($country_code)
+  {
+    $token = NULL;
+    $aws_id = '';
+    $asins = [
+      'B09TB8DDK5',
+      'B09V82KP32',
+      'B09V82LJQL',
+      'B09V82LS5S',
+      'B09V82M1CD',
+      'B09V82P512',
+
+    ];
+    $country_code = 'IN';
+
+    $identifiers_type = 'ASIN';
+    $incdata = ['attributes', 'dimensions', 'productTypes', 'images', 'summaries'];
+
+    $mws_region = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->first();
+    $token = $mws_region['aws_verified']['auth_code'];
+
+    $config =   $this->config($aws_id, $country_code, $token);
+    $apiInstance = new CatalogItemsV20220401Api($config);
+
+    $marketplace_id = [$this->marketplace_id($country_code)];
+
+    $page_size = 10;
+    $locale = null;
+    $seller_id = null;
+    $keywords = null;
+    $brand_names = null;
+    $classification_ids = null;
+    $page_size = 20;
+    $page_token = null;
+    $keywords_locale = null;
+
+    $result = $apiInstance->searchCatalogItems(
+      $marketplace_id,
+      $asins,
+      $identifiers_type,
+      $incdata,
+      $locale,
+      $seller_id,
+      $keywords,
+      $brand_names,
+      $classification_ids,
+      $page_size,
+      $page_token,
+      $keywords_locale
+    );
+    // $result =
+    //   $apiInstance->searchCatalogItems($marketplace_id, $asins, $identifiers_type, $incdata, $page_size);
+    $result = (array) json_decode(json_encode($result));
+
+    po($result);
   }
 }

@@ -18,8 +18,8 @@ class AmazonCatalogImport implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     private $payload;
-    
-    public $timeout = 60*2;
+
+    public $timeout = 60 * 2;
 
     /**
      * Create a new job instance.
@@ -41,13 +41,12 @@ class AmazonCatalogImport implements ShouldQueue
         $api_type = 'new';
 
         if ($api_type == 'new') {
-            
+
             //new catalog api
-            
+
             $catalog_asin = $this->payload;
             $catalog = new NewCatalog();
-            $catalog->Catalog($catalog_asin, $seller_id= NULL);
-
+            $catalog->Catalog($catalog_asin, $seller_id = NULL);
         }
         //  else {
 
