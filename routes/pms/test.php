@@ -9,6 +9,7 @@ use App\Models\seller\AsinMasterSeller;
 use Illuminate\Support\Facades\Storage;
 use App\Models\seller\SellerAsinDetails;
 use Illuminate\Support\Facades\Response;
+use App\Models\ShipNTrack\Packet\PacketForwarder;
 use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
 
@@ -100,8 +101,12 @@ Route::get('getPricing/', 'TestController@GetPricing');
 
 Route::get('test1', function () {
 
+    $PacketForwarder = PacketForwarder::where('status', NULL)
+        ->orWhere('status', '')
+        ->orWhere('status', '0')
+        ->get();
 
-    //
+    po($PacketForwarder);
 });
 
 

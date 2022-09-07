@@ -579,20 +579,7 @@ class TestController extends Controller
       'B09V82LS5S',
       'B09V82M1CD',
       'B09V82P512',
-      'B09V82Q26M',
-      'B09V82V5GQ',
-      'B09V82ZRL3',
-      'B09V831TR6',
-      'B09V833WY1',
-      'B09V834D95',
-      'B09V836D5Z',
-      'B09V83C2P6',
-      'B09V83CYYC',
-      'B09V83D5JB',
-      'B09V83KBYN',
-      'B09V83KM2X',
-      'B09V83PT9Z',
-      'B09N6MDPWC',
+
     ];
     $country_code = 'IN';
 
