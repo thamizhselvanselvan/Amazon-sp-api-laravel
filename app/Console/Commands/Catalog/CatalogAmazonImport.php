@@ -40,7 +40,7 @@ class CatalogAmazonImport extends Command
     public function handle()
     {
         $sources = ['us', 'in'];
-        $limit_array = ['in' => 2000, 'us' => 2000];
+        $limit_array = ['in' => 2500, 'us' => 2500];
 
         foreach ($sources as $source) {
 
@@ -56,6 +56,8 @@ class CatalogAmazonImport extends Command
             $asin_table_name = 'asin_source_' . $source . 's';
             $catalog_table_name = 'catalognew' . $source . 's';
             $current_data = date('H:i:s');
+
+            $asins = [];
             if ($current_data >= '01:00:00' && $current_data <= '01:05:00') {
                 // Log::info('UnAvaliable catalog asin dump');
 

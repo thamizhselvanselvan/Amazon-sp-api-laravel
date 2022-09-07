@@ -133,12 +133,10 @@ class NewCatalog
                     }
                 }
             }
-            Log::info($asins);
-            Log::info($queue_data);
             return $queue_data;
         } catch (Exception $e) {
 
-            // log::alert($e);
+            log::alert($e);
             $country_code = strtolower($country_code);
             $catalog_table = 'catalognew' . $country_code . 's';
 
