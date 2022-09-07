@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Orders
 {
-    public function getOrders()
+    public function getOrders($asin, $item_name)
     {
         $val = random_int(100, 10000);
         $random = substr(md5(mt_rand()), 0, 7);
@@ -23,7 +23,7 @@ class Orders
 
         /* ship and bill details  */
 
-       
+
         $orderID = random_int(100, 10000);
         $org_name = 'nitrous';
         $deli1 = 'Tech Team, tech@moshecom.com';
@@ -36,7 +36,7 @@ class Orders
         $area_code = '213';
         $ph_no = '9110674543';
 
-         $addressID = substr(md5(mt_rand()), 0, 9);
+        $addressID = substr(md5(mt_rand()), 0, 9);
         $fax_name = 'nitrous';
         $comments = 'nitrous,Tech Team, tech@moshecom.com,Washington ';
         $extrinsic = 'Nitrous';
@@ -45,14 +45,14 @@ class Orders
         $currency = 'USD';
         /* item details  */
         $money  = 2.91;
-        $asin = 'B09542G9ZN';
-        $item_description = 'Amazon Basics Cotton Rounds, 100ct, 1-Pack (Previously Solimo)';
+        $asin = $asin;
+        $item_description = $item_name;
         $unit = 'EA';
-        $class = '';
-        $manuname = 'Amazon.com Services, Inc.';
-        $manu_id = '';
-        $subcatagory = '';
-        $catagory = 'Plastic';
+        $class = 'NA';
+        $manuname = 'NA';
+        $manu_id = 'NA';
+        $subcatagory = 'NA';
+        $catagory = 'NA';
         $line = '1';
         $qty = '1';
 
@@ -104,6 +104,8 @@ class Orders
         <From>
             <Credential domain="networkid">
                 <Identity>NitrousTest5528363391</Identity>
+                <Extrinsic  name="Email">tech@moshecom.com</Extrinsic>
+
             </Credential>
         </From>
         <To>
@@ -116,29 +118,31 @@ class Orders
                 <Identity>NitrousTest5528363391</Identity>
                 <SharedSecret>CvQ585ZrwyElwlDEETPFpwjOTMaav5</SharedSecret>
             </Credential>
-            <UserAgent>Amazon Business cXML Application</UserAgent>
+            <UserAgent>test</UserAgent>
         </Sender>
         <Punchout>https://www.amazon.com/eprocurement/punchout</Punchout> 
-
     </Header>
     <Request deploymentMode="test">
         <OrderRequest>
+        <SuplierSetup>
+                <URL> http://userd8ff39619b0e21c.app.vtxhub.com/callback.php </URL>
+                </SuplierSetup>
             <OrderRequestHeader orderDate="' . $date . '" orderID="' . $orderID . '" type="new" orderType="regular">
                 <Total>
                     <Money currency="' . $currency . '">' . $money . '</Money>
                 </Total>
                 <ShipTo>
-                    <Address isoCountryCode=" ' . $countrycode . '" addressID="'. $addressID.'">
+                    <Address isoCountryCode=" ' . $countrycode . '" addressID="' . $addressID . '">
                         <Name xml:lang="en-US">' . $org_name . '</Name>
                         <PostalAddress name="' . $name . '">
                             <DeliverTo>' . $deli1 . '</DeliverTo>
-                              <DeliverTo>' . $deli2 . '</DeliverTo>
+                            <DeliverTo>' . $deli2 . '</DeliverTo>
                             <DeliverTo>' . $deli3 . '</DeliverTo>
                             <Street>' . $street . '</Street>
                             <City>' . $city . '</City>
                             <State>' . $state . '</State>
                             <PostalCode>' . $postcode . '</PostalCode>
-                            <Country  isoCountryCode=" '. $countrycode . '">' . $country_name . '</Country>
+                            <Country  isoCountryCode=" ' . $countrycode . '">' . $country_name . '</Country>
                         </PostalAddress>
                         <Email name="' . $name . '">' . $email . '</Email>
                         <Phone name="' . $name . '">
@@ -168,6 +172,8 @@ class Orders
                             <PostalCode>' . $postcode . '</PostalCode>
                             <Country isoCountryCode=" ' . $countrycode . '">' . $country . '</Country>
                             <Email name="Email">' . $email . '</Email>
+                             <Extrinsic name="Email">' . $email . '</Extrinsic>
+                             <Extrinsic name="UserEmail">' . $email . '</Extrinsic>
                             <Phone name="work">
                             <TelephoneNumber>
                                 <CountryCode isoCountryCode=" ' . $countrycode . '">' . $country . '</CountryCode>
@@ -185,9 +191,12 @@ class Orders
                         </Fax>
                     </Address>
                 </BillTo>
-                <Contact>
-               <Email name="Email">' . $email . '</Email>
-                </Contact>
+                <contact>
+                    <name xml:lang="en-US">' . $name . '</name>
+                    <phone>' . $ph_no . '</phone>
+                    <Email>' . $email . '</Email>
+                    <Email name="Email">' . $email . '</Email>
+                </contact>
                 <Shipping>
                     <Money currency="' . $currency . '">' . $money . '</Money>
                     <Description xml:lang="en">std-us</Description>
@@ -197,14 +206,16 @@ class Orders
                     <Description xml:lang="en">Included</Description>
                 </Tax>
                 <Comments>' . $comments . '</Comments>
-                <Extrinsic name="Email">' . $email. '</Extrinsic>
+                <Extrinsic name="Email">' . $email . '</Extrinsic>
+                <Extrinsic name="UserEmail">' . $email . '</Extrinsic>
+               
                 <Email>tech@moshecom.com</Email>
             </OrderRequestHeader>
             <ItemOut quantity="' . $qty . '" lineNumber="' . $line . '">
           
                 <ItemID>
                     <SupplierPartID>' . $asin . '</SupplierPartID>
-                    <SupplierPartAuxiliaryID>' . $supplierPartAuxiliaryID . '</SupplierPartAuxiliaryID>
+                    <SupplierPartAuxiliaryID>' . $supplierPartAuxiliaryID . ',1</SupplierPartAuxiliaryID>
                 </ItemID>
                 <ItemDetail>
                     <UnitPrice>
@@ -243,7 +254,7 @@ class Orders
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         $data = curl_exec($ch);
-        $send = [$data, $base,$xml];
+        $send = [$data, $base, $xml];
 
         return $send;
         if (curl_errno($ch))
