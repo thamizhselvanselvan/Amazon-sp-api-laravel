@@ -134,27 +134,43 @@ class cliqnshop_orders_call extends Command
                 $fax_name,
             ];
 
-            DB::connection('business')->table('orders')->insert([
-                // 'xml_sent' => json_encode($xml),
-                'xml_sent' => '',
-                'sent_payload' => $sent_payload,
-                'organization_name' => $org_name,
-                'order_date' => $order_date,
-                'name' => $name,
-                'e-mail' => $email,
-                'country_name' => $country_name,
-                'country_code' => $countrycode,
-                'order_id' => $order_id,
-                'item_details' => json_encode($item_details),
-                'ship_address' => json_encode($ship_address_array),
-                'bill_address' => json_encode($ship_address_array),
-                'responce_payload' => $receved_payload,
-                'responce_text' =>  $responce_text,
-                'responce_code' => $responce_code,
-                'created_at' => now(),
-                'updated_at' => now()
+            $insert = [
+                    'xml_sent' => '',
+                    'sent_payload' => $sent_payload,
+                    'organization_name' => $org_name,
+                    'order_date' => $order_date,
+                    'name' => $name,
+                    'e-mail' => $email,
+                    'country_name' => $country_name,
+                    'country_code' => $countrycode,
+                    'order_id' => $order_id,
+                    'item_details' => json_encode($item_details),
+                    'ship_address' => json_encode($ship_address_array),
+                    'bill_address' => json_encode($ship_address_array),
+                    'responce_payload' => $receved_payload,
+                    'responce_text' =>  $responce_text,
+                    'responce_code' => $responce_code,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
+
+            DB::connection('business')->table('orders')->upsert($insert, ['order_id'], [
+                'xml_sent',
+                'sent_payload',
+                'organization_name',
+                'order_date',
+                'name',
+                'e-mail',
+                'country_name',
+                'country_code',
+                'item_details',
+                'ship_address',
+                'bill_address',
+                'responce_payload',
+                'responce_text',
+                'responce_code'
             ]);
-            // dd($responce, $details);
+          
         }
     
     }

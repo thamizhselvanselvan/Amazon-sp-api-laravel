@@ -42,6 +42,7 @@ class Kernel extends ConsoleKernel
             // $schedule->command('pms:sellers-orders-import')->everyTenMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
 
             $schedule->command('mosh:catalog-amazon-import')->everyTenMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+            $schedule->command('mosh:order_cliqnshop_place')->everyFifteenMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
         }
 
         if (app()->environment() === 'local') {
