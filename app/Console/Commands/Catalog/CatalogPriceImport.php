@@ -79,15 +79,18 @@ class CatalogPriceImport extends Command
             $catalog_new_table = "catalognew${country_code_lr}s";
 
             $header = [
+                "${catalog_new_table}.id",
                 "${catalog_new_table}.asin",
                 "${catalog_new_table}.dimensions",
             ];
 
-            Log::notice("Select Query Before Chunk - " . endTime($start));
+            Log::notice("Select Query Before Chunk - 
+            
+            " . endTime($start));
 
             $catalog_modal->select($header)
                 ->join($destination_table,  "${destination_table}.asin", '=', "${catalog_new_table}.asin")
-                ->chunk($chunk, function ($data) use (
+                ->chunkById($chunk, function ($data) use (
                     $seller_id,
                     $country_code_lr,
                     $product_seller_details,
@@ -217,7 +220,7 @@ class CatalogPriceImport extends Command
 
                     Log::notice("Entire Process Finish - " . endTime($start));
                     // exit;
-                });
+                }, $column = 'id');
         }
     }
 }
