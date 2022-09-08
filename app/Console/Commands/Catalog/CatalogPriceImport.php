@@ -67,8 +67,6 @@ class CatalogPriceImport extends Command
             // } elseif ($country_code == 'IN') {
             //     PricingIn::truncate();
             // }
-
-            $country_code = 'us';
             $user_id = '';
             $des_asin_array = [];
             $calculated_weight = [];
