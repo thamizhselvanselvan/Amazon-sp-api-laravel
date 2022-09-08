@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
+use App\Models\Admin\ErrorReporting;
 use App\Services\SP_API\API\Catalog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -70,7 +71,7 @@ foreach($datas as $data){
 po($value);
 });
 
-// route::get('newcatalog/{asin}', function($asin){
+// route::get('newcatalog', function(){
 
 
 //     $host = config('database.connections.catalog.host');
@@ -107,41 +108,89 @@ po($value);
 //         $asins = [
 //             'B00014DZL6',
 //             'B00014E9W0',
-//             'B000WA6KFW',
+//             'B000WA6KFK',
 //             'B000WH10SW',
 //             'B000WNAP6O',
 //             'B000XAL2F4',
 //             'B000ZHJS0G',
 //         ];
+//         $identifiers = $asins;
 //         $identifiers_type = 'ASIN';
+//         $page_size = 20;
+//         $locale = null;
+//         $seller_id_temp = null;
+//         $keywords = null;
+//         $brand_names = null;
+//         $classification_ids = null;
+//         $page_token = null;
+//         $keywords_locale = null;
         
 //         $includedData= ['attributes','dimensions', 'images', 'productTypes', 'summaries'];
 //         echo"<pre>";
 //         try {
 //             $data = [];
-//             $result = $apiInstance->searchCatalogItems ($marketplace_id, $asins, $identifiers_type, $includedData);
+//             $result = $apiInstance->searchCatalogItems (
+//             $marketplace_id, 
+//             $identifiers,
+//             $identifiers_type,
+//             $includedData,
+//             $locale,
+//             $seller_id_temp,
+//             $keywords,
+//             $brand_names,
+//             $classification_ids,
+//             $page_size,
+//             $page_token,
+//             $keywords_locale,
+//         );
 //             $result = json_decode(json_encode($result));
 //             // po($result);
 //             // exit;
-//             foreach($result->items as $key1 => $value)
+//             foreach($result->items as $key => $value)
 //             {   
-//                 foreach($value as $key2 => $value1)
+//                 foreach($value as $key1 => $value1)
 //                 {
-//                     if($key2 == 'summaries')
+//                     if($key1 == 'summaries')
 //                     {
-//                         foreach($value1[0] as $key3 => $value2)
+//                         foreach($value1[0] as $key2 => $value2)
 //                         {
-//                             $data[$key1][$key3] = returnType($value2);
+//                             $data[$key][$key2] = returnType($value2);
+//                         }
+//                     }elseif($key1 == 'dimensions')
+//                     {
+//                         if(array_key_exists('package', (array)$value1[0])){
+//                             foreach($value1[0]->package as $key3 => $value3)
+//                             {
+//                                 $data[$key][$key3] = $value3->value;
+//                                 if($key3 == 'width' || $key3 == 'lenght' || $key3 == 'height')
+//                                 {
+//                                     $data[$key]['unit'] = $value3->unit;
+//                                 }
+//                                 if($key3 == 'weight'){
+                                    
+//                                     $data[$key]['weight_unit'] = $value3->unit;
+//                                 }
+//                             }
 //                         }
 //                     }
 //                     else{
-//                         $data[$key1][$key2] = returnType($value1);
+//                         $data[$key][$key1] = returnType($value1);
 //                     }
 //                 }  
 //             }
 //             po($data);
 //         } catch (Exception $e) {
-//             echo $e;
+//             $error_record = [
+//                 'queue_type' => 'Catalog',
+//                 'source' => $country_code,
+//                 'identifier_type' => 'ASIN',
+//             ];
+            
+//             ErrorReporting::insert($error_record);
+//             // echo $e->getMessage(), PHP_EOL;
+            
+//             print_r($e->getMessage());
+            
 //             // echo 'Exception when calling CatalogItemsV20220401Api->getCatalogItem: ', $e->getMessage(), PHP_EOL;
 //         }
 // }

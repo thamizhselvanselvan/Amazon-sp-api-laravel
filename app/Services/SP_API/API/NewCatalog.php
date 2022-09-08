@@ -9,6 +9,7 @@ use App\Models\Mws_region;
 use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\Admin\ErrorReporting;
 use App\Services\SP_API\Config\ConfigTrait;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
 
@@ -91,7 +92,7 @@ class NewCatalog
         $identifiers_type = 'ASIN';
         $page_size = 20;
         $locale = null;
-        $seller_id = null;
+        $seller_id_temp = null;
         $keywords = null;
         $brand_names = null;
         $classification_ids = null;
@@ -107,7 +108,7 @@ class NewCatalog
                 $identifiers_type,
                 $incdata,
                 $locale,
-                $seller_id,
+                $seller_id_temp,
                 $keywords,
                 $brand_names,
                 $classification_ids,
@@ -127,6 +128,19 @@ class NewCatalog
                         foreach ($value[0] as $key2 => $value2) {
                             $key2 = str_replace('marketplaceId', 'marketplace', $key2);
                             $queue_data[$key][$key2] = $this->returnDataType($value2);
+                        }
+                    } elseif ($key1 == 'dimensions') {
+                        if (array_key_exists('package', (array)$value[0])) {
+                            foreach ($value[0]->package as $key3 => $value3) {
+                                $queue_data[$key][$key3] = $value3->value;
+                                if ($key3 == 'height' || $key3 == 'width' || $key3 == 'length') {
+                                    $queue_data[$key]['unit'] = $value3->unit;
+                                }
+                                if ($key3 == 'weight') {
+
+                                    $queue_data[$key]['weight_unit'] = $value3->unit;
+                                }
+                            }
                         }
                     } else {
                         $queue_data[$key][$key1] = $this->returnDataType($value);
