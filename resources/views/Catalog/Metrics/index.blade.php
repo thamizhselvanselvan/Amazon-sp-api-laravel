@@ -1,6 +1,10 @@
 @extends('adminlte::page')
 @section('title', 'Import')
 
+@section('css')
+<link rel="stylesheet" href="/css/styles.css">
+@stop
+
 @section('content_header')
 <div class='row'>
     <div class="col-12 text-center">
@@ -27,7 +31,7 @@
     </div>
 </div>
 
-<div class="row">
+<!-- <div class="row">
     <div class="col">
         <div class="small-box bg-gradient-success text-center">
             <div class="inner">
@@ -48,9 +52,9 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
-<div class="row">
+<!-- <div class="row">
     <div class="col">
         <h2> IN Asin Priority Wise</h2>
         <div class="row">
@@ -121,6 +125,44 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
+<table class="table table-striped table-bordered table-sm text-center">
+    <thead>
+        <tr class="bg-info">
+            <th>Source</th>
+            <th>Priority</th>
+            <th>Total</th>
+            <th>Catalog</th>
+            <th>Delist</th>
+            <th>Unavailable</th>
+        </tr>
+    </thead>
+    <tbody>
+        @php
+        $i = 1
+        @endphp
+        @foreach ($priority_wise as $key => $priority)
+        @foreach ($priority as $key2 => $value)
+        <tr>
+            <td>{{$key2}}</td>
+            <td>Priority {{$i}}</td>
+            <td>{{$value}}</td>
+            <td>{{$Total_catalog[$key][$key2]}}</td>
+            <td></td>
+            <td></td>
+        </tr>
+        @if($i == 3)
+        @php     
+        $i = 0
+        @endphp
+        @endif
+        @php  
+            $i = $i+1
+        @endphp
+        
+        @endforeach
+        @endforeach
+    </tbody>
+</table>
 
 @stop

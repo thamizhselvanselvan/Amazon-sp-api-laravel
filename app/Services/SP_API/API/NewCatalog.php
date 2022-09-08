@@ -129,7 +129,11 @@ class NewCatalog
                             $key2 = str_replace('marketplaceId', 'marketplace', $key2);
                             $queue_data[$key][$key2] = $this->returnDataType($value2);
                         }
-                    } elseif ($key1 == 'dimensions') {
+                    } 
+                    else {
+                        $queue_data[$key][$key1] = $this->returnDataType($value);
+                    }
+                    if ($key1 == 'dimensions') {
                         if (array_key_exists('package', (array)$value[0])) {
                             foreach ($value[0]->package as $key3 => $value3) {
                                 $queue_data[$key][$key3] = $value3->value;
@@ -142,9 +146,7 @@ class NewCatalog
                                 }
                             }
                         }
-                    } else {
-                        $queue_data[$key][$key1] = $this->returnDataType($value);
-                    }
+                    } 
                 }
             }
             return $queue_data;
