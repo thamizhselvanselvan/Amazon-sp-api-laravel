@@ -196,3 +196,5 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
 });
 Route::get('export_catalog', 'TestController@ExportCatalog');
 Route::get('search_catalog/{country_code}', 'TestController@searchCatalog');
+
+Route::get('pricing', 'TestController@PricingTest');
