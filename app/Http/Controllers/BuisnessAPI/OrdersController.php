@@ -13,8 +13,10 @@ class OrdersController extends Controller
 {
     public function index()
     {
+        $asin = 'B017V4IMVQ';
+        $name = 'Harry Potter and the Sorcerers Stone, Book 1';
         $ApiCall = new Orders();
-        $data = $ApiCall->getOrders();
+        $data = $ApiCall->getOrders($asin,$name);
 
         $resultxml = $data[2];
          Storage::disk('local')->put('xml.txt', $resultxml);
