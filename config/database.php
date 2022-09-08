@@ -277,6 +277,25 @@ return [
                 // 'database' => env('DB_AUTHENTICATION_DATABASE', 'admin'), // required with Mongo 3+
             ],
         ],
+        'cliqnshop' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('CLIQNSHOP_DB_HOST', '127.0.0.1'),
+            'port' => env('CLIQNSHOP_DB_PORT', '3306'),
+            'database' => env('CLIQNSHOP_DB_DATABASE', 'forge'),
+            'username' => env('CLIQNSHOP_DB_USERNAME', 'forge'),
+            'password' => env('CLIQNSHOP_DB_PASSWORD', ''),
+            'unix_socket' => env('CLIQNSHOP_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => env('CLIQNSHOP_DB_PREFIX') . '_',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
 
     ],
 
