@@ -9,11 +9,6 @@ use Illuminate\Support\Facades\Log;
 
 class BuyBoxPriceImport
 {
-
-    public function __construct()
-    {
-    }
-
     public function fetchPriceFromBB($country_code, $seller_id)
     {
         $product_lp = '';
