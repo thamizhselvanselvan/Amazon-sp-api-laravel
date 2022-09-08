@@ -151,8 +151,6 @@ class NewCatalog
                     }
                 }
             }
-            Log::info($asins);
-            Log::info($queue_data);
             return $queue_data;
         } catch (Exception $e) {
 
@@ -167,6 +165,7 @@ class NewCatalog
             // ];
             
             // ErrorReporting::insert($error_record);
+
         }
     }
 

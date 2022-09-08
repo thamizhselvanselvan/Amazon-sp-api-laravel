@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands\Shipntrack\Tracking;
 
-use App\Models\ShipNTrack\Packet\PacketForwarder;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Models\ShipNTrack\Packet\PacketForwarder;
 
 class PacketTracking extends Command
 {
@@ -39,8 +39,12 @@ class PacketTracking extends Command
      */
     public function handle()
     {
-        PacketForwarder::get();
+        $PacketForwarder = PacketForwarder::where('status', NULL)
+            ->orWhere('status', '')
+            ->orWhere('status', '0')
+            ->get();
 
+        Log::alert(count($PacketForwarder));
 
 
         //
