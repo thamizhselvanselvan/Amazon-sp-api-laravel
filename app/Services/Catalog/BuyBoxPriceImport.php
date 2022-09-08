@@ -11,7 +11,8 @@ class BuyBoxPriceImport
 {
     public function fetchPriceFromBB($country_code, $seller_id, $limit)
     {
-        for ($i = 0; $i < 5; $i++) {
+        $i = 0;
+        for ($i; $i < 7; $i++) {
 
             $product_lp = '';
 
@@ -190,8 +191,9 @@ class BuyBoxPriceImport
 
                 //if all price are fetched then update status
                 $destination_model->where('id', '>', '0')->update(['price_status' => '0']);
+                break;
             }
-            Log::notice("Entire Process Finish - " . endTime($start));
         }
+        Log::notice("Entire Process Finish - " . endTime($start));
     }
 }
