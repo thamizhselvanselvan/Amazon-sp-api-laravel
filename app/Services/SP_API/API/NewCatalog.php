@@ -151,18 +151,17 @@ class NewCatalog
         } catch (Exception $e) {
 
             log::alert($e);
-            $country_code = strtolower($country_code);
-            $catalog_table = 'catalognew' . $country_code . 's';
+            // $country_code = strtolower($country_code);
+            // $catalog_table = 'catalognew' . $country_code . 's';
+            // $error_record = [
+            //     'queue_type' => 'Catalog',
+            //     'source' => $country_code,
+            //     'identifier' => $e,
+            //     'identifier_type' => 'ASIN',
+            // ];
+            
+            // ErrorReporting::insert($error_record);
 
-            // $found = DB::connection('catalog')->select("SELECT id, asin FROM $catalog_table 
-            // WHERE asin = '$asin' ");
-
-            // if (count($found) == 0) {
-
-            // $NewCatalogs = R::dispense($catalog_table);
-            // $NewCatalogs->asin = $asin;
-            // R::store($NewCatalogs);
-            // }
         }
     }
 
