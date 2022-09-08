@@ -95,7 +95,7 @@ class Order
         $result_data = json_decode(json_encode($result_data));
         $count = 0;
 
-        $delay_count = 25;
+        $delay_count = 28;
 
         foreach ($result_data as $resultkey => $result) {
 
