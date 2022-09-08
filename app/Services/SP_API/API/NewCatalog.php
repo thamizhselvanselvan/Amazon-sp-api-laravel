@@ -125,15 +125,21 @@ class NewCatalog
                 $queue_data[$key]['source'] = $country_code;
                 foreach ($record as $key1 => $value) {
                     if ($key1 == 'summaries') {
+
                         foreach ($value[0] as $key2 => $value2) {
+
                             $key2 = str_replace('marketplaceId', 'marketplace', $key2);
                             $queue_data[$key][$key2] = $this->returnDataType($value2);
                         }
                     } elseif ($key1 == 'dimensions') {
+
                         if (array_key_exists('package', (array)$value[0])) {
+
                             foreach ($value[0]->package as $key3 => $value3) {
+
                                 $queue_data[$key][$key3] = $value3->value;
                                 if ($key3 == 'height' || $key3 == 'width' || $key3 == 'length') {
+
                                     $queue_data[$key]['unit'] = $value3->unit;
                                 }
                                 if ($key3 == 'weight') {
@@ -143,6 +149,7 @@ class NewCatalog
                             }
                         }
                     } else {
+
                         $queue_data[$key][$key1] = $this->returnDataType($value);
                     }
                 }
@@ -159,9 +166,8 @@ class NewCatalog
             //     'identifier' => $e,
             //     'identifier_type' => 'ASIN',
             // ];
-            
-            // ErrorReporting::insert($error_record);
 
+            // ErrorReporting::insert($error_record);
         }
     }
 
