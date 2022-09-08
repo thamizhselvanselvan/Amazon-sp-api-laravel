@@ -4,6 +4,7 @@ namespace App\Console\Commands\BusinessAPI;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Services\AWS_Business_API\AWS_POC\Orders;
 
 class cliqnshop_orders_call extends Command
@@ -41,14 +42,21 @@ class cliqnshop_orders_call extends Command
     {
         $data = DB::connection('cliqnshop')->table('order')
 
-        ->join('order_base_product as oid', function ($query) {
-            $query->on('oid.baseid', '=', 'order.baseid');
-        })
+            ->join('order_base_product as oid', function ($query) {
+                $query->on('oid.baseid', '=', 'order.baseid')
+                ->where('status','0');
+            })
             ->join('product as pid', function ($query) {
                 $query->on('pid.id', '=', 'oid.prodid');
             })
             ->select('code', 'label')
             ->get();
+
+
+        $aimeosasin = DB::connection('cliqnshop')->table('order_base_product')
+            ->select('prodcode')
+            ->get();
+        
 
         $call = new Orders;
         foreach ($data as $val) {
@@ -106,6 +114,7 @@ class cliqnshop_orders_call extends Command
             $ManufacturerPartID = ($order_details["ManufacturerPartID"]);
             $category = ($order_details["category"]);
             $sub_category = ($order_details["sub_category"]);
+$xmlasin = $asin;
 
             $item_details = [
                 $asin,
@@ -135,24 +144,24 @@ class cliqnshop_orders_call extends Command
             ];
 
             $insert = [
-                    'xml_sent' => '',
-                    'sent_payload' => $sent_payload,
-                    'organization_name' => $org_name,
-                    'order_date' => $order_date,
-                    'name' => $name,
-                    'e-mail' => $email,
-                    'country_name' => $country_name,
-                    'country_code' => $countrycode,
-                    'order_id' => $order_id,
-                    'item_details' => json_encode($item_details),
-                    'ship_address' => json_encode($ship_address_array),
-                    'bill_address' => json_encode($ship_address_array),
-                    'responce_payload' => $receved_payload,
-                    'responce_text' =>  $responce_text,
-                    'responce_code' => $responce_code,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ];
+                'xml_sent' => '',
+                'sent_payload' => $sent_payload,
+                'organization_name' => $org_name,
+                'order_date' => $order_date,
+                'name' => $name,
+                'e-mail' => $email,
+                'country_name' => $country_name,
+                'country_code' => $countrycode,
+                'order_id' => $order_id,
+                'item_details' => json_encode($item_details),
+                'ship_address' => json_encode($ship_address_array),
+                'bill_address' => json_encode($ship_address_array),
+                'responce_payload' => $receved_payload,
+                'responce_text' =>  $responce_text,
+                'responce_code' => $responce_code,
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
 
             DB::connection('business')->table('orders')->upsert($insert, ['order_id'], [
                 'xml_sent',
@@ -170,8 +179,13 @@ class cliqnshop_orders_call extends Command
                 'responce_text',
                 'responce_code'
             ]);
-          
-        }
+
+            $data = DB::connection('cliqnshop')->table('order_base_product')->where('prodcode', $asin)->update([
+                'sent_xml' => $xml,
+                'status' =>'1',
+            ]);
+            
     
+        }
     }
 }
