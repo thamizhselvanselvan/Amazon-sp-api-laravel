@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class BuyBoxPriceImport
 {
-    public function fetchPriceFromBB($country_code, $seller_id)
+    public function fetchPriceFromBB($country_code, $seller_id, $limit)
     {
         $product_lp = '';
 
@@ -31,7 +31,7 @@ class BuyBoxPriceImport
 
         $destination_model = table_model_create(country_code: $country_code, model: 'Asin_destination', table_name: 'asin_destination_');
 
-        $data = $destination_model->select(['asin', 'user_id'])->where(['price_status' => '0'])->limit(1000)->get();
+        $data = $destination_model->select(['asin', 'user_id'])->where(['price_status' => '0'])->limit($limit)->get();
 
         foreach ($data as $value) {
 
