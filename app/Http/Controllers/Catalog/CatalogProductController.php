@@ -54,6 +54,7 @@ class CatalogProductController extends Controller
 
     public function GetCatalogFile(Request $request)
     {
+        $catalogfiles = [] ;
         $folder = $request->catalog;
         $path = (Storage::path("excel/downloads/".$folder));
         $files = scandir($path);
