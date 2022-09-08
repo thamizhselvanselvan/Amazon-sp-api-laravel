@@ -2,35 +2,24 @@
 
 namespace App\Console\Commands\Catalog;
 
-use AmazonPHP\SellingPartner\Model\ProductPricing\BuyBoxPriceType;
 use Illuminate\Console\Command;
-use App\Models\Catalog\PricingIn;
-use App\Models\Catalog\PricingUs;
-use Illuminate\Support\Facades\DB;
-use App\Models\Catalog\Asin_master;
-use Illuminate\Support\Facades\Log;
-use App\Models\Catalog\AsinDestination;
 use App\Services\Catalog\BuyBoxPriceImport;
-use App\Services\Catalog\PriceConversion;
 
-class CatalogPriceImport extends Command
+class CatalogPriceImportIN extends Command
 {
-    public $rate_master_in_ae;
-    public $rate_master_in_sa;
-    public $rate_master_in_sg;
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'mosh:Catalog-price-import-bb-us';
+    protected $signature = 'mosh:Catalog-price-import-bb-in';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Import catalog from buy box for US';
+    protected $description = 'Import catalog price form bb table for IN';
 
     /**
      * Create a new command instance.
@@ -54,8 +43,8 @@ class CatalogPriceImport extends Command
         //     'IN' => 39
         // ];
 
-        $country_code = 'US';
-        $seller_id = '40';
+        $country_code = 'IN';
+        $seller_id = '39';
 
         $buy_box_price = new BuyBoxPriceImport();
         $buy_box_price->fetchPriceFromBB($country_code, $seller_id);
