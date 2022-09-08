@@ -701,7 +701,6 @@ class TestController extends Controller
             'user_id' => $user_id,
             'price_status' => '1'
           ];
-          po($details);
         }
       }
       $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);

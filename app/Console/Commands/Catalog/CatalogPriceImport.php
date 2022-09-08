@@ -148,6 +148,16 @@ class CatalogPriceImport extends Command
                     $updated_at = explode(',', $value->updated_at);
 
                     $asin_name = $value->asin;
+
+                    if (isset($find_missing_asin[$asin_name])) {
+
+                        $des_asin_update[] = [
+                            'asin' => $asin_name,
+                            'user_id' => $user_id,
+                            'price_status' => '1'
+                        ];
+                    }
+
                     $available = $value->available;
                     $packet_weight = $calculated_weight[$asin_name];
 
@@ -214,6 +224,9 @@ class CatalogPriceImport extends Command
                         $pricing_in[] = [...$asin_details, ...$destination_price];
                     }
                 }
+
+                $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
+
                 if ($country_code_lr == 'us') {
 
                     PricingUs::upsert($pricing, 'unique_asin',  ['asin', 'available', 'weight', 'us_price', 'usa_to_in_b2b', 'usa_to_in_b2c', 'usa_to_uae', 'usa_to_sg', 'price_updated_at']);
