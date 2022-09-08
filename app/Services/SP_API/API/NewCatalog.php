@@ -81,7 +81,7 @@ class NewCatalog
     }
 
 
-    public function FetchDataFromCatalog($asins, $country_code, $seller_id , $token, $aws_id)
+    public function FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id)
     {
         $country_code = strtoupper($country_code);
         $config =   $this->config($aws_id, $country_code, $token);
@@ -129,24 +129,20 @@ class NewCatalog
                             $key2 = str_replace('marketplaceId', 'marketplace', $key2);
                             $queue_data[$key][$key2] = $this->returnDataType($value2);
                         }
-                    }elseif($key1 == 'dimensions')
-                    {
-                        if(array_key_exists('package', (array)$value[0])){
-                            foreach($value[0]->package as $key3 => $value3)
-                            {
+                    } elseif ($key1 == 'dimensions') {
+                        if (array_key_exists('package', (array)$value[0])) {
+                            foreach ($value[0]->package as $key3 => $value3) {
                                 $queue_data[$key][$key3] = $value3->value;
-                                if($key3 == 'height' || $key3 == 'width' || $key3 == 'length')
-                                {
+                                if ($key3 == 'height' || $key3 == 'width' || $key3 == 'length') {
                                     $queue_data[$key]['unit'] = $value3->unit;
                                 }
-                                if($key3 == 'weight'){
-                                    
+                                if ($key3 == 'weight') {
+
                                     $queue_data[$key]['weight_unit'] = $value3->unit;
                                 }
                             }
                         }
-                    }
-                    else {
+                    } else {
                         $queue_data[$key][$key1] = $this->returnDataType($value);
                     }
                 }
@@ -165,7 +161,6 @@ class NewCatalog
             // ];
             
             // ErrorReporting::insert($error_record);
-
         }
     }
 
