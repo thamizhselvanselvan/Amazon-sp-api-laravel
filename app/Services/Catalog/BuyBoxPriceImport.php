@@ -54,6 +54,8 @@ class BuyBoxPriceImport
                     'price_status' => '2'
                 ];
             }
+            Log::alert('Des asing array');
+            Log::alert($des_asin_array);
 
             $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
             $des_asin_update = [];
@@ -79,6 +81,9 @@ class BuyBoxPriceImport
                 $asin_array[] = "'$a'";
             }
 
+            Log::alert('cat asing array');
+            Log::alert($asin_array);
+
             if ($asin_array) {
 
                 $asin = implode(',', $asin_array);
@@ -93,6 +98,9 @@ class BuyBoxPriceImport
                     WHERE PPO.asin IN ($asin)
                     GROUP BY PPO.asin
                 ");
+
+                Log::alert('buybox asing array ->' . $priority);
+                Log::alert($asin_price);
 
                 foreach ($asin_price as $value) {
 
