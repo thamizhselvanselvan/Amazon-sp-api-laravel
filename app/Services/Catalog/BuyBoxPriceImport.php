@@ -11,11 +11,10 @@ class BuyBoxPriceImport
 {
     public function fetchPriceFromBB($country_code, $seller_id, $limit)
     {
-        $priority_array = ['P1' => '1', 'P2' => '2', 'P3' => '3', 'P4' => '4'];
+        $priority_array = ['P1' => '1', 'P2' => '2', 'P3' => '3'];
 
         foreach ($priority_array as $priority) {
 
-            $priority = 2;
             $product_lp = '';
 
             $start = startTime();
