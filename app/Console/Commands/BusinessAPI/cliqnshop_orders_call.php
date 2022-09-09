@@ -114,7 +114,7 @@ class cliqnshop_orders_call extends Command
             $ManufacturerPartID = ($order_details["ManufacturerPartID"]);
             $category = ($order_details["category"]);
             $sub_category = ($order_details["sub_category"]);
-$xmlasin = $asin;
+            $xmlasin = $asin;
 
             $item_details = [
                 $asin,
@@ -184,7 +184,7 @@ $xmlasin = $asin;
                 'sent_xml' => $xml,
                 'status' =>'1',
             ]);
-            Log::info('XML Sent to cliqnshop');
+            Log::info('XML Sent to cliqnshop Table');
     
         }
     }
