@@ -322,9 +322,9 @@ return [
             'can' =>   ['Admin', 'Catalog'],
             'submenu' => [
                 [
-                    'text'  => 'Metrics',
-                    'url'  => 'catalog/metrics',
-                    'icon' => 'fa fa-bar-chart',
+                    'text'  => 'Dashboard',
+                    'url'  => 'catalog/dashboard',
+                    'icon' => 'fa fa-dashboard',
                     'can' =>  ['Admin']
                 ],
 
