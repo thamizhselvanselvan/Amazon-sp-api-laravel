@@ -24,8 +24,8 @@ class CatalogDashboardController extends Controller
             $source = strtolower($source);
             $destination_table = "asin_destination_${source}s";
             $catalog_table = "catalognew${source}s";
-            $total_asin += $table_name->get('asin')->count();
-            $total_catalog += DB::connection('catalog')->table($catalog_table )->count('asin');
+            // $total_asin += $table_name->get('asin')->count();
+            // $total_catalog += DB::connection('catalog')->table($catalog_table )->count('asin');
 
             $buybox_table = "bb_product_${source}s_lp_offers";
             $catalog_price = "pricing_${source}s";
@@ -59,6 +59,6 @@ class CatalogDashboardController extends Controller
             $cat_price = [];
         }
         // po($record_arrays);
-       return view('Catalog.Dashboard.index', compact('total_asin', 'total_catalog', 'record_arrays'));
+       return view('Catalog.Dashboard.index', compact('record_arrays'));
     }
 }
