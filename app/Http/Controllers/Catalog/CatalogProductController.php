@@ -54,6 +54,7 @@ class CatalogProductController extends Controller
 
     public function GetCatalogFile(Request $request)
     {
+        $catalogfiles = [] ;
         $folder = $request->catalog;
         $path = (Storage::path("excel/downloads/".$folder));
         $files = scandir($path);
@@ -73,8 +74,14 @@ class CatalogProductController extends Controller
                         foreach($final_paths as $key3 => $final_file)
                         {
                             if($key3 > 1){
-                                $catfile = basename($final_file, '.zip');
-                                $catalogfiles [$file][$filename] = date("F d Y H:i:s.", filemtime($final_path . '/' . $final_file));
+                                
+                                $search_paths = glob(Storage::path('excel/downloads/'.$folder.'/'.$file.'/'.$filename.'/zip/*'));
+                                foreach($search_paths as $search_path){
+                                    if(str_contains($search_path, '.zip')){
+                                        $catfile = basename($final_file, '.zip');
+                                        $catalogfiles [$file][$filename] = date("F d Y H:i:s.", filemtime($final_path . '/' . $final_file));
+                                    }
+                                }
                             }
                         }
                     }

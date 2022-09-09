@@ -178,7 +178,7 @@
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                         </div>
                         <div class="modal-body catalogPricing">
-
+        
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
@@ -207,6 +207,7 @@
     });
 
     $('#catalogdownload').click(function() {
+        
         $.ajax({
             url: "/catalog/get-file",
             method: "GET",
@@ -215,23 +216,29 @@
                 "_token": "{{ csrf_token() }}",
             },
             success: function(response) {
-                console.log(response);
-                let files = '';
-                $.each(response, function(index, response) {
-                    let data = response;
-                    $.each(data, function(key, data){
-                        
-                        files += "<li class='p-0 m-0'>";
-                        files += "<a href='/catalog/download/csv-file/" + index + "/"+ key +
-                            "' class='p-0 m-0'> Catalog " + index + '&nbsp;' + key +"</a> ";
-                        files += data;
-                        files += "</li>";
-                    });
-                    let file_name = Object.keys(response)[0];
-                    let file_time = response[file_name];
+                if(response == ''){
+                    $('.catalogFiles').append('File Downloading..');
+                }else{
 
-                });
-                $('.catalogFiles').html(files);
+                    $('.catalogFiles').empty();
+                    console.log(response);
+                    let files = '';
+                    $.each(response, function(index, response) {
+                        let data = response;
+                        $.each(data, function(key, data){
+                            
+                            files += "<li class='p-0 m-0'>";
+                            files += "<a href='/catalog/download/csv-file/" + index + "/"+ key +
+                                "' class='p-0 m-0'> Catalog " + index + '&nbsp;' + key +"</a> ";
+                            files += data;
+                            files += "</li>";
+                        });
+                        // let file_name = Object.keys(response)[0];
+                        // let file_time = response[file_name];
+                    });
+                    $('.catalogFiles').html(files);
+                }
+                
             },
         });
     });
@@ -246,22 +253,28 @@
             },
             success: function(result) {
 
-                $('.catalogPricing').empty();
-                let files = '';
-                $.each(result, function(index, result) {
-                    let data = result;
-                    $.each(data, function(key, data) {
-                        files += "<li class='p-0 m-0'>";
-                        files += "<a href='/catalog/download/price/" + index + '/' +
-                            key +
-                            "' class='p-0 m-0'> Catalog Price " + index + '&nbsp;' +
-                            key + "</a> ";
-                        files += data;
-                        files += "</li>";
+                if(result == ''){
+                    $('.catalogPricing').append('File Downloading..');
+                }else{
+
+                    $('.catalogPricing').empty();
+                    let files = '';
+                    $.each(result, function(index, result) {
+                        let data = result;
+                        $.each(data, function(key, data) {
+                            files += "<li class='p-0 m-0'>";
+                            files += "<a href='/catalog/download/price/" + index + '/' +
+                                key +
+                                "' class='p-0 m-0'> Catalog Price " + index + '&nbsp;' +
+                                key + "</a> ";
+                            files += data;
+                            files += "</li>";
+                        });
                     });
-                });
-                $('.catalogPricing').append(files);
+                    $('.catalogPricing').append(files);
+                }
             },
+            
         });
     });
     </script>
