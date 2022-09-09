@@ -57,7 +57,7 @@ class CatalogPriceExportCSV extends Command
         $this->priority = $this->argument('priority');
 
         $chunk = 10000;
-        $exportFilePath = "excel/downloads/catalog_price/$this->country_code/Priority".$this->priority.'/' . $this->country_code . "_CatalogPrice";
+        $exportFilePath = "excel/downloads/catalog_price/$this->country_code/Priority" . $this->priority . '/' . $this->country_code . "_CatalogPrice";
         $deleteFilePath = "app/excel/downloads/catalog_price/" . $this->country_code;
 
         // if (file_exists(storage_path($deleteFilePath))) {
@@ -77,23 +77,29 @@ class CatalogPriceExportCSV extends Command
 
             $headers = ['asin', 'available', 'in_price', 'weight', 'ind_to_uae', 'ind_to_sg', 'ind_to_sa', 'price_updated_at'];
             $csv_header = ['Asin', 'Available', 'India Price', 'Weight(kg)', 'IND To UAE', 'IND To Singapore ', 'IND To Saudi', 'Updated At'];
-            PricingIn::select($headers)->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
+            PricingIn::select($headers)
+                ->join('asin_destination_ins', 'pricing_ins.asin', '=', 'asin_destination_ins.asin')
+                ->where('asin_destination_ins.priority', $this->priority)
+                ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
 
-                $this->CreateCsvFile($csv_header, $records, $exportFilePath);
-                //pusher
-            });
+                    $this->CreateCsvFile($csv_header, $records, $exportFilePath);
+                    //pusher
+                });
         } elseif ($this->country_code == 'US') {
 
             $headers = ['asin', 'available', 'weight', 'us_price', 'usa_to_in_b2b', 'usa_to_in_b2c', 'usa_to_uae', 'usa_to_sg', 'price_updated_at'];
             $csv_header = ['Asin', 'Available', 'Weight', 'US Price', 'USA To IND B2B', 'USA To IND B2C', 'USA To UAE', 'USA To Singapore', 'Updated At'];
-            PricingUs::select($headers)->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
+            PricingUs::select($headers)
+                ->join('asin_destination_uss', 'pricing_uss.asin', '=', 'asin_destination_uss.asin')
+                ->where('asin_destination_uss.priority', $this->priority)
+                ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
 
-                $this->CreateCsvFile($csv_header, $records, $exportFilePath);
-                //pusher
-            });
+                    $this->CreateCsvFile($csv_header, $records, $exportFilePath);
+                    //pusher
+                });
         }
 
-        $path = "excel/downloads/catalog_price/" . $this->country_code.'/Priority'.$this->priority;
+        $path = "excel/downloads/catalog_price/" . $this->country_code . '/Priority' . $this->priority;
         $path = Storage::path($path);
         $files = (scandir($path));
 
@@ -108,14 +114,14 @@ class CatalogPriceExportCSV extends Command
         }
 
         $zip = new ZipArchive;
-        $path = "excel/downloads/catalog_price/" . $this->country_code. '/Priority'.$this->priority.'/' . "/zip/" . $this->country_code . "_CatalogPrice.zip";
+        $path = "excel/downloads/catalog_price/" . $this->country_code . '/Priority' . $this->priority . '/' . "/zip/" . $this->country_code . "_CatalogPrice.zip";
         $file_path = Storage::path($path);
         if (!Storage::exists($path)) {
             Storage::put($path, '');
         }
         if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
             foreach ($this->totalFile as $key => $value) {
-                $path = Storage::path('excel/downloads/catalog_price/' . $this->country_code . '/Priority'.$this->priority. '/' . $value);
+                $path = Storage::path('excel/downloads/catalog_price/' . $this->country_code . '/Priority' . $this->priority . '/' . $value);
                 $relativeNameInZipFile = basename($path);
                 $zip->addFile($path, $relativeNameInZipFile);
             }

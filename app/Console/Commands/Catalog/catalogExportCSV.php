@@ -79,7 +79,7 @@ class catalogExportCSV extends Command
         $table_name = table_model_create(country_code: $this->country_code, model: 'Asin_destination', table_name: 'asin_destination_');
 
         $table_name->select($header)
-            ->where('priority', $this->priority)
+            ->where("priority", $this->priority)
             ->join($asin_cat, $asin_desti . '.asin', '=', $asin_cat . '.asin')
             ->chunk($chunk, function ($result) use ($header) {
 
