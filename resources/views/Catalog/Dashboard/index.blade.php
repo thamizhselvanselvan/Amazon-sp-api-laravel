@@ -31,41 +31,41 @@
     </div>
 </div>
 @php
-    $country = ['INDIA', 'USA'];
+$country = ['INDIA', 'USA'];
 @endphp
 
 @foreach ($json_arrays as $key1 => $record_array)
 
-    <h3>{{$country[$key1]}}</h3>
+<h3>{{$country[$key1]}}</h3>
 
-    <div class="row">
-        <div class="col">
-            <div class="info-box bg-success">
-                <div class="info-box-content text-center">
-                    <h4 class="info-box-number text-center">Process Type</h4>
-                    <h5 class="info-box-text">ASIN</h5>
-                    <h5 class="info-box-text">Catalog</h5>
-                    <h5 class="info-box-text">Delist</h5>
-                    <h5 class="info-box-text">Price</h5>
-                </div>
+<div class="row">
+    <div class="col">
+        <div class="info-box bg-success">
+            <div class="info-box-content text-center">
+                <h4 class="info-box-number text-center">Process Type</h4>
+                <h5 class="info-box-text">ASIN</h5>
+                <h5 class="info-box-text">Catalog</h5>
+                <h5 class="info-box-text">Delist</h5>
+                <h5 class="info-box-text">Price</h5>
             </div>
         </div>
-        @foreach ($record_array->priority_wise_asin as $key2 => $record)
-            
-            <div class="col">
-                <div class="info-box bg-success">
-                    <div class="info-box-content text-center">
-                        <h4 class="info-box-number text-center">Priority {{$key2+1}}</h4>
-                        <h5 class="info-box-text">{{$record}}</h5>
-                        <h5 class="info-box-text">{{ $record_array->catalog[$key2] }}</h5>
-                        <h5 class="info-box-text">{{ $record_array->delist_asin[$key2] }}</h5>
-                        <h5 class="info-box-text">{{ $record_array->catalog_price[$key2] }}</h5>
-                    </div>
-                </div>
-            </div>
-            
-        @endforeach
     </div>
+    @foreach ($record_array->priority_wise_asin as $key2 => $record)
+
+    <div class="col">
+        <div class="info-box bg-success">
+            <div class="info-box-content text-center">
+                <h4 class="info-box-number text-center">Priority {{$key2+1}}</h4>
+                <h5 class="info-box-text">{{$record}}</h5>
+                <h5 class="info-box-text">{{ $record_array->catalog[$key2] }}</h5>
+                <h5 class="info-box-text">{{ $record_array->delist_asin[$key2] }}</h5>
+                <h5 class="info-box-text">{{ $record_array->catalog_price[$key2] }}</h5>
+            </div>
+        </div>
+    </div>
+
+    @endforeach
+</div>
 @endforeach
 
 @stop
