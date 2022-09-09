@@ -83,11 +83,14 @@ class CatalogAmazonImport extends Command
                 $queue_name = 'catalog_IN';
             }
 
-            foreach ($asins as $asin) {
+            foreach ($asins as $details) {
 
-                $seller_id  =  $asin->user_id;
+                $seller_id  =  $details->user_id;
+
+                $asin = $details->asin;
+
                 $asin_upsert_source[] = [
-                    'asin' => $asin->asin,
+                    'asin' => $asin,
                     'user_id' => $seller_id,
                     'status' => '1'
                 ];
@@ -97,15 +100,18 @@ class CatalogAmazonImport extends Command
                     $asin_source = [];
                     $count = 0;
                 }
-                $asin_source[] = [
-                    'asin' => $asin->asin,
-                    'seller_id' => $asin->user_id,
-                    'source' => $source,
-                ];
-                $count++;
+
+                if (strlen($asin) == 10) {
+
+                    $asin_source[] = [
+                        'asin' => $asin,
+                        'seller_id' => $details->user_id,
+                        'source' => $source,
+                    ];
+                    $count++;
+                }
             }
             jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
-
 
             $model = 'Asin_source';
             $table_name = "asin_source_";

@@ -11,16 +11,12 @@ class BuyBoxPriceImport
 {
     public function fetchPriceFromBB($country_code, $seller_id, $limit)
     {
-        $priority_array = ['P1' => '1', 'P2' => '2', 'P3' => '3', 'P4' => '4'];
+        $priority_array = ['P1' => 1, 'P2' => 2, 'P3' => 3];
+        $price_convert = new PriceConversion();
 
         foreach ($priority_array as $priority) {
 
-            $priority = 2;
             $product_lp = '';
-
-            $start = startTime();
-
-            $price_convert = new PriceConversion();
 
             $user_id = '';
             $des_asin_array = [];
@@ -37,12 +33,7 @@ class BuyBoxPriceImport
             $destination_model = table_model_create(country_code: $country_code, model: 'Asin_destination', table_name: 'asin_destination_');
 
             $data = $destination_model->select(['asin', 'user_id'])
-                ->where(
-                    [
-                        'price_status' => '0',
-                        'priority' => $priority
-                    ]
-                )
+                ->where('price_status', 0)->where('priority', $priority)
                 ->limit($limit)->get();
 
             foreach ($data as $value) {
@@ -55,9 +46,13 @@ class BuyBoxPriceImport
                 $des_asin_update[] = [
                     'asin' => $asin,
                     'user_id' => $user_id,
-                    'price_status' => '2'
+                    'price_status' => 2
                 ];
             }
+
+
+            Log::alert('Des asing array -> ' . $country_code . '-> ' . $priority);
+            Log::alert($des_asin_array);
 
             $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
             $des_asin_update = [];
@@ -83,11 +78,13 @@ class BuyBoxPriceImport
                 $asin_array[] = "'$a'";
             }
 
+            Log::alert('cat asing array');
+            Log::alert($asin_array);
+
+
             if ($asin_array) {
 
                 $asin = implode(',', $asin_array);
-
-                Log::notice("Before BB Select Query - " . endTime($start));
 
                 $asin_price = DB::connection('buybox')
                     ->select("SELECT PPO.asin, LP.available,
@@ -100,8 +97,8 @@ class BuyBoxPriceImport
                     GROUP BY PPO.asin
                 ");
 
-
-                Log::notice("After BB Select Query - " . endTime($start));
+                Log::alert('buybox asing array ->' . $priority);
+                Log::alert($asin_price);
 
                 foreach ($asin_price as $value) {
 
@@ -110,13 +107,12 @@ class BuyBoxPriceImport
                     $updated_at = explode(',', $value->updated_at);
 
                     $asin_name = $value->asin;
-
                     if (isset($find_missing_asin[$asin_name])) {
 
                         $des_asin_update[] = [
                             'asin' => $asin_name,
                             'user_id' => $user_id,
-                            'price_status' => '1'
+                            'price_status' => 1
                         ];
                     }
 
@@ -199,9 +195,8 @@ class BuyBoxPriceImport
             } else {
 
                 //if all price are fetched then update status
-                $destination_model->where('id', '>', '0')->update(['price_status' => '0']);
+                $destination_model->where('priority', $priority)->update(['price_status' => 0]);
             }
         }
-        Log::notice("Entire Process Finish - " . endTime($start));
     }
 }
