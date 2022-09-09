@@ -34,7 +34,7 @@
     $country = ['INDIA', 'USA'];
 @endphp
 
-@foreach ($record_arrays as $key1 => $record_array)
+@foreach ($json_arrays as $key1 => $record_array)
 
     <h3>{{$country[$key1]}}</h3>
 
@@ -50,16 +50,16 @@
                 </div>
             </div>
         </div>
-        @foreach ($record_array['priority_wise_asin'] as $key2 => $record)
+        @foreach ($record_array->priority_wise_asin as $key2 => $record)
             
             <div class="col">
                 <div class="info-box bg-success">
                     <div class="info-box-content text-center">
                         <h4 class="info-box-number text-center">Priority {{$key2+1}}</h4>
                         <h5 class="info-box-text">{{$record}}</h5>
-                        <h5 class="info-box-text">{{ $record_array['catalog'][$key2] }}</h5>
-                        <h5 class="info-box-text">{{ $record_array['delist_asin'][$key2] }}</h5>
-                        <h5 class="info-box-text">{{ $record_array['catalog_price'][$key2] }}</h5>
+                        <h5 class="info-box-text">{{ $record_array->catalog[$key2] }}</h5>
+                        <h5 class="info-box-text">{{ $record_array->delist_asin[$key2] }}</h5>
+                        <h5 class="info-box-text">{{ $record_array->catalog_price[$key2] }}</h5>
                     </div>
                 </div>
             </div>
