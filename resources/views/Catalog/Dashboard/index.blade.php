@@ -50,19 +50,19 @@ $country = ['INDIA', 'USA'];
             </div>
         </div>
     </div>
-        @foreach ($record_array->priority_wise_asin as $key2 => $records)
-            <div class="col">
-                <div class="info-box bg-success">
-                    <div class="info-box-content text-center">
-                        <h4 class="info-box-number text-center">Priority {{$key2}}</h4>
-                        <h5 class="info-box-text">{{$records}}</h5>
-                        <h5 class="info-box-text">{{ $record_array->catalog->$key2 }}</h5>
-                        <h5 class="info-box-text">{{ $record_array->delist_asin->$key2 }}</h5>
-                        <h5 class="info-box-text">{{ $record_array->catalog_price->$key2 }}</h5>
-                    </div>
+    @foreach ($record_array->priority_wise_asin as $key2 => $records)
+        <div class="col">
+            <div class="info-box bg-success">
+                <div class="info-box-content text-center">
+                    <h4 class="info-box-number text-center">Priority {{$key2}}</h4>
+                    <h5 class="info-box-text">{{$records}}</h5>
+                    <h5 class="info-box-text">{{ $record_array->catalog->$key2 }}</h5>
+                    <h5 class="info-box-text">{{ $record_array->delist_asin->$key2 }}</h5>
+                    <h5 class="info-box-text">{{ $record_array->catalog_price->$key2 }}</h5>
                 </div>
             </div>
-        @endforeach
+        </div>
+    @endforeach
     
 </div>
 @endforeach
