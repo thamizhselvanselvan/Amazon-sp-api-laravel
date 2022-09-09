@@ -61,6 +61,7 @@ class NewCatalog
         $NewCatalogs = [];
         $country_code1 = strtolower($country_code1);
         $catalog_table = 'catalognew' . $country_code1 . 's';
+
         foreach ($queue_data as $record) {
             if ($record) {
                 foreach ($record as $key1 => $value) {
@@ -121,6 +122,7 @@ class NewCatalog
             $queue_data = [];
 
             foreach ($result['items'] as $key => $record) {
+
                 $queue_data[$key]['seller_id'] = $seller_id;
                 $queue_data[$key]['source'] = $country_code;
                 foreach ($record as $key1 => $value) {
@@ -133,8 +135,10 @@ class NewCatalog
                             $queue_data[$key][$key2] = $this->returnDataType($value2);
                         }
                     } else {
+
                         $queue_data[$key][$key1] = $this->returnDataType($value);
                     }
+
                     if ($key1 == 'dimensions') {
 
                         if (array_key_exists('package', (array)$value[0])) {
