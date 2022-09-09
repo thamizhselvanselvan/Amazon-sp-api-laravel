@@ -49,39 +49,40 @@ class BuyBoxPriceImport
                     'price_status' => 2
                 ];
             }
-            if ($data) {
 
-                Log::alert('Des asing array -> ' . $country_code . '-> ' . $priority);
-                Log::alert($des_asin_array);
 
-                $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
-                $des_asin_update = [];
+            Log::alert('Des asing array -> ' . $country_code . '-> ' . $priority);
+            Log::alert($des_asin_array);
 
-                $catalog_model = table_model_create(country_code: $country_code_lr, model: 'Catalog', table_name: 'catalognew');
-                $cat_data = $catalog_model->select(['asin', 'dimensions'])->whereIn('asin', $des_asin_array)->get();
+            $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
+            $des_asin_update = [];
 
-                $pricing = [];
-                $pricing_in = [];
-                $asin_details = [];
-                $listing_price_amount = '';
+            $catalog_model = table_model_create(country_code: $country_code_lr, model: 'Catalog', table_name: 'catalognew');
+            $cat_data = $catalog_model->select(['asin', 'dimensions'])->whereIn('asin', $des_asin_array)->get();
 
-                $asin_array = [];
-                foreach ($cat_data as $value) {
-                    $weight = '0.5';
+            $pricing = [];
+            $pricing_in = [];
+            $asin_details = [];
+            $listing_price_amount = '';
 
-                    if (isset(json_decode($value->dimensions)[0]->package->weight->value)) {
-                        $weight = json_decode($value->dimensions)[0]->package->weight->value;
-                    }
+            $asin_array = [];
+            foreach ($cat_data as $value) {
+                $weight = '0.5';
 
-                    $a = $value->asin;
-                    $calculated_weight[$a] =  $weight;
-                    $asin_array[] = "'$a'";
+                if (isset(json_decode($value->dimensions)[0]->package->weight->value)) {
+                    $weight = json_decode($value->dimensions)[0]->package->weight->value;
                 }
 
-                Log::alert('cat asing array');
-                Log::alert($asin_array);
+                $a = $value->asin;
+                $calculated_weight[$a] =  $weight;
+                $asin_array[] = "'$a'";
+            }
+
+            Log::alert('cat asing array');
+            Log::alert($asin_array);
 
 
+            if ($asin_array) {
 
                 $asin = implode(',', $asin_array);
 
