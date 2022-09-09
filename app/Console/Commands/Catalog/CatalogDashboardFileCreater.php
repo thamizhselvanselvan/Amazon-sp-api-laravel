@@ -39,7 +39,6 @@ class CatalogDashboardFileCreater extends Command
      */
     public function handle()
     {
-        Log::warning("Catalog dashboard file running..");
         $sources = ['IN', 'US'];
         $total_asin = 0;
         $total_catalog = 0 ;
@@ -75,8 +74,6 @@ class CatalogDashboardFileCreater extends Command
                 
 
             }
-
-            
             $record_arrays []= [
                 'source' => $source,
                 'priority_wise_asin' => $priority_wise,
@@ -91,6 +88,10 @@ class CatalogDashboardFileCreater extends Command
             $cat_price = [];
         }
         $cat_dashboard_file = "excel/downloads/catalog-dashboard-file.json";
+        $cat_dashboard_file = "Dashboard/catalog-dashboard-file.json";
+        if(!Storage::exists($cat_dashboard_file)){
+            Storage::put($cat_dashboard_file, '');
+        }
         Storage::put($cat_dashboard_file, json_encode($record_arrays));
         Log::warning("Catalog dashboard file create successfully!");
     }
