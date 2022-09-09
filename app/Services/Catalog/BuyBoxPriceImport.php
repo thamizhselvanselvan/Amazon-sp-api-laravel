@@ -11,7 +11,7 @@ class BuyBoxPriceImport
 {
     public function fetchPriceFromBB($country_code, $seller_id, $limit)
     {
-        $priority_array = ['P1' => '1', 'P2' => '2', 'P3' => '3'];
+        $priority_array = ['P1' => 1, 'P2' => 2, 'P3' => 3];
         $price_convert = new PriceConversion();
 
         foreach ($priority_array as $priority) {
@@ -33,12 +33,7 @@ class BuyBoxPriceImport
             $destination_model = table_model_create(country_code: $country_code, model: 'Asin_destination', table_name: 'asin_destination_');
 
             $data = $destination_model->select(['asin', 'user_id'])
-                ->where(
-                    [
-                        'price_status' => '0',
-                        'priority' => $priority
-                    ]
-                )
+                ->where('price_status', 0)->where('priority', $priority)
                 ->limit($limit)->get();
 
             foreach ($data as $value) {
@@ -51,40 +46,42 @@ class BuyBoxPriceImport
                 $des_asin_update[] = [
                     'asin' => $asin,
                     'user_id' => $user_id,
-                    'price_status' => '2'
+                    'price_status' => 2
                 ];
             }
-            Log::alert('Des asing array');
-            Log::alert($des_asin_array);
+            if ($data) {
 
-            $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
-            $des_asin_update = [];
+                Log::alert('Des asing array -> ' . $country_code . '-> ' . $priority);
+                Log::alert($des_asin_array);
 
-            $catalog_model = table_model_create(country_code: $country_code_lr, model: 'Catalog', table_name: 'catalognew');
-            $cat_data = $catalog_model->select(['asin', 'dimensions'])->whereIn('asin', $des_asin_array)->get();
+                $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
+                $des_asin_update = [];
 
-            $pricing = [];
-            $pricing_in = [];
-            $asin_details = [];
-            $listing_price_amount = '';
+                $catalog_model = table_model_create(country_code: $country_code_lr, model: 'Catalog', table_name: 'catalognew');
+                $cat_data = $catalog_model->select(['asin', 'dimensions'])->whereIn('asin', $des_asin_array)->get();
 
-            $asin_array = [];
-            foreach ($cat_data as $value) {
-                $weight = '0.5';
+                $pricing = [];
+                $pricing_in = [];
+                $asin_details = [];
+                $listing_price_amount = '';
 
-                if (isset(json_decode($value->dimensions)[0]->package->weight->value)) {
-                    $weight = json_decode($value->dimensions)[0]->package->weight->value;
+                $asin_array = [];
+                foreach ($cat_data as $value) {
+                    $weight = '0.5';
+
+                    if (isset(json_decode($value->dimensions)[0]->package->weight->value)) {
+                        $weight = json_decode($value->dimensions)[0]->package->weight->value;
+                    }
+
+                    $a = $value->asin;
+                    $calculated_weight[$a] =  $weight;
+                    $asin_array[] = "'$a'";
                 }
 
-                $a = $value->asin;
-                $calculated_weight[$a] =  $weight;
-                $asin_array[] = "'$a'";
-            }
+                Log::alert('cat asing array');
+                Log::alert($asin_array);
 
-            Log::alert('cat asing array');
-            Log::alert($asin_array);
 
-            if ($asin_array) {
 
                 $asin = implode(',', $asin_array);
 
@@ -114,7 +111,7 @@ class BuyBoxPriceImport
                         $des_asin_update[] = [
                             'asin' => $asin_name,
                             'user_id' => $user_id,
-                            'price_status' => '1'
+                            'price_status' => 1
                         ];
                     }
 
@@ -197,7 +194,7 @@ class BuyBoxPriceImport
             } else {
 
                 //if all price are fetched then update status
-                $destination_model->where('priority', $priority)->where('id', '>', '0')->update(['price_status' => '0']);
+                $destination_model->where('priority', $priority)->update(['price_status' => 0]);
             }
         }
     }
