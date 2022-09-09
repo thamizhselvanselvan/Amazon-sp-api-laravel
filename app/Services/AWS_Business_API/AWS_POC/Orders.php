@@ -4,6 +4,7 @@ namespace App\Services\AWS_Business_API\AWS_POC;
 
 use Exception;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -15,30 +16,30 @@ class Orders
         $random = substr(md5(mt_rand()), 0, 7);
         $uniq = $random . $val . '@moshecom.com';
         $date = Carbon::now()->format('d-m-Y');
-        $countrycode = 'US';
-        $country = 'USA';
-        $country_name = 'Unite States';
+        $countrycode = 'IN';
+        $country = 'IND';
+        $country_name = 'India';
         $email = 'tech@moshecom.com';
         $name = 'mr.Robert';
 
         /* ship and bill details  */
 
-
+        $final_item_name = str_replace(array('&','<','>',';'), ' ', $item_name);
         $orderID = random_int(100, 10000);
         $org_name = 'nitrous';
-        $deli1 = 'Tech Team, tech@moshecom.com';
-        $deli2 = 'bliss';
-        $deli3 = 'Tech TEAM';
-        $street = '325 9th Ave N';
-        $city = 'Seattle';
-        $state = 'Washington';
-        $postcode = '98109';
-        $area_code = '213';
+        $deli1 = 'Tech Team, tech@moshecom.com, 987, MRN Center, 2nd Floor,Puneeth Rajkumar Rd, HRBR Layout 1st Block, Banaswadi, Bengaluru, Karnataka 560043 ';
+        $deli2 = '987, MRN Center, 2nd Floor,Puneeth Rajkumar Rd, HRBR Layout 1st Block, Banaswadi, Bengaluru, Karnataka 560043 ';
+        $deli3 = 'Bangalore India';
+        $street = 'Puneeth Rajkumar Rd';
+        $city = 'Bangalore';
+        $state = 'karnataka';
+        $postcode = '560043';
+        $area_code = '560043';
         $ph_no = '9110674543';
 
         $addressID = substr(md5(mt_rand()), 0, 9);
         $fax_name = 'nitrous';
-        $comments = 'nitrous,Tech Team, tech@moshecom.com,Washington ';
+        $comments = 'nitrous,Tech Team, tech@moshecom.com,Bangalore ';
         $extrinsic = 'Nitrous';
         $supplierPartAuxiliaryID  = substr(md5(mt_rand()), 0, 9);
         $tax = '1';
@@ -46,7 +47,7 @@ class Orders
         /* item details  */
         $money  = 2.91;
         $asin = $asin;
-        $item_description = $item_name;
+        $item_description = $final_item_name;
         $unit = 'EA';
         $class = 'NA';
         $manuname = 'NA';
@@ -136,8 +137,6 @@ class Orders
                         <Name xml:lang="en-US">' . $org_name . '</Name>
                         <PostalAddress name="' . $name . '">
                             <DeliverTo>' . $deli1 . '</DeliverTo>
-                            <DeliverTo>' . $deli2 . '</DeliverTo>
-                            <DeliverTo>' . $deli3 . '</DeliverTo>
                             <Street>' . $street . '</Street>
                             <City>' . $city . '</City>
                             <State>' . $state . '</State>
@@ -215,7 +214,6 @@ class Orders
           
                 <ItemID>
                     <SupplierPartID>' . $asin . '</SupplierPartID>
-                    <SupplierPartAuxiliaryID>' . $supplierPartAuxiliaryID . ',1</SupplierPartAuxiliaryID>
                 </ItemID>
                 <ItemDetail>
                     <UnitPrice>
@@ -255,7 +253,7 @@ class Orders
 
         $data = curl_exec($ch);
         $send = [$data, $base, $xml];
-
+       
         return $send;
         if (curl_errno($ch))
             print curl_error($ch);

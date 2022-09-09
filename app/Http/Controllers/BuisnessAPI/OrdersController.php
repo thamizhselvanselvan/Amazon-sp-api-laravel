@@ -13,8 +13,8 @@ class OrdersController extends Controller
 {
     public function index()
     {
-        $asin = 'B017V4IMVQ';
-        $name = 'Harry Potter and the Sorcerers Stone, Book 1';
+        $asin = 'B09R63Z5L7';
+        $name = 'Acer Aspire Vero Intel Iris  Xe Graphics ';
         $ApiCall = new Orders();
         $data = $ApiCall->getOrders($asin,$name);
 
@@ -94,26 +94,26 @@ class OrdersController extends Controller
             $fax_name,
         ];
 
-        DB::connection('business')->table('orders')->insert([
-            // 'xml_sent' => json_encode($xml),
-            'xml_sent' => '',
-            'sent_payload' => $sent_payload,
-            'organization_name' => $org_name,
-            'order_date' => $order_date,
-            'name' => $name,
-            'e-mail' => $email,
-            'country_name' => $country_name,
-            'country_code' => $countrycode,
-            'order_id' => $order_id,
-            'item_details' => json_encode($item_details),
-            'ship_address' => json_encode($ship_address_array),
-            'bill_address' => json_encode($ship_address_array),
-            'responce_payload' => $receved_payload,
-            'responce_text' =>  $responce_text,
-            'responce_code' => $responce_code,
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
+        // DB::connection('business')->table('orders')->insert([
+        //     // 'xml_sent' => json_encode($xml),
+        //     'xml_sent' => '',
+        //     'sent_payload' => $sent_payload,
+        //     'organization_name' => $org_name,
+        //     'order_date' => $order_date,
+        //     'name' => $name,
+        //     'e-mail' => $email,
+        //     'country_name' => $country_name,
+        //     'country_code' => $countrycode,
+        //     'order_id' => $order_id,
+        //     'item_details' => json_encode($item_details),
+        //     'ship_address' => json_encode($ship_address_array),
+        //     'bill_address' => json_encode($ship_address_array),
+        //     'responce_payload' => $receved_payload,
+        //     'responce_text' =>  $responce_text,
+        //     'responce_code' => $responce_code,
+        //     'created_at' => now(),
+        //     'updated_at' => now()
+        // ]);
         dd($responce, $details);
         return view('buisnessapi.orders.index', compact('data'));
     }

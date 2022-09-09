@@ -163,28 +163,28 @@ $xmlasin = $asin;
                 'updated_at' => now()
             ];
 
-            DB::connection('business')->table('orders')->upsert($insert, ['order_id'], [
-                'xml_sent',
-                'sent_payload',
-                'organization_name',
-                'order_date',
-                'name',
-                'e-mail',
-                'country_name',
-                'country_code',
-                'item_details',
-                'ship_address',
-                'bill_address',
-                'responce_payload',
-                'responce_text',
-                'responce_code'
-            ]);
+            // DB::connection('business')->table('orders')->upsert($insert, ['order_id'], [
+            //     'xml_sent',
+            //     'sent_payload',
+            //     'organization_name',
+            //     'order_date',
+            //     'name',
+            //     'e-mail',
+            //     'country_name',
+            //     'country_code',
+            //     'item_details',
+            //     'ship_address',
+            //     'bill_address',
+            //     'responce_payload',
+            //     'responce_text',
+            //     'responce_code'
+            // ]);
 
             $data = DB::connection('cliqnshop')->table('order_base_product')->where('prodcode', $asin)->update([
                 'sent_xml' => $xml,
                 'status' =>'1',
             ]);
-            
+            Log::info('XML Sent to cliqnshop');
     
         }
     }
