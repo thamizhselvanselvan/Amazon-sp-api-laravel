@@ -16,9 +16,9 @@ class Orders
         $random = substr(md5(mt_rand()), 0, 7);
         $uniq = $random . $val . '@moshecom.com';
         $date = Carbon::now()->format('d-m-Y');
-        $countrycode = 'IN';
-        $country = 'IND';
-        $country_name = 'India';
+        $countrycode = 'US';
+        $country = 'USA';
+        $country_name = 'united States Of America';
         $email = 'tech@moshecom.com';
         $name = 'mr.Robert';
 
@@ -27,14 +27,14 @@ class Orders
         $final_item_name = str_replace(array('&','<','>',';'), ' ', $item_name);
         $orderID = random_int(100, 10000);
         $org_name = 'nitrous';
-        $deli1 = 'Tech Team, tech@moshecom.com, 987, MRN Center, 2nd Floor,Puneeth Rajkumar Rd, HRBR Layout 1st Block, Banaswadi, Bengaluru, Karnataka 560043 ';
-        $deli2 = '987, MRN Center, 2nd Floor,Puneeth Rajkumar Rd, HRBR Layout 1st Block, Banaswadi, Bengaluru, Karnataka 560043 ';
-        $deli3 = 'Bangalore India';
-        $street = 'Puneeth Rajkumar Rd';
-        $city = 'Bangalore';
-        $state = 'karnataka';
-        $postcode = '560043';
-        $area_code = '560043';
+        $deli1 = 'Tech Team, tech@moshecom.com, 325 9th Ave N,Seattle,Washington';
+        $deli2 = '';
+        $deli3 = '';
+        $street = '325 9th Ave N';
+        $city = 'Seattle';
+        $state = 'Washington';
+        $postcode = '98109';
+        $area_code = '206';
         $ph_no = '9110674543';
 
         $addressID = substr(md5(mt_rand()), 0, 9);
@@ -45,7 +45,7 @@ class Orders
         $tax = '1';
         $currency = 'USD';
         /* item details  */
-        $money  = 2.91;
+        $money  = 10;
         $asin = $asin;
         $item_description = $final_item_name;
         $unit = 'EA';
