@@ -11,7 +11,7 @@ class CatalogDashboardController extends Controller
 {
     public function Metrics()
     {
-        
+        $cat_dashboard_file = '';
         if(!Storage::exists("Dashboard/catalog-dashboard-file.json")){
             $cat_dashboard_file = "Dashboard/catalog-dashboard-file.json";
             Storage::put($cat_dashboard_file, '');
