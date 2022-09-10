@@ -63,7 +63,6 @@ $country = ['INDIA', 'USA'];
             </div>
         </div>
     @endforeach
-    
 </div>
 @endforeach
 
