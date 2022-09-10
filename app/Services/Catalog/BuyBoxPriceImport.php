@@ -195,7 +195,7 @@ class BuyBoxPriceImport
             } else {
 
                 //if all price are fetched then update status
-                $destination_model->where('priority', $priority)->update(['price_status' => 0]);
+                //$destination_model->where('priority', $priority)->update(['price_status' => 0]);
             }
         }
     }
