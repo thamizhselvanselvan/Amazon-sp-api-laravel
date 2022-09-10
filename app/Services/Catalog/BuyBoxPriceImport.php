@@ -17,7 +17,7 @@ class BuyBoxPriceImport
         foreach ($priority_array as $priority) {
 
             $product_lp = '';
-
+            $priority = 2;
             $user_id = '';
             $des_asin_array = [];
             $calculated_weight = [];
@@ -54,7 +54,7 @@ class BuyBoxPriceImport
             Log::alert('Des asing array -> ' . $country_code . '-> ' . $priority);
             Log::alert($des_asin_array);
 
-            $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
+            $destination_model->where('priority', $priority)->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
             $des_asin_update = [];
 
             $catalog_model = table_model_create(country_code: $country_code_lr, model: 'Catalog', table_name: 'catalognew');
@@ -183,7 +183,7 @@ class BuyBoxPriceImport
                     }
                 }
 
-                $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
+                // $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
 
                 if ($country_code_lr == 'us') {
 
@@ -195,7 +195,7 @@ class BuyBoxPriceImport
             } else {
 
                 //if all price are fetched then update status
-                $destination_model->where('priority', $priority)->update(['price_status' => 0]);
+                //$destination_model->where('priority', $priority)->update(['price_status' => 0]);
             }
         }
     }
