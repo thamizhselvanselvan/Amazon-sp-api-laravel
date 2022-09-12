@@ -17,36 +17,36 @@ class Orders
         $date = Carbon::now()->format('d-m-Y');
         $countrycode = 'US';
         $country = 'USA';
-        $country_name = 'Unite States';
+        $country_name = 'united States Of America';
         $email = 'tech@moshecom.com';
         $name = 'mr.Robert';
 
         /* ship and bill details  */
 
-
+        $final_item_name = str_replace(array('&', '<', '>', ';'), ' ', $item_name);
         $orderID = random_int(100, 10000);
         $org_name = 'nitrous';
-        $deli1 = 'Tech Team, tech@moshecom.com';
-        $deli2 = 'bliss';
-        $deli3 = 'Tech TEAM';
+        $deli1 = 'Tech Team, tech@moshecom.com, 325 9th Ave N,Seattle,Washington';
+        $deli2 = '';
+        $deli3 = '';
         $street = '325 9th Ave N';
         $city = 'Seattle';
         $state = 'Washington';
         $postcode = '98109';
-        $area_code = '213';
+        $area_code = '206';
         $ph_no = '9110674543';
 
         $addressID = substr(md5(mt_rand()), 0, 9);
         $fax_name = 'nitrous';
-        $comments = 'nitrous,Tech Team, tech@moshecom.com,Washington ';
+        $comments = 'nitrous,Tech Team, tech@moshecom.com,Bangalore ';
         $extrinsic = 'Nitrous';
         $supplierPartAuxiliaryID  = substr(md5(mt_rand()), 0, 9);
         $tax = '1';
         $currency = 'USD';
         /* item details  */
-        $money  = 2.91;
+        $money  = 10;
         $asin = $asin;
-        $item_description = $item_name;
+        $item_description = $final_item_name;
         $unit = 'EA';
         $class = 'NA';
         $manuname = 'NA';
@@ -136,8 +136,6 @@ class Orders
                         <Name xml:lang="en-US">' . $org_name . '</Name>
                         <PostalAddress name="' . $name . '">
                             <DeliverTo>' . $deli1 . '</DeliverTo>
-                            <DeliverTo>' . $deli2 . '</DeliverTo>
-                            <DeliverTo>' . $deli3 . '</DeliverTo>
                             <Street>' . $street . '</Street>
                             <City>' . $city . '</City>
                             <State>' . $state . '</State>
@@ -215,7 +213,6 @@ class Orders
           
                 <ItemID>
                     <SupplierPartID>' . $asin . '</SupplierPartID>
-                    <SupplierPartAuxiliaryID>' . $supplierPartAuxiliaryID . ',1</SupplierPartAuxiliaryID>
                 </ItemID>
                 <ItemDetail>
                     <UnitPrice>
