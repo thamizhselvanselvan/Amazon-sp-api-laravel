@@ -32,13 +32,14 @@ class Kernel extends ConsoleKernel
             $schedule->command('backup:clean')->daily()->at('01:00');
             $schedule->command('pms:boe-upload-Do')->everyFourHours()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
             $schedule->command('pms:remove-uploaded-boe')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-
             $schedule->command('pms:sellers-orders-import')->everyThirtyMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-            //$schedule->command('mosh:seller-asin-get-pricing')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+
             $schedule->command('mosh:catalog-amazon-import')->everyFiveMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
             $schedule->command('mosh:Catalog-price-import-bb-in')->everyMinute()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
             $schedule->command('mosh:Catalog-price-import-bb-us')->everyMinute()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-            $schedule->command('mosh:catalog-dashboard-file')->everyFiveMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+            $schedule->command('mosh:catalog-dashboard-file')->everyTenMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+
+            //$schedule->command('mosh:seller-asin-get-pricing')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
         }
 
         if (app()->environment() === 'staging') {
