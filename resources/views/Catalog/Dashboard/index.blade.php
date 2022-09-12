@@ -89,18 +89,6 @@ $country = ['INDIA', 'USA'];
                         <div class="col-4"> </div>
                     </div>
                 </div>
-                <!-- <div class="info-box-text">
-                    <div class="row">
-                        <div class="col-4"> </div>
-                        <div class="col-2 text-left">
-                            <h5> BB_Price </h5>
-                        </div>
-                        <div class="col-2 text-right">
-                            <h5> {{ $record_array->bb_price->$key2 }}</h5>
-                        </div>
-                        <div class="col"> </div>
-                    </div>
-                </div> -->
             </div>
         </div>
     </div>
