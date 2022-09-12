@@ -45,7 +45,7 @@ class CatalogPriceImportIN extends Command
 
         $country_code = 'IN';
         $seller_id = '39';
-        $limit = 3000;
+        $limit = 1000;
 
         $buy_box_price = new BuyBoxPriceImport();
         $buy_box_price->fetchPriceFromBB($country_code, $seller_id, $limit);
