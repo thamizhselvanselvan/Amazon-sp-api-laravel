@@ -17,7 +17,7 @@ class BuyBoxPriceImport
         foreach ($priority_array as $priority) {
 
             $product_lp = '';
-            $priority = 2;
+            // $priority = 2;
             $user_id = '';
             $des_asin_array = [];
             $calculated_weight = [];
