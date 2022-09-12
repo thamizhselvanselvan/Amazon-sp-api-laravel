@@ -16,7 +16,10 @@ class CatalogDashboardController extends Controller
             Storage::put($cat_dashboard_file, '');
             commandExecFunc('mosh:catalog-dashboard-file');
         }
+        $FileTime = date("F d Y H:i:s.", filemtime(Storage::path('Dashboard/catalog-dashboard-file.json')));
+        $json_arrays = [];
         $json_arrays = json_decode(Storage::get($cat_dashboard_file));
-       return view('Catalog.Dashboard.index', compact('json_arrays'));
+
+       return view('Catalog.Dashboard.index', compact('json_arrays', 'FileTime'));
     }
 }

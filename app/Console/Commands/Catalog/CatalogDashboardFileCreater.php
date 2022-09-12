@@ -67,7 +67,7 @@ class CatalogDashboardFileCreater extends Command
             $Total_catalogs = DB::connection('catalog')
             ->select("SELECT count(${destination_table}.asin) as asin_catalog ,${destination_table}.priority from ${destination_table}
             join ${catalog_table}
-            where ${destination_table}.asin = ${catalog_table}.asin
+            ON ${destination_table}.asin = ${catalog_table}.asin
             group by ${destination_table}.priority
             ");
             
@@ -80,8 +80,8 @@ class CatalogDashboardFileCreater extends Command
             $delist_asins = DB::connection('catalog')
             ->select("SELECT count(${destination_table}.asin) as asin_delist, ${destination_table}.priority from ${destination_table}
             join ${dbname}.${buybox_table}
-            where $destination_table.asin = $buybox_table.asin
-            and ${buybox_table}.delist = 1
+            ON ${destination_table}.asin = ${buybox_table}.asin
+            WHERE ${buybox_table}.delist = 1
             group by ${destination_table}.priority
             ");
 
@@ -92,8 +92,8 @@ class CatalogDashboardFileCreater extends Command
             
             $cat_prices =  DB::connection('catalog')
             ->select("SELECT count(${destination_table}.asin) as catalog_price, ${destination_table}.priority from ${destination_table}
-            join ${catalog_price}
-            where ${destination_table}.asin = ${catalog_price}.asin
+            join ${dbname}.${buybox_table}
+            ON ${destination_table}.asin = ${buybox_table}.asin
             group by ${destination_table}.priority
             ");
             foreach($cat_prices as $cat_price){
