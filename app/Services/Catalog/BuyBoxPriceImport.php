@@ -17,7 +17,14 @@ class BuyBoxPriceImport
         foreach ($priority_array as $priority) {
 
             $product_lp = '';
+            $country_code_lr = strtolower($country_code);
+
             $priority = 2;
+
+            if ($country_code_lr == 'us') {
+                $priority = 3;
+            }
+
             $user_id = '';
             $des_asin_array = [];
             $calculated_weight = [];
@@ -25,7 +32,6 @@ class BuyBoxPriceImport
             $des_asin_update = [];
             $find_missing_asin = [];
 
-            $country_code_lr = strtolower($country_code);
 
             $product_seller_details = 'bb_product_' . $country_code_lr . 's_seller_details';
             $product_lp = 'bb_product_' . $country_code_lr . 's_lp_offers';
