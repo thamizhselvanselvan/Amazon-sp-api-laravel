@@ -48,7 +48,7 @@ class CatalogDashboardFileCreater extends Command
             $asin_priority = [1 => 0, 2 => 0, 3 => 0];
             $catalog = [1 => 0, 2 => 0, 3 => 0];
             $asin_delist = [1 => 0, 2 => 0, 3 => 0];
-            $asin_bb_price = [1 => 0, 2 => 0, 3 => 0];
+            // $asin_bb_price = [1 => 0, 2 => 0, 3 => 0];
             $cat_price = [1 => 0, 2 => 0, 3 => 0];
 
             $source = strtolower($source);
@@ -90,16 +90,16 @@ class CatalogDashboardFileCreater extends Command
                 $asin_delist[$delist] = $delist_asin->asin_delist;
             }
 
-            $bb_prices =  DB::connection('catalog')
-                ->select("SELECT count(${destination_table}.asin) as catalog_price, ${destination_table}.priority from ${destination_table}
-            join ${dbname}.${buybox_table}
-            ON ${destination_table}.asin = ${buybox_table}.asin
-            group by ${destination_table}.priority
-            ");
-            foreach ($bb_prices as $bb_price) {
-                $price = $bb_price->priority;
-                $asin_bb_price[$price] = $bb_price->catalog_price;
-            }
+            // $bb_prices =  DB::connection('catalog')
+            //     ->select("SELECT count(${destination_table}.asin) as catalog_price, ${destination_table}.priority from ${destination_table}
+            // join ${dbname}.${buybox_table}
+            // ON ${destination_table}.asin = ${buybox_table}.asin
+            // group by ${destination_table}.priority
+            // ");
+            // foreach ($bb_prices as $bb_price) {
+            //     $price = $bb_price->priority;
+            //     $asin_bb_price[$price] = $bb_price->catalog_price;
+            // }
 
             $cat_pricings = DB::connection('catalog')
                 ->select("SELECT count(${destination_table}.asin) as price, ${destination_table}.priority from ${destination_table}
@@ -116,7 +116,6 @@ class CatalogDashboardFileCreater extends Command
                 'priority_wise_asin' => $asin_priority,
                 'catalog' => $catalog,
                 'delist_asin' => $asin_delist,
-                'bb_price' => $asin_bb_price,
                 'catalog_price' => $cat_price,
             ];
         }
