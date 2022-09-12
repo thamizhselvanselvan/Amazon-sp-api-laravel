@@ -48,7 +48,9 @@ class CatalogDashboardFileCreater extends Command
             $asin_priority = [1 => 0,2 => 0,3 => 0];
             $catalog = [1 => 0, 2 => 0, 3 => 0];
             $asin_delist = [1 => 0,2 => 0,3 => 0];
-            $asin_catalog_price = [1 => 0,2 => 0,3 => 0];
+            $asin_bb_price = [1 => 0,2 => 0,3 => 0];
+            $cat_price = [1 => 0,2 => 0,3 => 0];
+
             $source = strtolower($source);
             $destination_table = "asin_destination_${source}s";
             $catalog_table = "catalognew${source}s";
@@ -90,22 +92,34 @@ class CatalogDashboardFileCreater extends Command
                 $asin_delist[$delist] = $delist_asin->asin_delist;
             }
             
-            $cat_prices =  DB::connection('catalog')
+            $bb_prices =  DB::connection('catalog')
             ->select("SELECT count(${destination_table}.asin) as catalog_price, ${destination_table}.priority from ${destination_table}
             join ${dbname}.${buybox_table}
             ON ${destination_table}.asin = ${buybox_table}.asin
             group by ${destination_table}.priority
             ");
-            foreach($cat_prices as $cat_price){
-                $price = $cat_price->priority;
-                $asin_catalog_price[$price] = $cat_price->catalog_price;
+            foreach($bb_prices as $bb_price){
+                $price = $bb_price->priority;
+                $asin_bb_price[$price] = $bb_price->catalog_price;
             }
-                
+
+            $cat_pricings = DB::connection('catalog')
+            ->select("SELECT count(${destination_table}.asin) as price, ${destination_table}.priority from ${destination_table}
+            join ${catalog_price}
+            ON ${destination_table}.asin = ${catalog_price}.asin
+            group by ${destination_table}.priority
+            ");
+            foreach($cat_pricings as $cat_pricing){
+                $pr_priority = $cat_pricing->priority;
+                $cat_price[$pr_priority] = $cat_pricing->price;
+            }
+
             $record_arrays []  = [
             'priority_wise_asin' => $asin_priority,
             'catalog' => $catalog,
             'delist_asin' => $asin_delist,
-            'catalog_price' => $asin_catalog_price,
+            'bb_price' => $asin_bb_price,
+            'catalog_price' => $cat_price,
             ];
 
         }
