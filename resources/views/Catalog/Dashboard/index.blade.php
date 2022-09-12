@@ -41,11 +41,11 @@ $country = ['INDIA', 'USA'];
                 <div class="info-box-content text-center">
                     <h4 class="info-box-number text-center">Priority {{$key2}}</h4>
                     
-                    <div class="info-box-text"><div class="row"><div class="col-4"> </div><div class="col-2 text-left">ASIN </div><div class="col-2 text-right"><h5> {{$records}}</h5> </div><div class="col-4"> </div> </div> </div>
-                    <div class="info-box-text"><div class="row"><div class="col-4"> </div><div class="col-2 text-left">Catalog </div><div class="col-2 text-right"><h5> {{ $record_array->catalog->$key2 }}</h5> </div><div class="col-4"> </div> </div></div>
-                    <div class="info-box-text"><div class="row"><div class="col-4"> </div><div class="col-2 text-left">Delist </div><div class="col-2 text-right"> <h5> {{ $record_array->delist_asin->$key2 }}</h5> </div><div class="col-4"> </div></div></div>
-                    <div class="info-box-text"><div class="row"><div class="col-4"> </div><div class="col-2 text-left">Price </div><div class="col-2 text-right"><h5> {{ $record_array->catalog_price->$key2 }}</h5> </div><div class="col-4"> </div> </div></div>
-                    <div class="info-box-text"><div class="row"><div class="col-4"> </div><div class="col-2 text-left">BB_Price </div><div class="col-2 text-right"><h5> {{ $record_array->bb_price->$key2 }}</h5> </div><div class="col"> </div> </div></div>
+                    <div class="info-box-text"><div class="row"><div class="col-4"> </div><div class="col-2 text-left"><h5> ASIN </h5> </div><div class="col-2 text-right"><h5> {{$records}}</h5> </div><div class="col-4"> </div> </div> </div>
+                    <div class="info-box-text"><div class="row"><div class="col-4"> </div><div class="col-2 text-left"><h5> Catalog </h5> </div><div class="col-2 text-right"><h5> {{ $record_array->catalog->$key2 }}</h5> </div><div class="col-4"> </div> </div></div>
+                    <div class="info-box-text"><div class="row"><div class="col-4"> </div><div class="col-2 text-left"><h5> Delist </h5> </div><div class="col-2 text-right"> <h5> {{ $record_array->delist_asin->$key2 }}</h5> </div><div class="col-4"> </div></div></div>
+                    <div class="info-box-text"><div class="row"><div class="col-4"> </div><div class="col-2 text-left"><h5> Price </h5> </div><div class="col-2 text-right"><h5> {{ $record_array->catalog_price->$key2 }}</h5> </div><div class="col-4"> </div> </div></div>
+                    <div class="info-box-text"><div class="row"><div class="col-4"> </div><div class="col-2 text-left"><h5> BB_Price </h5> </div><div class="col-2 text-right"><h5> {{ $record_array->bb_price->$key2 }}</h5> </div><div class="col"> </div> </div></div>
                 </div>
             </div>
         </div>
