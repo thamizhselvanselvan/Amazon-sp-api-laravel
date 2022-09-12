@@ -11,7 +11,7 @@
         <h1 class="mt-0 text-dark font-weight-bold"> Dashboard</h1>
     </div>
 </div>
-<h5 class="text-right">{{$FileTime}}</h5>
+<h5 class="text-right"><b>Last Update : </b>{{$FileTime}}</h5>
 @stop
 
 @section('content')
