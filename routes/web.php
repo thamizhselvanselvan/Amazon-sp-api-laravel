@@ -129,6 +129,7 @@ po($value);
 //         echo"<pre>";
 //         try {
 //             $data = [];
+//             $miss_asin = [];
 //             $result = $apiInstance->searchCatalogItems (
 //             $marketplace_id, 
 //             $identifiers,
@@ -148,6 +149,9 @@ po($value);
 //             // exit;
 //             foreach($result->items as $key => $value)
 //             {   
+//                 $diff_array [] = $value->asin;
+//                 po($diff_array);
+//                 // exit;
 //                 foreach($value as $key1 => $value1)
 //                 {
 //                     if($key1 == 'summaries')
@@ -175,6 +179,7 @@ po($value);
 //                     }
 //                     else{
 //                         $data[$key][$key1] = returnType($value1);
+                        
 //                     }
 //                 }  
 //             }
