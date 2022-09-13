@@ -19,12 +19,6 @@ class BuyBoxPriceImport
             $product_lp = '';
             $country_code_lr = strtolower($country_code);
 
-            $priority = 2;
-
-            if ($country_code_lr == 'us') {
-                $priority = 3;
-            }
-
             $user_id = '';
             $des_asin_array = [];
             $calculated_weight = [];
