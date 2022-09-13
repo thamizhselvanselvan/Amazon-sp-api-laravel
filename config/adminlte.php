@@ -325,26 +325,26 @@ return [
                     'text'  => 'Dashboard',
                     'url'  => 'catalog/dashboard',
                     'icon' => 'fa fa-dashboard',
-                    'can' =>  ['Admin']
+                    'can' =>  ['Admin', 'Catalog']
                 ],
 
                 [
                     'text' => 'Asin Master',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin'],
+                    'can' =>  ['Admin', 'Catalog'],
                     'submenu' => [
                         [
                             'text'  => 'Asin Source',
                             'url'  => 'catalog/asin-source',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin', 'Catalog']
                         ],
 
                         [
                             'text'  => 'Asin Destination',
                             'url'  => 'catalog/asin-destination',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin', 'Catalog']
                         ],
                     ],
                 ],
@@ -360,7 +360,7 @@ return [
                     'text' => 'Mosh Amazon Catalog',
                     'url'  => 'catalog/product',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin'],
+                    'can' =>  ['Admin', 'Catalog'],
                 ],
                 [
 
