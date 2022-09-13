@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\OrdersV0Api;
+use App\Services\SP_API\API\NewCatalog;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
 use App\Jobs\Seller\Seller_catalog_import_job;
@@ -91,7 +92,17 @@ class OrderItem
                 }
             }
         }
+
         $data = [];
+
+        $class =  'catalog\AmazonCatalogImport';
+        $queue_name = 'inventory';
+        $queue_delay = 0;
+        $asins = '';
+        $asin_source = [];
+        // $asin_table_name = 'asin_source_' . strtolower($awsCountryCode ). 's';
+        $catalog_table_name = 'catalognew' . strtolower($awsCountryCode ). 's';
+
         foreach ($result_orderItems['payload']['order_items'] as $result_order) {
             foreach ((array)$result_order as $result) {
 
@@ -119,8 +130,23 @@ class OrderItem
                     }
                     if ($detailsKey == 'asin') {
                         $asin = $value;
+                    
                     }
                 }
+                
+                $asins = DB::connection('catalog')->select("SELECT asin FROM $catalog_table_name where asin = '$asin' ");
+          
+                    if(count($asins) <= 0){ 
+                        $asin_source[] = [
+                            'asin' => $asin,
+                            'seller_id' => $aws_id,
+                            'source' => $awsCountryCode,
+                        ];
+                        
+                        jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
+                    }
+                Log::notice($asin_source);
+
                 $order_detials->amazon_order_identifier = $order_id;
                 $order_detials->shipping_address = $order_address;
                 $order_detials->created_at = now();
