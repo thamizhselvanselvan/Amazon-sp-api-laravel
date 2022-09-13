@@ -40,7 +40,7 @@ class NewCatalog
                 'status'   => 1,
             ];
             $asins[] = $asin;
-            // Log::info($asins);
+            
             $mws_region = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->first();
             $token = $mws_region['aws_verified']['auth_code'];
             $country_code = strtolower($country_code);
@@ -170,10 +170,10 @@ class NewCatalog
                     'source' => $country_code,   
                 ];
             }
-            CatalogMissingAsin::insert($miss_asin);
+            CatalogMissingAsin::upsert($miss_asin,['asin'], ['asin', 'source']);
             return $queue_data;
         } catch (Exception $e) {
-
+            
             log::alert($e);
         }
     }

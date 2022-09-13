@@ -7,11 +7,14 @@
 
 @section('content_header')
 <div class='row'>
-    <div class="col-12 text-center">
+    <div class="col-6 text-right">
         <h1 class="mt-0 text-dark font-weight-bold"> Dashboard</h1>
     </div>
+    <div class="col-6">
+        <h5 class="text-right"><b>Last Update : </b>{{$FileTime}}</h5>
+
+    </div>
 </div>
-<h5 class="text-right"><b>Last Update : </b>{{$FileTime}}</h5>
 @stop
 
 @section('content')
@@ -43,50 +46,50 @@ $country = ['INDIA', 'USA'];
 
                 <div class="info-box-text">
                     <div class="row">
-                        <div class="col-4"> </div>
+                        <div class="col-2"> </div>
                         <div class="col-2 text-left">
                             <h5> ASIN </h5>
                         </div>
-                        <div class="col-2 text-right">
+                        <div class="col-6 text-right">
                             <h5> {{$records}}</h5>
                         </div>
-                        <div class="col-4"> </div>
+                        <div class="col-2"> </div>
                     </div>
                 </div>
                 <div class="info-box-text">
                     <div class="row">
-                        <div class="col-4"> </div>
+                        <div class="col-2"> </div>
                         <div class="col-2 text-left">
                             <h5> Catalog </h5>
                         </div>
-                        <div class="col-2 text-right">
+                        <div class="col-6 text-right">
                             <h5> {{ $record_array->catalog->$key2 }}</h5>
                         </div>
-                        <div class="col-4"> </div>
+                        <div class="col-2"> </div>
                     </div>
                 </div>
                 <div class="info-box-text">
                     <div class="row">
-                        <div class="col-4"> </div>
+                        <div class="col-2"> </div>
                         <div class="col-2 text-left">
                             <h5> Delist </h5>
                         </div>
-                        <div class="col-2 text-right">
+                        <div class="col-6 text-right">
                             <h5> {{ $record_array->delist_asin->$key2 }}</h5>
                         </div>
-                        <div class="col-4"> </div>
+                        <div class="col-2"> </div>
                     </div>
                 </div>
                 <div class="info-box-text">
                     <div class="row">
-                        <div class="col-4"> </div>
+                        <div class="col-2"> </div>
                         <div class="col-2 text-left">
                             <h5> Price </h5>
                         </div>
-                        <div class="col-2 text-right">
+                        <div class="col-6 text-right">
                             <h5> {{ $record_array->catalog_price->$key2 }}</h5>
                         </div>
-                        <div class="col-4"> </div>
+                        <div class="col-2"> </div>
                     </div>
                 </div>
             </div>
