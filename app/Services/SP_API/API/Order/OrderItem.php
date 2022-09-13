@@ -145,7 +145,6 @@ class OrderItem
                         
                         jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
                     }
-                Log::notice($asin_source);
 
                 $order_detials->amazon_order_identifier = $order_id;
                 $order_detials->shipping_address = $order_address;
