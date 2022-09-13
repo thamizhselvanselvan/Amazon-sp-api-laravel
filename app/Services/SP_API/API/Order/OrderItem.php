@@ -98,7 +98,7 @@ class OrderItem
         $class =  'catalog\AmazonCatalogImport';
         $queue_name = 'inventory';
         $queue_delay = 0;
-        $asins = '';
+        $asins = [];
         $asin_source = [];
         // $asin_table_name = 'asin_source_' . strtolower($awsCountryCode ). 's';
         $catalog_table_name = 'catalognew' . strtolower($awsCountryCode ). 's';
