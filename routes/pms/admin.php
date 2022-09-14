@@ -34,3 +34,5 @@ Route::get('admin/stores', 'Admin\AdminManagementController@selectStore')->name(
 Route::post('admin/update-store', 'Admin\AdminManagementController@updateStore'); 
 
 
+Route::get('admin/system-setting', 'SystemSetting\SystemSettingController@index');
+
