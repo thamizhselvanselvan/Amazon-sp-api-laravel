@@ -20,15 +20,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Models\order\OrderSellerCredentials;
 use App\Services\Config\ConfigTrait;
 use Illuminate\Support\Facades\Auth;
 use SellingPartnerApi\Api\OrdersApi;
-
 use SellingPartnerApi\Configuration;
+
+use App\Services\SP_API\API\NewCatalog;
 use Illuminate\Support\Facades\Artisan;
 use Yajra\DataTables\Contracts\DataTable;
 use function PHPUnit\Framework\returnSelf;
+use App\Models\order\OrderSellerCredentials;
 use App\Services\SP_API\Config\ConfigTrait as ConfigConfigTrait;
 
 class OrdersListController extends Controller
@@ -59,6 +60,27 @@ class OrdersListController extends Controller
 
     public function GetOrdersList()
     {
+        
+        $source_key_exists = 0;
+        $check_table = DB::connection('catalog')->select('SHOW TABLES');
+        foreach($check_table as $key => $table_name)
+        {
+            foreach($table_name as $name_of_table)
+            {
+                if($name_of_table == 'catalognewaes'){
+                    $source_key_exists = 1;
+                }
+            }
+        }
+        if($source_key_exists == 0){
+            $redbean = new NewCatalog();
+            $redbean->RedBeanConnection();
+            // $catalog_table = $catalog_table_name;
+            $NewCatalogs = R::dispense('catalognewaes');
+            $NewCatalogs->asin = '';
+            R::store($NewCatalogs);
+        }
+
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
             Log::warning("Export asin command executed local !");

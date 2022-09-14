@@ -1,5 +1,5 @@
 @extends('adminlte::page')
-@section('title', 'Import')
+@section('title', 'Dashboard')
 
 @section('css')
 <link rel="stylesheet" href="/css/styles.css">
@@ -30,6 +30,7 @@
         </div>
     </div>
 </div>
+
 @php
 $country = ['INDIA', 'USA'];
 @endphp
