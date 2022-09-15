@@ -11,6 +11,7 @@ use App\Models\Admin\BB\BB_User;
 use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\Admin\ErrorReporting;
 use Illuminate\Support\Facades\Auth;
 use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
@@ -140,7 +141,18 @@ class Catalog
                 );
             }
         } catch (Exception $e) {
-            Log::alert($e);
+            // Log::alert($e);
+            $code =  $e->getCode();
+            $msg = $e->getMessage();
+            $error_reportings = ErrorReporting::create([
+                'queue_type' => "catalog",
+                'identifier' => $asin,
+                'identifier_type' => "ASIN",
+                'source' => $country_code,
+                'aws_key' => $aws_id,
+                'error_code' => $code,
+                'message' => $msg,
+            ]);
         }
     }
 }

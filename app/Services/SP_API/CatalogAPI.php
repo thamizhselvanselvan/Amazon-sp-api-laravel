@@ -4,6 +4,7 @@ namespace App\Services\SP_API;
 
 use Exception;
 use SellingPartnerApi\Endpoint;
+use App\Models\Admin\ErrorReporting;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\CatalogApi as Catalog;
 
@@ -42,7 +43,17 @@ class CatalogAPI {
             return ['asin1' => $result->asin, 'item_name' => $result->summaries[0]->itemName];
             
         } catch (Exception $e) {
-            
+            $code =  $e->getCode();
+            $msg = $e->getMessage();
+            $error_reportings = ErrorReporting::create([
+                'queue_type' => "Catalog",
+                'identifier' => $asin,
+                'identifier_type' => "ASIN",
+                'source' => NULL,
+                'aws_key' => "AKIAZTIHMXYBD5SRG5IZ",
+                'error_code' => $code,
+                'message' => $msg,
+            ]);
         }
 
         return ['error' => true];
