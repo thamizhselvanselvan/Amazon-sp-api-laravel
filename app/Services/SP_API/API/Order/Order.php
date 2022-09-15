@@ -85,7 +85,7 @@ class Order
             $amazon_order_id = '';
         } catch (Exception $e) {
 
-            Log::warning('Exception when calling OrdersApi->getOrders: ' . $e->getMessage());
+            // Log::warning('Exception when calling OrdersApi->getOrders: ' . $e->getMessage());
             $code =  $e->getCode();
             $msg = $e->getMessage();
             $error_reportings = ErrorReporting::create([
