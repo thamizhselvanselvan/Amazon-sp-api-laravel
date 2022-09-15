@@ -24,6 +24,8 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use App\Models\order\OrderSellerCredentials;
 use App\Services\SP_API\API\Order\missingOrder;
+use League\Csv\Reader;
+
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 
 class labelManagementController extends Controller
@@ -187,7 +189,7 @@ class labelManagementController extends Controller
         $generator = new BarcodeGeneratorPNG();
         foreach ($allid as $id) {
             $results = $this->labelDataFormating($id);
-            
+
             $result[] = (object)$results;
 
             $barcode_awb = 'AWB-MISSING';
@@ -476,5 +478,57 @@ class labelManagementController extends Controller
                 unlink($file);
             }
         }
+    }
+
+    public function labelMissingAddress()
+    {
+        return view('label.upload_missing_addrs');
+    }
+
+    public function labelMissingAddressUpload(Request $request)
+    {
+        foreach ($request->files as $key => $files) {
+
+            foreach ($files as $keys => $file) {
+
+                $fileName = $file->getClientOriginalName();
+                $fileName = uniqid() . ($fileName);
+            }
+        }
+
+        $csv = Reader::createFromPath($file, 'r');
+
+        foreach ($csv as $key => $data) {
+
+            if ($key > 0) {
+                $Order = $data[0];
+                $Name = $data[1];
+                $AddressLine1 = $data[2];
+                $AddressLine2 = $data[3];
+                $City = $data[4];
+                $County = $data[5];
+                $CountryCode = $data[6];
+                $Phone = $data[7];
+                $AddressType = $data[8];
+
+                $address_array = [
+                    'Name' => $Name,
+                    'AddressLine1' => $AddressLine1,
+                    'AddressLine2' => $AddressLine2,
+                    'City' => $City,
+                    'County' => $County,
+                    'CountryCode' => $CountryCode,
+                    'Phone' => $Phone,
+                    'AddressType' => $AddressType
+                ];
+
+                $address_json = (json_encode($address_array));
+                DB::connection('order')->select("
+                    UPDATE orderitemdetails SET shipping_address  = '$address_json' 
+                    WHERE amazon_order_identifier = '$Order'
+                ");
+            }
+        }
+        //
     }
 }
