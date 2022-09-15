@@ -279,7 +279,7 @@ return [
                     'icon' => 'far fa-fw fa-file',
                 ],
                 [
-                    'text' => 'Store management',
+                    'text' => 'Store Management',
                     'url' => 'admin/stores',
                     'can' => ['Admin', 'Account'],
                     'icon' => 'far fa-fw fa-file',
@@ -293,6 +293,7 @@ return [
                 [
                     'text' => 'BuyBox',
                     'can' =>  ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
                     'submenu' => [
                         [
                             'text' => 'Region Master ',
@@ -313,6 +314,12 @@ return [
                             'can' =>  ['Admin']
                         ],
                     ]
+                ],
+                [
+                    'text' => 'System Setting',
+                    'url' => 'admin/system-setting',
+                    'can' => ['Admin', 'Account'],
+                    'icon' => 'far fa fa-cog',
                 ],
             ],
         ],

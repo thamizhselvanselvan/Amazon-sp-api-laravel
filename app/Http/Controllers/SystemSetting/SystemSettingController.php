@@ -7,5 +7,8 @@ use Illuminate\Http\Request;
 
 class SystemSettingController extends Controller
 {
-    //
+    public function index()
+    {
+        return view('SystemSetting.index');
+    }
 }
