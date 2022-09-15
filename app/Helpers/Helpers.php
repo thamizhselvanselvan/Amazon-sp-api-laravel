@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use App\Models\SystemSetting\SystemSetting;
 use App\Models\ShipNTrack\SMSA\SmsaTrackings;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
 use App\Models\ShipNTrack\Bombino\BombinoTracking;
@@ -885,5 +886,16 @@ if (!function_exists('getTrackingDetails')) {
         } else {
             return 'Invalid AWB';
         }
+    }
+}
+
+if(!function_exists('getSystemSettingsValue'))
+{
+    function getSystemSettingsValue(String $key, $default)
+    {
+        $records = SystemSetting::where('key', $key)->first();
+        $value = isset($records->value) ? $records->value : $default;
+       
+        return $value;
     }
 }

@@ -44,7 +44,9 @@ class Order
 
         $apiInstance = new OrdersV0Api($config);
         // $startTime = Carbon::now()->subHours(9)->toISOString();
-        $startTime = Carbon::now()->subDays(5)->toISOString();
+        // $startTime = Carbon::now()->subDays(5)->toISOString();
+        $subDays = getSystemSettingsValue('subDays',5);
+        $startTime = Carbon::now()->subDays($subDays)->toISOString();
 
         $createdAfter = $startTime;
         $max_results_per_page = 100;
