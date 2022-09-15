@@ -100,7 +100,7 @@
 
             let formData = new FormData(this);
             let count = 0;
-            re = /(\.xlsx)$/i;
+            re = /(\.csv)$/i;
             $.each(files, function(index, elm) {
 
                 if (re.exec(elm['name'])) {

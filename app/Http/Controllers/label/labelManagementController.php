@@ -495,40 +495,46 @@ class labelManagementController extends Controller
                 $fileName = uniqid() . ($fileName);
             }
         }
+        $file_csv = file_get_contents($file);
+        $path = 'label/missing_address.csv';
+        Storage::put($path, $file_csv);
 
-        $csv = Reader::createFromPath($file, 'r');
+        commandExecFunc("mosh:order-address-missing-upload");
 
-        foreach ($csv as $key => $data) {
+        // $csv = Reader::createFromPath($file, 'r');
 
-            if ($key > 0) {
-                $Order = $data[0];
-                $Name = $data[1];
-                $AddressLine1 = $data[2];
-                $AddressLine2 = $data[3];
-                $City = $data[4];
-                $County = $data[5];
-                $CountryCode = $data[6];
-                $Phone = $data[7];
-                $AddressType = $data[8];
+        // foreach ($csv as $key => $data) {
 
-                $address_array = [
-                    'Name' => $Name,
-                    'AddressLine1' => $AddressLine1,
-                    'AddressLine2' => $AddressLine2,
-                    'City' => $City,
-                    'County' => $County,
-                    'CountryCode' => $CountryCode,
-                    'Phone' => $Phone,
-                    'AddressType' => $AddressType
-                ];
+        //     if ($key > 0) {
+        //         $Order = $data[0];
+        //         $Name = $data[1];
+        //         $AddressLine1 = $data[2];
+        //         $AddressLine2 = $data[3];
+        //         $City = $data[4];
+        //         $County = $data[5];
+        //         $CountryCode = $data[6];
+        //         $Phone = $data[7];
+        //         $AddressType = $data[8];
 
-                $address_json = (json_encode($address_array));
-                DB::connection('order')->select("
-                    UPDATE orderitemdetails SET shipping_address  = '$address_json' 
-                    WHERE amazon_order_identifier = '$Order'
-                ");
-            }
-        }
-        //
+        //         $address_array = [
+        //             'Name' => $Name,
+        //             'AddressLine1' => $AddressLine1,
+        //             'AddressLine2' => $AddressLine2,
+        //             'City' => $City,
+        //             'County' => $County,
+        //             'CountryCode' => $CountryCode,
+        //             'Phone' => $Phone,
+        //             'AddressType' => $AddressType
+        //         ];
+
+        //         $address_json = (json_encode($address_array));
+        //         DB::connection('order')->select("
+        //             UPDATE orderitemdetails SET shipping_address  = '$address_json' 
+        //             WHERE amazon_order_identifier = '$Order'
+        //         ");
+        //     }
+        //     Log::info($Order);
+        // }
+        return response()->json(["success" => "All file uploaded successfully"]);
     }
 }
