@@ -48,6 +48,8 @@ class AsinDestinationUpload extends Command
         $priority = $this->argument('priority');
         $destinations = explode(',', $this->option('destination'));
 
+        $bb_priority = $priority;
+
         $path = 'AsinDestination/asin.csv';
         $asins = Reader::createFromPath(Storage::path($path), 'r');
         $asins->setHeaderOffset(0);
@@ -58,6 +60,11 @@ class AsinDestinationUpload extends Command
         $product_lowest_price = [];
         $count = 0;
         foreach ($destinations as $this->destination) {
+
+            if ($this->destination == 'IN' || $this->destination == 'in') {
+                $bb_priority = 1;
+            }
+
             foreach ($asins as  $asin_details) {
                 $asin = $asin_details['ASIN'];
 
@@ -65,7 +72,7 @@ class AsinDestinationUpload extends Command
                     'asin'  => $asin,
                     'user_id'   => $user_id,
                     'priority' => $priority,
-                    
+
                 ];
 
                 $product[] = [
@@ -77,7 +84,7 @@ class AsinDestinationUpload extends Command
                 $product_lowest_price[] = [
                     'asin' => $asin,
                     'import_type' => 'Seller',
-                    'priority'  => $priority,
+                    'priority'  => $bb_priority,
                     'cyclic' => 0,
                 ];
 
