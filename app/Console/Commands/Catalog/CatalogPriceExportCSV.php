@@ -56,7 +56,6 @@ class CatalogPriceExportCSV extends Command
         $this->country_code = $this->argument('country_code');
         $this->priority = $this->argument('priority');
 
-        $chunk = 10000;
         $exportFilePath = "excel/downloads/catalog_price/$this->country_code/Priority" . $this->priority . '/' . $this->country_code . "_CatalogPrice";
         $deleteFilePath = "app/excel/downloads/catalog_price/" . $this->country_code;
 
@@ -71,7 +70,7 @@ class CatalogPriceExportCSV extends Command
         // }
 
         $record_per_csv = 1000000;
-        $chunk = 100000;
+        $chunk = 20000;
         $this->check = $record_per_csv / $chunk;
         if ($this->country_code == 'IN') {
 
