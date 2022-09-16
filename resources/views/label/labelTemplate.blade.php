@@ -111,10 +111,10 @@
                                 <div class="col p-0">
                                     <div class="text-center">
                                         @if($forwarder == '' || $forwarder == NULL)
-                                            &nbsp;
-                                            @else
-                                            {{ $forwarder }}
-                                            @endif
+                                        &nbsp;
+                                        @else
+                                        {{ $forwarder }}
+                                        @endif
                                     </div>
                                     <img class="label-barcode-img" src='data:image/png;base64,{!! $bar_code !!}'>
                                     <!-- {!! $bar_code !!} -->
@@ -208,8 +208,7 @@
                         <td class="p-1">{{$value['title']}}</td>
                         <td class="text-center p-1">{{$value['sku']}}</td>
                         <td class="text-center p-1">{{$value['qty']}}</td>
-                        <!-- <td class="text-center p-1">{{$value['order_total']->CurrencyCode}} -->
-                            <!-- {{$value['order_total']->Amount}} -->
+
                         </td>
                     </tr>
                     @endforeach
