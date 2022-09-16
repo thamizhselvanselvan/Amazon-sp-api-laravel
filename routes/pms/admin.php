@@ -34,3 +34,11 @@ Route::get('admin/stores', 'Admin\AdminManagementController@selectStore')->name(
 Route::post('admin/update-store', 'Admin\AdminManagementController@updateStore'); 
 
 
+Route::get('admin/system-setting', 'SystemSetting\SystemSettingController@index')->name('system.setting.home');
+Route::post('admin/system-setting/add', 'SystemSetting\SystemSettingController@AddSystemSetting')->name('add.system.setting');
+Route::get('admin/system-setting/edit/{id}', 'SystemSetting\SystemSettingController@EditSystemSetting')->name('edit.system.setting');
+Route::post('admin/system-setting/update/{id}', 'SystemSetting\SystemSettingController@UpdateSystemSetting')->name('update.system.setting');
+Route::get('admin/system-setting/remove/{id}', 'SystemSetting\SystemSettingController@DeleteSystemSetting')->name('remove.system.setting');
+Route::get('admin/system-setting/recycle', 'SystemSetting\SystemSettingController@RecycleSystemSetting')->name('recycle.system.setting');
+Route::get('admin/system-setting/restore/{id}', 'SystemSetting\SystemSettingController@RestoreSystemSetting')->name('restore.system.setting');
+

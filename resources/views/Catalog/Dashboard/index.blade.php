@@ -1,5 +1,5 @@
 @extends('adminlte::page')
-@section('title', 'Import')
+@section('title', 'Dashboard')
 
 @section('css')
 <link rel="stylesheet" href="/css/styles.css">
@@ -7,14 +7,14 @@
 
 @section('content_header')
 <div class='row'>
-    <div class="col-12 text-center">
-        <h1 class="m-0 text-dark font-weight-bold"> Dashboard</h1>
+    <div class="col-6 text-right">
+        <h1 class="mt-0 text-dark font-weight-bold"> Dashboard</h1>
     </div>
-    <h2 class='text-right col'>
+    <div class="col-6">
+        <h5 class="text-right"><b>Last Update : </b>{{$FileTime}}</h5>
 
-    </h2>
+    </div>
 </div>
-
 @stop
 
 @section('content')
@@ -30,38 +30,72 @@
         </div>
     </div>
 </div>
+
 @php
 $country = ['INDIA', 'USA'];
 @endphp
 
 @foreach ($json_arrays as $key1 => $record_array)
-
 <h3>{{$country[$key1]}}</h3>
-
 <div class="row">
+    @foreach ($record_array->priority_wise_asin as $key2 => $records)
     <div class="col">
         <div class="info-box bg-success">
+
             <div class="info-box-content text-center">
-                <h4 class="info-box-number text-center">Process Type</h4>
-                <h5 class="info-box-text">ASIN</h5>
-                <h5 class="info-box-text">Catalog</h5>
-                <h5 class="info-box-text">Delist</h5>
-                <h5 class="info-box-text">Price</h5>
-            </div>
-        </div>
-    </div>
-    @foreach ($record_array->priority_wise_asin as $key2 => $records)
-        <div class="col">
-            <div class="info-box bg-success">
-                <div class="info-box-content text-center">
-                    <h4 class="info-box-number text-center">Priority {{$key2}}</h4>
-                    <h5 class="info-box-text">{{$records}}</h5>
-                    <h5 class="info-box-text">{{ $record_array->catalog->$key2 }}</h5>
-                    <h5 class="info-box-text">{{ $record_array->delist_asin->$key2 }}</h5>
-                    <h5 class="info-box-text">{{ $record_array->catalog_price->$key2 }}</h5>
+                <h4 class="info-box-number text-center">Priority {{$key2}}</h4>
+
+                <div class="info-box-text">
+                    <div class="row">
+                        <div class="col-2"> </div>
+                        <div class="col-2 text-left">
+                            <h5> ASIN </h5>
+                        </div>
+                        <div class="col-6 text-right">
+                            <h5> {{$records}}</h5>
+                        </div>
+                        <div class="col-2"> </div>
+                    </div>
+                </div>
+                <div class="info-box-text">
+                    <div class="row">
+                        <div class="col-2"> </div>
+                        <div class="col-2 text-left">
+                            <h5> Catalog </h5>
+                        </div>
+                        <div class="col-6 text-right">
+                            <h5> {{ $record_array->catalog->$key2 }}</h5>
+                        </div>
+                        <div class="col-2"> </div>
+                    </div>
+                </div>
+                <div class="info-box-text">
+                    <div class="row">
+                        <div class="col-2"> </div>
+                        <div class="col-2 text-left">
+                            <h5> Delist </h5>
+                        </div>
+                        <div class="col-6 text-right">
+                            <h5> {{ $record_array->delist_asin->$key2 }}</h5>
+                        </div>
+                        <div class="col-2"> </div>
+                    </div>
+                </div>
+                <div class="info-box-text">
+                    <div class="row">
+                        <div class="col-2"> </div>
+                        <div class="col-2 text-left">
+                            <h5> Price </h5>
+                        </div>
+                        <div class="col-6 text-right">
+                            <h5> {{ $record_array->catalog_price->$key2 }}</h5>
+                        </div>
+                        <div class="col-2"> </div>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
     @endforeach
 </div>
 @endforeach

@@ -17,7 +17,8 @@ class BuyBoxPriceImport
         foreach ($priority_array as $priority) {
 
             $product_lp = '';
-            // $priority = 2;
+            $country_code_lr = strtolower($country_code);
+
             $user_id = '';
             $des_asin_array = [];
             $calculated_weight = [];
@@ -25,7 +26,6 @@ class BuyBoxPriceImport
             $des_asin_update = [];
             $find_missing_asin = [];
 
-            $country_code_lr = strtolower($country_code);
 
             $product_seller_details = 'bb_product_' . $country_code_lr . 's_seller_details';
             $product_lp = 'bb_product_' . $country_code_lr . 's_lp_offers';
@@ -49,10 +49,6 @@ class BuyBoxPriceImport
                     'price_status' => 2
                 ];
             }
-
-
-            Log::alert('Des asing array -> ' . $country_code . '-> ' . $priority);
-            Log::alert($des_asin_array);
 
             $destination_model->where('priority', $priority)->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
             $des_asin_update = [];
@@ -78,10 +74,6 @@ class BuyBoxPriceImport
                 $asin_array[] = "'$a'";
             }
 
-            Log::alert('cat asing array');
-            Log::alert($asin_array);
-
-
             if ($asin_array) {
 
                 $asin = implode(',', $asin_array);
@@ -96,9 +88,6 @@ class BuyBoxPriceImport
                     WHERE PPO.asin IN ($asin)
                     GROUP BY PPO.asin
                 ");
-
-                Log::alert('buybox asing array ->' . $priority);
-                Log::alert($asin_price);
 
                 foreach ($asin_price as $value) {
 

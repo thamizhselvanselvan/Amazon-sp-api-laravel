@@ -39,7 +39,7 @@ class CatalogAmazonImport extends Command
      */
     public function handle()
     {
-        $sources = ['us', 'in'];
+        $sources = ['in', 'us'];
         $limit_array = ['in' => 2500, 'us' => 2500];
 
         foreach ($sources as $source) {
@@ -79,6 +79,9 @@ class CatalogAmazonImport extends Command
             }
 
             $country_code_up = strtoupper($source);
+
+            Log::info("${country_code_up} -> total asin for catalog " . count($asins));
+
             if ($country_code_up == 'IN') {
                 $queue_name = 'catalog_IN';
             }

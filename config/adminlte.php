@@ -279,7 +279,7 @@ return [
                     'icon' => 'far fa-fw fa-file',
                 ],
                 [
-                    'text' => 'Store management',
+                    'text' => 'Store Management',
                     'url' => 'admin/stores',
                     'can' => ['Admin', 'Account'],
                     'icon' => 'far fa-fw fa-file',
@@ -293,6 +293,7 @@ return [
                 [
                     'text' => 'BuyBox',
                     'can' =>  ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
                     'submenu' => [
                         [
                             'text' => 'Region Master ',
@@ -314,6 +315,12 @@ return [
                         ],
                     ]
                 ],
+                [
+                    'text' => 'System Setting',
+                    'url' => 'admin/system-setting',
+                    'can' => ['Admin', 'Account'],
+                    'icon' => 'far fa fa-cog',
+                ],
             ],
         ],
 
@@ -325,26 +332,26 @@ return [
                     'text'  => 'Dashboard',
                     'url'  => 'catalog/dashboard',
                     'icon' => 'fa fa-dashboard',
-                    'can' =>  ['Admin']
+                    'can' =>  ['Admin', 'Catalog']
                 ],
 
                 [
                     'text' => 'Asin Master',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin'],
+                    'can' =>  ['Admin', 'Catalog'],
                     'submenu' => [
                         [
                             'text'  => 'Asin Source',
                             'url'  => 'catalog/asin-source',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin', 'Catalog']
                         ],
 
                         [
                             'text'  => 'Asin Destination',
                             'url'  => 'catalog/asin-destination',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin']
+                            'can' =>  ['Admin', 'Catalog']
                         ],
                     ],
                 ],
@@ -360,7 +367,7 @@ return [
                     'text' => 'Mosh Amazon Catalog',
                     'url'  => 'catalog/product',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin'],
+                    'can' =>  ['Admin', 'Catalog'],
                 ],
                 [
 

@@ -13,9 +13,11 @@ use Illuminate\Support\Facades\Log;
 use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\OrdersV0Api;
+use App\Services\SP_API\API\NewCatalog;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
 use App\Jobs\Seller\Seller_catalog_import_job;
+use App\Models\Admin\ErrorReporting;
 
 class OrderItem
 {
@@ -40,15 +42,28 @@ class OrderItem
         try {
 
             $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
+            po($result_orderItems);
+            exit;
             $result_order_address = $apiInstance->getOrderAddress($order_id);
 
             $tem = $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id);
         } catch (Exception $e) {
 
-            Log::warning($e->getMessage());
+           // Log::warning($e->getMessage());
+            $code =  $e->getCode();
+            $msg = $e->getMessage();
+            $error_reportings = ErrorReporting::create([
+            'queue_type' => "order",
+            'identifier' => $order_id,
+            'identifier_type' => "order_id",
+            'source' => $awsCountryCode,
+            'aws_key' => $aws_id,
+            'error_code' => $code,
+            'message' => $msg,
+            ]);
         }
         return true;
-    }
+            }
 
     public function OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id)
     {
@@ -91,7 +106,17 @@ class OrderItem
                 }
             }
         }
+
         $data = [];
+
+        $class =  'catalog\AmazonCatalogImport';
+        $queue_name = 'inventory';
+        $queue_delay = 0;
+        $asins = [];
+        $asin_source = [];
+        // $asin_table_name = 'asin_source_' . strtolower($awsCountryCode ). 's';
+        $catalog_table_name = 'catalognew' . strtolower($awsCountryCode ). 's';
+
         foreach ($result_orderItems['payload']['order_items'] as $result_order) {
             foreach ((array)$result_order as $result) {
 
@@ -119,8 +144,22 @@ class OrderItem
                     }
                     if ($detailsKey == 'asin') {
                         $asin = $value;
+                    
                     }
                 }
+                
+                $asins = DB::connection('catalog')->select("SELECT asin FROM $catalog_table_name where asin = '$asin' ");
+          
+                    if(count($asins) <= 0){ 
+                        $asin_source[] = [
+                            'asin' => $asin,
+                            'seller_id' => $aws_id,
+                            'source' => $awsCountryCode,
+                        ];
+                        
+                        jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
+                    }
+
                 $order_detials->amazon_order_identifier = $order_id;
                 $order_detials->shipping_address = $order_address;
                 $order_detials->created_at = now();

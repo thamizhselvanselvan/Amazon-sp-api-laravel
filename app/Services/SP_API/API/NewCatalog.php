@@ -10,6 +10,7 @@ use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Admin\ErrorReporting;
+use App\Models\Catalog\CatalogMissingAsin;
 use App\Services\SP_API\Config\ConfigTrait;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
 
@@ -25,6 +26,7 @@ class NewCatalog
         $country_code1 = '';
         $asins = [];
         $count = 0;
+        $miss_asins = [];
 
         foreach ($records as $record) {
             $asin = $record['asin'];
@@ -38,7 +40,7 @@ class NewCatalog
                 'status'   => 1,
             ];
             $asins[] = $asin;
-
+            
             $mws_region = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->first();
             $token = $mws_region['aws_verified']['auth_code'];
             $country_code = strtolower($country_code);
@@ -66,20 +68,21 @@ class NewCatalog
                 foreach ($record as $key1 => $value) {
                     $NewCatalogs[] = R::dispense($catalog_table);
                     foreach ($value as $key => $data) {
-
                         if ($key != '0') {
-
+                            
                             $NewCatalogs[$key1]->$key = $data;
                         }
                     }
                     $NewCatalogs[$key1]->created_at = now();
                     $NewCatalogs[$key1]->updated_at = now();
+
+                    $miss_asins [] = $value['asin'];
                 }
             }
         }
         R::storeALL($NewCatalogs);
+       
     }
-
 
     public function FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id)
     {
@@ -119,12 +122,14 @@ class NewCatalog
             $result = (array) json_decode(json_encode($result));
 
             $queue_data = [];
-
+            $check_asin = [];
             foreach ($result['items'] as $key => $record) {
+                $check_asin [] = $record->asin;
+
                 $queue_data[$key]['seller_id'] = $seller_id;
                 $queue_data[$key]['source'] = $country_code;
                 foreach ($record as $key1 => $value) {
-
+                    
                     if ($key1 == 'summaries') {
 
                         foreach ($value[0] as $key2 => $value2) {
@@ -155,20 +160,21 @@ class NewCatalog
                     }
                 }
             }
+            $miss_asin_array = [];
+            $miss_asin = [];
+            $diffs = array_diff($asins, $check_asin);
+            foreach($diffs as $diff){
+                $miss_asin [] = [
+                    'asin' => $diff,
+                    'user_id' => $seller_id,
+                    'source' => $country_code,   
+                ];
+            }
+            CatalogMissingAsin::upsert($miss_asin,['asin'], ['asin', 'source']);
             return $queue_data;
         } catch (Exception $e) {
-
+            
             log::alert($e);
-            // $country_code = strtolower($country_code);
-            // $catalog_table = 'catalognew' . $country_code . 's';
-            // $error_record = [
-            //     'queue_type' => 'Catalog',
-            //     'source' => $country_code,
-            //     'identifier' => $e,
-            //     'identifier_type' => 'ASIN',
-            // ];
-
-            // ErrorReporting::insert($error_record);
         }
     }
 
