@@ -1,7 +1,11 @@
 <?php
 
-use App\Http\Controllers\PMSPHPUnitTestController;
+use App\Jobs\B2C\B2CBooking;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
+use App\Services\B2CShip\B2cshipBooking;
+
 
 Route::get('b2cship/dashboard', 'B2cship\B2cshipDashboardController@Dashboard');
 Route::get('b2cship/kyc', 'B2cship\B2cshipKycController@index');
@@ -14,9 +18,9 @@ Route::get('b2cship/update-report', 'B2cship\TrackingStatusController@update_rep
 
 Route::get('b2cship/monitor', 'B2cship\B2cshipMonitorController@index');
 
-Route::get('bombion/packet-activities','B2cship\BombinoPacketActivitiesController@PacketActivitiesDetails');
-Route::get('bombion/update-packet-details','B2cship\BombinoPacketActivitiesController@UpdatePacketDetails');
-Route::get('bombion/csv-export','B2cship\BombinoPacketActivitiesController@ExportToCSV');
+Route::get('bombion/packet-activities', 'B2cship\BombinoPacketActivitiesController@PacketActivitiesDetails');
+Route::get('bombion/update-packet-details', 'B2cship\BombinoPacketActivitiesController@UpdatePacketDetails');
+Route::get('bombion/csv-export', 'B2cship\BombinoPacketActivitiesController@ExportToCSV');
 
 
 // Route::get('b2cship/Trackingtab','B2cship\B2cshipDashboardController@showDashboard');
@@ -29,3 +33,22 @@ Route::get('bombion/csv-export','B2cship\BombinoPacketActivitiesController@Expor
 
 
 
+
+Route::get('b2c/test',function(){
+
+    $amazon_order_id = '171-0523827-5559508';
+
+    if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+        B2CBooking::dispatch([
+            'amazon_order_id' => $amazon_order_id
+        ])->onconnection('redis');
+    } else {
+        B2CBooking::dispatch(
+            [
+                'amazon_order_id' => $amazon_order_id,
+            ]
+
+        );
+    }
+
+});
