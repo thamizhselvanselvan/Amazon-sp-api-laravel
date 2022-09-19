@@ -24,7 +24,9 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use App\Models\order\OrderSellerCredentials;
 use App\Services\SP_API\API\Order\missingOrder;
+use GuzzleHttp\Promise\Create;
 use League\Csv\Reader;
+use League\Csv\Writer;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 
@@ -45,7 +47,7 @@ class labelManagementController extends Controller
             $catalog = config('database.connections.catalog.database');
             $web = config('database.connections.web.database');
             $prefix = config('database.connections.web.prefix');
-            
+
             $data = DB::select("SELECT
             DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
             from ${web}.${prefix}labels as web
@@ -230,12 +232,12 @@ class labelManagementController extends Controller
 
             foreach ($header as $key => $excel_data) {
 
-                if($key != 0){
-                    $Label_excel_data [] = [
+                if ($key != 0) {
+                    $Label_excel_data[] = [
                         'order_no' => $excel_data[0],
                         'awb_no'    => $excel_data[1],
                         'bag_no'    => $excel_data[2],
-                        'forwarder' => $excel_data[3], 
+                        'forwarder' => $excel_data[3],
                     ];
                 }
             }
@@ -424,41 +426,53 @@ class labelManagementController extends Controller
         Storage::put($path, $file_csv);
 
         commandExecFunc("mosh:order-address-missing-upload");
-
-        // $csv = Reader::createFromPath($file, 'r');
-
-        // foreach ($csv as $key => $data) {
-
-        //     if ($key > 0) {
-        //         $Order = $data[0];
-        //         $Name = $data[1];
-        //         $AddressLine1 = $data[2];
-        //         $AddressLine2 = $data[3];
-        //         $City = $data[4];
-        //         $County = $data[5];
-        //         $CountryCode = $data[6];
-        //         $Phone = $data[7];
-        //         $AddressType = $data[8];
-
-        //         $address_array = [
-        //             'Name' => $Name,
-        //             'AddressLine1' => $AddressLine1,
-        //             'AddressLine2' => $AddressLine2,
-        //             'City' => $City,
-        //             'County' => $County,
-        //             'CountryCode' => $CountryCode,
-        //             'Phone' => $Phone,
-        //             'AddressType' => $AddressType
-        //         ];
-
-        //         $address_json = (json_encode($address_array));
-        //         DB::connection('order')->select("
-        //             UPDATE orderitemdetails SET shipping_address  = '$address_json' 
-        //             WHERE amazon_order_identifier = '$Order'
-        //         ");
-        //     }
-        //     Log::info($Order);
-        // }
         return response()->json(["success" => "All file uploaded successfully"]);
+    }
+
+    public function labelMissingAddressExport()
+    {
+        $missing_address = DB::connection('order')
+            ->select(
+                "SELECT 
+                    osc.store_name, oids.amazon_order_identifier, osc.country_code
+                FROM 
+                    orderitemdetails oids
+                        JOIN
+                    ord_order_seller_credentials osc ON osc.seller_id = oids.seller_identifier
+                WHERE
+                    oids.shipping_address = '' AND oids.amazon_order_identifier != '' "
+            );
+
+        $path = 'excel/downloads/label/missing_address_template.csv';
+        $file_path = Storage::path('excel/downloads/label/missing_address_template.csv');
+
+        if (!Storage::exists($path)) {
+            Storage::put($path, '');
+        }
+
+        $csv = Writer::createFromPath($file_path, 'w');
+        $csv->insertOne([
+            'Order',
+            'Store Name',
+            'Name',
+            'AddressLine1',
+            'AddrssLine2',
+            'City',
+            'County',
+            'CountryCode',
+            'Phone',
+            'AddressType'
+        ]);
+
+        foreach ($missing_address as $details) {
+
+            $tem_data = [
+                $details->amazon_order_identifier,
+                $details->store_name . ' [ ' . $details->country_code . ' ]'
+            ];
+            $csv->insertOne($tem_data);
+        }
+
+        return response()->download($file_path);
     }
 }

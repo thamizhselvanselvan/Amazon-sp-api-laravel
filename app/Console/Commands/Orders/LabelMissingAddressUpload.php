@@ -51,14 +51,14 @@ class LabelMissingAddressUpload extends Command
 
             if ($key > 0) {
                 $Order = $data[0];
-                $Name = $data[1];
-                $AddressLine1 = $data[2];
-                $AddressLine2 = $data[3];
-                $City = $data[4];
-                $County = $data[5];
-                $CountryCode = $data[6];
-                $Phone = $data[7];
-                $AddressType = $data[8];
+                $Name = $data[2];
+                $AddressLine1 = $data[3];
+                $AddressLine2 = $data[4];
+                $City = $data[5];
+                $County = $data[6];
+                $CountryCode = $data[7];
+                $Phone = $data[8];
+                $AddressType = $data[9];
 
                 $address_array = [
                     'Name' => $Name,

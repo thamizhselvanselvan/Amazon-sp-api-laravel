@@ -26,3 +26,4 @@ Route::get('label/zip/download', 'label\labelManagementController@zipDownload');
 
 Route::get('label/missing/address', 'label\labelManagementController@labelMissingAddress');
 Route::post('label/missing/address', 'label\labelManagementController@labelMissingAddressUpload');
+Route::get('label/missing/address/export', 'label\labelManagementController@labelMissingAddressExport');
