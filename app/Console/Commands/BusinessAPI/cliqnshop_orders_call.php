@@ -52,12 +52,6 @@ class cliqnshop_orders_call extends Command
             ->select('code', 'label')
             ->get();
 
-
-        $aimeosasin = DB::connection('cliqnshop')->table('order_base_product')
-            ->select('prodcode')
-            ->get();
-        
-
         $call = new Orders;
         foreach ($data as $val) {
             // po($data);
@@ -184,8 +178,7 @@ class cliqnshop_orders_call extends Command
                 'sent_xml' => $xml,
                 'status' =>'1',
             ]);
-            Log::info('XML Sent to cliqnshop Table');
-    
+     
         }
     }
 }
