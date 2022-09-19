@@ -82,7 +82,7 @@ class AsinDestinationController extends Controller
                 $table_name = table_model_create(country_code:$destination, model:'Asin_destination', table_name:'asin_destination_');
                 $table_name->upsert($records, ['user_asin_unique'], ['asin', 'priority']);
                 $push_to_bb = new PushAsin();
-                $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination);
+                $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination, priority:$priority);
                 $records = [];
                 $product = [];
                 $product_lowest_price = [];

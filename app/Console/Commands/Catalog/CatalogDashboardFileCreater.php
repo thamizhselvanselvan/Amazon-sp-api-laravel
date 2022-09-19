@@ -42,7 +42,7 @@ class CatalogDashboardFileCreater extends Command
     {
         $sources = ['IN', 'US'];
         $record_arrays = [];
-        $dbname = config('database.connections.buybox.database');
+        $dbname = config('database.connections.catalog.database');
         foreach ($sources as $source) {
 
             $asin_priority = [1 => 0, 2 => 0, 3 => 0];
@@ -51,12 +51,12 @@ class CatalogDashboardFileCreater extends Command
             // $asin_bb_price = [1 => 0, 2 => 0, 3 => 0];
             $cat_price = [1 => 0, 2 => 0, 3 => 0];
 
+            $delist_asins = [];
             $source = strtolower($source);
             $destination_table = "asin_destination_${source}s";
             $catalog_table = "catalognew${source}s";
-            $buybox_table = "bb_product_${source}s_lp_offers";
             $catalog_price = "pricing_${source}s";
-
+            
             $priority_wise = DB::connection('catalog')
                 ->select("SELECT count(asin) as priority_wise, priority from ${destination_table} 
             group by priority");
@@ -77,17 +77,34 @@ class CatalogDashboardFileCreater extends Command
                 $catalog[$cat] = $total_catalog->asin_catalog;
             }
 
-            $delist_asins = DB::connection('catalog')
-                ->select("SELECT count(${destination_table}.asin) as asin_delist, ${destination_table}.priority from ${destination_table}
-            join ${dbname}.${buybox_table}
-            ON ${destination_table}.asin = ${buybox_table}.asin
-            WHERE ${buybox_table}.delist = 1
-            group by ${destination_table}.priority
-            ");
+            for($priority = 1; $priority <= 3; $priority++){
 
-            foreach ($delist_asins as $delist_asin) {
-                $delist = $delist_asin->priority;
-                $asin_delist[$delist] = $delist_asin->asin_delist;
+                $buybox_table = "bb_product_aa_custom_p${priority}_${source}_offers";
+
+                // $delist_asins [] = DB::connection('catalog')
+                //     ->select("SELECT count(${destination_table}.asin) as asin_delist, ${destination_table}.priority from ${destination_table}
+                // join ${dbname}.${buybox_table}
+                // ON ${destination_table}.asin = ${buybox_table}.asin
+                // WHERE ${buybox_table}.delist = 1
+                // group by ${destination_table}.priority
+                // ");
+                
+                $delist_asins [] = DB::connection('buybox')
+                ->select("SELECT count(${buybox_table}.asin) as asin_delist, ${buybox_table}.priority
+                from ${buybox_table}
+                join ${dbname}.${destination_table} as destination
+                on ${buybox_table}.asin = destination.asin
+                and ${buybox_table}.priority = destination.priority
+                where ${buybox_table}.delist = 1
+                group by ${buybox_table}.priority
+                ");
+            }
+
+            foreach($delist_asins as $value){
+                foreach ($value as $delist_asin) {
+                    $delist = $delist_asin->priority;
+                    $asin_delist[$delist] = $delist_asin->asin_delist;
+                }
             }
 
             // $bb_prices =  DB::connection('catalog')

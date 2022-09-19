@@ -15,7 +15,7 @@ class BuyBoxPriceImport
         $price_convert = new PriceConversion();
 
         foreach ($priority_array as $priority) {
-
+            
             $product_lp = '';
             $country_code_lr = strtolower($country_code);
 
@@ -27,8 +27,12 @@ class BuyBoxPriceImport
             $find_missing_asin = [];
 
 
-            $product_seller_details = 'bb_product_' . $country_code_lr . 's_seller_details';
-            $product_lp = 'bb_product_' . $country_code_lr . 's_lp_offers';
+            // $product_lp = 'bb_product_' . $country_code_lr . 's_lp_offers';
+            // $product_seller_details = 'bb_product_' . $country_code_lr . 's_seller_details';
+
+            $product_seller_details = "bb_product_aa_custom_p${priority}_${country_code_lr}_seller_details";
+            $product_lp = "bb_product_aa_custom_p${priority}_${country_code_lr}_offers";
+            
 
             $destination_model = table_model_create(country_code: $country_code, model: 'Asin_destination', table_name: 'asin_destination_');
 
@@ -73,21 +77,25 @@ class BuyBoxPriceImport
                 $calculated_weight[$a] =  $weight;
                 $asin_array[] = "'$a'";
             }
-
+            
             if ($asin_array) {
-
+                
                 $asin = implode(',', $asin_array);
 
+                
                 $asin_price = DB::connection('buybox')
                     ->select("SELECT PPO.asin, LP.available,
                 GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
                 group_concat(PPO.listingprice_amount) as listingprice_amount,
                 group_concat(PPO.updated_at) as updated_at
                 FROM $product_seller_details as PPO
-                JOIN $product_lp as LP On PPO.asin = LP.asin
-                    WHERE PPO.asin IN ($asin)
-                    GROUP BY PPO.asin
+                JOIN $product_lp as LP 
+                ON PPO.asin = LP.asin
+                WHERE PPO.asin IN ($asin)
+                GROUP BY PPO.asin
                 ");
+
+                log::alert($asin_price);
 
                 foreach ($asin_price as $value) {
 
