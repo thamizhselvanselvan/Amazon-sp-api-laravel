@@ -42,7 +42,7 @@ class OrderItem
         try {
             Log::alert('Order Item Details Try Block');
             $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
-            // $result_order_address = $apiInstance->getOrderAddress($order_id);
+            $result_order_address = $apiInstance->getOrderAddress($order_id);
             $result_order_address = [];
             $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id);
         } catch (Exception $e) {
