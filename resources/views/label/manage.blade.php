@@ -8,7 +8,6 @@
         .table td {
             padding: 0;
             padding-left: 5px;
-
         }
 
         .btn-group-sm .btn,
@@ -51,138 +50,63 @@
             </div>
         </div>
     </div>
-    <div class="pl-2">
-        <table class="table table-bordered yajra-datatable table-striped text-center">
-            <thead>
-                <tr class="text-bold bg-info">
 
-                    <th>Sr</th>
-                    <th>Store Name </th>
-                    <th>Order No.</th>
-                    <th>AWB No.</th>
-                    <th>Order Date</th>
-                    <th>SKU</th>
-                    <th>Customer</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+@stop
 
-    @stop
+@section('js')
+    <script>
+        $(document).ready(function() {
+            $('.check_all').change(function() {
 
-    @section('js')
-        <script>
-            let yajra_table = $('.yajra-datatable').DataTable({
-
-                processing: true,
-                serverSide: true,
-                ajax: "{{ url('/label/manage') }}",
-                pageLength: 50,
-                columns: [{
-                        data: 'sn',
-                        name: 'sn',
-                        orderable: false,
-                        searchable: false
-                    },
-                    // {
-                    //     data: 'status',
-                    //     name: 'status'
-                    // },
-                    {
-                        data: 'store_name',
-                        name: 'store_name',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'order_no',
-                        name: 'order_no',
-                    },
-                    {
-                        data: 'awb_no',
-                        name: 'awb_no',
-                    },
-                    {
-                        data: 'purchase_date',
-                        name: 'purchase_date',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'seller_sku',
-                        name: 'seller_sku',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'customer_name',
-                        name: 'customer_name',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    },
-                ],
+                if ($('.check_all').is(':checked')) {
+                    $('.check_options').prop('checked', true);
+                } else {
+                    $('.check_options').prop('checked', false);
+                }
             });
 
-            $(document).ready(function() {
-                $('.check_all').change(function() {
-
-                    if ($('.check_all').is(':checked')) {
-                        $('.check_options').prop('checked', true);
+            $('#print_selected').click(function() {
+                // alert('working');
+                let id = '';
+                let count = '';
+                $("input[name='options[]']:checked").each(function() {
+                    if (count == 0) {
+                        id += $(this).val();
                     } else {
-                        $('.check_options').prop('checked', false);
+                        id += '-' + $(this).val();
+                    }
+                    count++;
+                    window.location.href = '/label/print-selected/' + id;
+                });
+                // alert(id);
+            });
+
+            $('#download_selected').click(function() {
+                let id = '';
+                let count = '';
+                let arr = '';
+                $("input[name='options[]']:checked").each(function() {
+                    if (count == 0) {
+                        id += $(this).val();
+                    } else {
+                        id += '-' + $(this).val();
+                    }
+                    count++;
+                });
+                $.ajax({
+                    method: 'POST',
+                    url: "{{ url('/label/select-download') }}",
+                    data: {
+                        'id': id,
+                        "_token": "{{ csrf_token() }}",
+                    },
+                    success: function(response) {
+                        arr += response;
+                        window.location.href = '/label/zip-download/' + arr;
+                        // alert('Export pdf successfully');
                     }
                 });
-
-                $('#print_selected').click(function() {
-                    // alert('working');
-                    let id = '';
-                    let count = '';
-                    $("input[name='options[]']:checked").each(function() {
-                        if (count == 0) {
-                            id += $(this).val();
-                        } else {
-                            id += '-' + $(this).val();
-                        }
-                        count++;
-                        window.location.href = '/label/print-selected/' + id;
-                    });
-                    // alert(id);
-                });
-
-                $('#download_selected').click(function() {
-                    let id = '';
-                    let count = '';
-                    let arr = '';
-                    $("input[name='options[]']:checked").each(function() {
-                        if (count == 0) {
-                            id += $(this).val();
-                        } else {
-                            id += '-' + $(this).val();
-                        }
-                        count++;
-                    });
-                    $.ajax({
-                        method: 'POST',
-                        url: "{{ url('/label/select-download') }}",
-                        data: {
-                            'id': id,
-                            "_token": "{{ csrf_token() }}",
-                        },
-                        success: function(response) {
-                            arr += response;
-                            window.location.href = '/label/zip-download/' + arr;
-                            // alert('Export pdf successfully');
-                        }
-                    });
-                });
             });
-        </script>
-    @stop
+        });
+    </script>
+@stop
