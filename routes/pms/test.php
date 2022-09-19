@@ -144,6 +144,8 @@ Route::get('ustoinprice', function () {
 });
 
 Route::get('intosa/{weight}/{price}', 'TestController@INToSA');
+Route::get('intouae/{weight}/{price}', 'TestController@INDToUAE');
+Route::get('INDToSG/{weight}/{price}', 'TestController@INDToSG');
 
 Route::get('smsatracking/{awb}', function ($awb_no) {
 

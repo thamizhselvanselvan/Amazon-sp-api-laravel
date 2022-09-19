@@ -51,7 +51,7 @@ class catalogExportCSV extends Command
     public function handle()
     {
         $total_csv = 1000000;
-        $chunk = 100000;
+        $chunk = 20000;
         $this->remender = $total_csv / $chunk;
         $this->country_code = $this->argument('country_code');
 
