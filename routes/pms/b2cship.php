@@ -34,7 +34,7 @@ Route::get('bombion/csv-export', 'B2cship\BombinoPacketActivitiesController@Expo
 
 
 
-Route::get('test',function(){
+Route::get('b2c/test',function(){
 
     $amazon_order_id = '171-0523827-5559508';
 
