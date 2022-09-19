@@ -16,6 +16,7 @@ use SellingPartnerApi\Api\OrdersV0Api;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
+use App\Models\Admin\ErrorReporting;
 
 class Order
 {
@@ -44,7 +45,9 @@ class Order
 
         $apiInstance = new OrdersV0Api($config);
         // $startTime = Carbon::now()->subHours(9)->toISOString();
-        $startTime = Carbon::now()->subDays(5)->toISOString();
+        // $startTime = Carbon::now()->subDays(5)->toISOString();
+        $subDays = getSystemSettingsValue('subDays',5);
+        $startTime = Carbon::now()->subDays($subDays)->toISOString();
 
         $createdAfter = $startTime;
         $max_results_per_page = 100;
@@ -84,7 +87,18 @@ class Order
             $amazon_order_id = '';
         } catch (Exception $e) {
 
-            Log::warning('Exception when calling OrdersApi->getOrders: ' . $e->getMessage());
+            // Log::warning('Exception when calling OrdersApi->getOrders: ' . $e->getMessage());
+            $code =  $e->getCode();
+            $msg = $e->getMessage();
+            $error_reportings = ErrorReporting::create([
+                'queue_type' => "order",
+                'identifier' => $seller_id,
+                'identifier_type' => "seller_id",
+                'source' => $awsCountryCode,
+                'aws_key' => $awsId,
+                'error_code' => $code,
+                'message' => $msg,
+            ]);
         }
     }
 

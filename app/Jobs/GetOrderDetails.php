@@ -7,6 +7,7 @@ use RedBeanPHP\R as R;
 use Illuminate\Bus\Queueable;
 use SellingPartnerApi\Endpoint;
 use Illuminate\Support\Facades\Log;
+use App\Models\Admin\ErrorReporting;
 use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
 use Illuminate\Queue\SerializesModels;
@@ -105,7 +106,18 @@ class GetOrderDetails implements ShouldQueue
             }
             R::store($order_details);
         } catch (Exception $e) {
-            log::alert($e->getMessage());
+           // log::alert($e->getMessage());
+            $code =  $e->getCode();
+            $msg = $e->getMessage();
+            $error_reportings = ErrorReporting::create([
+                'queue_type' => "GetOrderItem",
+                'identifier' => $order_id,
+                'identifier_type' => "order_id",
+                'source' => NULL,
+                'aws_key' => $seller_id,
+                'error_code' => $code,
+                'message' => $msg,
+            ]);
         }
     }
 
@@ -154,7 +166,18 @@ class GetOrderDetails implements ShouldQueue
             }
         } catch (Exception $e) {
             
-            log::alert($e->getMessage());
+            // log::alert($e->getMessage());
+            $code =  $e->getCode();
+            $msg = $e->getMessage();
+            $error_reportings = ErrorReporting::create([
+                'queue_type' => "GetOrderItem",
+                'identifier' => $order_id,
+                'identifier_type' => "order_id",
+                'source' => NULL,
+                'aws_key' => $seller_id,
+                'error_code' => $code,
+                'message' => $msg,
+            ]);
         }
     }
 }
