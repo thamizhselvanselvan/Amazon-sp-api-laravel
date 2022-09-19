@@ -13,90 +13,119 @@ class ZohoController extends Controller
     private function getAccessToken()
     {
         $zohoURL = "https://accounts.zoho.in/oauth/v2/token";
-
         $clientID = '1000.FY2B09NCY9PFBOT4FTRM0GEMXKCO2I';
-
         $clientSecret = 'd050ac81701d158c1903037082674034ace0d9538f';
+        $refres_token = '1000.5446197eabbe5bf255aa17617cd27aad.a1fd478a681bd1581c541b8a1b78d380';
 
-        $grantType = 'refresh_token';
-        $refreshToken = '1000.b3d61045a34455d7bff812b726e835ef.724fe9a752f343e4646436c974895534';
+        $curl = curl_init();
 
-        $CompleteURI = $zohoURL . "?refresh_token=" . $refreshToken . "&client_id=" . $clientID . "&client_secret=" . $clientSecret . "&grant_type=" . $grantType;
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $zohoURL,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_SSL_VERIFYPEER =>  false,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => array(
+                'client_id' => $clientID,
+                'client_secret' => $clientSecret,
+                'refresh_token' => $refres_token,
+                'grant_type' => 'refresh_token'
+            ),
+        ));
 
-        $response = Http::post($CompleteURI);
+        $response = curl_exec($curl);
 
-        $response = json_decode($response);
+        curl_close($curl);
+
+        echo "The Refresh Code";
+        po($response);
+        echo "<br>";
+        $response = json_decode($response, true);
         // dd($response);
-        return $response->access_token;
+        return $response;
     }
 
     public function getOrderDetails(Request $request, $leadId)
     {
         $leadId = trim($leadId, 'zcrm_');
-
+        $leadId  = '389763000000274001';
         $accessToken = $this->getAccessToken();
+        $token = $accessToken['access_token'];
         $headers = [
-            'Authorization' => 'Zoho-oauthtoken ' . $accessToken,
+            'Authorization' => 'Zoho-oauthtoken ' . $token,
         ];
-        $zohoURL = 'https://www.zohoapis.com/crm/v2/Leads/';
+        $zohoURL = 'https://www.zohoapis.in/crm/v2/Leads/';
 
         $CompleteURI = $zohoURL . $leadId;
         $response = Http::withHeaders($headers)->get($CompleteURI);
         $response = json_decode($response);
+        debug($response);
+        dd($response->data->data);
+        exit;
+
+
         $response = ($response->data[0]);
-        // echo '<pre>';
-        // print_r($response);
-        // echo '</pre>';
 
         return response()->json($response);
     }
 
     public function insertZohoOrder($data, $accessToken)
     {
-
-        $post = array("data" => $data);
-        $post = json_encode($post);
-        echo '<pre>';
-        //print_r($post);
-        print_r($post);
-        echo '</pre>';
-
-        $headers = [
-            'Authorization' => 'Zoho-oauthtoken ' . $accessToken,
-            'Content-Type: text/json'
-        ];
-        $zohoURL = 'https://www.zohoapis.com/crm/v2/Leads';
-        //$CompleteURI = $zohoURL;
-
-        $response = Http::withHeaders($headers)->post($zohoURL, [$post]);
-
-        $response = json_decode($response);
-        return $response;
     }
 
 
     public function addOrderItemsToZoho()
     {
-        //$accessToken = $this->getAccessToken();
+        $url = "https://www.zohoapis.in/crm/v2/Leads";
+        $token = $this->getAccessToken();
+        $authtoken = '';
+        if ($token) {
+            $authtoken = $token['access_token'];
+        }
 
-        // $orderItems = DB::connection('order')->select("
-        //     SELECT
-        //     *,  oid.shipping_address
-        //     FROM
-        //         ord_zoho_models AS ozm
-        //     INNER JOIN orderitemdetails AS oid
-        //     ON
-        //         oid.id = ozm.order_identifier
-        //     INNER JOIN ord_order_seller_credentials AS oosc
-        //     ON
-        //         oosc.seller_id = ozm.seller_identifier
-        //     INNER JOIN orders AS os
-        //     ON
-        //     os.amazon_order_identifier = oid.amazon_order_identifier
-        //     WHERE
-        //     ozm.zoho_id = ''
-        // ");
+        $requestBody = array();
+        $recordArray = array();
+        $recordObject = array();
 
+        $recordObject["Company"] = "FieldAPIValue";
+        $recordObject["Last_Name"] = "347706107420006";
+        $recordObject["First_Name"] = "34770617420006";
+        $recordObject["State"] = "FieldAPIValue";
+        $recordArray[] = $recordObject;
+        $requestBody["data"] = $recordArray;
+
+        $curl_pointer = curl_init();
+        $curl_options = array();
+        $headersArray = array();
+        $headersArray[] = "Authorization" . ":" . "Zoho-oauthtoken $authtoken";
+
+        $curl_options[CURLOPT_URL] = $url;
+        $curl_options[CURLOPT_RETURNTRANSFER] = true;
+        $curl_options[CURLOPT_HEADER] = 1;
+        $curl_options[CURLOPT_CUSTOMREQUEST] = "POST";
+        $curl_options[CURLOPT_POSTFIELDS] = json_encode($requestBody);
+        $curl_options[CURLOPT_HTTPHEADER] = $headersArray;
+
+        curl_setopt_array($curl_pointer, $curl_options);
+        $result = curl_exec($curl_pointer);
+
+        $content = preg_split('/[\r\n]/', $result, -1, PREG_SPLIT_NO_EMPTY);
+        $array = (($content[count($content) - 1]));
+
+        $result = (json_decode($array));
+        $response['id'] = ($result->data[0]->details->id);
+        $response['status'] = ($result->data[0]->status);
+
+        po($result);
+        dd($response);
+        exit;
+
+        return true;
         $orderItems = DB::connection('order')->select("
             SELECT *, oid.shipping_address 
             FROM 
@@ -126,86 +155,64 @@ class ZohoController extends Controller
         }
     }
 
-    public function insertOrderItemtoZoho($orderitem)
+    public function insertOrderItemtoZoho($token)
     {
-        $orderDate = Carbon::parse($orderitem["purchase_date"])->format('Y-m-d H:i:s');
+        $curl_pointer = curl_init();
 
-        $prodarray = array();
-        $prodarray["Alternate_Order_No"]        = $orderitem["amazon_order_identifier"];
-        $prodarray["Follow_up_Status"]          = 'Open';
-        if ($orderitem["store_name"] == 'nitrous' || $orderitem["store_name"] == 'in_mbm') {
-            $prodarray["Lead_Status"] = 'B2C Order Confirmed KYC Pending';
-        } else {
-            $prodarray["Lead_Status"] = 'Order Confirmed Purchase Pending';
-        }
-        $prodarray["Lead_Source"]               = "Amazon.in";
+        $curl_options = array();
+        $url = "https://www.zohoapis.in/crm/v2/Leads";
 
-        $buyerDtls = json_decode($orderitem["shipping_address"]);
-        $address = $buyerDtls->AddressLine1 . '<br> ' . $buyerDtls->AddressLine2;
-        $address = str_replace("&", " and ", $address);
+        $curl_options[CURLOPT_URL] = $url;
+        $curl_options[CURLOPT_RETURNTRANSFER] = true;
+        $curl_options[CURLOPT_HEADER] = 1;
+        $curl_options[CURLOPT_CUSTOMREQUEST] = "POST";
+        $requestBody = array();
+        $recordArray = array();
+        $recordObject = array();
+        $recordObject["Company"] = "FieldAPIValue";
+        $recordObject["Last_Name"] = "347706107420006";
+        $recordObject["First_Name"] = "34770617420006";
+        $recordObject["State"] = "FieldAPIValue";
 
-        $prodarray["Last_Name"]                 = $buyerDtls->Name;
-        $prodarray["Mobile"]                    = substr((int) filter_var($buyerDtls->Phone, FILTER_SANITIZE_NUMBER_INT), -10);
-        $prodarray["Address"]                   = $address;
-        $prodarray["City"]                      = $buyerDtls->City;
-        $prodarray["State"]                     = '';
-        $prodarray["Zip_Code"]                  = '';
+        $recordArray[] = $recordObject;
+        $requestBody["data"] = $recordArray;
+        $curl_options[CURLOPT_POSTFIELDS] = json_encode($requestBody);
+        $headersArray = array();
 
-        $buyerEmail = json_decode($orderitem["buyer_info"]);
+        $headersArray[] = "Authorization" . ":" . "Zoho-oauthtoken $token";
 
-        $prodarray["Email"]                     = ((isset($buyerEmail->BuyerEmail)) ? $buyerEmail->BuyerEmail : '');
-        $prodarray["Email"]                     = '';
-        $prodarray["Customer_Type1"]            = '';
-        $order_total = json_decode($orderitem["order_total"]);
+        $curl_options[CURLOPT_HTTPHEADER] = $headersArray;
 
-        $prodarray["Amount_Paid_by_Customer"]   = ((isset($order_total->Amount)) ? $order_total->Amount : '');
-        $prodarray["Designation"]               = preg_replace("/[^a-zA-Z0-9_ -\/]+/", "", substr($orderitem["title"], 0, 100));
-        $prodarray["Order_Creation_Date"]       = $orderDate;
-        $prodarray["Product_Code"]              = $orderitem["seller_sku"];
+        curl_setopt_array($curl_pointer, $curl_options);
 
-        if ($orderitem["store_name"] != 'Amazon.in-Gotech') {
-            $prodarray["Procurement_URL"] = 'http://www.amazon.in/gp/product/' . $orderitem['asin'];
-            $prodarray["Product_Link"] = 'http://www.amazon.ae/gp/product/' . $orderitem['asin'];
-        } else {
-            $prodarray["Procurement_URL"] = 'http://www.amazon.com/gp/product/' . $orderitem['asin'];
-            $prodarray["Product_Link"] = 'http://www.amazon.in/gp/product/' . $orderitem['asin'];
-        }
+        $result = curl_exec($curl_pointer);
+        $responseInfo = curl_getinfo($curl_pointer);
+        curl_close($curl_pointer);
 
-        $prodarray["US_EDD"]                    = Carbon::parse($orderitem["latest_delivery_date"])->format('Y-m-d');
 
-        $item_price = json_decode($orderitem["item_price"]);
-        $prodarray["Product_Cost"]              = $item_price->Amount;
-        $prodarray["Product_Category"]          = ''; //$orderitem["product_category"];
-        $prodarray["Item_Type_Category"]        = ''; //$orderitem["item_type_category"];
+        po($result);
+    }
+    public function getrecord()
+    {
+        $leadId  = '389763000000243001';
 
-        $product_info = json_decode($orderitem["product_info"]);
-        $prodarray["Quantity"]                  = $product_info->NumberOfItems;
-        $prodarray["ASIN"]                      = $orderitem["asin"];
-        $prodarray["SKU"]                       = $orderitem["seller_sku"];
-        $prodarray["H_Code"]                    = ''; //$orderitem["hs_code"];
-        $prodarray["GST"]                       = ''; //$orderitem["gst"];
+        // $leadId = trim($leadId, 'zcrm_');
 
-        if ($orderitem["store_name"] == 'mahzuz_uae') {
-            $prodarray["Lead_Source"] = 'Amazon.ae-Mahzuz';
-        } else {
-            $prodarray["Lead_Source"] = $orderitem["store_name"];
-        }
+        $accessToken = $this->getAccessToken();
+        $token = $accessToken['access_token'];
+        $headers = [
+            'Authorization' => 'Zoho-oauthtoken ' . $token,
+        ];
+        $zohoURL = 'https://www.zohoapis.com/crm/v2/Leads/';
 
-        $prodarray["Fulfilment_Channel"]        = $orderitem["fulfillment_channel"];
-        // $prodarray["Weight_in_LBS"]             = (string)ceil($orderitem["weight_in_lbs"]);
-        $prodarray["Payment_Reference_Number1"] = $orderitem["order_item_identifier"];
-        $prodarray["Exchange"]                  = env('DOLLAR_RATE');
-        $prodarray["Nature"]                    = "Import";
+        $CompleteURI = $zohoURL . $leadId;
+        $response = Http::withHeaders($headers)->get($CompleteURI);
+        $response = json_decode($response);
+        $response = ($response->data[0]);
+    }
 
-        // $prodarray["International_Shipment_ID"] = isset($prodarray["courier_awb"])?$prodarray["courier_awb"]:'';
-        // //$prodarray["Bombino_Shipment_ID"] = isset($prodarray["courier_awb"])?$prodarray["courier_awb"]:'';
-        // $prodarray["International_Courier_Name"] = isset($prodarray["courier_name"])?$prodarray["courier_name"]:'';
-        // $prodarray["US_Shipper"] = $prodarray["us_shipper"];
-
-        // //$prodarray["US_Shipper"] = "Sabs Infotech";
-
-        return $prodarray;
-
-        // $leads = array($prodarray);
+    public function isStringSet($string)
+    {
+        return (!is_null($string) && $string !== '');
     }
 }
