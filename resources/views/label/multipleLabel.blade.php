@@ -123,14 +123,14 @@
                                 <div class="row">
                                     <div class="col"></div>
                                     <div class="col p-0">
-                                    <div class=" text-center mb-1">
-                                        @if($value->forwarder)
+                                        <div class=" text-center mb-1">
+                                            @if($value->forwarder)
                                             {{$value->forwarder}}
-                                        @else
+                                            @else
                                             &nbsp;
-                                        @endif
-                                        
-                                    </div>
+                                            @endif
+
+                                        </div>
                                         <img class="label-barcode-img" src='data:image/png;base64,{!! $bar_code[$key] !!}' width="300px">
                                         <b>
                                             <div class="text-center">
@@ -222,8 +222,6 @@
                             <td class="text-center p-1">{{$details['title']}}</td>
                             <td class="text-center p-1">{{$details['sku']}}</td>
                             <td class="text-center p-1">{{$details['qty']}}</td>
-                            <!-- <td class="text-center p-1">{{$details['order_total']->CurrencyCode}}
-                                {{$details['order_total']->Amount}} -->
                             </td>
                         </tr>
                         @endforeach

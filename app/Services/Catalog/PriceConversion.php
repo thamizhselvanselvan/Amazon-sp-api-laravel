@@ -21,9 +21,9 @@ class PriceConversion
     public function USAToINDB2C($weight, $bb_price)
     {
         if ($weight > 0.9) {
-            $int_shipping_base_charge = (7.5 + ($weight - 1) * 4.5);
+            $int_shipping_base_charge = (7.5 + ($weight - 1) * 5.5);
         } else {
-            $int_shipping_base_charge = 4.5;
+            $int_shipping_base_charge = 5.5;
         }
 
         $duty_rate = 56.00 / 100;
@@ -43,9 +43,9 @@ class PriceConversion
     public function USAToINDB2B($weight, $bb_price)
     {
         if ($weight > 0.9) {
-            $int_shipping_base_charge = (6 + ($weight - 1) * 6);
+            $int_shipping_base_charge = (7 + ($weight - 1) * 7);
         } else {
-            $int_shipping_base_charge = 6;
+            $int_shipping_base_charge = 7;
         }
 
         $duty_rate = 32.00 / 100;
@@ -76,7 +76,7 @@ class PriceConversion
         $seller_commission = 10 / 100;
         $packaging = 4;
         $amazon_commission = 15.00 / 100;
-        $int_shipping_base_charge = $weight * 4.5;
+        $int_shipping_base_charge = $weight * 5.5;
         $ex_rate = 3.7;
         $duty_cost = ($duty_rate * ($bb_price + $int_shipping_base_charge));
 
