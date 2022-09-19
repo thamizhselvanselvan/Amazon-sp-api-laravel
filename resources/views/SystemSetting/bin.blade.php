@@ -7,21 +7,16 @@
 
 @section('content_header')
 <div class='row'>
-    <a href="{{ route('system.setting.home') }}" class="btn btn-primary btn-sm" >
-        <i class="fas fa-arrow-left"></i> back
+    <a href="{{ route('system.setting.home') }}" >
+        <x-adminlte-button label="Back" type="submit" theme="primary" icon="fas fa-arrow-left" class="btn btn-primary btn-sm" />
     </a>
 
     <div class="col text-center">
         <h1 class="mb-1 text-dark font-weight-bold"> System Setting </h1>
 
     </div>
-    <!-- <div class="col-5 text-right">
-        <a href="test">
-            <x-adminlte-button label="Bin" type="submit" theme="primary" icon="far fa-trash-alt text-danger" class="btn btn-sm  ml-2" />
-        </a>
-    </div> -->
+    
 </div>
-
 
 @stop
 
