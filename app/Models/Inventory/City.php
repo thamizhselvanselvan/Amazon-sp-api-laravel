@@ -15,11 +15,11 @@ class City extends Model
     
     public function states()
     {
-        return $this->hasOne(State::class.'id', 'state_id');
+        return $this->hasOne(State::class, 'id', 'state_id');
     }
 
-    public function countrys()
-    {
-        return $this->hasOne(Country::class, 'id', 'country_id');
-    }
+    // public function countries()
+    // {
+    //     return $this->hasOne(Country::class, 'id', 'country_id');
+    // }
 }

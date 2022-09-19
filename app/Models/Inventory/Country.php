@@ -10,5 +10,11 @@ class Country extends Model
     use HasFactory;
     protected $connection =  'inventory';
     Protected $table = "countries";
-    protected $fillable = ['name','created_at','updated_at'];
+    protected $fillable = ['name','country_code','code','numeric_code','phone_code','capital','currency','currency_name','currency_symbol','created_at','updated_at'];
+
+    // public function states()
+    // {
+    //     return $this->hasMany(State::class ,'id', 'state_id');
+    // }
+   
 }
