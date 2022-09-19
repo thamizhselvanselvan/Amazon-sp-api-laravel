@@ -24,7 +24,7 @@ class OrderItem
 
     public function OrderItemDetails($order_id, $aws_id, $country_code)
     {
-        Log::alert('Order Item Details -> ' . $order_id);
+        // Log::alert('Order Item Details -> ' . $order_id);
 
         $config = $this->config($aws_id, $country_code);
         $marketplace_ids = $this->marketplace_id($country_code);
@@ -40,10 +40,10 @@ class OrderItem
         $next_token = NULL;
 
         try {
-            Log::alert('Order Item Details Try Block');
+            // Log::alert('Order Item Details Try Block');
             $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
             $result_order_address = $apiInstance->getOrderAddress($order_id);
-            $result_order_address = [];
+            // $result_order_address = [];
             $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id);
         } catch (Exception $e) {
 
@@ -54,7 +54,7 @@ class OrderItem
 
     public function OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id)
     {
-        Log::alert('Redbean connection before');
+        // Log::alert('Redbean connection before');
 
         $host = config('database.connections.order.host');
         $dbname = config('database.connections.order.database');
@@ -66,7 +66,7 @@ class OrderItem
             R::addDatabase('order', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
             R::selectDatabase('order');
         }
-        Log::alert('Redbean connection done');
+        // Log::alert('Redbean connection done');
 
         $order_address = '';
         $amazon_order = '';
@@ -136,7 +136,6 @@ class OrderItem
                         $asin = $value;
                     }
                 }
-
 
                 $order_detials->amazon_order_identifier = $order_id;
                 $order_detials->shipping_address = $order_address;

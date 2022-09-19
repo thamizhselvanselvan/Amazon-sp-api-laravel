@@ -135,7 +135,7 @@
             });
 
             function getBack() {
-                // window.location.href = '/label/manage'
+                window.location.href = '/label/manage'
             }
         });
     });
