@@ -11,15 +11,15 @@ class State extends Model
  
     protected $connection = 'inventory';
     protected $table = 'states';
-    protected $fillable = ['country_id','name','created_at','updated_at'];
+    protected $fillable = ['country_id','name'];
 
-    public function citys()
-    {
-        return $this->hasMany(City::class);
-    }
+    // public function citys()
+    // {
+    //     return $this->hasMany(City::class);
+    // }
 
-    public function countrys()
+    public function country()
     {
-        return $this->hasOne(Country::class, 'id', 'country_id');
+        return $this->hasOne(Country::class,'id','country_id');
     }
 }

@@ -10,15 +10,15 @@ class City extends Model
     use HasFactory;
     protected $connection = 'inventory';
     protected $table ='cities';
-    protected $fillable = ['state_id','name','created_at','updated_at'];
+    protected $fillable = ['state_id','name'];
 
     
     public function states()
     {
-        return $this->hasOne(State::class.'id', 'state_id');
+        return $this->hasOne(State::class, 'id', 'state_id');
     }
 
-    public function countrys()
+    public function countries()
     {
         return $this->hasOne(Country::class, 'id', 'country_id');
     }
