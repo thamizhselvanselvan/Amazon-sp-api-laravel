@@ -9,10 +9,17 @@ class Label extends Model
 {
     use HasFactory;
     protected $table = 'labels';
+    protected $fillable = [
+        'status',
+        'order_no',
+        'awb_no',
+        'bag_no',
+        'forwarder',
+    ];
 
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-        $this->getConnection()->setTablePrefix('');
-    }
+    // public function __construct(array $attributes = [])
+    // {
+    //     parent::__construct($attributes);
+    //     $this->getConnection()->setTablePrefix('');
+    // }
 }

@@ -6,12 +6,12 @@
 <div class="row">
     <h1 class="m-0 text-dark">Amazon Data</h1>
     <div class="col d-flex justify-content-end">
-        <h2 class=" ml-2">
+        <!-- <h2 class=" ml-2">
             <a href="{{ route('catalog.amazon.product') }}">
                 <x-adminlte-button label="Fetch Catalog From Amazon" class="btn-sm" theme="primary"
                     icon="fas fa-file-export" id="exportUniversalTextiles" />
             </a>
-        </h2>
+        </h2> -->
         <h2 class="ml-2">
             <x-adminlte-button label="Export Catalog" theme="primary" class="btn-sm" icon="fas fa-file-export"
                 id="exportCatalog" data-toggle="modal" data-target="#catalogExport" />

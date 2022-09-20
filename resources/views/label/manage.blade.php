@@ -3,13 +3,13 @@
 
 @section('css')
 
-<link rel="stylesheet" href="/css/styles.css">
-<style>
-    .table td {
-        padding: 0;
-        padding-left: 5px;
 
-    }
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .table td {
+            padding: 0;
+            padding-left: 5px;
+        }
 
     .btn-group-sm .btn,
     .btn-sm {
@@ -54,86 +54,11 @@
         </div>
     </div>
 </div>
-<div class="pl-2">
-    <table class="table table-bordered yajra-datatable table-striped text-center">
-        <thead>
-            <tr class="text-bold bg-info">
 
-                <th>Sr</th>
-                <th>Store Name </th>
-                <th>Order No.</th>
-                <th>AWB No.</th>
-                <th>Order Date</th>
-                <th>SKU</th>
-                <th>Customer</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+@stop
 
-    @stop
-
-    @section('js')
+@section('js')
     <script>
-        let yajra_table = $('.yajra-datatable').DataTable({
-
-            processing: true,
-            serverSide: true,
-            ajax: "{{ url('/label/manage') }}",
-            pageLength: 50,
-            columns: [{
-                    data: 'sn',
-                    name: 'sn',
-                    orderable: false,
-                    searchable: false
-                },
-                // {
-                //     data: 'status',
-                //     name: 'status'
-                // },
-                {
-                    data: 'store_name',
-                    name: 'store_name',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'order_no',
-                    name: 'order_no',
-                },
-                {
-                    data: 'awb_no',
-                    name: 'awb_no',
-                },
-                {
-                    data: 'purchase_date',
-                    name: 'purchase_date',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'seller_sku',
-                    name: 'seller_sku',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'customer_name',
-                    name: 'customer_name',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                },
-            ],
-        });
-
         $(document).ready(function() {
             $('.check_all').change(function() {
 
@@ -188,4 +113,7 @@
             });
         });
     </script>
-    @stop
+
+@stop
+
+
