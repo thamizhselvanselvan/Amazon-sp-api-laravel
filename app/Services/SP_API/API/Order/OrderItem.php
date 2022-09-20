@@ -50,21 +50,21 @@ class OrderItem
             $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id);
         } catch (Exception $e) {
 
-           // Log::warning($e->getMessage());
+            // Log::warning($e->getMessage());
             $code =  $e->getCode();
             $msg = $e->getMessage();
             $error_reportings = ErrorReporting::create([
-            'queue_type' => "order",
-            'identifier' => $order_id,
-            'identifier_type' => "order_id",
-            'source' => $awsCountryCode,
-            'aws_key' => $aws_id,
-            'error_code' => $code,
-            'message' => $msg,
+                'queue_type' => "order",
+                'identifier' => $order_id,
+                'identifier_type' => "order_id",
+                'source' => $awsCountryCode,
+                'aws_key' => $aws_id,
+                'error_code' => $code,
+                'message' => $msg,
             ]);
         }
         return true;
-            }
+    }
 
     public function OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id)
     {
