@@ -4,6 +4,7 @@ namespace App\Services\AWS_Business_API\AWS_POC;
 
 use Exception;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -252,11 +253,14 @@ class Orders
 
         $data = curl_exec($ch);
         $send = [$data, $base, $xml];
-
+        Log::alert($data);
         return $send;
-        if (curl_errno($ch))
+        if (curl_errno($ch)) {
             print curl_error($ch);
-        else
+            Log::warning("Something Went Wrong In B-OrderAPI");
+        } else {
+
             curl_close($ch);
+        }
     }
 }

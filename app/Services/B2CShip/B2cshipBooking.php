@@ -13,7 +13,7 @@ class B2cshipBooking
 {
     public function b2cdata($amazon_order_id)
     {
-  
+
         $ord_details = DB::connection('order')
             ->select("SELECT 
                 oids.*, 
@@ -29,8 +29,8 @@ class B2cshipBooking
              oids.amazon_order_identifier = '$amazon_order_id'
               
         ");
-     $consignee_data = [];
-     foreach ($ord_details as $key => $details) {
+        $consignee_data = [];
+        foreach ($ord_details as $key => $details) {
             $OrderID = $details->order_id;
 
             if (is_null($details->order_date)) {
@@ -105,53 +105,51 @@ class B2cshipBooking
             $consignee_Phone = $this->objKeyVerify($consignee_details, 'Phone');
             $consignee_AddressType = $this->objKeyVerify($consignee_details, 'AddressType');
 
-                $cat_data =   DB::connection('catalog')->select("SELECT * FROM catalognewins  where asin = $asin");
+            $cat_data =   DB::connection('catalog')->select("SELECT * FROM catalognewins  where asin = $asin");
 
-               
-                    $value = $cat_data[0];
 
-                    $height = $value->height;
-                    $unit = $value->unit;
-                    $length = $value->length;
-                    $weight = $value->weight;
-                    $width = $value->width;
+            $value = $cat_data[0];
 
-                     $data['OrderID'] =     $OrderID;
-                     $data['purchase_date'] =  $purchase_date;
-                     $data['payment method'] = $payment_method;
-                     $data['pieces'] = $pieces;
-                     $data['email'] = $email;
-                     $data['item_name'] = $item_name;
-                     $data['consignee_name'] = $consignee_name;
-                     $data['consignee_AddressLine1'] = $consignee_AddressLine1;
-                     $data['consignee_AddressLine2'] = $consignee_AddressLine2;
-                     $data['consignee_city'] = $consignee_city;
-                     $data['consignee_state'] = $consignee_state;
-                     $data['consignee_CountryCode'] = $consignee_CountryCode;
-                     $data['invoice_no'] = $invoice_no;
-                     $data['invoice_value'] = $item_price;
-                     $data['consignee_pincode'] = $consignee_pincode;
-                     $data['consignee_Phone'] = $consignee_Phone;
-                     $data['consignee_AddressType'] = $consignee_AddressType;
-                     $data['consignee_tax_amt'] =  $consignee_tax_amt;
-                     $data['consignee_tax_currency'] =  $consignee_tax_currency;
-                     $data['height'] = $height;
-                     $data['unit'] =   $unit;
-                     $data['length'] = $length;
-                     $data['weight'] =  $weight;
-                     $data['width'] = $width;
+            $height = $value->height;
+            $unit = $value->unit;
+            $length = $value->length;
+            $weight = $value->weight;
+            $width = $value->width;
 
-                    $consignee_data [] = $data;
-                   
-                
-            }
-           
+            $data['OrderID'] =     $OrderID;
+            $data['purchase_date'] =  $purchase_date;
+            $data['payment method'] = $payment_method;
+            $data['pieces'] = $pieces;
+            $data['email'] = $email;
+            $data['item_name'] = $item_name;
+            $data['consignee_name'] = $consignee_name;
+            $data['consignee_AddressLine1'] = $consignee_AddressLine1;
+            $data['consignee_AddressLine2'] = $consignee_AddressLine2;
+            $data['consignee_city'] = $consignee_city;
+            $data['consignee_state'] = $consignee_state;
+            $data['consignee_CountryCode'] = $consignee_CountryCode;
+            $data['invoice_no'] = $invoice_no;
+            $data['invoice_value'] = $item_price;
+            $data['consignee_pincode'] = $consignee_pincode;
+            $data['consignee_Phone'] = $consignee_Phone;
+            $data['consignee_AddressType'] = $consignee_AddressType;
+            $data['consignee_tax_amt'] =  $consignee_tax_amt;
+            $data['consignee_tax_currency'] =  $consignee_tax_currency;
+            $data['height'] = $height;
+            $data['unit'] =   $unit;
+            $data['length'] = $length;
+            $data['weight'] =  $weight;
+            $data['width'] = $width;
+
+            $consignee_data[] = $data;
+        }
+
         $this->requestxml($consignee_data);
     }
     public function requestxml($consignee_data)
     {
         define('CUSTOMS_PERCENTAGE', 65);
-         $consignee_values = $consignee_data;
+        $consignee_values = $consignee_data;
 
         foreach ($consignee_values as $data) {
 
@@ -225,40 +223,44 @@ class B2cshipBooking
                         </PCSDescriptionDetail>
                     </PCSDescriptionDetails>
                 </ShipmentBookingRequest>';
+
+   
+            $this->getawb($xml);
+
         }
 
-        $this->getawb($xml);
     }
-    public function getawb($xml)
+    public function getawb($xmldata)
     {
-        
-        $url = "https://api.b2cship.us/B2CShipAPI.svc/ShipmentBooking";
-        
-        $headers = array(
-            "Content-type: text/xml",
-            "Content-length: " . strlen($xml),
-            "Connection: close",
-        );
+     
+            $url = "https://api.b2cship.us/B2CShipAPI.svc/ShipmentBooking";
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $headers = array(
+                "Content-type: text/xml",
+                "Content-length: " . strlen($xmldata),
+                "Connection: close",
+            );
 
-        $data = curl_exec($ch);
-        Log::info($data);
-        // return $data;
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $xmldata);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-        if (curl_errno($ch))
-            print curl_error($ch);
-        else
-            curl_close($ch);
-        return $data;
+            $data = curl_exec($ch);
+            // return $data;
+            Log::info($data);
+
+            if (curl_errno($ch))
+                print curl_error($ch);
+            else
+                curl_close($ch);
+            return $data;
+        // }
     }
 
     public function calculateCustomValue($Data)
