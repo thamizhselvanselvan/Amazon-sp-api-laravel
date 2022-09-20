@@ -15,7 +15,7 @@ class BuyBoxPriceImport
         $price_convert = new PriceConversion();
 
         foreach ($priority_array as $priority) {
-            
+
             $product_lp = '';
             $country_code_lr = strtolower($country_code);
 
@@ -32,7 +32,7 @@ class BuyBoxPriceImport
 
             $product_seller_details = "bb_product_aa_custom_p${priority}_${country_code_lr}_seller_details";
             $product_lp = "bb_product_aa_custom_p${priority}_${country_code_lr}_offers";
-            
+
 
             $destination_model = table_model_create(country_code: $country_code, model: 'Asin_destination', table_name: 'asin_destination_');
 
@@ -77,12 +77,12 @@ class BuyBoxPriceImport
                 $calculated_weight[$a] =  $weight;
                 $asin_array[] = "'$a'";
             }
-            
+
             if ($asin_array) {
-                
+
                 $asin = implode(',', $asin_array);
 
-                
+
                 $asin_price = DB::connection('buybox')
                     ->select("SELECT PPO.asin, LP.available,
                 GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
@@ -94,8 +94,6 @@ class BuyBoxPriceImport
                 WHERE PPO.asin IN ($asin)
                 GROUP BY PPO.asin
                 ");
-
-                log::alert($asin_price);
 
                 foreach ($asin_price as $value) {
 
