@@ -11,7 +11,7 @@ class State extends Model
  
     protected $connection = 'inventory';
     protected $table = 'states';
-    protected $fillable = ['country_id','name','created_at','updated_at'];
+    protected $fillable = ['country_id','name'];
 
     // public function citys()
     // {

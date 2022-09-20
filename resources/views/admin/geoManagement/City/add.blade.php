@@ -30,8 +30,8 @@
 <form class="text-center" method = "POST" action="/store_city">
     @csrf
   <div class="m-2">
-  <select class="form-control w-25 m-auto" name ="state" aria-label="Default select example">
-  <option selected>Select State</option>
+  <select class="form-control w-25 m-auto" name ="state_id" aria-label="Default select example">
+  <option value="">Select State</option>
   @foreach($states as $state1)
   <option id ="state_id" value="{{$state1->id}}">{{$state1->name}}</option>
   @endforeach
@@ -41,9 +41,9 @@
       {{$message="Please Select State"}}
       @enderror
 <br>
-    <input type="text" class="form-control w-25 m-auto" id="city" name ="city_name" placeholder = "City" autofocus required autocomplete="off">
+    <input type="text" class="form-control w-25 m-auto" id="city" name ="name" placeholder = "City" autofocus required autocomplete="off">
     <span class="text-danger">
-      @error('city_name')
+      @error('name')
       {{$message="City is Required"}}
       @enderror
   </div>

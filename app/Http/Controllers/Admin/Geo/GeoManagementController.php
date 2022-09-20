@@ -81,22 +81,28 @@ class GeoManagementController extends Controller
   public function index_city(Request $request)
   {
     // $cities = City::all();
-   // $cities = City::paginate(10);
-   if ($request->ajax()) {
-    $data = City::with(['states']);
+    // $cities = City::paginate(10);
 
-    return Datatables::of($data)
-      ->addIndexColumn()
-      ->editColumn('state_name', function ($data) {
-        return ($data->id) ? $data->states->name : "NA";
-    })
-      ->addColumn('action', function ($row) {
-        $actionBtn = '<div class="d-flex"><a href="/edit_city/' . $row->id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
-        $actionBtn .= '<div class="d-flex"><a href="/delete_city/' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
-        return $actionBtn;
+    
+    // exit;
+    if ($request->ajax()) {
+
+      $data = City::with(['states']);
+      return Datatables::of($data)
+        ->addIndexColumn()
+        ->editColumn('state_name', function ($data) {
+          
+          $city = isset($data->states['name']) ? $data->states['name'] : "NA";
+        return $city;
+          
       })
-      ->rawColumns(['state_name','action'])
-      ->make(true);
+        ->addColumn('action', function ($row) {
+          $actionBtn = '<div class="d-flex"><a href="/edit_city/' . $row->id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
+          $actionBtn .= '<div class="d-flex"><a href="/delete_city/' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
+          return $actionBtn;
+        })
+        ->rawColumns(['state_name','action'])
+        ->make(true);
   }
     return view('admin.geoManagement.City.index');
   }
@@ -109,8 +115,8 @@ class GeoManagementController extends Controller
         'name' => 'required|unique:App\Models\Inventory\Country',
         'country_code' => 'required|unique:App\Models\Inventory\Country',
         'code' => 'required|unique:App\Models\Inventory\Country',
-        'numeric_code' => 'required|numeric|unique:App\Models\Inventory\Country',
-        'phone_code' => 'required|numeric|unique:App\Models\Inventory\Country',
+        'numeric_code' => 'required|unique:App\Models\Inventory\Country',
+        'phone_code' => 'required|unique:App\Models\Inventory\Country',
         'capital' => 'required|unique:App\Models\Inventory\Country',
         'currency' => 'required|unique:App\Models\Inventory\Country',
         'currency_name' => 'required|unique:App\Models\Inventory\Country',
@@ -118,41 +124,39 @@ class GeoManagementController extends Controller
 
       ]
     );
-
+$country_name = $request->name;
     Country::insert($geo_data);
-    return redirect('show_country')->with('message', 'Country Added');
+    return redirect('show_country')->with('message', $country_name . ' Added');
   }
 
   public function store_state(Request $request)
   {
     $request->validate(
       [
-        'state_name' => 'unique:App\Models\Inventory\State,name',
-        'country_id'  =>  'required'
+        'country_id' => 'required',
+        'name' => 'unique:App\Models\Inventory\State',
       ]
     );
-    
-    $state = new State;
-    $state->country_id = $request->get('country');
-    $state->name = $request->get('state_name');
+    $state=new State;
+    $state->country_id=$request->get('country_id');
+    $state->name=$request->get('name');
     $state->save();
-    return redirect('show_state')->with('message', 'State Added');
+    return redirect('show_state')->with('message',  $state->name . ' Added');
   }
 
   public function store_city(Request $request)
   {
     $request->validate(
       [
-        'city_name' => 'Required',
-        'state_id' => 'Required'
+        'state_id' => 'required',
+        'name' => 'required',
       ]
     );
     $city = new City;
-
-    $city->state_id = $request->get('state');
-    $city->name = $request->get('city_name');
+    $city->state_id = $request->get('state_id');
+    $city->name = $request->get('name');
     $city->save();
-    return redirect('show_city')->with('message', 'City Added');
+    return redirect('show_city')->with('message', $city->name . ' Added');
   }
 
   public function show_country(Country $country)
@@ -175,13 +179,36 @@ class GeoManagementController extends Controller
     return view('admin.geoManagement.City.index', compact('cities', 'states'));
   }
 
-  public function destroy_country(Country $country, $id)
+  public function destroy_country(Country $country, $country_id)
   {
-    $country = Country::find($id);
-    $state=State::where('country_id',$id)->delete();
-    $city=City::where('state_id',$id)->delete();
+    $country = Country::where('id', $country_id)->first();
+    $country_name = $country->name;
+    if(!$country) {
+      // Country code doesn't exists
+      return false;
+    }
+
+    $state_ids  = State::select('id')->where('country_id', $country_id)->get()->pluck('id')->toArray();
+    $city_ids = [];
+
+    if(count($state_ids) == 0) {
+      // No state Found
+      return false;
+    }
+    
+    foreach($state_ids as $state_id)
+    {
+
+      $city_ids = City::select('id')->where('state_id', $state_id)->get()->pluck('id')->toArray();
+      City::whereIn('id', $city_ids)->delete();
+      
+    }
+
+ 
+    State::where('country_id', $country_id)->delete();
     $country->delete();
-    return redirect('show_country')->with('message', 'Country Deleted');
+
+    return redirect('show_country')->with('danger', $country_name . ' has deleted Successfully');
   }
   
   public function destroy_state(State $state, $id)
@@ -189,14 +216,14 @@ class GeoManagementController extends Controller
     $state = State::find($id);
     $state->delete();
     $city=City::where('state_id',$id)->delete();
-    return redirect('show_state')->with('message', 'State Deleted');
+    return redirect('show_state')->with('danger',$state->name  .  ' has deleted Successfully');
   }
 
   public function destroy_city(City $city, $id)
   {
     $city = City::find($id);
     $city->delete();
-    return redirect('show_city')->with('message', 'City Deleted');
+    return redirect('show_city')->with('danger',$city->name  . ' has deleted Successfully');
   }
 
   public function edit_country(Country $country, $id)
@@ -228,43 +255,45 @@ class GeoManagementController extends Controller
         'name' => 'required|unique:App\Models\Inventory\Country',
         'country_code' => 'required|unique:App\Models\Inventory\Country',
         'code' => 'required|unique:App\Models\Inventory\Country',
-        'numeric_code' => 'required|numeric|unique:App\Models\Inventory\Country',
-        'phone_code' => 'required|numeric|unique:App\Models\Inventory\Country',
+        'numeric_code' => 'required|unique:App\Models\Inventory\Country',
+        'phone_code' => 'required|unique:App\Models\Inventory\Country',
         'capital' => 'required|unique:App\Models\Inventory\Country',
         'currency' => 'required|unique:App\Models\Inventory\Country',
         'currency_name' => 'required|unique:App\Models\Inventory\Country',
         'currency_symbol' => 'required|unique:App\Models\Inventory\Country',
       ]
     );
+    $country_name = $request->name;
     Country::find($id)->update($geo_data);
-    return redirect('show_country')->with('message', 'Country Updated');
+    return redirect('show_country')->with('message', $country_name .  ' has updated Successfully');
   }
 
   public function update_state(Request $request, State $state, $id)
   {
     $request->validate(
       [
-        'state_name' => 'unique:App\Models\Inventory\State,name',
+        'country' => 'required',
+        'state_name' => 'required',
       ]
     );
     $states = State::find($id);
     $states->country_id = $request->get('country');
     $states->name = $request->get('state_name');
     $states->save();
-    return redirect('show_state')->with('message', 'State Updated');
+    return redirect('show_state')->with('message', $states->name.  ' has updated Successfully');
   }
 
   public function update_city(Request $request, City $city, $id)
   {
     $request->validate(
-      [
-        'city_name' => 'required'
+      [ 'state' => 'required',
+        'city_name' => 'required',
       ]
     );
     $cities = City::find($id);
     $cities->state_id = $request->get('state');
     $cities->name = $request->get('city_name');
     $cities->save();
-    return redirect('show_city')->with('message', 'City Updated');
+    return redirect('show_city')->with('message', $cities->name.  ' has updated Successfully');
   }
 }

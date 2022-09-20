@@ -30,8 +30,8 @@
 <form class="text-center" method = "POST" action="/store_state">
     @csrf
   <div class="m-2">
-  <select class="form-control w-25 m-auto" name ="country" aria-label="Default select example">
-  <option selected>Select Country</option>
+  <select class="form-control w-25 m-auto" name ="country_id" aria-label="Default select example">
+  <option value="" selected>Select Country</option>
   @foreach($countries as $country1)
   <option id ="country_id" value="{{$country1->id}}">{{$country1->name}}</option>
   @endforeach
@@ -41,9 +41,9 @@
       {{$message="Please Select Country"}}
       @enderror
 <br>
-    <input type="text" class="form-control w-25 m-auto" id="state" name ="state_name" placeholder = "State" autofocus required autocomplete="off">
+    <input type="text" class="form-control w-25 m-auto" id="name" name ="name" placeholder = "State" autofocus required autocomplete="off">
     <span class="text-danger">
-      @error('state_name')
+      @error('name')
       {{$message="This State already exist"}}
       @enderror
   </div>

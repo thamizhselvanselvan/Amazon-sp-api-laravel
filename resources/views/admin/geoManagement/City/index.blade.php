@@ -24,10 +24,18 @@
 
 @section('content')
 @if(session()->has('message'))
-    <div class="alert alert-success">
+<div class="alert alert-success alert-block">
+    <button type="button" class="close" data-dismiss="alert">×</button>
         {{ session()->get('message') }}
     </div>
-@endif
+    @elseif(session()->has('danger'))
+    <div class="alert alert-danger alert-block">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        {{ session()->get('danger') }}
+    </div>
+            @endif
+        </div>
+    </div>
     <div class="row">
         <div class="col">        
             <h2 class="mb-4">
@@ -61,15 +69,16 @@
         ajax: "{{route('city.get') }}",
         columns: [
             {
-                data: 'DT_RowIndex',
-                orderable: false,
-                searchable: false
+                data: 'id',
+                name: 'id',
+                // orderable: false,
+                // searchable: false
             },
             {
-                data: 'state_name',
-                name: 'state_name',
-                orderable: false,
-                searchable: false,
+                data: 'states.name',
+                name: 'states.name',
+                // orderable: false,
+                // searchable: false,
             },
             {
                 data: 'name',
@@ -83,7 +92,12 @@
             }
         ],
     });
-
+    $(document).on('click', '.delete', function(){
+        let bool = confirm('Are you sure you want to delete this ?');
+        if (!bool) {
+            return false;
+        }
+    });
     // $(document).on('click', ".delete", function(e) {
     //     e.preventDefault();
     //     let bool = confirm('Are you sure you want to push this asin to Bin?');

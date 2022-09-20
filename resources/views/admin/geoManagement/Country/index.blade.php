@@ -26,10 +26,18 @@
 @section('content')
 
 @if(session()->has('message'))
-    <div class="alert alert-success">
+<div class="alert alert-success alert-block">
+    <button type="button" class="close" data-dismiss="alert">×</button>
         {{ session()->get('message') }}
     </div>
-@endif
+    @elseif(session()->has('danger'))
+    <div class="alert alert-danger alert-block">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        {{ session()->get('danger') }}
+    </div>
+            @endif
+        </div>
+    </div>
 
 <div class="row">
     <div class="col">
@@ -62,8 +70,8 @@
         serverSide: true,
         ajax: "{{route('country.get') }}",
         columns: [{
-                data: 'DT_RowIndex',
-                name: 'DT_RowIndex',
+                data: 'id',
+                name: 'id',
                 orderable: true,
                 searchable: true
             },
@@ -78,6 +86,13 @@
                 searchable: false
             },
         ]
+    });
+
+    $(document).on('click', '.delete', function(){
+        let bool = confirm('Are you sure you want to delete this ?');
+        if (!bool) {
+            return false;
+        }
     });
 
     // $(document).on('click', ".delete", function(e) {
