@@ -33,6 +33,7 @@ class OrderItem
 
         $apiInstance = new OrdersV0Api($config);
         $this->SelectedSellerOrderItem($apiInstance, $country_code, $order_id, $aws_id);
+        return true;
     }
 
     public function SelectedSellerOrderItem($apiInstance, $awsCountryCode, $order_id, $aws_id)
@@ -43,8 +44,6 @@ class OrderItem
         try {
             // Log::alert('Order Item Details Try Block');
             $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
-            po($result_orderItems);
-            exit;
             $result_order_address = $apiInstance->getOrderAddress($order_id);
             // $result_order_address = [];
             $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id);
