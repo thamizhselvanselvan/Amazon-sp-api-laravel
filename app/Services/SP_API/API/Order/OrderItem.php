@@ -25,7 +25,7 @@ class OrderItem
 
     public function OrderItemDetails($order_id, $aws_id, $country_code)
     {
-        // Log::alert('Order Item Details -> ' . $order_id);
+        Log::alert('Order Item Details -> ' . $order_id);
 
         $config = $this->config($aws_id, $country_code);
         $marketplace_ids = $this->marketplace_id($country_code);
