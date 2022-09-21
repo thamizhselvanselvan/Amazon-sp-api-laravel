@@ -15,18 +15,35 @@ class OrdersDashboardController extends Controller
         $startTime = Carbon::now();
         $endTime = Carbon::now()->subDays(30);
 
-        $order_sql = DB::connection('order')->select("SELECT order_status, our_seller_identifier,COUNT(order_status) as count, os.store_name, os.country_code from orders 
-        join ord_order_seller_credentials as os 
-        where os.seller_id = orders.our_seller_identifier 
-        AND orders.updated_at BETWEEN '$endTime' AND '$startTime' 
-        GROUP BY our_seller_identifier, order_status");
+        $order_sql = DB::connection('order')
+            ->select("SELECT 
+                 order_status, our_seller_identifier,COUNT(order_status) as count, os.store_name, os.country_code 
+            from orders 
+                join 
+            ord_order_seller_credentials as os 
+            where
+                os.seller_id = orders.our_seller_identifier 
+            AND 
+                orders.updated_at BETWEEN '$endTime' AND '$startTime' 
+            GROUP BY
+            our_seller_identifier, order_status");
 
         // dd($order_sql);
 
-        $latest_update = DB::connection('order')->select("SELECT updated_at, our_seller_identifier, os.store_name FROM orders 
-        join ord_order_seller_credentials as os where os.seller_id = orders.our_seller_identifier 
-        group by updated_at, our_seller_identifier 
-        order by updated_at DESC");
+        $latest_update = DB::connection('order')
+            ->select("SELECT 
+                ord.updated_at, ord.our_seller_identifier, os.store_name 
+            FROM
+                 orders as ord
+                  JOIN
+                ord_order_seller_credentials as os 
+            WHERE 
+                os.seller_id = ord.our_seller_identifier 
+            GROUP BY 
+                ord.updated_at, ord.our_seller_identifier 
+            ORDER BY
+                 ord.updated_at 
+            DESC");
         // dd($latest_update);
         $order_collect = collect($order_sql);
         $order_groupby = $order_collect->groupBy('store_name');
