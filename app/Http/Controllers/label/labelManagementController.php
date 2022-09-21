@@ -323,6 +323,18 @@ class labelManagementController extends Controller
             'qty' => NULL
         ];
 
+        $ignore = [
+            'gun',
+            'lighter',
+            'gold',
+            'spark',
+            'fuel',
+            'heat',
+            'oxygen',
+            'alcohols',
+            'famable',
+        ];
+
         if (!$label) {
             return NULL;
         }
@@ -353,7 +365,8 @@ class labelManagementController extends Controller
                     $label_data[$key1] = $dimensions;
                 } elseif ($key1 == 'title') {
 
-                    $product[$key][$key1] = $label_detials;
+                    $ignore_title = str_ireplace($ignore, '', $label_detials);
+                    $product[$key][$key1] = $ignore_title;
                 } elseif ($key1 == 'sku') {
 
                     $product[$key][$key1] = $label_detials;
