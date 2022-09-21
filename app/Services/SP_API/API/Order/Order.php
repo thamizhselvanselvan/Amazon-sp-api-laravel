@@ -192,8 +192,8 @@ class Order
 
                 //call orderitem details jobs
                 $orders->order_item = '0';
-                $orders->updatedat = now();
-                $orders->createdat = now();
+                $orders->updated_at = now();
+                $orders->created_at = now();
                 // dd($orders);
                 R::store($orders);
 
