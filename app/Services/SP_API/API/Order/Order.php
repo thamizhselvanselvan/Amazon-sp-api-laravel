@@ -175,7 +175,7 @@ class Order
                 foreach ($amazon_order_details as $key => $value) {
                     $update_orders->{$key} = $value;
                 }
-                $update_orders->updatedat = now();
+                $update_orders->updated_at = now();
 
                 R::store($update_orders);
                 // sleep(2);
