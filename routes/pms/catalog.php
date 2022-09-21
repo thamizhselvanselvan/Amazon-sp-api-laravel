@@ -3,6 +3,7 @@
 use App\Http\Controllers\PMSPHPUnitTestController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('catalog/dashboard', 'Catalog\CatalogDashboardController@Metrics');
 
 Route::resource('textiles', 'textilesController');
 Route::post('import-csv', 'textilesController@importTextiles')->name('import.csv');
@@ -45,16 +46,16 @@ Route::post('catalog/remove/asin/{id}', 'Catalog\AsinSourceController@trash');
 Route::get('catalog/asin/bin', 'Catalog\AsinSourceController@trashView')->name('catalog.softDelete.view');
 Route::post('catalog/asin/restore/{id}', 'Catalog\AsinSourceController@restore')->name('catalog.restore.view');
 Route::get('catalog/asin-template-download', 'Catalog\AsinSourceController@AsinTemplateDownload')->name('catalog.download.template');
+Route::get('catalog/rate-exchange', 'Catalog\AsinSourceController@getExchangeRate')->name('catalog.exchange.rate');
+Route::get('catalog/asin-truncate', 'Catalog\AsinSourceController@AsinTruncate')->name('catalog.asin.source.truncate');
+
 Route::get('catalog/product', 'Catalog\CatalogProductController@Index');
 Route::get('catalog/product/fetch-from-amazon', 'Catalog\CatalogProductController@Amazon')->name('catalog.amazon.product');
-
-Route::post('catalog/price/export', 'Catalog\CatalogProductController@PriceExport')->name('catalog.price.export');
-
-Route::get('catalog/rate-exchange', 'Catalog\AsinSourceController@getExchangeRate')->name('catalog.exchange.rate');
+Route::get('catalog/price/export', 'Catalog\CatalogProductController@PriceExport')->name('catalog.price.export');
 Route::get('catalog/export', 'Catalog\CatalogProductController@ExportCatalog')->name('catalog.export');
 Route::get('catalog/get-file', 'Catalog\CatalogProductController@GetCatalogFile');
-Route::get('catalog/download/csv-file/{country_code}', 'Catalog\CatalogProductController@DownloadCatalogIntocsv');
-Route::get('catalog/download/price/{country_code}', 'Catalog\CatalogProductController@DownloadCatalogPrice');
+Route::get('catalog/download/csv-file/{country_code}/{priority}', 'Catalog\CatalogProductController@DownloadCatalogIntocsv');
+Route::get('catalog/download/price/{country_code}/{priority}', 'Catalog\CatalogProductController@DownloadCatalogPrice');
 
 Route::get('catalog/asin-destination', 'Catalog\AsinDestinationController@index')->name('Asin.destination.index');
 Route::get('catalog/import-asin-destination', 'Catalog\AsinDestinationController@AsinDestinationImport');
@@ -67,3 +68,4 @@ Route::get('catalog/asin-destination/restore/{id}', 'Catalog\AsinDestinationCont
 Route::get('catalog/asin-destination/download-template', 'Catalog\AsinDestinationController@AsinDestinationDownloadTemplate')->name('catalog.destination.download.template');
 Route::get('catalog/asin-destination/asin-export', 'Catalog\AsinDestinationController@AsinDestinationAsinExport')->name('catalog.asin.dastination.export');
 Route::get('catalog/asin-destination/download-csv', 'Catalog\AsinDestinationController@AsinDestinationDownloadCsvZip')->name('catalog.download.asin.destination');
+Route::get('catalog/asin-destination/truncate', 'Catalog\AsinDestinationController@AsinDestinationBBTruncate')->name('catalog.asin.destination.truncate');

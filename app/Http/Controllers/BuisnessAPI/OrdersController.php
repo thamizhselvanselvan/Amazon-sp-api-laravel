@@ -2,24 +2,37 @@
 
 namespace App\Http\Controllers\BuisnessAPI;
 
+use Nette\Utils\Json;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use App\Services\AWS_Business_API\AWS_POC\Orders;
 
 class OrdersController extends Controller
 {
     public function index()
     {
+        $asin = 'B017V4IMVQ';
+        $name = 'Harry Potter and the Sorcerers Stone, Book 1';
         $ApiCall = new Orders();
-        $data = $ApiCall->getOrders();
+        $data = $ApiCall->getOrders($asin,$name);
+
+        $resultxml = $data[2];
+         Storage::disk('local')->put('xml.txt', $resultxml);
+
+
+        
         $responce = ($data[0]);
+
         $parse = simplexml_load_string($responce);
-        $xml =  json_decode(json_encode($parse), true);
+        $xmlr =  json_decode(json_encode($parse), true);
         $details = ($data[1]);
-        $responce_code = ($xml["Response"]["Status"]["@attributes"]["code"]);
-        $responce_text = ($xml["Response"]["Status"]["@attributes"]["text"]);
-        $receved_payload = ($xml["@attributes"]["payloadID"]);
+        $responce_code = ($xmlr["Response"]["Status"]["@attributes"]["code"]);
+        $responce_text = ($xmlr["Response"]["Status"]["@attributes"]["text"]);
+        $receved_payload = ($xmlr["@attributes"]["payloadID"]);
+
+        $xml = ($data[2]);
 
         $order_details_array = ($data[1]);
         $order_details = ($order_details_array[0]);
@@ -81,25 +94,27 @@ class OrdersController extends Controller
             $fax_name,
         ];
 
-        // DB::connection('order')->table('business_orders')->insert([
-        //     'sent_payload' => $sent_payload,
-        //     'organization_name' => $org_name,
-        //     'order_date' => $order_date,
-        //     'name' => $name,
-        //     'e-mail' => $email,
-        //     'country_name' => $country_name,
-        //     'country_code' => $countrycode,
-        //     'order_id' => $order_id,
-        //     'item_details' => json_encode($item_details),
-        //     'ship_address' => json_encode($ship_address_array),
-        //     'bill_address' => json_encode($ship_address_array),
-        //     'responce_payload' => $receved_payload,
-        //     'responce_text' =>  $responce_text,
-        //     'responce_code' => $responce_code,
-        //     'created_at' => now(),
-        //     'updated_at' => now()
-        // ]);
-
+        DB::connection('business')->table('orders')->insert([
+            // 'xml_sent' => json_encode($xml),
+            'xml_sent' => '',
+            'sent_payload' => $sent_payload,
+            'organization_name' => $org_name,
+            'order_date' => $order_date,
+            'name' => $name,
+            'e-mail' => $email,
+            'country_name' => $country_name,
+            'country_code' => $countrycode,
+            'order_id' => $order_id,
+            'item_details' => json_encode($item_details),
+            'ship_address' => json_encode($ship_address_array),
+            'bill_address' => json_encode($ship_address_array),
+            'responce_payload' => $receved_payload,
+            'responce_text' =>  $responce_text,
+            'responce_code' => $responce_code,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+        dd($responce, $details);
         return view('buisnessapi.orders.index', compact('data'));
     }
 }

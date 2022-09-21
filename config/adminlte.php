@@ -233,7 +233,7 @@ return [
         // ],
         [
             'type'         => 'fullscreen-widget',
-            'topnav_right' => true,
+            'topnav_right' => false,
         ],
 
         // Sidebar items:
@@ -279,7 +279,7 @@ return [
                     'icon' => 'far fa-fw fa-file',
                 ],
                 [
-                    'text' => 'Store management',
+                    'text' => 'Store Management',
                     'url' => 'admin/stores',
                     'can' => ['Admin', 'Account'],
                     'icon' => 'far fa-fw fa-file',
@@ -293,6 +293,7 @@ return [
                 [
                     'text' => 'BuyBox',
                     'can' =>  ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
                     'submenu' => [
                         [
                             'text' => 'Region Master ',
@@ -314,6 +315,12 @@ return [
                         ],
                     ]
                 ],
+                [
+                    'text' => 'System Setting',
+                    'url' => 'admin/system-setting',
+                    'can' => ['Admin', 'Account'],
+                    'icon' => 'far fa fa-cog',
+                ],
             ],
         ],
 
@@ -322,22 +329,29 @@ return [
             'can' =>   ['Admin', 'Catalog'],
             'submenu' => [
                 [
+                    'text'  => 'Dashboard',
+                    'url'  => 'catalog/dashboard',
+                    'icon' => 'fa fa-dashboard',
+                    'can' =>  ['Admin', 'Catalog']
+                ],
+
+                [
                     'text' => 'Asin Master',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin'],
+                    'can' =>  ['Admin', 'Catalog'],
                     'submenu' => [
                         [
-                        'text'  => 'Asin Source',
-                        'url'  => 'catalog/asin-source',
-                        'icon' => 'far fa-fw fa-file',
-                        'can' =>  ['Admin']
+                            'text'  => 'Asin Source',
+                            'url'  => 'catalog/asin-source',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin', 'Catalog']
                         ],
 
                         [
-                        'text'  => 'Asin Destination',
-                        'url'  => 'catalog/asin-destination',
-                        'icon' => 'far fa-fw fa-file',
-                        'can' =>  ['Admin']
+                            'text'  => 'Asin Destination',
+                            'url'  => 'catalog/asin-destination',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin', 'Catalog']
                         ],
                     ],
                 ],
@@ -353,7 +367,7 @@ return [
                     'text' => 'Mosh Amazon Catalog',
                     'url'  => 'catalog/product',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin'],
+                    'can' =>  ['Admin', 'Catalog'],
                 ],
                 [
 
@@ -538,9 +552,28 @@ return [
             'submenu' => [
                 [
                     'text' => 'Dashboard',
-                    'url' => 'orders/dashboard',
                     'can' => ['Admin'],
-                    'icon' => 'far fa-fw fa-file',
+                    'icon' => 'fa fa-dashboard',
+                    'submenu'   => [
+                        [
+                            'text' => 'Order Details',
+                            'url' => 'orders/dashboard',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-dashboard',
+                        ],
+                        [
+                            'text' => 'Order Item Details',
+                            'url' => 'orders/item/dashboard',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-dashboard',
+                        ],
+                    ],
+                ],
+                [
+                    'text' => 'AWS Order Dashboard',
+                    'can' => ['Admin'],
+                    'icon' => 'fa fa-dashboard',
+                    'url' => "orders/aws/dashboard",
 
                 ],
             ],
@@ -629,7 +662,7 @@ return [
                         ],
                     ],
                 ],
-                
+
 
             ]
         ],
@@ -795,6 +828,13 @@ return [
                 [
                     'text' => 'Order API',
                     'url' => 'business/orders',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+
+                ],
+                [
+                    'text' => 'View Details',
+                    'url' => 'business/details',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
 

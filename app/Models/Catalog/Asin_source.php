@@ -6,15 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class AsinSource extends Model
+class Asin_source extends Model
 {
     use HasFactory, SoftDeletes;
-
     protected $connection = 'catalog';
     protected $fillable = [
         'asin',
-        'user_id',
-        'source',
+        'user_id'
     ];
 
     public function mws_region()

@@ -6,11 +6,61 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Catalog\Asin_master;
 use Illuminate\Support\Facades\Route;
 use App\Models\seller\AsinMasterSeller;
+use Illuminate\Support\Facades\Storage;
 use App\Models\seller\SellerAsinDetails;
 use Illuminate\Support\Facades\Response;
+use App\Models\ShipNTrack\Packet\PacketForwarder;
 use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
-Route::get("test", function () {
+
+Route::get('in', function () {
+    // $file_path = public_path('template/Catalog-Asin-Template.csv');
+    // return response()->download($file_path);
+
+    $path = Storage::path('excel/downloads/catalog_price/IN/Priority1/IN_CatalogPrice0.csv');
+    return response()->download($path);
+});
+
+Route::get('us', function () {
+
+    $path = Storage::path('excel/downloads/catalog_price/US/Priority1/US_CatalogPrice0.csv');
+    return response()->download($path);
+    // return Storage::download('excel\downloads\catalog_price\US\Priority1\US_CatalogPrice0.csv');
+});
+Route::get("test/{country_code}", function ($country_code) {
+
+
+
+    $joint_data = DB::connection('catalog')->select("SELECT source.asin FROM asin_destination_ins as source
+    JOIN catalognewins as cat
+    ON source.asin = cat.asin
+    WHERE source.priority = 1
+    ");
+    $country_code = 'us';
+    $asin_desti = 'asin_destination_' . $country_code . 's';
+    $asin_cat = 'catalognew' . $country_code . 's';
+
+
+    $modal_table = table_model_create(country_code: 'us', model: 'Asin_destination', table_name: 'asin_destination_');
+    $joint_data = $modal_table->where('priority', 2)
+        ->join($asin_cat, $asin_desti . '.asin', '=', $asin_cat . '.asin')
+        ->chunk(10, function ($data) {
+        });
+    // po(count($joint_data));
+    exit;
+
+    $found = DB::connection('catalog')->select("SELECT id, asin FROM catalognewuss 
+    WHERE asin = 'B07PCHQ8H2' ");
+
+    po($found[0]->id);
+
+    $table_name = "catalognew${country_code}s";
+    $test = DB::connection('catalog')->select("DELETE s1 from $table_name s1, $table_name s2 where s1.id > s2.id and s1.asin = s2.asin");
+    return $test;
+    exit;
+
+
+    exit;
     $pricing = [];
     $asin_details = [];
 
@@ -51,16 +101,17 @@ Route::get('getPricing/', 'TestController@GetPricing');
 
 Route::get('test1', function () {
 
-    $whereIn = '402-5523703-2980317';
-    $data = DB::connection('b2cship')
-        ->select("SELECT AWBNo, RefNo, BookingDate FROM Packet
-                    WHERE RefNo = '$whereIn'
-                ");
-    dd($data);
+    $PacketForwarder = PacketForwarder::where('status', NULL)
+        ->orWhere('status', '')
+        ->orWhere('status', '0')
+        ->get();
+
+    po($PacketForwarder);
 });
 
 
-Route::get('ustoin/{weight}/{price}', 'TestController@USAToIND');
+Route::get('ustoinb2c/{weight}/{price}', 'TestController@USAToINDb2c');
+Route::get('ustoinb2b/{weight}/{price}', 'TestController@USAToINDb2b');
 Route::get('ustouae/{weight}/{price}', 'TestController@USAToUAE');
 Route::get('ustosg/{weight}/{price}', 'TestController@USATOSG');
 
@@ -93,6 +144,8 @@ Route::get('ustoinprice', function () {
 });
 
 Route::get('intosa/{weight}/{price}', 'TestController@INToSA');
+Route::get('intouae/{weight}/{price}', 'TestController@INDToUAE');
+Route::get('INDToSG/{weight}/{price}', 'TestController@INDToSG');
 
 Route::get('smsatracking/{awb}', function ($awb_no) {
 
@@ -144,3 +197,6 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
     echo $response;
 });
 Route::get('export_catalog', 'TestController@ExportCatalog');
+Route::get('search_catalog/{country_code}', 'TestController@searchCatalog');
+
+Route::get('pricing', 'TestController@PricingTest');

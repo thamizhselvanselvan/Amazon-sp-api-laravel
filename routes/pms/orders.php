@@ -11,3 +11,7 @@ Route::get('orders/itemsdetails', 'Orders\OrdersListController@GetOrderitems')->
 Route::get('orders/details', 'Orders\OrdersListController@OrderDetails');
 Route::get('orders/item-details', 'Orders\OrdersListController@OrderItemDetails');
 Route::get('orders/getdetails/', 'Orders\OrdersListController@GetOrderDetails')->name('getOrder.details');
+
+Route::get('orders/item/dashboard', 'Orders\OrdersDashboardController@OrderItemDashboard');
+
+Route::get('orders/aws/dashboard', 'Orders\OrdersDashboardController@AwsOrderDashboard')->name('order.aws.dashboard');

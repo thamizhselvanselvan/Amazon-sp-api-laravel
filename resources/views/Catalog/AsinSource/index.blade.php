@@ -2,6 +2,10 @@
 
 @section('title', 'ASIN Source')
 
+@section('css')
+<link rel="stylesheet" href="/css/styles.css">
+@stop
+
 @section('content_header')
 <div class="row">
     <div class="col">
@@ -15,19 +19,61 @@
             <a href="import-bulk-asin">
                 <x-adminlte-button label="Asin Bulk Import" theme="primary" icon="fas fa-file-import" class="btn-sm" />
             </a>
-            <a href="{{route('catalog.asin.export')}}">
-                <x-adminlte-button label="Asin Export" theme="primary" icon="fas fa-file-export" class="btn-sm" />
+            <!-- <a href="{{route('catalog.asin.export')}}">
+                <x-adminlte-button label="Asin Export" theme="primary" icon="fas fa-file-export" class="btn-sm " />
             </a>
 
             <x-adminlte-button label="Download Asin" theme="primary" icon="fas fa-file-download" data-toggle="modal"
-                data-target="#exampleModal" class="btn-sm"></x-adminlte-button>
+                data-target="#exampleModal" class="btn-sm"></x-adminlte-button> -->
 
             <a href="{{ route('catalog.download.template') }}">
                 <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-file-download"
                     id="exportUniversalTextiles" class="btn-sm" />
             </a>
 
-            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            <!-- <a href="#"> -->
+                <x-adminlte-button label="Asin Truncate" theme="primary" icon="fas fa-trash text-danger"
+                 class="btn-sm" data-toggle="modal" data-target="#asinTruncate"></x-adminlte-button>
+            <!-- </a> -->
+
+            <div class="modal fade" id="asinTruncate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">ASIN Table Truncate</h5>
+                            <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" style="font-size:15px">
+                            <h5>Select Source</h5><br>
+                            <form action="{{ route('catalog.asin.source.truncate') }}">
+                                <div class="row">
+                                    <div class="col-2">
+                                        <label for="IN">IN</label>
+                                        <input type="checkbox" name="source[]" value="IN" >
+                                    </div>
+                                    <div class="col-2">
+                                        <label for="US">US</label>
+                                        <input type="checkbox" name="source[]" value="US" >
+                                    </div>
+                                    
+                                </div><br>
+                                <div class="col-12 float-left">
+                                    <x-adminlte-button label="Truncate" theme="danger" class="btn btn-sm truncate" icon="fas fa-trash " type="submit" />
+                                </div>
+                            </form>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary btn-danger" data-dismiss="modal"  >Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -47,11 +93,11 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
             </a>
-            <a href="{{ route('catalog.softDelete.view') }}">
+            <!-- <a href="{{ route('catalog.softDelete.view') }}">
                 <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" class="btn-sm" />
-            </a>
+            </a> -->
         </h2>
     </div>
 </div>
@@ -71,7 +117,7 @@
             @endif
         </div>
 
-        <table class="table table-bordered yajra-datatable table-striped text-center table-sm">
+        <!-- <table class="table table-bordered yajra-datatable table-striped text-center table-sm">
             <thead>
                 <tr class="length">
                     <th>S/N</th>
@@ -82,7 +128,7 @@
             </thead>
             <tbody>
             </tbody>
-        </table>
+        </table> -->
     </div>
 </div>
 @stop
@@ -96,37 +142,37 @@ $(function() {
 
 function yajra_datatable() {
 
-    let yajra_table = $('.yajra-datatable').DataTable({
-        processing: true,
-        serverSide: true,
-        destroy: true,
-        pageLength: 50,
-        ajax: "{{ url('catalog/asin-source') }}",
-        columns: [{
-                data: 'id',
-                name: 'id',
-                orderable: false,
-                searchable: false
-            },
-            {
-                data: 'asin',
-                name: 'asin',
-                orderable: false
-            },
-            {
-                data: 'source',
-                name: 'source',
-                orderable: false
-            },
-            {
-                data: 'action',
-                name: 'action',
-                orderable: false,
-                searchable: false
-            },
+    // let yajra_table = $('.yajra-datatable').DataTable({
+    //     processing: true,
+    //     serverSide: true,
+    //     destroy: true,
+    //     pageLength: 50,
+    //     ajax: "{{ url('catalog/asin-source') }}",
+    //     columns: [{
+    //             data: 'id',
+    //             name: 'id',
+    //             orderable: false,
+    //             searchable: false
+    //         },
+    //         {
+    //             data: 'asin',
+    //             name: 'asin',
+    //             orderable: false
+    //         },
+    //         {
+    //             data: 'source',
+    //             name: 'source',
+    //             orderable: false
+    //         },
+    //         {
+    //             data: 'action',
+    //             name: 'action',
+    //             orderable: false,
+    //             searchable: false
+    //         },
 
-        ]
-    });
+    //     ]
+    // });
 }
 
 $(document).on('click', ".delete", function(e) {
@@ -138,9 +184,7 @@ $(document).on('click', ".delete", function(e) {
     }
     let self = $(this);
     let id = self.attr('data-id');
-
     self.prop('disable', true);
-
     $.ajax({
         method: 'post',
         url: '/catalog/remove/asin/' + id,
@@ -156,6 +200,14 @@ $(document).on('click', ".delete", function(e) {
     });
 
 });
+
+$(document).on('click', '.truncate', function(){
+    let bool = confirm('Are you sure you want to truncate this selected table?');
+    if (!bool) {
+        return false;
+    }
+});
+
 
 </script>
 @stop

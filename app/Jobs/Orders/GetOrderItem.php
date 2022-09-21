@@ -15,6 +15,7 @@ class GetOrderItem implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     private $payload;
+    private $timeout = 100;
     /**
      * Create a new job instance.
      *
@@ -32,10 +33,11 @@ class GetOrderItem implements ShouldQueue
      */
     public function handle()
     {
-        // Log::info("Order Item Import");
         $order_id = $this->payload['order_id'];
         $aws_id = $this->payload['aws_id'];
         $country_code = $this->payload['country_code'];
+
+        Log::info("Order Item Import $aws_id");
 
         $order_item = new OrderItem();
         $order_item->OrderItemDetails($order_id, $aws_id, $country_code);

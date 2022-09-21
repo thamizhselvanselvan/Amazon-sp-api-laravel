@@ -24,6 +24,10 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use App\Models\order\OrderSellerCredentials;
 use App\Services\SP_API\API\Order\missingOrder;
+use GuzzleHttp\Promise\Create;
+use League\Csv\Reader;
+use League\Csv\Writer;
+
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 
 class labelManagementController extends Controller
@@ -42,72 +46,23 @@ class labelManagementController extends Controller
             $order = config('database.connections.order.database');
             $catalog = config('database.connections.catalog.database');
             $web = config('database.connections.web.database');
+            $prefix = config('database.connections.web.prefix');
 
             $data = DB::select("SELECT
-    
-        DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
-        from $web.labels as web
-        JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
-        JOIN $order.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
-        JOIN $order.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
-        -- JOIN $catalog.catalog as cat ON cat.asin = orderDetails.asin
-        WHERE web.bag_no = $bag_no
-    ");
+            DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
+            from ${web}.${prefix}labels as web
+            JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
+            JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
+            JOIN ${order}.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+            -- JOIN $catalog.catalog as cat ON cat.asin = orderDetails.asin
+            WHERE web.bag_no = ${bag_no}
+            ");
             return response()->json($data);
         }
     }
 
     public function manage(Request $request)
     {
-        $data = $this->bladeOrderDetails();
-        // dd($data);
-        if ($request->ajax()) {
-
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function ($id) {
-
-                    $this->order_details = $this->labelDataFormating($id->id);
-                    if ($this->order_details) {
-                        $action = '<div class="d-flex pl-5"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
-                        $action .= '<div class="d-flex pl-2"><a href="/label/download-direct/' . $id->id . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
-                        $action .= '<div class="text-center pl-3"><i class="fa fa-check-circle" style="color:green" aria-hidden="true"></i>';
-                        return $action;
-                    }
-                    // $action1 = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
-                    $action = "<div class ='text-center d-flex pl-5'>Details Not Avaliable
-                    <div class='text-center  pl-5'><i class='fa fa-times' style='color:red' aria-hidden='true'></i>";
-                    return $action;
-                })
-                ->addColumn('sn', function ($id) {
-                    return $id->id;
-                })
-                ->addColumn('check_box', function ($id) {
-                    if ($this->order_details) {
-                        $check_box = '<div class="pl-2"><input class="check_options" type="checkbox" value=' . $id->id . ' name="options[]" ></div>';
-                        return $check_box;
-                    }
-                })
-                // ->editColumn('status', function () {
-                //     if ($this->order_details) {
-                //         return '<div class="text-center"><i class="fa fa-check-circle" style="color:green" aria-hidden="true"></i>';
-                //     }
-                //     return '<div class="text-center"><i class="fa fa-times" style="color:red" aria-hidden="true"></i>';
-                // })
-                ->editColumn('purchase_date', function ($date) {
-                    $purchase_date = date('Y-m-d', strtotime($date->purchase_date));
-                    return $purchase_date;
-                })
-                ->editColumn('customer_name', function ($customer_name) {
-                    $customer_name = (array) json_decode($customer_name->shipping_address);
-                    if (isset($customer_name['Name'])) {
-                        return $customer_name['Name'];
-                    }
-                    return 'NA';
-                })
-                ->rawColumns(['sn', 'action', 'check_box', 'purchase_date', 'customer_name'])
-                ->make(true);
-        }
         return view('label.manage');
     }
 
@@ -115,18 +70,18 @@ class labelManagementController extends Controller
     {
         //Single view
         $result = $this->labelDataFormating($id);
-
         $awb_no = $result['awb_no'];
+        $forwarder = $result['forwarder'];
 
         if ($awb_no == '' || $awb_no == NULL) {
-            $awb_no = 'Awb Missing';
+            $awb_no = 'AWB-MISSING';
         }
         $result = (object)$result;
 
         // dd($result);
         $generator = new BarcodeGeneratorPNG();
-        $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39E));
-        return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no'));
+        $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39));
+        return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder'));
     }
     public function ExportLabel(Request $request)
     {
@@ -159,7 +114,8 @@ class labelManagementController extends Controller
     public function DownloadDirect($id)
     {
         $this->deleteAllPdf();
-        $result = DB::connection('web')->select("select * from labels where id = '$id' ");
+        // $result = DB::connection('web')->select("select * from labels where id = '$id' ");
+        $result = Label::where('id', $id)->get();
         $awb_no = $result[0]->awb_no;
         $file_path = 'label/label' . $awb_no . '.pdf';
 
@@ -171,7 +127,7 @@ class labelManagementController extends Controller
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
 
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
@@ -184,18 +140,18 @@ class labelManagementController extends Controller
     public function PrintSelected($id)
     {
         $allid = explode('-', $id);
+        $generator = new BarcodeGeneratorPNG();
         foreach ($allid as $id) {
             $results = $this->labelDataFormating($id);
+
             $result[] = (object)$results;
-            $generator = new BarcodeGeneratorPNG();
 
-            $barcode_awb = 'Awb Missing';
+            $barcode_awb = 'AWB-MISSING';
 
-            if (isset($result['awb_no'])) {
-                $barcode_awb = $result['awb_no'];
+            if (($results['awb_no'])) {
+                $barcode_awb = $results['awb_no'];
             }
-
-            $bar_code[] = base64_encode($generator->getBarcode($barcode_awb, $generator::TYPE_CODE_39E));
+            $bar_code[] = base64_encode($generator->getBarcode($barcode_awb, $generator::TYPE_CODE_39));
         }
 
         return view('label.multipleLabel', compact('result', 'bar_code'));
@@ -261,14 +217,6 @@ class labelManagementController extends Controller
 
     public function uploadExcel(Request $request)
     {
-        $host = config('database.connections.web.host');
-        $dbname = config('database.connections.web.database');
-        $port = config('database.connections.web.port');
-        $username = config('database.connections.web.username');
-        $password = config('database.connections.web.password');
-
-        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-
         foreach ($request->files as $key => $files) {
 
             foreach ($files as $keys => $file) {
@@ -278,44 +226,23 @@ class labelManagementController extends Controller
             }
         }
         $data = Excel::toArray([], $file);
-        $header_value = [];
-        $excel_data = [];
+        $Label_excel_data = [];
 
         foreach ($data as $header) {
-            foreach ($header as $key => $header_data) {
-                if ($key == 0) {
-                    foreach ($header_data as $headerKey => $excel_header) {
-                        if ($excel_header) {
-                            $header_value[$headerKey] = $excel_header;
-                        }
-                    }
-                } else {
-                    foreach ($header_data as $valueKey => $excel_value) {
-                        if ($excel_value) {
-                            $excel_data[$key][$valueKey] = $excel_value;
-                        }
-                    }
+
+            foreach ($header as $key => $excel_data) {
+
+                if ($key != 0) {
+                    $Label_excel_data[] = [
+                        'order_no' => $excel_data[0],
+                        'awb_no'    => $excel_data[1],
+                        'bag_no'    => $excel_data[2],
+                        'forwarder' => $excel_data[3],
+                    ];
                 }
             }
         }
-
-        foreach ($excel_data as $data) {
-
-            $label = R::dispense('labels');
-            $label->status = 0;
-            foreach ($data as $key => $value) {
-                if (isset($header_value[$key])) {
-
-                    $column = lcfirst($header_value[$key]);
-                    $label->$column = $value;
-                }
-            }
-            $date = new DateTime(date('Y-m-d'));
-            $created_at = $date->format('Y-m-d');
-            // $label->order_date = $created_at;
-            R::store($label);
-        }
-
+        Label::upsert($Label_excel_data, ['order_awb_no_unique'], ['order_no', 'awb_no', 'bag_no', 'forwarder']);
         return response()->json(["success" => "All file uploaded successfully"]);
     }
 
@@ -366,10 +293,12 @@ class labelManagementController extends Controller
         $order = config('database.connections.order.database');
         $catalog = config('database.connections.catalog.database');
         $web = config('database.connections.web.database');
+        $prefix = config('database.connections.web.prefix');
 
         $label = DB::select("SELECT ordetail.asin,
         GROUP_CONCAT(DISTINCT web.order_no)as order_no,
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
+        GROUP_CONCAT(DISTINCT web.forwarder) as forwarder,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
         GROUP_CONCAT(DISTINCT ordetail.shipping_address) as shipping_address,
         GROUP_CONCAT(DISTINCT ordetail.item_price) as order_total,
@@ -378,11 +307,11 @@ class labelManagementController extends Controller
         GROUP_CONCAT(DISTINCT ordetail.title) as title,
         GROUP_CONCAT(DISTINCT ordetail.seller_sku) as sku,
         GROUP_CONCAT(DISTINCT ordetail.quantity_ordered) as qty
-        from $web.labels as web
-        JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
-        JOIN $order.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
+        from ${web}.${prefix}labels as web
+        JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
+        JOIN ${order}.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
         -- JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin
-        WHERE web.id = $id
+        WHERE web.id = ${id}
         GROUP BY ordetail.asin
     ");
 
@@ -452,29 +381,98 @@ class labelManagementController extends Controller
         $order = config('database.connections.order.database');
         $catalog = config('database.connections.catalog.database');
         $web = config('database.connections.web.database');
+        $prefix = config('database.connections.web.prefix');
 
         $data = DB::select("SELECT
 
             DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
-            from $web.labels as web
-            JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
-            JOIN $order.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
-            JOIN $order.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+            from ${web}.${prefix}labels as web
+            JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
+            JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
+            JOIN ${order}.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
 
             -- JOIN ord ON ord.our_seller_identifier = $order.ord_order_seller_credentials.seller_id as
         ");
-
         return $data;
     }
 
     public function deleteAllPdf()
     {
         $files = glob(Storage::path('label/*'));
-
         foreach ($files as $file) {
             if (is_file($file)) {
                 unlink($file);
             }
         }
+    }
+
+    public function labelMissingAddress()
+    {
+        return view('label.upload_missing_addrs');
+    }
+
+    public function labelMissingAddressUpload(Request $request)
+    {
+        foreach ($request->files as $key => $files) {
+
+            foreach ($files as $keys => $file) {
+
+                $fileName = $file->getClientOriginalName();
+                $fileName = uniqid() . ($fileName);
+            }
+        }
+        $file_csv = file_get_contents($file);
+        $path = 'label/missing_address.csv';
+        Storage::put($path, $file_csv);
+
+        commandExecFunc("mosh:order-address-missing-upload");
+        return response()->json(["success" => "All file uploaded successfully"]);
+    }
+
+    public function labelMissingAddressExport()
+    {
+        $missing_address = DB::connection('order')
+            ->select(
+                "SELECT 
+                    osc.store_name, oids.amazon_order_identifier, osc.country_code
+                FROM 
+                    orderitemdetails oids
+                        JOIN
+                    ord_order_seller_credentials osc ON osc.seller_id = oids.seller_identifier
+                WHERE
+                    oids.shipping_address = '' AND oids.amazon_order_identifier != '' "
+            );
+
+        $path = 'excel/downloads/label/missing_address_template.csv';
+        $file_path = Storage::path('excel/downloads/label/missing_address_template.csv');
+
+        if (!Storage::exists($path)) {
+            Storage::put($path, '');
+        }
+
+        $csv = Writer::createFromPath($file_path, 'w');
+        $csv->insertOne([
+            'Order',
+            'Store Name',
+            'Name',
+            'AddressLine1',
+            'AddrssLine2',
+            'City',
+            'County',
+            'CountryCode',
+            'Phone',
+            'AddressType'
+        ]);
+
+        foreach ($missing_address as $details) {
+
+            $tem_data = [
+                $details->amazon_order_identifier,
+                $details->store_name . ' [ ' . $details->country_code . ' ]'
+            ];
+            $csv->insertOne($tem_data);
+        }
+
+        return response()->download($file_path);
     }
 }

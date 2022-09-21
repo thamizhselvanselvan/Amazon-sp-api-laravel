@@ -9,8 +9,8 @@ use App\Http\Controllers\Controller;
 
 class B2cshipDashboardController extends Controller
 {
-  
-// public $bomobino_inactive = [];
+
+  // public $bomobino_inactive = [];
   public function TrackingApiDetials()
   {
     $status_detials = DB::connection('b2cship')->select("SELECT StatusDetails, AwbNo, CreatedDate,FPCode
@@ -20,12 +20,11 @@ class B2cshipDashboardController extends Controller
               FROM PODTrans Where FPCode != '' AND FPCode != 'BD Delhi' 
             ) sub
         WHERE row_num = 1");
-        
+
     $status_detials_array = [];
     $ignore = 'DL Delhi';
     foreach ($status_detials as $key => $value) {
-      if(!str_contains($value->FPCode, $ignore))
-      {
+      if (!str_contains($value->FPCode, $ignore)) {
         $date = $value->CreatedDate;
         $date_time = $this->CarbonGetDateDiff($date);
         $status_detials_array[$key] = [
@@ -50,14 +49,13 @@ class B2cshipDashboardController extends Controller
               FROM PODTrans Where FPCode != '' AND FPCode != 'BD Delhi' 
             ) sub
         WHERE row_num = 1");
-        
+
     $status_detials_array = [];
     $today = Carbon::today();
     $ignore = 'DL Delhi';
     foreach ($status_detials as $key => $value) {
 
-      if(str_contains($value->FPCode, $ignore))
-      {
+      if (str_contains($value->FPCode, $ignore)) {
         $date = $value->CreatedDate;
         $date_time = $this->CarbonGetDateDiff($date);
         $tracking_inactive_status[$key] = [
@@ -68,7 +66,7 @@ class B2cshipDashboardController extends Controller
           'time' => $date_time['time'],
 
         ];
-       }
+      }
     }
     // return response()->json($status_detials_array);
     return $tracking_inactive_status;
@@ -80,19 +78,18 @@ class B2cshipDashboardController extends Controller
     $status_detials_array = $this->TrackingApiDetials();
     $tracking_inactive_status = $this->TrackingApiDetailsInactive();
     $bombino_status = $this->BombinoStatus();
-    $bombino_inactive =$this->BombinoInactive();
+    $bombino_inactive = $this->BombinoInactive();
     $delivery_status = $this->BlueDartAndDeliveryStatus();
     $delivery_inactive_status = $this->DeliveryStatusInactive();
-    return view('b2cship.dashboard', compact(['status_detials_array', 'tracking_inactive_status', 'bombino_status', 'delivery_status','kyc_booking_status','bombino_inactive', 'delivery_inactive_status']));
+    return view('b2cship.dashboard', compact(['status_detials_array', 'tracking_inactive_status', 'bombino_status', 'delivery_status', 'kyc_booking_status', 'bombino_inactive', 'delivery_inactive_status']));
     // return view('b2cship.dashboard', compact(['status_detials_array']));
-    
+
   }
 
   public function showDashboard()
   {
     $status_detials_array = $this->TrackingApiDetials();
     return response()->json($status_detials_array);
-
   }
 
   public function CarbonGetDateDiff($date)
@@ -119,7 +116,7 @@ class B2cshipDashboardController extends Controller
 
   public function BookingAndKycStatusDetails()
   {
-    
+
     $kyc_received = DB::connection('b2cship')->select("SELECT TOP 1 AWBNO, CreatedDate
     FROM Packet WHERE IsKYC ='true' ORDER BY CreatedDate DESC");
 
@@ -133,7 +130,7 @@ class B2cshipDashboardController extends Controller
 
     $b2c_booking = DB::connection('b2cship')->select("SELECT TOP 1 AWBNO, CreatedDate
     FROM Packet ORDER BY CreatedDate DESC");
-    
+
     $date_booking = $this->CarbonGetDateDiff($b2c_booking[0]->CreatedDate);
 
     $b2c_booking_array[0] = [
@@ -152,14 +149,13 @@ class B2cshipDashboardController extends Controller
     ];
 
     $kyc_status_array = [];
-    foreach($kyc_status as $key => $value)
-    {
+    foreach ($kyc_status as $key => $value) {
       $date = $value->CreatedDate;
       $date_time = $this->CarbonGetDateDiff($date);
 
       $kyc_status_array[$key] = [
 
-        'Status' => 'KYC '.$value->Status,
+        'Status' => 'KYC ' . $value->Status,
         'AwbNo' => $value->AwbNo,
         'day' => $date_time['Days'],
         'time' => $date_time['time']
@@ -248,8 +244,7 @@ class B2cshipDashboardController extends Controller
     $delivery_status = [];
     $ignore = 'DL Delhi';
     foreach ($delivery_last_update as $key => $value) {
-      if(!str_contains($value->FPCode, $ignore))
-      {
+      if (!str_contains($value->FPCode, $ignore)) {
         $date = $value->CreatedDate;
         $final_date = $this->CarbonGetDateDiff($date);
         $delivery_status[$key] = [
@@ -278,8 +273,7 @@ class B2cshipDashboardController extends Controller
     $delivery_status = [];
     $ignore = 'DL Delhi';
     foreach ($delivery_last_update as $key => $value) {
-      if((str_contains($value->FPCode, $ignore)))
-      {
+      if ((str_contains($value->FPCode, $ignore))) {
         $date = $value->CreatedDate;
         $final_date = $this->CarbonGetDateDiff($date);
         $delivery_inactive_status[$key] = [

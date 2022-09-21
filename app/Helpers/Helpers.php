@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use App\Models\SystemSetting\SystemSetting;
 use App\Models\ShipNTrack\SMSA\SmsaTrackings;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
 use App\Models\ShipNTrack\Bombino\BombinoTracking;
@@ -184,7 +185,7 @@ if (!function_exists('endTime')) {
     function endTime($start)
     {
         $time_elapsed_secs = microtime(true) - $start;
-        print("Time elapsed: $time_elapsed_secs");
+        // print("Time elapsed: $time_elapsed_secs");
 
         return $time_elapsed_secs;
     }
@@ -506,13 +507,13 @@ function signRequest()
 }
 
 if (!function_exists('jobDispatchFunc')) {
-    function jobDispatchFunc($class, $parameters, $queue_type = 'default')
+    function jobDispatchFunc($class, $parameters, $queue_type = 'default', $delay = 0)
     {
         $class = 'App\\Jobs\\' . $class;
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-            dispatch(new $class($parameters))->onConnection('redis')->onQueue($queue_type);
+            dispatch(new $class($parameters))->onConnection('redis')->onQueue($queue_type)->delay($delay);
         } else {
-            dispatch(new $class($parameters));
+            dispatch(new $class($parameters))->delay($delay);
         }
     }
 }
@@ -531,12 +532,11 @@ if (!function_exists('table_model_set')) {
     }
 }
 
+
 if (!function_exists('table_model_create')) {
     function table_model_create(string $country_code, string $model, string $table_name): object
     {
-
         $country_code_lr = strtolower($country_code);
-
         $namespace = 'App\\Models\\Catalog\\' . $model;
         $product_model = new $namespace;
 
@@ -602,8 +602,8 @@ if (!function_exists('getWeight')) {
 
             if ($value->Weight->Units == 'pounds') {
 
-                $weight_kg = poundToKg($value->Weight->value);
-                return round($weight_kg, 2);
+                $weight_pound = ($value->Weight->value);
+                return round($weight_pound, 2);
             }
         } else {
             return 0.5;
@@ -713,11 +713,11 @@ if (!function_exists('mungXML')) {
                 . '\<' // LOCATE A LEFT WICKET 
                 . '/?' // MAYBE FOLLOWED BY A SLASH 
                 . preg_quote($key) // THE NAMESPACE 
-                . ')' // ENDGROUP PATTERN 
+                . ')' // END GROUP PATTERN 
                 . '(' // GROUP PATTERN 2 
                 . ':{1}' // A COLON (EXACTLY ONE) 
                 . ')' // END GROUP PATTERN 
-                . '#' // REGEXDELIMITER 
+                . '#' //REGEXDELIMITER 
             ;
             // INSERT THE UNDERSCORE INTO THE TAG NAME 
             $rep
@@ -730,6 +730,7 @@ if (!function_exists('mungXML')) {
         return $xml;
     } //End :: mungXML() 
 }
+
 if (!function_exists('BombinoTrackingResponse')) {
     function BombinoTrackingResponse($awb_no)
     {
@@ -830,7 +831,7 @@ if (!function_exists('forwarderTrackingEvent')) {
 if (!function_exists('getTrackingDetails')) {
     function getTrackingDetails($awb_no)
     {
-        $bombino_t_details  = [];
+        $bombino_t_details = [];
         $smsa_t_detials = [];
 
         $order = config('database.connections.order.database');
@@ -876,14 +877,25 @@ if (!function_exists('getTrackingDetails')) {
             $column = array_column($tracking_details, 'Date_Time');
             array_multisort($column, SORT_DESC, $tracking_details);
 
-            $result  = [
-                'tracking_details'  => $tracking_details,
-                'shipping_address'  => $packet_forwarder->shipping_address,
+            $result = [
+                'tracking_details' => $tracking_details,
+                'shipping_address' => $packet_forwarder->shipping_address,
             ];
 
             return $result;
         } else {
             return 'Invalid AWB';
         }
+    }
+}
+
+if(!function_exists('getSystemSettingsValue'))
+{
+    function getSystemSettingsValue(String $key, $default)
+    {
+        $records = SystemSetting::where('key', $key)->first();
+        $value = isset($records->value) ? $records->value : $default;
+       
+        return $value;
     }
 }

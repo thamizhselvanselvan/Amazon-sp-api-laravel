@@ -244,6 +244,59 @@ return [
             ]) : [],
         ],
 
+        'business' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('BUSINESS_ORDER_DB_HOST', '127.0.0.1'),
+            'port' => env('BUSINESS_ORDER_DB_PORT', '3306'),
+            'database' => env('BUSINESS_ORDER_DB_DATABASE', 'forge'),
+            'username' => env('BUSINESS_ORDER_DB_USERNAME', 'forge'),
+            'password' => env('BUSINESS_ORDER_DB_PASSWORD', ''),
+            'unix_socket' => env('BUSINESS_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => env('BUSINESS_ORDER_DB_PREFIX') . '_',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+        'mongodb' => [
+            'driver' => 'mongodb',
+            'host' => env('MONGO_DB_HOST', 'localhost'),
+            'port' => env('MONGO_DB_PORT', 27017),
+            'database' => env('MONGO_DB_DATABASE'),
+            'username' => env('MONGO_DB_USERNAME'),
+            'password' => env('MONGO_DB_PASSWORD'),
+            'options' => [
+                // here you can pass more settings to the Mongo Driver Manager
+                // see https://www.php.net/manual/en/mongodb-driver-manager.construct.php under "Uri Options" for a list of complete parameters that you can use
+
+                // 'database' => env('DB_AUTHENTICATION_DATABASE', 'admin'), // required with Mongo 3+
+            ],
+        ],
+        'cliqnshop' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('CLIQNSHOP_DB_HOST', '127.0.0.1'),
+            'port' => env('CLIQNSHOP_DB_PORT', '3306'),
+            'database' => env('CLIQNSHOP_DB_DATABASE', 'forge'),
+            'username' => env('CLIQNSHOP_DB_USERNAME', 'forge'),
+            'password' => env('CLIQNSHOP_DB_PASSWORD', ''),
+            'unix_socket' => env('CLIQNSHOP_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => env('CLIQNSHOP_DB_PREFIX') . '_',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
     ],
 
     /*

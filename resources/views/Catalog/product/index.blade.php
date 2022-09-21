@@ -4,44 +4,139 @@
 @section('content_header')
 
 <div class="row">
-
     <h1 class="m-0 text-dark">Amazon Data</h1>
     <div class="col d-flex justify-content-end">
-
-        <div>
-            <x-adminlte-select name="country" id="country" class="float-right mt-1 catalogcountry">
-                <option value="NULL">Select Country</option>
-                @foreach ($sources as $source)
-                <option value="{{$source->source}}">{{$source->source}}</option>
-                @endforeach
-            </x-adminlte-select>
-            <p class="countrymsg" id="countrymsg"></p>
-        </div>
-
-        <h2 class=" ml-2">
+        <!-- <h2 class=" ml-2">
             <a href="{{ route('catalog.amazon.product') }}">
                 <x-adminlte-button label="Fetch Catalog From Amazon" class="btn-sm" theme="primary"
                     icon="fas fa-file-export" id="exportUniversalTextiles" />
             </a>
-        </h2>
+        </h2> -->
         <h2 class="ml-2">
             <x-adminlte-button label="Export Catalog" theme="primary" class="btn-sm" icon="fas fa-file-export"
-                id="exportCatalog" />
+                id="exportCatalog" data-toggle="modal" data-target="#catalogExport" />
         </h2>
-        <h2 class="ml-2">
 
+        <h2 class="ml-2">
             <x-adminlte-button label="Download Catalog" theme="primary" class="btn-sm" icon="fas fa-download"
                 id="catalogdownload" data-toggle="modal" data-target="#downloadModal" />
-
         </h2>
         <h2 class="ml-2">
             <x-adminlte-button label="Export Catalog Price" class="btn-sm" theme="primary" icon="fas fa-file-export"
-                id="export_catalog_price" />
+                id="export_catalog_price" data-toggle="modal" data-target="#catalogPriceExport" />
         </h2>
         <h2 class="ml-2">
             <x-adminlte-button label="Download Catalog Price" class="btn-sm" theme="primary" icon="fas fa-download"
                 id="download_catalog_price" data-toggle="modal" data-target="#file_download_modal" />
         </h2>
+
+        <div class="modal fade" id="catalogExport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Export Catalog</h5>
+                        <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="font-size:15px">
+                        <form action="{{ route('catalog.export') }}">
+                            <h5>Select Source</h5>
+                            <div class="row border">
+                                <div class="col-2">
+                                    <label for="IN">IN</label>
+                                    <input type="radio" name="source" value="IN">
+                                </div>
+                                <div class="col-2">
+                                    <label for="US">US</label>
+                                    <input type="radio" name="source" value="US">
+                                </div>
+                            </div><br>
+
+                            <h5>Select Priority</h5>
+                            <div class="row border">
+                                <div class="col-2">
+                                    <label for="P1">P1</label>
+                                    <input type="radio" class="destination-priority" name="priority" value="1">
+                                </div>
+                                <div class="col-2">
+                                    <label for="P2">P2</label>
+                                    <input type="radio" class="destination-priority" name="priority" value="2">
+                                </div>
+                                <div class="col-2 ">
+                                    <label for="P3">P3</label>
+                                    <input type="radio" class="destination-priority" name="priority" value="3">
+                                </div>
+                            </div>
+
+                            <div class="col-12 float-left mt-2">
+                                <x-adminlte-button label="Export" theme="success" class="btn btn-sm "
+                                    icon="fas fa-file-export " type="submit" />
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="catalogPriceExport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Export Catalog Price</h5>
+                        <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="font-size:15px">
+                        <form action="{{ route('catalog.price.export') }}" method="GET">
+                            <h5>Select Source</h5>
+                            <div class="row border">
+                                <div class="col-2">
+                                    <label for="IN">IN</label>
+                                    <input type="radio" name="source" value="IN">
+                                </div>
+                                <div class="col-2">
+                                    <label for="US">US</label>
+                                    <input type="radio" name="source" value="US">
+                                </div>
+                            </div><br>
+
+                            <h5>Select Priority</h5>
+                            <div class="row border">
+                                <div class="col-2">
+                                    <label for="P1">P1</label>
+                                    <input type="radio" class="destination-priority" name="priority" value="1">
+                                </div>
+                                <div class="col-2">
+                                    <label for="P2">P2</label>
+                                    <input type="radio" class="destination-priority" name="priority" value="2">
+                                </div>
+                                <div class="col-2 ">
+                                    <label for="P3">P3</label>
+                                    <input type="radio" class="destination-priority" name="priority" value="3">
+                                </div>
+                            </div>
+
+                            <div class="col-12 float-left mt-2">
+                                <x-adminlte-button label="Export" theme="success" class="btn btn-sm "
+                                    icon="fas fa-file-export " type="submit" />
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="modal" id="downloadModal">
             <div class="modal-dialog">
@@ -54,25 +149,17 @@
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- <h2 class="ml-2">
-            <a href="#{{ route('catalog.export') }}">
-                <x-adminlte-button label="Export Catalog" theme="primary" icon="fas fa-file-export"
-                    id="exportCatalog" />
-            </a>
-        </h2> -->
     </div>
     @stop
 
     @section('content')
     @csrf
-
     <div class="row">
-
         <div class="col">
 
             <div class="alert_display">
@@ -91,30 +178,14 @@
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                         </div>
                         <div class="modal-body catalogPricing">
-
+        
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <table class="table table-bordered yajra-datatable table-striped">
-                <thead>
-                    <tr>
-                        <th>S/N</th>
-                        <th>Asin</th>
-                        <th>Source</th>
-                        <th>Name</th>
-                        <th>Dimension</th>
-                        <th>Weight</th>
-                        <th>Price</th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
         </div>
     </div>
 
@@ -129,104 +200,14 @@
         }
     });
 
-    function yajraTable(country_code) {
-        let yajra_table = $('.yajra-datatable').DataTable({
-            processing: true,
-            serverSide: true,
-            destroy: true,
-            ajax: {
-                url: "{{ url('catalog/product') }}",
-                data: {
-                    "country_code": country_code,
-                    "_token": "{{ csrf_token() }}",
-                },
-            },
-            pageLength: 200,
-            lengthMenu: [50, 100, 200, 500],
-            columns: [{
-                    data: 'DT_RowIndex',
-                    name: 'DT_RowIndex',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'asin',
-                    name: 'asin'
-                },
-                {
-                    data: 'source',
-                    name: 'source'
-                },
-                {
-                    data: 'title',
-                    name: 'title'
-                },
-                {
-                    data: 'item_dimensions',
-                    name: 'item_dimensions'
-                },
-                {
-                    data: 'weight',
-                    name: 'weight'
-                },
-                {
-                    data: 'amount',
-                    name: 'amount'
-                },
-            ]
-        });
-    }
-
     $(document).ready(function() {
-
         $('#country').change(function() {
             document.getElementById('countrymsg').innerHTML = '';
         });
-
-        $('#exportCatalog').on('click', function() {
-            let country_code = $('#country').val();
-            if (country_code == 'NULL') {
-                var id = document.getElementById('country');
-                var text = 'Country must filled out';
-                document.getElementById('countrymsg').innerHTML = text;
-                document.getElementById('countrymsg').style.color = "red";
-            } else {
-                $.ajax({
-                    url: "{{ url('catalog/export') }}",
-                    data: {
-                        "_token": "{{ csrf_token() }}",
-                        "country_code": country_code,
-                    },
-                });
-            }
-        });
-    });
-
-    $('#export_catalog_price').on('click', function() {
-        let country_code = $('#country').val();
-        if (country_code == 'NULL' || country_code == 'AE') {
-            var id = document.getElementById('country');
-            var text = 'Country must filled out';
-            document.getElementById('countrymsg').innerHTML = text;
-            document.getElementById('countrymsg').style.color = "red";
-        } else {
-            $.ajax({
-                url: "/catalog/price/export",
-                type: "post",
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                    "_method": 'POST',
-                    "country_code": country_code
-                },
-                success: function(response) {
-                    console.log(response);
-                },
-            });
-        }
     });
 
     $('#catalogdownload').click(function() {
-
+        
         $.ajax({
             url: "/catalog/get-file",
             method: "GET",
@@ -235,27 +216,35 @@
                 "_token": "{{ csrf_token() }}",
             },
             success: function(response) {
-                console.log(response);
-                let files = '';
-                $.each(response, function(index, response) {
-                    let file_name = Object.keys(response)[0];
-                    let file_time = response[file_name];
-                    // alert(file_time);
+                if(response == ''){
+                    $('.catalogFiles').append('File Downloading..');
+                }else{
 
-                    files += "<li class='p-0 m-0'>";
-                    files += "<a href='/catalog/download/csv-file/" + file_name +
-                        "' class='p-0 m-0'> Catalog " + file_name + "</a> ";
-                    files += file_time;
-                    files += "</li>";
-                });
-                $('.catalogFiles').html(files);
+                    $('.catalogFiles').empty();
+                    console.log(response);
+                    let files = '';
+                    $.each(response, function(index, response) {
+                        let data = response;
+                        $.each(data, function(key, data){
+                            
+                            files += "<li class='p-0 m-0'>";
+                            files += "<a href='/catalog/download/csv-file/" + index + "/"+ key +
+                                "' class='p-0 m-0'> Catalog " + index + '&nbsp;' + key +"</a> ";
+                            files += data;
+                            files += "</li>";
+                        });
+                        // let file_name = Object.keys(response)[0];
+                        // let file_time = response[file_name];
+                    });
+                    $('.catalogFiles').html(files);
+                }
+                
             },
         });
     });
 
     $('#download_catalog_price').click(function() {
         $.ajax({
-            // url: "/catalog/price/file",
             url: "/catalog/get-file",
             data: {
                 "method": "GET",
@@ -263,21 +252,29 @@
                 "_token": "{{ csrf_token() }}",
             },
             success: function(result) {
-                console.log(result);
-                let files = '';
-                $.each(result, function(index, result) {
-                    let file_name = Object.keys(result)[0];
-                    let file_time = result[file_name];
-                    // alert(file_time);
 
-                    files += "<li class='p-0 m-0'>";
-                    files += "<a href='/catalog/download/price/" + file_name +
-                        "' class='p-0 m-0'> Catalog Price " + file_name + "</a> ";
-                    files += file_time;
-                    files += "</li>";
-                });
-                $('.catalogPricing').html(files);
+                if(result == ''){
+                    $('.catalogPricing').append('File Downloading..');
+                }else{
+
+                    $('.catalogPricing').empty();
+                    let files = '';
+                    $.each(result, function(index, result) {
+                        let data = result;
+                        $.each(data, function(key, data) {
+                            files += "<li class='p-0 m-0'>";
+                            files += "<a href='/catalog/download/price/" + index + '/' +
+                                key +
+                                "' class='p-0 m-0'> Catalog Price " + index + '&nbsp;' +
+                                key + "</a> ";
+                            files += data;
+                            files += "</li>";
+                        });
+                    });
+                    $('.catalogPricing').append(files);
+                }
             },
+            
         });
     });
     </script>

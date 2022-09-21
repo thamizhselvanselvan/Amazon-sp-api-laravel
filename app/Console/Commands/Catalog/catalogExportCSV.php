@@ -18,12 +18,13 @@ class catalogExportCSV extends Command
     private $writer;
     private $csv_files = [];
     private $file_path;
+    private $priority;
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'mosh:catalog-export-csv {country_code}';
+    protected $signature = 'mosh:catalog-export-csv {priority} {country_code}';
 
     /**
      * The console command description.
@@ -50,200 +51,124 @@ class catalogExportCSV extends Command
     public function handle()
     {
         $total_csv = 1000000;
-        $chunk = 100000;
+        $chunk = 20000;
         $this->remender = $total_csv / $chunk;
         $this->country_code = $this->argument('country_code');
 
-        $table_name = 'catalog' . strtolower($this->country_code) . 's';
-        $modal_table = table_model_create(country_code: $this->country_code, model: 'Catalog', table_name: 'catalog');
-        $modal_table->orderBy('id')->chunk($chunk, function ($result) {
+        $this->priority = $this->argument('priority');
 
-            if ($this->count == 1) {
-                $this->file_path = "excel/downloads/catalog/" . $this->country_code . "/Catalog-export" . $this->country_code . $this->offset . ".csv";
-                $this->csv_files[] = "Catalog-export" . $this->country_code . $this->offset . ".csv";
+        $asin_cat = 'catalognew' . strtolower($this->country_code) . 's';
 
-                if (!Storage::exists($this->file_path)) {
-                    Storage::put($this->file_path, '');
+        $header = [
+            $asin_cat . '.asin',
+            $asin_cat . '.source',
+            $asin_cat . '.dimensions',
+            $asin_cat . '.images',
+            $asin_cat . '.product_types',
+            $asin_cat . '.brand',
+            $asin_cat . '.color',
+            $asin_cat . '.item_classification',
+            $asin_cat . '.item_name',
+            $asin_cat . '.style',
+            $asin_cat . '.website_display_group',
+            $asin_cat . '.manufacturer'
+        ];
+
+        $asin_desti = 'asin_destination_' . strtolower($this->country_code) . 's';
+
+        $table_name = table_model_create(country_code: $this->country_code, model: 'Asin_destination', table_name: 'asin_destination_');
+
+        $table_name->select($header)
+            ->where("priority", $this->priority)
+            ->join($asin_cat, $asin_desti . '.asin', '=', $asin_cat . '.asin')
+            ->chunk($chunk, function ($result) use ($header) {
+
+                if ($this->count == 1) {
+
+                    $csv_header = [
+                        'Asin',
+                        'Source',
+                        'Weight',
+                        'Images_1',
+                        'Images_2',
+                        'Product_types',
+                        'Brand',
+                        'Color',
+                        'Item_classifications',
+                        'Item_name',
+                        'Style',
+                        'Website_display_group',
+                        'Manufacturer'
+                    ];
+
+                    $this->file_path = "excel/downloads/catalog/" . $this->country_code . "/Priority" . $this->priority . "/Catalog-export" . $this->country_code . $this->offset . ".csv";
+                    $this->csv_files[] = "Catalog-export" . $this->country_code . $this->offset . ".csv";
+
+                    if (!Storage::exists($this->file_path)) {
+                        Storage::put($this->file_path, '');
+                    }
+
+                    $this->writer = Writer::createFromPath(Storage::path($this->file_path, 'w'));
+                    $this->writer->insertOne($csv_header);
                 }
 
-                $this->writer = Writer::createFromPath(Storage::path($this->file_path, 'w'));
-                $header = [
-                    'asin',
-                    'source',
-                    'binding',
-                    'brand',
-                    'color',
-                    'item_dimensions',
-                    'is_adult_product',
-                    'is_autographed',
-                    'is_memorabilia',
-                    'label',
-                    'manufacturer',
-                    'material_type',
-                    'model',
-                    'package_dimensions',
-                    'package_quantity',
-                    'part_number',
-                    'product_group',
-                    'product_type_name',
-                    'publisher',
-                    'size',
-                    'small_image',
-                    'studio',
-                    'title',
-                    'display_size',
-                    'languages',
-                    'department',
-                    'list_price',
-                    'creator',
-                    'number_of_items',
-                    'warranty',
-                    'flavor',
-                    'platform',
-                    'publication_date',
-                    'release_date',
-                    'hazardous_material_type',
-                    'system_memory_size',
-                    'item_part_number',
-                    'product_type_subcategory',
-                    'scent',
-                    'manufacturer_parts_warranty_description',
-                    'number_of_discs',
-                    'manufacturer_maximum_age',
-                    'manufacturer_minimum_age',
-                    'hand_orientation',
-                    'artist',
-                    'audience_rating',
-                    'format',
-                    'genre',
-                    'clasp_type',
-                    'author',
-                    'edition',
-                    'chain_type',
-                    'metal_type',
-                    'total_diamond_weight',
-                    'pegi_rating',
-                    'region_code',
-                    'metal_stamp',
-                    'maximum_resolution',
-                    'operating_system',
-                    'size_per_pearl',
-                    'optical_zoom',
-                    'running_time',
-                    'hardware_platform',
-                    'shaft_material',
-                    'band_material_type',
-                    'processor_count',
-                    'theatrical_release_date',
-                    'number_of_pages',
-                    'system_memory_type',
-                    'gem_type',
-                    'hard_disk_interface',
-                    'hard_disk_size',
-                    'media_type',
-                ];
-                $this->writer->insertOne($header);
-            }
-            foreach ($result as $value) {
-                $records[] = [
-                    'asin' => $value->asin,
-                    'source' => $value->source,
-                    'binding' => $value->binding,
-                    'brand' => $value->brand,
-                    'color' => $value->color,
-                    'item_dimensions' => $value->item_dimensions,
-                    'is_adult_product' => $value->is_adult_product,
-                    'is_autographed' => $value->is_autographed,
-                    'is_memorabilia' => $value->is_memorabilia,
-                    'label' => $value->label,
-                    'manufacturer' => $value->manufacturer,
-                    'material_type' => $value->material_type,
-                    'model' => $value->model,
-                    'package_dimensions' => $value->package_dimensions,
-                    'package_quantity' => $value->package_quantity,
-                    'part_number' => $value->part_number,
-                    'product_group' => $value->product_group,
-                    'product_type_name' => $value->product_type_name,
-                    'publisher' => $value->publisher,
-                    'size' => $value->size,
-                    'small_image' => $value->small_image,
-                    'studio' => $value->studio,
-                    'title' => $value->title,
-                    'display_size' => $value->display_size,
-                    'languages' => $value->languages,
-                    'department' => $value->department,
-                    'list_price' => $value->list_price,
-                    'creator' => $value->creator,
-                    'number_of_items' => $value->number_of_items,
-                    'warranty' => $value->warranty,
-                    'flavor' => $value->flavor,
-                    'platform' => $value->platform,
-                    'publication_date' => $value->publication_date,
-                    'release_date' => $value->release_date,
-                    'hazardous_material_type' => $value->hazardous_material_type,
-                    'system_memory_size' => $value->system_memory_size,
-                    'item_part_number' => $value->item_part_number,
-                    'product_type_subcategory' => $value->product_type_subcategory,
-                    'scent' => $value->scent,
-                    'manufacturer_parts_warranty_description' => $value->manufacturer_parts_warranty_description,
-                    'number_of_discs' => $value->number_of_discs,
-                    'manufacturer_maximum_age' => $value->manufacturer_maximum_age,
-                    'manufacturer_minimum_age' => $value->manufacturer_minimum_age,
-                    'hand_orientation' => $value->hand_orientation,
-                    'artist' => $value->artist,
-                    'audience_rating' => $value->audience_rating,
-                    'format' => $value->format,
-                    'genre' => $value->genre,
-                    'clasp_type' => $value->clasp_type,
-                    'author' => $value->author,
-                    'edition' => $value->edition,
-                    'chain_type' => $value->chain_type,
-                    'metal_type' => $value->metal_type,
-                    'total_diamond_weight' => $value->total_diamond_weight,
-                    'pegi_rating' => $value->pegi_rating,
-                    'region_code' => $value->region_code,
-                    'metal_stamp' => $value->metal_stamp,
-                    'maximum_resolution' => $value->maximum_resolution,
-                    'operating_system' => $value->operating_system,
-                    'size_per_pearl' => $value->size_per_pearl,
-                    'optical_zoom' => $value->optical_zoom,
-                    'running_time' => $value->running_time,
-                    'hardware_platform' => $value->hardware_platform,
-                    'shaft_material' => $value->shaft_material,
-                    'band_material_type' => $value->band_material_type,
-                    'processor_count' => $value->processor_count,
-                    'theatrical_release_date' => $value->theatrical_release_date,
-                    'number_of_pages' => $value->number_of_pages,
-                    'system_memory_type' => $value->system_memory_type,
-                    'gem_type' => $value->gem_type,
-                    'hard_disk_interface' => $value->hard_disk_interface,
-                    'hard_disk_size' => $value->hard_disk_size,
-                    'media_type' => $value->media_type
-                ];
-            }
-            $this->writer->insertAll($records);
+                foreach ($result as $value) {
+                    $weight = '0.5';
+                    $product_type  = '';
+                    $images1  = '';
+                    $images2  = '';
 
-            if ($this->remender == $this->count) {
+                    if (isset(json_decode($value->dimensions)[0]->package->weight->value)) {
 
-                ++$this->offset;
-                $this->count = 1;
-            } else {
+                        $weight = json_decode($value->dimensions)[0]->package->weight->value;
+                    }
 
-                ++$this->count;
-            }
-        });
+                    if (isset(json_decode($value->product_types)[0]->productType)) {
+                        $product_type = json_decode($value->product_types)[0]->productType;
+                    }
+                    if (isset(json_decode($value->images)[0]->images[0]->link)) {
+                        $images1 = json_decode($value->images)[0]->images[0]->link;
+                    }
+                    if (isset(json_decode($value->images)[0]->images[1]->link)) {
+                        $images2 = json_decode($value->images)[0]->images[1]->link;
+                    }
+
+                    $records[] = [
+                        'asin' => $value->asin,
+                        'source' => $value->source,
+                        'weight' => $weight,
+                        'images1' => $images1,
+                        'images2' => $images2,
+                        'product_types' => $product_type,
+                        'brand' => $value->brand,
+                        'color' => $value->color,
+                        'item_classifications' => $value->item_classifications,
+                        'item_name' => $value->item_name,
+                        'style' => $value->style,
+                        'website_display_group' => $value->website_display_group,
+                        'manufacturer' => $value->manufacture,
+                    ];
+                }
+                $this->writer->insertAll($records);
+
+                if ($this->remender == $this->count) {
+                    ++$this->offset;
+                    $this->count = 1;
+                } else {
+                    ++$this->count;
+                }
+            });
 
         $zip = new ZipArchive;
-        $path = "excel/downloads/catalog/" . $this->country_code . "/zip/Catalog" . $this->country_code . ".zip";
+        $path = "excel/downloads/catalog/" . $this->country_code . "/Priority" . $this->priority . "/zip/Catalog" . $this->country_code . ".zip";
         $file_path = Storage::path($path);
 
         if (!Storage::exists($path)) {
             Storage::put($path, '');
         }
-
         if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
             foreach ($this->csv_files as $key => $value) {
-                $path = Storage::path('excel/downloads/catalog/' . $this->country_code . '/' . $value);
+                $path = Storage::path('excel/downloads/catalog/' . $this->country_code . '/Priority' . $this->priority . '/' . $value);
                 $relativeNameInZipFile = basename($path);
                 $zip->addFile($path, $relativeNameInZipFile);
             }

@@ -119,17 +119,25 @@
                 <table class="table table-label table-bordered table-bordered-dark pt-1 pb-0 mb-1 table_border">
                     <tbody>
                         <tr>
-                            <td class="pb-0 pt-2">
+                            <td class="pt-0 pb-0">
                                 <div class="row">
                                     <div class="col"></div>
                                     <div class="col p-0">
+                                        <div class=" text-center mb-1">
+                                            @if($value->forwarder)
+                                            {{$value->forwarder}}
+                                            @else
+                                            &nbsp;
+                                            @endif
+
+                                        </div>
                                         <img class="label-barcode-img" src='data:image/png;base64,{!! $bar_code[$key] !!}' width="300px">
                                         <b>
                                             <div class="text-center">
-                                                @if ($value->awb_no == NULL || $value->awb_no == '')
-                                                Awb Missing
+                                                @if($value->awb_no)
+                                                {{$value->awb_no}}
                                                 @else
-                                                {{ $value->awb_no }}
+                                                AWB is missing
                                                 @endif
                                             </div>
                                         </b>
@@ -204,7 +212,7 @@
                             <th class="text-center">Product Name</th>
                             <th class="text-center">SKU</th>
                             <th class="text-center">QTY</th>
-                            <th class="text-center">Price</th>
+                            <!-- <th class="text-center">Price</th> -->
                         </tr>
                     </thead>
                     <tbody>
@@ -214,8 +222,6 @@
                             <td class="text-center p-1">{{$details['title']}}</td>
                             <td class="text-center p-1">{{$details['sku']}}</td>
                             <td class="text-center p-1">{{$details['qty']}}</td>
-                            <td class="text-center p-1">{{$details['order_total']->CurrencyCode}}
-                                {{$details['order_total']->Amount}}
                             </td>
                         </tr>
                         @endforeach

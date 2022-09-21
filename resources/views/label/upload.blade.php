@@ -130,7 +130,6 @@
                     }
                 },
                 error: function(response) {
-                    alert('error');
                 }
             });
 

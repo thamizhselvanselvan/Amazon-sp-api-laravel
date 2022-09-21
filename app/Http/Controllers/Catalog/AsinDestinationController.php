@@ -17,19 +17,19 @@ class AsinDestinationController extends Controller
 {
     public function index(Request $request)
     {
-        if ($request->ajax()) {
+        // if ($request->ajax()) {
 
-            $data = AsinDestination::orderBy('id', 'DESC')->get();
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function ($row) {
-                    $actionBtn = '<div class="d-flex"><a href="edit-asin-destination/' . $row->id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
-                    $actionBtn .= '<div class="d-flex pl-2 trash"><a href="trash-asin-destination/' . $row->id . ' " class=" btn btn-sm btn-danger "><i class="fa fa-trash"></i> Remove</a>';
+        //     $data = AsinDestination::orderBy('id', 'DESC')->get();
+        //     return DataTables::of($data)
+        //         ->addIndexColumn()
+        //         ->addColumn('action', function ($row) {
+        //             $actionBtn = '<div class="d-flex"><a href="edit-asin-destination/' . $row->id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
+        //             $actionBtn .= '<div class="d-flex pl-2 trash"><a href="trash-asin-destination/' . $row->id . ' " class=" btn btn-sm btn-danger "><i class="fa fa-trash"></i> Remove</a>';
 
-                    return $actionBtn;
-                })
-                ->make(true);
-        }
+        //             return $actionBtn;
+        //         })
+        //         ->make(true);
+        // }
         return view('Catalog.AsinDestination.index');
     }
 
@@ -44,42 +44,59 @@ class AsinDestinationController extends Controller
             $request->validate([
                 'text_area' => 'required',
                 'destination'    => 'required',
+                'priority'  => 'required',
             ]);
             $user_id = Auth::user()->id;
             $value = $request->text_area;
-            $destination = $request->destination;
-            $asins = preg_split('/[\r\n| |:|,]/', $value, -1, PREG_SPLIT_NO_EMPTY);
-
-            $country_code = buyboxCountrycode();
-            if ($destination == 'UK') {
-                return redirect('catalog/import-asin-destination')->with('error', 'Seller not available!');
+            $destinations = $request->destination;
+            $priority = $request->priority;
+            
+            foreach($destinations as $destination)
+            {
+                $asins = preg_split('/[\r\n| |:|,]/', $value, -1, PREG_SPLIT_NO_EMPTY);
+                $country_code = buyboxCountrycode();
+                // if ($destination == 'UK') {
+                //     return redirect('catalog/import-asin-destination')->with('error', 'Seller not available!');
+                // }
+                foreach ($asins as $asin) {
+                    $records[] = [
+                        'asin'  => $asin,
+                        'user_id'   => $user_id,
+                        'priority'  => $priority,
+                    ];
+    
+                    $product[] = [
+                        'seller_id' => $country_code[$destination],
+                        'active'   =>  1,
+                        'asin1' => $asin,
+                    ];
+    
+                    $product_lowest_price[] = [
+                        'asin'  => $asin,
+                        'import_type'   => 'Seller',
+                        'priority'  => $priority,
+                        'cyclic' => 0,
+                    ];
+                }
+              
+                $table_name = table_model_create(country_code:$destination, model:'Asin_destination', table_name:'asin_destination_');
+                $table_name->upsert($records, ['user_asin_unique'], ['asin', 'priority']);
+                $push_to_bb = new PushAsin();
+                $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination, priority:$priority);
+                $records = [];
+                $product = [];
+                $product_lowest_price = [];
             }
-            foreach ($asins as $asin) {
-                $records[] = [
-                    'asin'  => $asin,
-                    'user_id'   => $user_id,
-                    'destination'   => $destination,
 
-                ];
-
-                $product[] = [
-                    'seller_id' => $country_code[$destination],
-                    'active'   =>  1,
-                    'asin1' => $asin,
-                ];
-
-                $product_lowest_price[] = [
-                    'asin'  => $asin,
-                    'import_type'   => 'Seller'
-                ];
-            }
-            AsinDestination::upsert($records, ['user_asin_destination_unique'], ['asin',]);
-            $push_to_bb = new PushAsin();
-            $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination);
         } elseif ($request->form_type == 'file_upload') {
+
             $user_id = Auth::user()->id;
+            $priority = $request->priority;
+            $destination = implode(',', $request->destination);
             $validation = $request->validate([
-                'asin' => 'required|mimes:csv',
+                'asin' => 'required|mimes:txt,csv',
+                'destination' => 'required',
+                'priority' => 'required',
             ]);
 
             if (!$validation) {
@@ -87,25 +104,10 @@ class AsinDestinationController extends Controller
             }
 
             $file = file_get_contents($request->asin);
-
             $path = 'AsinDestination/asin.csv';
-            // if(!Storage::exists($path)){
             Storage::put($path, $file);
-            // }
 
-            if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-
-                Log::warning("asin production executed");
-
-                $base_path = base_path();
-                $command = "cd $base_path && php artisan mosh:Asin-destination-upload ${user_id} > /dev/null &";
-                exec($command);
-                Log::warning("asin production command executed");
-            } else {
-
-                Log::warning("Export coma executed local !");
-                Artisan::call('mosh:Asin-destination-upload' . ' ' . $user_id);
-            }
+            commandExecFunc("mosh:Asin-destination-upload ${user_id} ${priority} --destination=${destination} ");
         }
         return redirect('catalog/import-asin-destination')->with('success', 'File has been uploaded successfully');
     }
@@ -166,14 +168,11 @@ class AsinDestinationController extends Controller
     public function AsinDestinationAsinExport(Request $request)
     {
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-
             $base_path = base_path();
             $command = "cd $base_path && php artisan mosh:asin-destination-csv-export > /dev/null &";
             exec($command);
-
             Log::warning("Export asin command executed production  !!!");
         } else {
-
             Log::warning("Export asin command executed local !");
             Artisan::call('mosh:asin-destination-csv-export');
         }
@@ -187,5 +186,18 @@ class AsinDestinationController extends Controller
             return Storage::download($file);
         }
         return 'File is not available right now!';
+    }
+
+    public function AsinDestinationBBTruncate(Request $request)
+    {
+        $validate = $request->validate([
+            'destination' => 'required',
+            'priority' => 'required',
+        ]);
+        $destinations = implode(',', $request->destination);
+        $priority = $request->priority;
+        commandExecFunc("mosh:Asin-destination-delete-priority-wise ${priority} --destinations=${destinations}");
+
+        return redirect('catalog/asin-destination')->with('success', 'Table Truncate successfully');
     }
 }

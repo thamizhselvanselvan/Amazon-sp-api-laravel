@@ -7,6 +7,7 @@ use RedBeanPHP\R;
 use App\Models\BOE;
 use League\Csv\Writer;
 use App\Models\Mws_region;
+use AWS\CRT\HTTP\Response;
 use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
 use App\Models\Aws_credential;
@@ -23,14 +24,15 @@ use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\CatalogApi;
 use App\Services\SP_API\CatalogImport;
+use SellingPartnerApi\Api\OrdersV0Api;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Cache\RateLimiting\Limit;
 use App\Services\Catalog\PriceConversion;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
-use AWS\CRT\HTTP\Response;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use SellingPartnerApi\Api\ProductPricingApi;
+use SellingPartnerApi\Api\CatalogItemsV20220401Api;
 
 class TestController extends Controller
 {
@@ -42,8 +44,6 @@ class TestController extends Controller
    */
   public function getASIN($asin, $country_code)
   {
-
-
     $asins = array($asin);
     $token = '';
     $marketplace = '';
@@ -93,87 +93,6 @@ class TestController extends Controller
       "endpoint" => $endpoint,  // or another endpoint from lib/Endpoints.php
       "roleArn" => 'arn:aws:iam::659829865986:role/Mosh-E-Com-SP-API-Role'
     ]);
-
-
-    $item_type = 'Asin'; // string | Indicates whether ASIN values or seller SKU values are used to identify items. If you specify Asin, the information in the response will be dependent on the list of Asins you provide in the Asins parameter. If you specify Sku, the information in the response will be dependent on the list of Skus you provide in the Skus parameter.
-    $skus = array(); // string[] | A list of up to twenty seller SKU values used to identify items in the given marketplace.
-    $item_condition = 'New'; // string | Filters the offer listings based on item condition. Possible values: New, Used, Collectible, Refurbished, Club.
-    $offer_type = 'B2C'; // string | Indicates whether to request pricing information for the seller's B2C or B2B offers. Default is B2C.
-
-    echo 'Catalog Items API v2020-12-01/ getCatalogItem';
-    echo "<hr>";
-    $apiInstance = new CatalogItemsV0Api($config);
-    echo "<pre>";
-
-    try {
-      $result = $apiInstance->getCatalogItem($marketplace, $asin);
-      $result = json_decode(json_encode($result));
-      po($result);
-    } catch (Exception $e) {
-      echo 'Exception when calling CatalogApi->getCatalogItem: ', $e->getMessage(), PHP_EOL;
-    }
-
-    echo 'Product Pricing Api / getCompetitivePricing';
-    echo "<hr>";
-
-    exit;
-    $apiInstance = new ProductPricingApi($config);
-    try {
-      $result = $apiInstance->getCompetitivePricing($marketplace, $item_type, $asins);
-      $result = json_decode(json_encode($result));
-      po($result);
-      echo 'landed price';
-      $pricing = $result[0]->Product->CompetitivePricing->CompetitivePrices[0]->Price->LandedPrice;
-      print_r($pricing->CurrencyCode);
-      print_r($pricing->Amount);
-      //   $result = (array)($result->payload->AttributeSets[0]);
-    } catch (Exception $e) {
-      echo 'Exception when calling ProductPricingApi->getCompetitivePricing: ', $e->getMessage(), PHP_EOL;
-    }
-
-    echo "<hr>";
-    echo 'Product Pricing Api / getItemOffers';
-    echo "<hr>";
-    echo "<pre>";
-    try {
-      $result = $apiInstance->getItemOffers($marketplace, $item_condition, $asin)->getPayload();
-      $result = json_decode(json_encode($result));
-      print_r($result);
-    } catch (Exception $e) {
-      echo 'Exception when calling ProductPricingApi->getItemOffers: ', $e->getMessage(), PHP_EOL;
-    }
-
-    echo "<hr>";
-    echo 'Product Pricing Api / getPricing';
-    echo "<hr>";
-
-    try {
-      $result = $apiInstance->getPricing($marketplace, $item_type, $asins)->getPayload();
-      // po($result);
-      $result = json_decode(json_encode($result));
-      print_r($result);
-    } catch (Exception $e) {
-      echo 'Exception when calling ProductPricingApi->getPricing: ', $e->getMessage(), PHP_EOL;
-    }
-
-
-
-
-
-    echo "<hr>";
-
-    echo "<hr>";
-    echo 'Product Pricing Api / getListingOffers';
-    echo "<hr>";
-
-    try {
-      $result = $apiInstance->getListingOffers($marketplace, $item_type, $asins)->getPayload();
-      // po($result);
-      $result = json_decode(json_encode($result));
-      print_r($result);
-    } catch (Exception $e) {
-      echo 'Exception when calling ProductPricingApi->getPricing: ', $e->getMessage(), PHP_EOL;
-    }
   }
 
   public function getSellerOrder($seller_id, $country_code)
@@ -182,16 +101,19 @@ class TestController extends Controller
 
     $token = NULL;
     $config = $this->config($seller_id, $country_code, $token);
+
     $marketplace_ids = $this->marketplace_id($country_code);
     $marketplace_ids = [$marketplace_ids];
 
-    $apiInstance = new OrdersApi($config);
+    $apiInstance = new OrdersV0Api($config);
     $startTime = Carbon::now()->subDays(5)->toISOString();
     $createdAfter = $startTime;
-    $max_results_per_page = 100;
+    $max_results_per_page = 1;
 
-    $next_token = NULL;
+    $next_token = 'Nz0eSs51UK+aJqJYLDm0ZAmQazDrhw3C42KwwQyR9e/L6UHaBK1qlqaqZ6TcljqaxqXyQLkGMBs8VhF73Xgy+6+TtJlDlUR56p8S6xVccYWSkB8HgnURuo2teiazVgkyInTAy+XKVmRZBY+oaVuycwQFure81U/CSOnRa9h35auYeATp5zAOhzgKA0lggjg0f2GLmUGyr9UGnxD0RJmrryegoU0IPZxXuDhY0Mlg+b9axYTTEsJ5Nkzyjn+QzAQYMBO/reDY2s8X+G/WxAkd4Fo++pAnAbakpMzWaPWrWIu7EbcPNB+bB6Hzx3wYc8HkVHr6/v7aqUE6gx0WW4bluJnycMd/XRCQ3VVGVsnIXDuwRGD7sGc+vvNIww18kAHE3toQYgtSWoW8GvFjc507ZCZ4zjikEy7+rToAsYN83sHgkdZPXhcRcM4Geo6I62Nv5h8v0uN9IxQ=';
+    // $next_token = iconv("UTF-8", "UTF-8//IGNORE", $next_token);
     $amazon_order_ids = NULL;
+    // $next_token = NULL;
 
     $order = $apiInstance->getOrders(
       $marketplace_ids,
@@ -206,6 +128,7 @@ class TestController extends Controller
       $seller_order_id = null,
       $max_results_per_page,
       $easy_ship_shipment_statuses = null,
+      $electronic_invoice_statuses = null,
       $next_token,
       $amazon_order_ids,
       $actual_fulfillment_supply_source_id = null,
@@ -224,7 +147,7 @@ class TestController extends Controller
     $marketplace_ids = $this->marketplace_id($country_code);
     $marketplace_ids = [$marketplace_ids];
 
-    $apiInstance = new OrdersApi($config);
+    $apiInstance = new OrdersV0Api($config);
     $startTime = Carbon::now()->subDays(30)->toISOString();
     $createdAfter = $startTime;
     $max_results_per_page = 100;
@@ -233,7 +156,7 @@ class TestController extends Controller
     $amazon_order_ids = [$order_id];
     echo '<hr>';
     echo 'Order Details';
-    $order = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses = null, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, $next_token, $amazon_order_ids, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
+    $order = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses = null, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, null, $next_token, $amazon_order_ids, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
     po($order);
 
     echo '<hr>';
@@ -382,122 +305,27 @@ class TestController extends Controller
 
   public function INDToSA($weight, $bb_price)
   {
-    $rate_array = $this->rate_master_in_sa;
-    $int_shipping_base_charge = '';
-    foreach ($rate_array as $key => $value) {
-
-      if ($key >= $weight) {
-        $int_shipping_base_charge = $value['lmd_cost'];
-        break;
-      }
-    }
-
-    $duty_rate = 7 / 100;
-    $nitshopp = 12.0 / 100;
-    $packaging = 100.00;
-    $amazon_commission = 15.0 / 100;
-    $ex_rate = 0.051;
-
-    $duty_cost = ($bb_price + $int_shipping_base_charge) * $duty_rate;
-
-    $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
-      (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $nitshopp);
-
-    $mbm_usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
-      ($amazon_commission * $price_befor_amazon_fees * 0.14);
-
-    $uae_sa = $mbm_usd_sp * $ex_rate;
-
-    return round($uae_sa, 2);
+    return (new PriceConversion())->INDToSA($weight, $bb_price);
   }
 
   public function INDToSG($weight, $bb_price)
   {
-    //India to Singapore
-    $rate_array = $this->rate_master_in_sg;
-    $int_shipping_base_charge = '';
-    foreach ($rate_array as $key => $value) {
-
-      if ($key >= $weight) {
-        $int_shipping_base_charge = $value['lmd_cost'];
-        break;
-      }
-    }
-
-    $duty_rate = 7 / 100;
-    $nitshopp = 15.0 / 100;
-    $packaging = 120.00;
-    $amazon_commission = 15.0 / 100;
-    $ex_rate = 0.019;
-
-    $duty_cost = ($bb_price + $int_shipping_base_charge) * $duty_rate;
-
-    $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
-      (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $nitshopp);
-
-    $mbm_usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
-      ($amazon_commission * $price_befor_amazon_fees * 0.14);
-
-    $uae_sg = $mbm_usd_sp * $ex_rate;
-
-    return round($uae_sg, 2);
+    return (new PriceConversion())->INDToSG($weight, $bb_price);
   }
 
   public function INDToUAE($weight, $bb_price)
   {
-    $rate_array = $this->rate_master_in_ae;
-    $int_shipping_base_charge = '';
-
-    foreach ($rate_array as $key => $value) {
-
-      if ($key >= $weight) {
-        $int_shipping_base_charge = $value['lmd_cost'];
-        break;
-      }
-    }
-    $duty_rate = 7 / 100;
-    $nitshopp = 12.0 / 100;
-    $packaging = 180.00;
-    $amazon_commission = 15.0 / 100;
-    $ex_rate = 0.051;
-
-    $duty_cost = ($bb_price + $int_shipping_base_charge) * $duty_rate;
-
-    $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
-      (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $nitshopp);
-
-    $mbm_usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
-      ($amazon_commission * $price_befor_amazon_fees * 0.14);
-
-    $uae_sp = $mbm_usd_sp * $ex_rate;
-
-    return round($uae_sp, 2);
+    return (new PriceConversion())->INDToUAE($weight, $bb_price);
   }
 
-  public function USAToIND($weight, $bb_price)
+  public function USAToINDb2c($weight, $bb_price)
   {
-    if ($weight > 0.9) {
-      $int_shipping_base_charge = (6 + ($weight - 1) * 6);
-    } else {
-      $int_shipping_base_charge = 6;
-    }
+    return (new PriceConversion())->USAToINDB2C($weight, $bb_price);
+  }
 
-    $duty_rate = 32.00 / 100;
-    $seller_commission = 10 / 100;
-    $packaging = 2;
-    $amazon_commission = 22.00 / 100;
-
-    $ex_rate = 82;
-    $duty_cost = ($duty_rate * ($bb_price + $int_shipping_base_charge));
-
-    $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
-      (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $seller_commission);
-
-    $usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
-      ($amazon_commission * $price_befor_amazon_fees * 0.12);
-
-    $india_sp = $usd_sp * $ex_rate;
-    return round($india_sp, 2);
+  public function USAToINDb2b($weight, $bb_price)
+  {
+    return (new PriceConversion())->USAToINDB2B($weight, $bb_price);
   }
 
   public function getWeight($dimensions)
@@ -517,64 +345,17 @@ class TestController extends Controller
 
   public function USATOUAE($weight, $bb_price)
   {
-    $duty_rate = 5 / 100;
-    $seller_commission = 10 / 100;
-    $packaging = 4;
-    $amazon_commission = 15.00 / 100;
-    $int_shipping_base_charge = $weight * 4.5;
-    $ex_rate = 3.7;
-    $duty_cost = ($duty_rate * ($bb_price + $int_shipping_base_charge));
-
-    $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
-      (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $seller_commission);
-
-    $usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
-      ($amazon_commission * $price_befor_amazon_fees * 0.12);
-
-    $IED_sp = $usd_sp * $ex_rate;
-    return round($IED_sp, 2);
+    return (new PriceConversion())->USATOUAE($weight, $bb_price);
   }
 
   public function USATOSG($weight, $bb_price)
   {
-
-    if ($weight > 0.9) {
-      $int_shipping_base_charge = (8 + ($weight - 1) * 4.5);
-    } else {
-      $int_shipping_base_charge = 8;
-    }
-
-    // return $int_shipping_base_charge;
-    $duty_rate = 4.00 / 100;
-    $seller_commission = 10 / 100;
-    $packaging = 3;
-    $MBM = 10.0 / 100;
-    $amazon_commission = 12.00 / 100;
-
-    $ex_rate = 1.37;
-    $duty_cost = $duty_rate * $bb_price;
-
-
-    $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
-      (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $MBM);
-
-    $mbm_usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
-      ($amazon_commission * $price_befor_amazon_fees * 0.14);
-
-    // return $mbm_usd_sp;
-    $sg_sp = $mbm_usd_sp * $ex_rate;
-
-    return round($sg_sp, 2);
-    //
+    return (new PriceConversion())->USATOSG($weight, $bb_price);
   }
 
   public function INToSA($weight, $bb_price)
   {
-
-    $priceConverter = new PriceConversion();
-
-    return $priceConverter->USAToIND($weight, $bb_price);
-    //
+    return (new PriceConversion())->INDToSA($weight, $bb_price);
   }
 
   public function ExportCatalog()
@@ -610,5 +391,150 @@ class TestController extends Controller
     return Storage::download($file_path);
     dd($data);
     //
+  }
+
+  public function searchCatalog($country_code)
+  {
+    $token = NULL;
+    $aws_id = '';
+    $asins = [
+      'B09TB8DDK5',
+      'B09V82KP32',
+      'B09V82LJQL',
+      'B09V82LS5S',
+      'B09V82M1CD',
+      'B09V82P512',
+
+    ];
+    $country_code = 'IN';
+
+    $identifiers_type = 'ASIN';
+    $incdata = ['attributes', 'dimensions', 'productTypes', 'images', 'summaries'];
+
+    $mws_region = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->first();
+    $token = $mws_region['aws_verified']['auth_code'];
+
+    $config =   $this->config($aws_id, $country_code, $token);
+    $apiInstance = new CatalogItemsV20220401Api($config);
+
+    $marketplace_id = [$this->marketplace_id($country_code)];
+
+    $page_size = 10;
+    $locale = null;
+    $seller_id = null;
+    $keywords = null;
+    $brand_names = null;
+    $classification_ids = null;
+    $page_size = 20;
+    $page_token = null;
+    $keywords_locale = null;
+
+    $result = $apiInstance->searchCatalogItems(
+      $marketplace_id,
+      $asins,
+      $identifiers_type,
+      $incdata,
+      $locale,
+      $seller_id,
+      $keywords,
+      $brand_names,
+      $classification_ids,
+      $page_size,
+      $page_token,
+      $keywords_locale
+    );
+    // $result =
+    //   $apiInstance->searchCatalogItems($marketplace_id, $asins, $identifiers_type, $incdata, $page_size);
+    $result = (array) json_decode(json_encode($result));
+
+    po($result);
+  }
+
+  public function PricingTest()
+  {
+
+    $country_code_lr = 'us';
+    $user_id = '';
+    $des_asin_array = [];
+    $calculated_weight = [];
+    $asin_array_bb = [];
+    $des_asin_update = [];
+    $missing_asin = [];
+    $find_missing_asin = [];
+
+    $product_seller_details = 'bb_product_' . $country_code_lr . 's_seller_details';
+    $product_lp = 'bb_product_' . $country_code_lr . 's_lp_offers';
+
+    $destination_model = table_model_create(country_code: $country_code_lr, model: 'Asin_destination', table_name: 'asin_destination_');
+    $data = $destination_model->select(['asin', 'user_id'])->where(['price_status' => '0'])->limit(10)->get();
+
+    foreach ($data as $value) {
+
+      $asin = $value->asin;
+      $des_asin_array[] =  $asin;
+      $user_id = $value->user_id;
+
+      $find_missing_asin[$asin] = 1;
+      $des_asin_update[] = [
+        'asin' => $asin,
+        'user_id' => $user_id,
+        'price_status' => '2'
+      ];
+    }
+    // dd($find_missing_asin);
+
+    $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
+    $des_asin_update = [];
+
+    $catalog_model = table_model_create(country_code: $country_code_lr, model: 'Catalog', table_name: 'catalognew');
+    $cat_data = $catalog_model->select(['asin', 'dimensions'])->whereIn('asin', $des_asin_array)->get();
+
+    foreach ($cat_data as $value) {
+      $weight = '0.5';
+
+      if (isset(json_decode($value->dimensions)[0]->package->weight->value)) {
+        $weight = json_decode($value->dimensions)[0]->package->weight->value;
+      }
+
+      $a = $value->asin;
+      $calculated_weight[$a] =  $weight;
+      $asin_array_bb[] = "'$a'";
+    }
+
+    if ($asin_array_bb) {
+
+      $pricing_asin = implode(',', $asin_array_bb);
+
+      $asin_price = DB::connection('buybox')
+        ->select("SELECT PPO.asin, LP.available,
+          GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
+          group_concat(PPO.listingprice_amount) as listingprice_amount,
+          group_concat(PPO.updated_at) as updated_at
+          FROM $product_seller_details as PPO
+          JOIN $product_lp as LP On PPO.asin = LP.asin
+            WHERE PPO.asin IN ($pricing_asin)
+            GROUP BY PPO.asin
+      ");
+
+      foreach ($asin_price as $details) {
+
+        $asin_name = $details->asin;
+        if (isset($find_missing_asin[$asin_name])) {
+
+          $des_asin_update[] = [
+            'asin' => $asin_name,
+            'user_id' => $user_id,
+            'price_status' => '1'
+          ];
+        }
+      }
+      $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
+      dd($asin_price);
+
+      dd($calculated_weight, $pricing_asin);
+    } else {
+
+      $destination_model->where('id', '>', '0')->update(['price_status' => '0']);
+    }
   }
 }

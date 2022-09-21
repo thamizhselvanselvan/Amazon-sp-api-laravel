@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Catalog\Asin_master;
 use Carbon\Laravel\ServiceProvider;
 use Illuminate\Support\Facades\Log;
+use App\Models\Admin\ErrorReporting;
 use App\Services\Config\ConfigTrait;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
@@ -117,8 +118,19 @@ class CatalogImport
                 }
             } catch (Exception $e) {
 
-                echo $e . '<hr>';
-                Log::alert($e);
+                // echo $e . '<hr>';
+                // Log::alert($e);
+                $code =  $e->getCode();
+            $msg = $e->getMessage();
+            $error_reportings = ErrorReporting::create([
+                'queue_type' => "CatalogImport",
+                'identifier' => $asin,
+                'identifier_type' => "ASIN",
+                'source' => $country_code,
+                'aws_key' => $aws_key,
+                'error_code' => $code,
+                'message' => $msg,
+            ]);
             }
         }
 

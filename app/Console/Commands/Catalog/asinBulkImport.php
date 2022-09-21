@@ -12,12 +12,13 @@ use Illuminate\Support\Facades\Storage;
 
 class asinBulkImport extends Command
 {
+    private $country;
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'pms:asin-import {user_id} ';
+    protected $signature = 'pms:asin-import {user_id} {--source=} ';
 
     /**
      * The console command description.
@@ -44,65 +45,67 @@ class asinBulkImport extends Command
     public function handle()
     {
         //source and seller id
-        $push_to_bb = new PushAsin();
+        // $push_to_bb = new PushAsin();
 
         $user_id = $this->argument('user_id');
+        $sources = explode(',', $this->option('source'));
 
         $path = 'AsinMaster/asin.csv';
-
         $csv = Reader::createFromPath(Storage::path($path), 'r');
         $csv->setDelimiter(",");
         $csv->setHeaderOffset(0);
 
         $source = buyboxCountrycode();
-        $asin_details = [];
+        $asin = [];
         $count = 0;
 
-        foreach ($csv as $key => $record) {
-            $country_code = strtoupper($record['Source']);
-            $seller_id = $source[$country_code];
-            $asin = $record['ASIN'];
+        foreach ($sources as $key1 => $this->country) {
 
-            $asin_details[] = [
+            foreach ($csv as $key => $record) {
+                $country_code = strtoupper($this->country);
+                $seller_id = $source[$country_code];
+                $asin = $record['ASIN'];
 
-                'asin' => $asin,
-                'user_id' => $user_id,
-                'source' => $record['Source'],
-            ];
-
-            if ($count == 1000) {
-
-                AsinSource::upsert($asin_details, ['user_asin_source_unique'], ['source']);
-                $count = 0;
-                $asin_details = [];
-            }
-            $count++;
-        }
-
-        AsinSource::upsert($asin_details, ['user_asin_source_unique'], ['source']);
-
-        // $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $country_code);
-
-        $asins = AsinSource::where('status', '=', 0)->get(['asin', 'source', 'user_id']);
-        $count = 0;
-        $asin_source = [];
-        $class = 'catalog\\AmazonCatalogImport';
-        foreach ($asins as $asin) {
-
-            if ($count == 10) {
-                jobDispatchFunc($class, $asin_source, 'catalog');
-                $asin_source = [];
-                $count = 0;
-            } else {
-
-                $asin_source[] = [
-                    'asin' => $asin->asin,
-                    'source' => $asin->source,
-                    'seller_id' => $asin->user_id
+                $asin_details[] = [
+                    'asin' => $asin,
+                    'user_id' => $user_id,
                 ];
+
+                if ($count == 999) {
+
+                    $model_name = table_model_create(country_code: $this->country, model: 'Asin_source', table_name: 'asin_source_');
+                    $model_name->upsert($asin_details, ['user_asin_unique'], ['asin']);
+                    $count = 0;
+                    $asin_details = [];
+                }
                 $count++;
             }
+            $table_name = table_model_create(country_code: $this->country, model: 'Asin_source', table_name: 'asin_source_');
+            $table_name->upsert($asin_details, ['user_asin_unique'], ['asin']);
+
+
+            $country_code_up = strtoupper($this->country);
+            $queue = 'catalog';
+
+            if ($country_code_up == 'IN') {
+
+                $queue = 'catalog_IN';
+            }
+            $class = 'catalog\AmazonCatalogImport';
+
+            // $table_name->where('status', 0)->chunk(10, function ($asins) use ($class,  $queue) {
+
+            //     $asin_source = [];
+            //     foreach ($asins as $asin) {
+
+            //         $asin_source[] = [
+            //             'asin' => $asin->asin,
+            //             'source' => $this->country,
+            //             'seller_id' => $asin->user_id
+            //         ];
+            //     }
+            //     jobDispatchFunc($class, $asin_source, $queue);
+            // });
         }
-        jobDispatchFunc($class, $asin_source, 'catalog');
     }
 }

@@ -23,3 +23,7 @@ Route::get('label/print-selected/{id}', 'label\labelManagementController@PrintSe
 Route::POST('label/select-download', 'label\labelManagementController@DownloadSelected');
 // Route::get('label/zip-download/{arr}', 'label\labelManagementController@zipDownload');
 Route::get('label/zip/download', 'label\labelManagementController@zipDownload');
+
+Route::get('label/missing/address', 'label\labelManagementController@labelMissingAddress');
+Route::post('label/missing/address', 'label\labelManagementController@labelMissingAddressUpload');
+Route::get('label/missing/address/export', 'label\labelManagementController@labelMissingAddressExport');

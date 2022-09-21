@@ -105,10 +105,17 @@
             <table class="table table-label table-bordered table-bordered-dark<td pt-1 pb-0 mb-1 table_border">
                 <tbody>
                     <tr>
-                        <td class="pb-0">
+                        <td class="pt-0 pb-0">
                             <div class="row">
                                 <div class="col p-0"></div>
                                 <div class="col p-0">
+                                    <div class="text-center">
+                                        @if($forwarder == '' || $forwarder == NULL)
+                                        &nbsp;
+                                        @else
+                                        {{ $forwarder }}
+                                        @endif
+                                    </div>
                                     <img class="label-barcode-img" src='data:image/png;base64,{!! $bar_code !!}'>
                                     <!-- {!! $bar_code !!} -->
                                     <b>
@@ -191,7 +198,7 @@
                         <th class="text-center">Product Name</th>
                         <th class="text-center">SKU</th>
                         <th class="text-center">QTY</th>
-                        <th class="text-center">Price</th>
+                        <!-- <th class="text-center">Price</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -201,8 +208,7 @@
                         <td class="p-1">{{$value['title']}}</td>
                         <td class="text-center p-1">{{$value['sku']}}</td>
                         <td class="text-center p-1">{{$value['qty']}}</td>
-                        <td class="text-center p-1">{{$value['order_total']->CurrencyCode}}
-                            {{$value['order_total']->Amount}}
+
                         </td>
                     </tr>
                     @endforeach
