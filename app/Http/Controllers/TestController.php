@@ -30,6 +30,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use App\Services\Catalog\PriceConversion;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
+use App\Services\Zoho\ZohoOrder;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use SellingPartnerApi\Api\ProductPricingApi;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
@@ -536,5 +537,15 @@ class TestController extends Controller
 
       $destination_model->where('id', '>', '0')->update(['price_status' => '0']);
     }
+  }
+
+  public function TestZoho()
+  {
+    (new ZohoOrder())->getOrderDetails();
+  }
+  public function TestGetZoho($lead)
+  {
+
+    (new ZohoOrder())->zohoOrderDetails($lead);
   }
 }
