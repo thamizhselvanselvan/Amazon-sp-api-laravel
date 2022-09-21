@@ -34,14 +34,28 @@ class insertZohoOrder
         ));
 
         $response = curl_exec($curl);
-
         curl_close($curl);
-
-        echo "The Refresh Code";
-        po($response);
-        echo "<br>";
         $response = json_decode($response, true);
-        // dd($response);
+
         return $response;
+    }
+
+    public function addOrderItemsToZoho()
+    {
+
+        //
+    }
+
+    public function zohoOrderFormating()
+    {
+
+        //
+    }
+
+    public function getOrderDetails()
+    {
+
+
+        //
     }
 }

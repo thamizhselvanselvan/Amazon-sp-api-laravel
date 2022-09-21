@@ -179,15 +179,15 @@ class Order
 
                 R::store($update_orders);
                 // sleep(2);
-                $order_item_details = DB::connection('order')
-                    ->select("SELECT id FROM orders 
-                WHERE amazon_order_identifier = '$amazon_order_id' AND order_item = '0' ");
+                // $order_item_details = DB::connection('order')
+                //     ->select("SELECT id FROM orders 
+                // WHERE amazon_order_identifier = '$amazon_order_id' AND order_item = '0' ");
 
-                if (count($order_item_details) > 0) {
+                // if (count($order_item_details) > 0) {
 
-                    $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
-                    $this->delay += $delay_count;
-                }
+                //     $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
+                //     $this->delay += $delay_count;
+                // }
             } else {
 
                 //call orderitem details jobs
@@ -197,7 +197,7 @@ class Order
                 // dd($orders);
                 R::store($orders);
 
-                $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
+                // $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
                 $this->delay += $delay_count;
             }
         }
@@ -213,7 +213,7 @@ class Order
                     'aws_id' => $awsId,
                     'country_code' => $awsCountryCode,
                 ]
-            )->onConnection('redis')->onQueue($this->order_queue_name)->delay($this->delay);
+            )->onConnection('redis')->onQueue('order')->delay($this->delay);
         } else {
 
             GetOrderItem::dispatch(
