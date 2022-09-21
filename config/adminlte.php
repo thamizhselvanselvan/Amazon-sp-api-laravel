@@ -589,6 +589,13 @@ return [
                     ],
                 ],
                 [
+                    'text' => 'Odrer Details',
+                    'can' => ['Admin'],
+                    'icon' => 'fa fa-dashboard',
+                    'url' => "orders/details/list",
+
+                ],
+                [
                     'text' => 'AWS Order Dashboard',
                     'can' => ['Admin'],
                     'icon' => 'fa fa-dashboard',

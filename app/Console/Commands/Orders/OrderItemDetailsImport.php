@@ -2,9 +2,11 @@
 
 namespace App\Console\Commands\Orders;
 
-use App\Services\SP_API\API\Order\OrderItem;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Services\SP_API\API\Order\Order;
+use App\Services\SP_API\API\Order\OrderItem;
 
 class OrderItemDetailsImport extends Command
 {
@@ -39,7 +41,7 @@ class OrderItemDetailsImport extends Command
      */
     public function handle()
     {
-        $order_item = new OrderItem();
+        $order_item = new Order();
 
         $seller_id_array  = DB::connection('order')->select('SELECT our_seller_identifier 
         from orders group by our_seller_identifier');
@@ -63,7 +65,9 @@ class OrderItemDetailsImport extends Command
                 $order_id = $details->amazon_order_identifier;
                 $aws_id = $details->our_seller_identifier;
 
-                $order_item->OrderItemDetails($order_id, $aws_id, $country);
+                Log::info("Command $order_id -> $aws_id");
+
+                $order_item->getOrderItemQueue($order_id, $aws_id, $country);
             }
         }
     }
