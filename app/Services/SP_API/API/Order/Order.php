@@ -22,10 +22,20 @@ class Order
 {
     use ConfigTrait;
     private  $delay = 0;
+    private $order_queue_name = '';
     public function SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code, $amazon_order_id)
     {
         $seller_id = $awsId;
 
+        $order_queue_array = [
+            6 => 'order_Nitrous',
+            29 => 'order_MBM',
+            35 => 'order_Mahzuz'
+        ];
+        $this->order_queue_name = 'order';
+        if (array_key_exists($awsId, $order_queue_array)) {
+            $this->order_queue_name = $order_queue_array[$awsId];
+        }
 
         $host = config('database.connections.order.host');
         $dbname = config('database.connections.order.database');
@@ -46,7 +56,7 @@ class Order
         $apiInstance = new OrdersV0Api($config);
         // $startTime = Carbon::now()->subHours(9)->toISOString();
         // $startTime = Carbon::now()->subDays(5)->toISOString();
-        $subDays = getSystemSettingsValue('subDays',5);
+        $subDays = getSystemSettingsValue('subDays', 5);
         $startTime = Carbon::now()->subDays($subDays)->toISOString();
 
         $createdAfter = $startTime;
@@ -203,7 +213,7 @@ class Order
                     'aws_id' => $awsId,
                     'country_code' => $awsCountryCode,
                 ]
-            )->onConnection('redis')->onQueue('order')->delay($this->delay);
+            )->onConnection('redis')->onQueue($this->order_queue_name)->delay($this->delay);
         } else {
 
             GetOrderItem::dispatch(

@@ -25,7 +25,7 @@ class OrderItem
 
     public function OrderItemDetails($order_id, $aws_id, $country_code)
     {
-        // Log::alert('Order Item Details -> ' . $order_id);
+        Log::alert('Order Item Details -> ' . $order_id);
 
         $config = $this->config($aws_id, $country_code);
         $marketplace_ids = $this->marketplace_id($country_code);
@@ -33,6 +33,7 @@ class OrderItem
 
         $apiInstance = new OrdersV0Api($config);
         $this->SelectedSellerOrderItem($apiInstance, $country_code, $order_id, $aws_id);
+        return true;
     }
 
     public function SelectedSellerOrderItem($apiInstance, $awsCountryCode, $order_id, $aws_id)
@@ -43,28 +44,26 @@ class OrderItem
         try {
             // Log::alert('Order Item Details Try Block');
             $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
-            po($result_orderItems);
-            exit;
             $result_order_address = $apiInstance->getOrderAddress($order_id);
             // $result_order_address = [];
             $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id);
         } catch (Exception $e) {
 
-           // Log::warning($e->getMessage());
+            // Log::warning($e->getMessage());
             $code =  $e->getCode();
             $msg = $e->getMessage();
             $error_reportings = ErrorReporting::create([
-            'queue_type' => "order",
-            'identifier' => $order_id,
-            'identifier_type' => "order_id",
-            'source' => $awsCountryCode,
-            'aws_key' => $aws_id,
-            'error_code' => $code,
-            'message' => $msg,
+                'queue_type' => "order",
+                'identifier' => $order_id,
+                'identifier_type' => "order_id",
+                'source' => $awsCountryCode,
+                'aws_key' => $aws_id,
+                'error_code' => $code,
+                'message' => $msg,
             ]);
         }
         return true;
-            }
+    }
 
     public function OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id)
     {
