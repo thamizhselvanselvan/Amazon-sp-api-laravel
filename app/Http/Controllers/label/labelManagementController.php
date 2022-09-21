@@ -323,6 +323,18 @@ class labelManagementController extends Controller
             'qty' => NULL
         ];
 
+        $ignore = [
+            'gun',
+            'lighter',
+            'gold',
+            'spark',
+            'fuel',
+            'heat',
+            'oxygen',
+            'alcohols',
+            'famable',
+        ];
+
         if (!$label) {
             return NULL;
         }
@@ -353,7 +365,8 @@ class labelManagementController extends Controller
                     $label_data[$key1] = $dimensions;
                 } elseif ($key1 == 'title') {
 
-                    $product[$key][$key1] = $label_detials;
+                    $ignore_title = str_ireplace($ignore, '', $label_detials);
+                    $product[$key][$key1] = $ignore_title;
                 } elseif ($key1 == 'sku') {
 
                     $product[$key][$key1] = $label_detials;
@@ -434,11 +447,13 @@ class labelManagementController extends Controller
         $missing_address = DB::connection('order')
             ->select(
                 "SELECT 
-                    osc.store_name, oids.amazon_order_identifier, osc.country_code
+                    osc.store_name, ord.purchase_date, oids.amazon_order_identifier, osc.country_code
                 FROM 
                     orderitemdetails oids
                         JOIN
                     ord_order_seller_credentials osc ON osc.seller_id = oids.seller_identifier
+                        JOIN
+                    orders ord oN ord.amazon_order_identifier = oids.amazon_order_identifier
                 WHERE
                     oids.shipping_address = '' AND oids.amazon_order_identifier != '' "
             );
@@ -454,9 +469,10 @@ class labelManagementController extends Controller
         $csv->insertOne([
             'Order',
             'Store Name',
+            'Order Date',
             'Name',
             'AddressLine1',
-            'AddrssLine2',
+            'AddressLine2',
             'City',
             'County',
             'CountryCode',
@@ -467,7 +483,8 @@ class labelManagementController extends Controller
         foreach ($missing_address as $details) {
             $tem_data = [
                 $details->amazon_order_identifier,
-                $details->store_name . ' [ ' . $details->country_code . ' ]'
+                $details->store_name . ' [ ' . $details->country_code . ' ]',
+                $details->purchase_date
             ];
             $csv->insertOne($tem_data);
         }
