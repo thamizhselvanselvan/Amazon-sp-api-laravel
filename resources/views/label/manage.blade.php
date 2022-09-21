@@ -39,6 +39,10 @@
         <a href="missing/address">
             <x-adminlte-button label="Upload Missing Address" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
         </a>
+        <a href="{{ route('label.order.dump') }}">
+            <x-adminlte-button label="Order Import" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
+        </a>
+
     </h2>
 </div>
 @stop
