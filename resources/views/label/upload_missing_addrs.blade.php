@@ -14,6 +14,9 @@
         <a href="{{ route('label.manage') }}" class="btn btn-primary btn-sm">
             <i class="fas fa-long-arrow-alt-left"></i> Back
         </a>
+        <a href=" {{ route('label.missing.address.export')}} ">
+            <x-adminlte-button label="Download Missing Address" theme="primary" icon="fas fa-file-download" class="btn-sm ml-2" />
+        </a>
     </div>
 </div>
 
