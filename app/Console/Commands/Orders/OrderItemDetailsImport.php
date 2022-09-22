@@ -61,7 +61,7 @@ class OrderItemDetailsImport extends Command
                             AND ord.our_seller_identifier = '$seller_id' 
                             AND ord.order_status != 'Pending' 
                             AND ord.order_status != 'Canceled' 
-                            limit 10");
+                            limit 1");
 
                 foreach ($missing_order_id as $details) {
 
