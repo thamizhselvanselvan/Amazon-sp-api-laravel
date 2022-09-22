@@ -49,6 +49,8 @@ class OrdersCsvImport extends Command
         
         $file_path = "OrderFile/order.csv";
         $csv_data = Reader::createFromPath(Storage::path($file_path, 'r'));
+        $csv_data->setDelimiter(',');
+        $csv_data->setHeaderOffset(0);
         $orderItemDetails_table = [];
         $orders_table = [];
         $item_price = [];
@@ -60,48 +62,48 @@ class OrdersCsvImport extends Command
             if($key != 0){
 
                 $item_price = [
-                    'CurrencyCode' => $csv[7],
-                    'Amount' => $csv[8],
+                    'CurrencyCode' => $csv['Currency_code'],
+                    'Amount' => $csv['Item_price'],
                 ];
 
                 $shipping_address = [
-                    'Name'  =>  $csv[9],
-                    'AddressLine1'  =>  $csv[10],
-                    'AddressLine2'  =>  $csv[11],
-                    'City'  =>  $csv[12],
-                    'StateOrRegion' => $csv[13],
-                    'PostalCode' => $csv[14],
+                    'Name'  =>  $csv['Buyer_name'],
+                    'AddressLine1'  =>  $csv['Address_line_1'],
+                    'AddressLine2'  =>  $csv['Address_line_2'],
+                    'City'  =>  $csv['City'],
+                    'StateOrRegion' => $csv['State_or_region'],
+                    'PostalCode' => $csv['Postal_code'],
                     'CountryCode' => $country_code,
-                    'Phone' =>  $csv[16],
-                    'AddressType' => $csv[17],
+                    'Phone' =>  $csv['Phone'],
+                    'AddressType' => $csv['Address_type'],
                 ];
 
                 $shipping_address1 = [
-                    'Name'  =>  $csv[9],
-                    'AddressLine1'  =>  $csv[10],
-                    'AddressLine2'  =>  $csv[11],
-                    'City'  =>  $csv[12],
-                    'County' => $csv[15],
+                    'Name'  =>  $csv['Buyer_name'],
+                    'AddressLine1'  =>  $csv['Address_line_1'],
+                    'AddressLine2'  =>  $csv['Address_line_2'],
+                    'City'  =>  $csv['City'],
+                    'County' => $csv['County'],
                     'CountryCode' => $country_code,
-                    'Phone' =>  $csv[16],
-                    'AddressType' => $csv[17],
+                    'Phone' =>  $csv['Phone'],
+                    'AddressType' => $csv['Address_type'],
                 ];
 
                 $buyer_info = [
-                    'BuyerEmail' => $csv[32],
+                    'BuyerEmail' => $csv['Buyer_info'],
                 ];
 
                 $orderItemDetails_table [] = [
 
                     'seller_identifier' => $store_id,
                     'country'   => $country_code,
-                    'amazon_order_identifier'   => $csv[0],
-                    'asin'  => $csv[1],
-                    'seller_sku' => $csv[2],
-                    'order_item_identifier' => $csv[3],
-                    'title' => $csv[4],
-                    'quantity_ordered'  =>  $csv[5],
-                    'quantity_shipped'  =>  $csv[6],
+                    'amazon_order_identifier'   => $csv['Amazon_order_identifier'],
+                    'asin'  => $csv['ASIN'],
+                    'seller_sku' => $csv['Seller_sku'],
+                    'order_item_identifier' => $csv['Order_item_id'],
+                    'title' => $csv['Title'],
+                    'quantity_ordered'  =>  $csv['Quantity_ordered'],
+                    'quantity_shipped'  =>  $csv['Quantity_shipped'],
                     'item_price'    =>  json_encode($item_price),
                     'shipping_address'  =>  json_encode((($country_code == 'IN') ? $shipping_address : $shipping_address1)),
                     'created_at'    =>  now(),
@@ -112,23 +114,23 @@ class OrdersCsvImport extends Command
 
                     'our_seller_identifier' =>  $store_id,
                     'country'   =>  $country_code,
-                    'amazon_order_identifier'   =>  $csv[0],
-                    'purchase_date' =>  $csv[18],
-                    'order_status'  =>  $csv[19],
-                    'fulfillment_channel' =>  $csv[20],
-                    'sales_channel' =>  $csv[21],
-                    'payment_method_details' =>  $csv[22],
-                    'number_of_items_unshipped' => $csv[23],
-                    'marketplace_identifier'    =>  $csv[24],
-                    'ship_service_level'    =>  $csv[25],
+                    'amazon_order_identifier'   =>  $csv['Amazon_order_identifier'],
+                    'purchase_date' =>  $csv['Purchase_date'],
+                    'order_status'  =>  $csv['Order_status'],
+                    'fulfillment_channel' =>  $csv['Fulfillment_channel'],
+                    'sales_channel' =>  $csv['Sales_channel'],
+                    'payment_method_details' =>  $csv['Payment_method_identifier'],
+                    'number_of_items_unshipped' => $csv['Number_of_items_unshipped'],
+                    'marketplace_identifier'    =>  $csv['Marketplace_id'],
+                    'ship_service_level'    =>  $csv['Ship_service_level'],
                     'order_total'   =>  json_encode($item_price),
-                    'number_of_items_shipped' => $csv[6],
-                    'shipment_service_level_category'    =>  $csv[26],
-                    'order_type'    =>  $csv[27],
-                    'earliest_ship_date'    =>  $csv[28],
-                    'latest_ship_date'    =>  $csv[29],
-                    'earliest_delivery_date'    =>  $csv[30],
-                    'latest_delivery_date'    =>  $csv[31],
+                    'number_of_items_shipped' => $csv['Quantity_shipped'],
+                    'shipment_service_level_category'    =>  $csv['Shipment_service_level_category'],
+                    'order_type'    =>  $csv['Order_type'],
+                    'earliest_ship_date'    =>  $csv['Earliest_ship_date'],
+                    'latest_ship_date'    =>  $csv['Latest_ship_date'],
+                    'earliest_delivery_date'    =>  $csv['Earliest_delivery_date'],
+                    'latest_delivery_date'    =>  $csv['Latest_delivery_date'],
                     'shipping_address'  =>  json_encode((($country_code == 'IN') ? $shipping_address : $shipping_address1)),
                     'buyer_info'    =>  json_encode($buyer_info),
                     'created_at'    =>  now(),
@@ -136,20 +138,20 @@ class OrdersCsvImport extends Command
                 ];
             }
         }
-        OrderItemDetails::upsert($orderItemDetails_table, ['order_item_identifier'], [
+        OrderItemDetails::upsert($orderItemDetails_table, ['order_item_identifier_UNIQUE'], [
             'seller_identifier',
             'country',
             'amazon_order_identifier',
             'asin',
-             'seller_sku',
-             'title',
+            'seller_sku',
+            'title',
             'quantity_ordered',
             'quantity_shipped',
             'item_price',
             'shipping_address'
         ]);
 
-        Order::upsert($orders_table, ['amazon_order_identifier'], [
+        Order::upsert($orders_table, ['amazon_order_identifier_UNIQUE'], [
             'our_seller_identifier',
             'country', 
             'fulfillment_channel',
