@@ -64,6 +64,15 @@ class Order
         $next_token = NULL;
 
         $amazon_order_ids = $amazon_order_id ? [$amazon_order_id] : NULL;
+        $order_statuses = [
+            'Unshipped',
+            'PartiallyShipped',
+            'Shipped',
+            'InvoiceUnconfirmed',
+            'Canceled',
+            'Unfulfillable'
+        ];
+        $order_statuses = NULL;
         try {
             next_token_exist:
             $results = $apiInstance->getOrders(
@@ -72,7 +81,7 @@ class Order
                 $created_before = null,
                 $last_updated_after = null,
                 $last_updated_before = null,
-                $order_statuses = null,
+                $order_statuses,
                 $fulfillment_channels = null,
                 $payment_methods = null,
                 $buyer_email = null,
