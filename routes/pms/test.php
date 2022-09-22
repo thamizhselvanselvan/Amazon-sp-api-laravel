@@ -122,3 +122,5 @@ Route::get('pricing', 'TestController@PricingTest');
 
 Route::get('test/zoho', 'TestController@TestZoho');
 Route::get('test/get/zoho/data/{lead}', 'TestController@TestGetZoho');
+
+Route::get('test/smsa/booking', 'Testcontroller@SmsaBooking');
