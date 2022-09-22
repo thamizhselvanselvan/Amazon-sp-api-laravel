@@ -300,9 +300,9 @@
             </div>
             <div class="col-2">
                 @if (isset($item_tax->Amount))
-                <x-adminlte-input label="Tax Amount:" name="Amount" value="{{$item_tax->Amount}}" type="text" />
+                <x-adminlte-input label="Tax Amount:" name="tax_amount" value="{{$item_tax->Amount}}" type="text" />
                 @else
-                <x-adminlte-input label=" Tax Amount:" name="Amount" type="text" />
+                <x-adminlte-input label=" Tax Amount:" name="tax_amount" type="text" />
                 @endif
             </div>
             <div class="col-2">

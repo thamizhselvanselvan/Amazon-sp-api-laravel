@@ -20,4 +20,6 @@ Route::get('orders/aws/dashboard', 'Orders\OrdersDashboardController@AwsOrderDas
 
 Route::get('orders/details/list', 'Orders\OrderDetailsController@index')->name('orders.index');
 Route::post('orders/search/details', 'Orders\OrderDetailsController@search')->name('orders.search');
+
+
 Route::post('orders/details/update', 'Orders\OrderDetailsController@update')->name('orders.update');
