@@ -36,9 +36,16 @@
         <div class="col-2">
             <x-adminlte-input label="Enter OrderID:" name="orderid" id="orderid" type="text" placeholder="OrderID...." />
         </div>
-        <div class="col ">
+        <div class="col-1">
             <div style="margin-top: 2.0rem;">
                 <x-adminlte-button label="Search" theme="primary" id="ord_search" icon=" fas fa-search" type="submit" />
+            </div>
+        </div>
+        <div class="col-2">
+            <div style="margin-top: 2.0rem;">
+                <a href="/orders/csv/import">
+                    <x-adminlte-button label="Order Import" theme="info"  icon="fas fa-file-upload" type="button" />
+                </a>
             </div>
         </div>
     </div>
