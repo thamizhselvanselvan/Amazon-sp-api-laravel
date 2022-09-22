@@ -496,38 +496,4 @@ class labelManagementController extends Controller
         return response()->download($file_path);
     }
 
-    public function LabelOrderDump()
-    {
-        
-        $order_sellers = OrderSellerCredentials::select('seller_id', 'store_name')->get()->toArray();
-        // po($order_sellers);
-        // exit;
-        return view('label.order_dump', compact('order_sellers'));
-    }
-    
-    public function DumpOrdersFile(Request $request)
-    {
-        $request->validate([
-
-            'store_name' => 'required|not_in:0',
-            'order_csv' => 'required|mimes:txt,csv',
-        ]);
-
-        if(!$request->hasFile('order_csv')){
-            return back()->with('error', "Please upload file to import it to the database");
-        }
-
-        $file_path = "OrderFile/order.csv";
-        $csv_file = file_get_contents($request->order_csv);
-        $store_id = $request->store_name;
-        Storage::put($file_path, $csv_file);
-        commandExecFunc("mosh:order-csv-import ${store_id} ");
-
-        return back()->with('success', 'Orders file has been uploaded successfully !');
-    }
-
-    public function OrderCsvDownload()
-    {
-        return response()->download(public_path("template/order-csv.csv"));
-    }
 }

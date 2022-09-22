@@ -11,10 +11,7 @@
 </div>
 <div class="row">
     <div class="col">
-        <a href="{{ route('label.manage') }}" class="btn btn-primary btn-sm">
-            <i class="fas fa-long-arrow-alt-left"></i> Back
-        </a>
-        <a href=" {{route('download.order.csv')}} ">
+        <a href=" {{route('download.order.csv.template')}} ">
             <x-adminlte-button label="Download Order Template" theme="primary" icon="fas fa-file-download" class="btn-sm ml-2" />
         </a>
     </div>
@@ -55,7 +52,7 @@
             Please Select Order CSV.
         </x-adminlte-alert>
 
-        <form class="row" id="multi-file-upload" method="POST" action="{{ route('dump.orders.file') }}" accept-charset="utf-8" enctype="multipart/form-data">
+        <form class="row" id="multi-file-upload" method="POST" action="{{ route('import.orders.file') }}" accept-charset="utf-8" enctype="multipart/form-data">
             @csrf
             <div class="col-3"></div>
             <div class="col-6">
