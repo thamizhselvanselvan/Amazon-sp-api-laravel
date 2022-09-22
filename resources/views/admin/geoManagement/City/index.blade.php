@@ -40,7 +40,7 @@
         <div class="col">        
             <h2 class="mb-4">
                 <a href="/admin/geo/city/add">
-                    <x-adminlte-button label="Add City" theme="primary" icon="fas fa-plus" />
+                    <x-adminlte-button class="ml-2" label="Add City" theme="primary" icon="fas fa-plus" />
                 </a>
             </h2>
 

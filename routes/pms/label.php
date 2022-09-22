@@ -27,3 +27,6 @@ Route::get('label/zip/download', 'label\labelManagementController@zipDownload');
 Route::get('label/missing/address', 'label\labelManagementController@labelMissingAddress');
 Route::post('label/missing/address', 'label\labelManagementController@labelMissingAddressUpload');
 Route::get('label/missing/address/export', 'label\labelManagementController@labelMissingAddressExport')->name('label.missing.address.export');
+Route::get('label/orders/dump', 'label\labelManagementController@LabelOrderDump')->name('label.order.dump');
+Route::POST('label/dump/order/file', 'label\labelManagementController@DumpOrdersFile')->name('dump.orders.file');
+Route::get('label/order/csv/download','label\labelManagementController@OrderCsvDownload')->name('download.order.csv');
