@@ -190,9 +190,91 @@ class TestController extends Controller
   public function SmsaTracking($awb_no)
   {
 
-    //
+    return SmsaTrackingResponse($awb_no);
   }
 
+  public function SmsaBooking()
+  {
+    $awb_no = '';
+    $password = config('database.smsa_password');
+    $url = "http://track.smsaexpress.com/SECOM/SMSAwebService.asmx";
+
+    $xmlRequest =
+      '<?xml version="1.0" encoding="utf-8"?>
+    <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+      <soap:Body>
+        <addShip xmlns="http://track.smsaexpress.com/secom/">
+          <passKey>' . $password . '</passKey>
+          <refNo>1234567900</refNo>
+          <sentDate>22-09-2022</sentDate>
+          <idNo>1</idNo>
+          <cName>Test name</cName>
+          <cntry>India</cntry>
+          <cCity>Siwan</cCity>
+          <cZip></cZip>
+          <cPOBox></cPOBox>
+          <cMobile>8585852589</cMobile>
+          <cTel1></cTel1>
+          <cTel2></cTel2>
+          <cAddr1>bhagwanpur</cAddr1>
+          <cAddr2>bhagwanpur</cAddr2>
+          <shipType>DLV</shipType>
+          <PCs>1</PCs>
+          <cEmail>test@gmail.com</cEmail>
+          <carrValue></carrValue>
+          <carrCurr></carrCurr>
+          <codAmt>0</codAmt>
+          <weight>1</weight>
+          <custVal></custVal>
+          <custCurr></custCurr>
+          <insrAmt></insrAmt>
+          <insrCurr></insrCurr>
+          <itemDesc></itemDesc>
+          <sName>test shipper</sName>
+          <sContact>8585852356</sContact>
+          <sAddr1>bangalore</sAddr1>
+          <sAddr2></sAddr2>
+          <sCity>karnatak</sCity>
+          <sPhone>8585852356</sPhone>
+          <sCntry>India</sCntry>
+          <prefDelvDate></prefDelvDate>
+          <gpsPoints></gpsPoints>
+        </addShip>
+      </soap:Body>
+    </soap:Envelope>';
+
+    $xmlRequest = '<?xml version="1.0" encoding="utf-8"?>
+    <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+      <soap:Body>
+        <getPDFSino xmlns="http://track.smsaexpress.com/secom/">
+          <awbNo>Bom@7379</awbNo>
+          <passKey>290342178314</passKey>
+        </getPDFSino>
+      </soap:Body>
+    </soap:Envelope>';
+    $headers = array(
+      'Content-type: text/xml',
+    );
+
+    $ch = curl_init();
+    //setting the curl options
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlRequest);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_VERBOSE, 0);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+    $data = curl_exec($ch);
+
+    return ($data);
+    $plainXML = mungXML(trim($data));
+    $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+    dd($arrayResult);
+    //
+  }
   public function BombinoTracking($awb_no)
   {
 
