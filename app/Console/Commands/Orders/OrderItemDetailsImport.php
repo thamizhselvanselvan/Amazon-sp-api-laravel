@@ -58,7 +58,10 @@ class OrderItemDetailsImport extends Command
                         orderitemdetails as oids on ord.amazon_order_identifier = oids.amazon_order_identifier 
                     where
                         oids.amazon_order_identifier IS NULL 
-                            AND ord.our_seller_identifier = '$seller_id' limit 1");
+                            AND ord.our_seller_identifier = '$seller_id' 
+                            AND ord.order_status != 'Pending' 
+                            AND ord.order_status != 'Canceled' 
+                            limit 10");
 
                 foreach ($missing_order_id as $details) {
 

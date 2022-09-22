@@ -115,7 +115,7 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
     curl_close($curl);
     echo $response;
 });
-Route::get('export_catalog', 'TestController@ExportCatalog');
+Route::get('test/order', 'TestController@testOrderAPI');
 Route::get('search_catalog/{country_code}', 'TestController@searchCatalog');
 
 Route::get('pricing', 'TestController@PricingTest');
