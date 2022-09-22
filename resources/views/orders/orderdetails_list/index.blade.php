@@ -46,7 +46,7 @@
 
 
 
-<form action="" method="post" id="update_form">
+<form action="{{ route('orders.update') }}" method="post" id="update_form">
     @csrf
     <div class="container-fluid">
         <div class="row justify-content-center">
@@ -300,9 +300,9 @@
             </div>
             <div class="col-2">
                 @if (isset($item_tax->Amount))
-                <x-adminlte-input label="Tax Amount:" name="Amount" value="{{$item_tax->Amount}}" type="text" />
+                <x-adminlte-input label="Tax Amount:" name="tax_amount" value="{{$item_tax->Amount}}" type="text" />
                 @else
-                <x-adminlte-input label=" Tax Amount:" name="Amount" type="text" />
+                <x-adminlte-input label=" Tax Amount:" name="tax_amount" type="text" />
                 @endif
             </div>
             <div class="col-2">
@@ -325,6 +325,7 @@
         let $ordervalue = $('#orderid').val();
         if ($ordervalue == "") {
             alert("Enter OrderID");
+            return false;
         } else {
             //    $("#update_form").show();
         }

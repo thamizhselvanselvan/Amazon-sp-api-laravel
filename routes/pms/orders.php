@@ -17,9 +17,11 @@ Route::get('orders/item/dashboard', 'Orders\OrdersDashboardController@OrderItemD
 Route::get('orders/aws/dashboard', 'Orders\OrdersDashboardController@AwsOrderDashboard')->name('order.aws.dashboard');
 
 
-Route::resource('orders/details/list', 'Orders\OrderDetailsController');
-Route::get('orders/details/search', 'Orders\OrderDetailsController@index')->name('orders.index');
+
+Route::get('orders/details/list', 'Orders\OrderDetailsController@index')->name('orders.index');
 Route::post('orders/search/details', 'Orders\OrderDetailsController@search')->name('orders.search');
+
+
 Route::post('orders/details/update', 'Orders\OrderDetailsController@update')->name('orders.update');
 
 Route::get('orders/csv/import', 'Orders\OrdersDashboardController@OrderCsvImport')->name('orders.csv.import');
