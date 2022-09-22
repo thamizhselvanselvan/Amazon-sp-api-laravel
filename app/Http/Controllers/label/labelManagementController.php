@@ -24,6 +24,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use App\Models\order\OrderSellerCredentials;
 use App\Services\SP_API\API\Order\missingOrder;
+use Carbon\Carbon;
 use GuzzleHttp\Promise\Create;
 use League\Csv\Reader;
 use League\Csv\Writer;
@@ -482,13 +483,17 @@ class labelManagementController extends Controller
 
         foreach ($missing_address as $details) {
 
+            $date = $details->purchase_date;
+            $date = Carbon::parse($date)->format('Y-m-d');
             $tem_data = [
                 $details->amazon_order_identifier,
                 $details->store_name . ' [ ' . $details->country_code . ' ]',
-                $details->purchase_date
+                $date
             ];
             $csv->insertOne($tem_data);
         }
+
+
 
         return response()->download($file_path);
     }
