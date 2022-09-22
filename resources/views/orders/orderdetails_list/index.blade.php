@@ -45,7 +45,6 @@
 </form>
 
 
-
 <form action="{{ route('orders.update') }}" method="post" id="update_form">
     @csrf
     <div class="container-fluid">
@@ -179,9 +178,9 @@
             </div>
             <div class="col-2">
                 @if (isset($data[0]->unship))
-                <x-adminlte-input label="UnShip:" name="unship" value="{{$data[0]->unship}}" type="text" />
+                <x-adminlte-input label="UnShiped:" name="unship" value="{{$data[0]->unship}}" type="text" />
                 @else
-                <x-adminlte-input label=" UnShip:" name="unship" type="text" />
+                <x-adminlte-input label=" UnShiped:" name="unship" type="text" />
                 @endif
             </div>
             <div class="col-2">
@@ -303,6 +302,13 @@
                 <x-adminlte-input label="Tax Amount:" name="tax_amount" value="{{$item_tax->Amount}}" type="text" />
                 @else
                 <x-adminlte-input label=" Tax Amount:" name="tax_amount" type="text" />
+                @endif
+            </div>
+            <div class="col-2">
+                @if (isset($item_tax->CurrencyCode))
+                <x-adminlte-input label="Tax CurrencyCode:" name="rrencyCode" value="{{$item_tax->CurrencyCode}}" type="text" />
+                @else
+                <x-adminlte-input label=" Tax CurrencyCode:" name="rrencyCode" type="text" />
                 @endif
             </div>
             <div class="col-2">
