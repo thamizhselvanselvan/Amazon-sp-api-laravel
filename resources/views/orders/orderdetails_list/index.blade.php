@@ -46,7 +46,7 @@
 
 
 
-<form action="" method="post" id="update_form">
+<form action="{{ route('orders.update') }}" method="post" id="update_form">
     @csrf
     <div class="container-fluid">
         <div class="row justify-content-center">
@@ -325,6 +325,7 @@
         let $ordervalue = $('#orderid').val();
         if ($ordervalue == "") {
             alert("Enter OrderID");
+            return false;
         } else {
             //    $("#update_form").show();
         }
