@@ -39,7 +39,7 @@
         <div class="col">        
             <h2 class="mb-4">
                 <a href="/admin/geo/state/add">
-                    <x-adminlte-button label="Add State" theme="primary" icon="fas fa-plus" />
+                    <x-adminlte-button class="ml-2" label="Add State" theme="primary" icon="fas fa-plus" />
                 </a>
             </h2>
             <table class="table table-bordered yajra-datatable table-striped">
