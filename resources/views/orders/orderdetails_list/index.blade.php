@@ -36,14 +36,20 @@
         <div class="col-2">
             <x-adminlte-input label="Enter OrderID:" name="orderid" id="orderid" type="text" placeholder="OrderID...." />
         </div>
-        <div class="col ">
+        <div class="col-1">
             <div style="margin-top: 2.0rem;">
                 <x-adminlte-button label="Search" theme="primary" id="ord_search" icon=" fas fa-search" type="submit" />
             </div>
         </div>
+        <div class="col-2">
+            <div style="margin-top: 2.0rem;">
+                <a href="/orders/csv/import">
+                    <x-adminlte-button label="Order Import" theme="info" icon="fas fa-file-upload" type="button" />
+                </a>
+            </div>
+        </div>
     </div>
 </form>
-
 
 
 <form action="{{ route('orders.update') }}" method="post" id="update_form">
@@ -52,16 +58,16 @@
         <div class="row justify-content-center">
             <div class="col-2">
                 @if (isset($data[0]->amazon_order_identifier))
-                <x-adminlte-input label="amazon_order_identifier:" name="amazon_order_identifier" value="{{$data[0]->amazon_order_identifier}}" type="text" />
+                <x-adminlte-input label="Amazon Order Identifier:" name="amazon_order_identifier" id="identifier" value="{{$data[0]->amazon_order_identifier}}" type="text" />
                 @else
-                <x-adminlte-input label="amazon_order_identifier:" name="amazon_order_identifier" type="text" />
+                <x-adminlte-input label="Amazon Order Identifier:" name="amazon_order_identifier" id="identifier" type="text" />
                 @endif
             </div>
             <div class="col-2">
                 @if (isset($data[0]->order_item_identifier))
-                <x-adminlte-input label="order Item Identifier:" name="order_item_identifier" value="{{$data[0]->order_item_identifier}}" type="text" />
+                <x-adminlte-input label="Order Item Identifier:" name="order_item_identifier" value="{{$data[0]->order_item_identifier}}" type="text" />
                 @else
-                <x-adminlte-input label="order Item Identifier:" name="order_item_identifier" type="text" />
+                <x-adminlte-input label="Order Item Identifier:" name="order_item_identifier" type="text" />
                 @endif
             </div>
             <div class="col-2">
@@ -87,9 +93,9 @@
             </div>
             <div class="col-2">
                 @if (isset($data[0]->title))
-                <x-adminlte-input label="Product name:" name="title" value="{{$data[0]->title}}" type="text" />
+                <x-adminlte-input label="Product Name:" name="title" value="{{$data[0]->title}}" type="text" />
                 @else
-                <x-adminlte-input label="Product name:" name="title" type="text" />
+                <x-adminlte-input label="Product Name:" name="title" type="text" />
                 @endif
             </div>
 
@@ -163,8 +169,8 @@
                 @endif
             </div>
             <div class="col-2">
-                @if (isset($data[0]->ordqty))
-                <x-adminlte-input label="Quantity Orderd:" name="qty" value="{{$data[0]->ordqty}}" type="text" />
+                @if (isset($data[0]->quantity_ordered))
+                <x-adminlte-input label="Quantity Orderd:" name="qty" value="{{$data[0]->quantity_ordered}}" type="text" />
                 @else
                 <x-adminlte-input label="Quantity Orderd:" name="qty" type="text" />
 
@@ -172,16 +178,16 @@
             </div>
             <div class="col-2">
                 @if (isset($data[0]->quantity_shipped))
-                <x-adminlte-input label="Quantity shipped:" name="quantity_shipped" value="{{$data[0]->quantity_shipped}}" type="text" />
+                <x-adminlte-input label="Quantity Shipped:" name="quantity_shipped" value="{{$data[0]->quantity_shipped}}" type="text" />
                 @else
-                <x-adminlte-input label="Quantity shipped:" name="quantity_shipped" type="text" />
+                <x-adminlte-input label="Quantity Shipped:" name="quantity_shipped" type="text" />
                 @endif
             </div>
             <div class="col-2">
                 @if (isset($data[0]->unship))
-                <x-adminlte-input label="UnShip:" name="unship" value="{{$data[0]->unship}}" type="text" />
+                <x-adminlte-input label="UnShiped:" name="unship" value="{{$data[0]->unship}}" type="text" />
                 @else
-                <x-adminlte-input label=" UnShip:" name="unship" type="text" />
+                <x-adminlte-input label=" UnShiped:" name="unship" type="text" />
                 @endif
             </div>
             <div class="col-2">
@@ -286,9 +292,9 @@
         <div class="row">
             <div class="col-2">
                 @if (isset($email_used->BuyerEmail))
-                <x-adminlte-input label="Buyer Email." name="BuyerEmail" value="{{$email_used->BuyerEmail}}" type="text" />
+                <x-adminlte-input label="Buyer Email:" name="BuyerEmail" value="{{$email_used->BuyerEmail}}" type="text" />
                 @else
-                <x-adminlte-input label="Buyer Email." name="BuyerEmail" type="text" />
+                <x-adminlte-input label="Buyer Email:" name="BuyerEmail" type="text" />
                 @endif
             </div>
             <div class="col-2">
@@ -306,8 +312,15 @@
                 @endif
             </div>
             <div class="col-2">
+                @if (isset($item_tax->CurrencyCode))
+                <x-adminlte-input label="Tax CurrencyCode:" name="rrencyCode" value="{{$item_tax->CurrencyCode}}" type="text" />
+                @else
+                <x-adminlte-input label=" Tax CurrencyCode:" name="rrencyCode" type="text" />
+                @endif
+            </div>
+            <div class="col-2">
                 <div style="margin-top: 2.0rem;">
-                    <x-adminlte-button label="Update" theme="success" class="label.update" icon="fas fa-save" type="submit" />
+                    <x-adminlte-button label="Update" theme="success" id="update" class="label.update" icon="fas fa-save" type="submit" />
                 </div>
             </div>
         </div>
@@ -325,6 +338,16 @@
         let $ordervalue = $('#orderid').val();
         if ($ordervalue == "") {
             alert("Enter OrderID");
+            return false;
+        } else {
+            //    $("#update_form").show();
+        }
+    });
+    $("#update").on('click', function(e) {
+
+        let $orderid = $('#identifier').val();
+        if ($orderid == "") {
+            alert("Search The Order To Be Updated");
             return false;
         } else {
             //    $("#update_form").show();

@@ -589,13 +589,6 @@ return [
                     ],
                 ],
                 [
-                    'text' => 'Order Import',
-                    'can' => ['Admin'],
-                    'icon' => 'fas fa-file-upload',
-                    'url' => "orders/csv/import",
-
-                ],
-                [
                     'text' => 'Order Details',
                     'can' => ['Admin'],
                     'icon' => 'fa fa-search',
