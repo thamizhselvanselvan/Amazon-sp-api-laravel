@@ -6,7 +6,7 @@ echo "GIT hook started"
 
 composer install --ignore-platform-reqs
 
-php artisan self-diagnosis
+#php artisan self-diagnosis
 
 php artisan migrate
 php artisan cache:clear
