@@ -192,7 +192,9 @@ return [
                 ],
             ],
             'write' => [
-                'host' => [],
+                'host' => [
+                    env('AWS_DB_HOST', '127.0.0.1')
+                ],
             ],
             'port' => env('AWS_DB_PORT', '3306'),
             'database' => env('AWS_DB_DATABASE', ''),

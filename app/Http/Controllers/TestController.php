@@ -30,6 +30,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use App\Services\Catalog\PriceConversion;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
+use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetails;
 use App\Services\Zoho\ZohoOrder;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use SellingPartnerApi\Api\ProductPricingApi;
@@ -575,5 +576,15 @@ class TestController extends Controller
   {
 
     (new ZohoOrder())->zohoOrderDetails($lead);
+  }
+
+  public function TestAmazonFeed()
+  {
+
+    (new FeedOrderDetails())->FeedOrderTrackingNo();
+  }
+
+  public function testFeed()
+  {
   }
 }
