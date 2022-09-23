@@ -194,15 +194,6 @@ class AsinSourceController extends Controller
         return response()->download($file_path);
     }
 
-    public function getExchangeRate()
-    {
-        $records = AsinSource::select('asin', 'source')->get();
-        foreach ($records as $record) {
-            $asin = $record->asin;
-            $source = $record->source;
-        }
-    }
-
     public function AsinTruncate(Request $request)
     {
         $sources = $request->source;
@@ -213,5 +204,29 @@ class AsinSourceController extends Controller
             $table_name->truncate();
         }
         return redirect('catalog/asin-source')->with('success', 'Table Truncate successfully');
+    }
+
+    public function CatalogSearch(Request $request)
+    {
+        $request->validate([
+            'source' => 'required|in:IN,US',
+            'catalog_asins' => 'required',
+        ]);
+        $country_code = strtolower($request->source);
+        $asins = array_unique(preg_split('/[\r\n| |:|,|.]/', $request->catalog_asins, -1, PREG_SPLIT_NO_EMPTY));
+        $pricing = ($country_code == 'in') ? 'price.in_price, price.ind_to_uae, price.ind_to_sg, price.ind_to_sa' : ' us_price, usa_to_uae, usa_to_sg ' ;
+        
+        foreach($asins as $key => $asin)
+        {
+            $catalogs [] = DB::connection('catalog')->select("SELECT cat.asin, cat.seller_id, cat.source, cat.height, cat.length, cat.width, cat.unit, cat.weight, cat.weight_unit, cat.brand, cat.manufacturer,
+            ${pricing}
+            FROM catalognew${country_code}s  as cat
+            JOIN pricing_${country_code}s as price
+            ON cat.asin = price.asin
+            where cat.asin = '$asin'
+            ");
+        
+        }
+        return response()->json([$catalogs]);
     }
 }

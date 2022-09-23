@@ -3,7 +3,13 @@
 @section('title', 'ASIN Source')
 
 @section('css')
-<link rel="stylesheet" href="/css/styles.css">
+<!-- <link rel="stylesheet" href="/css/styles.css"> -->
+<style type="text/css">
+    #error{
+        margin-top : -20px;
+    }
+</style>
+
 @stop
 
 @section('content_header')
@@ -31,10 +37,8 @@
                     id="exportUniversalTextiles" class="btn-sm" />
             </a>
 
-            <!-- <a href="#"> -->
-                <x-adminlte-button label="Asin Truncate" theme="primary" icon="fas fa-trash text-danger"
-                 class="btn-sm" data-toggle="modal" data-target="#asinTruncate"></x-adminlte-button>
-            <!-- </a> -->
+            <x-adminlte-button label="Asin Truncate" theme="primary" icon="fas fa-trash text-danger"
+                class="btn-sm" data-toggle="modal" data-target="#asinTruncate"></x-adminlte-button>
 
             <div class="modal fade" id="asinTruncate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
@@ -72,32 +76,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Asin Download</h5>
-                            <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-
-                            <a href="{{ route('catalog.download.asinMaster') }}">
-                                <h6>Download ASIN </h6>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-            </a>
-            <!-- <a href="{{ route('catalog.softDelete.view') }}">
-                <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" class="btn-sm" />
-            </a> -->
         </h2>
     </div>
 </div>
@@ -116,98 +94,144 @@
             </div>
             @endif
         </div>
-
-        <!-- <table class="table table-bordered yajra-datatable table-striped text-center table-sm">
-            <thead>
-                <tr class="length">
-                    <th>S/N</th>
-                    <th>ASIN</th>
-                    <th>Source</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table> -->
     </div>
+</div>
+<div class="row">
+    <div class="col-2"></div>
+    <div class="col-8 ">
+        <div class="card ">
+            <div class="card-body ">
+                <label for="Select Source" class ="mt-0">Select Source</label><br>
+                <div class="row ">
+                    <div class="col-1">
+                        <input type="radio" class="Asin-source" name="source" value="IN"  />
+                        <label for="IN">IN</label>
+                    </div>
+                    <div class="col-1">
+                        <input type="radio" class="Asin-source" name="source" value="US"  />
+                        <label for="US">US</label>
+                    </div>
+                    
+                </div>
+                <x-adminlte-textarea label="Search Catalog" type="text-area" class="Asins" name="catalog_asins" placeholder="Enter Asin" rows="4" />
+                <b><p class="text-danger" id="error"></p></b>
+                <x-adminlte-button label="Search" type="submit" theme="primary" icon="fas fa-search text-danger" class="search-catalog btn-sm float-right mt-2 " />
+            </div>
+        </div>
+    </div>
+    <div class="col-2"></div>
+</div>
+<div class="row d-none display-data">
+    <table class="table table-bordered yajra-datatable table-striped text-center table-sm ">
+        <thead class="thead">
+            <!-- <tr class="bg-info">
+                <th>Seller Id</th>
+                <th>ASIN</th>
+                <th>Source</th>
+                <th>Height</th>
+                <th>Width</th>
+                <th>Length</th>
+                <th>Unit</th>
+                <th>Weight</th>
+                <th>Weight Unit</th>
+                <th>Brand</th>
+                <th>Manufacturer</th>
+                <th>Price</th>
+            </tr> -->
+        </thead>
+        <tbody class="search-data">
+        </tbody>
+    </table>
 </div>
 @stop
 
 @section('js')
 <script type="text/javascript">
+    
+    $('.search-catalog').on('click', function(){
+        
+        $('.display-data').addClass('d-block');
+        let catalog_asins = $('.Asins').val();
+        let source = $('input[name="source"]:checked').val();
 
-$(function() {
-    yajra_datatable();
-});
+        if(!$('input[name="source"]:checked').val() ){
+            alert('Please choose source');
+            return false;
+        }
+        else if(catalog_asins == ''){
+            document.getElementById('error').innerHTML = 'Please enter Asin *';
+            $('.thead').empty();
+            $('.search-data').empty();
 
-function yajra_datatable() {
+            return false;
+        }else{
+            document.getElementById('error').innerHTML = '';
+            $.ajax({
+                method: 'post',
+                url: "{{ route('catalog.asin.search') }}",
+                data: {
+                    "catalog_asins" : catalog_asins,
+                    "source": source,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(result) {
+                    let data = '';
+                    let head = "<tr class='bg-info'>";
+                    $('.thead').empty();
+                    $.each(result[0][0], function(key3, result){
+                        $.each(result, function(key4, header){
+                            head += " <td>"+ key4 +"</td> ";
+                        })
+                    });
 
-    // let yajra_table = $('.yajra-datatable').DataTable({
-    //     processing: true,
-    //     serverSide: true,
-    //     destroy: true,
-    //     pageLength: 50,
-    //     ajax: "{{ url('catalog/asin-source') }}",
-    //     columns: [{
-    //             data: 'id',
-    //             name: 'id',
-    //             orderable: false,
-    //             searchable: false
-    //         },
-    //         {
-    //             data: 'asin',
-    //             name: 'asin',
-    //             orderable: false
-    //         },
-    //         {
-    //             data: 'source',
-    //             name: 'source',
-    //             orderable: false
-    //         },
-    //         {
-    //             data: 'action',
-    //             name: 'action',
-    //             orderable: false,
-    //             searchable: false
-    //         },
+                    $.each(result, function(key, result){
+                        $.each(result, function(key2, record){
+                            data += '<tr>';
+                            $.each(record[0], function(key5, catalog_data){
+                               
+                                data += "<td>"+catalog_data+"</td>";
+                            });
+                            data += '</tr>';
+                        });
+                    });
+                    $('.thead').append(head);
+                    $('.search-data').html(data);
+                },
+            });
+        }
+ 
+    });
+    $(document).on('click', ".delete", function(e) {
+        e.preventDefault();
+        let bool = confirm('Are you sure you want to push this asin to Bin?');
 
-    //     ]
-    // });
-}
+        if (!bool) {
+            return false;
+        }
+        let self = $(this);
+        let id = self.attr('data-id');
+        self.prop('disable', true);
+        $.ajax({
+            method: 'post',
+            url: '/catalog/remove/asin/' + id,
+            data: {
+                "_token": "{{ csrf_token() }}",
+            },
+            response: 'json',
+            success: function(response) {
+                alert('Delete successfully');
+                yajra_datatable();
+            },
+        });
 
-$(document).on('click', ".delete", function(e) {
-    e.preventDefault();
-    let bool = confirm('Are you sure you want to push this asin to Bin?');
-
-    if (!bool) {
-        return false;
-    }
-    let self = $(this);
-    let id = self.attr('data-id');
-    self.prop('disable', true);
-    $.ajax({
-        method: 'post',
-        url: '/catalog/remove/asin/' + id,
-        data: {
-            "_token": "{{ csrf_token() }}",
-        },
-        response: 'json',
-        success: function(response) {
-            alert('Delete successfully');
-            // location.reload()
-            yajra_datatable();
-        },
     });
 
-});
-
-$(document).on('click', '.truncate', function(){
-    let bool = confirm('Are you sure you want to truncate this selected table?');
-    if (!bool) {
-        return false;
-    }
-});
-
+    $(document).on('click', '.truncate', function(){
+        let bool = confirm('Are you sure you want to truncate this selected table?');
+        if (!bool) {
+            return false;
+        }
+    });
 
 </script>
 @stop
