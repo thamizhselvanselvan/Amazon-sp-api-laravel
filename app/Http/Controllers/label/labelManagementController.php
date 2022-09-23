@@ -493,8 +493,7 @@ class labelManagementController extends Controller
             $csv->insertOne($tem_data);
         }
 
-
-
         return response()->download($file_path);
     }
+
 }

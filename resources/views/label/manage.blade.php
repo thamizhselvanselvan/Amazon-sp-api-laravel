@@ -39,6 +39,7 @@
         <a href="missing/address">
             <x-adminlte-button label="Upload Missing Address" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
         </a>
+
     </h2>
 </div>
 @stop
