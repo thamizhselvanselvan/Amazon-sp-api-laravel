@@ -40,6 +40,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('mosh:Catalog-price-import-bb-us')->everyMinute()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
             $schedule->command('mosh:catalog-dashboard-file')->everyThirtyMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
 
+            $schedule->command('mosh:feed-tracking-details-to-amazon')->everyFiveMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
             //$schedule->command('mosh:seller-asin-get-pricing')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
         }
 

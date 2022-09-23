@@ -10,7 +10,12 @@
     </div>
 </div>
 <div class="row">
-    <div class="col">
+    <div class="col-1">
+        <a href="{{route('orders.search.index')}}" class="btn btn-primary btn-sm">
+            <i class="fas fa-long-arrow-alt-left"></i> Back
+        </a>
+    </div>
+    <div class="col-2">
         <a href=" {{route('download.order.csv.template')}} ">
             <x-adminlte-button label="Download Order Template" theme="primary" icon="fas fa-file-download" class="btn-sm ml-2" />
         </a>
@@ -56,11 +61,11 @@
             @csrf
             <div class="col-3"></div>
             <div class="col-6">
-                
+
                 <x-adminlte-select name="store_name" id="store" class='store' label="Select Store">
                     <option value="0">Select Store</option>
                     @foreach ($order_sellers as $seller)
-                        <option value="{{ $seller['seller_id'] }}"> {{$seller['store_name']}} </option>
+                    <option value="{{ $seller['seller_id'] }}"> {{$seller['store_name']}} </option>
                     @endforeach
                 </x-adminlte-select>
 
@@ -80,6 +85,6 @@
 
 @section('js')
 <script>
-    
+
 </script>
 @stop
