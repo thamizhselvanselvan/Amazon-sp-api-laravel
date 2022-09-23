@@ -30,6 +30,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use App\Services\Catalog\PriceConversion;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
+use App\Services\Zoho\ZohoOrder;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use SellingPartnerApi\Api\ProductPricingApi;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
@@ -98,7 +99,7 @@ class TestController extends Controller
   public function getSellerOrder($seller_id, $country_code)
   {
     echo "Order List";
-
+    //new media new token
     $token = NULL;
     $config = $this->config($seller_id, $country_code, $token);
 
@@ -108,20 +109,23 @@ class TestController extends Controller
     $apiInstance = new OrdersV0Api($config);
     $startTime = Carbon::now()->subDays(5)->toISOString();
     $createdAfter = $startTime;
-    $max_results_per_page = 1;
+    $max_results_per_page = 100;
 
     $next_token = 'Nz0eSs51UK+aJqJYLDm0ZAmQazDrhw3C42KwwQyR9e/L6UHaBK1qlqaqZ6TcljqaxqXyQLkGMBs8VhF73Xgy+6+TtJlDlUR56p8S6xVccYWSkB8HgnURuo2teiazVgkyInTAy+XKVmRZBY+oaVuycwQFure81U/CSOnRa9h35auYeATp5zAOhzgKA0lggjg0f2GLmUGyr9UGnxD0RJmrryegoU0IPZxXuDhY0Mlg+b9axYTTEsJ5Nkzyjn+QzAQYMBO/reDY2s8X+G/WxAkd4Fo++pAnAbakpMzWaPWrWIu7EbcPNB+bB6Hzx3wYc8HkVHr6/v7aqUE6gx0WW4bluJnycMd/XRCQ3VVGVsnIXDuwRGD7sGc+vvNIww18kAHE3toQYgtSWoW8GvFjc507ZCZ4zjikEy7+rToAsYN83sHgkdZPXhcRcM4Geo6I62Nv5h8v0uN9IxQ=';
     // $next_token = iconv("UTF-8", "UTF-8//IGNORE", $next_token);
     $amazon_order_ids = NULL;
-    // $next_token = NULL;
+    $next_token = NULL;
+    $order_statuses = null;
+    $order_statuses = ['Unshipped', 'PartiallyShipped', 'Shipped', 'InvoiceUnconfirmed', 'Canceled', 'Unfulfillable'];
 
+    // $order_statuses = ['Pending'];
     $order = $apiInstance->getOrders(
       $marketplace_ids,
       $createdAfter,
       $created_before = null,
       $last_updated_after = null,
       $last_updated_before = null,
-      $order_statuses = null,
+      $order_statuses,
       $fulfillment_channels = null,
       $payment_methods = null,
       $buyer_email = null,
@@ -142,8 +146,12 @@ class TestController extends Controller
 
   public function getOrder($order_id, $seller_id, $country_code)
   {
+    //new media new token
     $token = NULL;
+    // $token = 'Atzr|IwEBIN0kK1fNcVINCWD922Ed_hlgmfFbpJnumV8-L4FctK1RJJvTFx2mXymHIfN3G5TQIGg2lukH-p-fGbTA_7g7h_8SAyfmQVYBq83Gev7WtGagNoDM4mfqAxhOHU-wD3FDyfJomA0P5iAASpb0ecBz72FfmoamkFI4pTbuAwB-G7LjvW-ITkDjgZQl8lnsgCI6J5EN-4e8K9eJrAU5p9LMFjPfk8vTqiRAJx6YKNQvNTtPbm3HXmk3AnoogG44IOVazzad7D0VUOr6KQNSQnmx3aN9R2UBgt67KM2YPugDteKKygm9D0JomfmtlY-f3y0Eox4';
+
     $config = $this->config($seller_id, $country_code, $token);
+
     $marketplace_ids = $this->marketplace_id($country_code);
     $marketplace_ids = [$marketplace_ids];
 
@@ -152,11 +160,13 @@ class TestController extends Controller
     $createdAfter = $startTime;
     $max_results_per_page = 100;
 
+    // $order_statuses = ['Unshipped', 'PartiallyShipped', 'Shipped', 'InvoiceUnconfirmed', 'Canceled', 'Unfulfillable'];
+    $order_statuses = null;
     $next_token = NULL;
     $amazon_order_ids = [$order_id];
     echo '<hr>';
     echo 'Order Details';
-    $order = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses = null, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, null, $next_token, $amazon_order_ids, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
+    $order = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, null, $next_token, $amazon_order_ids, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
     po($order);
 
     echo '<hr>';
@@ -358,96 +368,33 @@ class TestController extends Controller
     return (new PriceConversion())->INDToSA($weight, $bb_price);
   }
 
-  public function ExportCatalog()
+  public function testOrderAPI()
   {
+    $seller_id = 35;
+    $country_code = 'AE';
+    $order_id = '404-2296365-0046701';
+    // 406-8657142-1805957
+    $token = NULL;
+    $config = $this->config($seller_id, $country_code, $token);
+    $marketplace_ids = $this->marketplace_id($country_code);
+    $marketplace_ids = [$marketplace_ids];
 
-    $columns = DB::connection('catalog')->select("SHOW COLUMNS from cataloguss");
-    $header = [];
-    foreach ($columns as $columns_name) {
 
-      $header[] = $columns_name->Field;
-    }
-    natsort($header);
+    $apiInstance = new OrdersV0Api($config);
+    $startTime = Carbon::now()->subDays(30)->toISOString();
+    $createdAfter = $startTime;
+    $max_results_per_page = 100;
 
-    dd($header);
-    $db_header = implode(',', $header);
-
-    $data = DB::connection('catalog')->select("SELECT $db_header from cataloguss");
-
-    $file_path = 'catalog/US_catalog.csv';
-    if (!Storage::exists($file_path)) {
-      Storage::put($file_path, '');
-    }
-
-    $writer = Writer::createFromPath(Storage::path($file_path, 'w'));
-
-    $data = array_map(function ($datas) {
-      return (array) $datas;
-    }, $data);
-
-    $writer->insertOne($header);
-    $writer->insertAll($data);
-
-    return Storage::download($file_path);
-    dd($data);
-    //
+    $next_token = NULL;
+    $amazon_order_ids = [$order_id];
+    echo '<hr>';
+    echo 'Order Details';
+    $order = $apiInstance->getOrderItems($order_id)->getPayload();
+    po($order);
   }
 
   public function searchCatalog($country_code)
   {
-    $token = NULL;
-    $aws_id = '';
-    $asins = [
-      'B09TB8DDK5',
-      'B09V82KP32',
-      'B09V82LJQL',
-      'B09V82LS5S',
-      'B09V82M1CD',
-      'B09V82P512',
-
-    ];
-    $country_code = 'IN';
-
-    $identifiers_type = 'ASIN';
-    $incdata = ['attributes', 'dimensions', 'productTypes', 'images', 'summaries'];
-
-    $mws_region = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->first();
-    $token = $mws_region['aws_verified']['auth_code'];
-
-    $config =   $this->config($aws_id, $country_code, $token);
-    $apiInstance = new CatalogItemsV20220401Api($config);
-
-    $marketplace_id = [$this->marketplace_id($country_code)];
-
-    $page_size = 10;
-    $locale = null;
-    $seller_id = null;
-    $keywords = null;
-    $brand_names = null;
-    $classification_ids = null;
-    $page_size = 20;
-    $page_token = null;
-    $keywords_locale = null;
-
-    $result = $apiInstance->searchCatalogItems(
-      $marketplace_id,
-      $asins,
-      $identifiers_type,
-      $incdata,
-      $locale,
-      $seller_id,
-      $keywords,
-      $brand_names,
-      $classification_ids,
-      $page_size,
-      $page_token,
-      $keywords_locale
-    );
-    // $result =
-    //   $apiInstance->searchCatalogItems($marketplace_id, $asins, $identifiers_type, $incdata, $page_size);
-    $result = (array) json_decode(json_encode($result));
-
-    po($result);
   }
 
   public function PricingTest()
@@ -536,5 +483,15 @@ class TestController extends Controller
 
       $destination_model->where('id', '>', '0')->update(['price_status' => '0']);
     }
+  }
+
+  public function TestZoho()
+  {
+    (new ZohoOrder())->getOrderDetails();
+  }
+  public function TestGetZoho($lead)
+  {
+
+    (new ZohoOrder())->zohoOrderDetails($lead);
   }
 }

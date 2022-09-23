@@ -269,9 +269,28 @@ return [
                     'text' => 'Geo Master',
                     'url' => 'admin/geo',
                     'icon' => 'fas fa-globe-asia',
-                    'can' =>  ['Admin']
-
+                    'can' =>  ['Admin'],
+                    'submenu' => [
+                        [
+                            'text' => 'Country',
+                            'url' => 'admin/geo/country',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin'],
+                        ],
+                        [
+                            'text' => 'State',
+                            'url' => 'admin/geo/state',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin'],
+                        ],
+                        [
+                            'text' => 'City',
+                            'url' => 'admin/geo/city',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin'],
+                        ],
                 ],
+            ],
                 [
                     'text' => 'Company Master',
                     'url' => 'company',

@@ -12,87 +12,6 @@ use Illuminate\Support\Facades\Response;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
 use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
-
-Route::get('in', function () {
-    // $file_path = public_path('template/Catalog-Asin-Template.csv');
-    // return response()->download($file_path);
-
-    $path = Storage::path('excel/downloads/catalog_price/IN/Priority1/IN_CatalogPrice0.csv');
-    return response()->download($path);
-});
-
-Route::get('us', function () {
-
-    $path = Storage::path('excel/downloads/catalog_price/US/Priority1/US_CatalogPrice0.csv');
-    return response()->download($path);
-    // return Storage::download('excel\downloads\catalog_price\US\Priority1\US_CatalogPrice0.csv');
-});
-Route::get("test/{country_code}", function ($country_code) {
-
-
-
-    $joint_data = DB::connection('catalog')->select("SELECT source.asin FROM asin_destination_ins as source
-    JOIN catalognewins as cat
-    ON source.asin = cat.asin
-    WHERE source.priority = 1
-    ");
-    $country_code = 'us';
-    $asin_desti = 'asin_destination_' . $country_code . 's';
-    $asin_cat = 'catalognew' . $country_code . 's';
-
-
-    $modal_table = table_model_create(country_code: 'us', model: 'Asin_destination', table_name: 'asin_destination_');
-    $joint_data = $modal_table->where('priority', 2)
-        ->join($asin_cat, $asin_desti . '.asin', '=', $asin_cat . '.asin')
-        ->chunk(10, function ($data) {
-        });
-    // po(count($joint_data));
-    exit;
-
-    $found = DB::connection('catalog')->select("SELECT id, asin FROM catalognewuss 
-    WHERE asin = 'B07PCHQ8H2' ");
-
-    po($found[0]->id);
-
-    $table_name = "catalognew${country_code}s";
-    $test = DB::connection('catalog')->select("DELETE s1 from $table_name s1, $table_name s2 where s1.id > s2.id and s1.asin = s2.asin");
-    return $test;
-    exit;
-
-
-    exit;
-    $pricing = [];
-    $asin_details = [];
-
-    $pricing[] = $asin_details;
-    // po($pricing);
-    exit;
-    $awb_no = 'US10000141';
-    $bombino_account_id = config('database.bombino_account_id');
-    $bombino_user_id = config('database.bombino_user_id');
-    $bombino_password = config('database.bombino_password');
-
-    $url = "http://api.bombinoexp.in/bombinoapi.svc/Tracking?AccountId=$bombino_account_id&UserId=$bombino_user_id&Password=$bombino_password&AwbNo=$awb_no";
-
-    $curl = curl_init();
-
-    curl_setopt_array($curl, array(
-        CURLOPT_URL => $url,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'GET',
-    ));
-
-    $response = curl_exec($curl);
-    curl_close($curl);
-    $response = json_decode($response);
-    po($response);
-});
-
 Route::get('test/catalog/{asin}/{country}', 'TestController@getASIN');
 Route::get('test/seller/order/{seller_id}/{country_code}', 'TestController@getSellerOrder');
 Route::get('test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
@@ -196,7 +115,10 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
     curl_close($curl);
     echo $response;
 });
-Route::get('export_catalog', 'TestController@ExportCatalog');
+Route::get('test/order', 'TestController@testOrderAPI');
 Route::get('search_catalog/{country_code}', 'TestController@searchCatalog');
 
 Route::get('pricing', 'TestController@PricingTest');
+
+Route::get('test/zoho', 'TestController@TestZoho');
+Route::get('test/get/zoho/data/{lead}', 'TestController@TestGetZoho');

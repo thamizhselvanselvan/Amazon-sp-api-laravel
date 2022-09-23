@@ -28,18 +28,14 @@
         <a href="search-label">
             <x-adminlte-button label="Search Label" theme="primary" icon="fas fa-search" class="btn-sm" />
         </a>
-        <a href="excel/template">
-            <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-file-download" class="btn-sm" />
-        </a>
+        
         <a href="upload">
             <x-adminlte-button label="Add New Records" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
         </a>
         <a href="missing">
-            <x-adminlte-button label="Find Missing Orders" theme="primary" icon="fas fa-sync" class="btn-sm" />
+            <x-adminlte-button label="Fetch Missing Orders" theme="primary" icon="fas fa-sync" class="btn-sm" />
         </a>
-        <a href="missing/address/export">
-            <x-adminlte-button label="Download Missing Address" theme="primary" icon="fas fa-file-download" class="btn-sm" />
-        </a>
+        
         <a href="missing/address">
             <x-adminlte-button label="Upload Missing Address" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
         </a>

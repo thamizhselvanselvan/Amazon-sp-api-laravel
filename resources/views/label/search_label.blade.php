@@ -10,13 +10,16 @@
     <h1 class="m-0 text-dark col">Label Management</h1>
     <h2 class="mb-4 text-right col"></h2>
     <label>
-        Search:<input type="text" id="Searchbox" placeholder="Search label">
+        Search:<input type="text" id="Searchbox" placeholder="Search label" autocomplete="off">
     </label>
 </div>
-<div class="row">
+<div class="row mt-2">
     <div class="col">
         <a href="{{ route('label.manage') }}" class="btn btn-primary btn-sm">
             <i class="fas fa-long-arrow-alt-left"></i> Back
+        </a>
+        <a href="zip/download">
+            <x-adminlte-button label="Download Label Zip" theme="primary" icon="fas fa-download" class="btn-md ml-2 btn-sm" id='zip-download' />
         </a>
     </div>
 </div>
@@ -39,9 +42,7 @@
 <div class="container-fluid label-search-box">
     <div class="row">
         <div class="col">
-            <a href="zip/download">
-                <x-adminlte-button label="Download Label Zip" theme="primary" icon="fas fa-download" class="btn-md ml-1" id='zip-download' />
-            </a>
+            
         </div>
         <div class="col">
             <form action="">
