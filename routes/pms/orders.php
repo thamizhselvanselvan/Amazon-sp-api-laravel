@@ -20,5 +20,7 @@ Route::POST('orders/import/file', 'Orders\OrdersDashboardController@ImortOrdersF
 Route::get('orders/csv/download','Orders\OrdersDashboardController@OrderCsvDownload')->name('download.order.csv.template');
 
 Route::get('orders/details/list', 'Orders\OrderDetailsController@index')->name('orders.search.index');
-Route::post('orders/search/details', 'Orders\OrderDetailsController@search')->name('orders.search');
+// Route::post('orders/search/details', 'Orders\OrderDetailsController@search')->name('orders.search');
 Route::post('orders/details/update', 'Orders\OrderDetailsController@update')->name('orders.searched.update');
+Route::post('orders/bulk/search', 'Orders\OrderDetailsController@bulksearch')->name('orders.search.bulk');
+Route::get('orders/bulk/edit/{id}', 'Orders\OrderDetailsController@bulkedit');
