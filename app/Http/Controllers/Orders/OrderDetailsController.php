@@ -49,7 +49,7 @@ class OrderDetailsController extends Controller
 
 
         if (empty($data[0])) {
-            return redirect()->intended('/orders/details/list')->with('error', 'Order Not present. Or Invalid OrderID');
+            return redirect()->intended('/orders/details/list')->with('error', 'Order Not present. Or Invalid OrderID  ');
         }
         $details = [];
         $price_data = [];

@@ -52,7 +52,7 @@
 </form>
 
 
-<form action="{{ route('orders.update') }}" method="post" id="update_form">
+<form action="{{ route('orders.searched.update') }}" method="post" id="update_form">
     @csrf
     <div class="container-fluid">
         <div class="row justify-content-center">
@@ -246,46 +246,46 @@
         <div class="row justify-content-center">
             <div class="col-2">
                 @if (isset($details->Name))
-                <x-adminlte-input label="Name:" name="name" value="{{$details->Name}}" type="text" />
+                <x-adminlte-input label="Consignee Name:" name="name" value="{{$details->Name}}" type="text" />
                 @else
-                <x-adminlte-input label="Name:" name="name" type="text" />
+                <x-adminlte-input label="Consignee Name:" name="name" type="text" />
                 @endif
             </div>
             <div class="col-2">
                 @if(isset($details->AddressLine1))
-                <x-adminlte-input label="Address 1:" name="address_1" value="{{$details->AddressLine1}}" type="text" />
+                <x-adminlte-input label="Consignee Address 1:" name="address_1" value="{{$details->AddressLine1}}" type="text" />
                 @else
-                <x-adminlte-input label="Address 1:" name="address_1" type="text" />
+                <x-adminlte-input label="Consignee Address 1:" name="address_1" type="text" />
                 @endif
             </div>
             <div class="col-2">
                 @if (isset($details->AddressLine2))
-                <x-adminlte-input label="Address 2:" name="address_2" value="{{$details->AddressLine2}}" type="text" />
+                <x-adminlte-input label="Consignee Address 2:" name="address_2" value="{{$details->AddressLine2}}" type="text" />
 
                 @else
-                <x-adminlte-input label="Address 2:" name="address_2" type="text" />
+                <x-adminlte-input label="Consignee Address 2:" name="address_2" type="text" />
                 @endif
             </div>
             <div class="col-2">
                 @if (isset($details->City))
-                <x-adminlte-input label="City:" name="city" value="{{$details->City}}" type="text" />
+                <x-adminlte-input label="Consignee City:" name="city" value="{{$details->City}}" type="text" />
                 @else
-                <x-adminlte-input label="City:" name="city" type="text" />
+                <x-adminlte-input label="Consignee City:" name="city" type="text" />
 
                 @endif
             </div>
             <div class="col-2">
                 @if (isset($details->StateOrRegion))
-                <x-adminlte-input label="County/State" name="county" value="{{$details->StateOrRegion}}" type="text" />
+                <x-adminlte-input label="Consignee County/State" name="county" value="{{$details->StateOrRegion}}" type="text" />
                 @else
-                <x-adminlte-input label="County/State:" name="county" type="text" />
+                <x-adminlte-input label="Consignee County/State:" name="county" type="text" />
                 @endif
             </div>
             <div class="col-2">
                 @if (isset($details->CountryCode))
-                <x-adminlte-input label="Country:" name="country" value="{{$details->CountryCode}}" type="text" />
+                <x-adminlte-input label="Consignee Country:" name="country" value="{{$details->CountryCode}}" type="text" />
                 @else
-                <x-adminlte-input label="Country:" name="country" type="text" />
+                <x-adminlte-input label="Consignee Country:" name="country" type="text" />
                 @endif
             </div>
         </div>
@@ -330,9 +330,7 @@
 
 @section('js')
 <script type="text/javascript">
-    // $("#update_form").hide();
-
-
+    //  $("#update_form").hide();
     $("#ord_search").on('click', function(e) {
 
         let $ordervalue = $('#orderid').val();
@@ -340,7 +338,7 @@
             alert("Enter OrderID");
             return false;
         } else {
-            //    $("#update_form").show();
+            // $("#update_form").show();
         }
     });
     $("#update").on('click', function(e) {
@@ -349,9 +347,8 @@
         if ($orderid == "") {
             alert("Search The Order To Be Updated");
             return false;
-        } else {
-            //    $("#update_form").show();
         }
+
     });
 </script>
 @stop
