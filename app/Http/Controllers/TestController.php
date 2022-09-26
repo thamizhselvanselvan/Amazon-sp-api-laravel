@@ -476,96 +476,13 @@ class TestController extends Controller
     po($order);
   }
 
-  public function searchCatalog($country_code)
-  {
-  }
-
-  public function PricingTest()
+  public function emiratePostTracking()
   {
 
-    $country_code_lr = 'us';
-    $user_id = '';
-    $des_asin_array = [];
-    $calculated_weight = [];
-    $asin_array_bb = [];
-    $des_asin_update = [];
-    $missing_asin = [];
-    $find_missing_asin = [];
 
-    $product_seller_details = 'bb_product_' . $country_code_lr . 's_seller_details';
-    $product_lp = 'bb_product_' . $country_code_lr . 's_lp_offers';
 
-    $destination_model = table_model_create(country_code: $country_code_lr, model: 'Asin_destination', table_name: 'asin_destination_');
-    $data = $destination_model->select(['asin', 'user_id'])->where(['price_status' => '0'])->limit(10)->get();
 
-    foreach ($data as $value) {
-
-      $asin = $value->asin;
-      $des_asin_array[] =  $asin;
-      $user_id = $value->user_id;
-
-      $find_missing_asin[$asin] = 1;
-      $des_asin_update[] = [
-        'asin' => $asin,
-        'user_id' => $user_id,
-        'price_status' => '2'
-      ];
-    }
-    // dd($find_missing_asin);
-
-    $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
-    $des_asin_update = [];
-
-    $catalog_model = table_model_create(country_code: $country_code_lr, model: 'Catalog', table_name: 'catalognew');
-    $cat_data = $catalog_model->select(['asin', 'dimensions'])->whereIn('asin', $des_asin_array)->get();
-
-    foreach ($cat_data as $value) {
-      $weight = '0.5';
-
-      if (isset(json_decode($value->dimensions)[0]->package->weight->value)) {
-        $weight = json_decode($value->dimensions)[0]->package->weight->value;
-      }
-
-      $a = $value->asin;
-      $calculated_weight[$a] =  $weight;
-      $asin_array_bb[] = "'$a'";
-    }
-
-    if ($asin_array_bb) {
-
-      $pricing_asin = implode(',', $asin_array_bb);
-
-      $asin_price = DB::connection('buybox')
-        ->select("SELECT PPO.asin, LP.available,
-          GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
-          group_concat(PPO.listingprice_amount) as listingprice_amount,
-          group_concat(PPO.updated_at) as updated_at
-          FROM $product_seller_details as PPO
-          JOIN $product_lp as LP On PPO.asin = LP.asin
-            WHERE PPO.asin IN ($pricing_asin)
-            GROUP BY PPO.asin
-      ");
-
-      foreach ($asin_price as $details) {
-
-        $asin_name = $details->asin;
-        if (isset($find_missing_asin[$asin_name])) {
-
-          $des_asin_update[] = [
-            'asin' => $asin_name,
-            'user_id' => $user_id,
-            'price_status' => '1'
-          ];
-        }
-      }
-      $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
-      dd($asin_price);
-
-      dd($calculated_weight, $pricing_asin);
-    } else {
-
-      $destination_model->where('id', '>', '0')->update(['price_status' => '0']);
-    }
+    //
   }
 
   public function TestZoho()

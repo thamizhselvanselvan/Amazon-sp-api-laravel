@@ -889,13 +889,12 @@ if (!function_exists('getTrackingDetails')) {
     }
 }
 
-if(!function_exists('getSystemSettingsValue'))
-{
+if (!function_exists('getSystemSettingsValue')) {
     function getSystemSettingsValue(String $key, $default)
     {
         $records = SystemSetting::where('key', $key)->first();
         $value = isset($records->value) ? $records->value : $default;
-       
+
         return $value;
     }
 }
