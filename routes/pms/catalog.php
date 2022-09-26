@@ -46,8 +46,9 @@ Route::post('catalog/remove/asin/{id}', 'Catalog\AsinSourceController@trash');
 Route::get('catalog/asin/bin', 'Catalog\AsinSourceController@trashView')->name('catalog.softDelete.view');
 Route::post('catalog/asin/restore/{id}', 'Catalog\AsinSourceController@restore')->name('catalog.restore.view');
 Route::get('catalog/asin-template-download', 'Catalog\AsinSourceController@AsinTemplateDownload')->name('catalog.download.template');
-Route::get('catalog/rate-exchange', 'Catalog\AsinSourceController@getExchangeRate')->name('catalog.exchange.rate');
+// Route::get('catalog/rate-exchange', 'Catalog\AsinSourceController@getExchangeRate')->name('catalog.exchange.rate');
 Route::get('catalog/asin-truncate', 'Catalog\AsinSourceController@AsinTruncate')->name('catalog.asin.source.truncate');
+Route::POST('catalog/asin/search', 'Catalog\AsinSourceController@CatalogSearch')->name('catalog.asin.search');
 
 Route::get('catalog/product', 'Catalog\CatalogProductController@Index');
 Route::get('catalog/product/fetch-from-amazon', 'Catalog\CatalogProductController@Amazon')->name('catalog.amazon.product');

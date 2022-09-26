@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Catalog;
 
 use RedBeanPHP\R;
 use App\Models\Catalog;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Services\BB\PushAsin;
 use Yajra\DataTables\DataTables;
@@ -194,15 +195,6 @@ class AsinSourceController extends Controller
         return response()->download($file_path);
     }
 
-    public function getExchangeRate()
-    {
-        $records = AsinSource::select('asin', 'source')->get();
-        foreach ($records as $record) {
-            $asin = $record->asin;
-            $source = $record->source;
-        }
-    }
-
     public function AsinTruncate(Request $request)
     {
         $sources = $request->source;
@@ -213,5 +205,56 @@ class AsinSourceController extends Controller
             $table_name->truncate();
         }
         return redirect('catalog/asin-source')->with('success', 'Table Truncate successfully');
+    }
+
+    public function CatalogSearch(Request $request)
+    {
+        $request->validate([
+            'source' => 'required|in:IN,US',
+            'catalog_asins' => 'required',
+        ]);
+        $country_code = strtolower($request->source);
+        $asins = array_unique(preg_split('/[\r\n| |:|,|.]/', $request->catalog_asins, -1, PREG_SPLIT_NO_EMPTY));
+        $pricing = ($country_code == 'in') ? 'price.in_price, price.ind_to_uae, price.ind_to_sg, price.ind_to_sa' : ' us_price, usa_to_uae, usa_to_sg ' ;
+        
+        foreach($asins as $key => $asin)
+        {
+            $catalogs [] = DB::connection('catalog')->select("SELECT cat.asin, cat.seller_id, cat.source, cat.dimensions, cat.brand, cat.manufacturer, ${pricing}
+            FROM catalognew${country_code}s  as cat
+            JOIN pricing_${country_code}s as price
+            ON cat.asin = price.asin
+            where cat.asin = '$asin'
+            ");
+        }
+
+        $header = [];
+        foreach($catalogs as $key => $catalog_value) {
+            if(isset($catalog_value[0])){
+            
+                foreach($catalog_value[0] as $key1 => $data) {
+                    if($key1 != 'dimensions' ) {
+                        $header[$key][$key1] = $data;
+                    }
+                }
+                $json = json_decode($catalog_value[0]->dimensions);
+                if($json != ''){
+    
+                    foreach($json as $package_data){
+                        foreach($package_data->package as $key2 => $value)
+                        {   
+                            $header[$key][$key2] = $value->value;
+                            if($key2 == 'height' || $key2 == 'width' || $key2 == 'length')
+                            {
+                                $header[$key]['unit'] = $value->unit;
+                            }
+                            if($key2 == 'weight') {
+                                $header[$key]['weight_unit'] = $value->unit;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return response()->json($header);
     }
 }

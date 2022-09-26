@@ -124,3 +124,5 @@ Route::get('test/zoho', 'TestController@TestZoho');
 Route::get('test/get/zoho/data/{lead}', 'TestController@TestGetZoho');
 
 Route::get('test/smsa/booking', 'Testcontroller@SmsaBooking');
+
+Route::get('test/amazon-feed', 'Testcontroller@TestAmazonFeed');
