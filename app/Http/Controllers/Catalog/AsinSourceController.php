@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Catalog;
 
 use RedBeanPHP\R;
 use App\Models\Catalog;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Services\BB\PushAsin;
 use Yajra\DataTables\DataTables;
@@ -218,15 +219,44 @@ class AsinSourceController extends Controller
         
         foreach($asins as $key => $asin)
         {
-            $catalogs [] = DB::connection('catalog')->select("SELECT cat.asin, cat.seller_id, cat.source, cat.height, cat.length, cat.width, cat.unit, cat.weight, cat.weight_unit, cat.brand, cat.manufacturer,
-            ${pricing}
+            $catalogs [] = DB::connection('catalog')->select("SELECT cat.asin, cat.seller_id, cat.source, cat.dimensions, cat.brand, cat.manufacturer, ${pricing}
             FROM catalognew${country_code}s  as cat
             JOIN pricing_${country_code}s as price
             ON cat.asin = price.asin
             where cat.asin = '$asin'
             ");
-        
         }
-        return response()->json([$catalogs]);
+
+        $header = [];
+        foreach($catalogs as $key => $catalog_value) {
+            if(isset($catalog_value[0])){
+            
+                foreach($catalog_value[0] as $key1 => $data) {
+                    if($key1 != 'dimensions' ) {
+                        $header[$key][$key1] = $data;
+                    }
+                }
+                $json = json_decode($catalog_value[0]->dimensions);
+                if($json != ''){
+    
+                    foreach($json as $package_data){
+                        foreach($package_data->package as $key2 => $value)
+                        {   
+                            if($key2 == 'height' || $key2 == 'width' || $key2 == 'length')
+                            {
+                                $header[$key]['unit'] = $value->unit;
+                            }else {
+                                
+                                $header[$key][$key2] = $value->value;
+                            }
+                            if($key2 == 'weight') {
+                                $header[$key]['weight_unit'] = $value->unit;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return response()->json($header);
     }
 }

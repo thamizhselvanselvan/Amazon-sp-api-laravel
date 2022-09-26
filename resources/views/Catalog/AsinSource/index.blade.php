@@ -180,32 +180,29 @@
                     let head = "";
                     let str_replace = '';
                     $('.thead').empty();
-                    $.each(result[0][0], function(key3, result){
-
-                        $.each(result, function(key4, header){
-                            head += " <td>"+ key4 +"</td> ";
-                            str_replace = head.replace(/_+/g, ' ').toUpperCase() ;
-                        })
+                    
+                    $.each(result[0], function(key, record){
+                        head += " <td>"+ key +"</td> ";
+                        str_replace = head.replace(/_+/g, ' ').toUpperCase() ;
                     });
                     $('.thead').append(str_replace);
 
-                    $.each(result, function(key, result){
-                        $.each(result, function(key2, record){
-                            data += '<tr>';
-                            $.each(record[0], function(key5, catalog_data){
-                               
-                                data += "<td>"+catalog_data+"</td>";
-                            });
-                            data += '</tr>';
+                    $.each(result, function(key1, record1){
+                        data += '<tr>';
+                        $.each(record1, function(key2, value){
+                            data += "<td>"+ value +"</td>"
                         });
+                        data +='</tr>';
                     });
-                    
                     $('.search-data').html(data);
                 },
+                error: function(result) {
+                    // alert('Data not found!');
+                }
             });
         }
- 
     });
+    
     $(document).on('click', ".delete", function(e) {
         e.preventDefault();
         let bool = confirm('Are you sure you want to push this asin to Bin?');
