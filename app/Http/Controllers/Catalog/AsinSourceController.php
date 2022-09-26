@@ -242,12 +242,10 @@ class AsinSourceController extends Controller
                     foreach($json as $package_data){
                         foreach($package_data->package as $key2 => $value)
                         {   
+                            $header[$key][$key2] = $value->value;
                             if($key2 == 'height' || $key2 == 'width' || $key2 == 'length')
                             {
                                 $header[$key]['unit'] = $value->unit;
-                            }else {
-                                
-                                $header[$key][$key2] = $value->value;
                             }
                             if($key2 == 'weight') {
                                 $header[$key]['weight_unit'] = $value->unit;
