@@ -244,9 +244,11 @@ class AsinSourceController extends Controller
                     else{
                         $dimensions_array = json_decode($data);
                         $header['height'] = isset($dimensions_array[0]->package->height->value)? $dimensions_array[0]->package->height->value: '';
-                        $header['weight'] = isset($dimensions_array[0]->package->weight->value)? $dimensions_array[0]->package->weight->value: '';
                         $header['width'] = isset($dimensions_array[0]->package->width->value)? $dimensions_array[0]->package->width->value: '';
                         $header['length'] = isset($dimensions_array[0]->package->length->value)? $dimensions_array[0]->package->length->value: '';
+                        $header['unit'] = isset($dimensions_array[0]->package->length->unit)? $dimensions_array[0]->package->length->unit: '';
+                        $header['weight'] = isset($dimensions_array[0]->package->weight->value)? $dimensions_array[0]->package->weight->value: '';
+                        $header['weight_unit'] = isset($dimensions_array[0]->package->weight->unit)? $dimensions_array[0]->package->weight->unit: '';
                     }
                 }
                 $final_data [] = $header;
