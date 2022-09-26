@@ -31,7 +31,7 @@ class PriceConversion
         $seller_commission = ($bb_price + $int_shipping_base_charge + $packaging) * (15 / 100);
 
         $price_before_duty = $bb_price + $int_shipping_base_charge + $packaging + $seller_commission;
-        $ex_rate = 82;
+        $ex_rate = 84;
         $duty_cost = ($price_before_duty * $duty_rate);
 
         $usd_sp = ($price_before_duty + $duty_cost) + ($price_before_duty + $duty_cost) * (20 / 100);
@@ -53,7 +53,7 @@ class PriceConversion
         $packaging = 2;
         $amazon_commission = 22.00 / 100;
 
-        $ex_rate = 82;
+        $ex_rate = 84;
         $duty_cost = ($duty_rate * ($bb_price + $int_shipping_base_charge));
 
         $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
