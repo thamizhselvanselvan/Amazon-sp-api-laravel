@@ -123,7 +123,8 @@
 </div>
 <div class="row d-none display-data">
     <table class="table table-bordered yajra-datatable table-striped text-center table-sm ">
-        <thead class="thead">
+        <thead class="">
+            <tr class="bg-info thead"></tr>
             <!-- <tr class="bg-info">
                 <th>Seller Id</th>
                 <th>ASIN</th>
@@ -176,13 +177,17 @@
                 },
                 success: function(result) {
                     let data = '';
-                    let head = "<tr class='bg-info'>";
+                    let head = "";
+                    let str_replace = '';
                     $('.thead').empty();
                     $.each(result[0][0], function(key3, result){
+
                         $.each(result, function(key4, header){
                             head += " <td>"+ key4 +"</td> ";
+                            str_replace = head.replace(/_+/g, ' ').toUpperCase() ;
                         })
                     });
+                    $('.thead').append(str_replace);
 
                     $.each(result, function(key, result){
                         $.each(result, function(key2, record){
@@ -194,7 +199,7 @@
                             data += '</tr>';
                         });
                     });
-                    $('.thead').append(head);
+                    
                     $('.search-data').html(data);
                 },
             });
