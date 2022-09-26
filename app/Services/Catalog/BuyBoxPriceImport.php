@@ -40,6 +40,8 @@ class BuyBoxPriceImport
                 ->where('price_status', 0)->where('priority', $priority)
                 ->limit($limit)->get();
 
+            Log::notice(count($data) . ' Price importing from BB');
+
             foreach ($data as $value) {
 
                 $asin = $value->asin;

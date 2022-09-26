@@ -99,7 +99,7 @@ class TestController extends Controller
 
   public function getSellerOrder($seller_id, $country_code)
   {
-    echo "Order List";
+    echo "Order Lst";
     //new media new token
     $token = NULL;
     $config = $this->config($seller_id, $country_code, $token);
@@ -108,11 +108,11 @@ class TestController extends Controller
     $marketplace_ids = [$marketplace_ids];
 
     $apiInstance = new OrdersV0Api($config);
-    $startTime = Carbon::now()->subDays(5)->toISOString();
+    $startTime = Carbon::now()->subDays(1)->toISOString();
     $createdAfter = $startTime;
     $max_results_per_page = 100;
 
-    $next_token = 'Nz0eSs51UK+aJqJYLDm0ZAmQazDrhw3C42KwwQyR9e/L6UHaBK1qlqaqZ6TcljqaxqXyQLkGMBs8VhF73Xgy+6+TtJlDlUR56p8S6xVccYWSkB8HgnURuo2teiazVgkyInTAy+XKVmRZBY+oaVuycwQFure81U/CSOnRa9h35auYeATp5zAOhzgKA0lggjg0f2GLmUGyr9UGnxD0RJmrryegoU0IPZxXuDhY0Mlg+b9axYTTEsJ5Nkzyjn+QzAQYMBO/reDY2s8X+G/WxAkd4Fo++pAnAbakpMzWaPWrWIu7EbcPNB+bB6Hzx3wYc8HkVHr6/v7aqUE6gx0WW4bluJnycMd/XRCQ3VVGVsnIXDuwRGD7sGc+vvNIww18kAHE3toQYgtSWoW8GvFjc507ZCZ4zjikEy7+rToAsYN83sHgkdZPXhcRcM4Geo6I62Nv5h8v0uN9IxQ=';
+    $next_token = '5EsEGMMJo12aJqJYLDm0ZAmQazDrhw3C6koriEUoNqjGCts1L1KLEUz0v33+eggAxqXyQLkGMBs8VhF73Xgy+6+TtJlDlUR57TLVg9FIRJIw1dq2BZHUh7bozNQEGhbjInTAy+XKVmRZBY+oaVuycwQFure81U/C2uVVFrsVPmp+MNAUdWgftyZHQdPXXp8Uf2GLmUGyr9UGnxD0RJmrryegoU0IPZxXtj51yALnq9+4M6STR6qxShi39nX7sSwDMBO/reDY2s8X+G/WxAkd4Fo++pAnAbakpMzWaPWrWIu7EbcPNB+bB7YS9ceFWcsPA9rNUA+mtRVhjT4sLT8FGGb7MtFtmIzif9BKH8lxMxIxY2fmRzniMupdWe0DnR4g0QZIgYUWbIiLESu+7fZQ8qP+IDCdVkzirToAsYN83sHHM2sVBc8891urusdmQ14zkYuItVQ5UdcoVDSpjSWO78jB0ZZToJ80jb45E6buG/w28uc4Sz+A7JGLiLVUOVHXvyOi2lUk+ruj54GUtHYexbMErlht7x/UfS8yBdUHI8PVgbG4EqTn58E/vfbI0LsGgPYTCOW+z8qPVvvqDB6I8w==';
     // $next_token = iconv("UTF-8", "UTF-8//IGNORE", $next_token);
     $amazon_order_ids = NULL;
     $next_token = NULL;
