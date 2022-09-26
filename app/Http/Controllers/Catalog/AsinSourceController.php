@@ -213,48 +213,45 @@ class AsinSourceController extends Controller
             'source' => 'required|in:IN,US',
             'catalog_asins' => 'required',
         ]);
+        $asin_array = [];
         $country_code = strtolower($request->source);
         $asins = array_unique(preg_split('/[\r\n| |:|,|.]/', $request->catalog_asins, -1, PREG_SPLIT_NO_EMPTY));
         $pricing = ($country_code == 'in') ? 'price.in_price, price.ind_to_uae, price.ind_to_sg, price.ind_to_sa' : ' us_price, usa_to_uae, usa_to_sg ' ;
         
-        foreach($asins as $key => $asin)
-        {
-            $catalogs [] = DB::connection('catalog')->select("SELECT cat.asin, cat.seller_id, cat.source, cat.dimensions, cat.brand, cat.manufacturer, ${pricing}
-            FROM catalognew${country_code}s  as cat
-            JOIN pricing_${country_code}s as price
-            ON cat.asin = price.asin
-            where cat.asin = '$asin'
-            ");
+        foreach($asins as $key => $asin){
+            $asin_array[] = "'$asin'";
         }
 
+        $asin_string = implode(',', $asin_array);
+            $catalogs [] = DB::connection('catalog')
+                ->select("SELECT cat.asin, cat.seller_id, cat.source, cat.dimensions, cat.brand, cat.manufacturer, ${pricing}
+                FROM catalognew${country_code}s  as cat
+                JOIN pricing_${country_code}s as price
+                ON cat.asin = price.asin
+                where cat.asin IN ($asin_string)
+            ");
+
         $header = [];
-        foreach($catalogs as $key => $catalog_value) {
-            if(isset($catalog_value[0])){
-            
-                foreach($catalog_value[0] as $key1 => $data) {
+        $final_data =[];
+        if(count($catalogs) > 0)
+        {
+            foreach($catalogs[0] as $key => $catalog_value) {
+                foreach($catalog_value as $key1 => $data) {
+                
                     if($key1 != 'dimensions' ) {
-                        $header[$key][$key1] = $data;
+                        $header[$key1] = $data;
+                    }
+                    else{
+                        $dimensions_array = json_decode($data);
+                        $header['height'] = isset($dimensions_array[0]->package->height->value)? $dimensions_array[0]->package->height->value: '';
+                        $header['weight'] = isset($dimensions_array[0]->package->weight->value)? $dimensions_array[0]->package->weight->value: '';
+                        $header['width'] = isset($dimensions_array[0]->package->width->value)? $dimensions_array[0]->package->width->value: '';
+                        $header['length'] = isset($dimensions_array[0]->package->length->value)? $dimensions_array[0]->package->length->value: '';
                     }
                 }
-                $json = json_decode($catalog_value[0]->dimensions);
-                if($json != ''){
-    
-                    foreach($json as $package_data){
-                        foreach($package_data->package as $key2 => $value)
-                        {   
-                            $header[$key][$key2] = $value->value;
-                            if($key2 == 'height' || $key2 == 'width' || $key2 == 'length')
-                            {
-                                $header[$key]['unit'] = $value->unit;
-                            }
-                            if($key2 == 'weight') {
-                                $header[$key]['weight_unit'] = $value->unit;
-                            }
-                        }
-                    }
-                }
+                $final_data [] = $header;
             }
         }
-        return response()->json($header);
+        return response()->json($final_data);
     }
 }

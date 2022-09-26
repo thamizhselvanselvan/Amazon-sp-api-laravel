@@ -180,10 +180,10 @@
                     let head = "";
                     let str_replace = '';
                     $('.thead').empty();
-                    
                     $.each(result[0], function(key, record){
                         head += " <td>"+ key +"</td> ";
                         str_replace = head.replace(/_+/g, ' ').toUpperCase() ;
+                        
                     });
                     $('.thead').append(str_replace);
 
