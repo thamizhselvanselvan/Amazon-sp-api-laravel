@@ -146,7 +146,7 @@ class CatalogProductController extends Controller
 
         $asin_string = implode(',', $asin_array);
             $catalogs [] = DB::connection('catalog')
-                ->select("SELECT cat.asin, cat.seller_id, cat.source, cat.dimensions, cat.brand, cat.manufacturer, ${pricing}
+                ->select("SELECT cat.asin, cat.source, cat.dimensions, cat.item_name, cat.brand, cat.manufacturer, ${pricing}
                 FROM catalognew${country_code}s  as cat
                 JOIN pricing_${country_code}s as price
                 ON cat.asin = price.asin
@@ -165,11 +165,11 @@ class CatalogProductController extends Controller
                     }
                     else{
                         $dimensions_array = json_decode($data);
-                        $header['height'] = isset($dimensions_array[0]->package->height->value) ? $dimensions_array[0]->package->height->value: '';
-                        $header['width'] = isset($dimensions_array[0]->package->width->value) ? $dimensions_array[0]->package->width->value: '';
-                        $header['length'] = isset($dimensions_array[0]->package->length->value) ? $dimensions_array[0]->package->length->value: '';
-                        $header['unit'] = isset($dimensions_array[0]->package->length->unit) ? $dimensions_array[0]->package->length->unit: '';
-                        $header['weight'] = isset($dimensions_array[0]->package->weight->value) ? $dimensions_array[0]->package->weight->value: '';
+                        $header['height'] = round(isset($dimensions_array[0]->package->height->value) ? $dimensions_array[0]->package->height->value: '', 3);
+                        $header['width'] = round(isset($dimensions_array[0]->package->width->value) ? $dimensions_array[0]->package->width->value: '', 3);
+                        $header['length'] = round(isset($dimensions_array[0]->package->length->value) ? $dimensions_array[0]->package->length->value: '', 3);
+                        $header['unit'] =  isset($dimensions_array[0]->package->length->unit) ? $dimensions_array[0]->package->length->unit: '';
+                        $header['weight'] = round(isset($dimensions_array[0]->package->weight->value) ? $dimensions_array[0]->package->weight->value: '', 3);
                         $header['weight_unit'] = isset($dimensions_array[0]->package->weight->unit) ? $dimensions_array[0]->package->weight->unit: '';
                     }
                 }
