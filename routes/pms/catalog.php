@@ -48,7 +48,6 @@ Route::post('catalog/asin/restore/{id}', 'Catalog\AsinSourceController@restore')
 Route::get('catalog/asin-template-download', 'Catalog\AsinSourceController@AsinTemplateDownload')->name('catalog.download.template');
 // Route::get('catalog/rate-exchange', 'Catalog\AsinSourceController@getExchangeRate')->name('catalog.exchange.rate');
 Route::get('catalog/asin-truncate', 'Catalog\AsinSourceController@AsinTruncate')->name('catalog.asin.source.truncate');
-Route::POST('catalog/asin/search', 'Catalog\AsinSourceController@CatalogSearch')->name('catalog.asin.search');
 
 Route::get('catalog/product', 'Catalog\CatalogProductController@Index');
 Route::get('catalog/product/fetch-from-amazon', 'Catalog\CatalogProductController@Amazon')->name('catalog.amazon.product');
@@ -57,6 +56,7 @@ Route::get('catalog/export', 'Catalog\CatalogProductController@ExportCatalog')->
 Route::get('catalog/get-file', 'Catalog\CatalogProductController@GetCatalogFile');
 Route::get('catalog/download/csv-file/{country_code}/{priority}', 'Catalog\CatalogProductController@DownloadCatalogIntocsv');
 Route::get('catalog/download/price/{country_code}/{priority}', 'Catalog\CatalogProductController@DownloadCatalogPrice');
+Route::POST('catalog/asin/search', 'Catalog\CatalogProductController@CatalogSearch')->name('catalog.asin.search');
 
 Route::get('catalog/asin-destination', 'Catalog\AsinDestinationController@index')->name('Asin.destination.index');
 Route::get('catalog/import-asin-destination', 'Catalog\AsinDestinationController@AsinDestinationImport');
