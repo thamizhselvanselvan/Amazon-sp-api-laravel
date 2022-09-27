@@ -476,12 +476,49 @@ class TestController extends Controller
     po($order);
   }
 
-  public function emiratePostTracking()
+  public function emiratePostTracking($tracking_id)
   {
+    $account_no = 'C175120';
+    $password = 'C175120';
 
+    $tracking_id = '123456783';
+    $curl = curl_init();
 
+    $headers = array(
+      'Content-Type: text/xml; charset=utf-8',
+      'SOAPAction: http://epg.generic.tracking/TrackShipmentByAwbNo',
+      'AccountNo: ' . $account_no,
+      'Password: ' . $password
+    );
 
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://osbtest.epg.gov.ae/ebs/genericapi/tracking',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => '<?xml version="1.0" encoding="utf-8"?>
+    <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+      <soap:Body>
+        <TrackShipmentByAwbNo xmlns="http://epg.generic.tracking/">
+          <AwbNo>' . $tracking_id . '</AwbNo>
+          <ShipmentType>Standard</ShipmentType>
+        </TrackShipmentByAwbNo>
+      </soap:Body>
+    </soap:Envelope>
+    ',
+      CURLOPT_HTTPHEADER => $headers,
+    ));
 
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+    $result = json_decode(json_encode($response));
+    $result = mungXML($result);
+    dd($result);
     //
   }
 
@@ -497,6 +534,8 @@ class TestController extends Controller
 
   public function TestAmazonFeed()
   {
+    // $date = Carbon::parse('2022-09-26T19:42:59.000Z')->format('Y-m-d');
+    // dd($date . 'T00:00:05.000Z');
 
     (new FeedOrderDetails())->FeedOrderTrackingNo();
   }
