@@ -13,9 +13,6 @@ class OrderDetailsController extends Controller
     {
         return view('orders.orderdetails_list.index');
     }
-    public function search(Request $request)
-    {
-    }
     public function update(Request $request)
     {
         $details = [
@@ -58,9 +55,9 @@ class OrderDetailsController extends Controller
                   orditem.title = '$request->title',
                   orditem.seller_sku = '$request->sku',
                   orditem.quantity_ordered = $request->qty,
+                  orditem.quantity_shipped ='$request->quantity_shipped',
                   orditem.asin = '$request->asin',
                   orditem.order_item_identifier = '$request->order_item_identifier',
-                  orditem.quantity_shipped ='$request->quantity_shipped',
                   orditem.item_price = '$currency_details',
                   orditem.item_tax = '$tax_details',
         
@@ -72,7 +69,6 @@ class OrderDetailsController extends Controller
                   ord.fulfillment_channel='$request->fulfillment_channel',
                   ord.sales_channel= '$request->sales_channel',
                   ord.ship_service_level='$request->ship_service_level',
-                  ord.number_of_items_unshipped= $request->unship,
                   ord.shipment_service_level_category= '$request->shipment_service_level_category',
                   ord.earliest_ship_date = '$request->earky_ship',
                   ord.latest_ship_date = '$request->latest_ship',
