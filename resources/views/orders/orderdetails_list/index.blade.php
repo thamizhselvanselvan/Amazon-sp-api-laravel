@@ -47,7 +47,7 @@
 <div class="row">
     <div class="col-2">
         <div class="form-group">
-            <label>Enter OrderID:</label>
+            <label>Enter OrderID's:</label>
             <div class="autocomplete" style="width:400px;">
                 <textarea name="upload_orders" rows="5" placeholder="Enter OrderID's here..." type=" text" autocomplete="off" class="form-control up_order"></textarea>
             </div>
@@ -77,7 +77,12 @@
         <table class="table table-bordered yajra-datatable table-striped" id="report_table">
             <thead>
                 <tr class="bordercss">
-                    <td></td>
+                    <th>Amazon Order Identifier</th>
+                    <th>Order Item Identifier</th>
+                    <th>Marketplace Identifier:</th>
+                    <th>ASIN</th>
+                    <th>Store Name</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody id="report_table_body">
@@ -89,13 +94,14 @@
 
 @section('js')
 <script type="text/javascript">
+    $("#report_table").hide();
     $("#ord_search").on('click', function(e) {
-
         let order_ids = $('.up_order').val();
         if (order_ids == "") {
             alert("Enter OrderID");
             return false;
         }
+        $("#report_table").show();
         $.ajax({
             method: 'POST',
             url: '/orders/bulk/search',
@@ -105,29 +111,37 @@
             },
             'dataType': 'json',
             success: function(response) {
-                // console.log(response.data);
+                console.log(response.data);
+
+                let html = '';
                 $.each(response.data, function(index, alldata) {
                     $.each(alldata, function(index, value) {
-                        // console.log(value)
-                        markup = "<tr><td><b>Amazon Order Identifier &nbsp;=&nbsp;</b>" +
-                            value.amazon_order_identifier +
-                            "</td>+<td><b>Order Item Identifier &nbsp;=&nbsp;</b>" +
-                            value.order_item_identifier +
-                            "</td>+<td><b>ASIN &nbsp;=&nbsp;</b>" +
-                            value.asin + "</td>" +
-                            "</td>+<td><b>Store Name &nbsp;=&nbsp;</b>" +
-                            value.store_name + "</td>" +
-                            // '<td>   <a href = "/orders/bulk/view"' + value[0].amazon_order_identifier + '"">click</a></td>'+
-                            '<td> <a href="/orders/bulk/edit/' + value.order_item_identifier + '" target="_blank"><button type="button" class="btn btn-info btn-sm">View Or Edit</button></a></td>' +
-                            "</tr>";
-                        tableBody = $("table tbody");
-                        tableBody.append(markup);
+                        html += "<tr class='table_row'>";
+                        html += "<td>&ensp;&nbsp;" + value.amazon_order_identifier + "</td>";
+                        html += "<td>&ensp;&nbsp;" + value.order_item_identifier + "</td>";
+                        html += "<td>&ensp;&nbsp;" + value.marketplace_identifier + "</td>";
+                        html += "<td>&ensp;&nbsp;" + value.asin + "</td>";
+                        html += "<td>&ensp;&nbsp;" + value.store_name + "</td>";
+                        html += '<td> <a href="/orders/bulk/edit/' + value.order_item_identifier + '" target="_blank"><button type="button" class="btn btn-info btn-sm">View Or Edit</button></a></td>';
+                        html += "</tr>";
+                        // markup = "<tr><td><b>Amazon Order Identifier &nbsp;=&nbsp;</b>" +
+                        //     value.amazon_order_identifier +
+                        //     "</td>+<td><b>Order Item Identifier &nbsp;=&nbsp;</b>" +
+                        //     value.order_item_identifier +
+                        //     "</td>+<td><b>ASIN &nbsp;=&nbsp;</b>" +
+                        //     value.asin + "</td>" +
+                        //     "</td>+<td><b>Store Name &nbsp;=&nbsp;</b>" +
+                        //     value.store_name + "</td>" +
+                        //     '<td> <a href="/orders/bulk/edit/' + value.order_item_identifier + '" target="_blank"><button type="button" class="btn btn-info btn-sm">View Or Edit</button></a></td>' +
+                        //     "</tr>";
+                        // tableBody = $("table tbody");
+                        // tableBody.append(markup);
                     });
+                    $("#report_table").append(html);
                 });
             },
-
             error: function(response) {
-                console.log(response);
+                alert('Something Went Wrong');
             }
         });
     });
