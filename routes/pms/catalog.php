@@ -75,3 +75,5 @@ Route::get('catalog/asin-destination/truncate', 'Catalog\AsinDestinationControll
 Route::get('catalog/cliqnshop/export', 'Catalog\CliqnshopCatalogController@catalogexport')->name('catalog.export.cliqnshop');
 Route::get('catalog/cliqnshop/get-file', 'Catalog\CliqnshopCatalogController@exportdownload')->name('catalog.export.download.cliqnshop');
 Route::get('catalog/cliqnsho/download', 'Catalog\CliqnshopCatalogController@DownloadCatalogcloqnshop')->name('catalog.export.download.cliqnshop');
+
+Route::get('catalog/exchange-rate', 'Catalog\CatalogExchangeManagementController@index');

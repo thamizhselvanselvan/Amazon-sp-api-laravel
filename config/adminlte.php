@@ -409,6 +409,13 @@ return [
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin']
                 ],
+                [
+
+                    'text' => 'Catalog Exchange Rate',
+                    'url'  => 'catalog/exchange-rate',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin']
+                ],
 
             ],
         ],
