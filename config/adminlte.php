@@ -409,6 +409,13 @@ return [
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin']
                 ],
+                [
+
+                    'text' => 'Catalog Exchange Rate',
+                    'url'  => 'catalog/exchange-rate',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin']
+                ],
 
             ],
         ],
@@ -587,6 +594,13 @@ return [
                             'icon' => 'fa fa-dashboard',
                         ],
                     ],
+                ],
+                [
+                    'text' => 'Order Details',
+                    'can' => ['Admin'],
+                    'icon' => 'fa fa-search',
+                    'url' => "orders/details/list",
+
                 ],
                 [
                     'text' => 'AWS Order Dashboard',

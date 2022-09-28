@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Catalog;
 
 use RedBeanPHP\R;
 use App\Models\Catalog;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Services\BB\PushAsin;
 use Yajra\DataTables\DataTables;
@@ -194,15 +195,6 @@ class AsinSourceController extends Controller
         return response()->download($file_path);
     }
 
-    public function getExchangeRate()
-    {
-        $records = AsinSource::select('asin', 'source')->get();
-        foreach ($records as $record) {
-            $asin = $record->asin;
-            $source = $record->source;
-        }
-    }
-
     public function AsinTruncate(Request $request)
     {
         $sources = $request->source;
@@ -214,4 +206,5 @@ class AsinSourceController extends Controller
         }
         return redirect('catalog/asin-source')->with('success', 'Table Truncate successfully');
     }
+
 }

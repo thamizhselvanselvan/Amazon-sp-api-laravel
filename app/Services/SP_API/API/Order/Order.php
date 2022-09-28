@@ -64,6 +64,15 @@ class Order
         $next_token = NULL;
 
         $amazon_order_ids = $amazon_order_id ? [$amazon_order_id] : NULL;
+        $order_statuses = [
+            'Unshipped',
+            'PartiallyShipped',
+            'Shipped',
+            'InvoiceUnconfirmed',
+            'Canceled',
+            'Unfulfillable'
+        ];
+        $order_statuses = NULL;
         try {
             next_token_exist:
             $results = $apiInstance->getOrders(
@@ -72,7 +81,7 @@ class Order
                 $created_before = null,
                 $last_updated_after = null,
                 $last_updated_before = null,
-                $order_statuses = null,
+                $order_statuses,
                 $fulfillment_channels = null,
                 $payment_methods = null,
                 $buyer_email = null,
@@ -175,29 +184,29 @@ class Order
                 foreach ($amazon_order_details as $key => $value) {
                     $update_orders->{$key} = $value;
                 }
-                $update_orders->updatedat = now();
+                $update_orders->updated_at = now();
 
                 R::store($update_orders);
                 // sleep(2);
-                $order_item_details = DB::connection('order')
-                    ->select("SELECT id FROM orders 
-                WHERE amazon_order_identifier = '$amazon_order_id' AND order_item = '0' ");
+                // $order_item_details = DB::connection('order')
+                //     ->select("SELECT id FROM orders 
+                // WHERE amazon_order_identifier = '$amazon_order_id' AND order_item = '0' ");
 
-                if (count($order_item_details) > 0) {
+                // if (count($order_item_details) > 0) {
 
-                    $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
-                    $this->delay += $delay_count;
-                }
+                //     $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
+                //     $this->delay += $delay_count;
+                // }
             } else {
 
                 //call orderitem details jobs
                 $orders->order_item = '0';
-                $orders->updatedat = now();
-                $orders->createdat = now();
+                $orders->updated_at = now();
+                $orders->created_at = now();
                 // dd($orders);
                 R::store($orders);
 
-                $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
+                // $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
                 $this->delay += $delay_count;
             }
         }
@@ -213,7 +222,7 @@ class Order
                     'aws_id' => $awsId,
                     'country_code' => $awsCountryCode,
                 ]
-            )->onConnection('redis')->onQueue($this->order_queue_name)->delay($this->delay);
+            )->onConnection('redis')->onQueue('order')->delay($this->delay);
         } else {
 
             GetOrderItem::dispatch(
