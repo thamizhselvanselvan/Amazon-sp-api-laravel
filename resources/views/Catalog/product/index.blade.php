@@ -18,25 +18,44 @@
             </a>
         </h2> -->
         <h2 class="ml-2">
-            <x-adminlte-button label="Export Catalog" theme="primary" class="btn-sm" icon="fas fa-file-export"
-                id="exportCatalog" data-toggle="modal" data-target="#catalogExport" />
+            <x-adminlte-button label="Cliqnshop Catalog Export" theme="primary" class="btn-sm" icon="fas fa-file-export" id="exportcliqnshopCatalog" />
+        </h2>
+        <h2 class="ml-2">
+            <x-adminlte-button label="Download Cliqnshop Catalog" theme="primary" class="btn-sm" icon="fas fa-download" id="catalogcliqnshopdownload" data-toggle="modal" data-target="#downloacliqdModal" />
         </h2>
 
         <h2 class="ml-2">
-            <x-adminlte-button label="Download Catalog" theme="primary" class="btn-sm" icon="fas fa-download"
-                id="catalogdownload" data-toggle="modal" data-target="#downloadModal" />
-        </h2>
-        <h2 class="ml-2">
-            <x-adminlte-button label="Export Catalog Price" class="btn-sm" theme="primary" icon="fas fa-file-export"
-                id="export_catalog_price" data-toggle="modal" data-target="#catalogPriceExport" />
-        </h2>
-        <h2 class="ml-2">
-            <x-adminlte-button label="Download Catalog Price" class="btn-sm" theme="primary" icon="fas fa-download"
-                id="download_catalog_price" data-toggle="modal" data-target="#file_download_modal" />
+            <x-adminlte-button label="Export Catalog" theme="primary" class="btn-sm" icon="fas fa-file-export" id="exportCatalog" data-toggle="modal" data-target="#catalogExport" />
         </h2>
 
-        <div class="modal fade" id="catalogExport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
+        <h2 class="ml-2">
+            <x-adminlte-button label="Download Catalog" theme="primary" class="btn-sm" icon="fas fa-download" id="catalogdownload" data-toggle="modal" data-target="#downloadModal" />
+        </h2>
+        <h2 class="ml-2">
+            <x-adminlte-button label="Export Catalog Price" class="btn-sm" theme="primary" icon="fas fa-file-export" id="export_catalog_price" data-toggle="modal" data-target="#catalogPriceExport" />
+        </h2>
+        <h2 class="ml-2">
+            <x-adminlte-button label="Download Catalog Price" class="btn-sm" theme="primary" icon="fas fa-download" id="download_catalog_price" data-toggle="modal" data-target="#file_download_modal" />
+        </h2>
+
+        <div class="modal" id="downloacliqdModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Download Cliqnshop Catalog </h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body catalogcliqnshop">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="catalogExport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -76,8 +95,7 @@
                             </div>
 
                             <div class="col-12 float-left mt-2">
-                                <x-adminlte-button label="Export" theme="success" class="btn btn-sm "
-                                    icon="fas fa-file-export " type="submit" />
+                                <x-adminlte-button label="Export" theme="success" class="btn btn-sm " icon="fas fa-file-export " type="submit" />
                             </div>
                         </form>
                     </div>
@@ -89,8 +107,7 @@
             </div>
         </div>
 
-        <div class="modal fade" id="catalogPriceExport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
+        <div class="modal fade" id="catalogPriceExport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -130,8 +147,7 @@
                             </div>
 
                             <div class="col-12 float-left mt-2">
-                                <x-adminlte-button label="Export" theme="success" class="btn btn-sm "
-                                    icon="fas fa-file-export " type="submit" />
+                                <x-adminlte-button label="Export" theme="success" class="btn btn-sm " icon="fas fa-file-export " type="submit" />
                             </div>
                         </form>
                     </div>
@@ -159,13 +175,13 @@
                 </div>
             </div>
         </div>
-        
+
 
     </div>
 </div>
 @stop
 
-@section('content') 
+@section('content')
 <div class="row">
     <div class="col">
 
@@ -203,20 +219,22 @@
                 <h3>Search Catalog And Price</h3>
             </div>
             <div class="card-body ">
-                <label for="Select Source" class ="mt-0">Select Source</label><br>
+                <label for="Select Source" class="mt-0">Select Source</label><br>
                 <div class="row ">
                     <div class="col-1">
-                        <input type="radio" class="Asin-source" name="source" value="IN"  />
+                        <input type="radio" class="Asin-source" name="source" value="IN" />
                         <label for="IN">IN</label>
                     </div>
                     <div class="col-1">
-                        <input type="radio" class="Asin-source" name="source" value="US"  />
+                        <input type="radio" class="Asin-source" name="source" value="US" />
                         <label for="US">US</label>
                     </div>
-                    
+
                 </div>
                 <x-adminlte-textarea label="Enter ASIN" type="text-area" class="Asins" name="catalog_asins" placeholder="Enter Asin" rows="4" />
-                <b><p class="text-danger" id="error"></p></b>
+                <b>
+                    <p class="text-danger" id="error"></p>
+                </b>
                 <x-adminlte-button label="Search" type="submit" theme="primary" icon="fas fa-search text-danger" class="search-catalog btn-sm float-right mt-2 " />
             </div>
         </div>
@@ -228,7 +246,7 @@
     <table class="table table-bordered table-striped text-center table-sm ">
         <thead class="">
             <tr class="bg-info thead"></tr>
-            
+
         </thead>
         <tbody class="search-data">
         </tbody>
@@ -252,7 +270,7 @@
     });
 
     $('#catalogdownload').click(function() {
-        
+
         $.ajax({
             url: "/catalog/get-file",
             method: "GET",
@@ -261,20 +279,20 @@
                 "_token": "{{ csrf_token() }}",
             },
             success: function(response) {
-                if(response == ''){
+                if (response == '') {
                     $('.catalogFiles').append('File Downloading..');
-                }else{
+                } else {
 
                     $('.catalogFiles').empty();
                     console.log(response);
                     let files = '';
                     $.each(response, function(index, response) {
                         let data = response;
-                        $.each(data, function(key, data){
-                            
+                        $.each(data, function(key, data) {
+
                             files += "<li class='p-0 m-0'>";
-                            files += "<a href='/catalog/download/csv-file/" + index + "/"+ key +
-                                "' class='p-0 m-0'> Catalog " + index + '&nbsp;' + key +"</a> ";
+                            files += "<a href='/catalog/download/csv-file/" + index + "/" + key +
+                                "' class='p-0 m-0'> Catalog " + index + '&nbsp;' + key + "</a> ";
                             files += data;
                             files += "</li>";
                         });
@@ -283,7 +301,7 @@
                     });
                     $('.catalogFiles').html(files);
                 }
-                
+
             },
         });
     });
@@ -298,9 +316,9 @@
             },
             success: function(result) {
 
-                if(result == ''){
+                if (result == '') {
                     $('.catalogPricing').append('File Downloading..');
-                }else{
+                } else {
 
                     $('.catalogPricing').empty();
                     let files = '';
@@ -319,35 +337,34 @@
                     $('.catalogPricing').append(files);
                 }
             },
-            
+
         });
     });
 
     // START CATALOG BULK SEARCH
 
-    $('.search-catalog').on('click', function(){
-    
+    $('.search-catalog').on('click', function() {
+
         $('.display-data').addClass('d-block');
         let catalog_asins = $('.Asins').val();
         let source = $('input[name="source"]:checked').val();
 
-        if(!$('input[name="source"]:checked').val() ){
+        if (!$('input[name="source"]:checked').val()) {
             alert('Please choose source');
             return false;
-        }
-        else if(catalog_asins == ''){
+        } else if (catalog_asins == '') {
             document.getElementById('error').innerHTML = 'Please enter Asin *';
             $('.thead').empty();
             $('.search-data').empty();
 
             return false;
-        }else{
+        } else {
             document.getElementById('error').innerHTML = '';
             $.ajax({
                 method: 'post',
                 url: "{{ route('catalog.asin.search') }}",
                 data: {
-                    "catalog_asins" : catalog_asins,
+                    "catalog_asins": catalog_asins,
                     "source": source,
                     "_token": "{{ csrf_token() }}",
                 },
@@ -356,19 +373,19 @@
                     let head = "";
                     let str_replace = '';
                     $('.thead').empty();
-                    $.each(result[0], function(key, record){
-                        head += " <td>"+ key +"</td> ";
-                        str_replace = head.replace(/_+/g, ' ').toUpperCase() ;
-                        
+                    $.each(result[0], function(key, record) {
+                        head += " <td>" + key + "</td> ";
+                        str_replace = head.replace(/_+/g, ' ').toUpperCase();
+
                     });
                     $('.thead').append(str_replace);
 
-                    $.each(result, function(key1, record1){
+                    $.each(result, function(key1, record1) {
                         data += '<tr>';
-                        $.each(record1, function(key2, value){
-                            data += "<td>"+ value +"</td>"
+                        $.each(record1, function(key2, value) {
+                            data += "<td>" + value + "</td>"
                         });
-                        data +='</tr>';
+                        data += '</tr>';
                     });
                     $('.search-data').html(data);
                 },
@@ -380,5 +397,37 @@
     });
 
     // END CATALOG BULK SEARCH
+
+    $('#exportcliqnshopCatalog').on('click', function() {
+        window.location.href = '/catalog/cliqnshop/export';
+    });
+
+    $('#catalogcliqnshopdownload').click(function() {
+
+        $.ajax({
+            url: "/catalog/cliqnshop/get-file",
+            method: "GET",
+            data: {
+                "catalog": "Cliqnshop",
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(result) {
+
+                if (result == '') {
+                    $('.catalogcliqnshop').append('File Downloading..');
+                } else {
+                    let files = '';
+                    files += "<a href='/catalog/cliqnshop/download/" +
+                        "' class='p-0 m-0'>  Download Cliqnshop Catalog " + '&nbsp;' +
+                        "</a> ";
+                    $('.catalogcliqnshop').empty();
+                    $('.catalogcliqnshop').append(files);
+                }
+            },
+            error: function(response) {
+                console.log(response);
+            },
+        });
+    });
 </script>
 @stop
