@@ -31,6 +31,7 @@ use App\Services\Catalog\PriceConversion;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetails;
+use SellingPartnerApi\Api\FeedsV20210630Api as FeedsApi;
 use App\Services\Zoho\ZohoOrder;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use SellingPartnerApi\Api\ProductPricingApi;
@@ -532,12 +533,24 @@ class TestController extends Controller
     (new ZohoOrder())->zohoOrderDetails($lead);
   }
 
-  public function TestAmazonFeed()
+  public function TestAmazonFeed($feed_id)
   {
-    // $date = Carbon::parse('2022-09-26T19:42:59.000Z')->format('Y-m-d');
-    // dd($date . 'T00:00:05.000Z');
+    $country_code = 'IN';
 
-    (new FeedOrderDetails())->FeedOrderTrackingNo();
+    $config = $this->config(6, $country_code, $token = NULL);
+    $apiInstance = new FeedsApi($config);
+    $result = ($apiInstance->getFeed($feed_id));
+
+    $result = json_decode(json_encode($result));
+    $feed_doc_id = $result->resultFeedDocumentId;
+
+    $doc_result = $apiInstance->getFeedDocument($feed_doc_id);
+
+    $doc_result = json_decode(json_encode($doc_result));
+    $url  = $doc_result->url;
+
+    echo "<script> window.open('" . $url . "','_blank')</script>";
+    exit;
   }
 
   public function testFeed()

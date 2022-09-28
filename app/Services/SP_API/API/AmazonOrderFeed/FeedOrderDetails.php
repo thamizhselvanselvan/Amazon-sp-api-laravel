@@ -42,9 +42,9 @@ class FeedOrderDetails
 
         // $config = $this->config(6, $country_code, $token = NULL);
         // $apiInstance = new FeedsApi($config);
-        // po($apiInstance->getFeed('127521019262'));
+        // po($apiInstance->getFeed('127538019262'));
         // exit;
-        // po($apiInstance->getFeedDocument('amzn1.tortuga.4.eu.e6029345-0676-4f24-8b58-4257398f6371.T2JU3SGGWMT9D'));
+        // po($apiInstance->getFeedDocument('amzn1.tortuga.4.eu.494ffeba-850c-4bdc-aec0-d0c802533085.T2XESTHNVMTWGI'));
         // exit;
 
         $marketplace_ids = $this->marketplace_id($country_code);
