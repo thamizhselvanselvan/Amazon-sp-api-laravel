@@ -89,14 +89,14 @@ class CliqnshopCatalogExport extends Command
             $data = (array)$data;
             $imagedata = json_decode($data['images'], true);
 
-            $img1 = null;
-            if (array_key_exists('images', $imagedata[0])) {
+            $img1 = [];
+            if (isset($imagedata[0]['images'])) {
 
                 foreach ($imagedata[0]['images'] as $counter => $image_data_new) {
                     $counter++;
                     if (array_key_exists("link", $image_data_new)) {
                         $img1["Images${counter}"] = $image_data_new['link'];
-                    }
+                    }   
 
                     if ($counter == 5) {
                         break;
@@ -126,10 +126,8 @@ class CliqnshopCatalogExport extends Command
 
             $csv_array = [...$csv_array, ...$img1];
 
-
-
             $writer->insertOne($csv_array);
-            Log::alert('Cliqnshop Command ended');
         }
+        Log::alert('Cliqnshop Command ended');
     }
 }
