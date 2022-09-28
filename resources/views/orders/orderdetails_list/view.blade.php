@@ -184,11 +184,18 @@
                 <x-adminlte-input label="Quantity Shipped:" name="quantity_shipped" type="text" />
                 @endif
             </div>
-            <div class="col-2">
+            <!-- <div class="col-2">
                 @if (isset($data[0]->unship))
                 <x-adminlte-input label="UnShiped:" name="unship" value="{{$data[0]->unship}}" type="text" />
                 @else
                 <x-adminlte-input label=" UnShiped:" name="unship" type="text" />
+                @endif
+            </div> -->
+            <div class="col-2">
+                @if (isset($data[0]->order_type))
+                <x-adminlte-input label="Order Type" name="order_type" value="{{$data[0]->order_type}}" type="text" />
+                @else
+                <x-adminlte-input label="Order Type:" name="order_type" type="text" />
                 @endif
             </div>
             <div class="col-2">
@@ -236,13 +243,16 @@
                 <x-adminlte-input label="Last Update Date:" name="last_update_date" type="text" />
                 @endif
             </div>
+
             <div class="col-2">
-                @if (isset($data[0]->order_type))
-                <x-adminlte-input label="Order Type" name="order_type" value="{{$data[0]->order_type}}" type="text" />
+                @if (isset($details->CountryCode))
+                <x-adminlte-input label="Consignee Country:" name="country" value="{{$details->CountryCode}}" type="text" />
                 @else
-                <x-adminlte-input label="Order Type:" name="order_type" type="text" />
+                <x-adminlte-input label="Consignee Country:" name="country" type="text" />
                 @endif
             </div>
+
+
         </div>
         <div class="row justify-content-center">
             <div class="col-2">
@@ -283,10 +293,10 @@
                 @endif
             </div>
             <div class="col-2">
-                @if (isset($details->CountryCode))
-                <x-adminlte-input label="Consignee Country:" name="country" value="{{$details->CountryCode}}" type="text" />
+                @if (isset($details->Phone))
+                <x-adminlte-input label="Phone No." name="phone" value="{{$details->Phone}}" type="text" />
                 @else
-                <x-adminlte-input label="Consignee Country:" name="country" type="text" />
+                <x-adminlte-input label="Phone No." name="phone" type="text" />
                 @endif
             </div>
         </div>
@@ -296,13 +306,6 @@
                 <x-adminlte-input label="Buyer Email:" name="BuyerEmail" value="{{$email_used->BuyerEmail}}" type="text" />
                 @else
                 <x-adminlte-input label="Buyer Email:" name="BuyerEmail" type="text" />
-                @endif
-            </div>
-            <div class="col-2">
-                @if (isset($details->Phone))
-                <x-adminlte-input label="Phone No." name="phone" value="{{$details->Phone}}" type="text" />
-                @else
-                <x-adminlte-input label="Phone No." name="phone" type="text" />
                 @endif
             </div>
             <div class="col-2">
