@@ -13,7 +13,8 @@ class CliqnshopCatalogController extends Controller
 {
     public function catalogexport()
     {
-        Artisan::call('Mosh:cliqnshop_catalog_export');
+
+        commandExecFunc("Mosh:cliqnshop_catalog_export");
         return redirect('/catalog/product')->with("success", "CliqnshopCatalog Price is Exporting please Wait for Few Minuts.");
     }
 
