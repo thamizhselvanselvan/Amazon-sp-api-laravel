@@ -70,14 +70,16 @@ class FeedOrderDetails
             if (count($store_data) > 0) {
                 foreach ($store_data as $details) {
 
-                    $date = Carbon::parse($details->purchase_date)->format('Y-m-d');
-                    $date = $date . 'T00:00:05.000Z';
+                    $date = Carbon::createFromFormat('Y-m-d H:i:s', $details->purchase_date, 'UTC')
+                        ->setTimezone('America/Los_Angeles');
+                    $date_time_uat = Carbon::parse($date)->format('Y-m-d\TH:i:s\Z');
+
                     $amazon_order_id = $details->amazon_order_id;
 
                     $data = [
                         'merchant_id' => $merchant_id,
                         'amazon_order_id' => $details->amazon_order_id,
-                        'purchase_date' => $date,
+                        'purchase_date' => $date_time_uat,
                         'carrier_code' => $carrier_name,
                         'shipping_method' => 'Standard',
                         'tracking_number' => $details->courier_awb,
