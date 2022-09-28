@@ -70,3 +70,8 @@ Route::get('catalog/asin-destination/download-template', 'Catalog\AsinDestinatio
 Route::get('catalog/asin-destination/asin-export', 'Catalog\AsinDestinationController@AsinDestinationAsinExport')->name('catalog.asin.dastination.export');
 Route::get('catalog/asin-destination/download-csv', 'Catalog\AsinDestinationController@AsinDestinationDownloadCsvZip')->name('catalog.download.asin.destination');
 Route::get('catalog/asin-destination/truncate', 'Catalog\AsinDestinationController@AsinDestinationBBTruncate')->name('catalog.asin.destination.truncate');
+
+
+Route::get('catalog/cliqnshop/export', 'Catalog\CliqnshopCatalogController@catalogexport')->name('catalog.export.cliqnshop');
+Route::get('catalog/cliqnshop/get-file', 'Catalog\CliqnshopCatalogController@exportdownload')->name('catalog.export.download.cliqnshop');
+Route::get('catalog/cliqnsho/download', 'Catalog\CliqnshopCatalogController@DownloadCatalogcloqnshop')->name('catalog.export.download.cliqnshop');
