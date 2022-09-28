@@ -40,11 +40,11 @@ class FeedOrderDetails
             6 => 92490
         ];
 
-        // $config = $this->config(6, $country_code, $token = NULL);
-        // $apiInstance = new FeedsApi($config);
-        // po($apiInstance->getFeed('127454019258'));
+        $config = $this->config(6, $country_code, $token = NULL);
+        $apiInstance = new FeedsApi($config);
+        // po($apiInstance->getFeed('127521019262'));
         // exit;
-        // po($apiInstance->getFeedDocument('amzn1.tortuga.4.eu.aa6af08c-9f85-42e2-85e9-5d87c72f9e96.T31ALWO5K8AOQ6'));
+        // po($apiInstance->getFeedDocument('amzn1.tortuga.4.eu.e6029345-0676-4f24-8b58-4257398f6371.T2JU3SGGWMT9D'));
         // exit;
 
         $marketplace_ids = $this->marketplace_id($country_code);
@@ -70,7 +70,8 @@ class FeedOrderDetails
             if (count($store_data) > 0) {
                 foreach ($store_data as $details) {
 
-                    $date = Carbon::parse($details->purchase_date)->addSeconds(10)->format('Y-m-d\TH:i:s\Z');
+                    $date = Carbon::parse($details->purchase_date)->format('Y-m-d');
+                    $date = $date . 'T00:00:05.000Z';
                     $amazon_order_id = $details->amazon_order_id;
 
                     $data = [
