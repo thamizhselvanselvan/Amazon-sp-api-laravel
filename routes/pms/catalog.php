@@ -70,3 +70,5 @@ Route::get('catalog/asin-destination/download-template', 'Catalog\AsinDestinatio
 Route::get('catalog/asin-destination/asin-export', 'Catalog\AsinDestinationController@AsinDestinationAsinExport')->name('catalog.asin.dastination.export');
 Route::get('catalog/asin-destination/download-csv', 'Catalog\AsinDestinationController@AsinDestinationDownloadCsvZip')->name('catalog.download.asin.destination');
 Route::get('catalog/asin-destination/truncate', 'Catalog\AsinDestinationController@AsinDestinationBBTruncate')->name('catalog.asin.destination.truncate');
+
+Route::get('catalog/exchange-rate', 'Catalog\CatalogExchangeManagementController@index');

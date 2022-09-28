@@ -40,6 +40,10 @@
             <x-adminlte-button label="Upload Missing Address" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
         </a>
 
+        <a href="/orders/csv/import">
+            <x-adminlte-button label="Order Import" theme="primary" icon="fas fa-file-upload" type="button" class="btn-sm"/>
+        </a>
+
     </h2>
 </div>
 @stop
