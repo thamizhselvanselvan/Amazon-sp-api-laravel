@@ -417,7 +417,7 @@
                     $('.catalogcliqnshop').append('File Downloading..');
                 } else {
                     let files = '';
-                    files += "<a href='/catalog/cliqnsho/download/" +
+                    files += "<a href='/catalog/cliqnshop/download/" +
                         "' class='p-0 m-0'>  Download Cliqnshop Catalog " + '&nbsp;' +
                         "</a> ";
                     $('.catalogcliqnshop').empty();
