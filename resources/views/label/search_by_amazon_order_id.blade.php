@@ -54,7 +54,7 @@
     <table class='table table-bordered table-striped text-center'>
         <thead>
             <tr class='text-bold bg-info'>
-                <th>Selected All <br><input type='checkbox' id='selectAll' /></th>
+                <!-- <th>Selected All <br><input type='checkbox' id='selectAll' /></th> -->
                 <th>Order No.</th>
                 <th>AWB No.</th>
                 <th>Courier</th>
@@ -73,8 +73,11 @@
 @section('js')
 <script>
     $(document).ready(function() {
-
         $('.search-amazon-order-id').on('click', function() {
+
+            $('#showTable').addClass('d-none');
+            $('#showTableMissing').addClass('d-none');
+
             var form_data = $('.form-control').val();
             $.ajax({
                 method: 'POST',
@@ -96,6 +99,15 @@
                     }
                 }
             });
+        });
+
+        $(document).on('click', '.update', function() {
+
+            let order_id = $(this).attr("ID");
+            let tracking_id = $('#tracking' + order_id).val();
+            let courier = $('#courier' + order_id).val();
+            alert(tracking_id);
+            alert(courier);
         });
     });
 </script>

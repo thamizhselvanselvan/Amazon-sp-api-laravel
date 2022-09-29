@@ -566,15 +566,12 @@ class labelManagementController extends Controller
 
             $missing_html .=
                 "<tr> 
-                    <td>
-                        <input class='check_options' type='checkbox' value='$order_id' name='options[]' id='update$order_id'>
-                    </td>
                     <td>$order_id</td>
-                    <td><input type ='text' placeholder='Tracking Id'> </td>
-                    <td><input type ='text' placeholder ='Courier Forwarder'> </td>
+                    <td><input type ='text' placeholder='Tracking Id' id ='tracking$order_id'> </td>
+                    <td><input type ='text' placeholder ='Courier Forwarder' id='courier$order_id'> </td>
                     <td>
                         <div class='d-flex'>
-                            <a href='/label/pdf-template/$order_id'class='edit btn btn-success btn-sm' target='_blank'>
+                            <a id='$order_id' class='update btn btn-success btn-sm'>
                                 <i class='fas fa-upload'></i> Update
                             </a>
                         </div>
@@ -582,5 +579,12 @@ class labelManagementController extends Controller
                 </tr>";
         }
         return $missing_html;
+    }
+
+    public function updateTrackingDetails()
+    {
+
+        // return $order_id;
+        //
     }
 }
