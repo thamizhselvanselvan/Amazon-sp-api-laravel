@@ -411,18 +411,26 @@
                 "catalog": "Cliqnshop",
                 "_token": "{{ csrf_token() }}",
             },
-            success: function(result) {
-            
-                if (result == '') {
+            success: function(response) {
+
+                if (response == '') {
                     $('.catalogcliqnshop').append('File Downloading..');
                 } else {
-                    let files = '';
-                    files += "<a href='/catalog/cliqnshop/download/" +
-                        "' class='p-0 m-0'>  Download Cliqnshop Catalog " + '&nbsp;' +
-                        "</a> " + result;
                     $('.catalogcliqnshop').empty();
+                    let files = '';
+                    $.each(response, function(index, result) {
+
+                        files += "<li class='p-0 m-0'>";
+                        files += "<a href='/catalog/cliqnshop/download/" + index + "'>" + index + '&nbsp; ' + "</a>";
+                        files += result;
+
+                        files += "</li>";
+
+                    });
                     $('.catalogcliqnshop').append(files);
+
                 }
+
             },
             error: function(response) {
                 console.log(response);

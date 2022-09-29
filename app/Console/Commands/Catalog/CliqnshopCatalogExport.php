@@ -47,109 +47,106 @@ class CliqnshopCatalogExport extends Command
      */
     public function handle()
     {
-        $total_csv = 10;
-        $chunk = 10;
+        $total_csv = 1000000;
+        $chunk = 100000;
+        $offset = 0;
         $this->remender = $total_csv / $chunk;
+        $header = [
+            'catalognewuss.asin',
+            'catalognewuss.brand',
+            'catalognewuss.images',
+            'catalognewuss.item_name',
+            'pricing_uss.usa_to_in_b2c'
+        ];
+        $asin_cat = 'pricing_uss';
 
-        $cat_details = DB::connection('catalog')
-            ->select("SELECT 
-                cat.asin,
-                cat.brand,
-                cat.images,
-                cat.item_name,
-                price.usa_to_in_b2c as inprice 
-            FROM catalognewuss AS cat
-            join pricing_uss AS price
-            on  cat.asin = price.asin
-            LIMIT  $chunk ");
+        $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
 
 
-        if ($this->count == 1) {
-            $headers = [
-                'Category',
-                'Sub-Category',
-                'Brand',
-                'ASIN',
-                'Product Name',
-                'short description',
-                'long description',
-                'Price',
-                'price quantity',
-                'price tax rate',
-                'Attributese',
-                'product variants',
-                'Suggested Products',
-                'Products bought together',
-                'stock level',
-                'date of back in stock',
-                'Images1',
-                'Images2',
-                'Images3',
-                'Images4',
-                'Images5'
-            ];
+        $cat_details =  $table_name->select($header)
+            ->join($asin_cat, 'catalognewuss.asin', '=', $asin_cat . '.asin')
+            ->chunk($chunk, function ($result) use ($header) {
 
-            $this->file_path = "Cliqnshop/" ."CatalogCliqnsop". $this->offset. ".csv";
+                if ($this->count == 1) {
+                    $headers = [
+                        'Category',
+                        'Sub-Category',
+                        'Brand',
+                        'ASIN',
+                        'Product Name',
+                        'short description',
+                        'long description',
+                        'Price',
+                        'price quantity',
+                        'price tax rate',
+                        'Attributese',
+                        'product variants',
+                        'Suggested Products',
+                        'Products bought together',
+                        'stock level',
+                        'date of back in stock',
+                        'Images1',
+                        'Images2',
+                        'Images3',
+                        'Images4',
+                        'Images5'
+                    ];
 
-
-            if (!Storage::exists($this->file_path)) {
-                Storage::put($this->file_path, '');
-            }
-
-
-            $this->writer = Writer::createFromPath(Storage::path($this->file_path, 'w'));
-            $this->writer->insertOne($headers);
-        }
-
-        foreach ($cat_details as $data) {
-
-            $data = (array)$data;
-            $imagedata = json_decode($data['images'], true);
-
-            $img1 = [];
-            if (isset($imagedata[0]['images'])) {
-
-                foreach ($imagedata[0]['images'] as $counter => $image_data_new) {
-                    $counter++;
-                    if (array_key_exists("link", $image_data_new)) {
-                        $img1["Images${counter}"] = $image_data_new['link'];
+                    $this->file_path = "Cliqnshop/" . "CatalogCliqnshop" . $this->offset . ".csv";
+                    if (!Storage::exists($this->file_path)) {
+                        Storage::put($this->file_path, '');
                     }
-
-                    if ($counter == 5) {
-                        break;
-                    }
+                    $this->writer = Writer::createFromPath(Storage::path($this->file_path, 'w'));
+                    $this->writer->insertOne($headers);
                 }
-            }
-            $csv_array = [
-                'Category' => null,
-                'Sub-Category' => null,
-                'Brand' => ucfirst($data['brand']),
-                'ASIN' => $data['asin'],
-                'Product Name' => $data['item_name'],
-                'short description' => null,
-                'long description' => null,
-                'Price' => $data['inprice'],
-                'price quantity' => '1',
-                'price tax rate' => '19',
-                'Attributese' => null,
-                'product variants' => null,
-                'Suggested Products' => null,
-                'Products bought together' => null,
-                'stock level' => '500',
-                'date of back in stock' => null
-            ];
+                foreach ($result as $data) {
 
-            $csv_array = [...$csv_array, ...$img1];
+                    $imagedata = json_decode($data['images'], true);
+                    $img1 = [];
+                    if (isset($imagedata[0]['images'])) {
 
-           $this->writer->insertone($csv_array);
+                        foreach ($imagedata[0]['images'] as $counter => $image_data_new) {
+                            $counter++;
+                            if (array_key_exists("link", $image_data_new)) {
+                                $img1["Images${counter}"] = $image_data_new['link'];
+                            }
 
-            if ($this->remender == $this->count) {
-                ++$this->offset;
-                $this->count = 1;
-            } else {
-                ++$this->count;
-            }
-        }
-        Log::alert('Cliqnshop Command ended');
+                            if ($counter == 5) {
+                                break;
+                            }
+                        }
+                    }
+                    $csv_array = [
+                        'Category' => null,
+                        'Sub-Category' => null,
+                        'Brand' => ucfirst($data['brand']),
+                        'ASIN' => $data['asin'],
+                        'Product Name' => $data['item_name'],
+                        'short description' => null,
+                        'long description' => null,
+                        'Price' => $data['usa_to_in_b2c'],
+                        'price quantity' => '1',
+                        'price tax rate' => '19',
+                        'Attributese' => null,
+                        'product variants' => null,
+                        'Suggested Products' => null,
+                        'Products bought together' => null,
+                        'stock level' => '500',
+                        'date of back in stock' => null
+                    ];
+
+                    $csv_array = [...$csv_array, ...$img1];
+                    $this->writer->insertOne($csv_array);
+                }
+
+                if ($this->remender == $this->count) {
+                    ++$this->offset;
+
+                    Log::info($this->offset);
+                    $this->count = 1;
+                } else {
+                    ++$this->count;
+                }
+            });
     }
 }
