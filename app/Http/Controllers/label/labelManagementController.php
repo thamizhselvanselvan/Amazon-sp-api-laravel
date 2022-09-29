@@ -288,13 +288,15 @@ class labelManagementController extends Controller
         return redirect('/label/manage')->with("success", "Order Details Is Updating, Please Wait.");
     }
 
-    public function labelDataFormating($id)
+    public function labelDataFormating($id, $search_type = NULL)
     {
         $label = '';
         $order = config('database.connections.order.database');
         $catalog = config('database.connections.catalog.database');
         $web = config('database.connections.web.database');
         $prefix = config('database.connections.web.prefix');
+
+        $where_condition = "web.id = $id";
 
         $label = DB::select("SELECT ordetail.asin,
         GROUP_CONCAT(DISTINCT web.order_no)as order_no,
@@ -496,4 +498,18 @@ class labelManagementController extends Controller
         return response()->download($file_path);
     }
 
+    public function labelSearchByOrderId(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $amazon_order_id = $request->order_id;
+            $amazon_order_id_array = preg_split('/[\r\n| |:|,]/', $amazon_order_id, -1, PREG_SPLIT_NO_EMPTY);
+
+            $amazon_order_id_string = "'" . implode("', '", $amazon_order_id_array) . "'";
+
+            $label_detials = $this->labelDataFormating($amazon_order_id, 'order_id');
+            return $amazon_order_id_string;
+        }
+        return view('label.search_by_amazon_order_id');
+    }
 }
