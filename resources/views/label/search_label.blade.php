@@ -42,7 +42,7 @@
 <div class="container-fluid label-search-box">
     <div class="row">
         <div class="col">
-            
+
         </div>
         <div class="col">
             <form action="">

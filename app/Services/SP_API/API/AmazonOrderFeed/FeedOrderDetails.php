@@ -10,6 +10,7 @@ use SellingPartnerApi\FeedType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\SP_API\Config\ConfigTrait;
+use JeroenNoten\LaravelAdminLte\View\Components\Widget\Card;
 use SellingPartnerApi\Model\FeedsV20210630 as Feeds;
 use SellingPartnerApi\Api\FeedsV20210630Api as FeedsApi;
 use SellingPartnerApi\Model\FeedsV20210630\CreateFeedSpecification;
@@ -25,6 +26,7 @@ class FeedOrderDetails
         $carrier_name = 'B2CShip';
         $data = [];
         $amazon_order_id = '';
+        $amazon_order_item_id =  '';
         $store_array = [
             5 => 'in_mbm',
             6 => 'nitrous'
@@ -70,11 +72,13 @@ class FeedOrderDetails
             if (count($store_data) > 0) {
                 foreach ($store_data as $details) {
 
-                    $date = Carbon::createFromFormat('Y-m-d H:i:s', $details->purchase_date, 'UTC')
+                    $current_date = Carbon::now()->subMinutes(1)->format('Y-m-d H:i:s');
+                    $date = Carbon::createFromFormat('Y-m-d H:i:s', $current_date, 'UTC')
                         ->setTimezone('America/Los_Angeles');
                     $date_time_uat = Carbon::parse($date)->format('Y-m-d\TH:i:s\Z');
 
                     $amazon_order_id = $details->amazon_order_id;
+                    $amazon_order_item_id = $details->order_item_id;
 
                     $data = [
                         'merchant_id' => $merchant_id,
@@ -89,7 +93,7 @@ class FeedOrderDetails
                 }
 
                 $response = $this->feedAWBToAmz($marketplace_ids, $config, $data);
-                $this->updateAWSTable($response, $amazon_order_id, $store_name);
+                $this->updateAWSTable($response, $amazon_order_id, $amazon_order_item_id, $store_name);
             }
         }
     }
@@ -157,7 +161,7 @@ class FeedOrderDetails
         return $xml;
     }
 
-    public function updateAWSTable($response, $amazon_order_id, $store_name)
+    public function updateAWSTable($response, $amazon_order_id, $amazon_order_item_id, $store_name)
     {
         $response = json_decode(json_encode($response));
         $feed_id = $response->feedId;
@@ -171,6 +175,8 @@ class FeedOrderDetails
                     amzn_temp_order_status = '$table_update_string' 
                 WHERE
                      amazon_order_id = '$amazon_order_id'
+                        AND
+                    order_item_id = '$amazon_order_item_id'
             ");
 
         return true;

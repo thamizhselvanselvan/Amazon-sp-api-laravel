@@ -44,20 +44,7 @@ class labelManagementController extends Controller
         if ($request->ajax()) {
 
             $bag_no = $request->bag_no;
-            $order = config('database.connections.order.database');
-            $catalog = config('database.connections.catalog.database');
-            $web = config('database.connections.web.database');
-            $prefix = config('database.connections.web.prefix');
-
-            $data = DB::select("SELECT
-            DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
-            from ${web}.${prefix}labels as web
-            JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
-            JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
-            JOIN ${order}.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
-            -- JOIN $catalog.catalog as cat ON cat.asin = orderDetails.asin
-            WHERE web.bag_no = ${bag_no}
-            ");
+            $data = $this->labelListing($bag_no);
             return response()->json($data);
         }
     }
@@ -183,27 +170,6 @@ class labelManagementController extends Controller
         return Storage::download('label/zip/label.zip');
     }
 
-    // public function zipDownload($arr)
-    // {
-    //     // po($arr);
-    //     $replace = explode(',', $arr);
-    //     $zip = new ZipArchive;
-    //     $path = 'label/zip/' . 'label.zip';
-    //     $fileName = Storage::path('label/zip/' . 'label.zip');
-    //     Storage::delete($path);
-    //     if (!Storage::exists($path)) {
-    //         Storage::put($path, '');
-    //     }
-    //     if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
-    //         foreach ($replace as $key => $value) {
-    //             $path = Storage::path('label/' . $value);
-    //             $relativeNameInZipFile = basename($path);
-    //             $zip->addFile($path, $relativeNameInZipFile);
-    //         }
-    //         $zip->close();
-    //     }
-    //     return response()->download($fileName);
-    // }
 
     public function downloadExcelTemplate()
     {
@@ -296,6 +262,7 @@ class labelManagementController extends Controller
         $web = config('database.connections.web.database');
         $prefix = config('database.connections.web.prefix');
 
+        $where_condition = "web.id = $id";
         $label = DB::select("SELECT ordetail.asin,
         GROUP_CONCAT(DISTINCT web.order_no)as order_no,
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
@@ -312,7 +279,7 @@ class labelManagementController extends Controller
         JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
         JOIN ${order}.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
         -- JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin
-        WHERE web.id = ${id}
+        WHERE $where_condition
         GROUP BY ordetail.asin
     ");
 
@@ -407,6 +374,7 @@ class labelManagementController extends Controller
 
             -- JOIN ord ON ord.our_seller_identifier = $order.ord_order_seller_credentials.seller_id as
         ");
+        // exit;
         return $data;
     }
 
@@ -496,4 +464,123 @@ class labelManagementController extends Controller
         return response()->download($file_path);
     }
 
+    public function labelListing($id, $search_type = NULL)
+    {
+        $where_condition = "web.bag_no = ${id}";
+        if ($search_type) {
+
+            $where_condition = "web.order_no IN ($id)";
+        }
+        $order = config('database.connections.order.database');
+        $catalog = config('database.connections.catalog.database');
+        $web = config('database.connections.web.database');
+        $prefix = config('database.connections.web.prefix');
+
+        $data = DB::select("SELECT
+        DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
+        from ${web}.${prefix}labels as web
+        JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
+        JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
+        JOIN ${order}.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+        -- JOIN $catalog.catalog as cat ON cat.asin = orderDetails.asin
+        WHERE $where_condition
+        ");
+        return $data;
+    }
+
+    public function labelSearchByOrderId(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $amazon_order_id = $request->order_id;
+            $amazon_order_id_array = preg_split('/[\r\n| |:|,]/', $amazon_order_id, -1, PREG_SPLIT_NO_EMPTY);
+
+            $amazon_order_id_array = array_unique($amazon_order_id_array);
+            $amazon_order_id_string = "'" . implode("', '", $amazon_order_id_array) . "'";
+
+            $label_detials = $this->labelListing($amazon_order_id_string, 'order_id');
+
+            $html = '';
+            $name = '';
+            $missing_html = '';
+            $found_order_id = [];
+
+            if (count($label_detials) > 0) {
+
+                foreach ($label_detials as $label_det) {
+
+                    $order_date = Carbon::parse($label_det->purchase_date)->format('Y-m-d');
+                    $id = $label_det->id;
+                    $address = $label_det->shipping_address;
+                    $address_array = json_decode(($address), true);
+                    if (isset($address_array['Name'])) {
+                        $name = $address_array['Name'];
+                    }
+                    $found_order_id[] = $label_det->order_no;
+                    $html .= "<tr>
+                                <td>
+                                    <input class='check_options' type='checkbox' value='$id' name='options[]' id='checkid$id'>
+                                </td>
+                                <td> $label_det->store_name </td> 
+                                <td> $label_det->order_no </td> 
+                                <td> $label_det->awb_no </td> 
+                                <td> $order_date </td> 
+                                <td> $label_det->seller_sku </td> 
+                                <td> $name</td>";
+                    if ($name) {
+                        $html .= "<td>
+                                    <div class='d-flex'>
+                                        <a href='/label/pdf-template/$id'class='edit btn btn-success btn-sm' target='_blank'>
+                                            <i class='fas fa-eye'></i> View 
+                                        </a>
+                                    
+                                        <div class='d-flex pl-2'>
+                                            <a href='/label/download-direct/$id' class='edit btn btn-info btn-sm'>
+                                                <i class='fas fa-download'></i> Download 
+                                            </a>
+                                        </div>
+                                    </div>
+                                    </td>
+                                </tr>";
+                    }
+                }
+            } else {
+
+                $missing_html = $this->trackingDetailsMissing($amazon_order_id_array);
+            }
+            $missing_order = array_diff($amazon_order_id_array, $found_order_id);
+
+            $missing_html = $this->trackingDetailsMissing($missing_order);
+            return [
+                'success' => $html,
+                'missing' => $missing_html,
+            ];
+        }
+        return view('label.search_by_amazon_order_id');
+    }
+
+    public function trackingDetailsMissing($amazon_order_id)
+    {
+        $missing_html = '';
+        foreach ($amazon_order_id as $order_id) {
+
+            $missing_html .=
+                "<tr> 
+                    <td>
+                        <input class='check_options' type='checkbox' value='$order_id' name='options[]' id='update$order_id'>
+                    </td>
+                    <td>$order_id</td>
+                    <td><input type ='text' placeholder='Tracking Id'> </td>
+                    <td><input type ='text' placeholder ='Courier Forwarder'> </td>
+                    <td>
+                        <div class='d-flex'>
+                            <a href='/label/pdf-template/$order_id'class='edit btn btn-success btn-sm' target='_blank'>
+                                <i class='fas fa-upload'></i> Update
+                            </a>
+                        </div>
+                    <td>
+                </tr>";
+        }
+        return $missing_html;
+    }
 }
