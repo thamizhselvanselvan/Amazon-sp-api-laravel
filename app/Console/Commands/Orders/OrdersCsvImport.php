@@ -46,7 +46,7 @@ class OrdersCsvImport extends Command
         $store_id = $this->argument('store_id');
         $country = OrderSellerCredentials::where('seller_id', $store_id)->get();
         $country_code = $country[0]->country_code;
-        
+
         $file_path = "OrderFile/order.csv";
         $csv_data = Reader::createFromPath(Storage::path($file_path, 'r'));
         $csv_data->setDelimiter(',');
@@ -57,9 +57,8 @@ class OrdersCsvImport extends Command
         $shipping_address = [];
         $buyer_info = [];
 
-        foreach($csv_data as $key => $csv)
-        {
-            if($key != 0){
+        foreach ($csv_data as $key => $csv) {
+            if ($key != 0) {
 
                 $item_price = [
                     'CurrencyCode' => $csv['Currency_code'],
@@ -93,7 +92,7 @@ class OrdersCsvImport extends Command
                     'BuyerEmail' => $csv['Buyer_info'],
                 ];
 
-                $orderItemDetails_table [] = [
+                $orderItemDetails_table[] = [
 
                     'seller_identifier' => $store_id,
                     'country'   => $country_code,
@@ -109,8 +108,8 @@ class OrdersCsvImport extends Command
                     'created_at'    =>  now(),
                     'updated_at'    =>  now(),
                 ];
-                
-                $orders_table [] = [
+
+                $orders_table[] = [
 
                     'our_seller_identifier' =>  $store_id,
                     'country'   =>  $country_code,
@@ -153,7 +152,7 @@ class OrdersCsvImport extends Command
 
         Order::upsert($orders_table, ['amazon_order_identifier_UNIQUE'], [
             'our_seller_identifier',
-            'country', 
+            'country',
             'fulfillment_channel',
             'amazon_order_identifier',
             'purchase_date',
@@ -175,7 +174,5 @@ class OrdersCsvImport extends Command
             'shipping_address',
             'buyer_info',
         ]);
-        
     }
-    
 }
