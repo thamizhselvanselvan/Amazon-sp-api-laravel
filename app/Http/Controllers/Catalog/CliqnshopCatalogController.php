@@ -15,23 +15,25 @@ class CliqnshopCatalogController extends Controller
     {
 
         commandExecFunc("Mosh:cliqnshop_catalog_export");
-        return redirect('/catalog/product')->with("success", "CliqnshopCatalog Price is Exporting please Wait for Few Minuts.");
+        return redirect('/catalog/product')->with("success", "Cliqnshop Catalog Price is Exporting please Wait for Few Minuts.");
     }
 
     public function exportdownload(Request $request)
     {
-        // $catalogfiles = [];
-        // $folder = $request->catalog;
-        // $path = Storage::path($folder);
-        // $files = glob($path."\*.csv"); 
-        // return response()->json('success');  
-
         $catalogfiles = [];
         $folder = $request->catalog;
         $path = Storage::path($folder);
-        $files = scandir($path);
+        $files = glob($path."\*.csv"); 
+        $time =   date("F d Y H:i:s.", filemtime($path ));
+        // return response()->json('success');  
+        
+        return response()->json($time);
 
-        return response()->json($files);
+//         $catalogfiles = [];
+//         $folder = $request->catalog;
+//         $path = Storage::path($folder);
+//         $files = scandir($path);
+// dd($files);
     }
     public function DownloadCatalogcloqnshop()
     {

@@ -310,7 +310,7 @@ class InventoryShipmentController extends Controller
     {
         $store = Inventory::where('ship_id', $id)->with(['warehouses', 'vendors'])->get();
         foreach ($store as $value) {
-
+            $warehouse_id ='';
             $warehouse_id = $value->warehouse_id;
         }
         $rack = Rack::where('warehouse_id', $warehouse_id)->get();
