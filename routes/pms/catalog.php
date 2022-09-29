@@ -72,3 +72,9 @@ Route::get('catalog/asin-destination/download-csv', 'Catalog\AsinDestinationCont
 Route::get('catalog/asin-destination/truncate', 'Catalog\AsinDestinationController@AsinDestinationBBTruncate')->name('catalog.asin.destination.truncate');
 
 Route::get('catalog/exchange-rate', 'Catalog\CatalogExchangeManagementController@index');
+Route::post('catalog/update/exchange-rate', 'Catalog\CatalogExchangeManagementController@CatalogUpdate')->name('catalog.update.exchange.rate');
+Route::get('catalog/record/auto-load', 'Catalog\CatalogExchangeManagementController@CatalogRecordAutoload');
+
+Route::get('catalog/cliqnshop/export', 'Catalog\CliqnshopCatalogController@catalogexport')->name('catalog.export.cliqnshop');
+Route::get('catalog/cliqnshop/get-file', 'Catalog\CliqnshopCatalogController@exportdownload')->name('catalog.export.download.cliqnshop');
+Route::get('catalog/cliqnshop/download', 'Catalog\CliqnshopCatalogController@DownloadCatalogcloqnshop')->name('catalog.export.cliqnshop.download');
