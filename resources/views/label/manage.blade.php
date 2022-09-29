@@ -23,28 +23,43 @@
     <h1 class="m-0 text-dark col-3">Label Management</h1>
 </div>
 
-<div class="row">
-    <h2 class="mb-4 text-right col">
-        <a href="search-label">
-            <x-adminlte-button label="Search Label" theme="primary" icon="fas fa-search" class="btn-sm" />
-        </a>
-        
-        <a href="upload">
-            <x-adminlte-button label="Add New Records" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
-        </a>
-        <a href="missing">
-            <x-adminlte-button label="Fetch Missing Orders" theme="primary" icon="fas fa-sync" class="btn-sm" />
-        </a>
-        
-        <a href="missing/address">
-            <x-adminlte-button label="Upload Missing Address" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
-        </a>
-
-        <a href="/orders/csv/import">
-            <x-adminlte-button label="Order Import" theme="primary" icon="fas fa-file-upload" type="button" class="btn-sm"/>
-        </a>
-
-    </h2>
+<div class="row d-flex">
+    <div class="col-12 text-right ">
+        <div class="dropdown d-inline-block">
+            <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Search
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="search-label">Search By Bag No.</a>
+                <a class="dropdown-item" href="#">Search By Order Id</a>
+            </div>
+        </div>
+        <!-- <div class="d-inline-block">
+            <a href="search-label">
+                <x-adminlte-button label="Search Label" theme="primary" icon="fas fa-search" class="btn-sm" />
+            </a>
+        </div> -->
+        <div class="d-inline-block">
+            <a href="upload">
+                <x-adminlte-button label="Add New Records" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
+            </a>
+        </div>
+        <div class="d-inline-block">
+            <a href="missing">
+                <x-adminlte-button label="Fetch Missing Orders" theme="primary" icon="fas fa-sync" class="btn-sm" />
+            </a>
+        </div>
+        <div class="d-inline-block">
+            <a href="missing/address">
+                <x-adminlte-button label="Upload Missing Address" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
+            </a>
+        </div>
+        <div class="d-inline-block">
+            <a href="/orders/csv/import">
+                <x-adminlte-button label="Order Import" theme="primary" icon="fas fa-file-upload" type="button" class="btn-sm" />
+            </a>
+        </div>
+    </div>
 </div>
 @stop
 
