@@ -28,6 +28,46 @@
         </div>
     </div>
 </div>
+
+<div id="showTable" class="d-none">
+    <table class='table table-bordered table-striped text-center'>
+        <thead>
+            <tr class='text-bold bg-info'>
+                <th>Selected All <br><input type='checkbox' id='selectAll' /></th>
+                <th>Store Name</th>
+                <th>Order No.</th>
+                <th>Awb No.</th>
+                <th>Order Date</th>
+                <th>SKU</th>
+                <th>Customer</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id='checkTable'>
+
+        </tbody>
+
+    </table>
+</div>
+
+<div id="showTableMissing" class="d-none">
+    <table class='table table-bordered table-striped text-center'>
+        <thead>
+            <tr class='text-bold bg-info'>
+                <th>Selected All <br><input type='checkbox' id='selectAll' /></th>
+                <th>Order No.</th>
+                <th>AWB No.</th>
+                <th>Courier</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id='checkTableMissing'>
+
+        </tbody>
+
+    </table>
+
+</div>
 @stop
 
 @section('js')
@@ -44,7 +84,16 @@
                     "_token": "{{ csrf_token() }}",
                 },
                 success: function(response) {
-                    //
+                    if (response.success) {
+                        $('#showTable').removeClass('d-none');
+                        $('#checkTable').html(response.success);
+
+                    }
+                    if (response.missing) {
+
+                        $('#showTableMissing').removeClass('d-none');
+                        $('#checkTableMissing').html(response.missing);
+                    }
                 }
             });
         });
