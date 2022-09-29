@@ -114,7 +114,7 @@ class PriceConversion
 
         if ($weight > 0.9) {
 
-            $int_shipping_base_charge = ($this->exchange_rate_data[5]['base_weight'] + ($weight - 1) * $this->exchange_rate_data[5]['base_weight']);
+            $int_shipping_base_charge = ($this->exchange_rate_data[5]['base_weight'] + ($weight - 1) * $this->exchange_rate_data[5]['base_shipping_charge']);
         } else {
             $int_shipping_base_charge = $this->exchange_rate_data[5]['base_weight'];
         }
