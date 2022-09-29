@@ -229,7 +229,7 @@ class PriceConversion
         }
         $duty_rate = $this->exchange_rate_data[2]['duty_rate'] / 100;
         $nitshopp = $this->exchange_rate_data[2]['seller_commission'] / 100;
-        $packaging = $this->exchange_rate_data[2]['pakaging'];
+        $packaging = $this->exchange_rate_data[2]['packaging'];
         $amazon_commission = $this->exchange_rate_data[2]['amazon_commission'] / 100;
         $ex_rate = $this->exchange_rate_data[2]['excerise_rate'];
 
