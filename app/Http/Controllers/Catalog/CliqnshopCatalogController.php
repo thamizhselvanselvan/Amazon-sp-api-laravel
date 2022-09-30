@@ -20,24 +20,22 @@ class CliqnshopCatalogController extends Controller
 
     public function exportdownload(Request $request)
     {
+
         $catalogfiles = [];
         $folder = $request->catalog;
-        $path = Storage::path($folder);
-        $files = glob($path."\*.csv"); 
-        $time =   date("F d Y H:i:s.", filemtime($path ));
-        // return response()->json('success');  
+        $path = (Storage::path( $folder));
+        $files = scandir($path);
         
-        return response()->json($time);
-
-//         $catalogfiles = [];
-//         $folder = $request->catalog;
-//         $path = Storage::path($folder);
-//         $files = scandir($path);
-// dd($files);
+        foreach ($files as $key => $file) {
+            if ($key > 1) {
+                $catalogfiles[$file] = date("F d Y H:i:s.", filemtime($path.'/'.$file ));
+      
+            }
+        }
+        return response()->json($catalogfiles);
     }
-    public function DownloadCatalogcloqnshop()
+    public function DownloadCatalogcloqnshop($index)
     {
-        $path = "Cliqnshop/catalog.csv";
-        return Storage::download($path);
+        return Storage::download('Cliqnshop/'.$index);
     }
 }
