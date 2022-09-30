@@ -501,6 +501,10 @@ class labelManagementController extends Controller
 
             $label_detials = $this->labelListing($amazon_order_id_string, 'order_id');
 
+            $temp_label = array_unique(array_column($label_detials, 'order_no'));
+            $temp_label = array_intersect_key($label_detials, $temp_label);
+
+            $label_detials = $temp_label;
             $html = '';
             $name = '';
             $missing_html = '';
@@ -524,30 +528,27 @@ class labelManagementController extends Controller
                     $found_order_id[] = $order_id;
 
                     $html .= "<tr>
-                                <td>
-                                    <input class='check_options' type='checkbox' value='$id' name='options[]' id='checkid$id'>
-                                </td>
                                 <td> $label_det->store_name </td> 
                                 <td> $label_det->order_no </td>";
 
-                    // if ($awb_no && $courier_name) {
+                    if ($awb_no && $courier_name) {
 
-                    $html .=      "<td> $awb_no </td> 
+                        $html .=      "<td> $awb_no </td> 
                                   <td> $courier_name </td> ";
-                    // } else {
-                    //     $awb_exist = $awb_no ? $awb_no : '';
-                    //     $courier_name_exist = $courier_name ? $courier_name : '';
-                    //     $html .= "<td><input type ='text' placeholder='$awb_no' id ='tracking$order_id' value='$awb_exist'></td>
-                    //     <td><input type ='text' placeholder ='$courier_name' id='courier$order_id' value ='$courier_name_exist'></td>";
-                    // }
+                    } else {
+                        $awb_exist = $awb_no ? $awb_no : '';
+                        $courier_name_exist = $courier_name ? $courier_name : '';
+                        $html .= "<td><input type ='text' placeholder='$awb_no' id ='tracking$order_id' value='$awb_exist'></td>
+                            <td><input type ='text' placeholder ='$courier_name' id='courier$order_id' value ='$courier_name_exist'></td>";
+                    }
 
                     $html .= "<td> $order_date </td> 
-                                <td> $label_det->seller_sku </td> 
+                                
                                 <td> $name</td>";
-                    if ($name) {
+                    if ($name && $courier_name && $awb_no) {
                         $html .= "<td>
                                     <div class='d-flex'>
-                                        <a href='/label/pdf-template/$id'class='edit btn btn-success btn-sm' target='_blank'>
+                                        <a href='/label/pdf-template/$id' class='edit btn btn-success btn-sm view'  target='_blank'>
                                             <i class='fas fa-eye'></i> View 
                                         </a>
                                     
@@ -562,13 +563,13 @@ class labelManagementController extends Controller
                     }
                     if (!$courier_name || !$awb_no) {
 
-                        // $html .= "<td>
-                        //             <div class='d-flex'>
-                        //                 <a id='$order_id' class='update btn btn-success btn-sm'>
-                        //                     <i class='fas fa-upload'></i> Update
-                        //                 </a>
-                        //             </div>
-                        //         <td>";
+                        $html .= "<td>
+                                    <div class='d-flex'>
+                                        <a id='$order_id' class='update btn btn-success btn-sm'>
+                                            <i class='fas fa-upload'></i> Update
+                                        </a>
+                                    </div>
+                                <td>";
                     }
                 }
             }
@@ -614,7 +615,7 @@ class labelManagementController extends Controller
 
         $label_update =  [
             'order_no' => $order_id,
-            'awb_no' => $tracking_id,
+            'awb_no' => strtoupper($tracking_id),
             'forwarder' => $courier
         ];
         Label::upsert($label_update, 'order_awb_no_unique', ['order_no', 'awb_no', 'forwarder']);
