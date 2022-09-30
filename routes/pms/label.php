@@ -29,4 +29,4 @@ Route::post('label/missing/address', 'label\labelManagementController@labelMissi
 Route::get('label/missing/address/export', 'label\labelManagementController@labelMissingAddressExport')->name('label.missing.address.export');
 
 Route::match(['get', 'post'], 'label/search/amazon-order-id', 'label\labelManagementController@labelSearchByOrderId')->name('lable.search.amazon-order-id');
-Route::match(['get', 'post'], 'label/update/tracking-details', 'label\labelManagementController@updateTrackingDetails');
+Route::match(['get', 'post'], 'label/update/tracking-details', 'label\labelManagementController@updateTrackingDetails')->name('lable.update.tracking-details');

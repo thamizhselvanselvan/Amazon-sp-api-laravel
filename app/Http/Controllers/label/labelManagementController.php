@@ -3,32 +3,33 @@
 namespace App\Http\Controllers\label;
 
 use DateTime;
+use App\Models;
 use ZipArchive;
 use RedBeanPHP\R;
+use Carbon\Carbon;
 use App\Models\Label;
+use League\Csv\Reader;
+use League\Csv\Writer;
 use App\Models\Mws_region;
 use Illuminate\Http\Request;
 use App\Jobs\Orders\GetOrder;
+use GuzzleHttp\Promise\Create;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
+
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
-
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use App\Models\order\OrderSellerCredentials;
-use App\Services\SP_API\API\Order\missingOrder;
-use Carbon\Carbon;
-use GuzzleHttp\Promise\Create;
-use League\Csv\Reader;
-use League\Csv\Writer;
 
+use App\Services\SP_API\API\Order\missingOrder;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 
 class labelManagementController extends Controller
@@ -477,13 +478,13 @@ class labelManagementController extends Controller
         $prefix = config('database.connections.web.prefix');
 
         $data = DB::select("SELECT
-        DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
-        from ${web}.${prefix}labels as web
-        JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
-        JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
-        JOIN ${order}.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
-        -- JOIN $catalog.catalog as cat ON cat.asin = orderDetails.asin
-        WHERE $where_condition
+            DISTINCT web.id, web.awb_no, web.forwarder, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
+            from ${web}.${prefix}labels as web
+            JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
+            JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
+            JOIN ${order}.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+            -- JOIN $catalog.catalog as cat ON cat.asin = orderDetails.asin
+            WHERE $where_condition
         ");
         return $data;
     }
@@ -512,19 +513,35 @@ class labelManagementController extends Controller
                     $order_date = Carbon::parse($label_det->purchase_date)->format('Y-m-d');
                     $id = $label_det->id;
                     $address = $label_det->shipping_address;
+                    $courier_name = $label_det->forwarder;
+                    $awb_no = $label_det->awb_no;
+                    $order_id = $label_det->order_no;
                     $address_array = json_decode(($address), true);
                     if (isset($address_array['Name'])) {
                         $name = $address_array['Name'];
                     }
-                    $found_order_id[] = $label_det->order_no;
+
+                    $found_order_id[] = $order_id;
+
                     $html .= "<tr>
                                 <td>
                                     <input class='check_options' type='checkbox' value='$id' name='options[]' id='checkid$id'>
                                 </td>
                                 <td> $label_det->store_name </td> 
-                                <td> $label_det->order_no </td> 
-                                <td> $label_det->awb_no </td> 
-                                <td> $order_date </td> 
+                                <td> $label_det->order_no </td>";
+
+                    // if ($awb_no && $courier_name) {
+
+                    $html .=      "<td> $awb_no </td> 
+                                  <td> $courier_name </td> ";
+                    // } else {
+                    //     $awb_exist = $awb_no ? $awb_no : '';
+                    //     $courier_name_exist = $courier_name ? $courier_name : '';
+                    //     $html .= "<td><input type ='text' placeholder='$awb_no' id ='tracking$order_id' value='$awb_exist'></td>
+                    //     <td><input type ='text' placeholder ='$courier_name' id='courier$order_id' value ='$courier_name_exist'></td>";
+                    // }
+
+                    $html .= "<td> $order_date </td> 
                                 <td> $label_det->seller_sku </td> 
                                 <td> $name</td>";
                     if ($name) {
@@ -543,14 +560,22 @@ class labelManagementController extends Controller
                                     </td>
                                 </tr>";
                     }
-                }
-            } else {
+                    if (!$courier_name || !$awb_no) {
 
-                $missing_html = $this->trackingDetailsMissing($amazon_order_id_array);
+                        // $html .= "<td>
+                        //             <div class='d-flex'>
+                        //                 <a id='$order_id' class='update btn btn-success btn-sm'>
+                        //                     <i class='fas fa-upload'></i> Update
+                        //                 </a>
+                        //             </div>
+                        //         <td>";
+                    }
+                }
             }
+
             $missing_order = array_diff($amazon_order_id_array, $found_order_id);
 
-            $missing_html = $this->trackingDetailsMissing($missing_order);
+            $missing_html .= $this->trackingDetailsMissing($missing_order);
             return [
                 'success' => $html,
                 'missing' => $missing_html,
@@ -581,10 +606,18 @@ class labelManagementController extends Controller
         return $missing_html;
     }
 
-    public function updateTrackingDetails()
+    public function updateTrackingDetails(Request $request)
     {
+        $order_id = $request->order_id;
+        $tracking_id = $request->tracking_id;
+        $courier = $request->courier;
 
-        // return $order_id;
-        //
+        $label_update =  [
+            'order_no' => $order_id,
+            'awb_no' => $tracking_id,
+            'forwarder' => $courier
+        ];
+        Label::upsert($label_update, 'order_awb_no_unique', ['order_no', 'awb_no', 'forwarder']);
+        return 'success';
     }
 }
