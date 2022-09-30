@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Catalog\AsinDestination;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Catalog\Asin_destination;
 use Yajra\DataTables\Facades\DataTables;
 
 class AsinDestinationController extends Controller
@@ -197,7 +198,25 @@ class AsinDestinationController extends Controller
         $destinations = implode(',', $request->destination);
         $priority = $request->priority;
         commandExecFunc("mosh:Asin-destination-delete-priority-wise ${priority} --destinations=${destinations}");
-
         return redirect('catalog/asin-destination')->with('success', 'Table Truncate successfully');
+    }
+
+    public function AsinDestinationBBSearchDelete(Request $request)
+    {
+        
+        $request->validate([
+            'source'    =>  'required|in:IN,US',
+            'priority'  =>  'required|in:1,2,3',
+            'Asins'     =>  'required',
+        ]);
+        
+        $source = strtolower($request->source);
+        $priority = $request->priority;
+        $Asins = array_unique(preg_split('/[\r\n| |:|,|.]/',$request->Asins , -1, PREG_SPLIT_NO_EMPTY));
+        $asins = implode(',', $Asins);
+        
+        commandExecFunc("mosh:search-asin-delete-bb-destination ${priority} ${source} ${asins}");
+        return redirect('/catalog/asin-destination')->with('success', 'ASINS has been deleted successfully!');
+    
     }
 }

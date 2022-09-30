@@ -135,72 +135,68 @@
             </div>
             @endif
         </div>
-
-        <!-- <table class="table table-bordered yajra-datatable table-striped text-center table-sm">
-            <thead>
-                <tr class="bg-info">
-                    <th>S/N</th>
-                    <th>ASIN</th>
-                    <th>Destination</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table> -->
-
     </div>
+</div>
+<div class="row">
+    <div class="col-2"></div>
+    <div class="col-8 ">
+        <form action=" {{ route('catalog.asin.destination.search.delete') }} " method="POST" >
+            @csrf
+            
+            <div class="card ">
+                <div class="card-header text-center mt-0 pt-0 mb-0 pb-0">
+                    <h3>Search ASIN And Delete</h3>
+                </div>
+                <div class="card-body ">
+                    <label for="Select Source" class="mt-0">Select Source</label><br>
+                    <div class="row ">
+                        <div class="col-1">
+                            <input type="radio" class="Asin-source" name="source" value="IN" />
+                            <label for="IN">IN</label>
+                        </div>
+                        <div class="col-1">
+                            <input type="radio" class="Asin-source" name="source" value="US" />
+                            <label for="US">US</label>
+                        </div>
+    
+                    </div>
+                    <label for="Select Source" class="mt-0">Select Priority</label><br>
+                    <div class="row ">
+                        <div class="col-1">
+                            <input type="radio" class="destination-priority" name="priority" value="1"  >
+                            <label for="P1">P1</label>
+                        </div>
+                        <div class="col-1">
+                            <input type="radio" class="destination-priority" name="priority" value="2"  >
+                            <label for="P2">P2</label>
+                        </div>
+                        <div class="col-1 ">
+                            <input type="radio" class="destination-priority" name="priority" value="3"  >
+                            <label for="P3">P3</label>
+                        </div>
+                    </div>
+                    <x-adminlte-textarea label="Enter ASIN" type="text-area" class="Asins" name="Asins" placeholder="Enter Asin" rows="4" />
+                    <b>
+                        <p class="text-danger" id="error"></p>
+                    </b>
+                    <x-adminlte-button label="Search & Delete" type="submit" theme="primary" icon="fas fa-trash text-danger" class="search&delete btn-sm float-right mt-2 " onclick="return confirm('Are you sure you want to delete these asins?')" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-2"></div>
 </div>
 @stop
 
 @section('js')
 <script type="text/javascript">
 
-$(function() {
-    yajra_datatable();
-});
-
-function yajra_datatable() {
-
-    // let yajra_table = $('.yajra-datatable').DataTable({
-    //     processing: true,
-    //     serverSide: true,
-    //     destroy: true,
-    //     pageLength: 200,
-    //     ajax: "{{ url('catalog/asin-destination') }}",
-    //     columns: [{
-    //             data: 'id',
-    //             name: 'id',
-    //             orderable: false,
-    //             searchable: false
-    //         },
-    //         {
-    //             data: 'asin',
-    //             name: 'asin',
-    //             orderable: false
-    //         },
-    //         {
-    //             data: 'destination',
-    //             name: 'destination',
-    //             orderable: false
-    //         },
-    //         {
-    //             data: 'action',
-    //             name: 'action',
-    //             orderable: false,
-    //             searchable: false
-    //         },
-
-    //     ]
-    // });
-}
 $(document).on('click', '.trash', function() {
-
     let bool = confirm('Are you sure you want to delete?');
     if (!bool) {
         return false;
     }
-    
+
 });
 
 $(document).on('click', '.truncate', function() {
