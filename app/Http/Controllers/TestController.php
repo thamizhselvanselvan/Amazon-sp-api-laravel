@@ -195,7 +195,7 @@ class TestController extends Controller
 
       po($e->getMessage());
     }
-    exit;
+    // exit;
     echo '<hr>';
     echo 'Order Address';
     try {
