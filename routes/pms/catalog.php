@@ -77,4 +77,4 @@ Route::get('catalog/record/auto-load', 'Catalog\CatalogExchangeManagementControl
 
 Route::get('catalog/cliqnshop/export', 'Catalog\CliqnshopCatalogController@catalogexport')->name('catalog.export.cliqnshop');
 Route::get('catalog/cliqnshop/get-file', 'Catalog\CliqnshopCatalogController@exportdownload')->name('catalog.export.download.cliqnshop');
-Route::get('catalog/cliqnshop/download', 'Catalog\CliqnshopCatalogController@DownloadCatalogcloqnshop')->name('catalog.export.cliqnshop.download');
+Route::get('catalog/cliqnshop/download/{index}', 'Catalog\CliqnshopCatalogController@DownloadCatalogcloqnshop')->name('catalog.export.cliqnshop.download');
