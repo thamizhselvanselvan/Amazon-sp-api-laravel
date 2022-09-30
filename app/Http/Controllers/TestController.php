@@ -179,14 +179,15 @@ class TestController extends Controller
 
     echo '<hr>';
     echo 'Order item details';
-
+    echo "<br>";
     try {
 
       $data_element = array('buyerInfo');
       $next_token = NULL;
       $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
-
-      po($result_orderItems);
+      $request_id = $result_orderItems['headers']['x-amzn-RequestId'];
+      echo "Request Id: " . $request_id[0];
+      po($result_orderItems->getPayload());
     } catch (Exception $e) {
 
       echo "<br>";
@@ -201,8 +202,11 @@ class TestController extends Controller
     try {
 
       $result_order_address = $apiInstance->getOrderAddress($order_id);
+      $request_id = $result_order_address['headers']['x-amzn-RequestId'];
 
-      po($result_order_address);
+      echo "Request Id: " . $request_id[0];
+
+      po($result_order_address->getPayload());
     } catch (Exception $e) {
       echo "<br>";
       echo 'Request Id: ' . (($e->getResponseHeaders())['x-amzn-RequestId'][0]);
