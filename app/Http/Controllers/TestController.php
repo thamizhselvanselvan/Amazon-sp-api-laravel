@@ -150,15 +150,13 @@ class TestController extends Controller
   {
     //new media new token
     $token = NULL;
-    // $token = 'Atzr|IwEBIN0kK1fNcVINCWD922Ed_hlgmfFbpJnumV8-L4FctK1RJJvTFx2mXymHIfN3G5TQIGg2lukH-p-fGbTA_7g7h_8SAyfmQVYBq83Gev7WtGagNoDM4mfqAxhOHU-wD3FDyfJomA0P5iAASpb0ecBz72FfmoamkFI4pTbuAwB-G7LjvW-ITkDjgZQl8lnsgCI6J5EN-4e8K9eJrAU5p9LMFjPfk8vTqiRAJx6YKNQvNTtPbm3HXmk3AnoogG44IOVazzad7D0VUOr6KQNSQnmx3aN9R2UBgt67KM2YPugDteKKygm9D0JomfmtlY-f3y0Eox4';
-
     $config = $this->config($seller_id, $country_code, $token);
 
     $marketplace_ids = $this->marketplace_id($country_code);
     $marketplace_ids = [$marketplace_ids];
 
     $apiInstance = new OrdersV0Api($config);
-    $startTime = Carbon::now()->subDays(30)->toISOString();
+    $startTime = Carbon::now()->subDays(1)->toISOString();
     $createdAfter = $startTime;
     $max_results_per_page = 100;
 
@@ -170,35 +168,50 @@ class TestController extends Controller
 
       echo '<hr>';
       echo 'Order Details';
-      $order = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, null, $next_token, $amazon_order_ids, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
-      po($order);
+      echo '<br>';
+      $order = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, null, $next_token, $amazon_order_ids, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null);
+      $request_id = $order['headers']['x-amzn-RequestId'];
+      echo "Request Id: " . $request_id[0];
+      po($order->getPayload());
     } catch (Exception $e) {
       po($e->getMessage());
     }
 
     echo '<hr>';
     echo 'Order item details';
-
+    echo "<br>";
     try {
 
       $data_element = array('buyerInfo');
       $next_token = NULL;
       $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
-
-      po($result_orderItems);
+      $request_id = $result_orderItems['headers']['x-amzn-RequestId'];
+      echo "Request Id: " . $request_id[0];
+      po($result_orderItems->getPayload());
     } catch (Exception $e) {
+
+      echo "<br>";
+      echo 'Request Id: ' . (($e->getResponseHeaders())['x-amzn-RequestId'][0]);
+      echo "<br>";
 
       po($e->getMessage());
     }
-
+    // exit;
     echo '<hr>';
     echo 'Order Address';
     try {
 
       $result_order_address = $apiInstance->getOrderAddress($order_id);
+      $request_id = $result_order_address['headers']['x-amzn-RequestId'];
 
-      po($result_order_address);
+      echo "Request Id: " . $request_id[0];
+
+      po($result_order_address->getPayload());
     } catch (Exception $e) {
+      echo "<br>";
+      echo 'Request Id: ' . (($e->getResponseHeaders())['x-amzn-RequestId'][0]);
+      echo "<br>";
+
       po($e->getMessage());
     }
 
@@ -534,8 +547,169 @@ class TestController extends Controller
 
     curl_close($curl);
     $result = json_decode(json_encode($response));
-    $result = mungXML($result);
-    dd($result);
+    $plainXML = mungXML($result);
+    $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+    dd($arrayResult);
+  }
+
+  public function emiratePostBooking()
+  {
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://osbtest.epg.gov.ae/ebs/genericapi/booking',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => '<?xml version="1.0" encoding="utf-8"?>
+      <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+        <soap:Body>
+          <CreateBookingRequest xmlns="http://epg.generic.booking/">
+            <BookingRequest>
+              <SenderContactName>Amit Singh</SenderContactName>
+              <SenderCompanyName>Mosh</SenderCompanyName>
+              <SenderAddress>Warehouse61</SenderAddress>
+              <SenderCity>Dubai</SenderCity>
+              <SenderContactMobile></SenderContactMobile>
+              <SenderContactPhone></SenderContactPhone>
+              <SenderEmail>Test@moshgmail.com</SenderEmail>
+              <SenderZipCode></SenderZipCode>
+              <SenderState>Dubai</SenderState>
+              <SenderCountry>UAE</SenderCountry>
+              <ReceiverContactName>Test Amit</ReceiverContactName>
+              <ReceiverCompanyName>Mosh</ReceiverCompanyName>
+              <ReceiverAddress>flat no 313</ReceiverAddress>
+              <ReceiverCity>Ajman</ReceiverCity>
+              <ReceiverCityName>Ajman</ReceiverCityName>
+              <ReceiverContactMobile></ReceiverContactMobile>
+              <ReceiverContactPhone></ReceiverContactPhone>
+              <ReceiverEmail>Aramex@gmail.com</ReceiverEmail>
+              <ReceiverZipCode></ReceiverZipCode>
+              <ReceiverState>Ajman</ReceiverState>
+              <ReceiverCountry>Dubai</ReceiverCountry>
+              <ReferenceNo>405-1952257037126</ReferenceNo>
+              <ReferenceNo1>1</ReferenceNo1>
+              <ReferenceNo2>2</ReferenceNo2>
+              <ReferenceNo3>3</ReferenceNo3>
+              <ContentTypeCode>4</ContentTypeCode>
+              <NatureType>NA</NatureType>
+              <Service>Domestic</Service>
+              <ShipmentType>Premium</ShipmentType>
+              <DeleiveryType>Counter</DeleiveryType>
+              <Registered>No</Registered>
+              <PaymentType>COD</PaymentType>
+              <CODAmount>100</CODAmount>
+              <CODCurrency>AED</CODCurrency>
+              <CommodityDescription>string</CommodityDescription>
+              <Pieces>1</Pieces>
+              <Weight>100</Weight>
+              <WeightUnit>Grams</WeightUnit>
+              <Length>.5</Length>
+              <Width>.5</Width>
+              <Height>1</Height>
+              <DimensionUnit>Meter</DimensionUnit>
+              <ItemValue>string</ItemValue>
+              <ValueCurrency>string</ValueCurrency>
+              <ProductCode>string</ProductCode>
+              <SpecialInstructionsID>string</SpecialInstructionsID>
+              <DeliveryInstructionsID>string</DeliveryInstructionsID>
+              <HandlingInstructionsID>string</HandlingInstructionsID>
+              <LabelType>RPT</LabelType>
+              <RequestSource>string</RequestSource>
+              <isReturnItem>No</isReturnItem>
+              <SendMailToSender>No</SendMailToSender>
+              <SendMailToReceiver>No</SendMailToReceiver>
+              <CustomDeclarations>
+                <CustomDeclarationRequest>
+                  <HSCode>1</HSCode>
+                  <TotalUnits>100</TotalUnits>
+                  <Weight>100</Weight>
+                  <Value>39</Value>
+                  <DeclaredCurrency>AED</DeclaredCurrency>
+                  <FileName></FileName>
+                  <FileType></FileType>
+                  <FileContent></FileContent>
+                  <CreatedBy>Amit</CreatedBy>
+                  <CategoryCode></CategoryCode>
+                  <Category></Category>
+                  <Description></Description>
+                </CustomDeclarationRequest>
+              </CustomDeclarations>
+              <MailCategoryID>100</MailCategoryID>
+              <PreferredPickupDate>2022-09-29T11:11:22.715Z</PreferredPickupDate>
+              <PreferredPickupTimeFrom>2022-09-29T01:11:22.715Z</PreferredPickupTimeFrom>
+              <PreferredPickupTimeTo>2022-09-29T23:11:22.715Z</PreferredPickupTimeTo>
+              <PrintType>LabelOnly</PrintType>
+              <AWBType>EAWB</AWBType>
+              <Is_Return_Service>No</Is_Return_Service>
+              <Latitude></Latitude>
+              <Longitude></Longitude>
+              <IsOnlinePayment>No</IsOnlinePayment>
+              <TransactionSource></TransactionSource>
+              <RequestType>Booking</RequestType>
+              <ReturnItemCode></ReturnItemCode>
+              <SenderCountryID></SenderCountryID>
+              <SenderZone></SenderZone>
+              <SenderRegion></SenderRegion>
+              <PrefereredDateTimeFrom>2022-09-29T11:11:22.715Z</PrefereredDateTimeFrom>
+              <PrefereredDateTimeTo>2022-09-29T11:11:22.715Z</PrefereredDateTimeTo>
+              <IsDropOff>No</IsDropOff>
+              <DropOffOfficeId></DropOffOfficeId>
+              <Remarks></Remarks>
+              <SpecialNotes></SpecialNotes>
+              <VehicleTypeCode></VehicleTypeCode>
+              <DeliveryLatitude></DeliveryLatitude>
+              <DeliveryLongitude></DeliveryLongitude>
+              <SenderRegionId></SenderRegionId>
+              <ReceiverRegionId></ReceiverRegionId>
+              <AWBNumber></AWBNumber>
+              <ReceiverLevel1ID>1</ReceiverLevel1ID>
+              <ReceiverLevel1Name></ReceiverLevel1Name>
+              <ReceiverLastLevelID></ReceiverLastLevelID>
+              <ReceiverLastLevelName></ReceiverLastLevelName>
+              <ConsignmentPiecesInfo>
+                <ConsignmentPiecesInfoBO>
+                  <Weight>1</Weight>
+                  <Length>1</Length>
+                  <Width>1</Width>
+                  <Height>1</Height>
+                </ConsignmentPiecesInfoBO>
+              </ConsignmentPiecesInfo>
+              <ActualPrice>100</ActualPrice>
+              <DiscountAmount></DiscountAmount>
+              <DiscountFlag></DiscountFlag>
+              <DiscountPercent></DiscountPercent>
+              <DiscountPrice></DiscountPrice>
+              <EmployeeEmail></EmployeeEmail>
+              <EmployeeId></EmployeeId>
+              <EmployeeMobile></EmployeeMobile>
+              <IsPudoDelivery></IsPudoDelivery>
+              <PudoLocationId></PudoLocationId>
+            </BookingRequest>
+          </CreateBookingRequest>
+        </soap:Body>
+      </soap:Envelope>
+    ',
+      CURLOPT_HTTPHEADER => array(
+        'Content-Type: text/xml; charset=utf-8',
+        'SOAPAction: http://epg.generic.booking/CreateBooking',
+        'AccountNo: C175120',
+        'Password: C175120'
+      ),
+    ));
+    $response = curl_exec($curl);
+    $plainXML = mungXML($response);
+    $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+    dd($arrayResult);
+
+    curl_close($curl);
+    dd($response);
+    echo $response;
+
     //
   }
 

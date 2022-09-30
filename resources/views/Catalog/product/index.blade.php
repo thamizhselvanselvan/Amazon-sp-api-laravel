@@ -412,14 +412,14 @@
                 "_token": "{{ csrf_token() }}",
             },
             success: function(result) {
-
+            
                 if (result == '') {
                     $('.catalogcliqnshop').append('File Downloading..');
                 } else {
                     let files = '';
                     files += "<a href='/catalog/cliqnshop/download/" +
                         "' class='p-0 m-0'>  Download Cliqnshop Catalog " + '&nbsp;' +
-                        "</a> ";
+                        "</a> " + result;
                     $('.catalogcliqnshop').empty();
                     $('.catalogcliqnshop').append(files);
                 }

@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Storage;
 
 class CliqnshopCatalogExport extends Command
 {
+    private $offset = 0;
+    private $count = 1;
+    private $remender;
+    private $writer;
+    private $file_path;
+
     /**
      * The name and signature of the console command.
      *
@@ -41,9 +47,12 @@ class CliqnshopCatalogExport extends Command
      */
     public function handle()
     {
-        Log::alert('Cliqnshop Command start');
+        $total_csv = 10;
+        $chunk = 10;
+        $this->remender = $total_csv / $chunk;
+
         $cat_details = DB::connection('catalog')
-        ->select("SELECT 
+            ->select("SELECT 
                 cat.asin,
                 cat.brand,
                 cat.images,
@@ -52,37 +61,45 @@ class CliqnshopCatalogExport extends Command
             FROM catalognewuss AS cat
             join pricing_uss AS price
             on  cat.asin = price.asin
-            LIMIT 100000         ");
+            LIMIT  $chunk ");
 
-        $headers = [
-            'Category',
-            'Sub-Category',
-            'Brand',
-            'ASIN',
-            'Product Name',
-            'short description',
-            'long description',
-            'Price',
-            'price quantity',
-            'price tax rate',
-            'Attributese',
-            'product variants',
-            'Suggested Products',
-            'Products bought together',
-            'stock level',
-            'date of back in stock',
-            'Images1',
-            'Images2',
-            'Images3',
-            'Images4',
-            'Images5'
-        ];
-        $exportFilePath = 'Cliqnshop/catalog.csv';
-        if (!Storage::exists($exportFilePath)) {
-            Storage::put($exportFilePath, '');
+
+        if ($this->count == 1) {
+            $headers = [
+                'Category',
+                'Sub-Category',
+                'Brand',
+                'ASIN',
+                'Product Name',
+                'short description',
+                'long description',
+                'Price',
+                'price quantity',
+                'price tax rate',
+                'Attributese',
+                'product variants',
+                'Suggested Products',
+                'Products bought together',
+                'stock level',
+                'date of back in stock',
+                'Images1',
+                'Images2',
+                'Images3',
+                'Images4',
+                'Images5'
+            ];
+
+            $this->file_path = "Cliqnshop/" ."CatalogCliqnsop". $this->offset. ".csv";
+
+
+            if (!Storage::exists($this->file_path)) {
+                Storage::put($this->file_path, '');
+            }
+
+
+            $this->writer = Writer::createFromPath(Storage::path($this->file_path, 'w'));
+            $this->writer->insertOne($headers);
         }
-        $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
-        $writer->insertOne($headers);
 
         foreach ($cat_details as $data) {
 
@@ -96,15 +113,13 @@ class CliqnshopCatalogExport extends Command
                     $counter++;
                     if (array_key_exists("link", $image_data_new)) {
                         $img1["Images${counter}"] = $image_data_new['link'];
-                    }   
+                    }
 
                     if ($counter == 5) {
                         break;
                     }
                 }
             }
-
-
             $csv_array = [
                 'Category' => null,
                 'Sub-Category' => null,
@@ -126,7 +141,14 @@ class CliqnshopCatalogExport extends Command
 
             $csv_array = [...$csv_array, ...$img1];
 
-            $writer->insertOne($csv_array);
+           $this->writer->insertone($csv_array);
+
+            if ($this->remender == $this->count) {
+                ++$this->offset;
+                $this->count = 1;
+            } else {
+                ++$this->count;
+            }
         }
         Log::alert('Cliqnshop Command ended');
     }

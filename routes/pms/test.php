@@ -128,3 +128,4 @@ Route::get('test/smsa/booking', 'Testcontroller@SmsaBooking');
 Route::get('test/amazon-feed/{lead_id}', 'Testcontroller@TestAmazonFeed');
 
 Route::get('test/emirate/tracking/{tracking_id}', 'TestController@emiratePostTracking');
+Route::get('test/emirate/booking', 'TestController@emiratePostBooking');
