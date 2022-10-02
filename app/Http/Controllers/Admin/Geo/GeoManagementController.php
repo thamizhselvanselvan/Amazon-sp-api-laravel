@@ -252,15 +252,15 @@ $country_name = $request->name;
   {
     $geo_data = $request->validate(
       [
-        'name' => 'required|unique:App\Models\Inventory\Country',
-        'country_code' => 'required|unique:App\Models\Inventory\Country',
-        'code' => 'required|unique:App\Models\Inventory\Country',
-        'numeric_code' => 'required|unique:App\Models\Inventory\Country',
-        'phone_code' => 'required|unique:App\Models\Inventory\Country',
-        'capital' => 'required|unique:App\Models\Inventory\Country',
-        'currency' => 'required|unique:App\Models\Inventory\Country',
-        'currency_name' => 'required|unique:App\Models\Inventory\Country',
-        'currency_symbol' => 'required|unique:App\Models\Inventory\Country',
+        'name' => 'required:App\Models\Inventory\Country',
+        'country_code' => 'required:App\Models\Inventory\Country',
+        'code' => 'required:App\Models\Inventory\Country',
+        'numeric_code' => 'required:App\Models\Inventory\Country',
+        'phone_code' => 'required:App\Models\Inventory\Country',
+        'capital' => 'required:App\Models\Inventory\Country',
+        'currency' => 'required:App\Models\Inventory\Country',
+        'currency_name' => 'required:App\Models\Inventory\Country',
+        'currency_symbol' => 'required:App\Models\Inventory\Country',
       ]
     );
     $country_name = $request->name;
