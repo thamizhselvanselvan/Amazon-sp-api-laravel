@@ -115,10 +115,17 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
     curl_close($curl);
     echo $response;
 });
-Route::get('export_catalog', 'TestController@ExportCatalog');
+Route::get('test/order', 'TestController@testOrderAPI');
 Route::get('search_catalog/{country_code}', 'TestController@searchCatalog');
 
 Route::get('pricing', 'TestController@PricingTest');
 
 Route::get('test/zoho', 'TestController@TestZoho');
 Route::get('test/get/zoho/data/{lead}', 'TestController@TestGetZoho');
+
+Route::get('test/smsa/booking', 'Testcontroller@SmsaBooking');
+
+Route::get('test/amazon-feed/{lead_id}', 'Testcontroller@TestAmazonFeed');
+
+Route::get('test/emirate/tracking/{tracking_id}', 'TestController@emiratePostTracking');
+Route::get('test/emirate/booking', 'TestController@emiratePostBooking');

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use App\Models\order\OrderSellerCredentials;
 
 class OrdersDashboardController extends Controller
@@ -237,5 +238,37 @@ class OrdersDashboardController extends Controller
 
         // dd($all_store_details);
         return view('orders.AwsOrderDashboard', compact('all_store_details'));
+    }
+
+    public function OrderCsvImport()
+    {
+        $order_sellers = OrderSellerCredentials::select('seller_id', 'store_name')->get()->toArray();
+        return view('orders.OrderImport.order_import_file', compact('order_sellers'));
+    }
+
+    public function ImortOrdersFile(Request $request)
+    {
+        $request->validate([
+
+            'store_name' => 'required|not_in:0',
+            'order_csv' => 'required|mimes:txt,csv',
+        ]);
+
+        if (!$request->hasFile('order_csv')) {
+            return back()->with('error', "Please upload file to import it to the database");
+        }
+
+        $file_path = "OrderFile/order.csv";
+        $csv_file = file_get_contents($request->order_csv);
+        $store_id = $request->store_name;
+        Storage::put($file_path, $csv_file);
+        commandExecFunc("mosh:order-csv-import ${store_id} ");
+
+        return back()->with('success', 'Orders file has been uploaded successfully !');
+    }
+
+    public function OrderCsvDownload()
+    {
+        return response()->download(public_path("template/order-csv.csv"));
     }
 }

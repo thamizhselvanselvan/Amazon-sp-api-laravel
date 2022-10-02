@@ -3,12 +3,16 @@
 namespace App\Services\Catalog;
 
 use App\Models\Admin\Ratemaster;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Models\Catalog\ExchangeRate;
 
 class PriceConversion
 {
     private $rate_master_in_ae;
     private $rate_master_in_sa;
     private $rate_master_in_sg;
+    private $exchange_rate_data;
 
     public function __construct()
     {
@@ -17,24 +21,37 @@ class PriceConversion
         $this->rate_master_in_sa = GetRateChart('IN-SA');
 
         $this->rate_master_in_sg = GetRateChart('IN-SG');
+
+        $this->exchange_rate_data = ExchangeRate::select('source_destination',
+                DB::raw("group_concat(`base_weight`) as base_weight, 
+                group_concat(`base_shipping_charge`) as base_shipping_charge,
+                group_concat(packaging) as packaging,
+                group_concat(seller_commission) as seller_commission,
+                group_concat(duty_rate) as duty_rate,
+                group_concat(sp_commission) as sp_commission,
+                group_concat(excerise_rate) as excerise_rate,
+                group_concat(amazon_commission) as amazon_commission
+                "))->groupBy('source_destination')->get()->toArray();
+
     }
     public function USAToINDB2C($weight, $bb_price)
     {
+        
         if ($weight > 0.9) {
-            $int_shipping_base_charge = (7.5 + ($weight - 1) * 5.5);
+            $int_shipping_base_charge = ($this->exchange_rate_data[4]['base_weight'] + ($weight - 1) * $this->exchange_rate_data[4]['base_shipping_charge']);
         } else {
-            $int_shipping_base_charge = 5.5;
+            $int_shipping_base_charge = $this->exchange_rate_data[4]['base_shipping_charge'];
         }
 
-        $duty_rate = 56.00 / 100;
-        $packaging = 2;
-        $seller_commission = ($bb_price + $int_shipping_base_charge + $packaging) * (15 / 100);
+        $duty_rate = $this->exchange_rate_data[4]['duty_rate'] / 100;
+        $packaging = $this->exchange_rate_data[4]['packaging'];
+        $seller_commission = ($bb_price + $int_shipping_base_charge + $packaging) * (($this->exchange_rate_data[4]['seller_commission']) / 100);
 
         $price_before_duty = $bb_price + $int_shipping_base_charge + $packaging + $seller_commission;
-        $ex_rate = 82;
+        $ex_rate = $this->exchange_rate_data[4]['excerise_rate'];
         $duty_cost = ($price_before_duty * $duty_rate);
 
-        $usd_sp = ($price_before_duty + $duty_cost) + ($price_before_duty + $duty_cost) * (20 / 100);
+        $usd_sp = ($price_before_duty + $duty_cost) + ($price_before_duty + $duty_cost) * (($this->exchange_rate_data[4]['sp_commission']) / 100);
 
         $india_sp = $usd_sp * $ex_rate;
         return round($india_sp, 2);
@@ -43,28 +60,28 @@ class PriceConversion
     public function USAToINDB2B($weight, $bb_price)
     {
         if ($weight > 0.9) {
-            $int_shipping_base_charge = (7 + ($weight - 1) * 7);
+            $int_shipping_base_charge = ($this->exchange_rate_data[3]['base_weight'] + ($weight - 1) * $this->exchange_rate_data[3]['base_shipping_charge']);
         } else {
-            $int_shipping_base_charge = 7;
+            $int_shipping_base_charge = $this->exchange_rate_data[3]['base_shipping_charge'];
         }
 
-        $duty_rate = 32.00 / 100;
-        $seller_commission = 10 / 100;
-        $packaging = 2;
-        $amazon_commission = 22.00 / 100;
+        $duty_rate = $this->exchange_rate_data[3]['duty_rate'] / 100;
+        $seller_commission = $this->exchange_rate_data[3]['seller_commission'] / 100;
+        $packaging = $this->exchange_rate_data[3]['packaging'];
+        $amazon_commission = $this->exchange_rate_data[3]['amazon_commission'] / 100;
 
-        $ex_rate = 82;
+        $ex_rate = $this->exchange_rate_data[3]['excerise_rate'];
         $duty_cost = ($duty_rate * ($bb_price + $int_shipping_base_charge));
 
         $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
             (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $seller_commission);
 
         $usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
-            ($amazon_commission * $price_befor_amazon_fees * 0.12);
+            ($amazon_commission * $price_befor_amazon_fees * $this->exchange_rate_data[3]['sp_commission']);
 
         $india_sp = $usd_sp * $ex_rate;
         return round($india_sp, 2);
-        //
+        
     }
 
     public function USATOUAE($weight, $bb_price)
@@ -72,19 +89,19 @@ class PriceConversion
         $weight = (float)$weight;
         $bb_price = (float)$bb_price;
 
-        $duty_rate = 5 / 100;
-        $seller_commission = 10 / 100;
-        $packaging = 4;
-        $amazon_commission = 15.00 / 100;
-        $int_shipping_base_charge = $weight * 5.5;
-        $ex_rate = 3.7;
+        $duty_rate = $this->exchange_rate_data[6]['duty_rate'] / 100;
+        $seller_commission = $this->exchange_rate_data[6]['seller_commission'] / 100;
+        $packaging = $this->exchange_rate_data[6]['packaging'];
+        $amazon_commission = $this->exchange_rate_data[6]['amazon_commission'] / 100;
+        $int_shipping_base_charge = $weight * $this->exchange_rate_data[6]['base_shipping_charge'];
+        $ex_rate = $this->exchange_rate_data[6]['excerise_rate'];
         $duty_cost = ($duty_rate * ($bb_price + $int_shipping_base_charge));
 
         $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
             (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $seller_commission);
 
         $usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
-            ($amazon_commission * $price_befor_amazon_fees * 0.12);
+            ($amazon_commission * $price_befor_amazon_fees * $this->exchange_rate_data[6]['sp_commission']);
 
         $IED_sp = $usd_sp * $ex_rate;
         return round($IED_sp, 2);
@@ -97,26 +114,26 @@ class PriceConversion
 
         if ($weight > 0.9) {
 
-            $int_shipping_base_charge = (8 + ($weight - 1) * 4.5);
+            $int_shipping_base_charge = ($this->exchange_rate_data[5]['base_weight'] + ($weight - 1) * $this->exchange_rate_data[5]['base_shipping_charge']);
         } else {
-            $int_shipping_base_charge = 8;
+            $int_shipping_base_charge = $this->exchange_rate_data[5]['base_weight'];
         }
 
         // return $int_shipping_base_charge;
-        $duty_rate = 4.00 / 100;
-        $seller_commission = 10 / 100;
-        $packaging = 3;
-        $MBM = 10.0 / 100;
-        $amazon_commission = 12.00 / 100;
+        $duty_rate = $this->exchange_rate_data[5]['duty_rate'] / 100;
+        // $seller_commission = 10 / 100;
+        $packaging = $this->exchange_rate_data[5]['packaging'];
+        $MBM = $this->exchange_rate_data[5]['seller_commission'] / 100;
+        $amazon_commission = $this->exchange_rate_data[5]['amazon_commission'] / 100;
 
-        $ex_rate = 1.37;
+        $ex_rate = $this->exchange_rate_data[5]['excerise_rate'];
         $duty_cost = $duty_rate * $bb_price;
 
         $price_befor_amazon_fees = ($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) +
             (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $MBM);
 
         $mbm_usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
-            ($amazon_commission * $price_befor_amazon_fees * 0.14);
+            ($amazon_commission * $price_befor_amazon_fees * $this->exchange_rate_data[5]['sp_commission']);
 
         $sg_sp = $mbm_usd_sp * $ex_rate;
 
@@ -140,11 +157,11 @@ class PriceConversion
             }
         }
 
-        $duty_rate = 7 / 100;
-        $nitshopp = 12.0 / 100;
-        $packaging = 100.00;
-        $amazon_commission = 15.0 / 100;
-        $ex_rate = 0.051;
+        $duty_rate = $this->exchange_rate_data[0]['duty_rate'] / 100;
+        $nitshopp = $this->exchange_rate_data[0]['seller_commission'] / 100;
+        $packaging = $this->exchange_rate_data[0]['packaging'];
+        $amazon_commission = $this->exchange_rate_data[0]['amazon_commission'] / 100;
+        $ex_rate = $this->exchange_rate_data[0]['excerise_rate'];
 
         $duty_cost = ($bb_price + $int_shipping_base_charge) * $duty_rate;
 
@@ -152,7 +169,7 @@ class PriceConversion
             (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $nitshopp);
 
         $mbm_usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
-            ($amazon_commission * $price_befor_amazon_fees * 0.14);
+            ($amazon_commission * $price_befor_amazon_fees * $this->exchange_rate_data[0]['sp_commission']);
 
         $uae_sa = $mbm_usd_sp * $ex_rate;
 
@@ -175,11 +192,11 @@ class PriceConversion
             }
         }
 
-        $duty_rate = 7 / 100;
-        $nitshopp = 15.0 / 100;
-        $packaging = 120.00;
-        $amazon_commission = 15.0 / 100;
-        $ex_rate = 0.019;
+        $duty_rate = $this->exchange_rate_data[1]['duty_rate'] / 100;
+        $nitshopp = $this->exchange_rate_data[1]['seller_commission'] / 100;
+        $packaging = $this->exchange_rate_data[1]['packaging'];
+        $amazon_commission = $this->exchange_rate_data[1]['amazon_commission'] / 100;
+        $ex_rate = $this->exchange_rate_data[1]['excerise_rate'];
 
         $duty_cost = ($bb_price + $int_shipping_base_charge) * $duty_rate;
 
@@ -187,7 +204,7 @@ class PriceConversion
             (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $nitshopp);
 
         $mbm_usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
-            ($amazon_commission * $price_befor_amazon_fees * 0.14);
+            ($amazon_commission * $price_befor_amazon_fees * $this->exchange_rate_data[1]['sp_commission']);
 
         $uae_sg = $mbm_usd_sp * $ex_rate;
 
@@ -210,11 +227,11 @@ class PriceConversion
                 break;
             }
         }
-        $duty_rate = 7 / 100;
-        $nitshopp = 12.0 / 100;
-        $packaging = 180.00;
-        $amazon_commission = 15.0 / 100;
-        $ex_rate = 0.051;
+        $duty_rate = $this->exchange_rate_data[2]['duty_rate'] / 100;
+        $nitshopp = $this->exchange_rate_data[2]['seller_commission'] / 100;
+        $packaging = $this->exchange_rate_data[2]['packaging'];
+        $amazon_commission = $this->exchange_rate_data[2]['amazon_commission'] / 100;
+        $ex_rate = $this->exchange_rate_data[2]['excerise_rate'];
 
         $duty_cost = ($bb_price + $int_shipping_base_charge) * $duty_rate;
 
@@ -222,7 +239,7 @@ class PriceConversion
             (($bb_price + $int_shipping_base_charge + $duty_cost + $packaging) * $nitshopp);
 
         $mbm_usd_sp = $price_befor_amazon_fees * (1 + $amazon_commission) +
-            ($amazon_commission * $price_befor_amazon_fees * 0.14);
+            ($amazon_commission * $price_befor_amazon_fees * $this->exchange_rate_data[2]['sp_commission']);
 
         $uae_sp = $mbm_usd_sp * $ex_rate;
 

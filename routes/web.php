@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Models\Admin\ErrorReporting;
+use App\Models\Catalog\ExchangeRate;
 use App\Services\SP_API\API\Catalog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -55,6 +56,21 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 // use ConfigTrait;
 
 Route::get('data', function (){
+
+    $tgh = ExchangeRate::select('source_destination',
+    DB::raw("group_concat(`base_weight`) as base_weight, 
+    group_concat(`base_shipping_charge`) as base_shipping_charge,
+    group_concat(packaging) as packaging,
+    group_concat(seller_commission) as seller_commission,
+    group_concat(duty_rate) as duty_rate,
+    group_concat(sp_commission) as sp_commission,
+    group_concat(excerise_rate) as excerise_rate,
+    group_concat(amazon_commission) as amazon_commission
+    "))->groupBy('source_destination')->get()->toArray();
+
+        po($tgh);
+    exit;
+
     $value = [];
    $datas = ['B00014DZL6',
    'B00014E9W0',

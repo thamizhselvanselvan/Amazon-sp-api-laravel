@@ -41,7 +41,7 @@ class OrderItemDetailsImport extends Command
      */
     public function handle()
     {
-        $order_item = new Order();
+        $order_item = new OrderItem();
 
         $seller_id_array  = DB::connection('order')->select('SELECT our_seller_identifier 
         from orders group by our_seller_identifier');
@@ -49,25 +49,32 @@ class OrderItemDetailsImport extends Command
         $seller_id = '';
         foreach ($seller_id_array as $value) {
             $seller_id = $value->our_seller_identifier;
+            if ($seller_id != 44) {
 
-            $missing_order_id = DB::connection('order')
-                ->select("SELECT ord.amazon_order_identifier, ord.our_seller_identifier, ord.country
+                $missing_order_id = DB::connection('order')
+                    ->select("SELECT ord.amazon_order_identifier, ord.our_seller_identifier, ord.country
                     from orders as ord
                             left join 
                         orderitemdetails as oids on ord.amazon_order_identifier = oids.amazon_order_identifier 
                     where
                         oids.amazon_order_identifier IS NULL 
-                            AND ord.our_seller_identifier = '$seller_id' limit 1");
+                            AND ord.our_seller_identifier = '$seller_id' 
+                            AND ord.order_status != 'Pending' 
+                            AND ord.order_status != 'Canceled' 
+                    order by ord.id desc
+                    limit 1
+                ");
 
-            foreach ($missing_order_id as $details) {
+                foreach ($missing_order_id as $details) {
 
-                $country = $details->country;
-                $order_id = $details->amazon_order_identifier;
-                $aws_id = $details->our_seller_identifier;
+                    $country = $details->country;
+                    $order_id = $details->amazon_order_identifier;
+                    $aws_id = $details->our_seller_identifier;
 
-                Log::info("Command $order_id -> $aws_id");
+                    Log::info("Command $order_id -> $aws_id");
 
-                $order_item->getOrderItemQueue($order_id, $aws_id, $country);
+                    $order_item->OrderItemDetails($order_id, $aws_id, $country);
+                }
             }
         }
     }

@@ -30,6 +30,8 @@ use Illuminate\Cache\RateLimiting\Limit;
 use App\Services\Catalog\PriceConversion;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
+use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetails;
+use SellingPartnerApi\Api\FeedsV20210630Api as FeedsApi;
 use App\Services\Zoho\ZohoOrder;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use SellingPartnerApi\Api\ProductPricingApi;
@@ -98,8 +100,8 @@ class TestController extends Controller
 
   public function getSellerOrder($seller_id, $country_code)
   {
-    echo "Order List";
-
+    echo "Order Lst";
+    //new media new token
     $token = NULL;
     $config = $this->config($seller_id, $country_code, $token);
 
@@ -107,22 +109,25 @@ class TestController extends Controller
     $marketplace_ids = [$marketplace_ids];
 
     $apiInstance = new OrdersV0Api($config);
-    $startTime = Carbon::now()->subDays(5)->toISOString();
+    $startTime = Carbon::now()->subDays(1)->toISOString();
     $createdAfter = $startTime;
-    $max_results_per_page = 1;
+    $max_results_per_page = 100;
 
-    $next_token = 'Nz0eSs51UK+aJqJYLDm0ZAmQazDrhw3C42KwwQyR9e/L6UHaBK1qlqaqZ6TcljqaxqXyQLkGMBs8VhF73Xgy+6+TtJlDlUR56p8S6xVccYWSkB8HgnURuo2teiazVgkyInTAy+XKVmRZBY+oaVuycwQFure81U/CSOnRa9h35auYeATp5zAOhzgKA0lggjg0f2GLmUGyr9UGnxD0RJmrryegoU0IPZxXuDhY0Mlg+b9axYTTEsJ5Nkzyjn+QzAQYMBO/reDY2s8X+G/WxAkd4Fo++pAnAbakpMzWaPWrWIu7EbcPNB+bB6Hzx3wYc8HkVHr6/v7aqUE6gx0WW4bluJnycMd/XRCQ3VVGVsnIXDuwRGD7sGc+vvNIww18kAHE3toQYgtSWoW8GvFjc507ZCZ4zjikEy7+rToAsYN83sHgkdZPXhcRcM4Geo6I62Nv5h8v0uN9IxQ=';
+    // $next_token = '5EsEGMMJo12aJqJYLDm0ZAmQazDrhw3C6koriEUoNqjGCts1L1KLEUz0v33+eggAxqXyQLkGMBs8VhF73Xgy+6+TtJlDlUR57TLVg9FIRJIw1dq2BZHUh7bozNQEGhbjInTAy+XKVmRZBY+oaVuycwQFure81U/C2uVVFrsVPmp+MNAUdWgftyZHQdPXXp8Uf2GLmUGyr9UGnxD0RJmrryegoU0IPZxXtj51yALnq9+4M6STR6qxShi39nX7sSwDMBO/reDY2s8X+G/WxAkd4Fo++pAnAbakpMzWaPWrWIu7EbcPNB+bB7YS9ceFWcsPA9rNUA+mtRVhjT4sLT8FGGb7MtFtmIzif9BKH8lxMxIxY2fmRzniMupdWe0DnR4g0QZIgYUWbIiLESu+7fZQ8qP+IDCdVkzirToAsYN83sHHM2sVBc8891urusdmQ14zkYuItVQ5UdcoVDSpjSWO78jB0ZZToJ80jb45E6buG/w28uc4Sz+A7JGLiLVUOVHXvyOi2lUk+ruj54GUtHYexbMErlht7x/UfS8yBdUHI8PVgbG4EqTn58E/vfbI0LsGgPYTCOW+z8qPVvvqDB6I8w==';
     // $next_token = iconv("UTF-8", "UTF-8//IGNORE", $next_token);
     $amazon_order_ids = NULL;
-    // $next_token = NULL;
+    $next_token = NULL;
+    $order_statuses = null;
+    $order_statuses = ['Unshipped', 'PartiallyShipped', 'Shipped', 'InvoiceUnconfirmed', 'Canceled', 'Unfulfillable'];
 
+    // $order_statuses = ['Pending'];
     $order = $apiInstance->getOrders(
       $marketplace_ids,
       $createdAfter,
       $created_before = null,
       $last_updated_after = null,
       $last_updated_before = null,
-      $order_statuses = null,
+      $order_statuses,
       $fulfillment_channels = null,
       $payment_methods = null,
       $buyer_email = null,
@@ -143,8 +148,12 @@ class TestController extends Controller
 
   public function getOrder($order_id, $seller_id, $country_code)
   {
+    //new media new token
     $token = NULL;
+    // $token = 'Atzr|IwEBIN0kK1fNcVINCWD922Ed_hlgmfFbpJnumV8-L4FctK1RJJvTFx2mXymHIfN3G5TQIGg2lukH-p-fGbTA_7g7h_8SAyfmQVYBq83Gev7WtGagNoDM4mfqAxhOHU-wD3FDyfJomA0P5iAASpb0ecBz72FfmoamkFI4pTbuAwB-G7LjvW-ITkDjgZQl8lnsgCI6J5EN-4e8K9eJrAU5p9LMFjPfk8vTqiRAJx6YKNQvNTtPbm3HXmk3AnoogG44IOVazzad7D0VUOr6KQNSQnmx3aN9R2UBgt67KM2YPugDteKKygm9D0JomfmtlY-f3y0Eox4';
+
     $config = $this->config($seller_id, $country_code, $token);
+
     $marketplace_ids = $this->marketplace_id($country_code);
     $marketplace_ids = [$marketplace_ids];
 
@@ -153,27 +162,45 @@ class TestController extends Controller
     $createdAfter = $startTime;
     $max_results_per_page = 100;
 
+    // $order_statuses = ['Unshipped', 'PartiallyShipped', 'Shipped', 'InvoiceUnconfirmed', 'Canceled', 'Unfulfillable'];
+    $order_statuses = null;
     $next_token = NULL;
     $amazon_order_ids = [$order_id];
-    echo '<hr>';
-    echo 'Order Details';
-    $order = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses = null, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, null, $next_token, $amazon_order_ids, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
-    po($order);
+    try {
+
+      echo '<hr>';
+      echo 'Order Details';
+      $order = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, null, $next_token, $amazon_order_ids, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
+      po($order);
+    } catch (Exception $e) {
+      po($e->getMessage());
+    }
 
     echo '<hr>';
     echo 'Order item details';
 
-    $data_element = array('buyerInfo');
-    $next_token = NULL;
-    $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
+    try {
 
-    po($result_orderItems);
+      $data_element = array('buyerInfo');
+      $next_token = NULL;
+      $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
+
+      po($result_orderItems);
+    } catch (Exception $e) {
+
+      po($e->getMessage());
+    }
 
     echo '<hr>';
     echo 'Order Address';
-    $result_order_address = $apiInstance->getOrderAddress($order_id);
+    try {
 
-    po($result_order_address);
+      $result_order_address = $apiInstance->getOrderAddress($order_id);
+
+      po($result_order_address);
+    } catch (Exception $e) {
+      po($e->getMessage());
+    }
 
     exit;
   }
@@ -181,9 +208,91 @@ class TestController extends Controller
   public function SmsaTracking($awb_no)
   {
 
-    //
+    return SmsaTrackingResponse($awb_no);
   }
 
+  public function SmsaBooking()
+  {
+    $awb_no = '';
+    $password = config('database.smsa_password');
+    $url = "http://track.smsaexpress.com/SECOM/SMSAwebService.asmx";
+
+    $xmlRequest =
+      '<?xml version="1.0" encoding="utf-8"?>
+    <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+      <soap:Body>
+        <addShip xmlns="http://track.smsaexpress.com/secom/">
+          <passKey>' . $password . '</passKey>
+          <refNo>1234567900</refNo>
+          <sentDate>22-09-2022</sentDate>
+          <idNo>1</idNo>
+          <cName>Test name</cName>
+          <cntry>India</cntry>
+          <cCity>Siwan</cCity>
+          <cZip></cZip>
+          <cPOBox></cPOBox>
+          <cMobile>8585852589</cMobile>
+          <cTel1></cTel1>
+          <cTel2></cTel2>
+          <cAddr1>bhagwanpur</cAddr1>
+          <cAddr2>bhagwanpur</cAddr2>
+          <shipType>DLV</shipType>
+          <PCs>1</PCs>
+          <cEmail>test@gmail.com</cEmail>
+          <carrValue></carrValue>
+          <carrCurr></carrCurr>
+          <codAmt>0</codAmt>
+          <weight>1</weight>
+          <custVal></custVal>
+          <custCurr></custCurr>
+          <insrAmt></insrAmt>
+          <insrCurr></insrCurr>
+          <itemDesc></itemDesc>
+          <sName>test shipper</sName>
+          <sContact>8585852356</sContact>
+          <sAddr1>bangalore</sAddr1>
+          <sAddr2></sAddr2>
+          <sCity>karnatak</sCity>
+          <sPhone>8585852356</sPhone>
+          <sCntry>India</sCntry>
+          <prefDelvDate></prefDelvDate>
+          <gpsPoints></gpsPoints>
+        </addShip>
+      </soap:Body>
+    </soap:Envelope>';
+
+    $xmlRequest = '<?xml version="1.0" encoding="utf-8"?>
+    <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+      <soap:Body>
+        <getPDFSino xmlns="http://track.smsaexpress.com/secom/">
+          <awbNo>Bom@7379</awbNo>
+          <passKey>290342178314</passKey>
+        </getPDFSino>
+      </soap:Body>
+    </soap:Envelope>';
+    $headers = array(
+      'Content-type: text/xml',
+    );
+
+    $ch = curl_init();
+    //setting the curl options
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlRequest);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_VERBOSE, 0);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+    $data = curl_exec($ch);
+
+    return ($data);
+    $plainXML = mungXML(trim($data));
+    $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+    dd($arrayResult);
+    //
+  }
   public function BombinoTracking($awb_no)
   {
 
@@ -359,184 +468,236 @@ class TestController extends Controller
     return (new PriceConversion())->INDToSA($weight, $bb_price);
   }
 
-  public function ExportCatalog()
+  public function testOrderAPI()
   {
-
-    $columns = DB::connection('catalog')->select("SHOW COLUMNS from cataloguss");
-    $header = [];
-    foreach ($columns as $columns_name) {
-
-      $header[] = $columns_name->Field;
-    }
-    natsort($header);
-
-    dd($header);
-    $db_header = implode(',', $header);
-
-    $data = DB::connection('catalog')->select("SELECT $db_header from cataloguss");
-
-    $file_path = 'catalog/US_catalog.csv';
-    if (!Storage::exists($file_path)) {
-      Storage::put($file_path, '');
-    }
-
-    $writer = Writer::createFromPath(Storage::path($file_path, 'w'));
-
-    $data = array_map(function ($datas) {
-      return (array) $datas;
-    }, $data);
-
-    $writer->insertOne($header);
-    $writer->insertAll($data);
-
-    return Storage::download($file_path);
-    dd($data);
-    //
-  }
-
-  public function searchCatalog($country_code)
-  {
+    $seller_id = 35;
+    $country_code = 'AE';
+    $order_id = '404-2296365-0046701';
+    // 406-8657142-1805957
     $token = NULL;
-    $aws_id = '';
-    $asins = [
-      'B09TB8DDK5',
-      'B09V82KP32',
-      'B09V82LJQL',
-      'B09V82LS5S',
-      'B09V82M1CD',
-      'B09V82P512',
+    $config = $this->config($seller_id, $country_code, $token);
+    $marketplace_ids = $this->marketplace_id($country_code);
+    $marketplace_ids = [$marketplace_ids];
 
-    ];
-    $country_code = 'IN';
 
-    $identifiers_type = 'ASIN';
-    $incdata = ['attributes', 'dimensions', 'productTypes', 'images', 'summaries'];
+    $apiInstance = new OrdersV0Api($config);
+    $startTime = Carbon::now()->subDays(30)->toISOString();
+    $createdAfter = $startTime;
+    $max_results_per_page = 100;
 
-    $mws_region = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->first();
-    $token = $mws_region['aws_verified']['auth_code'];
-
-    $config =   $this->config($aws_id, $country_code, $token);
-    $apiInstance = new CatalogItemsV20220401Api($config);
-
-    $marketplace_id = [$this->marketplace_id($country_code)];
-
-    $page_size = 10;
-    $locale = null;
-    $seller_id = null;
-    $keywords = null;
-    $brand_names = null;
-    $classification_ids = null;
-    $page_size = 20;
-    $page_token = null;
-    $keywords_locale = null;
-
-    $result = $apiInstance->searchCatalogItems(
-      $marketplace_id,
-      $asins,
-      $identifiers_type,
-      $incdata,
-      $locale,
-      $seller_id,
-      $keywords,
-      $brand_names,
-      $classification_ids,
-      $page_size,
-      $page_token,
-      $keywords_locale
-    );
-    // $result =
-    //   $apiInstance->searchCatalogItems($marketplace_id, $asins, $identifiers_type, $incdata, $page_size);
-    $result = (array) json_decode(json_encode($result));
-
-    po($result);
+    $next_token = NULL;
+    $amazon_order_ids = [$order_id];
+    echo '<hr>';
+    echo 'Order Details';
+    $order = $apiInstance->getOrderItems($order_id)->getPayload();
+    po($order);
   }
 
-  public function PricingTest()
+  public function emiratePostTracking($tracking_id)
   {
+    $account_no = 'C175120';
+    $password = 'C175120';
 
-    $country_code_lr = 'us';
-    $user_id = '';
-    $des_asin_array = [];
-    $calculated_weight = [];
-    $asin_array_bb = [];
-    $des_asin_update = [];
-    $missing_asin = [];
-    $find_missing_asin = [];
+    $tracking_id = '123456783';
+    $curl = curl_init();
 
-    $product_seller_details = 'bb_product_' . $country_code_lr . 's_seller_details';
-    $product_lp = 'bb_product_' . $country_code_lr . 's_lp_offers';
+    $headers = array(
+      'Content-Type: text/xml; charset=utf-8',
+      'SOAPAction: http://epg.generic.tracking/TrackShipmentByAwbNo',
+      'AccountNo: ' . $account_no,
+      'Password: ' . $password
+    );
 
-    $destination_model = table_model_create(country_code: $country_code_lr, model: 'Asin_destination', table_name: 'asin_destination_');
-    $data = $destination_model->select(['asin', 'user_id'])->where(['price_status' => '0'])->limit(10)->get();
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://osbtest.epg.gov.ae/ebs/genericapi/tracking',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => '<?xml version="1.0" encoding="utf-8"?>
+    <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+      <soap:Body>
+        <TrackShipmentByAwbNo xmlns="http://epg.generic.tracking/">
+          <AwbNo>' . $tracking_id . '</AwbNo>
+          <ShipmentType>Standard</ShipmentType>
+        </TrackShipmentByAwbNo>
+      </soap:Body>
+    </soap:Envelope>
+    ',
+      CURLOPT_HTTPHEADER => $headers,
+    ));
 
-    foreach ($data as $value) {
+    $response = curl_exec($curl);
 
-      $asin = $value->asin;
-      $des_asin_array[] =  $asin;
-      $user_id = $value->user_id;
+    curl_close($curl);
+    $result = json_decode(json_encode($response));
+    $plainXML = mungXML($result);
+    $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+    dd($arrayResult);
+  }
 
-      $find_missing_asin[$asin] = 1;
-      $des_asin_update[] = [
-        'asin' => $asin,
-        'user_id' => $user_id,
-        'price_status' => '2'
-      ];
-    }
-    // dd($find_missing_asin);
+  public function emiratePostBooking()
+  {
+    $curl = curl_init();
 
-    $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
-    $des_asin_update = [];
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://osbtest.epg.gov.ae/ebs/genericapi/booking',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => '<?xml version="1.0" encoding="utf-8"?>
+      <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+        <soap:Body>
+          <CreateBookingRequest xmlns="http://epg.generic.booking/">
+            <BookingRequest>
+              <SenderContactName>Amit Singh</SenderContactName>
+              <SenderCompanyName>Mosh</SenderCompanyName>
+              <SenderAddress>Warehouse61</SenderAddress>
+              <SenderCity>Dubai</SenderCity>
+              <SenderContactMobile></SenderContactMobile>
+              <SenderContactPhone></SenderContactPhone>
+              <SenderEmail>Test@moshgmail.com</SenderEmail>
+              <SenderZipCode></SenderZipCode>
+              <SenderState>Dubai</SenderState>
+              <SenderCountry>UAE</SenderCountry>
+              <ReceiverContactName>Test Amit</ReceiverContactName>
+              <ReceiverCompanyName>Mosh</ReceiverCompanyName>
+              <ReceiverAddress>flat no 313</ReceiverAddress>
+              <ReceiverCity>Ajman</ReceiverCity>
+              <ReceiverCityName>Ajman</ReceiverCityName>
+              <ReceiverContactMobile></ReceiverContactMobile>
+              <ReceiverContactPhone></ReceiverContactPhone>
+              <ReceiverEmail>Aramex@gmail.com</ReceiverEmail>
+              <ReceiverZipCode></ReceiverZipCode>
+              <ReceiverState>Ajman</ReceiverState>
+              <ReceiverCountry>Dubai</ReceiverCountry>
+              <ReferenceNo>405-1952257037126</ReferenceNo>
+              <ReferenceNo1>1</ReferenceNo1>
+              <ReferenceNo2>2</ReferenceNo2>
+              <ReferenceNo3>3</ReferenceNo3>
+              <ContentTypeCode>4</ContentTypeCode>
+              <NatureType>NA</NatureType>
+              <Service>Domestic</Service>
+              <ShipmentType>Premium</ShipmentType>
+              <DeleiveryType>Counter</DeleiveryType>
+              <Registered>No</Registered>
+              <PaymentType>COD</PaymentType>
+              <CODAmount>100</CODAmount>
+              <CODCurrency>AED</CODCurrency>
+              <CommodityDescription>string</CommodityDescription>
+              <Pieces>1</Pieces>
+              <Weight>100</Weight>
+              <WeightUnit>Grams</WeightUnit>
+              <Length>.5</Length>
+              <Width>.5</Width>
+              <Height>1</Height>
+              <DimensionUnit>Meter</DimensionUnit>
+              <ItemValue>string</ItemValue>
+              <ValueCurrency>string</ValueCurrency>
+              <ProductCode>string</ProductCode>
+              <SpecialInstructionsID>string</SpecialInstructionsID>
+              <DeliveryInstructionsID>string</DeliveryInstructionsID>
+              <HandlingInstructionsID>string</HandlingInstructionsID>
+              <LabelType>RPT</LabelType>
+              <RequestSource>string</RequestSource>
+              <isReturnItem>No</isReturnItem>
+              <SendMailToSender>No</SendMailToSender>
+              <SendMailToReceiver>No</SendMailToReceiver>
+              <CustomDeclarations>
+                <CustomDeclarationRequest>
+                  <HSCode>1</HSCode>
+                  <TotalUnits>100</TotalUnits>
+                  <Weight>100</Weight>
+                  <Value>39</Value>
+                  <DeclaredCurrency>AED</DeclaredCurrency>
+                  <FileName></FileName>
+                  <FileType></FileType>
+                  <FileContent></FileContent>
+                  <CreatedBy>Amit</CreatedBy>
+                  <CategoryCode></CategoryCode>
+                  <Category></Category>
+                  <Description></Description>
+                </CustomDeclarationRequest>
+              </CustomDeclarations>
+              <MailCategoryID>100</MailCategoryID>
+              <PreferredPickupDate>2022-09-29T11:11:22.715Z</PreferredPickupDate>
+              <PreferredPickupTimeFrom>2022-09-29T01:11:22.715Z</PreferredPickupTimeFrom>
+              <PreferredPickupTimeTo>2022-09-29T23:11:22.715Z</PreferredPickupTimeTo>
+              <PrintType>LabelOnly</PrintType>
+              <AWBType>EAWB</AWBType>
+              <Is_Return_Service>No</Is_Return_Service>
+              <Latitude></Latitude>
+              <Longitude></Longitude>
+              <IsOnlinePayment>No</IsOnlinePayment>
+              <TransactionSource></TransactionSource>
+              <RequestType>Booking</RequestType>
+              <ReturnItemCode></ReturnItemCode>
+              <SenderCountryID></SenderCountryID>
+              <SenderZone></SenderZone>
+              <SenderRegion></SenderRegion>
+              <PrefereredDateTimeFrom>2022-09-29T11:11:22.715Z</PrefereredDateTimeFrom>
+              <PrefereredDateTimeTo>2022-09-29T11:11:22.715Z</PrefereredDateTimeTo>
+              <IsDropOff>No</IsDropOff>
+              <DropOffOfficeId></DropOffOfficeId>
+              <Remarks></Remarks>
+              <SpecialNotes></SpecialNotes>
+              <VehicleTypeCode></VehicleTypeCode>
+              <DeliveryLatitude></DeliveryLatitude>
+              <DeliveryLongitude></DeliveryLongitude>
+              <SenderRegionId></SenderRegionId>
+              <ReceiverRegionId></ReceiverRegionId>
+              <AWBNumber></AWBNumber>
+              <ReceiverLevel1ID>1</ReceiverLevel1ID>
+              <ReceiverLevel1Name></ReceiverLevel1Name>
+              <ReceiverLastLevelID></ReceiverLastLevelID>
+              <ReceiverLastLevelName></ReceiverLastLevelName>
+              <ConsignmentPiecesInfo>
+                <ConsignmentPiecesInfoBO>
+                  <Weight>1</Weight>
+                  <Length>1</Length>
+                  <Width>1</Width>
+                  <Height>1</Height>
+                </ConsignmentPiecesInfoBO>
+              </ConsignmentPiecesInfo>
+              <ActualPrice>100</ActualPrice>
+              <DiscountAmount></DiscountAmount>
+              <DiscountFlag></DiscountFlag>
+              <DiscountPercent></DiscountPercent>
+              <DiscountPrice></DiscountPrice>
+              <EmployeeEmail></EmployeeEmail>
+              <EmployeeId></EmployeeId>
+              <EmployeeMobile></EmployeeMobile>
+              <IsPudoDelivery></IsPudoDelivery>
+              <PudoLocationId></PudoLocationId>
+            </BookingRequest>
+          </CreateBookingRequest>
+        </soap:Body>
+      </soap:Envelope>
+    ',
+      CURLOPT_HTTPHEADER => array(
+        'Content-Type: text/xml; charset=utf-8',
+        'SOAPAction: http://epg.generic.booking/CreateBooking',
+        'AccountNo: C175120',
+        'Password: C175120'
+      ),
+    ));
+    $response = curl_exec($curl);
+    $plainXML = mungXML($response);
+    $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+    dd($arrayResult);
 
-    $catalog_model = table_model_create(country_code: $country_code_lr, model: 'Catalog', table_name: 'catalognew');
-    $cat_data = $catalog_model->select(['asin', 'dimensions'])->whereIn('asin', $des_asin_array)->get();
+    curl_close($curl);
+    dd($response);
+    echo $response;
 
-    foreach ($cat_data as $value) {
-      $weight = '0.5';
-
-      if (isset(json_decode($value->dimensions)[0]->package->weight->value)) {
-        $weight = json_decode($value->dimensions)[0]->package->weight->value;
-      }
-
-      $a = $value->asin;
-      $calculated_weight[$a] =  $weight;
-      $asin_array_bb[] = "'$a'";
-    }
-
-    if ($asin_array_bb) {
-
-      $pricing_asin = implode(',', $asin_array_bb);
-
-      $asin_price = DB::connection('buybox')
-        ->select("SELECT PPO.asin, LP.available,
-          GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
-          group_concat(PPO.listingprice_amount) as listingprice_amount,
-          group_concat(PPO.updated_at) as updated_at
-          FROM $product_seller_details as PPO
-          JOIN $product_lp as LP On PPO.asin = LP.asin
-            WHERE PPO.asin IN ($pricing_asin)
-            GROUP BY PPO.asin
-      ");
-
-      foreach ($asin_price as $details) {
-
-        $asin_name = $details->asin;
-        if (isset($find_missing_asin[$asin_name])) {
-
-          $des_asin_update[] = [
-            'asin' => $asin_name,
-            'user_id' => $user_id,
-            'price_status' => '1'
-          ];
-        }
-      }
-      $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
-      dd($asin_price);
-
-      dd($calculated_weight, $pricing_asin);
-    } else {
-
-      $destination_model->where('id', '>', '0')->update(['price_status' => '0']);
-    }
+    //
   }
 
   public function TestZoho()
@@ -547,5 +708,30 @@ class TestController extends Controller
   {
 
     (new ZohoOrder())->zohoOrderDetails($lead);
+  }
+
+  public function TestAmazonFeed($feed_id)
+  {
+
+    $country_code = 'IN';
+
+    $config = $this->config(6, $country_code, $token = NULL);
+    $apiInstance = new FeedsApi($config);
+    $result = ($apiInstance->getFeed($feed_id));
+
+    $result = json_decode(json_encode($result));
+    $feed_doc_id = $result->resultFeedDocumentId;
+
+    $doc_result = $apiInstance->getFeedDocument($feed_doc_id);
+
+    $doc_result = json_decode(json_encode($doc_result));
+    $url  = $doc_result->url;
+
+    echo "<script> window.open('" . $url . "','_blank')</script>";
+    exit;
+  }
+
+  public function testFeed()
+  {
   }
 }
