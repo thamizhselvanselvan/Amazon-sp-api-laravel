@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Orders
 {
-    public function getOrders($asin, $item_name)
+    public function getOrders($asin, $item_name, $OfferID)
     {
         $val = random_int(100, 10000);
         $random = substr(md5(mt_rand()), 0, 7);
@@ -47,6 +47,7 @@ class Orders
         /* item details  */
         $money  = 10;
         $asin = $asin;
+        $offer = $OfferID;
         $item_description = $final_item_name;
         $unit = 'EA';
         $class = 'NA';
@@ -214,6 +215,7 @@ class Orders
           
                 <ItemID>
                     <SupplierPartID>' . $asin . '</SupplierPartID>
+                    <supplierPartAuxiliaryID> ' . $offer . '</supplierPartAuxiliaryID>
                 </ItemID>
                 <ItemDetail>
                     <UnitPrice>
