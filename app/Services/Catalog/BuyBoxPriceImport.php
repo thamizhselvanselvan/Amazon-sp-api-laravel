@@ -63,6 +63,7 @@ class BuyBoxPriceImport
                 $pricing_in = [];
                 $asin_details = [];
                 $listing_price_amount = '';
+                $unavaliable_asin = [];
 
                 $asin_array = [];
                 foreach ($cat_data as $value) {
@@ -75,6 +76,11 @@ class BuyBoxPriceImport
                     $a = $value->asin;
                     $calculated_weight[$a] =  $weight;
                     $asin_array[] = "'$a'";
+
+                    $unavaliable_asin[] = [
+                        'asin' => $a,
+                        'availble' => 0
+                    ];
                 }
 
                 if ($asin_array) {
@@ -184,9 +190,11 @@ class BuyBoxPriceImport
 
                     if ($country_code_lr == 'us') {
 
+                        PricingUs::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
                         PricingUs::upsert($pricing, 'unique_asin',  ['asin', 'available', 'weight', 'us_price', 'usa_to_in_b2b', 'usa_to_in_b2c', 'usa_to_uae', 'usa_to_sg', 'price_updated_at']);
                     } elseif ($country_code_lr == 'in') {
 
+                        PricingIn::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
                         PricingIn::upsert($pricing_in, 'asin_unique', ['asin', 'available', 'in_price', 'weight', 'ind_to_uae', 'ind_to_sg', 'ind_to_sa', 'price_updated_at']);
                     }
                 }
