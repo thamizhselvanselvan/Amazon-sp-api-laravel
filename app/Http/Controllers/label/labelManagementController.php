@@ -27,8 +27,9 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use Picqer\Barcode\BarcodeGeneratorHTML;
-use App\Models\order\OrderSellerCredentials;
+use Illuminate\Support\Facades\Validator;
 
+use App\Models\order\OrderSellerCredentials;
 use App\Services\SP_API\API\Order\missingOrder;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 
@@ -478,7 +479,7 @@ class labelManagementController extends Controller
         $prefix = config('database.connections.web.prefix');
 
         $data = DB::select("SELECT
-            DISTINCT web.id, web.awb_no, web.forwarder, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
+            DISTINCT web.id, web.awb_no, web.forwarder, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address,orderDetails.order_item_identifier
             from ${web}.${prefix}labels as web
             JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
             JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
@@ -620,4 +621,77 @@ class labelManagementController extends Controller
         Label::upsert($label_update, 'order_awb_no_unique', ['order_no', 'awb_no', 'forwarder']);
         return 'success';
     }
+
+    public function editOrderAddress($order_item_identifier)
+    {
+    
+        $order = config('database.connections.order.database');
+        $order_details = DB::select("SELECT shipping_address,order_item_identifier
+        from ${order}.orderitemdetails 
+        WHERE order_item_identifier = '$order_item_identifier'");       
+
+        $shipping_address=$order_details[0]->shipping_address;        
+        $manage = json_decode($shipping_address, true);
+
+		return Response($manage);
+
+        
+    }
+
+    public function updateOrderAddress(Request $request, $id )
+    {
+        
+        $validater = Validator::make($request->all(),[
+            'name' => ['required' ],
+            'phone' => ['required'],
+            'county' => ['required'],
+            'countryCode' => ['required'],
+            'city' => ['required'],
+            'addressType' => ['required'],
+            'addressLine1' => ['required'],
+            'addressLine2' => ['required']
+        ]);       
+
+        if($validater->fails())
+        {
+            return response()->json([
+                   
+                'status' => '400',
+                'errors' =>$validater->errors(),
+                    
+            ]);
+        }
+        else
+        {
+            $json_data=[];
+            $json_data = array(
+                                    "Name" => $request->input('name'),
+                                    "AddressLine1" => $request->input('addressLine1'),
+                                    "AddressLine2" => $request->input('addressLine2'),
+                                    "City" => $request->input('city'),
+                                    "County" => $request->input('county'),
+                                    "CountryCode" => $request->input('countryCode'),
+                                    "Phone" => $request->input('phone'),
+                                    "AddressType" => $request->input('addressType')
+                                );                                
+            $shipping_address=json_encode($json_data);         
+                       
+            $order = config('database.connections.order.database');
+            DB::select("UPDATE  ${order}.orderitemdetails 
+                        SET shipping_address = '$shipping_address'
+                         WHERE amazon_order_identifier = '$id'
+                        ");
+
+
+             return response()->json([                   
+                'status' => '200',
+                'message' => 'student updated successfully'                    
+            ]);
+
+            
+
+
+        }
+    }
+
 }
