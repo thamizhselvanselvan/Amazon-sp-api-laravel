@@ -38,7 +38,7 @@ class BuyBoxPriceImport
 
             if (count($data) > 0) {
 
-                Log::notice(count($data) . ' ->' . $priority . $country_code_lr . ' Price importing from BB');
+                // Log::notice(count($data) . ' ->' . $priority . $country_code_lr . ' Price importing from BB');
                 foreach ($data as $value) {
 
                     $asin = $value->asin;
@@ -149,6 +149,8 @@ class BuyBoxPriceImport
                                     ];
                             }
                         }
+                        Log::info("Updating price_${country_code_lr} Table");
+                        Log::info($asin_details);
                         if ($country_code_lr == 'us') {
 
                             $price_in_b2c = $price_convert->USAToINDB2C($packet_weight, $listing_price_amount);
@@ -201,7 +203,7 @@ class BuyBoxPriceImport
             } else {
                 //if all price are fetched fro selected priority then update status
                 $prir_count = $destination_model->where('priority', $priority)->update(['price_status' => 0]);
-                Log::info("$priority -> $prir_count updated");
+                // Log::info("$priority -> $prir_count updated");
             }
         }
     }
