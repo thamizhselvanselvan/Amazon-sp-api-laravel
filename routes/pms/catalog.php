@@ -70,6 +70,7 @@ Route::get('catalog/asin-destination/download-template', 'Catalog\AsinDestinatio
 Route::get('catalog/asin-destination/asin-export', 'Catalog\AsinDestinationController@AsinDestinationAsinExport')->name('catalog.asin.dastination.export');
 Route::get('catalog/asin-destination/download-csv', 'Catalog\AsinDestinationController@AsinDestinationDownloadCsvZip')->name('catalog.download.asin.destination');
 Route::get('catalog/asin-destination/truncate', 'Catalog\AsinDestinationController@AsinDestinationBBTruncate')->name('catalog.asin.destination.truncate');
+Route::post('catalog/asin-destination/search-delete', 'Catalog\AsinDestinationController@AsinDestinationBBSearchDelete')->name('catalog.asin.destination.search.delete');
 
 Route::get('catalog/exchange-rate', 'Catalog\CatalogExchangeManagementController@index');
 Route::post('catalog/update/exchange-rate', 'Catalog\CatalogExchangeManagementController@CatalogUpdate')->name('catalog.update.exchange.rate');

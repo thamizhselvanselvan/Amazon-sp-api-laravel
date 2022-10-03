@@ -7,10 +7,10 @@
 
 @section('content_header')
 <div class='row'>
-    <div class="col-6 text-right">
-        <h1 class="mt-0 text-dark font-weight-bold"> Dashboard</h1>
+    <div class="col-7 text-right">
+        <h1 class="mt-0 text-dark font-weight-bold"> Listing Priority Dashboard</h1>
     </div>
-    <div class="col-6">
+    <div class="col-5">
         <h5 class="text-right"><b>Last Update : </b>{{$FileTime}}</h5>
 
     </div>
@@ -32,7 +32,9 @@
 </div>
 
 @php
-$country = ['INDIA', 'USA'];
+$country = ['India Dashboard Count', 'USA Dashboard Count'];
+$header = ['Sold Listing', 'Inventory Listing', 'Unlisted'];
+
 @endphp
 
 @foreach ($json_arrays as $key1 => $record_array)
@@ -43,7 +45,7 @@ $country = ['INDIA', 'USA'];
         <div class="info-box bg-success">
 
             <div class="info-box-content text-center">
-                <h4 class="info-box-number text-center">Priority {{$key2}}</h4>
+                <h4 class="info-box-number text-center">{{ $header[$key2-1] }}</h4>
 
                 <div class="info-box-text">
                     <div class="row">

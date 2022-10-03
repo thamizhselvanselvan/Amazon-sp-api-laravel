@@ -22,7 +22,7 @@
 <div class="row">
     <div class="col">
         <label>Amazon Order Id</label>
-        <textarea class="form-control" rows="3" placeholder="Eg:- Amazon Order Id: 333-7777777-7777777" name="order_id"></textarea>
+        <textarea class="form-control" rows="2" placeholder="Eg:- Amazon Order Id: 333-7777777-7777777" name="order_id" id='order_id'></textarea>
         <div class="text-right m-2">
             <x-adminlte-button label='Search' class="btn-sm search-amazon-order-id" theme="primary" icon="fas fa-file-upload" type="submit" />
         </div>
@@ -33,13 +33,13 @@
     <table class='table table-bordered table-striped text-center'>
         <thead>
             <tr class='text-bold bg-info'>
-                <th>Selected All <br><input type='checkbox' id='selectAll' /></th>
+                <!-- <th>Selected All <br><input type='checkbox' id='selectAll' /></th> -->
                 <th>Store Name</th>
                 <th>Order No.</th>
                 <th>Awb No.</th>
                 <th>Courier Name</th>
                 <th>Order Date</th>
-                <th>SKU</th>
+                <!-- <th>SKU</th> -->
                 <th>Customer</th>
                 <th>Action</th>
             </tr>
@@ -86,6 +86,9 @@
                     if (response.success) {
                         $('#showTable').removeClass('d-none');
                         $('#checkTable').html(response.success);
+
+                        let view = $('.view').attr('href');
+                        window.open(view, '_blank');
                     }
                     if (response.missing) {
                         $('#showTableMissing').removeClass('d-none');
@@ -112,9 +115,17 @@
                     "_token": "{{ csrf_token() }}",
                 },
                 success: function(response) {
-
+                    $('.search-amazon-order-id').click();
                 }
             });
+        });
+
+        $('#order_id').on('keyup', function(e) {
+            var form_data = $('.form-control').val();
+            if (form_data.length == 19 && !e.ctrlKey) {
+
+                $('.search-amazon-order-id').click();
+            }
         });
     });
 </script>

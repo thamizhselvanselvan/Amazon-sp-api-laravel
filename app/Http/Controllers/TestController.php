@@ -174,7 +174,7 @@ class TestController extends Controller
       echo "Request Id: " . $request_id[0];
       po($order->getPayload());
     } catch (Exception $e) {
-      po($e->getMessage());
+      po($e);
     }
 
     echo '<hr>';
@@ -194,7 +194,7 @@ class TestController extends Controller
       echo 'Request Id: ' . (($e->getResponseHeaders())['x-amzn-RequestId'][0]);
       echo "<br>";
 
-      po($e->getMessage());
+      po($e);
     }
     // exit;
     echo '<hr>';
@@ -212,7 +212,7 @@ class TestController extends Controller
       echo 'Request Id: ' . (($e->getResponseHeaders())['x-amzn-RequestId'][0]);
       echo "<br>";
 
-      po($e->getMessage());
+      po($e);
     }
 
     exit;
