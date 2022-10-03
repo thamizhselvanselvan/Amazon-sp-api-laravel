@@ -150,15 +150,13 @@ class TestController extends Controller
   {
     //new media new token
     $token = NULL;
-    // $token = 'Atzr|IwEBIN0kK1fNcVINCWD922Ed_hlgmfFbpJnumV8-L4FctK1RJJvTFx2mXymHIfN3G5TQIGg2lukH-p-fGbTA_7g7h_8SAyfmQVYBq83Gev7WtGagNoDM4mfqAxhOHU-wD3FDyfJomA0P5iAASpb0ecBz72FfmoamkFI4pTbuAwB-G7LjvW-ITkDjgZQl8lnsgCI6J5EN-4e8K9eJrAU5p9LMFjPfk8vTqiRAJx6YKNQvNTtPbm3HXmk3AnoogG44IOVazzad7D0VUOr6KQNSQnmx3aN9R2UBgt67KM2YPugDteKKygm9D0JomfmtlY-f3y0Eox4';
-
     $config = $this->config($seller_id, $country_code, $token);
 
     $marketplace_ids = $this->marketplace_id($country_code);
     $marketplace_ids = [$marketplace_ids];
 
     $apiInstance = new OrdersV0Api($config);
-    $startTime = Carbon::now()->subDays(30)->toISOString();
+    $startTime = Carbon::now()->subDays(1)->toISOString();
     $createdAfter = $startTime;
     $max_results_per_page = 100;
 
@@ -170,36 +168,51 @@ class TestController extends Controller
 
       echo '<hr>';
       echo 'Order Details';
-      $order = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, null, $next_token, $amazon_order_ids, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null)->getPayload();
-      po($order);
+      echo '<br>';
+      $order = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, null, $next_token, $amazon_order_ids, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null);
+      $request_id = $order['headers']['x-amzn-RequestId'];
+      echo "Request Id: " . $request_id[0];
+      po($order->getPayload());
     } catch (Exception $e) {
-      po($e->getMessage());
+      po($e);
     }
 
     echo '<hr>';
     echo 'Order item details';
-
+    echo "<br>";
     try {
 
       $data_element = array('buyerInfo');
       $next_token = NULL;
       $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
-
-      po($result_orderItems);
+      $request_id = $result_orderItems['headers']['x-amzn-RequestId'];
+      echo "Request Id: " . $request_id[0];
+      po($result_orderItems->getPayload());
     } catch (Exception $e) {
 
-      po($e->getMessage());
-    }
+      echo "<br>";
+      echo 'Request Id: ' . (($e->getResponseHeaders())['x-amzn-RequestId'][0]);
+      echo "<br>";
 
+      po($e);
+    }
+    // exit;
     echo '<hr>';
     echo 'Order Address';
     try {
 
       $result_order_address = $apiInstance->getOrderAddress($order_id);
+      $request_id = $result_order_address['headers']['x-amzn-RequestId'];
 
-      po($result_order_address);
+      echo "Request Id: " . $request_id[0];
+
+      po($result_order_address->getPayload());
     } catch (Exception $e) {
-      po($e->getMessage());
+      echo "<br>";
+      echo 'Request Id: ' . (($e->getResponseHeaders())['x-amzn-RequestId'][0]);
+      echo "<br>";
+
+      po($e);
     }
 
     exit;
