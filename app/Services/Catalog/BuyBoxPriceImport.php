@@ -79,7 +79,7 @@ class BuyBoxPriceImport
 
                     $unavaliable_asin[] = [
                         'asin' => $a,
-                        'availble' => 0
+                        'available' => 0
                     ];
                 }
 
