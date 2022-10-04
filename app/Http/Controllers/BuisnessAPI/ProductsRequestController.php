@@ -21,16 +21,16 @@ class ProductsRequestController extends Controller
 
         return response()->json(['success' => ' details successfully Fetched', $data]);
     }
-    public function fetchusasin()
-    {
-        $data = AsinSource::select('asin')
-            ->where('source', 'US')
-            ->get();
-        foreach ($data as $val) {
-            $fetched[] = ($val->asin);
-        }
+    // public function fetchusasin()
+    // {
+    //     $data = AsinSource::select('asin')
+    //         ->where('source', 'US')
+    //         ->get();
+    //     foreach ($data as $val) {
+    //         $fetched[] = ($val->asin);
+    //     }
 
-        $tes = new product_details;
-        $tes->savedetails($fetched);
-    }
+    //     $tes = new product_details;
+    //     $tes->savedetails($fetched);
+    // }
 }

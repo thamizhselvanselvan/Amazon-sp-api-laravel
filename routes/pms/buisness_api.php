@@ -21,11 +21,16 @@ Route::resource('business/offers', 'BuisnessAPI\searchOffersRequestController');
 Route::get('business/asin/details', 'BuisnessAPI\GetProductsByAsinsController@searchasinproduct');
 Route::resource('business/byasins', 'BuisnessAPI\GetProductsByAsinsController');
 
-Route::resource('business/orders', 'BuisnessAPI\OrdersController');
 
 Route::resource('business/details', 'BuisnessAPI\ProductDetailsController');
 Route::get('buisness/details', 'BuisnessAPI\ProductDetailsController@viewpro');
 
+Route::get('business/orders/details', 'BuisnessAPI\OrdersController@test');
+Route::get('business/orders/view', 'BuisnessAPI\OrdersController@getorders');
+Route::get('business/orders/pending', 'BuisnessAPI\OrdersController@orderspending');
+Route::get('business/offers_view', 'BuisnessAPI\OrdersController@prodoffers');
+Route::get('business/order/book', 'BuisnessAPI\OrdersController@orderbooking');
+Route::resource('business/orders', 'BuisnessAPI\OrdersController');
 
 // Route::get('product/test', function()
 // {
