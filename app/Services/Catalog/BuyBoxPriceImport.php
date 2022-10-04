@@ -149,8 +149,8 @@ class BuyBoxPriceImport
                                     ];
                             }
                         }
-                        Log::info("Updating price_${country_code_lr} Table");
-                        Log::info($asin_details);
+                        // Log::info("Updating price_${country_code_lr} Table");
+                        // Log::info($asin_details);
                         if ($country_code_lr == 'us') {
 
                             $price_in_b2c = $price_convert->USAToINDB2C($packet_weight, $listing_price_amount);
