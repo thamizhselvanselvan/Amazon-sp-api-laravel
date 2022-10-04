@@ -37,7 +37,8 @@
         "spatie/laravel-failed-job-monitor": "^3.4",
         "spatie/laravel-permission": "^5.5",
         "symfony/symfony": "5.4.x",
-        "yajra/laravel-datatables-oracle": "^9.19"
+        "yajra/laravel-datatables-oracle": "^9.19",
+        "zohocrm/php-sdk-2.0": "^6.0"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
