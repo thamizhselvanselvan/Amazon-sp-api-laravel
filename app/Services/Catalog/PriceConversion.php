@@ -22,8 +22,9 @@ class PriceConversion
 
         $this->rate_master_in_sg = GetRateChart('IN-SG');
 
-        $this->exchange_rate_data = ExchangeRate::select('source_destination',
-                DB::raw("group_concat(`base_weight`) as base_weight, 
+        $this->exchange_rate_data = ExchangeRate::select(
+            'source_destination',
+            DB::raw("group_concat(`base_weight`) as base_weight, 
                 group_concat(`base_shipping_charge`) as base_shipping_charge,
                 group_concat(packaging) as packaging,
                 group_concat(seller_commission) as seller_commission,
@@ -31,12 +32,12 @@ class PriceConversion
                 group_concat(sp_commission) as sp_commission,
                 group_concat(excerise_rate) as excerise_rate,
                 group_concat(amazon_commission) as amazon_commission
-                "))->groupBy('source_destination')->get()->toArray();
-
+                ")
+        )->groupBy('source_destination')->get()->toArray();
     }
     public function USAToINDB2C($weight, $bb_price)
     {
-        
+
         if ($weight > 0.9) {
             $int_shipping_base_charge = ($this->exchange_rate_data[4]['base_weight'] + ($weight - 1) * $this->exchange_rate_data[4]['base_shipping_charge']);
         } else {
@@ -81,13 +82,17 @@ class PriceConversion
 
         $india_sp = $usd_sp * $ex_rate;
         return round($india_sp, 2);
-        
     }
 
     public function USATOUAE($weight, $bb_price)
     {
         $weight = (float)$weight;
         $bb_price = (float)$bb_price;
+
+        if ($weight < 0.5) {
+
+            $weight = 0.5;
+        }
 
         $duty_rate = $this->exchange_rate_data[6]['duty_rate'] / 100;
         $seller_commission = $this->exchange_rate_data[6]['seller_commission'] / 100;
