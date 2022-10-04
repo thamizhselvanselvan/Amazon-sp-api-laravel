@@ -38,7 +38,7 @@ class BuyBoxPriceImport
 
             if (count($data) > 0) {
 
-                Log::notice(count($data) . ' ->' . $priority . $country_code_lr . ' Price importing from BB');
+                // Log::notice(count($data) . ' ->' . $priority . $country_code_lr . ' Price importing from BB');
                 foreach ($data as $value) {
 
                     $asin = $value->asin;
@@ -63,6 +63,7 @@ class BuyBoxPriceImport
                 $pricing_in = [];
                 $asin_details = [];
                 $listing_price_amount = '';
+                $unavaliable_asin = [];
 
                 $asin_array = [];
                 foreach ($cat_data as $value) {
@@ -75,6 +76,11 @@ class BuyBoxPriceImport
                     $a = $value->asin;
                     $calculated_weight[$a] =  $weight;
                     $asin_array[] = "'$a'";
+
+                    $unavaliable_asin[] = [
+                        'asin' => $a,
+                        'available' => 0
+                    ];
                 }
 
                 if ($asin_array) {
@@ -143,6 +149,8 @@ class BuyBoxPriceImport
                                     ];
                             }
                         }
+                        Log::info("Updating price_${country_code_lr} Table");
+                        Log::info($asin_details);
                         if ($country_code_lr == 'us') {
 
                             $price_in_b2c = $price_convert->USAToINDB2C($packet_weight, $listing_price_amount);
@@ -184,16 +192,18 @@ class BuyBoxPriceImport
 
                     if ($country_code_lr == 'us') {
 
+                        PricingUs::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
                         PricingUs::upsert($pricing, 'unique_asin',  ['asin', 'available', 'weight', 'us_price', 'usa_to_in_b2b', 'usa_to_in_b2c', 'usa_to_uae', 'usa_to_sg', 'price_updated_at']);
                     } elseif ($country_code_lr == 'in') {
 
+                        PricingIn::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
                         PricingIn::upsert($pricing_in, 'asin_unique', ['asin', 'available', 'in_price', 'weight', 'ind_to_uae', 'ind_to_sg', 'ind_to_sa', 'price_updated_at']);
                     }
                 }
             } else {
                 //if all price are fetched fro selected priority then update status
                 $prir_count = $destination_model->where('priority', $priority)->update(['price_status' => 0]);
-                Log::info("$priority -> $prir_count updated");
+                // Log::info("$priority -> $prir_count updated");
             }
         }
     }
