@@ -409,6 +409,13 @@ return [
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin']
                 ],
+                [
+
+                    'text' => 'Catalog Exchange Rate',
+                    'url'  => 'catalog/exchange-rate',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin']
+                ],
 
             ],
         ],
@@ -853,9 +860,24 @@ return [
 
                 [
                     'text' => 'Order API',
-                    'url' => 'business/orders',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
+                    'submenu' => [
+                        [
+                            'text' => 'Order Test',
+                            'url' => 'business/orders',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ],
+                        [
+                            'text' => 'Order Details',
+                            'url' => 'business/orders/details',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ]
+                    ]
 
                 ],
                 [

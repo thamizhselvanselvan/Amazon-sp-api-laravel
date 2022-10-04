@@ -3,7 +3,13 @@
 @section('title', 'ASIN Source')
 
 @section('css')
-<link rel="stylesheet" href="/css/styles.css">
+<!-- <link rel="stylesheet" href="/css/styles.css"> -->
+<style type="text/css">
+    #error{
+        margin-top : -20px;
+    }
+</style>
+
 @stop
 
 @section('content_header')
@@ -31,10 +37,8 @@
                     id="exportUniversalTextiles" class="btn-sm" />
             </a>
 
-            <!-- <a href="#"> -->
-                <x-adminlte-button label="Asin Truncate" theme="primary" icon="fas fa-trash text-danger"
-                 class="btn-sm" data-toggle="modal" data-target="#asinTruncate"></x-adminlte-button>
-            <!-- </a> -->
+            <x-adminlte-button label="Asin Truncate" theme="primary" icon="fas fa-trash text-danger"
+                class="btn-sm" data-toggle="modal" data-target="#asinTruncate"></x-adminlte-button>
 
             <div class="modal fade" id="asinTruncate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
@@ -72,32 +76,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Asin Download</h5>
-                            <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-
-                            <a href="{{ route('catalog.download.asinMaster') }}">
-                                <h6>Download ASIN </h6>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-            </a>
-            <!-- <a href="{{ route('catalog.softDelete.view') }}">
-                <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" class="btn-sm" />
-            </a> -->
         </h2>
     </div>
 </div>
@@ -116,98 +94,44 @@
             </div>
             @endif
         </div>
-
-        <!-- <table class="table table-bordered yajra-datatable table-striped text-center table-sm">
-            <thead>
-                <tr class="length">
-                    <th>S/N</th>
-                    <th>ASIN</th>
-                    <th>Source</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table> -->
     </div>
 </div>
 @stop
 
 @section('js')
 <script type="text/javascript">
+    
+    $(document).on('click', ".delete", function(e) {
+        e.preventDefault();
+        let bool = confirm('Are you sure you want to push this asin to Bin?');
 
-$(function() {
-    yajra_datatable();
-});
+        if (!bool) {
+            return false;
+        }
+        let self = $(this);
+        let id = self.attr('data-id');
+        self.prop('disable', true);
+        $.ajax({
+            method: 'post',
+            url: '/catalog/remove/asin/' + id,
+            data: {
+                "_token": "{{ csrf_token() }}",
+            },
+            response: 'json',
+            success: function(response) {
+                alert('Delete successfully');
+                yajra_datatable();
+            },
+        });
 
-function yajra_datatable() {
-
-    // let yajra_table = $('.yajra-datatable').DataTable({
-    //     processing: true,
-    //     serverSide: true,
-    //     destroy: true,
-    //     pageLength: 50,
-    //     ajax: "{{ url('catalog/asin-source') }}",
-    //     columns: [{
-    //             data: 'id',
-    //             name: 'id',
-    //             orderable: false,
-    //             searchable: false
-    //         },
-    //         {
-    //             data: 'asin',
-    //             name: 'asin',
-    //             orderable: false
-    //         },
-    //         {
-    //             data: 'source',
-    //             name: 'source',
-    //             orderable: false
-    //         },
-    //         {
-    //             data: 'action',
-    //             name: 'action',
-    //             orderable: false,
-    //             searchable: false
-    //         },
-
-    //     ]
-    // });
-}
-
-$(document).on('click', ".delete", function(e) {
-    e.preventDefault();
-    let bool = confirm('Are you sure you want to push this asin to Bin?');
-
-    if (!bool) {
-        return false;
-    }
-    let self = $(this);
-    let id = self.attr('data-id');
-    self.prop('disable', true);
-    $.ajax({
-        method: 'post',
-        url: '/catalog/remove/asin/' + id,
-        data: {
-            "_token": "{{ csrf_token() }}",
-        },
-        response: 'json',
-        success: function(response) {
-            alert('Delete successfully');
-            // location.reload()
-            yajra_datatable();
-        },
     });
 
-});
-
-$(document).on('click', '.truncate', function(){
-    let bool = confirm('Are you sure you want to truncate this selected table?');
-    if (!bool) {
-        return false;
-    }
-});
-
+    $(document).on('click', '.truncate', function(){
+        let bool = confirm('Are you sure you want to truncate this selected table?');
+        if (!bool) {
+            return false;
+        }
+    });
 
 </script>
 @stop

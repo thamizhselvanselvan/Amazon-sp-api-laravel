@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Catalog\AsinDestination;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Catalog\Asin_destination;
 use Yajra\DataTables\Facades\DataTables;
 
 class AsinDestinationController extends Controller
@@ -50,9 +50,8 @@ class AsinDestinationController extends Controller
             $value = $request->text_area;
             $destinations = $request->destination;
             $priority = $request->priority;
-            
-            foreach($destinations as $destination)
-            {
+
+            foreach ($destinations as $destination) {
                 $asins = preg_split('/[\r\n| |:|,]/', $value, -1, PREG_SPLIT_NO_EMPTY);
                 $country_code = buyboxCountrycode();
                 // if ($destination == 'UK') {
@@ -64,13 +63,13 @@ class AsinDestinationController extends Controller
                         'user_id'   => $user_id,
                         'priority'  => $priority,
                     ];
-    
+
                     $product[] = [
                         'seller_id' => $country_code[$destination],
                         'active'   =>  1,
                         'asin1' => $asin,
                     ];
-    
+
                     $product_lowest_price[] = [
                         'asin'  => $asin,
                         'import_type'   => 'Seller',
@@ -78,16 +77,15 @@ class AsinDestinationController extends Controller
                         'cyclic' => 0,
                     ];
                 }
-              
-                $table_name = table_model_create(country_code:$destination, model:'Asin_destination', table_name:'asin_destination_');
+
+                $table_name = table_model_create(country_code: $destination, model: 'Asin_destination', table_name: 'asin_destination_');
                 $table_name->upsert($records, ['user_asin_unique'], ['asin', 'priority']);
                 $push_to_bb = new PushAsin();
-                $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination, priority:$priority);
+                $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $destination, priority: $priority);
                 $records = [];
                 $product = [];
                 $product_lowest_price = [];
             }
-
         } elseif ($request->form_type == 'file_upload') {
 
             $user_id = Auth::user()->id;
@@ -114,7 +112,7 @@ class AsinDestinationController extends Controller
 
     public function AsinDestinationEdit($id)
     {
-        $asin = AsinDestination::find($id);
+        $asin = Asin_destination::find($id);
         return view('Catalog.AsinDestination.edit', compact('asin'));
     }
 
@@ -126,22 +124,22 @@ class AsinDestinationController extends Controller
         ]);
 
         $update['destination'] = strtoupper($update['destination']);
-        AsinDestination::where('id', $id)->update($update);
+        Asin_destination::where('id', $id)->update($update);
         return redirect()->intended('/catalog/asin-destination')->with('success', 'Asin has been updated successfully');
     }
 
     public function AsinDestinationTrash($id)
     {
-        AsinDestination::where('id', $id)->delete();
+        Asin_destination::where('id', $id)->delete();
         return redirect()->intended('/catalog/asin-destination')->with('success', 'Asin has been pushed to Bin successfully');
     }
 
     public function AsinDestinationTrashView(Request $request)
     {
-        $asins = AsinDestination::onlyTrashed()->get();
+        $asins = Asin_destination::onlyTrashed()->get();
         if ($request->ajax()) {
 
-            $data = AsinDestination::orderBy('id', 'DESC')->get();
+            $data = Asin_destination::orderBy('id', 'DESC')->get();
             return DataTables::of($asins)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
@@ -155,7 +153,7 @@ class AsinDestinationController extends Controller
 
     public function AsinDestinationTrashRestore($id)
     {
-        AsinDestination::where('id', $id)->restore();
+        Asin_destination::where('id', $id)->restore();
         return redirect()->intended('/catalog/asin-destination/bin')->with('success', 'Asin has been restored successfully');
     }
 
@@ -197,7 +195,24 @@ class AsinDestinationController extends Controller
         $destinations = implode(',', $request->destination);
         $priority = $request->priority;
         commandExecFunc("mosh:Asin-destination-delete-priority-wise ${priority} --destinations=${destinations}");
-
         return redirect('catalog/asin-destination')->with('success', 'Table Truncate successfully');
+    }
+
+    public function AsinDestinationBBSearchDelete(Request $request)
+    {
+
+        $request->validate([
+            'source'    =>  'required|in:IN,US',
+            'priority'  =>  'required|in:1,2,3',
+            'Asins'     =>  'required',
+        ]);
+
+        $source = strtolower($request->source);
+        $priority = $request->priority;
+        $Asins = array_unique(preg_split('/[\r\n| |:|,|.]/', $request->Asins, -1, PREG_SPLIT_NO_EMPTY));
+        $asins = implode(',', $Asins);
+
+        commandExecFunc("mosh:search-asin-delete-bb-destination ${priority} ${source} ${asins}");
+        return redirect('/catalog/asin-destination')->with('success', 'ASINS has been deleted successfully!');
     }
 }

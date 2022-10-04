@@ -245,7 +245,7 @@ class OrdersDashboardController extends Controller
         $order_sellers = OrderSellerCredentials::select('seller_id', 'store_name')->get()->toArray();
         return view('orders.OrderImport.order_import_file', compact('order_sellers'));
     }
-    
+
     public function ImortOrdersFile(Request $request)
     {
         $request->validate([
@@ -254,7 +254,7 @@ class OrdersDashboardController extends Controller
             'order_csv' => 'required|mimes:txt,csv',
         ]);
 
-        if(!$request->hasFile('order_csv')){
+        if (!$request->hasFile('order_csv')) {
             return back()->with('error', "Please upload file to import it to the database");
         }
 

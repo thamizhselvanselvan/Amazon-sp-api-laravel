@@ -10,15 +10,15 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-1">
-        <a href="{{route('orders.search.index')}}" class="btn btn-primary btn-sm">
+    <div class="col-4">
+        <!-- <a href="{{ route('label.manage')}}" class="btn btn-primary btn-sm">
             <i class="fas fa-long-arrow-alt-left"></i> Back
-        </a>
-    </div>
-    <div class="col-2">
+        </a> -->
+
         <a href=" {{route('download.order.csv.template')}} ">
             <x-adminlte-button label="Download Order Template" theme="primary" icon="fas fa-file-download" class="btn-sm ml-2" />
         </a>
+
     </div>
 </div>
 
