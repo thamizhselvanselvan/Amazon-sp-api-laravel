@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\shipntrack\API;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +28,12 @@ Route::group(['namespace' => 'Api\App\v1', 'as' => 'v1.', 'prefix' => 'v1'], fun
         Route::group([
             'prefix' => 'auth',
             'middleware' => \Fruitcake\Cors\HandleCors::class,
-        ], function() {
+        ], function () {
         });
     });
+    // Route::get('/testing', AmazonTrackingAPIController::class);
 });
+
+$method = ['get', 'post'];
+Route::match($method, 'trackingAmazon', 'shipntrack\API\AmazonTrackingAPIController@AmazonTrackingMaster');
+Route::match($method, 'trackingb2cship', 'shipntrack\API\B2CShipTrackingAPIController@B2CshipTrackingResponse');

@@ -6,7 +6,7 @@ use ZipArchive;
 use League\Csv\Writer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use App\Models\Catalog\Asin_master;
+use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -17,6 +17,7 @@ class asinExport extends Command
     private $mode ;
     private $writer;
     private $file_path;
+    private $total = [];
     protected $Files = [];
     /**
      * The name and signature of the console command.
@@ -54,7 +55,7 @@ class asinExport extends Command
         $chunk = 100000;
         $this->mode = $total_csv / $chunk;
 
-        Asin_master::orderBy('id')->chunk($chunk, function ($records) {
+        AsinSource::orderBy('id')->chunk($chunk, function ($records) {
             
             if($this->count == 1 ){
 
@@ -64,12 +65,19 @@ class asinExport extends Command
                     Storage::put($this->file_path, '');
                     }
                 $this->writer = Writer::createFromPath(Storage::path($this->file_path), "w"); 
-                $header = ['S/N','Asin', 'Source', 'Destination 1', 'Destination 2', 'Destination 3', 'Destination 4', 'Destination 5', 'Created At','Updated At'];
+                $header = ['Asin', 'Source'];
                 $this->writer->insertOne($header);
 
             }
+            foreach($records as $record)
+            {
+                $this->total [] = [
+                    'Asin'  => $record['asin'],
+                    'Source'    => $record['source'],
+                ];
+            }
             $records = $records->toArray();
-            $this->writer->insertall($records);
+            $this->writer->insertall($this->total);
 
             if($this->mode == $this->count){
                 $this->offset++;
@@ -77,9 +85,7 @@ class asinExport extends Command
             }
             else{
                 $this->count++;
-            }
-            
-
+            } 
         });
         
         $zip = new ZipArchive;

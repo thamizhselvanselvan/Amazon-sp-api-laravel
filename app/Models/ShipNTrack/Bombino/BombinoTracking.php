@@ -20,4 +20,11 @@ class BombinoTracking extends Model
         'status',
         'weight',
     ];
+
+    public function bombinoTrackingJoin()
+    {
+        return $this->hasMany(BombinoTrackingDetails::class, 'awbno', 'awbno');
+    }
+
+    
 }

@@ -92,13 +92,12 @@ class OtherAmazonInProductController extends Controller
         $filesArray = [];
         foreach ($files as $key => $file) {
             if ($key > 1) {
-                if(!str_contains($file, '.mosh'))
-                {
+                if (!str_contains($file, '.mosh')) {
                     $filesArray[][$file] =  date("F d Y H:i:s.", filemtime($path . '/' . $file));
                 }
             }
         }
-        
+
         return response()->json(['success' => true, "files_lists" => $filesArray]);
     }
 

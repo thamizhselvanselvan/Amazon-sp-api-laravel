@@ -8,8 +8,10 @@ use App\Models\Mws_region;
 use App\Models\Aws_credential;
 use SellingPartnerApi\Endpoint;
 use App\Models\Admin\BB\BB_User;
+use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\Admin\ErrorReporting;
 use Illuminate\Support\Facades\Auth;
 use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
@@ -21,10 +23,10 @@ use SellingPartnerApi\Api\CatalogItemsV0Api;
 class Catalog
 {
     use ConfigTrait;
-    
+
     public function index($datas, $seller_id = NULL, $type)
     {
-        
+
         //$type = 1 for seller, 2 for Order, 3 for inventory
         $host = config('database.connections.catalog.host');
         $dbname = config('database.connections.catalog.database');
@@ -49,8 +51,9 @@ class Catalog
                 $token = ($mws_region['aws_verified']['auth_code']);
 
                 $seller_id = $value->seller_id;
-                $check = DB::connection('catalog')->select("SELECT asin from catalogs where asin = '$asin'");
-                // $check = catalog::where('asin', $asin)->get();
+                $country_table = strtolower($country_code);
+                $countrywise_table = 'catalog' . $country_table . 's';
+                $check = DB::connection('catalog')->select("SELECT asin from $countrywise_table where asin = '$asin'");
                 // $check = [];
                 if (count($check) <= 0) {
 
@@ -77,16 +80,21 @@ class Catalog
         $config = $this->config($aws_id, $country_code, $auth_code);
         $apiInstance = new CatalogItemsV0Api($config);
         $marketplace = $this->marketplace_id($country_code);
-        // $country_code = '';
-        
-        $seller_id = $aws_id?$aws_id:$seller_id; 
+
+        $country_code = strtolower($country_code);
+        $table_name = 'catalog' . $country_code . 's';
+
+        $seller_id = $aws_id ? $aws_id : $seller_id;
         try {
             $result = $apiInstance->getCatalogItem($marketplace, $asin);
             $result = json_decode(json_encode($result));
             if (isset(($result->payload->AttributeSets[0]))) {
 
                 $result = (array)($result->payload->AttributeSets[0]);
-                $productcatalogs = R::dispense('catalogs');
+                $productcatalogs = R::dispense($table_name);
+
+                // Log::alert($productcatalogs);
+                // exit;
 
                 $productcatalogs->seller_id = $seller_id;
                 $productcatalogs->asin = $asin;
@@ -94,7 +102,7 @@ class Catalog
 
                 foreach ($result as $key => $data) {
                     $key = lcfirst($key);
-                    
+
                     if (is_object($data)) {
 
                         $productcatalogs->{$key} = json_encode($data);
@@ -102,7 +110,6 @@ class Catalog
                         $productcatalogs->{$key} = ($data);
                     } else {
                         $productcatalogs->{$key} = json_encode($data);
-                        
                     }
                 }
                 R::store($productcatalogs);
@@ -122,11 +129,30 @@ class Catalog
                 //inventory
 
             } elseif ($type == 4) {
-                DB::connection('catalog')
-                ->update("UPDATE asin_masters SET status = '1' WHERE status = '0'");
+                AsinSource::upsert(
+                    [
+                        'asin' => $asin,
+                        'source' => $country_code,
+                        'user_id' => $seller_id,
+                        'status' => 1
+                    ],
+                    ['user_asin_source_unique'],
+                    ['status']
+                );
             }
         } catch (Exception $e) {
-            Log::alert($e);
+            // Log::alert($e);
+            $code =  $e->getCode();
+            $msg = $e->getMessage();
+            $error_reportings = ErrorReporting::create([
+                'queue_type' => "catalog",
+                'identifier' => $asin,
+                'identifier_type' => "ASIN",
+                'source' => $country_code,
+                'aws_key' => $aws_id,
+                'error_code' => $code,
+                'message' => $msg,
+            ]);
         }
     }
 }

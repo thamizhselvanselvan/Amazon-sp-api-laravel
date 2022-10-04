@@ -1,12 +1,12 @@
 <?php
 
-use App\Services\AWS_Business_API\Auth\AWS_Business;
 use RedBeanPHP\R;
 use Carbon\Carbon;
 use App\Models\User;
 use League\Csv\Reader;
 use App\Events\testEvent;
 use AWS\CRT\HTTP\Request;
+use App\Events\checkEvent;
 use App\Models\Mws_region;
 use Maatwebsite\Excel\Row;
 use App\Jobs\TestQueueFail;
@@ -15,6 +15,7 @@ use Smalot\PdfParser\Parser;
 use Dflydev\DotAccessData\Data;
 use SellingPartnerApi\Endpoint;
 use App\Models\Inventory\Shelve;
+use App\Models\Inventory\Country;
 use App\Models\Universal_textile;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
@@ -22,6 +23,8 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
+use App\Models\Admin\ErrorReporting;
+use App\Models\Catalog\ExchangeRate;
 use App\Services\SP_API\API\Catalog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -35,6 +38,8 @@ use App\Services\Inventory\ReportWeekly;
 use Spatie\Permission\Models\Permission;
 use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
+use SellingPartnerApi\Api\CatalogItemsV20220401Api;
+use App\Services\AWS_Business_API\Auth\AWS_Business;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
@@ -48,135 +53,391 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('country',function(){
- 
+// use ConfigTrait;
+
+Route::get('data', function () {
+
+    $tgh = ExchangeRate::select(
+        'source_destination',
+        DB::raw("group_concat(`base_weight`) as base_weight, 
+    group_concat(`base_shipping_charge`) as base_shipping_charge,
+    group_concat(packaging) as packaging,
+    group_concat(seller_commission) as seller_commission,
+    group_concat(duty_rate) as duty_rate,
+    group_concat(sp_commission) as sp_commission,
+    group_concat(excerise_rate) as excerise_rate,
+    group_concat(amazon_commission) as amazon_commission
+    ")
+    )->groupBy('source_destination')->get()->toArray();
+
+    po($tgh);
+    exit;
+
+    $value = [];
+    $datas = [
+        'B00014DZL6',
+        'B00014E9W0',
+        'B01DBQIIGC',
+        'B01DGIKD1I',
+        'B01DNYGMZ6',
+        'B01DPEGT4S',
+    ];
+    foreach ($datas as $data) {
+        $value[] = $data;
+    }
+
+    po($value);
+});
+
+// route::get('newcatalog', function(){
+
+
+//     $host = config('database.connections.catalog.host');
+//         $dbname = config('database.connections.catalog.database');
+//         $port = config('database.connections.catalog.port');
+//         $username = config('database.connections.catalog.username');
+//         $password = config('database.connections.catalog.password');
+
+//         if (!R::testConnection('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password)) {
+//             R::addDatabase('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+//             R::selectDatabase('catalog');
+//         }
+
+//     // $token = 'Atzr|IwEBIJbccmvWhc6q6XrigE6ja7nyYj962XdxoK8AHhgYvfi-WKo3MsrbTSLWFo79My_xmmT48DSVh2e_6w8nxgaeza9XZ9HtNnk7l4Rl_nWhhO6xzEdfIfU7Ev4hktjvU8CjMvYnRn_Cw5JveEqZSggp961Sg7CoBEDpwXZbAE3SYXSdeNxfP2Nu84y2ZzlsP3CNZqcTvXMWflLk1qqY6ittwlGAXpL0BwGxPCBRmjbXOy5xsZqwCPAQhW6l9AJtLPhwOlSSDjcxxvCTH9-LEPSWHLRP1wV3fRgosOlCsQgmuET0pm5SO7FVJTRWux8h2k5hnnM';
+//     $token = 'Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg';
+//     $country_code = 'IN';
+//     $aws_id = NULL;
+
+//     $config = new Configuration([
+//         "lwaClientId" => "amzn1.application-oa2-client.0167f1a848ae4cf0aabeeb1abbeaf8cf",
+//         "lwaClientSecret" => "5bf9add9576f83d33293b0e9e2ed5e671000a909f161214a77b93d26e7082765",
+//         "lwaRefreshToken" => $token,
+//         "awsAccessKeyId" => "AKIAZTIHMXYBD5SRG5IZ",
+//         "awsSecretAccessKey" => "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",
+//         "endpoint" => Endpoint::NA,  // or another endpoint from lib/Endpoints.php
+//         "roleArn" => 'arn:aws:iam::659829865986:role/Mosh-E-Com-SP-API-Role'
+//     ]);
+//         $apiInstance = new CatalogItemsV20220401Api($config);
+//         // po($apiInstance);
+//         // exit;
+//         // $marketplace_id = 'A21TJRUUN4KGV';
+//         $marketplace_id = ['ATVPDKIKX0DER'];
+//         // $asin = 'B00000JHQ0';
+//         $asins = [
+//             'B00014DZL6',
+//             'B00014E9W0',
+//             'B000WA6KFK',
+//             'B000WH10SW',
+//             'B000WNAP6O',
+//             'B000XAL2F4',
+//             'B000ZHJS0G',
+//         ];
+//         $identifiers = $asins;
+//         $identifiers_type = 'ASIN';
+//         $page_size = 20;
+//         $locale = null;
+//         $seller_id_temp = null;
+//         $keywords = null;
+//         $brand_names = null;
+//         $classification_ids = null;
+//         $page_token = null;
+//         $keywords_locale = null;
+
+//         $includedData= ['attributes','dimensions', 'images', 'productTypes', 'summaries'];
+//         echo"<pre>";
+//         try {
+//             $data = [];
+//             $miss_asin = [];
+//             $result = $apiInstance->searchCatalogItems (
+//             $marketplace_id, 
+//             $identifiers,
+//             $identifiers_type,
+//             $includedData,
+//             $locale,
+//             $seller_id_temp,
+//             $keywords,
+//             $brand_names,
+//             $classification_ids,
+//             $page_size,
+//             $page_token,
+//             $keywords_locale,
+//         );
+//             $result = json_decode(json_encode($result));
+//             // po($result);
+//             // exit;
+//             foreach($result->items as $key => $value)
+//             {   
+//                 $diff_array [] = $value->asin;
+//                 po($diff_array);
+//                 // exit;
+//                 foreach($value as $key1 => $value1)
+//                 {
+//                     if($key1 == 'summaries')
+//                     {
+//                         foreach($value1[0] as $key2 => $value2)
+//                         {
+//                             $data[$key][$key2] = returnType($value2);
+//                         }
+//                     }elseif($key1 == 'dimensions')
+//                     {
+//                         if(array_key_exists('package', (array)$value1[0])){
+//                             foreach($value1[0]->package as $key3 => $value3)
+//                             {
+//                                 $data[$key][$key3] = $value3->value;
+//                                 if($key3 == 'width' || $key3 == 'lenght' || $key3 == 'height')
+//                                 {
+//                                     $data[$key]['unit'] = $value3->unit;
+//                                 }
+//                                 if($key3 == 'weight'){
+
+//                                     $data[$key]['weight_unit'] = $value3->unit;
+//                                 }
+//                             }
+//                         }
+//                     }
+//                     else{
+//                         $data[$key][$key1] = returnType($value1);
+
+//                     }
+//                 }  
+//             }
+//             po($data);
+//         } catch (Exception $e) {
+//             $error_record = [
+//                 'queue_type' => 'Catalog',
+//                 'source' => $country_code,
+//                 'identifier_type' => 'ASIN',
+//             ];
+
+//             ErrorReporting::insert($error_record);
+//             // echo $e->getMessage(), PHP_EOL;
+
+//             print_r($e->getMessage());
+
+//             // echo 'Exception when calling CatalogItemsV20220401Api->getCatalogItem: ', $e->getMessage(), PHP_EOL;
+//         }
+// }
+
+// );
+
+// function returnType($type){
+//     $data = '';
+//     if(is_object($type)){
+//         $data = json_encode($type);
+//     }
+//     elseif(is_string($type))
+//     {
+//         $data = $type;
+//     }else{
+//         $data = json_encode($type);
+//     }
+//     return $data;
+// }
+
+
+
+Route::get('country', function () {
+
+
+    Log::channel('slack')->error('Hello world! for app 360');
+    exit;
+
     $path =  public_path('country.json');
-        $jsonfile = json_decode(file_get_contents($path),true);
-        $countries_list = [];
+    $jsonfile = json_decode(file_get_contents($path), true);
+    $countries_list = [];
 
-        foreach($jsonfile as $jsondata)
-        {
-            $countries_list [] = [
+    foreach ($jsonfile as $jsondata) {
+        $countries_list[] = [
 
-                "name" => $jsondata['name'],
-                "country_code" => $jsondata['iso3'],
-                "code" => $jsondata['iso2'],
-                "numeric_code" => $jsondata['numeric_code'],
-                "phone_code" => $jsondata['phone_code'],
-                "capital" => $jsondata['capital'],
-                "currency" => $jsondata['currency'],
-                "currency_name" => $jsondata['currency_name'],
-                "currency_symbol" => $jsondata['currency_symbol'],
-                "created_at" => now(),
-                "updated_at" => now(),
-            ];
-        }
-        po($countries_list);
-       
-        $country_count = Country::count();
+            "name" => $jsondata['name'],
+            "country_code" => $jsondata['iso3'],
+            "code" => $jsondata['iso2'],
+            "numeric_code" => $jsondata['numeric_code'],
+            "phone_code" => $jsondata['phone_code'],
+            "capital" => $jsondata['capital'],
+            "currency" => $jsondata['currency'],
+            "currency_name" => $jsondata['currency_name'],
+            "currency_symbol" => $jsondata['currency_symbol'],
+            "created_at" => now(),
+            "updated_at" => now(),
+        ];
+    }
+    po($countries_list);
 
-        if($country_count <= 0 )
-        {
-            Country::insert($countries_list);
-        }
+    $country_count = Country::count();
 
-        $countries = Country::get();
+    if ($country_count <= 0) {
+        Country::insert($countries_list);
+    }
+
+    $countries = Country::get();
+});
+Route::get('TrackingApi', function () {
+
+    // return $awbNo;
+    // $url = "https://amazon-sp-api-laravel.app/api/testing?awbNo=US30000002";
+    // $awbNo = 'US30000002';
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => "https://amazon-sp-api-laravel.app/api/testing/awbNo=US30000002",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_POSTFIELDS => "<?xml version='1.0' encoding='UTF-8'?>
+<AmazonTrackingRequest xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xsi:noNamespaceSchemaLocation='AmazonTrackingRequest.xsd'>
+</AmazonTrackingRequest>",
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: text/plain',
+
+        ),
+    ));
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+    return $response;
+});
+
+Route::get('channel', function () {
+    return view('checkChannel');
 });
 
 Route::get('test', function (ReportWeekly $report_weekly) {
 
-  $host       = "na.business-api.amazon.com";
-  $accessKey  = 'AKIARVGPJZCJHLW5MH63';
-  $secretKey  = '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';
-  $region     = "us-east-1";
-  $service    = "execute-api";
-  $requestUrl = "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
-  $uri        = 'products/2020-08-26/products/B081G4G8N8';
-  $httpRequestMethod = 'GET';
-  $data       = '';
+    $host = "na.business-api.amazon.com";
+    $accessKey = 'AKIARVGPJZCJHLW5MH63';
+    $secretKey = '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';
+    $region = "us-east-1";
+    $service = "execute-api";
+    $requestUrl =
+        "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
+    $uri = 'products/2020-08-26/products/B081G4G8N8';
+    $httpRequestMethod = 'GET';
+    $data = '';
 
-  $sign = new AWS_Business;
-  $headers = $sign->sign($host, $uri, $requestUrl,
-              $accessKey, $secretKey, $region, $service,
-              $httpRequestMethod, $data);
+    $sign = new AWS_Business;
+    $headers = $sign->sign(
+        $host,
+        $uri,
+        $requestUrl,
+        $accessKey,
+        $secretKey,
+        $region,
+        $service,
+        $httpRequestMethod,
+        $data
+    );
 
-  apiCall($headers);
+    apiCall($headers);
 
-  exit;
+    exit;
 
-  $data = '';
-  $host               = "na.business-api.amazon.com";
-  $accessKey          = "AKIARVGPJZCJHLW5MH63";
-  $secretKey          = "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";
-  $region             = "us-east-1";
-  $service            = "execute-api";
-  $requestUrl         = "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
-  $uri                = 'products/2020-08-26/products';
-  $httpRequestMethod  = 'GET';
+    $data = '';
+    $host = "na.business-api.amazon.com";
+    $accessKey = "AKIARVGPJZCJHLW5MH63";
+    $secretKey = "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";
+    $region = "us-east-1";
+    $service = "execute-api";
+    $requestUrl =
+        "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
+    $uri = 'products/2020-08-26/products';
+    $httpRequestMethod = 'GET';
 
-  $headers = calcualteAwsSignatureAndReturnHeaders($host, $uri, $requestUrl,
-              $accessKey, $secretKey, $region, $service,
-              $httpRequestMethod, $data);
+    $headers = calcualteAwsSignatureAndReturnHeaders(
+        $host,
+        $uri,
+        $requestUrl,
+        $accessKey,
+        $secretKey,
+        $region,
+        $service,
+        $httpRequestMethod,
+        $data
+    );
 
-  apiCall($headers);
+    apiCall($headers);
 
-  exit;
+    exit;
 
     // $requestUrl = "https://na.business-api.amazon.com";
     // $httpRequestMethod = "GET";
     // $headers = calcualteAwsSignatureAndReturnHeaders();
     $data = '';
 
-    $host               = "na.business-api.amazon.com";
-    // $accessKey          = ACCESS_KEY;
-    // $secretKey          = SECRET_KEY;
-    $accessKey          = "AKIARVGPJZCJHLW5MH63";
-    $secretKey          = "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";
-    $region             = "us-east-1";
-    $service            = "execute-api";
-    $requestUrl         = "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
-                          //?productRegion=US&locale=es_US
-                          //productRegion=US&locale=es_US
-    $uri                = 'products/2020-08-26/products/B081G4G8N8';
-    $httpRequestMethod  = 'GET';
+    $host = "na.business-api.amazon.com";
+    // $accessKey = ACCESS_KEY;
+    // $secretKey = SECRET_KEY;
+    $accessKey = "AKIARVGPJZCJHLW5MH63";
+    $secretKey = "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";
+    $region = "us-east-1";
+    $service = "execute-api";
+    $requestUrl =
+        "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
+    //?productRegion=US&locale=es_US
+    //productRegion=US&locale=es_US
+    $uri = 'products/2020-08-26/products/B081G4G8N8';
+    $httpRequestMethod = 'GET';
 
-    $headers = calcualteAwsSignatureAndReturnHeaders($host, $uri, $requestUrl,
-                $accessKey, $secretKey, $region, $service,
-                $httpRequestMethod, $data);
+    $headers = calcualteAwsSignatureAndReturnHeaders(
+        $host,
+        $uri,
+        $requestUrl,
+        $accessKey,
+        $secretKey,
+        $region,
+        $service,
+        $httpRequestMethod,
+        $data
+    );
 
-    $call = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, $debug=TRUE);
+    $call = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, $debug = TRUE);
     dd($headers, $call);
     exit;
 
-     $host = "na.business-api.amazon.com";
-     $uri = "products/2020-08-26/products/B081G4G8N8";
-     $requestUrl = "https://na.business-api.amazon.com";
-     $accessKey = "AKIARVGPJZCJHLW5MH63";
-     $secretKey = "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";
-     $region = "us-east-1";
-     $service = "execute-api";
-     $httpRequestMethod = "";
-     $data = "";
+    $host = "na.business-api.amazon.com";
+    $uri = "products/2020-08-26/products/B081G4G8N8";
+    $requestUrl = "https://na.business-api.amazon.com";
+    $accessKey = "AKIARVGPJZCJHLW5MH63";
+    $secretKey = "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";
+    $region = "us-east-1";
+    $service = "execute-api";
+    $httpRequestMethod = "";
+    $data = "";
 
-     $headers = calcualteAwsSignatureAndReturnHeaders($host, $uri, $requestUrl,
-     $accessKey, $secretKey, $region, $service,
-     $httpRequestMethod, $data, $debug = TRUE);
-
-
-     $result = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, TRUE);
-
-
-     exit;
-  $aws = new AWS_Business;
-
-  dd($aws->signTest());
-
-   exit;
+    $headers = calcualteAwsSignatureAndReturnHeaders(
+        $host,
+        $uri,
+        $requestUrl,
+        $accessKey,
+        $secretKey,
+        $region,
+        $service,
+        $httpRequestMethod,
+        $data,
+        $debug = TRUE
+    );
 
 
+    $result = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, TRUE);
 
 
-   
+    exit;
+    $aws = new AWS_Business;
+
+    dd($aws->signTest());
+
+    exit;
+
+
+
+
+
 
     exit;
 
@@ -210,26 +471,24 @@ Route::get('command', function () {
     }
 });
 
-Route::get('job', function()
-{
+Route::get('job', function () {
     TestQueueFail::dispatch();
 });
 
-Route::get('deleterole', function()
-{
+Route::get('deleterole', function () {
     $role = Role::findByName('Orders');
     $role->delete();
 });
 
-Route::get('rename', function()
-{
-    $currenturl =  request()->getSchemeAndHttpHost();
+Route::get('rename', function () {
+    $currenturl = request()->getSchemeAndHttpHost();
     return $currenturl;
 });
 
 Route::get('test-queue-redis', function () {
 
-    $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails where status = 0 ");
+    $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails
+where status = 0 ");
     $count = 0;
     $batch = 0;
     $asinList = [];
@@ -238,9 +497,9 @@ Route::get('test-queue-redis', function () {
         // $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
         // $check = [];
         // if (!array_key_exists('0', $check)) {
-            $count++;
-            // $batch++;
-            $data[] = $value;
+        $count++;
+        // $batch++;
+        $data[] = $value;
         // }
         //$type = 1 for seller, 2 for Order, 3 for inventory
         if ($count == 10) {
@@ -277,15 +536,15 @@ Route::get('test-queue-redis', function () {
     }
 });
 
-Route::get('order/item', function (){
+Route::get('order/item', function () {
 
     $order_id = '403-6898279-3539565';
-
 });
 
 Route::get('order/catalog', function () {
 
-    $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails where status = 0 ");
+    $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails
+where status = 0 ");
     $count = 0;
     $batch = 0;
     $asinList = [];

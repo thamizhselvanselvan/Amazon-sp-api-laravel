@@ -38,6 +38,7 @@
                     @endforeach
                 </x-adminlte-select>
             </div>
+
             <div class="col-3">
                 <h2>
                     <div style="margin-top: 1.8rem;">
@@ -45,8 +46,18 @@
                     </div>
                 </h2>
             </div>
-        </form>
+            <h6 class="mb-4 text-right col">
+                <div class="search">
+                    <label>
+                        <div style="margin-top: 1.8rem;">
+                            Search:
+                            <input type="text" id="myInput" class="d-inline-block" placeholder="search asin" autocomplete="off" />
+                    </label>
+                </div>
     </div>
+    </h6>
+    </form>
+</div>
 </div>
 @stop
 @section('content')
@@ -70,14 +81,14 @@
         <tr>
             <th>Warehouse Name</th>
             <th>Shipment ID</th>
-            <th>ASIN</th>
+            <th id='asin'>ASIN</th>
             <th>Item Name</th>
             <th>Price/Unit</th>
             <th>Quantity In.</th>
             <th>Quantity/out.</th>
             <th>Quantity Left</th>
+            <th>Storage Location</th>
             <th>Inwarding Date</th>
-            <th>Bin</th>
         </tr>
     </thead>
     <tbody id="data_display">
@@ -88,11 +99,22 @@
 
 @section('js')
 <script type="text/javascript">
-    /*hide untill data is filled*/
-    $("#inward").hide();
-    $("#outward,#detail_table,#export").hide();
+    /*hide untill selection is done */
+
+    $("#detail_table,#export,.search").hide();
     $("#warehouse").on('change', function(e) {
-        $("#inward,#outward,#detail_table,#export").show();
+        $("#detail_table,#export,.search").show();
+    });
+
+    /* Search function */
+
+    $(document).ready(function() {
+        $("#myInput").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#data_display tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
     });
 
     $('#warehouse').change(function(e) {
@@ -109,7 +131,7 @@
             },
             'dataType': 'json',
             success: function(response) {
-                // console.log(response);
+
                 let html = '';
                 $.each(response, function(index, value) {
 
@@ -124,12 +146,17 @@
                     html += "<td>" + value.quantity + "</td>";
                     html += "<td>" + value.out_quantity + "</td>";
                     html += "<td>" + value.balance_quantity + "</td>";
+                    if (value.bins == null) {
+                        html += "<td>" + 'Not Allocated' + "</td>"
+                    } else {
+                        html += "<td>" + value.bins.rack_id  + '-' + value.bins.shelve_id  + '-' + value.bins.bin_id  + "</td>";
+                    }
+
                     html += "<td>" + d.toDateString() + "</td>";
-                    html += "<td>" + value.bin + "</td>";
                     html += "</tr>";
 
                 });
-
+                // html += "<td>" + value.bin + "</td>";
 
                 $("#data_display").html(html);
 
@@ -138,7 +165,8 @@
 
             },
             error: function(response) {
-                console.log(response);
+                // console.log(response);
+                alert('error');
             }
         });
 

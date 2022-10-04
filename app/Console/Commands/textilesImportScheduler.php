@@ -42,57 +42,53 @@ class textilesImportScheduler extends Command
      * @return int
      */
     public function handle()
-    {   
+    {
         // Log::warning("Script executed production onclick !");  
 
-        $url ='https://files.channable.com/f8k02iylfY7c5YTsxH-SxQ==.csv';
+        $url = 'https://files.channable.com/f8k02iylfY7c5YTsxH-SxQ==.csv';
 
         $source = file_get_contents($url);
         $path = 'universalTextilesImport/textiles.csv';
 
         Storage::put($path, $source);
-        
+
         $csv = Reader::createFromPath(Storage::path($path), 'r');
 
         $csv->setDelimiter("\t");
         $csv->setHeaderOffset(0);
 
-       
+
         $stmt = (new Statement())
             ->where(function (array $record) {
                 return $record;
             })
             ->offset(0);
-            // ->limit(2000);
-           
+        // ->limit(2000);
+
         $records = $stmt->process($csv);
 
         $textiles = [];
-      
-            $count = 0;
-            $tagger = 0;
-            foreach($records as $key => $record)
-            {
-                if(isset($record['id'])) {
 
-                    $record['textile_id'] = $record['id'];
-                    unset($record['id']);
+        $count = 0;
+        $tagger = 0;
+        foreach ($records as $key => $record) {
+            if (isset($record['id'])) {
 
-                }   
+                $record['textile_id'] = $record['id'];
+                unset($record['id']);
+            }
 
-                $textiles[] = $record;
-                if($count == 1000) {
-                
-                    Universal_textile::upsert($textiles, ['textile_id'], ['ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type']);
+            $textiles[] = $record;
+            if ($count == 1000) {
 
-                    $count = 0;
-                    $textiles = [];
-                }
-                $count++;
-                
-            }	
-            
-            Universal_textile::upsert($textiles, ['textile_id'], ['ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type']); 
+                Universal_textile::upsert($textiles, ['textile_id'], ['ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type']);
 
+                $count = 0;
+                $textiles = [];
+            }
+            $count++;
+        }
+
+        Universal_textile::upsert($textiles, ['textile_id'], ['ean', 'brand', 'title', 'size', 'color', 'transfer_price', 'shipping_weight', 'product_type']);
     }
 }

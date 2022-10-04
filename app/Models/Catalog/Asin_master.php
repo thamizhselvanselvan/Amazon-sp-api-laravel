@@ -18,11 +18,6 @@ class Asin_master extends Model
         'asin',
         'user_id',
         'source',
-        'destination_1',
-        'destination_2',
-        'destination_3',
-        'destination_4',
-        'destination_5',
     ];
 
     public function mws_region()

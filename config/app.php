@@ -56,6 +56,8 @@ return [
 
     'asset_url' => env('ASSET_URL', null),
 
+    'dropbox_access_token' => env('DROPBOX_ACCESS_TOKEN'),
+
     'slack_notification_webhook' => env('SLACK_NOTIFICATION_WEBHOOK'),
 
     'aws_sp_api_client_id' => env('AWS_SP_API_CLIENT_ID'),
@@ -63,10 +65,6 @@ return [
     'aws_sp_api_access_key_id' => env('AWS_SP_API_ACCESS_KEY_ID'),
     'aws_sp_api_access_secret_id' => env('AWS_SP_API_ACCESS_SECRET_KEY'),
     'aws_sp_api_role_arn' => env('AWS_SP_API_ROLE_ARN'),
-
-    'aws_business_api_access_key' => env('AWS_BUSINESS_API_ACCESS_KEY'),
-    'aws_business_api_secret_key' => env('AWS_BUSINESS_API_SECRET_KEY'),
-    'aws_business_api_email' => env('AWS_BUSINESS_API_EMAIL'),
 
     /*
     |--------------------------------------------------------------------------
@@ -190,9 +188,14 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\HorizonServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+
         Yajra\DataTables\DataTablesServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        App\Providers\DropboxServiceProvider::class,
         Arcanedev\LogViewer\LogViewerServiceProvider::class,
+
+
+
 
     ],
 

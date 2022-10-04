@@ -58,50 +58,50 @@
 
 @section('js')
 <script type="text/javascript">
-        $(function() {
+    $(function() {
 
-            let yajra_table = $('.yajra-datatable').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: "{{ url('/shipntrack/smsa') }}",
-                pageLength:50,
-                columns: [{
-                        data: 'id',
-                        name: 'id',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'awbno',
-                        name: 'awbno'
-                    },
-                    {
-                        data: 'date',
-                        name: 'date'
-                    },
-                    {
-                        data: 'activity',
-                        name: 'activity'
-                    },
-                    {
-                        data: 'details',
-                        name: 'details'
-                    },
-                    {
-                        data: 'location',
-                        name: 'location',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    },
-                ]
-            });
-
+        let yajra_table = $('.yajra-datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ url('/shipntrack/smsa') }}",
+            pageLength: 50,
+            columns: [{
+                    data: 'id',
+                    name: 'id',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'awbno',
+                    name: 'awbno'
+                },
+                {
+                    data: 'date',
+                    name: 'date'
+                },
+                {
+                    data: 'activity',
+                    name: 'activity'
+                },
+                {
+                    data: 'details',
+                    name: 'details'
+                },
+                {
+                    data: 'location',
+                    name: 'location',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
+                },
+            ]
         });
+
+    });
 </script>
 @stop

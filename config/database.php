@@ -59,6 +59,19 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
+            'dump' => [
+                'dump_binary_path' => env('MYSQL_DUMP_BINARY_PATH', '/usr/bin/'),
+                'excludeTables' => [
+                    'sp_asin_masters',
+                    'sp_failed_jobs',
+                    'sp_jobs',
+                    'sp_model_has_permissions',
+                    'sp_other_catalog_asins',
+                    'sp_rate_masters',
+                    'sp_universal_textiles',
+                ],
+                'useSingleTransaction' => true,
+            ],
         ],
 
         'inventory' => [
@@ -79,6 +92,16 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
+            'dump' => [
+                'dump_binary_path' => env('MYSQL_DUMP_BINARY_PATH', '/usr/bin/'),
+                'excludeTables' => [
+                    'in_catalogs',
+                    'in_states',
+                    'in_countries',
+                    'in_cities',
+                ],
+                'useSingleTransaction' => true,
+            ],
         ],
 
         'catalog' => [
@@ -119,7 +142,7 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-        ],    
+        ],
 
         'seller' => [
             'driver' => 'mysql',
@@ -139,7 +162,7 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-        ],        
+        ],
 
         'buybox' => [
             'driver' => 'mysql',
@@ -159,8 +182,8 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-        ],      
-        
+        ],
+
         'aws' => [
             'driver' => 'mysql',
             'read' => [
@@ -169,7 +192,9 @@ return [
                 ],
             ],
             'write' => [
-                'host' => [],
+                'host' => [
+                    env('AWS_DB_HOST', '127.0.0.1')
+                ],
             ],
             'port' => env('AWS_DB_PORT', '3306'),
             'database' => env('AWS_DB_DATABASE', ''),
@@ -200,7 +225,7 @@ return [
             'password' => env('MSSQL_DB_PASSWORD', ''),
             'charset' => 'utf8',
         ],
-        
+
         'shipntracking' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
@@ -220,6 +245,60 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
+
+        'business' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('BUSINESS_ORDER_DB_HOST', '127.0.0.1'),
+            'port' => env('BUSINESS_ORDER_DB_PORT', '3306'),
+            'database' => env('BUSINESS_ORDER_DB_DATABASE', 'forge'),
+            'username' => env('BUSINESS_ORDER_DB_USERNAME', 'forge'),
+            'password' => env('BUSINESS_ORDER_DB_PASSWORD', ''),
+            'unix_socket' => env('BUSINESS_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => env('BUSINESS_ORDER_DB_PREFIX') . '_',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+        'mongodb' => [
+            'driver' => 'mongodb',
+            'host' => env('MONGO_DB_HOST', 'localhost'),
+            'port' => env('MONGO_DB_PORT', 27017),
+            'database' => env('MONGO_DB_DATABASE'),
+            'username' => env('MONGO_DB_USERNAME'),
+            'password' => env('MONGO_DB_PASSWORD'),
+            'options' => [
+                // here you can pass more settings to the Mongo Driver Manager
+                // see https://www.php.net/manual/en/mongodb-driver-manager.construct.php under "Uri Options" for a list of complete parameters that you can use
+
+                // 'database' => env('DB_AUTHENTICATION_DATABASE', 'admin'), // required with Mongo 3+
+            ],
+        ],
+        'cliqnshop' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('CLIQNSHOP_DB_HOST', '127.0.0.1'),
+            'port' => env('CLIQNSHOP_DB_PORT', '3306'),
+            'database' => env('CLIQNSHOP_DB_DATABASE', 'forge'),
+            'username' => env('CLIQNSHOP_DB_USERNAME', 'forge'),
+            'password' => env('CLIQNSHOP_DB_PASSWORD', ''),
+            'unix_socket' => env('CLIQNSHOP_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => env('CLIQNSHOP_DB_PREFIX') . '_',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
     ],
 
     /*

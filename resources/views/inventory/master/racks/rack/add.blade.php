@@ -71,12 +71,11 @@
             <div class="row justify-content-center">
 
                 <div class="col-4">
-                    <x-adminlte-input label="Rack ID" name="rid" type="text" placeholder="ID" />
-                    
+                    <x-adminlte-input label="Rack ID" name="rid" type="text" placeholder="ID" value="{{ old('rid') }}" />
                 </div>
 
                 <div class="col-4">
-                    <x-adminlte-input label="Rack Name" name="rack" type="text" placeholder="Name" />
+                    <x-adminlte-input label="Rack Name" name="rack" type="text" placeholder="Name" value="{{ old('rack') }}" />
                 </div>
 
                 <div class="col-4" id="add">
@@ -86,9 +85,7 @@
                 </div>
 
             </div>
-
             <div class="row"> </div>
-
             <br>
 
             <table class="table table-bordered yajra-datatable table-striped" id="rack_table">
@@ -119,9 +116,6 @@
 <script type="text/javascript">
     /*hide untill data is filled*/
 
-    // $("#add").on("click", function() {
-       
-    // });
     $("#rack_table").hide();
     $("#add").on('click', function(e) {
 
@@ -130,7 +124,7 @@
         if (rackid == '') {
             alert('Rack ID Requirerd');
             return false;
-        } else if(rval==''){
+        } else if (rval == '') {
             alert('Rack Name is Required');
             return false;
 

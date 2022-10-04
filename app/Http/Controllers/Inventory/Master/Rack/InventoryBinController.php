@@ -74,6 +74,7 @@ class InventoryBinController extends Controller
             'ware_id' => 'required',
             'rack_id' => 'required',
             'shelve_id' => 'required',
+            'bid' => 'required',
             'name' => 'required',
             'depth' => 'required',
             'width' => 'required',
@@ -85,6 +86,9 @@ class InventoryBinController extends Controller
 
         if (!$shelve_exists) {
             return redirect()->route('bins.create')->with('error', 'Selected shelve id invalid');
+        }
+        if (!$request->bin_id) {
+            return redirect()->route('bins.create')->with('error', 'Please Enter Bin Details And Click on Add');
         }
 
         $bin_lists = [];

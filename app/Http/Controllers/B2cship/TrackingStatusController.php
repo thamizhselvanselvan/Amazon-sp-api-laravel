@@ -170,11 +170,11 @@ class TrackingStatusController extends Controller
         foreach ($records as $record) {
             foreach ($record as $key => $value) {
                 if ($key != 'StatusDetails') {
-                
+
                     $csv_value[$count][$key]  = $value;
                 }
             }
-            $count ++;
+            $count++;
         }
         $writer->insertAll($csv_value);
 
@@ -200,7 +200,7 @@ class TrackingStatusController extends Controller
                 $trackingMsg = $fpCode . ' : ' . $statusDetails;
                 if ((!str_contains($trackingMsg, $ignorebombion))) {
                     $PODeventsArray[$offset]['TrackingMsg'] = $trackingMsg;
-                    $PODeventsArray[$offset]['StatusDetails'] = $statusDetails;
+                    $PODeventsArray[$offset]['StatusDetails'] = str_replace('  ', ' ', $statusDetails);
 
                     $offset++;
                 }
@@ -209,7 +209,9 @@ class TrackingStatusController extends Controller
             $micro_status =  DB::connection('b2cship')->select("SELECT DISTINCT Status, MicroStatusName FROM MicroStatusMapping ");
             $micro_status_array = [];
             foreach ($micro_status as $key => $status) {
-                $micro_status_array[strtoupper($status->Status)] = strtoupper($status->MicroStatusName);
+
+                $msg = str_replace('  ', ' ', strtoupper($status->Status));
+                $micro_status_array[$msg] = strtoupper($status->MicroStatusName);
             }
             $micro_status_missing = [];
             $ms_offset = 0;
@@ -217,7 +219,12 @@ class TrackingStatusController extends Controller
             foreach ($PODeventsArray as $PODevnetKey => $tracking) {
                 $tracking_msg = trim(strtoupper($tracking['StatusDetails']));
 
-                if (!isset(($micro_status_array[$tracking_msg])) && !str_contains($tracking_msg, strtoupper('Shipment has been OUTWARDED With Bag No')) && !str_contains($tracking_msg, strtoupper(' CLEARANCE PROCEDURE IN PROGRESS Description: CLEARANCE PROGRESS')) && !str_contains($tracking_msg, strtoupper('Delivery date rescheduled'))) {
+                if (
+                    !isset(($micro_status_array[$tracking_msg])) &&
+                    !str_contains($tracking_msg, strtoupper('Shipment has been OUTWARDED With Bag No')) &&
+                    !str_contains($tracking_msg, strtoupper(' CLEARANCE PROCEDURE IN PROGRESS Description: CLEARANCE PROGRESS')) &&
+                    !str_contains($tracking_msg, strtoupper('Delivery date rescheduled'))
+                ) {
 
                     $micro_status_missing[$ms_offset]['Status'] = $tracking_msg;
                     $micro_status_missing[$ms_offset]['Tracking_msg'] = $tracking['TrackingMsg'];
@@ -228,7 +235,7 @@ class TrackingStatusController extends Controller
                 ->addIndexColumn()
                 ->make(true);
         }
-        // dd($micro_status_missing);
+
         return view('b2cship.trackingStatus.micro_status_missing_report');
     }
 

@@ -3,8 +3,10 @@
 namespace App\Console\Commands\Label;
 
 use ZipArchive;
+use App\Models\Label;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\Storage;
 
@@ -49,11 +51,10 @@ class labelBulkZipDownload extends Command
         
         $excelid = explode('-', $passid);
         foreach ($excelid as $getId) {
-            // $id = Label::where('id', $getId)->get();
-            $id = DB::connection('web')->select("select * from labels where id = '$getId' ");
-
+        
+            $id = Label::where('id', $getId)->get();
+            // $id = DB::connection('web')->select("select * from labels where id = '$getId' ");
             foreach ($id as $key => $value) {
-
                 $awb_no = $value->awb_no;
                 $url = str_replace('select-download', 'pdf-template', $currenturl . '/' . $getId);
 
@@ -75,9 +76,10 @@ class labelBulkZipDownload extends Command
         }
 
         $zip = new ZipArchive;
+        $zip_path = 'label/zip/' . 'label.zip';
         $fileName = Storage::path('label/zip/' . 'label.zip');
-        if (!Storage::exists($path)) {
-            Storage::put($path, '');
+        if (!Storage::exists($zip_path)) {
+            Storage::put($zip_path, '');
         }
         if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
             foreach ($saveAsPdf as $key => $value) {

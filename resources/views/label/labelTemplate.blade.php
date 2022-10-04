@@ -4,10 +4,8 @@
 @section('content_header')
 <div class="label-company text-inverse f-w-600">
     <span class="pull-right hidden-print">
-        <a href="javascript:void(0);" class="btn btn-sm btn-white m-b-10 p-l-5" id="Export_to_pdf"><i
-                class="fa fa-file t-plus-1 text-danger fa-fw fa-lg"></i> Export as PDF</a>
-        <a href="javascript:;" onclick="window.print()" class="btn btn-sm btn-white m-b-10 p-l-5"><i
-                class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
+        <a href="javascript:void(0);" class="btn btn-sm btn-white m-b-10 p-l-5" id="Export_to_pdf"><i class="fa fa-file t-plus-1 text-danger fa-fw fa-lg"></i> Export as PDF</a>
+        <a href="javascript:;" onclick="window.print()" class="btn btn-sm btn-white m-b-10 p-l-5"><i class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
 
     </span>
     <br>
@@ -17,36 +15,83 @@
 @section('css')
 
 <style type="text/css">
-@media print {
-
-    @page {
-        size: 4in 6in;
-        margin: 0px;
-        padding: 0px;
+    body div strong {
+        font-family: "Lato";
+        font-weight: 900;
+        font-size: 12px;
     }
 
-    .container-fluid {
-        size: 4in 6in;
-        width: 384px;
-        height: 576px;
-        margin: 0px;
-        padding: 0px;
+    body * {
+        font-family: "Lato";
+        font-weight: 700;
+        font-size: 14px;
     }
 
-    #label-container {
-        margin: 0px;
-        padding: 0px;
-        /* padding-top: 5px; */
-        transform-origin: 0 0;
-        transform: scale(1.4);
+    .table_border th,
+    .table_border td,
+    .table_border td,
+    .table_border thead th,
+    .return {
+        border: 1px solid black !important;
     }
 
-    #label-container .label {
-        margin: 0px;
-        padding: 0px;
+    .mb-1,
+    .my-1 {
+        margin-bottom: 0px !important;
     }
-}
 
+    .mt-1,
+    .my-1 {
+        margin-top: 0px !important;
+    }
+
+    .return,
+    .prduct-details thead tr th {
+        border-top: 0px !important;
+    }
+
+    @media print {
+
+        @page {
+            size: 4in 6in;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .table_border th,
+        .table_border td,
+        .table_border tr,
+        .table_border thead th,
+        .return {
+            border: 1px solid black !important;
+        }
+
+        .return,
+        .prduct-details thead tr th {
+            border-top: 0px !important;
+        }
+
+        .container-fluid {
+            size: 4in 6in;
+            width: 384px;
+            height: 576px;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #label-container {
+            margin: 0px;
+            padding: 0px;
+            /* padding-top: 5px; */
+            transform-origin: 0 0;
+            transform: scale(1.4);
+        }
+
+        #label-container .label {
+            margin: 0px;
+            padding: 0px;
+        }
+    }
 </style>
 @stop
 
@@ -57,16 +102,30 @@
     <div class="label p-1">
         <div class="label-content">
             <!-- <div class="table-responsive"> -->
-            <table class="table table-label table-bordered table-bordered-dark<td pt-1 pb-0 mb-1">
+            <table class="table table-label table-bordered table-bordered-dark<td pt-1 pb-0 mb-1 table_border">
                 <tbody>
                     <tr>
-                        <td class="pb-0">
+                        <td class="pt-0 pb-0">
                             <div class="row">
                                 <div class="col p-0"></div>
                                 <div class="col p-0">
+                                    <div class="text-center">
+                                        @if($forwarder == '' || $forwarder == NULL)
+                                        &nbsp;
+                                        @else
+                                        {{ $forwarder }}
+                                        @endif
+                                    </div>
                                     <img class="label-barcode-img" src='data:image/png;base64,{!! $bar_code !!}'>
+                                    <!-- {!! $bar_code !!} -->
                                     <b>
-                                        <div class="text-center">{{ $result->awb_no }}</div>
+                                        <div class="text-center">
+                                            @if($result->awb_no =='' || $result->awb_no == NULL)
+                                            AWB is missing
+                                            @else
+                                            {{ $result->awb_no }}
+                                            @endif
+                                        </div>
                                     </b>
                                 </div>
                                 <div class="col p-0"></div>
@@ -132,14 +191,14 @@
                     </tr>
                 </tbody>
             </table>
-            <table class="table table-bordered table-bordered-dark product pt-0">
+            <table class="table table-bordered table-bordered-dark product pt-0 mb-0 prduct-details table_border">
                 <thead>
                     <tr>
                         <th class="text-left">Sr</th>
                         <th class="text-center">Product Name</th>
                         <th class="text-center">SKU</th>
                         <th class="text-center">QTY</th>
-                        <th class="text-center">Price</th>
+                        <!-- <th class="text-center">Price</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -149,8 +208,8 @@
                         <td class="p-1">{{$value['title']}}</td>
                         <td class="text-center p-1">{{$value['sku']}}</td>
                         <td class="text-center p-1">{{$value['qty']}}</td>
-                        <td class="text-center p-1">{{$value['order_total']->CurrencyCode}}
-                            {{$value['order_total']->Amount}}</td>
+
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -159,7 +218,7 @@
             </table>
 
             <div class="mt-1 p-1 small return">
-                <div>Return Address:</div>
+                <div><strong>Return Address:<strong></div>
                 <span>Warehouse 61, Al Habtoor Warehouses, Industrial Area 3, Al Qusias, Dubai UAE</span>
             </div>
             <!-- </div> -->
@@ -170,27 +229,27 @@
 
     @section('js')
     <script>
-    $(document).ready(function() {
-        $('#Export_to_pdf').click(function(e) {
-            e.preventDefault();
-            var url = $(location).attr('href');
-            var awb_no = $('#awb_no').val();
-            // alert(url);
-            $.ajax({
-                method: 'POST',
-                url: "{{ url('/label/export-pdf')}}",
-                data: {
-                    'url': url,
-                    'awb_no': awb_no,
-                    "_token": "{{ csrf_token() }}",
-                },
-                success: function(response) {
+        $(document).ready(function() {
+            $('#Export_to_pdf').click(function(e) {
+                e.preventDefault();
+                var url = $(location).attr('href');
+                var awb_no = $('#awb_no').val();
+                // alert(url);
+                $.ajax({
+                    method: 'POST',
+                    url: "{{ url('/label/export-pdf')}}",
+                    data: {
+                        'url': url,
+                        'awb_no': awb_no,
+                        "_token": "{{ csrf_token() }}",
+                    },
+                    success: function(response) {
 
-                    window.location.href = '/label/download/' + awb_no;
-                    alert('Download pdf successfully');
-                }
+                        window.location.href = '/label/download/' + awb_no;
+                        alert('Download pdf successfully');
+                    }
+                });
             });
         });
-    });
     </script>
     @stop

@@ -85,27 +85,27 @@
 
             </div>
             <div class="row">
-                
+
                 <div class="col-4">
-                    <x-adminlte-input label="Bin ID" name="bid" type="text" placeholder="ID" id="bin_id" />
+                    <x-adminlte-input label="Bin ID" name="bid" type="text" placeholder="ID" id="bin_id" value="{{ old('bid') }}" />
                 </div>
 
                 <div class="col-4">
-                    <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name " />
+                    <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name " value="{{ old('name') }}" />
                 </div>
                 <div class="col-4">
-                    <x-adminlte-input label="Width" name="width" id="width" type="text" placeholder="Width" />
+                    <x-adminlte-input label="Width" name="width" id="width" type="text" placeholder="Width" value="{{ old('width') }}" />
                 </div>
             </div>
 
             <div class="row">
 
-                
+
                 <div class="col-4">
-                    <x-adminlte-input label="Height" name="height" id="height" type="text" placeholder="Height" />
+                    <x-adminlte-input label="Height" name="height" id="height" type="text" placeholder="Height" value="{{ old('height') }}" />
                 </div>
                 <div class="col-4">
-                    <x-adminlte-input label="Depth" name="depth" id="depth" type="text" placeholder="Depth " />
+                    <x-adminlte-input label="Depth" name="depth" id="depth" type="text" placeholder="Depth " value="{{ old('depth') }}" />
                 </div>
                 <div class="col-4" id="add">
                     <div style="margin-top: 2.3rem;">
@@ -247,7 +247,7 @@
                     $('#shelve_id').empty();
                     let shelve_data = '<option> Select Shelve </option>';
                     $.each(result, function(i, result) {
-                        shelve_data += "<option value='" + result.shelve_id + "'>" + result.shelve_id+ "/" + result.name + "</option>";
+                        shelve_data += "<option value='" + result.shelve_id + "'>" + result.shelve_id + "/" + result.name + "</option>";
                     });
                     $('#shelve_id').append(shelve_data);
                 },

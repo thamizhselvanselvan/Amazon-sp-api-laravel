@@ -14,6 +14,9 @@
         <a href="{{ route('label.manage') }}" class="btn btn-primary btn-sm">
             <i class="fas fa-long-arrow-alt-left"></i> Back
         </a>
+        <a href="excel/template">
+            <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-file-download" class="btn-sm ml-2" />
+        </a>
     </div>
 </div>
 
@@ -130,7 +133,6 @@
                     }
                 },
                 error: function(response) {
-                    alert('error');
                 }
             });
 

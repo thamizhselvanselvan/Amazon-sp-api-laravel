@@ -19,8 +19,7 @@ class InventoryRackController extends Controller
 
     public function index(Request $request)
     {
-        // $data = Shelve::query()->with(['racks']);
-        // dd($data);
+
         if ($request->ajax()) {
 
             //     $data = Shelve::query()->rightJoin('racks as r', function($join) {
@@ -73,7 +72,9 @@ class InventoryRackController extends Controller
         }
 
         $rack_lists = [];
-
+        if (!$request->rack_id) {
+            return redirect()->route('racks.create')->with('error', 'Enter Rack name and Rack ID And Click  Add');
+        } else {
         foreach ($request->rack_id as $key => $rack_id) {
 
             $rack_lists[] = [
@@ -84,7 +85,7 @@ class InventoryRackController extends Controller
                 'updated_at' => now()
             ];
         }
-
+    }
         Rack::insert($rack_lists);
 
         return redirect()->route('racks.index')->with('success', 'Racks  has been created successfully');
@@ -103,6 +104,7 @@ class InventoryRackController extends Controller
     {
 
         $validated = $request->validate([
+            'warehouse_id' => 'required',
             'name' => 'required|min:2|max:100',
             'rack_id' => 'required|min:1|max:100'
         ]);

@@ -6,7 +6,6 @@ use PDO;
 use Exception;
 use PDOException;
 use RedBeanPHP\R as R;
-use App\Models\Asin_master;
 use Illuminate\Console\Command;
 use App\Jobs\AmazonCatalogImport;
 use Illuminate\Support\Facades\DB;

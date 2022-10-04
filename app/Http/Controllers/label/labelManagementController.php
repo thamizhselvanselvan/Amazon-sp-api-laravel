@@ -3,25 +3,32 @@
 namespace App\Http\Controllers\label;
 
 use DateTime;
+use App\Models;
 use ZipArchive;
 use RedBeanPHP\R;
+use Carbon\Carbon;
 use App\Models\Label;
+use League\Csv\Reader;
+use League\Csv\Writer;
 use App\Models\Mws_region;
 use Illuminate\Http\Request;
 use App\Jobs\Orders\GetOrder;
+use GuzzleHttp\Promise\Create;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
+
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
-
 use Picqer\Barcode\BarcodeGeneratorHTML;
+use Illuminate\Support\Facades\Validator;
+
 use App\Models\order\OrderSellerCredentials;
 use App\Services\SP_API\API\Order\missingOrder;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
@@ -39,75 +46,13 @@ class labelManagementController extends Controller
         if ($request->ajax()) {
 
             $bag_no = $request->bag_no;
-            $order = config('database.connections.order.database');
-            $catalog = config('database.connections.catalog.database');
-            $web = config('database.connections.web.database');
-
-            $data = DB::select("SELECT
-    
-        DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
-        from $web.labels as web
-        JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
-        JOIN $order.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
-        JOIN $order.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
-        -- JOIN $catalog.catalog as cat ON cat.asin = orderDetails.asin
-        WHERE web.bag_no = $bag_no
-    ");
+            $data = $this->labelListing($bag_no);
             return response()->json($data);
         }
     }
 
     public function manage(Request $request)
     {
-        $data = $this->bladeOrderDetails();
-        // dd($data);
-        if ($request->ajax()) {
-
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function ($id) {
-
-                    $this->order_details = $this->labelDataFormating($id->id);
-                    if ($this->order_details) {
-                        $action = '<div class="d-flex pl-5"><a href="/label/pdf-template/' . $id->id . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
-                        $action .= '<div class="d-flex pl-2"><a href="/label/download-direct/' . $id->id . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
-                        $action .= '<div class="text-center pl-3"><i class="fa fa-check-circle" style="color:green" aria-hidden="true"></i>';
-                        return $action;
-                    }
-                    // $action1 = '<div class="pl-2"><input class="" type="checkbox" value='.$id['id'].' name="options[]" ></div>';
-                    $action = "<div class ='text-center d-flex pl-5'>Details Not Avaliable
-                    <div class='text-center  pl-5'><i class='fa fa-times' style='color:red' aria-hidden='true'></i>";
-                    return $action;
-                })
-                ->addColumn('sn', function ($id) {
-                    return $id->id;
-                })
-                ->addColumn('check_box', function ($id) {
-                    if ($this->order_details) {
-                        $check_box = '<div class="pl-2"><input class="check_options" type="checkbox" value=' . $id->id . ' name="options[]" ></div>';
-                        return $check_box;
-                    }
-                })
-                // ->editColumn('status', function () {
-                //     if ($this->order_details) {
-                //         return '<div class="text-center"><i class="fa fa-check-circle" style="color:green" aria-hidden="true"></i>';
-                //     }
-                //     return '<div class="text-center"><i class="fa fa-times" style="color:red" aria-hidden="true"></i>';
-                // })
-                ->editColumn('purchase_date', function ($date) {
-                    $purchase_date = date('Y-m-d', strtotime($date->purchase_date));
-                    return $purchase_date;
-                })
-                ->editColumn('customer_name', function ($customer_name) {
-                    $customer_name = (array) json_decode($customer_name->shipping_address);
-                    if (isset($customer_name['Name'])) {
-                        return $customer_name['Name'];
-                    }
-                    return 'NA';
-                })
-                ->rawColumns(['sn', 'action', 'check_box', 'purchase_date', 'customer_name'])
-                ->make(true);
-        }
         return view('label.manage');
     }
 
@@ -116,12 +61,17 @@ class labelManagementController extends Controller
         //Single view
         $result = $this->labelDataFormating($id);
         $awb_no = $result['awb_no'];
+        $forwarder = $result['forwarder'];
+
+        if ($awb_no == '' || $awb_no == NULL) {
+            $awb_no = 'AWB-MISSING';
+        }
         $result = (object)$result;
 
         // dd($result);
         $generator = new BarcodeGeneratorPNG();
-        $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39E));
-        return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no'));
+        $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39));
+        return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder'));
     }
     public function ExportLabel(Request $request)
     {
@@ -154,7 +104,8 @@ class labelManagementController extends Controller
     public function DownloadDirect($id)
     {
         $this->deleteAllPdf();
-        $result = DB::connection('web')->select("select * from labels where id = '$id' ");
+        // $result = DB::connection('web')->select("select * from labels where id = '$id' ");
+        $result = Label::where('id', $id)->get();
         $awb_no = $result[0]->awb_no;
         $file_path = 'label/label' . $awb_no . '.pdf';
 
@@ -166,7 +117,7 @@ class labelManagementController extends Controller
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
 
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
@@ -179,11 +130,18 @@ class labelManagementController extends Controller
     public function PrintSelected($id)
     {
         $allid = explode('-', $id);
+        $generator = new BarcodeGeneratorPNG();
         foreach ($allid as $id) {
             $results = $this->labelDataFormating($id);
+
             $result[] = (object)$results;
-            $generator = new BarcodeGeneratorPNG();
-            $bar_code[] = base64_encode($generator->getBarcode($results['awb_no'], $generator::TYPE_CODE_39E));
+
+            $barcode_awb = 'AWB-MISSING';
+
+            if (($results['awb_no'])) {
+                $barcode_awb = $results['awb_no'];
+            }
+            $bar_code[] = base64_encode($generator->getBarcode($barcode_awb, $generator::TYPE_CODE_39));
         }
 
         return view('label.multipleLabel', compact('result', 'bar_code'));
@@ -214,27 +172,6 @@ class labelManagementController extends Controller
         return Storage::download('label/zip/label.zip');
     }
 
-    // public function zipDownload($arr)
-    // {
-    //     // po($arr);
-    //     $replace = explode(',', $arr);
-    //     $zip = new ZipArchive;
-    //     $path = 'label/zip/' . 'label.zip';
-    //     $fileName = Storage::path('label/zip/' . 'label.zip');
-    //     Storage::delete($path);
-    //     if (!Storage::exists($path)) {
-    //         Storage::put($path, '');
-    //     }
-    //     if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
-    //         foreach ($replace as $key => $value) {
-    //             $path = Storage::path('label/' . $value);
-    //             $relativeNameInZipFile = basename($path);
-    //             $zip->addFile($path, $relativeNameInZipFile);
-    //         }
-    //         $zip->close();
-    //     }
-    //     return response()->download($fileName);
-    // }
 
     public function downloadExcelTemplate()
     {
@@ -249,14 +186,6 @@ class labelManagementController extends Controller
 
     public function uploadExcel(Request $request)
     {
-        $host = config('database.connections.web.host');
-        $dbname = config('database.connections.web.database');
-        $port = config('database.connections.web.port');
-        $username = config('database.connections.web.username');
-        $password = config('database.connections.web.password');
-
-        R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-
         foreach ($request->files as $key => $files) {
 
             foreach ($files as $keys => $file) {
@@ -266,44 +195,23 @@ class labelManagementController extends Controller
             }
         }
         $data = Excel::toArray([], $file);
-        $header_value = [];
-        $excel_data = [];
+        $Label_excel_data = [];
 
         foreach ($data as $header) {
-            foreach ($header as $key => $header_data) {
-                if ($key == 0) {
-                    foreach ($header_data as $headerKey => $excel_header) {
-                        if ($excel_header) {
-                            $header_value[$headerKey] = $excel_header;
-                        }
-                    }
-                } else {
-                    foreach ($header_data as $valueKey => $excel_value) {
-                        if ($excel_value) {
-                            $excel_data[$key][$valueKey] = $excel_value;
-                        }
-                    }
+
+            foreach ($header as $key => $excel_data) {
+
+                if ($key != 0) {
+                    $Label_excel_data[] = [
+                        'order_no' => $excel_data[0],
+                        'awb_no'    => $excel_data[1],
+                        'bag_no'    => $excel_data[2],
+                        'forwarder' => $excel_data[3],
+                    ];
                 }
             }
         }
-
-        foreach ($excel_data as $data) {
-
-            $label = R::dispense('labels');
-            $label->status = 0;
-            foreach ($data as $key => $value) {
-                if (isset($header_value[$key])) {
-
-                    $column = lcfirst($header_value[$key]);
-                    $label->$column = $value;
-                }
-            }
-            $date = new DateTime(date('Y-m-d'));
-            $created_at = $date->format('Y-m-d');
-            // $label->order_date = $created_at;
-            R::store($label);
-        }
-
+        Label::upsert($Label_excel_data, ['order_awb_no_unique'], ['order_no', 'awb_no', 'bag_no', 'forwarder']);
         return response()->json(["success" => "All file uploaded successfully"]);
     }
 
@@ -324,6 +232,7 @@ class labelManagementController extends Controller
         $country_code = $seller[1];
 
         $datas = preg_split('/[\r\n| |:|,]/', $order_id, -1, PREG_SPLIT_NO_EMPTY);
+
         foreach ($datas as $amazon_order_id) {
             if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
@@ -353,10 +262,13 @@ class labelManagementController extends Controller
         $order = config('database.connections.order.database');
         $catalog = config('database.connections.catalog.database');
         $web = config('database.connections.web.database');
+        $prefix = config('database.connections.web.prefix');
 
+        $where_condition = "web.id = $id";
         $label = DB::select("SELECT ordetail.asin,
         GROUP_CONCAT(DISTINCT web.order_no)as order_no,
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
+        GROUP_CONCAT(DISTINCT web.forwarder) as forwarder,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
         GROUP_CONCAT(DISTINCT ordetail.shipping_address) as shipping_address,
         GROUP_CONCAT(DISTINCT ordetail.item_price) as order_total,
@@ -365,11 +277,11 @@ class labelManagementController extends Controller
         GROUP_CONCAT(DISTINCT ordetail.title) as title,
         GROUP_CONCAT(DISTINCT ordetail.seller_sku) as sku,
         GROUP_CONCAT(DISTINCT ordetail.quantity_ordered) as qty
-        from $web.labels as web
-        JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
-        JOIN $order.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
+        from ${web}.${prefix}labels as web
+        JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
+        JOIN ${order}.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
         -- JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin
-        WHERE web.id = $id
+        WHERE $where_condition
         GROUP BY ordetail.asin
     ");
 
@@ -379,6 +291,18 @@ class labelManagementController extends Controller
             'title' => NULL,
             'sku' => NULL,
             'qty' => NULL
+        ];
+
+        $ignore = [
+            'gun',
+            'lighter',
+            'gold',
+            'spark',
+            'fuel',
+            'heat',
+            'oxygen',
+            'alcohols',
+            'famable',
         ];
 
         if (!$label) {
@@ -411,7 +335,8 @@ class labelManagementController extends Controller
                     $label_data[$key1] = $dimensions;
                 } elseif ($key1 == 'title') {
 
-                    $product[$key][$key1] = $label_detials;
+                    $ignore_title = str_ireplace($ignore, '', $label_detials);
+                    $product[$key][$key1] = $ignore_title;
                 } elseif ($key1 == 'sku') {
 
                     $product[$key][$key1] = $label_detials;
@@ -439,29 +364,335 @@ class labelManagementController extends Controller
         $order = config('database.connections.order.database');
         $catalog = config('database.connections.catalog.database');
         $web = config('database.connections.web.database');
+        $prefix = config('database.connections.web.prefix');
 
         $data = DB::select("SELECT
 
             DISTINCT web.id, web.awb_no, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address
-            from $web.labels as web
-            JOIN $order.orders as ord ON ord.amazon_order_identifier = web.order_no
-            JOIN $order.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
-            JOIN $order.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+            from ${web}.${prefix}labels as web
+            JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
+            JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
+            JOIN ${order}.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
 
             -- JOIN ord ON ord.our_seller_identifier = $order.ord_order_seller_credentials.seller_id as
         ");
-
+        // exit;
         return $data;
     }
 
     public function deleteAllPdf()
     {
         $files = glob(Storage::path('label/*'));
-
         foreach ($files as $file) {
             if (is_file($file)) {
                 unlink($file);
             }
         }
     }
+
+    public function labelMissingAddress()
+    {
+        return view('label.upload_missing_addrs');
+    }
+
+    public function labelMissingAddressUpload(Request $request)
+    {
+        foreach ($request->files as $key => $files) {
+
+            foreach ($files as $keys => $file) {
+
+                $fileName = $file->getClientOriginalName();
+                $fileName = uniqid() . ($fileName);
+            }
+        }
+        $file_csv = file_get_contents($file);
+        $path = 'label/missing_address.csv';
+        Storage::put($path, $file_csv);
+
+        commandExecFunc("mosh:order-address-missing-upload");
+        return response()->json(["success" => "All file uploaded successfully"]);
+    }
+
+    public function labelMissingAddressExport()
+    {
+        $missing_address = DB::connection('order')
+            ->select(
+                "SELECT 
+                    osc.store_name, ord.purchase_date, oids.amazon_order_identifier, osc.country_code
+                FROM 
+                    orderitemdetails oids
+                        JOIN
+                    ord_order_seller_credentials osc ON osc.seller_id = oids.seller_identifier
+                        JOIN
+                    orders ord oN ord.amazon_order_identifier = oids.amazon_order_identifier
+                WHERE
+                    oids.shipping_address = '' AND oids.amazon_order_identifier != '' "
+            );
+
+        $path = 'excel/downloads/label/missing_address_template.csv';
+        $file_path = Storage::path('excel/downloads/label/missing_address_template.csv');
+
+        if (!Storage::exists($path)) {
+            Storage::put($path, '');
+        }
+
+        $csv = Writer::createFromPath($file_path, 'w');
+        $csv->insertOne([
+            'Order',
+            'Store Name',
+            'Order Date',
+            'Name',
+            'AddressLine1',
+            'AddressLine2',
+            'City',
+            'County',
+            'CountryCode',
+            'Phone',
+            'AddressType'
+        ]);
+
+        foreach ($missing_address as $details) {
+
+            $date = $details->purchase_date;
+            $date = Carbon::parse($date)->format('Y-m-d');
+            $tem_data = [
+                $details->amazon_order_identifier,
+                $details->store_name . ' [ ' . $details->country_code . ' ]',
+                $date
+            ];
+            $csv->insertOne($tem_data);
+        }
+
+        return response()->download($file_path);
+    }
+
+    public function labelListing($id, $search_type = NULL)
+    {
+        $where_condition = "web.bag_no = ${id}";
+        if ($search_type) {
+
+            $where_condition = "web.order_no IN ($id)";
+        }
+        $order = config('database.connections.order.database');
+        $catalog = config('database.connections.catalog.database');
+        $web = config('database.connections.web.database');
+        $prefix = config('database.connections.web.prefix');
+
+        $data = DB::select("SELECT
+            DISTINCT web.id, web.awb_no, web.forwarder, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address,orderDetails.order_item_identifier
+            from ${web}.${prefix}labels as web
+            JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
+            JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
+            JOIN ${order}.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+            -- JOIN $catalog.catalog as cat ON cat.asin = orderDetails.asin
+            WHERE $where_condition
+        ");
+        return $data;
+    }
+
+    public function labelSearchByOrderId(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $amazon_order_id = $request->order_id;
+            $amazon_order_id_array = preg_split('/[\r\n| |:|,]/', $amazon_order_id, -1, PREG_SPLIT_NO_EMPTY);
+
+            $amazon_order_id_array = array_unique($amazon_order_id_array);
+            $amazon_order_id_string = "'" . implode("', '", $amazon_order_id_array) . "'";
+
+            $label_detials = $this->labelListing($amazon_order_id_string, 'order_id');
+
+            $temp_label = array_unique(array_column($label_detials, 'order_no'));
+            $temp_label = array_intersect_key($label_detials, $temp_label);
+
+            $label_detials = $temp_label;
+            $html = '';
+            $name = '';
+            $missing_html = '';
+            $found_order_id = [];
+
+            if (count($label_detials) > 0) {
+
+                foreach ($label_detials as $label_det) {
+
+                    $order_date = Carbon::parse($label_det->purchase_date)->format('Y-m-d');
+                    $id = $label_det->id;
+                    $address = $label_det->shipping_address;
+                    $courier_name = $label_det->forwarder;
+                    $awb_no = $label_det->awb_no;
+                    $order_id = $label_det->order_no;
+                    $address_array = json_decode(($address), true);
+                    if (isset($address_array['Name'])) {
+                        $name = $address_array['Name'];
+                    }
+
+                    $found_order_id[] = $order_id;
+
+                    $html .= "<tr>
+                                <td> $label_det->store_name </td> 
+                                <td> $label_det->order_no </td>";
+
+                    if ($awb_no && $courier_name) {
+
+                        $html .=      "<td> $awb_no </td> 
+                                  <td> $courier_name </td> ";
+                    } else {
+                        $awb_exist = $awb_no ? $awb_no : '';
+                        $courier_name_exist = $courier_name ? $courier_name : '';
+                        $html .= "<td><input type ='text' placeholder='$awb_no' id ='tracking$order_id' value='$awb_exist'></td>
+                            <td><input type ='text' placeholder ='$courier_name' id='courier$order_id' value ='$courier_name_exist'></td>";
+                    }
+
+                    $html .= "<td> $order_date </td> 
+                                
+                                <td> $name</td>";
+                    if ($name && $courier_name && $awb_no) {
+                        $html .= "<td>
+                                    <div class='d-flex'>
+                                        <a href='/label/pdf-template/$id' class='edit btn btn-success btn-sm view'  target='_blank'>
+                                            <i class='fas fa-eye'></i> View 
+                                        </a>
+                                    
+                                        <div class='d-flex pl-2'>
+                                            <a href='/label/download-direct/$id' class='edit btn btn-info btn-sm'>
+                                                <i class='fas fa-download'></i> Download 
+                                            </a>
+                                        </div>
+                                    </div>
+                                    </td>
+                                </tr>";
+                    }
+                    if (!$courier_name || !$awb_no) {
+
+                        $html .= "<td>
+                                    <div class='d-flex'>
+                                        <a id='$order_id' class='update btn btn-success btn-sm'>
+                                            <i class='fas fa-upload'></i> Update
+                                        </a>
+                                    </div>
+                                <td>";
+                    }
+                }
+            }
+
+            $missing_order = array_diff($amazon_order_id_array, $found_order_id);
+
+            $missing_html .= $this->trackingDetailsMissing($missing_order);
+            return [
+                'success' => $html,
+                'missing' => $missing_html,
+            ];
+        }
+        return view('label.search_by_amazon_order_id');
+    }
+
+    public function trackingDetailsMissing($amazon_order_id)
+    {
+        $missing_html = '';
+        foreach ($amazon_order_id as $order_id) {
+
+            $missing_html .=
+                "<tr> 
+                    <td>$order_id</td>
+                    <td><input type ='text' placeholder='Tracking Id' id ='tracking$order_id'> </td>
+                    <td><input type ='text' placeholder ='Courier Forwarder' id='courier$order_id'> </td>
+                    <td>
+                        <div class='d-flex'>
+                            <a id='$order_id' class='update btn btn-success btn-sm'>
+                                <i class='fas fa-upload'></i> Update
+                            </a>
+                        </div>
+                    <td>
+                </tr>";
+        }
+        return $missing_html;
+    }
+
+    public function updateTrackingDetails(Request $request)
+    {
+        $order_id = $request->order_id;
+        $tracking_id = $request->tracking_id;
+        $courier = $request->courier;
+
+        $label_update =  [
+            'order_no' => $order_id,
+            'awb_no' => strtoupper($tracking_id),
+            'forwarder' => $courier
+        ];
+        Label::upsert($label_update, 'order_awb_no_unique', ['order_no', 'awb_no', 'forwarder']);
+        return 'success';
+    }
+
+    public function editOrderAddress($order_item_identifier)
+    {
+    
+        $order = config('database.connections.order.database');
+        $order_details = DB::select("SELECT shipping_address,order_item_identifier
+        from ${order}.orderitemdetails 
+        WHERE order_item_identifier = '$order_item_identifier'");       
+
+        $shipping_address=$order_details[0]->shipping_address;        
+        $manage = json_decode($shipping_address, true);
+
+		return Response($manage);
+
+        
+    }
+
+    public function updateOrderAddress(Request $request, $id )
+    {
+        
+        $validater = Validator::make($request->all(),[
+            'name' => ['required' ],
+            'phone' => ['required'],
+            'county' => ['required'],
+            'countryCode' => ['required'],
+            'city' => ['required'],
+            'addressType' => ['required'],
+            'addressLine1' => ['required'],
+            'addressLine2' => ['required']
+        ]);       
+
+        if($validater->fails())
+        {
+            return response()->json([
+                   
+                'status' => '400',
+                'errors' =>$validater->errors(),
+                    
+            ]);
+        }
+        else
+        {
+            $json_data=[];
+            $json_data = array(
+                                    "Name" => $request->input('name'),
+                                    "AddressLine1" => $request->input('addressLine1'),
+                                    "AddressLine2" => $request->input('addressLine2'),
+                                    "City" => $request->input('city'),
+                                    "County" => $request->input('county'),
+                                    "CountryCode" => $request->input('countryCode'),
+                                    "Phone" => $request->input('phone'),
+                                    "AddressType" => $request->input('addressType')
+                                );                                
+            $shipping_address=json_encode($json_data);         
+                       
+            $order = config('database.connections.order.database');
+            DB::select("UPDATE  ${order}.orderitemdetails 
+                        SET shipping_address = '$shipping_address'
+                         WHERE amazon_order_identifier = '$id'
+                        ");
+
+
+             return response()->json([                   
+                'status' => '200',
+                'message' => 'student updated successfully'                    
+            ]);
+
+            
+
+
+        }
+    }
+
 }

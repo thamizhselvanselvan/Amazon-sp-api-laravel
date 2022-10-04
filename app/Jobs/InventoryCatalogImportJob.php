@@ -7,6 +7,7 @@ use App\Models\Mws_region;
 use Illuminate\Bus\Queueable;
 use App\Models\Inventory\Catalog;
 use Illuminate\Support\Facades\Log;
+use App\Models\Admin\ErrorReporting;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Services\SP_API\Config\ConfigTrait;
@@ -63,7 +64,18 @@ class InventoryCatalogImportJob implements ShouldQueue
                 // Log::info("Inv Job compleated");
                 // Log::alert($data_formate['Title']);
             } catch (Exception $e) {
-                Log::warning($e);
+                // Log::warning($e);
+                $code =  $e->getCode();
+            $msg = $e->getMessage();
+            $error_reportings = ErrorReporting::create([
+                'queue_type' => "Inventory",
+                'identifier' => $asin,
+                'identifier_type' => "ASIN",
+                'source' => $country_code,
+                'aws_key' => $aws_id,
+                'error_code' => $code,
+                'message' => $msg,
+            ]);
             }
         }
     }

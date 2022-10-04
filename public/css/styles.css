@@ -576,3 +576,23 @@ body {
     height: 46px;
     width: 300px;
 }
+
+.countrymsg {
+    margin-top: -10px;
+    font-size: small;
+}
+
+.catalogcountry {
+    height: 0px;
+}
+.TrackingEventMaster tr {
+    line-height: 0.9;
+}
+
+.event-master-btn .btn-sm {
+    padding: 0px;
+}
+
+.awbNo {
+    width: 100px;
+}

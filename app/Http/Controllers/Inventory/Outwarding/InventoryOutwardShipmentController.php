@@ -6,16 +6,17 @@ use Carbon\Carbon;
 use App\Models\Currency;
 use Illuminate\Http\Request;
 use App\Models\Inventory\Bin;
+use App\Models\Inventory\Tag;
 use App\Models\Inventory\Rack;
 use App\Models\Inventory\Vendor;
 use App\Models\Inventory\Inventory;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory\Outshipment;
-use App\Models\Inventory\Shipment_Inward_Details;
-use App\Models\Inventory\Shipment_Outward;
-use App\Models\Inventory\Shipment_Outward_Details;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\Inventory\Shipment_Outward;
+use App\Models\Inventory\Shipment_Inward_Details;
+use App\Models\Inventory\Shipment_Outward_Details;
 
 class InventoryOutwardShipmentController extends Controller
 {
@@ -61,9 +62,10 @@ class InventoryOutwardShipmentController extends Controller
         $destination_lists = Vendor::where('type', 'Destination')->get();
         $currency_lists = Currency::get();
         $ware_list = [];
+        $tags = Tag::get();
         $ware_lists = Shipment_Inward_Details::with('warehouses')->get()->unique('warehouses');
 
-        return view('inventory.outward.shipment.create', compact('destination_lists', 'ware_lists', 'currency_lists'));
+        return view('inventory.outward.shipment.create', compact('destination_lists', 'ware_lists', 'currency_lists','tags'));
     }
 
     public function show(Request $reques, $id)
@@ -97,7 +99,7 @@ class InventoryOutwardShipmentController extends Controller
     public function outstore($id)
     {
         $reduce = Outshipment::where('ship_id', $id)->with(['warehouses', 'vendors'])->first();
-
+    
         $warehouse_id = ($reduce->warehouse);
         $rack = Rack::where('warehouse_id', $warehouse_id)->get();
 
@@ -135,7 +137,6 @@ class InventoryOutwardShipmentController extends Controller
 
         $shipment_id = random_int(1000, 9999);
 
-
         foreach ($request->asin as $key => $asin) {
 
             $items[] = [
@@ -145,7 +146,6 @@ class InventoryOutwardShipmentController extends Controller
                 "price" => $request->price[$key],
             ];
         }
-
 
         Shipment_Outward::insert([
             "Ship_id" => $shipment_id,
@@ -166,6 +166,7 @@ class InventoryOutwardShipmentController extends Controller
                 "currency" => $request->currency,
                 "asin" => $asin,
                 "item_name" => $request->name[$key],
+                "tag" => $request->tag[$key],
                 "price" => $request->price[$key],
                 "quantity" => $request->quantity[$key],
                 "created_at" => now(),
@@ -180,7 +181,7 @@ class InventoryOutwardShipmentController extends Controller
 
                 Inventory::where('id', $id)->update([
 
-                    'out_quantity' =>$inventory->out_quantity +$request->quantity[$key],
+                    'out_quantity' =>$inventory->out_quantity + $request->quantity[$key1],
                     'balance_quantity' => $inventory->balance_quantity - $request->quantity[$key1],
                     
                 ]);
