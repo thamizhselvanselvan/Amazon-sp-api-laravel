@@ -50,7 +50,7 @@ class CatalogDashboardService
             }
 
             $this->bb_delist_count = [];
-            $table = table_model_create(country_code: $source, model: 'asin_destination', table_name: 'asin_destination_');
+            $table = table_model_create(country_code: $source, model: 'Asin_destination', table_name: 'asin_destination_');
             for ($priority = 1; $priority <= 3; $priority++) {
 
                 $this->gross = 0;
