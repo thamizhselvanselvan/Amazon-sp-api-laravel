@@ -742,7 +742,60 @@ class TestController extends Controller
     exit;
   }
 
-  public function testFeed()
+  public function AramexTracking($tracking_id)
   {
+
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://ws.aramex.net/ShippingAPI.V2/Tracking/Service_1_0.svc/json/TrackShipments',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => '{
+    "ClientInfo": {
+        "UserName": "test.api@aramex.com",
+        "Password": "Aramex@12345",
+        "Version": "v1.0",
+        "AccountNumber": "60531487",
+        "AccountPin": "654654",
+        "AccountEntity": "BOM",
+        "AccountCountryCode": "IN",
+        "Source": 1
+    },
+    "GetLastTrackingUpdateOnly": false,
+    "Shipments": [
+        "34141706712",
+        "34141705065",
+        "34141703875",
+        "35072819832",
+        "35072820123",
+        "35072820436",
+        "35072820064",
+        "35072820414",
+        "35072815724" 
+    ],
+    "Transaction": {
+        "Reference1": "",
+        "Reference2": "",
+        "Reference3": "",
+        "Reference4": "",
+        "Reference5": ""
+    }
+}',
+      CURLOPT_HTTPHEADER => array(
+        'Content-Type: application/json'
+      ),
+    ));
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+    $result = mungXML($response);
+    $arrayResult = json_decode(json_encode(SimpleXML_Load_String($result, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+    dd($arrayResult);
   }
 }
