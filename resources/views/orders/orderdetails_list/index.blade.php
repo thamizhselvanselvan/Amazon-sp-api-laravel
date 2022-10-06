@@ -101,6 +101,7 @@
             alert("Enter OrderID");
             return false;
         }
+       $('#report_table_body').empty();
         $("#report_table").show();
         $.ajax({
             method: 'POST',
@@ -111,7 +112,7 @@
             },
             'dataType': 'json',
             success: function(response) {
-                console.log(response.data);
+                // console.log(response.data);
 
                 let html = '';
                 $.each(response.data, function(index, alldata) {
