@@ -764,19 +764,11 @@ class TestController extends Controller
         "AccountPin": "654654",
         "AccountEntity": "BOM",
         "AccountCountryCode": "IN",
-        "Source": 1
+        "Source": 10
     },
     "GetLastTrackingUpdateOnly": false,
     "Shipments": [
         "34141706712",
-        "34141705065",
-        "34141703875",
-        "35072819832",
-        "35072820123",
-        "35072820436",
-        "35072820064",
-        "35072820414",
-        "35072815724" 
     ],
     "Transaction": {
         "Reference1": "",
@@ -792,10 +784,27 @@ class TestController extends Controller
     ));
 
     $response = curl_exec($curl);
-
+    // "34141705065",
+    // "34141703875",
+    // "35072819832",
+    // "35072820123",
+    // "35072820436",
+    // "35072820064",
+    // "35072820414",
+    // "35072815724" 
     curl_close($curl);
     $result = mungXML($response);
     $arrayResult = json_decode(json_encode(SimpleXML_Load_String($result, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-    dd($arrayResult);
+
+    // $error = $arrayResult['HasErrors'];
+    // $non_existing_way_bills = $arrayResult['NonExistingWaybills'];
+    // $tracking_details = $arrayResult['TrackingResults']['a_KeyValueOfstringArrayOfTrackingResultmFAkxlpY'];
+
+    // if ($error) {
+
+    //   // return ''
+    // }
+    // dd($tracking_details);
+    po($arrayResult);
   }
 }
