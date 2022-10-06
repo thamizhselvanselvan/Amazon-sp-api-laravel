@@ -76,7 +76,7 @@ Route::get('wherein', function () {
     $delist_asin_count = [];
     $gross = 0;
     $count = [];
-    $table = table_model_create(country_code: 'us', model: 'asin_destination', table_name: 'asin_destination_');
+    $table = table_model_create(country_code: 'in', model: 'Asin_destination', table_name: 'asin_destination_');
     for ($priority = 1; $priority <= 3; $priority++) {
         $gross = 0;
         $data = $table->select('id', 'asin')->where('priority', $priority)->chunkbyid(5000, function ($result) use ($priority, $gross) {
@@ -84,16 +84,18 @@ Route::get('wherein', function () {
                 $asins[] = "'$delist_asin->asin'";
             }
             $asin = implode(',', $asins);
-            $buybox_table = "bb_product_aa_custom_p${priority}_us_offers";
-            $delist_asin_count[] = DB::connection('buybox')->select("SELECT count(asin)as asin_delist, priority
+            $buybox_table = "bb_product_aa_custom_p${priority}_in_offers";
+            $delist_asin_count[] = DB::connection('buybox')->select("SELECT count(asin)as asin_delist
             FROM ${buybox_table} 
             WHERE asin IN ($asin)
             and delist = 1
             group by priority
             ");
             foreach ($delist_asin_count as $asin_delist) {
+
                 if (isset($asin_delist[0])) {
                     // po($gross = &$gross + $asin_delist[0]->asin_delist);
+                    // po($asin_delist[0]);
                 }
             }
             po($delist_asin_count);

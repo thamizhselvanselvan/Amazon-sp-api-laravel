@@ -95,6 +95,18 @@
                                     <div class="col-2"> </div>
                                 </div>
                             </div>
+                            <div class="info-box-text">
+                                <div class="row">
+                                    <div class="col-2"> </div>
+                                    <div class="col-2 text-left">
+                                        <h5> Unavailable </h5>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        <h5> {{ $record_array->asin_unavailable->$key2 }}</h5>
+                                    </div>
+                                    <div class="col-2"> </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
