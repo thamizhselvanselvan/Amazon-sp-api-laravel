@@ -118,7 +118,7 @@
         });
     });
     $('#vieworders').on('click', function() {
-
+        $('#data_display').empty();
         $("#orderstable").show();
         $("#orderspending").hide();
         $(".search").show();
@@ -159,6 +159,7 @@
 
     $('#pendingorders').on('click', function() {
 
+        $("#data_display_pending").empty();
         $("#orderspending").show();
         $("#orderstable").hide();
         $(".search").show();
