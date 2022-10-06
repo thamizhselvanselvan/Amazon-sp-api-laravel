@@ -40,6 +40,7 @@ use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
 use App\Services\AWS_Business_API\Auth\AWS_Business;
+use phpDocumentor\Reflection\Types\Null_;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
@@ -54,6 +55,53 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 |
 */
 // use ConfigTrait;
+$delist_asins;
+Route::get('wherein', function () {
+
+    $dbname = config('database.connections.catalog.database');
+    $destination_table = "asin_destination_uss";
+    $buybox_table = "bb_product_aa_custom_p2_us_offers";
+
+    // $delist_asins[] = DB::connection('buybox')
+    //     ->select("SELECT count(${buybox_table}.asin) as asin_delist, ${buybox_table}.priority
+    //             from ${buybox_table}
+    //             join ${dbname}.${destination_table} as destination
+    //             on ${buybox_table}.asin = destination.asin
+    //             and ${buybox_table}.priority = destination.priority
+    //             where ${buybox_table}.delist = 1
+    //             group by ${buybox_table}.priority
+    //             ");
+
+    $asins = [];
+    $delist_asin_count = [];
+    $gross = 0;
+    $count = [];
+    $table = table_model_create(country_code: 'in', model: 'Asin_destination', table_name: 'asin_destination_');
+    for ($priority = 1; $priority <= 3; $priority++) {
+        $gross = 0;
+        $data = $table->select('id', 'asin')->where('priority', $priority)->chunkbyid(5000, function ($result) use ($priority, $gross) {
+            foreach ($result as $delist_asin) {
+                $asins[] = "'$delist_asin->asin'";
+            }
+            $asin = implode(',', $asins);
+            $buybox_table = "bb_product_aa_custom_p${priority}_in_offers";
+            $delist_asin_count[] = DB::connection('buybox')->select("SELECT count(asin)as asin_delist
+            FROM ${buybox_table} 
+            WHERE asin IN ($asin)
+            and delist = 1
+            group by priority
+            ");
+            foreach ($delist_asin_count as $asin_delist) {
+
+                if (isset($asin_delist[0])) {
+                    // po($gross = &$gross + $asin_delist[0]->asin_delist);
+                    // po($asin_delist[0]);
+                }
+            }
+            po($delist_asin_count);
+        });
+    }
+});
 
 Route::get('data', function () {
 
