@@ -219,7 +219,12 @@
                         @foreach ($value->product as $key => $details)
                         <tr class="mb-0">
                             <td class="text-center p-1">{{$key+1}}</td>
-                            <td class="text-center p-1">{{$details['title']}}</td>
+                            <td class="text-center p-1">
+                                @php
+                                $new_word = wordwrap($details['title'], 20,"\n",true);
+                                echo "$new_word\n";
+                                @endphp
+                            </td>
                             <td class="text-center p-1">{{$details['sku']}}</td>
                             <td class="text-center p-1">{{$details['qty']}}</td>
                             </td>
