@@ -23,7 +23,7 @@ class StockController extends Controller
     public function getlist(Request $request)
     {
         if ($request->ajax()) {
-            $ware =  Inventory::with('warehouses','bins')
+            $ware =  Inventory::with('warehouses','shelves')
                 ->where('warehouse_id', $request->id)
                 ->where('balance_quantity', '>', 0)
                 ->get();
@@ -53,7 +53,7 @@ class StockController extends Controller
                 'Quantity',
                 'Outwarded',
                 'Quantity Left',
-                'Storage Bin',
+                'Storage Shelve',
                 'Inwarding Date'
             ];
             $exportFilePath = 'Inventory/WarehouseStocks.csv'; // your file path, where u want to save

@@ -87,7 +87,7 @@
             <th>Quantity In.</th>
             <th>Quantity/out.</th>
             <th>Quantity Left</th>
-            <th>Storage Location</th>
+            <th>Storage Shelve</th>
             <th>Inwarding Date</th>
         </tr>
     </thead>
@@ -131,6 +131,7 @@
             },
             'dataType': 'json',
             success: function(response) {
+                // console.log(response);
 
                 let html = '';
                 $.each(response, function(index, value) {
@@ -146,10 +147,10 @@
                     html += "<td>" + value.quantity + "</td>";
                     html += "<td>" + value.out_quantity + "</td>";
                     html += "<td>" + value.balance_quantity + "</td>";
-                    if (value.bins == null) {
+                    if (value.shelves == null) {
                         html += "<td>" + 'Not Allocated' + "</td>"
                     } else {
-                        html += "<td>" + value.bins.rack_id  + '-' + value.bins.shelve_id  + '-' + value.bins.bin_id  + "</td>";
+                        html += "<td>" + value.shelves.rack_id + '-' + value.shelves.shelve_id + "</td>";
                     }
 
                     html += "<td>" + d.toDateString() + "</td>";
