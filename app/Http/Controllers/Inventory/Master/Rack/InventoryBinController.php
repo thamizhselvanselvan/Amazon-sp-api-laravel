@@ -70,18 +70,6 @@ class InventoryBinController extends Controller
     public function store(Request $request)
     {
 
-        $request->validate([
-            'ware_id' => 'required',
-            'rack_id' => 'required',
-            'shelve_id' => 'required',
-            'bid' => 'required',
-            'name' => 'required',
-            'depth' => 'required',
-            'width' => 'required',
-            'height' => 'required',
-
-        ]);
-
         $shelve_exists = Shelve::where('shelve_id', $request->shelve_id)->exists();
 
         if (!$shelve_exists) {
@@ -108,6 +96,7 @@ class InventoryBinController extends Controller
                 'updated_at' => now()
             ];
         }
+       
         Bin::insert($bin_lists);
 
         return redirect()->route('bins.index')->with('success', 'Bin  has been created successfully');

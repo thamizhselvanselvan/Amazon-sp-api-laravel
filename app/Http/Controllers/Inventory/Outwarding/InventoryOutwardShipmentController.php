@@ -12,6 +12,7 @@ use App\Models\Inventory\Vendor;
 use App\Models\Inventory\Inventory;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory\Outshipment;
+use App\Models\Inventory\Shelve;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Inventory\Shipment_Outward;
@@ -89,8 +90,8 @@ class InventoryOutwardShipmentController extends Controller
         $place = Inventory::whereIn('asin', $items)->get();
         $loc = [];
         foreach ($place as $plc) {
-
-            $loc[] = Bin::where('bin_id', $plc['bin'])->first();
+// dd($plc);
+            $loc[] = Shelve::where('shelve_id', $plc['bin'])->first();
         }
 
         return view('inventory.outward.shipment.view', compact('outview', 'id', 'currency', 'bar_code', 'bar', 'loc'));
@@ -120,7 +121,6 @@ class InventoryOutwardShipmentController extends Controller
         }
     }
 
-
     public function selectview(Request $request)
     {
 
@@ -135,8 +135,8 @@ class InventoryOutwardShipmentController extends Controller
     public function storeoutshipment(Request $request)
     {
 
-        $shipment_id = random_int(1000, 9999);
-
+        $val = random_int(1000, 99999);
+        $shipment_id = 'OUT'.$val;
         foreach ($request->asin as $key => $asin) {
 
             $items[] = [

@@ -34,7 +34,8 @@ class InventoryShipmentController extends Controller
 {
     public function index(Request $request)
     {
-
+        $data = Shipment_Inward_Details::select("ship_id", "source_id", "created_at")->distinct()->with(['vendors'])->orderby('created_at', 'DESC')->get();
+        // dd($data);
         if ($request->ajax()) {
 
             $data = Shipment_Inward_Details::select("ship_id", "source_id", "created_at")->distinct()->with(['vendors'])->orderby('created_at','DESC')->get();
@@ -46,12 +47,12 @@ class InventoryShipmentController extends Controller
                 ->editColumn('date', function ($row) {
                     return Carbon::parse($row['created_at'])->format('M d Y');
                 })
-
                 ->addColumn('action', function ($row) {
-                    $actionBtn  = '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '" class="edit btn btn-success btn-sm"><i class="fas fa-eye"></i> View</a>';
-                    $actionBtn .= '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '/place" class="store btn btn-primary btn-sm ml-2"><i class="fas fa-box"></i> Bin Placement </a>';
-                    $actionBtn .= '<div class="d-flex"><a href="/inventory/shipments/' . $row->ship_id . '/lable" class="lable btn btn-info btn-sm ml-2"><i class="fas fa-print"></i> Print label </a>';
+                    $actionBtn  = '<div class="d-flex"><a href="/inventory/shipments/' . $row->source_id.'/'. $row->ship_id . '" class="edit btn btn-success btn-sm"><i class="fas fa-eye"></i> View</a>';
+                    $actionBtn .= '<div class="d-flex"><a href="/inventory/shipments/' . $row->source_id .'/'. $row->ship_id . '/place" class="store btn btn-primary btn-sm ml-2"><i class="fas fa-box"></i> Bin Placement </a>';
+                    $actionBtn .= '<div class="d-flex"><a href="/inventory/shipments/' . $row->source_id . '/' . $row->ship_id . '/lable" class="lable btn btn-info btn-sm ml-2"><i class="fas fa-print"></i> Print label </a>';
                     return $actionBtn;
+           
                 })
 
                 ->rawColumns(['source_name', 'action', 'date'])
@@ -71,18 +72,18 @@ class InventoryShipmentController extends Controller
         return view('inventory.inward.shipment.create', compact('source_lists', 'ware_lists', 'currency_lists','tags'));
     }
 
-    public function show($id)
+    public function show($source, $id)
     {
 
-        $view = Shipment_Inward_Details::where('ship_id', $id)->with(['warehouses', 'vendors'])->get();
+        $view = Shipment_Inward_Details::where('ship_id', $id)->where('source_id', $source)->with(['warehouses', 'vendors'])->get();
 
         $warehouse_name = '';
         $vendor_name = '';
         $currency_id = '';
 
         $generator = new BarcodeGeneratorHTML();
+        $bar_code = '';
         foreach ($view as $key => $bar) {
-            $bar_code = '';
 
             $bar_code = $generator->getBarcode($bar->ship_id, $generator::TYPE_CODE_93);
             $warehouse_name = $bar->warehouses->name;
@@ -159,7 +160,7 @@ class InventoryShipmentController extends Controller
             } else {
                 $filtere_data[$asin_key] = "NA";
                 $catalog_insert[$asin_key] = [
-                    'asin' => $val['asin'],
+                    'asin' => $val['asin'] ?? $asin_key,
                     'source' => $wantedsrc->code
                 ];
             }
@@ -167,8 +168,8 @@ class InventoryShipmentController extends Controller
 
         if (count($catalog_insert) > 0) {
             Catalog::insert($catalog_insert);
-
-            Artisan::call('mosh:inventory_catalog_import');
+            commandExecFunc("mosh:inventory_catalog_import");
+           
         }
 
 
@@ -209,15 +210,15 @@ class InventoryShipmentController extends Controller
 
     public function storeshipment(Request $request)
     {
-
-        $ship_id = random_int(1000, 9999);
+        $uniq= random_int(1000, 99999);
+        $ship_id ='INW'. $uniq;
         $items = [];
 
         $request->validate([
             'warehouse' => 'required',
             'currency' => 'required',
         ]);
-
+        
         foreach ($request->asin as $key => $asin) {
 
             $items[] = [
@@ -229,21 +230,25 @@ class InventoryShipmentController extends Controller
             ];
         }
 
-        Shipment_Inward::insert([
-            "warehouse_id" => $request->warehouse,
-            "source_id" => $request->source,
-            "ship_id" => $ship_id,
-            "currency" => $request->currency,
-            "shipment_count" => count($items),
-            "created_at" => now(),
-            "updated_at" => now()
-        ]);
+        foreach ($request->asin as $key1 => $asin1)
+         {
 
+                      Shipment_Inward::insert([
+                          "warehouse_id" => $request->warehouse,
+                          "source_id" =>  $request->source[$key1],
+                          "ship_id" => $ship_id,
+                          "currency" => $request->currency,
+                          "shipment_count" => count($items),
+                          "created_at" => now(),
+                          "updated_at" => now()
+                      ]);
+          }
+ 
         foreach ($request->asin as $key1 => $asin1) {
 
             Shipment_Inward_Details::create([
                 "warehouse_id" => $request->warehouse,
-                "source_id" => $request->source,
+                "source_id" =>  $request->source[$key1],
                 "ship_id" => $ship_id,
                 "currency" => $request->currency,
                 "asin" => $asin1,
@@ -260,6 +265,7 @@ class InventoryShipmentController extends Controller
 
             Inventory::create([
                 "warehouse_id" => $request->warehouse,
+                "source_id" =>  $request->source[$key1],
                 "ship_id" => $ship_id,
                 "asin" => $asin1,
                 "price" => $request->price[$key1],
@@ -275,42 +281,11 @@ class InventoryShipmentController extends Controller
         return response()->json(['success' => 'Shipment has Created successfully']);
     }
 
-    public function inwardingdata(Request $request)
+    public function store($source,$id)
     {
-        $data = Shipment_Inward_Details::query()->with(['vendors', 'warehouses']);
-
-        if ($request->ajax()) {
-
-
-
-            return DataTables::of($data)
-                ->addIndexColumn()
-
-                ->editColumn('source_name', function ($data) {
-                    return ($data->vendors) ? $data->vendors->name : "NA";
-                })
-                ->editColumn('warehouse_name', function ($data) {
-                    return ($data->warehouses) ? $data->warehouses->name : "NA";
-                })
-
-
-
-                ->editColumn('created_at', function ($row) {
-                    return Carbon::parse($row['created_at'])->format('M d Y');
-                })
-                ->rawColumns(['source_name', 'created_at', 'warehouse_name'])
-                ->make(true);
-        }
-
-
-        return view('inventory.inward.shipment.view');
-    }
-
-    public function store($id)
-    {
-        $store = Inventory::where('ship_id', $id)->with(['warehouses', 'vendors'])->get();
+        $warehouse_id ='';
+        $store = Inventory::where('ship_id', $id)->where('source_id',$source)->with(['warehouses', 'vendors'])->get();
         foreach ($store as $value) {
-            $warehouse_id ='';
             $warehouse_id = $value->warehouse_id;
         }
         $rack = Rack::where('warehouse_id', $warehouse_id)->get();
@@ -337,20 +312,21 @@ class InventoryShipmentController extends Controller
 
     public function placeship(Request $request)
     {
+  
         foreach ($request->asin as $key1 => $asin) {
 
             $ship_id = $request->ship_id[$key1];
             Inventory::where('ship_id', $ship_id)->where('asin', $asin)
                 ->update([
-                    'bin' => $request->bin[$key1],
+                    'bin' => $request->shelve[$key1],
                 ]);
         }
         return response()->json(['success' => 'Shipment has stored successfully']);
     }
 
-    public function printlable(Request $request, $id)
+    public function printlable(Request $request,$source, $id)
     {
-        $lable = Shipment_Inward_Details::where('ship_id', $id)->with(['warehouses', 'vendors'])->get();
+        $lable = Shipment_Inward_Details::where('ship_id', $id)->where('source_id', $source)->with(['warehouses', 'vendors'])->get();
         $quant = [];
         $total = 0;
         foreach ($lable as $key => $val) {
