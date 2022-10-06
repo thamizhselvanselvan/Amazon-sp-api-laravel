@@ -104,7 +104,7 @@ class OrdersCsvImport extends Command
                     'asin'                      => $csv['ASIN'],
                     'seller_sku'                => $csv['Seller_sku'],
                     'order_item_identifier'     => $csv['Order_item_id'],
-                    'title'                     => $title,
+                    'title'                     => htmlspecialchars($title),
                     'quantity_ordered'          => $csv['Quantity_ordered'],
                     'quantity_shipped'          => $csv['Quantity_shipped'],
                     'item_price'                => json_encode($item_price),
