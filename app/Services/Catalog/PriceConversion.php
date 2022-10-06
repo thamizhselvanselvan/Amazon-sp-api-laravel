@@ -37,12 +37,16 @@ class PriceConversion
     }
     public function USAToINDB2C($weight, $bb_price)
     {
-
-        if ($weight > 0.9) {
-            $int_shipping_base_charge = ($this->exchange_rate_data[4]['base_weight'] + ($weight - 1) * $this->exchange_rate_data[4]['base_shipping_charge']);
-        } else {
-            $int_shipping_base_charge = $this->exchange_rate_data[4]['base_shipping_charge'];
+        if ($weight < 1) {
+            $weight = 1;
         }
+
+        $int_shipping_base_charge = ($this->exchange_rate_data[4]['base_weight'] + ($weight - 1) * $this->exchange_rate_data[4]['base_shipping_charge']);
+
+        // if ($weight > 0.9) {
+        // } else {
+        //     $int_shipping_base_charge = $this->exchange_rate_data[4]['base_shipping_charge'];
+        // }
 
         $duty_rate = $this->exchange_rate_data[4]['duty_rate'] / 100;
         $packaging = $this->exchange_rate_data[4]['packaging'];
@@ -60,11 +64,17 @@ class PriceConversion
 
     public function USAToINDB2B($weight, $bb_price)
     {
-        if ($weight > 0.9) {
-            $int_shipping_base_charge = ($this->exchange_rate_data[3]['base_weight'] + ($weight - 1) * $this->exchange_rate_data[3]['base_shipping_charge']);
-        } else {
-            $int_shipping_base_charge = $this->exchange_rate_data[3]['base_shipping_charge'];
+        if ($weight < 1) {
+            $weight = 1;
         }
+
+        $int_shipping_base_charge = ($this->exchange_rate_data[3]['base_weight'] + ($weight - 1) * $this->exchange_rate_data[3]['base_shipping_charge']);
+
+        // if ($weight > 0.9) {
+        //     $int_shipping_base_charge = ($this->exchange_rate_data[3]['base_weight'] + ($weight - 1) * $this->exchange_rate_data[3]['base_shipping_charge']);
+        // } else {
+        //     $int_shipping_base_charge = $this->exchange_rate_data[3]['base_shipping_charge'];
+        // }
 
         $duty_rate = $this->exchange_rate_data[3]['duty_rate'] / 100;
         $seller_commission = $this->exchange_rate_data[3]['seller_commission'] / 100;
