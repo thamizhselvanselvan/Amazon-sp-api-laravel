@@ -129,3 +129,5 @@ Route::get('test/amazon-feed/{lead_id}', 'Testcontroller@TestAmazonFeed');
 
 Route::get('test/emirate/tracking/{tracking_id}', 'TestController@emiratePostTracking');
 Route::get('test/emirate/booking', 'TestController@emiratePostBooking');
+
+Route::get('test/aramex/tracking/{tracking_id}', 'TestController@AramexTracking');
