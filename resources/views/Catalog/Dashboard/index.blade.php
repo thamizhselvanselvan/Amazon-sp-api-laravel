@@ -75,6 +75,18 @@
                                 <div class="row">
                                     <div class="col-2"> </div>
                                     <div class="col-2 text-left">
+                                        <h5> Catalog(N/A)</h5>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        <h5> {{ $record_array->na_catalog->$key2 }}</h5>
+                                    </div>
+                                    <div class="col-2"> </div>
+                                </div>
+                            </div>
+                            <div class="info-box-text">
+                                <div class="row">
+                                    <div class="col-2"> </div>
+                                    <div class="col-2 text-left">
                                         <h5> Delist </h5>
                                     </div>
                                     <div class="col-6 text-right">

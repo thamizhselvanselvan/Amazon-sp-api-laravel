@@ -59,24 +59,42 @@ $delist_asins;
 Route::get('wherein', function () {
 
     $dbname = config('database.connections.catalog.database');
-    $destination_table = "asin_destination_uss";
+    $destination_table = "asin_destination_ins";
     $buybox_table = "bb_product_aa_custom_p2_us_offers";
 
-    // $delist_asins[] = DB::connection('buybox')
-    //     ->select("SELECT count(${buybox_table}.asin) as asin_delist, ${buybox_table}.priority
-    //             from ${buybox_table}
-    //             join ${dbname}.${destination_table} as destination
-    //             on ${buybox_table}.asin = destination.asin
-    //             and ${buybox_table}.priority = destination.priority
-    //             where ${buybox_table}.delist = 1
-    //             group by ${buybox_table}.priority
-    //             ");
+    $table = table_model_create(country_code: 'in', model: 'Asin_destination', table_name: 'asin_destination_');
+
+    // $unavailable_catalog = DB::connection('catalog')->select(" SELECT count(destination.asin)as asin_cnt, destination.priority 
+    // FROM asin_destination_ins as destination
+    // JOIN catalognewins as cat
+    // ON destination.asin = cat.asin
+    // WHERE destination.asin = cat.asin
+    // -- AND cat.asin IS NULL  
+    // GROUP BY priority
+    // ");
+    $asin = [1 => 0, 2 => 0, 3 => 0];
+    $catalog_table = "catalognewins";
+    $unavailable_catalog = DB::connection('catalog')
+        ->select("SELECT count(${destination_table}.asin) as asin_catalog ,${destination_table}.priority from ${destination_table}
+            join ${catalog_table}
+            ON ${destination_table}.asin = ${catalog_table}.asin
+            group by ${destination_table}.priority
+            ");
+    $priority = DB::connection('catalog')->select(" SELECT count(asin)as asin_cnt, priority 
+        FROM asin_destination_ins as destination
+        group by priority");
+
+    foreach ($priority as $key => $catalog) {
+        po($catalog->asin_cnt - $unavailable_catalog[$key]->asin_catalog);
+    }
+    po($priority);
+    po(($unavailable_catalog));
+    exit;
 
     $asins = [];
     $delist_asin_count = [];
     $gross = 0;
     $count = [];
-    $table = table_model_create(country_code: 'in', model: 'Asin_destination', table_name: 'asin_destination_');
     for ($priority = 1; $priority <= 3; $priority++) {
         $gross = 0;
         $data = $table->select('id', 'asin')->where('priority', $priority)->chunkbyid(5000, function ($result) use ($priority, $gross) {
