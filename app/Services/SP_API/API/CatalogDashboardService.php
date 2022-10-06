@@ -8,8 +8,11 @@ use Illuminate\Support\Facades\Storage;
 
 class CatalogDashboardService
 {
-    public $gross;
-    public $bb_delist_count = [];
+    private $gross;
+    private $unavailable;
+    private $bb_delist_count = [];
+    private $bb_unavailable_count = [];
+
     public function catalogDashboard()
     {
         $sources = ['IN', 'US'];
@@ -20,8 +23,8 @@ class CatalogDashboardService
             $asin_priority = [1 => 0, 2 => 0, 3 => 0];
             $catalog = [1 => 0, 2 => 0, 3 => 0];
             $bb_asin_delist = [1 => 0, 2 => 0, 3 => 0];
-            // $asin_bb_price = [1 => 0, 2 => 0, 3 => 0];
             $cat_price = [1 => 0, 2 => 0, 3 => 0];
+            $asin_bb_unavailable = [1 => 0, 2 => 0, 3 => 0];
 
             $delist_asin_count = [];
             $source = strtolower($source);
@@ -50,10 +53,12 @@ class CatalogDashboardService
             }
 
             $this->bb_delist_count = [];
+            $this->bb_unavailable_count = [];
             $table = table_model_create(country_code: $source, model: 'Asin_destination', table_name: 'asin_destination_');
             for ($priority = 1; $priority <= 3; $priority++) {
 
                 $this->gross = 0;
+                $this->unavailable = 0;
                 $data = $table->select('id', 'asin')->where('priority', $priority)->chunkbyid(5000, function ($result) use ($priority, $source) {
                     foreach ($result as $delist_asin) {
                         $asins[] = "'$delist_asin->asin'";
@@ -71,19 +76,46 @@ class CatalogDashboardService
                             $this->gross = $this->gross + $asin_delist[0]->asin_delist;
                         }
                     }
+
+                    $this->bb_delist_count[] = [
+                        'asin_delist'   => $this->gross,
+                        'priority'  => $priority,
+                    ];
+
+                    //buybox asin unavailable start
+                    $bb_unavailable_asins[] = DB::connection('buybox')->select("SELECT count(asin)as asin_unavailable
+                    FROM ${buybox_table}
+                    WHERE asin IN ($asin)
+                    AND available = 2
+                    ");
+
+                    foreach ($bb_unavailable_asins as $bb_unavailable_asin) {
+                        if (isset($bb_unavailable_asin[0])) {
+                            $this->unavailable = $this->unavailable + $bb_unavailable_asin[0]->asin_unavailable;
+                        }
+                    }
+
+                    $this->bb_unavailable_count[] = [
+                        'asin_unavailable'  =>  $this->unavailable,
+                        'priority'  => $priority,
+                    ];
+
+                    //buybox asin unavailable end
+
                 });
-                $this->bb_delist_count[] = [
-                    'asin_delist'   => $this->gross,
-                    'priority'  => $priority,
-                ];
             }
-            log::alert($this->bb_delist_count);
 
             foreach ($this->bb_delist_count as $delist_asin) {
                 $delist = $delist_asin['priority'];
                 $bb_asin_delist[$delist] = $delist_asin['asin_delist'];
             }
 
+            foreach ($this->bb_unavailable_count as $asin_unavailabe) {
+                $unavail_asin = $asin_unavailabe['priority'];
+                $asin_bb_unavailable[$unavail_asin] = $asin_unavailabe['asin_unavailable'];
+            }
+
+            log::alert($asin_bb_unavailable);
 
             $cat_pricings = DB::connection('catalog')
                 ->select("SELECT count(${destination_table}.asin) as price, ${destination_table}.priority from ${destination_table}
@@ -101,6 +133,7 @@ class CatalogDashboardService
                 'catalog' => $catalog,
                 'delist_asin' => $bb_asin_delist,
                 'catalog_price' => $cat_price,
+                'asin_unavailable'  =>  $asin_bb_unavailable,
             ];
         }
 

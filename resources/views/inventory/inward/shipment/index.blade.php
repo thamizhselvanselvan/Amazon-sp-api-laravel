@@ -40,9 +40,6 @@
             <a href="{{ route('shipments.create') }}">
                     <x-adminlte-button label="Create Shipment" theme="primary" icon="fas fa-plus" />
                 </a>
-                <!-- <a href="{{ route('shipments.view') }}">
-                    <x-adminlte-button label="View Shipment" theme="primary" icon="fas fa-file" />
-                </a> -->
             </h2> 
 
             </h2> 
