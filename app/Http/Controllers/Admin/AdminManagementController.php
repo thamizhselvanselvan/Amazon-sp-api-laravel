@@ -265,8 +265,18 @@ class AdminManagementController extends Controller
                     }
                     return $action;
                 })
-                ->rawColumns(['region', 'order', 'order_item', 'enable_snt'])
-                ->make(true);;
+                ->addColumn('source', function () {
+                    $action = '<div class="pl-2"><select name="source"><option value="NULL">Select Source</option><option value="IN">IN</option><option value="US">US</option><option value="AE">AE</option></select></div>';
+
+                    return $action;
+                })
+                ->addColumn('destination', function () {
+                    $action = '<div class="pl-2"><select name="destination"><option value="NULL">Select Destination</option><option value="IN">IN</option><option value="US">US</option><option value="AE">AE</option></select></div>';
+
+                    return $action;
+                })
+                ->rawColumns(['region', 'order', 'order_item', 'enable_snt', 'source', 'destination'])
+                ->make(true);
         }
 
         return view('orders.listorders.selectstore');
