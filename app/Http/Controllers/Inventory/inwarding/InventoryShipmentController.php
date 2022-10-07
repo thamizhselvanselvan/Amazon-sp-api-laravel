@@ -34,8 +34,6 @@ class InventoryShipmentController extends Controller
 {
     public function index(Request $request)
     {
-        $data = Shipment_Inward_Details::select("ship_id", "source_id", "created_at")->distinct()->with(['vendors'])->orderby('created_at', 'DESC')->get();
-        // dd($data);
         if ($request->ajax()) {
 
             $data = Shipment_Inward_Details::select("ship_id", "source_id", "created_at")->distinct()->with(['vendors'])->orderby('created_at','DESC')->get();

@@ -36,10 +36,11 @@ class CatalogDashboardService
 
 
             $Total_catalogs = DB::connection('catalog')
-                ->select("SELECT count(${destination_table}.asin) as asin_catalog ,${destination_table}.priority from ${destination_table}
-            join ${catalog_table}
-            ON ${destination_table}.asin = ${catalog_table}.asin
-            group by ${destination_table}.priority
+                ->select("SELECT count(${destination_table}.asin) as asin_catalog,
+                ${destination_table}.priority from ${destination_table}
+                    join ${catalog_table}
+                    ON ${destination_table}.asin = ${catalog_table}.asin
+                    group by ${destination_table}.priority
             ");
 
             foreach ($Total_catalogs as $total_catalog) {
@@ -66,50 +67,54 @@ class CatalogDashboardService
 
                 $this->gross = 0;
                 $this->unavailable = 0;
-                $data = $table->select('id', 'asin')->where('priority', $priority)->chunkbyid(5000, function ($result) use ($priority, $source) {
-                    foreach ($result as $delist_asin) {
-                        $asins[] = "'$delist_asin->asin'";
-                    }
-                    $asin = implode(',', $asins);
-                    $buybox_table = "bb_product_aa_custom_p${priority}_${source}_offers";
-                    $delist_asin_count[] = DB::connection('buybox')->select("SELECT count(asin)as asin_delist
-                        FROM ${buybox_table} 
-                        WHERE asin IN ($asin)
-                        and delist = 1
+                $data = $table->select('id', 'asin')
+                    ->where('priority', $priority)
+                    ->chunkbyid(5000, function ($result) use ($priority, $source) {
+                        foreach ($result as $delist_asin) {
+                            $asins[] = "'$delist_asin->asin'";
+                        }
+                        $asin = implode(',', $asins);
+                        $buybox_table = "bb_product_aa_custom_p${priority}_${source}_offers";
+                        $delist_asin_count[] = DB::connection('buybox')
+                            ->select("SELECT count(asin)as asin_delist
+                            FROM ${buybox_table} 
+                            WHERE asin IN ($asin)
+                            and delist = 1
                         ");
 
-                    foreach ($delist_asin_count as $asin_delist) {
-                        if (isset($asin_delist[0])) {
-                            $this->gross = $this->gross + $asin_delist[0]->asin_delist;
+                        foreach ($delist_asin_count as $asin_delist) {
+                            if (isset($asin_delist[0])) {
+                                $this->gross = $this->gross + $asin_delist[0]->asin_delist;
+                            }
                         }
-                    }
 
-                    $this->bb_delist_count[] = [
-                        'asin_delist'   => $this->gross,
-                        'priority'  => $priority,
-                    ];
+                        $this->bb_delist_count[] = [
+                            'asin_delist'   => $this->gross,
+                            'priority'  => $priority,
+                        ];
 
-                    //buybox asin unavailable start
-                    $bb_unavailable_asins[] = DB::connection('buybox')->select("SELECT count(asin)as asin_unavailable
+                        //buybox asin unavailable start
+                        $bb_unavailable_asins[] = DB::connection('buybox')
+                            ->select("SELECT count(asin)as asin_unavailable
                     FROM ${buybox_table}
                     WHERE asin IN ($asin)
                     AND available = 2
                     ");
 
-                    foreach ($bb_unavailable_asins as $bb_unavailable_asin) {
-                        if (isset($bb_unavailable_asin[0])) {
-                            $this->unavailable = $this->unavailable + $bb_unavailable_asin[0]->asin_unavailable;
+                        foreach ($bb_unavailable_asins as $bb_unavailable_asin) {
+                            if (isset($bb_unavailable_asin[0])) {
+                                $this->unavailable = $this->unavailable + $bb_unavailable_asin[0]->asin_unavailable;
+                            }
                         }
-                    }
 
-                    $this->bb_unavailable_count[] = [
-                        'asin_unavailable'  =>  $this->unavailable,
-                        'priority'  => $priority,
-                    ];
+                        $this->bb_unavailable_count[] = [
+                            'asin_unavailable'  =>  $this->unavailable,
+                            'priority'  => $priority,
+                        ];
 
-                    //buybox asin unavailable end
+                        //buybox asin unavailable end
 
-                });
+                    });
             }
 
             foreach ($this->bb_delist_count as $delist_asin) {
@@ -125,7 +130,8 @@ class CatalogDashboardService
             // log::alert($asin_bb_unavailable);
 
             $cat_pricings = DB::connection('catalog')
-                ->select("SELECT count(${destination_table}.asin) as price, ${destination_table}.priority from ${destination_table}
+                ->select("SELECT count(${destination_table}.asin) as price, 
+                ${destination_table}.priority from ${destination_table}
             join ${catalog_price}
             ON ${destination_table}.asin = ${catalog_price}.asin
             group by ${destination_table}.priority
