@@ -154,7 +154,29 @@ class BusinessasinDetails implements ShouldQueue
             // $data->productvariations =  $productVariations;
 
             // R::store($data);
-            DB::connection('business')->table('catalog_business')->insert([
+            // DB::connection('business')->table('catalog_business')->insert([
+            //     'asin' =>      $asin,
+            //     'asin_type' => $asin_type,
+            //     // 'signedProductid' =>$signedProductId,
+            //     'availability' => $availability,
+            //     'buyingGuidance' => $buyingGuidance,
+            //     'fulfillmentType' =>  $fulfillmentType,
+            //     'merchant' => $merchant,
+            //     // 'offerid' =>  $offerId,
+            //     'price' =>      $price,
+            //     'listPrice' =>   $listPrice,
+            //     'productCondition' =>  $productCondition,
+            //     'condition' => $condition,
+            //     // 'quantityLimits' =>  $quantityLimits,
+            //     'deliveryInformation' =>  $deliveryInformation,
+            //     // 'features' =>$features,
+            //     // 'taxonomies' =>$taxonomies,
+            //     'title' =>    $title,
+            //     'url' =>    $url,
+            //     // 'productOverview' =>   $productOverview,
+            //     // 'productvariations' =>   $productVariations,
+            // ]);
+            DB::connection('mongodb')->table('product_details')->insert([
                 'asin' =>      $asin,
                 'asin_type' => $asin_type,
                 // 'signedProductid' =>$signedProductId,
@@ -176,12 +198,12 @@ class BusinessasinDetails implements ShouldQueue
                 // 'productOverview' =>   $productOverview,
                 // 'productvariations' =>   $productVariations,
             ]);
-
+Log::info('Mongo Insertion succesfull');
             $end_time = endTime($start_time);
             //   Log::alert("After Update Query - $end_time");
             $counter++;
         }
         $finished_loop = endTime($start_time);
-        Log::info("FInal Query Time and finished at $finished_loop");
+        // Log::info("FInal Query Time and finished at $finished_loop");
     }
 }
