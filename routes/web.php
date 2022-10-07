@@ -59,35 +59,15 @@ $delist_asins;
 Route::get('wherein', function () {
 
     $dbname = config('database.connections.catalog.database');
-    $destination_table = "asin_destination_ins";
+    $destination_table = "asin_destination_uss";
     $buybox_table = "bb_product_aa_custom_p2_us_offers";
 
     $table = table_model_create(country_code: 'in', model: 'Asin_destination', table_name: 'asin_destination_');
 
-    // $unavailable_catalog = DB::connection('catalog')->select(" SELECT count(destination.asin)as asin_cnt, destination.priority 
-    // FROM asin_destination_ins as destination
-    // JOIN catalognewins as cat
-    // ON destination.asin = cat.asin
-    // WHERE destination.asin = cat.asin
-    // -- AND cat.asin IS NULL  
-    // GROUP BY priority
-    // ");
-    $asin = [1 => 0, 2 => 0, 3 => 0];
-    $catalog_table = "catalognewins";
-    $unavailable_catalog = DB::connection('catalog')
-        ->select("SELECT count(${destination_table}.asin) as asin_catalog ,${destination_table}.priority from ${destination_table}
-            join ${catalog_table}
-            ON ${destination_table}.asin = ${catalog_table}.asin
-            group by ${destination_table}.priority
-            ");
-    $priority = DB::connection('catalog')->select(" SELECT count(asin)as asin_cnt, priority 
-        FROM asin_destination_ins as destination
-        group by priority");
+    $unavailable_catalog = $table->select("asin_destination_ins.asin")
+        ->join("catalognewins as catalog", 'catalog.asin', '=', 'asin_destination_ins.asin')
+        ->groupBy('asin_destination_ins.priority');
 
-    foreach ($priority as $key => $catalog) {
-        po($catalog->asin_cnt - $unavailable_catalog[$key]->asin_catalog);
-    }
-    po($priority);
     po(($unavailable_catalog));
     exit;
 
