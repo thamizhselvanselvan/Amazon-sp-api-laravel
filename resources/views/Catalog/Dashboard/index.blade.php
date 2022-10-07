@@ -78,7 +78,8 @@
                                         <h5> Catalog(N/A)</h5>
                                     </div>
                                     <div class="col-6 text-right">
-                                        <h5> {{ $record_array->na_catalog->$key2 }}</h5>
+                                        <h5> {{ isset($record_array->na_catalog->$key2) ? $record_array->na_catalog->$key2 : 0 }}
+                                        </h5>
                                     </div>
                                     <div class="col-2"> </div>
                                 </div>
