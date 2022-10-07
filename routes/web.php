@@ -58,6 +58,10 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 $delist_asins;
 Route::get('wherein', function () {
 
+    $date = date('Y-m-d-H-i');
+    po("asin${date}.csv");
+    exit;
+
     $dbname = config('database.connections.catalog.database');
     $destination_table = "asin_destination_uss";
     $buybox_table = "bb_product_aa_custom_p2_us_offers";
