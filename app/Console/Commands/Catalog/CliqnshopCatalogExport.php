@@ -48,8 +48,9 @@ class CliqnshopCatalogExport extends Command
     public function handle()
     {
         $total_csv = 10000;
-        $chunk = 1000;
+        $chunk = 10000;
         $offset = 0;
+       
         $this->remender = $total_csv / $chunk;
         $header = [
             'catalognewuss.asin',
@@ -62,14 +63,13 @@ class CliqnshopCatalogExport extends Command
 
         ];
         $asin_cat = 'pricing_uss';
-
+        
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
-
-
         $cat_details =  $table_name->select($header)
-            ->join($asin_cat, 'catalognewuss.asin', '=', $asin_cat . '.asin')
-            ->chunk($chunk, function ($result) use ($header) {
-
+        ->join($asin_cat, 'catalognewuss.asin', '=', $asin_cat . '.asin')
+        ->chunk($chunk, function ($result) use ($header) {
+            $count_break = 0;
+            
                 if ($this->count == 1) {
                     $headers = [
                         'Category',
@@ -141,20 +141,25 @@ class CliqnshopCatalogExport extends Command
                         'stock level' => '500',
                         'date of back in stock' => null
                     ];
-
+                    
                     $csv_array = [...$csv_array, ...$img1];
                     $this->writer->insertOne($csv_array);
+                    $count_break =  $count_break +1;
+                    if($count_break == 10000){
+                        exit;
+                    }
                 }
-
+                
                 if ($this->remender == $this->count) {
                     ++$this->offset;
-
+                    
                     $this->count = 1;
                 } else {
                     ++$this->count;
                 }
             });
-
-
+          
+            
+            
         }
-}
+    }
