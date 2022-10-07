@@ -38,23 +38,22 @@ class SearchAsinDeleteFromDestinationAndBuyBox extends Command
      */
     public function handle()
     {
-         $priority = $this->argument('priority');
+        $priority = $this->argument('priority');
         $source = $this->argument('source');
         $Asins = explode(',', $this->argument('asins'));
-        
+
         $buybox_offer_table = "product_aa_custom_p${priority}_${source}_offer";
         $bb_product_table = "product_aa_custom_p${priority}_${source}";
         $cat_table = "asin_destination_${source}s";
         $dbname = config('database.connections.buybox.database');
 
-        foreach($Asins as $key => $asin){
-            $modal_table = table_model_create(country_code:$source, model:'Asin_destination', table_name: 'asin_destination_');
+        foreach ($Asins as $key => $asin) {
+            $modal_table = table_model_create(country_code: $source, model: 'Asin_destination', table_name: 'asin_destination_');
             $modal_table->where('asin', $asin)->delete();
-            $bb_product = table_model_set(country_code:$source, model:'bb_product_aa_custom', table_name:$bb_product_table);
+            $bb_product = table_model_set(country_code: $source, model: 'bb_product_aa_custom', table_name: $bb_product_table);
             $bb_product->where('asin1', $asin)->delete();
             $bb_product_lowest_price = table_model_set(country_code: $source, model: 'bb_product_aa_custom_offer', table_name: $buybox_offer_table);
             $bb_product_lowest_price->where('asin', $asin)->delete();
         }
-        
     }
 }
