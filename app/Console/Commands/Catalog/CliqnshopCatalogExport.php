@@ -47,8 +47,8 @@ class CliqnshopCatalogExport extends Command
      */
     public function handle()
     {
-        $total_csv = 1000000;
-        $chunk = 100000;
+        $total_csv = 10000;
+        $chunk = 1000;
         $offset = 0;
         $this->remender = $total_csv / $chunk;
         $header = [
@@ -56,7 +56,10 @@ class CliqnshopCatalogExport extends Command
             'catalognewuss.brand',
             'catalognewuss.images',
             'catalognewuss.item_name',
-            'pricing_uss.usa_to_in_b2c'
+            'pricing_uss.usa_to_in_b2c',
+            'pricing_uss.us_price',
+            'pricing_uss.usa_to_uae',
+
         ];
         $asin_cat = 'pricing_uss';
 
@@ -76,7 +79,9 @@ class CliqnshopCatalogExport extends Command
                         'Product Name',
                         'short description',
                         'long description',
-                        'Price',
+                        'Price_US_IN',
+                        'Price_US_US',
+                        'Price_US_UAE',
                         'price quantity',
                         'price tax rate',
                         'Attributese',
@@ -124,7 +129,9 @@ class CliqnshopCatalogExport extends Command
                         'Product Name' => $data['item_name'],
                         'short description' => null,
                         'long description' => null,
-                        'Price' => $data['usa_to_in_b2c'],
+                        'Price_US_IN' => $data['usa_to_in_b2c'],
+                        'Price_US_US' => $data['us_price'],
+                        'Price_US_UAE' => $data['usa_to_uae'],
                         'price quantity' => '1',
                         'price tax rate' => '19',
                         'Attributese' => null,
@@ -142,11 +149,12 @@ class CliqnshopCatalogExport extends Command
                 if ($this->remender == $this->count) {
                     ++$this->offset;
 
-                    Log::info($this->offset);
                     $this->count = 1;
                 } else {
                     ++$this->count;
                 }
             });
-    }
+
+
+        }
 }

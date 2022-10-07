@@ -39,7 +39,7 @@ class InventoryOutwardShipmentController extends Controller
                 ->addColumn('destination_name', function ($data) {
                     return ($data->vendors) ? $data->vendors->name : " NA";
                 })
-                ->editColumn('date', function ($row) {
+                ->addColumn('date', function ($row) {
                     return Carbon::parse($row['created_at'])->format('M d Y');
                 })
                 ->addColumn('action', function ($row) {
