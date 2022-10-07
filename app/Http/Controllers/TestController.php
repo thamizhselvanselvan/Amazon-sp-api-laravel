@@ -721,12 +721,12 @@ class TestController extends Controller
     (new ZohoOrder())->zohoOrderDetails($lead);
   }
 
-  public function TestAmazonFeed($feed_id)
+  public function TestAmazonFeed($feed_id, $seller_id)
   {
 
     $country_code = 'IN';
 
-    $config = $this->config(6, $country_code, $token = NULL);
+    $config = $this->config($seller_id, $country_code, $token = NULL);
     $apiInstance = new FeedsApi($config);
     $result = ($apiInstance->getFeed($feed_id));
 
