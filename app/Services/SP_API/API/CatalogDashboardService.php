@@ -25,6 +25,7 @@ class CatalogDashboardService
             $bb_asin_delist = [1 => 0, 2 => 0, 3 => 0];
             $cat_price = [1 => 0, 2 => 0, 3 => 0];
             $asin_bb_unavailable = [1 => 0, 2 => 0, 3 => 0];
+            $na_catalog = [1 => 0, 2 => 0, 3 => 0];
 
             $delist_asin_count = [];
             $source = strtolower($source);
@@ -32,13 +33,7 @@ class CatalogDashboardService
             $catalog_table = "catalognew${source}s";
             $catalog_price = "pricing_${source}s";
 
-            $priority_wise = DB::connection('catalog')
-                ->select("SELECT count(asin) as priority_wise, priority from ${destination_table} 
-            group by priority");
-            foreach ($priority_wise as $priority) {
-                $value = $priority->priority;
-                $asin_priority[$value] = $priority->priority_wise;
-            }
+
 
             $Total_catalogs = DB::connection('catalog')
                 ->select("SELECT count(${destination_table}.asin) as asin_catalog ,${destination_table}.priority from ${destination_table}
@@ -50,6 +45,18 @@ class CatalogDashboardService
             foreach ($Total_catalogs as $total_catalog) {
                 $cat = $total_catalog->priority;
                 $catalog[$cat] = $total_catalog->asin_catalog;
+            }
+
+            $priority_wise = DB::connection('catalog')
+                ->select("SELECT count(asin) as priority_wise, priority from ${destination_table} 
+            group by priority");
+
+            foreach ($priority_wise as $priority) {
+                $value = $priority->priority;
+                $asin_priority[$value] = $priority->priority_wise;
+
+                // unavailable catalog start
+                $na_catalog[$value] = $priority->priority_wise - $catalog[$value];
             }
 
             $this->bb_delist_count = [];
@@ -115,7 +122,7 @@ class CatalogDashboardService
                 $asin_bb_unavailable[$unavail_asin] = $asin_unavailabe['asin_unavailable'];
             }
 
-            log::alert($asin_bb_unavailable);
+            // log::alert($asin_bb_unavailable);
 
             $cat_pricings = DB::connection('catalog')
                 ->select("SELECT count(${destination_table}.asin) as price, ${destination_table}.priority from ${destination_table}
@@ -134,6 +141,7 @@ class CatalogDashboardService
                 'delist_asin' => $bb_asin_delist,
                 'catalog_price' => $cat_price,
                 'asin_unavailable'  =>  $asin_bb_unavailable,
+                'na_catalog'    =>  $na_catalog,
             ];
         }
 
