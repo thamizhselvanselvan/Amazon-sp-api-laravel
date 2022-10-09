@@ -45,3 +45,5 @@ Route::post('shipntrack/stopTrackingUpadate', 'shipntrack\Tracking\TrackingContr
 
 // Route::get('shipntrack/trackingList', 'shipntrack\TrackingList\TrackingListController@index');
 // Route::get('shipntrack/trackingList/search', 'shipntrack\TrackingList\TrackingListController@SearchByAwbNo');
+
+Route::match($method, 'shipntrack/courier', 'shipntrack\Courier\CourierPartnerController@index')->name('snt.courier.index');
