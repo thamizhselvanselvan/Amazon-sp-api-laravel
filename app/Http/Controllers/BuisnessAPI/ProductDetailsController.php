@@ -23,6 +23,7 @@ class ProductDetailsController extends Controller
          
          $asin = ($request->asin);
          
+         
          $data = Product_Details::query()
          ->where('asin', $asin)
          ->get();
