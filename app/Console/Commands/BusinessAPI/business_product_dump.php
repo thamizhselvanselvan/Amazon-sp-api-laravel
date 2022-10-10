@@ -25,7 +25,7 @@ class business_product_dump extends Command
      *
      * @var string
      */
-    protected $description = 'Command Will get The Details of the Products of US Through Business API';
+    protected $description = 'Command Will get The Details of the Products of US Using Business API';
 
     /**
      * Create a new command instance.
@@ -49,13 +49,14 @@ class business_product_dump extends Command
         $end_time = endTime($start_time);
         //  Log::warning("Before Select Query - $end_time");
 
-        // $records = table_model_create(country_code: 'US', model: 'Asin_source', table_name: 'asin_source_')
-        //     ->select('asin')
-        //     //  ->limit(10)->get()->pluck('asin');
-        //     ->chunk(25, function ($records) use ($delay, $start_time) {
+        $records = table_model_create(country_code: 'US', model: 'Asin_source', table_name: 'asin_source_')
+            ->select('asin')
+            //  ->limit(100)->get()
+            ->chunk(25, function ($records) use ($delay, $start_time) {
 
-        $data = table_model_create(country_code: 'US', model: 'Asin_source', table_name: 'asin_source_')
-        ->select('asin')->chunk(20, function ($records) use ($delay) {
+        // $data = table_model_create(country_code: 'US', model: 'Asin_source', table_name: 'asin_source_')
+        // ->select('asin')->chunk(20, function ($records) use ($delay) {
+
 
 
                 if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
@@ -76,6 +77,6 @@ class business_product_dump extends Command
             });
         $end_time = endTime($start_time);
         // Log::warning("After 100 process Select Query - $end_time");
-        // Log::info($delay);
+     
     }
 }

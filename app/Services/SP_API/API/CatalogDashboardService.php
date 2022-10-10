@@ -57,7 +57,7 @@ class CatalogDashboardService
                 $asin_priority[$value] = $priority->priority_wise;
 
                 // unavailable catalog start
-                // $na_catalog[$value] = $priority->priority_wise - $catalog[$value];
+                $na_catalog[$value] = $priority->priority_wise - $catalog[$value];
             }
 
             $this->bb_delist_count = [];
@@ -147,7 +147,7 @@ class CatalogDashboardService
                 'delist_asin' => $bb_asin_delist,
                 'catalog_price' => $cat_price,
                 'asin_unavailable'  =>  $asin_bb_unavailable,
-                // 'na_catalog'    =>  $na_catalog,
+                'na_catalog'    =>  $na_catalog,
             ];
         }
 
