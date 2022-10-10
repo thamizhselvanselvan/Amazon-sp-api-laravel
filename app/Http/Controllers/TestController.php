@@ -31,6 +31,7 @@ use App\Services\Catalog\PriceConversion;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
 use App\Services\ShipNTrack\Tracking\AramexTracking;
+use App\Services\ShipNTrack\Tracking\AramexTrackingServices;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetails;
 use SellingPartnerApi\Api\FeedsV20210630Api as FeedsApi;
 use App\Services\Zoho\ZohoOrder;
@@ -756,7 +757,7 @@ class TestController extends Controller
     // "35072820064",
     // "35072820414",
     // "35072815724" 
-    po((new AramexTracking())->TrackingDetails($tracking_id));
+    po((new AramexTrackingServices())->TrackingDetails($tracking_id));
 
     // po($arrayResult);
 

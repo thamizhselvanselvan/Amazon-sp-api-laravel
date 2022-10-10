@@ -2,15 +2,47 @@
 
 namespace App\Services\ShipNTrack\Tracking;
 
+use App\Models\ShipNTrack\Aramex\AramexTracking;
+use Carbon\Carbon;
 use Exception;
 use Hamcrest\Type\IsString;
 
-class AramexTracking
+class AramexTrackingServices
 {
+    private $fillable = [
+        'WaybillNumber' => 'awbno',
+        'UpdateCode' => 'update_code',
+        'UpdateDescription' => 'update_description',
+        'UpdateDateTime' => 'update_date_time',
+        'UpdateLocation' => 'update_location',
+        'Comments' => 'comment',
+        'GrossWeight' => 'gross_weight',
+        'ChargeableWeight' => 'chargeable_weight',
+        'WeightUnit' => 'weight_unit',
+        'ProblemCode' => 'problem_code'
+    ];
     public function TrackingDetails($tracking_awb)
     {
         $tracking_array = $this->TrackingAPI($tracking_awb);
         $tracking_details = $this->TrackingDataFormating($tracking_array);
+
+        // dd(($tracking_details['Tracking_details']));
+        AramexTracking::upsert(
+            $tracking_details['Tracking_details'],
+            'awbno_update_date_time_unique',
+            [
+                'awbno',
+                'update_code',
+                'update_description',
+                'update_date_time',
+                'update_location',
+                'comment',
+                'gross_weight',
+                'chargeable_weight',
+                'weight_unit',
+                'problem_code'
+            ]
+        );
         return $tracking_details;
     }
 
@@ -107,29 +139,81 @@ class AramexTracking
     {
         $tracking_array = [];
         $tracking_array_tem = [];
+        $tracking_data = [];
 
         if (array_key_exists(0, $tracking_details)) {
+
             foreach ($tracking_details as $data) {
+
                 foreach ($data['a_Value']['TrackingResult'] as $details) {
+
+                    $tem_array = [
+                        'awbno' => 'NA',
+                        'update_code' => 'NA',
+                        'update_description' => 'NA',
+                        'update_date_time' => 'NA',
+                        'update_location' => 'NA',
+                        'comment' => 'NA',
+                        'gross_weight' => 'NA',
+                        'chargeable_weight' => 'NA',
+                        'weight_unit' => 'NA',
+                        'problem_code' => 'NA'
+                    ];
                     foreach ($details as $key => $value) {
-                        $tracking_data[$key] = $value;
+
+                        if (is_string($value)) {
+
+                            if (array_key_exists($key, $this->fillable)) {
+
+                                if ($this->fillable[$key] == 'update_date_time') {
+
+                                    $date_formate = Carbon::parse($value)->format('Y-m-d H:i:s');
+                                    $tem_array[$this->fillable[$key]] = $date_formate;
+                                } else {
+                                    $tem_array[$this->fillable[$key]] = $value;
+                                }
+                            }
+                        }
                     }
-                    $tracking_array_tem[] = $tracking_data;
+                    $tracking_array_tem[] = $tem_array;
                 }
                 $tracking_array[] = $tracking_array_tem;
                 $tracking_array_tem = [];
             }
             return $tracking_array;
         } else {
-            foreach ($tracking_details['a_Value']['TrackingResult'] as $details) {
 
+            foreach ($tracking_details['a_Value']['TrackingResult'] as $details) {
+                $tem_array = [
+                    'awbno' => 'NA',
+                    'update_code' => 'NA',
+                    'update_description' => 'NA',
+                    'update_date_time' => 'NA',
+                    'update_location' => 'NA',
+                    'comment' => 'NA',
+                    'gross_weight' => 'NA',
+                    'chargeable_weight' => 'NA',
+                    'weight_unit' => 'NA',
+                    'problem_code' => 'NA'
+                ];
                 foreach ($details as $key => $value) {
 
                     if (is_string($value)) {
-                        $tracking_data[$key] = $value;
+
+                        if (array_key_exists($key, $this->fillable)) {
+
+                            if ($this->fillable[$key] == 'update_date_time') {
+
+                                $date_formate = Carbon::parse($value)->format('Y-m-d H:i:s');
+                                $tem_array[$this->fillable[$key]] = $date_formate;
+                            } else {
+
+                                $tem_array[$this->fillable[$key]] = $value;
+                            }
+                        }
                     }
                 }
-                $tracking_array[] = $tracking_data;
+                $tracking_array[] = $tem_array;
             }
             return $tracking_array;
         }
