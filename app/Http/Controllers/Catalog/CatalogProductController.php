@@ -48,38 +48,33 @@ class CatalogProductController extends Controller
         $priority = $request->priority;
         $country_code = $request->source;
         commandExecFunc("mosh:catalog-export-csv ${priority} ${country_code} ");
-        
+
         return redirect('/catalog/product')->with("success", "Catalog is Exporting");;
     }
 
     public function GetCatalogFile(Request $request)
     {
-        $catalogfiles = [] ;
+        $catalogfiles = [];
         $folder = $request->catalog;
-        $path = (Storage::path("excel/downloads/".$folder));
+        $path = (Storage::path("excel/downloads/" . $folder));
         $files = scandir($path);
-        foreach($files as $key => $file)
-        {
-            if($key > 1)
-            {
-                $file_path = Storage::path('excel/downloads/'.$folder.'/'.$file);
+        foreach ($files as $key => $file) {
+            if ($key > 1) {
+                $file_path = Storage::path('excel/downloads/' . $folder . '/' . $file);
                 $file_paths = scandir($file_path);
-                
-                foreach($file_paths as $key2 => $filename)
-                {
-                    if($key2 >1)
-                    {
-                        $final_path = Storage::path('excel/downloads/'.$folder.'/'.$file.'/'.$filename);
+
+                foreach ($file_paths as $key2 => $filename) {
+                    if ($key2 > 1) {
+                        $final_path = Storage::path('excel/downloads/' . $folder . '/' . $file . '/' . $filename);
                         $final_paths = scandir($final_path);
-                        foreach($final_paths as $key3 => $final_file)
-                        {
-                            if($key3 > 1){
-                                
-                                $search_paths = glob(Storage::path('excel/downloads/'.$folder.'/'.$file.'/'.$filename.'/zip/*'));
-                                foreach($search_paths as $search_path){
-                                    if(str_contains($search_path, '.zip')){
+                        foreach ($final_paths as $key3 => $final_file) {
+                            if ($key3 > 1) {
+
+                                $search_paths = glob(Storage::path('excel/downloads/' . $folder . '/' . $file . '/' . $filename . '/zip/*'));
+                                foreach ($search_paths as $search_path) {
+                                    if (str_contains($search_path, '.zip')) {
                                         $catfile = basename($final_file, '.zip');
-                                        $catalogfiles [$file][$filename] = date("F d Y H:i:s.", filemtime($final_path . '/' . $final_file));
+                                        $catalogfiles[$file][$filename] = date("F d Y H:i:s.", filemtime($final_path . '/' . $final_file));
                                     }
                                 }
                             }
@@ -95,7 +90,7 @@ class CatalogProductController extends Controller
     {
         $folder = "catalog";
         $this->deletefile($folder, $country_code);
-        $path = "excel/downloads/catalog/".$country_code."/".$priority."/zip/Catalog".$country_code.".zip";
+        $path = "excel/downloads/catalog/" . $country_code . "/" . $priority . "/zip/Catalog" . $country_code . ".zip";
         return Storage::download($path);
     }
 
@@ -115,13 +110,13 @@ class CatalogProductController extends Controller
     {
         $folder = "catalog_price";
         $this->deletefile($folder, $country_code);
-        $path = "excel/downloads/catalog_price/".$country_code.'/'.$priority.'/zip/'.$country_code."_CatalogPrice.zip";
+        $path = "excel/downloads/catalog_price/" . $country_code . '/' . $priority . '/zip/' . $country_code . "_CatalogPrice.zip";
         return Storage::download($path);
     }
 
     public function deletefile($folder, $country_code)
     {
-        $files = glob(Storage::path('excel/downloads/'.$folder.'/'.$country_code.'/*'));
+        $files = glob(Storage::path('excel/downloads/' . $folder . '/' . $country_code . '/*'));
         foreach ($files as $file) {
             if (is_file($file)) {
                 unlink($file);
@@ -138,15 +133,15 @@ class CatalogProductController extends Controller
         $asin_array = [];
         $country_code = strtolower($request->source);
         $asins = array_unique(preg_split('/[\r\n| |:|,|.]/', $request->catalog_asins, -1, PREG_SPLIT_NO_EMPTY));
-        $pricing = ($country_code == 'in') ? 'price.in_price, price.ind_to_uae, price.ind_to_sg, price.ind_to_sa' : ' us_price, usa_to_uae, usa_to_sg ' ;
-        
-        foreach($asins as $key => $asin){
+        $pricing = ($country_code == 'in') ? 'price.in_price, price.ind_to_uae, price.ind_to_sg, price.ind_to_sa' : ' us_price, usa_to_uae, usa_to_sg ';
+
+        foreach ($asins as $key => $asin) {
             $asin_array[] = "'$asin'";
         }
 
         $asin_string = implode(',', $asin_array);
-            $catalogs [] = DB::connection('catalog')
-                ->select("SELECT cat.asin, cat.source, cat.dimensions, cat.item_name, cat.brand, cat.manufacturer, ${pricing}
+        $catalogs[] = DB::connection('catalog')
+            ->select("SELECT cat.asin, cat.source, cat.dimensions, cat.item_name, cat.brand, cat.manufacturer, ${pricing}
                 FROM catalognew${country_code}s  as cat
                 JOIN pricing_${country_code}s as price
                 ON cat.asin = price.asin
@@ -154,26 +149,24 @@ class CatalogProductController extends Controller
             ");
 
         $header = [];
-        $final_data =[];
-        if(count($catalogs) > 0)
-        {
-            foreach($catalogs[0] as $key => $catalog_value) {
-                foreach($catalog_value as $key1 => $data) {
-                
-                    if($key1 != 'dimensions' ) {
+        $final_data = [];
+        if (count($catalogs) > 0) {
+            foreach ($catalogs[0] as $key => $catalog_value) {
+                foreach ($catalog_value as $key1 => $data) {
+
+                    if ($key1 != 'dimensions') {
                         $header[$key1] = $data;
-                    }
-                    else{
+                    } else {
                         $dimensions_array = json_decode($data);
-                        $header['height'] = round(isset($dimensions_array[0]->package->height->value) ? $dimensions_array[0]->package->height->value: '', 3);
-                        $header['width'] = round(isset($dimensions_array[0]->package->width->value) ? $dimensions_array[0]->package->width->value: '', 3);
-                        $header['length'] = round(isset($dimensions_array[0]->package->length->value) ? $dimensions_array[0]->package->length->value: '', 3);
-                        $header['unit'] =  isset($dimensions_array[0]->package->length->unit) ? $dimensions_array[0]->package->length->unit: '';
-                        $header['weight'] = round(isset($dimensions_array[0]->package->weight->value) ? $dimensions_array[0]->package->weight->value: '', 3);
-                        $header['weight_unit'] = isset($dimensions_array[0]->package->weight->unit) ? $dimensions_array[0]->package->weight->unit: '';
+                        $header['height'] = isset($dimensions_array[0]->package->height->value) ? round((float)$dimensions_array[0]->package->height->value, 3) : '';
+                        $header['width'] = isset($dimensions_array[0]->package->width->value) ? round((float)$dimensions_array[0]->package->width->value, 3) : '';
+                        $header['length'] = isset($dimensions_array[0]->package->length->value) ? round((float)$dimensions_array[0]->package->length->value, 3) : '';
+                        $header['unit'] =  isset($dimensions_array[0]->package->length->unit) ? $dimensions_array[0]->package->length->unit : '';
+                        $header['weight'] = isset($dimensions_array[0]->package->weight->value) ? round((float)$dimensions_array[0]->package->weight->value, 3) : '';
+                        $header['weight_unit'] = isset($dimensions_array[0]->package->weight->unit) ? $dimensions_array[0]->package->weight->unit : '';
                     }
                 }
-                $final_data [] = $header;
+                $final_data[] = $header;
             }
         }
         return response()->json($final_data);

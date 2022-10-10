@@ -3,11 +3,9 @@
 
 @section('css')
     <link rel="stylesheet" href="/css/styles.css">
-
 @stop
+
 @section('content_header')
-
-
     <!--  Edit address modal start -->
     <div class="modal fade " id="crud-modal" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -16,21 +14,21 @@
                     <h4 class="modal-title" id="customerCrudModal">Order Address Details Editer</h4>
                 </div>
                 <div class="modal-body">
-                        
-                        <div class="text-center">
-                            <div id="spinner-container" class="spinner-border justify-content-center"  role="status" >
-                                <span class="sr-only">Loading...</span>
-                            </div>
+
+                    <div class="text-center">
+                        <div id="spinner-container" class="spinner-border justify-content-center" role="status">
+                            <span class="sr-only">Loading...</span>
                         </div>
-                        
-                        <div id="form-content" style="display: none">
-                            <div id="warning" class="alert alert-warning alert-dismissible fade show" role="alert">
-                                <strong>Be carefull!</strong> changes canot be reverted back ....
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    </div>
+
+                    <div id="form-content" style="display: none">
+                        <div id="warning" class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <strong>Be carefull!</strong> changes canot be reverted back ....
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        <form name="orderAddressForm" id="orderAddressForm"  method="POST"  action="javascript:void(0)">
+                            </button>
+                        </div>
+                        <form name="orderAddressForm" id="orderAddressForm" method="POST" action="javascript:void(0)">
                             <input type="hidden" name="order_item_identifier" id="order_item_identifier">
                             <input type="hidden" name="amazon_order_identifier" id="amazon_order_identifier">
                             @csrf
@@ -74,40 +72,36 @@
                                     <div class="form-group">
                                         <strong>AddressType:</strong>
                                         <input type="text" name="addressType" id="addressType" class="form-control"
-                                            placeholder="AddressType" onchange="validate()" >
+                                            placeholder="AddressType" onchange="validate()">
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-12 col-md-12">
                                     <div class="form-group">
                                         <strong>AddressLine1:</strong>
-                                        <textarea name="addressLine1" id="addressLine1" class="form-control"
-                                            placeholder="AddressLine1" onchange="validate()" ></textarea>
+                                        <textarea name="addressLine1" id="addressLine1" class="form-control" placeholder="AddressLine1" onchange="validate()"></textarea>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-12 col-md-12">
                                     <div class="form-group">
                                         <strong>AddressLine2:</strong>
-                                        <textarea name="addressLine2" id="addressLine2" class="form-control"
-                                            placeholder="AddressLine2" onchange="validate()" ></textarea>
+                                        <textarea name="addressLine2" id="addressLine2" class="form-control" placeholder="AddressLine2" onchange="validate()"></textarea>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-                                    <button type="submit" id="btn-update-order" name="btnsave" class="btn btn-primary"
-                                        >Update</button>
-                                    <a id="closemodal"  class="btn btn-danger">Cancel</a>
+                                    <button type="submit" id="btn-update-order" name="btnsave"
+                                        class="btn btn-primary">Update</button>
+                                    <a id="closemodal" class="btn btn-danger">Cancel</a>
                                 </div>
                             </div>
                         </form>
-                      </div>
-                    
-                    
+                    </div>
+
+
                 </div>
             </div>
         </div>
     </div>
     <!--  Edit address modal start -->
-
-
     <div class="row">
         <h1 class="m-0 text-dark col">Label Management</h1>
         <h2 class="mb-4 text-right col"></h2>
@@ -154,10 +148,10 @@
                         <label>Bag No.:</label>
                         <div class="input-group">
                             <!-- <div class="input-group-prepend">
-                                <span class="input-group-text">
-                                    <i class="far fa-calendar-alt"></i>
-                                </span>
-                            </div> -->
+                                                                        <span class="input-group-text">
+                                                                            <i class="far fa-calendar-alt"></i>
+                                                                        </span>
+                                                                    </div> -->
 
                             <input type="text" class="form-control float-right" name="bag_no"
                                 placeholder="Input Bag No." id="bag_no">
@@ -198,6 +192,7 @@
 @stop
 
 @section('js')
+
     <script type="text/javascript">
         $(document).ready(function() {
             // begin search label
@@ -284,17 +279,21 @@
 
                                     table +=
                                         "<div class='d-flex pl-2'><a id='edit-address' data-toggle='modal' data-id=" +
-                                            response.order_item_identifier +
-                                        " data-amazon_order_identifier=" + response.order_no +" href='javascript:void(0)' class='edit btn btn-secondary btn-sm'><i class='fas fa-address-card'></i> Address </a></td></tr>"
+                                        response.order_item_identifier +
+                                        " data-amazon_order_identifier=" + response
+                                        .order_no +
+                                        " href='javascript:void(0)' class='edit btn btn-secondary btn-sm'><i class='fas fa-address-card'></i> Address </a></td></tr>"
 
 
                                 } else {
 
                                     table += "<td> ";
-                                        table +=
+                                    table +=
                                         "<div class='d-flex'><a id='edit-address' data-toggle='modal' data-id=" +
-                                            response.order_item_identifier +
-                                        " data-amazon_order_identifier=" + response.order_no +" href='javascript:void(0)' class='edit btn btn-secondary btn-sm '><i class='fas fa-address-card'></i> Address </a></div>"
+                                        response.order_item_identifier +
+                                        " data-amazon_order_identifier=" + response
+                                        .order_no +
+                                        " href='javascript:void(0)' class='edit btn btn-secondary btn-sm '><i class='fas fa-address-card'></i> Address </a></div>"
                                     table += "</td></tr>";
                                 }
                             });
@@ -362,25 +361,24 @@
             });
 
 
-            $('#checkTable').on('click', '#edit-address', function() {                 
+            $('#checkTable').on('click', '#edit-address', function() {
 
-                var order_item_identifier = $(this).data('id'); 
-                var amazon_order_identifier = $(this).data('amazon_order_identifier');   
-                loadOrderAddressFormFunction( order_item_identifier,amazon_order_identifier);
-                  
+                var order_item_identifier = $(this).data('id');
+                var amazon_order_identifier = $(this).data('amazon_order_identifier');
+                loadOrderAddressFormFunction(order_item_identifier, amazon_order_identifier);
+
                 $('#danger').hide();
                 $('#success').hide();
             });
 
-            
-            function loadOrderAddressFormFunction( order_item_identifier,amazon_order_identifier )
-            {                
-                
+
+            function loadOrderAddressFormFunction(order_item_identifier, amazon_order_identifier) {
+
                 $('#form-content').hide();
                 $('#spinner-container').show();
-                $.get('edit-order-address/'+order_item_identifier+'', function (data) {
-                    
-                    
+                $.get('edit-order-address/' + order_item_identifier + '', function(data) {
+
+
                     $('#order_item_identifier').val(order_item_identifier);
                     $('#amazon_order_identifier').val(amazon_order_identifier);
                     $('#name').val(data.Name);
@@ -392,104 +390,98 @@
                     $('#addressLine1').val(data.AddressLine1);
                     $('#addressLine2').val(data.AddressLine2);
 
-                    setTimeout(function (){                        
+                    setTimeout(function() {
                         $('#form-content').show();
-                        $('#spinner-container').hide();                                
+                        $('#spinner-container').hide();
                     }, 500); // How long you want the delay to be, measured in milliseconds.
 
-                })                                
+                })
                 $('#crud-modal').modal('show');
             }
 
-            $("#orderAddressForm").submit(function()
-            {
+            $("#orderAddressForm").submit(function() {
                 var order_item_identifier = $('#order_item_identifier').val();
                 var amazon_order_identifier = $('#amazon_order_identifier').val();
-                
+
                 $.ajaxSetup({
                     headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     }
-                    });
-                $('#btn-update-order').html("<span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span> Please wait");
-                $("#btn-update-order"). attr("disabled", true);
+                });
+                $('#btn-update-order').html(
+                    "<span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span> Please wait"
+                );
+                $("#btn-update-order").attr("disabled", true);
                 $.ajax({
-                            url: "update-order-address/"+amazon_order_identifier,
-                            type: "PUT",
-                            data: $('#orderAddressForm').serialize(),
-                                success: function( response ) {
-                                    if (response.status == 400) 
-                                    {
-                                        $('#success').hide();
-                                        $('#danger').hide();
-                                        var errors = '<ul>'
-                                        $.each(response.errors,function(key, err_values){
-                                             errors +=  '<li>'+err_values+'</li>';
-                                        });
-                                        errors += '</ul>'
-                                        
-                                        $(
-                                            `<div id="danger" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    url: "update-order-address/" + amazon_order_identifier,
+                    type: "PUT",
+                    data: $('#orderAddressForm').serialize(),
+                    success: function(response) {
+                        if (response.status == 400) {
+                            $('#success').hide();
+                            $('#danger').hide();
+                            var errors = '<ul>'
+                            $.each(response.errors, function(key, err_values) {
+                                errors += '<li>' + err_values + '</li>';
+                            });
+                            errors += '</ul>'
+
+                            $(
+                                `<div id="danger" class="alert alert-danger alert-dismissible fade show" role="alert">
                                                 <strong> Validation Failed!</strong> 
-                                                `+errors+`
+                                                ` + errors + `
                                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>`
-                                        ).insertAfter("#warning");
-                                    }
-                                    else if(response.status == 200)
-                                    {
-                                        $('#danger').hide();
-                                        $('#success').hide();
-                                        $(
-                                            `<div id="success" class="alert alert-success alert-dismissible fade show" role="alert">
+                            ).insertAfter("#warning");
+                        } else if (response.status == 200) {
+                            $('#danger').hide();
+                            $('#success').hide();
+                            $(
+                                `<div id="success" class="alert alert-success alert-dismissible fade show" role="alert">
                                                 <strong>Updated!</strong> Thanks ....
                                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>`
-                                        ).insertAfter("#warning");
-                                        
-                                        // closing the modal after form update
-                                        setTimeout(function (){ 
-                                            $('#SearchByDate').click();                       
-                                            $('#crud-modal').modal('hide');                               
-                                            }, 1000); // How long you want the delay to be, measured in milliseconds.
-                                                
-                                    }
-                                    loadOrderAddressFormFunction( order_item_identifier,amazon_order_identifier );                                    
-                                    $("#btn-update-order"). attr("disabled", false);
-                                    $('#btn-update-order').html("Update");
-                                    
-                                    
-                                    
-                                }
-                            });
-            });            
+                            ).insertAfter("#warning");
+
+                            // closing the modal after form update
+                            setTimeout(function() {
+                                    $('#SearchByDate').click();
+                                    $('#crud-modal').modal('hide');
+                                },
+                                1000
+                            ); // How long you want the delay to be, measured in milliseconds.
+
+                        }
+                        loadOrderAddressFormFunction(order_item_identifier,
+                            amazon_order_identifier);
+                        $("#btn-update-order").attr("disabled", false);
+                        $('#btn-update-order').html("Update");
+
+
+
+                    }
+                });
+            });
 
             $('#closemodal').click(function() {
                 $('#crud-modal').modal('hide');
-            });  
+            });
         });
 
-        error=false        
-        function validate()
-        {
+        error = false
+
+        function validate() {
             // document.orderAddressForm.btnsave.disabled=false;
-            if(document.orderAddressForm.name.value !='' && document.orderAddressForm.phone.value !='')
-            {
+            if (document.orderAddressForm.name.value != '' && document.orderAddressForm.phone.value != '') {
                 // document.orderAddressForm.btnsave.disabled=false;
-            }
-            else
-            {
+            } else {
                 // document.orderAddressForm.btnsave.disabled=true;
             }
         }
-
-
     </script>
-    
-   
 
 @stop

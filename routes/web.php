@@ -59,9 +59,18 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 $delist_asins;
 Route::get('wherein', function () {
 
-    // $files = (Storage::allFiles('AsinDestination'));
-    // $file = File::files(Storage::path('AsinDestination'));
-    po(filemtime(Storage::path('AsinDestination/asin.csv')));
+    $back_file_date = Carbon::now()->subDays(4)->toDateString();
+    $files = Storage::allFiles('AsinDestination');
+
+    foreach ($files as $file_name) {
+
+        $FileTime = date("F d Y H:i:s.", filemtime(Storage::path("${file_name}")));
+        $current_file_date = Carbon::parse($FileTime)->toDateString();
+
+        if ($back_file_date == $current_file_date) {
+            unlink(Storage::path($file_name));
+        }
+    }
     exit;
 
     $dbname = config('database.connections.catalog.database');
