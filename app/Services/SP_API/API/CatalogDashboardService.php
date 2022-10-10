@@ -98,6 +98,7 @@ class CatalogDashboardService
                             ->select("SELECT count(asin)as asin_unavailable
                     FROM ${buybox_table}
                     WHERE asin IN ($asin)
+                    AND delist = 0
                     AND available = 2
                     ");
 

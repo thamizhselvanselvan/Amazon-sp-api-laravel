@@ -77,9 +77,9 @@ class AsinDestinationUpload extends Command
 
                 $product_lowest_price[] = [
                     'asin' => $asin,
-                    'import_type' => 'Seller',
-                    'priority'  => $priority,
                     'cyclic' => 0,
+                    'priority'  => $priority,
+                    'import_type' => 'Seller',
                 ];
 
                 if ($count == 999) {
