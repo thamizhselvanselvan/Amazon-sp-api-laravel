@@ -171,7 +171,7 @@
                                             <strong>
                                                 @if(isset($value->shipping_address['Name']))
                                                 {{$value->shipping_address['Name']}}
-                                                $endif
+                                                @endif
                                             </strong><br>
                                             @if(isset($value->shipping_address['AddressLine1']))
                                             {{$value->shipping_address['AddressLine1']}},
