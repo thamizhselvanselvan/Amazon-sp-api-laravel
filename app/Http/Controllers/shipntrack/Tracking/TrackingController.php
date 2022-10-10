@@ -21,7 +21,7 @@ class TrackingController extends Controller
 
     public function StopTracking(Request $request)
     {
-        $courier_partner = ['Bombino', 'Smsa'];
+        $courier_partner = ['Bombino', 'Smsa', 'EmiratePost', 'Aramex'];
 
         if ($request->ajax()) {
 
@@ -34,12 +34,19 @@ class TrackingController extends Controller
             $table_model = $details[0];
             $table_column = $details[1];
 
+            $html = '';
             $data = $table_model::get()->unique($table_column);
             foreach ($data as  $value) {
-
-                $records[] = $value->$table_column;
+                $data = $value->$table_column;
+                if ($data) {
+                    $html  .= "<tr>
+                                <td class='text-left'> $data </td>
+                                <td> <input type='checkbox' value ='$data'/></td>
+                                <td> <input type='checkbox' value ='$data'/> </td>
+                              <tr>";
+                }
             }
-            return response()->json($records);
+            return ['success' => $html];
         }
         return view('shipntrack.Tracking.stopTracking', compact('courier_partner'));
     }

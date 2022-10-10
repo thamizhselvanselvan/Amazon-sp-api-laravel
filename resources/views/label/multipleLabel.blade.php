@@ -168,7 +168,11 @@
                                     <div class="col">
                                         <div class="col">
                                             <strong>Ship To: </strong>
-                                            <strong>{{$value->shipping_address['Name']}}</strong><br>
+                                            <strong>
+                                                @if(isset($value->shipping_address['Name']))
+                                                {{$value->shipping_address['Name']}}
+                                                $endif
+                                            </strong><br>
                                             @if(isset($value->shipping_address['AddressLine1']))
                                             {{$value->shipping_address['AddressLine1']}},
                                             @endif

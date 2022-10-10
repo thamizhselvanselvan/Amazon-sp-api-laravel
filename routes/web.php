@@ -36,11 +36,12 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\TestController;
 use App\Services\Inventory\ReportWeekly;
 use Spatie\Permission\Models\Permission;
+use phpDocumentor\Reflection\Types\Null_;
 use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
+use Symfony\Component\Validator\Constraints\File;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
 use App\Services\AWS_Business_API\Auth\AWS_Business;
-use phpDocumentor\Reflection\Types\Null_;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
@@ -58,8 +59,9 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 $delist_asins;
 Route::get('wherein', function () {
 
-    $date = date('Y-m-d-H-i');
-    po("asin${date}.csv");
+    // $files = (Storage::allFiles('AsinDestination'));
+    // $file = File::files(Storage::path('AsinDestination'));
+    po(filemtime(Storage::path('AsinDestination/asin.csv')));
     exit;
 
     $dbname = config('database.connections.catalog.database');
