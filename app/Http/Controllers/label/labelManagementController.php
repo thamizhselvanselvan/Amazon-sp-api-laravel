@@ -468,11 +468,12 @@ class labelManagementController extends Controller
 
     public function labelListing($id, $search_type = NULL)
     {
-        $where_condition = "web.bag_no = ${id}";
-        if ($search_type) {
+        $where_condition = "web.bag_no = '${id}' ";
 
+        if ($search_type) {
             $where_condition = "web.order_no IN ($id)";
         }
+
         $order = config('database.connections.order.database');
         $catalog = config('database.connections.catalog.database');
         $web = config('database.connections.web.database');

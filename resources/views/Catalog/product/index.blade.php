@@ -412,7 +412,7 @@
                         $('.search-data').html(data);
                     },
                     error: function(result) {
-                        // alert('Data not found!');
+                        alert('Data not found!');
                     }
                 });
             }
