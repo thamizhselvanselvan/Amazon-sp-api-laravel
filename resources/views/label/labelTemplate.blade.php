@@ -152,7 +152,11 @@
                             <div class="row">
                                 <div class="col p-0">
                                     <strong>Ship To: </strong>
-                                    <strong>{{$result->shipping_address['Name']}}</strong><br>
+                                    <strong>
+                                        @if(isset($result->shipping_address['Name']))
+                                        {{$result->shipping_address['Name']}}
+                                        @endif
+                                    </strong><br>
 
                                     <strong>Address: </strong>
                                     @if(isset($result->shipping_address['AddressLine1']))
