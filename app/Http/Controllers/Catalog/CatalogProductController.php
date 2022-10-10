@@ -158,11 +158,11 @@ class CatalogProductController extends Controller
                         $header[$key1] = $data;
                     } else {
                         $dimensions_array = json_decode($data);
-                        $header['height'] = isset($dimensions_array[0]->package->height->value) ? round($dimensions_array[0]->package->height->value, 3) : '';
-                        $header['width'] = isset($dimensions_array[0]->package->width->value) ? round($dimensions_array[0]->package->width->value, 3) : '';
-                        $header['length'] = isset($dimensions_array[0]->package->length->value) ? round($dimensions_array[0]->package->length->value, 3) : '';
+                        $header['height'] = isset($dimensions_array[0]->package->height->value) ? round((float)$dimensions_array[0]->package->height->value, 3) : '';
+                        $header['width'] = isset($dimensions_array[0]->package->width->value) ? round((float)$dimensions_array[0]->package->width->value, 3) : '';
+                        $header['length'] = isset($dimensions_array[0]->package->length->value) ? round((float)$dimensions_array[0]->package->length->value, 3) : '';
                         $header['unit'] =  isset($dimensions_array[0]->package->length->unit) ? $dimensions_array[0]->package->length->unit : '';
-                        $header['weight'] = isset($dimensions_array[0]->package->weight->value) ? round($dimensions_array[0]->package->weight->value, 3) : '';
+                        $header['weight'] = isset($dimensions_array[0]->package->weight->value) ? round((float)$dimensions_array[0]->package->weight->value, 3) : '';
                         $header['weight_unit'] = isset($dimensions_array[0]->package->weight->unit) ? $dimensions_array[0]->package->weight->unit : '';
                     }
                 }
