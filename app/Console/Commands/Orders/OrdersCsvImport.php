@@ -141,7 +141,7 @@ class OrdersCsvImport extends Command
                     'latest_ship_date'                 =>  $lsd,
                     'earliest_delivery_date'           =>  $edd,
                     'latest_delivery_date'             =>  $ldd,
-                    'shipping_address'                 =>  json_encode($shipping_address),
+                    // 'shipping_address'                 =>  json_encode($shipping_address),
                     'buyer_info'                       =>  json_encode($buyer_info),
                     'created_at'                       =>  now(),
                     'updated_at'                       =>  now(),
@@ -189,7 +189,7 @@ class OrdersCsvImport extends Command
                 'latest_ship_date',
                 'earliest_delivery_date',
                 'latest_delivery_date',
-                'shipping_address',
+                // 'shipping_address',
                 'buyer_info',
             ]
         );
