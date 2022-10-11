@@ -75,7 +75,7 @@ class CatalogPriceExportCSV extends Command
         if ($this->country_code == 'IN') {
 
             $headers = [
-                'pricing_ins.asin',
+                'destination.asin as asin',
                 'pricing_ins.available',
                 'pricing_ins.in_price',
                 'pricing_ins.weight',
@@ -97,8 +97,9 @@ class CatalogPriceExportCSV extends Command
             ];
 
             PricingIn::select($headers)
-                ->join('asin_destination_ins', 'pricing_ins.asin', '=', 'asin_destination_ins.asin')
-                ->where('asin_destination_ins.priority', $this->priority)
+                ->rightJoin('asin_destination_ins as destination', 'pricing_ins.asin', '=', 'destination.asin')
+                ->where('destination.priority', $this->priority)
+                ->orWhereNull('destination.asin')
                 ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
 
                     $this->CreateCsvFile($csv_header, $records, $exportFilePath);
@@ -107,7 +108,7 @@ class CatalogPriceExportCSV extends Command
         } elseif ($this->country_code == 'US') {
 
             $headers = [
-                'pricing_uss.asin',
+                'destination.asin as asin',
                 'pricing_uss.available',
                 'pricing_uss.weight',
                 'pricing_uss.us_price',
@@ -117,7 +118,6 @@ class CatalogPriceExportCSV extends Command
                 'pricing_uss.usa_to_sg',
                 'pricing_uss.price_updated_at'
             ];
-
 
             $csv_header = [
                 'Asin',
@@ -132,8 +132,9 @@ class CatalogPriceExportCSV extends Command
             ];
 
             PricingUs::select($headers)
-                ->join('asin_destination_uss', 'pricing_uss.asin', '=', 'asin_destination_uss.asin')
-                ->where('asin_destination_uss.priority', $this->priority)
+                ->rightJoin('asin_destination_uss as destination', 'pricing_uss.asin', '=', 'destination.asin')
+                ->where('destination.priority', $this->priority)
+                ->orWhereNull('destination.asin')
                 ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
 
                     $this->CreateCsvFile($csv_header, $records, $exportFilePath);
@@ -186,7 +187,17 @@ class CatalogPriceExportCSV extends Command
         $records = array_map(function ($datas) {
             return (array) $datas;
         }, $records);
-        $this->writer->insertall($records);
+
+        $not_available = [];
+
+        foreach ($records as $key => $record) {
+            foreach ($record as $key2 => $value) {
+
+                $not_available[$key][$key2] = $value ?? "NA";
+            }
+        }
+
+        $this->writer->insertall($not_available);
 
         if ($this->check == $this->count) {
             $this->fileNameOffset++;

@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Log;
 use App\Models\order\OrderItemDetails;
 use Illuminate\Support\Facades\Storage;
 use App\Models\order\OrderSellerCredentials;
+use Carbon\Carbon;
+use JeroenNoten\LaravelAdminLte\View\Components\Widget\Card;
 
 class OrdersCsvImport extends Command
 {
@@ -94,10 +96,10 @@ class OrdersCsvImport extends Command
                 ];
 
                 $title = str_replace("'\'", "Or", $csv['Title']);
-                // $title = $csv['Title'];
+
+                $shipping_address = ($country_code == 'IN') ? $shipping_address : $shipping_address1;
 
                 $orderItemDetails_table[] = [
-
                     'seller_identifier'         => $store_id,
                     'country'                   => $country_code,
                     'amazon_order_identifier'   => $csv['Amazon_order_identifier'],
@@ -108,17 +110,22 @@ class OrdersCsvImport extends Command
                     'quantity_ordered'          => $csv['Quantity_ordered'],
                     'quantity_shipped'          => $csv['Quantity_shipped'],
                     'item_price'                => json_encode($item_price),
-                    'shipping_address'          => json_encode((($country_code == 'IN') ? $shipping_address : $shipping_address1)),
+                    'shipping_address'          => json_encode($shipping_address),
                     'created_at'                => now(),
                     'updated_at'                => now(),
                 ];
 
-                $orders_table[] = [
+                $purchase_date = Carbon::parse($csv['Purchase_date'])->format('Y-m-d\Th:i:s\Z');
+                $esd = Carbon::parse($csv['Earliest_ship_date'])->format('Y-m-d\Th:i:s\Z');
+                $lsd = Carbon::parse($csv['Latest_ship_date'])->format('Y-m-d\Th:i:\Z');
+                $edd = Carbon::parse($csv['Earliest_delivery_date'])->format('Y-m-d\Th:i:\Z');
+                $ldd = Carbon::parse($csv['Latest_delivery_date'])->format('Y-m-d\Th:i:\Z');
 
+                $orders_table[] = [
                     'our_seller_identifier'            =>  $store_id,
                     'country'                          =>  $country_code,
                     'amazon_order_identifier'          =>  $csv['Amazon_order_identifier'],
-                    'purchase_date'                    =>  $csv['Purchase_date'],
+                    'purchase_date'                    =>  $purchase_date,
                     'order_status'                     =>  $csv['Order_status'],
                     'fulfillment_channel'              =>  $csv['Fulfillment_channel'],
                     'sales_channel'                    =>  $csv['Sales_channel'],
@@ -130,11 +137,11 @@ class OrdersCsvImport extends Command
                     'number_of_items_shipped'          =>  $csv['Quantity_shipped'],
                     'shipment_service_level_category'  =>  $csv['Shipment_service_level_category'],
                     'order_type'                       =>  $csv['Order_type'],
-                    'earliest_ship_date'               =>  $csv['Earliest_ship_date'],
-                    'latest_ship_date'                 =>  $csv['Latest_ship_date'],
-                    'earliest_delivery_date'           =>  $csv['Earliest_delivery_date'],
-                    'latest_delivery_date'             =>  $csv['Latest_delivery_date'],
-                    'shipping_address'                 =>  json_encode((($country_code == 'IN') ? $shipping_address : $shipping_address1)),
+                    'earliest_ship_date'               =>  $esd,
+                    'latest_ship_date'                 =>  $lsd,
+                    'earliest_delivery_date'           =>  $edd,
+                    'latest_delivery_date'             =>  $ldd,
+                    // 'shipping_address'                 =>  json_encode($shipping_address),
                     'buyer_info'                       =>  json_encode($buyer_info),
                     'created_at'                       =>  now(),
                     'updated_at'                       =>  now(),
@@ -182,7 +189,7 @@ class OrdersCsvImport extends Command
                 'latest_ship_date',
                 'earliest_delivery_date',
                 'latest_delivery_date',
-                'shipping_address',
+                // 'shipping_address',
                 'buyer_info',
             ]
         );
