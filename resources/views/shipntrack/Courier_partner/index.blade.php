@@ -62,8 +62,7 @@
         <thead class="bg-info">
             <tr>
                 <th>courier Name</th>
-                <th>Source</th>
-                <th>Destination</th>
+                <th>Source - Destination</th>
                 <th>Code</th>
                 <th>Active</th>
             </tr>
@@ -93,10 +92,6 @@
                 {
                     data: 'source_destination',
                     name: 'source_destination',
-                },
-                {
-                    data: 'courier_code',
-                    name: 'courier_code',
                 },
                 {
                     data: 'courier_code',
