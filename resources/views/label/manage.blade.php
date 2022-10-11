@@ -32,15 +32,15 @@
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item" href="search-label">Search By Bag No.</a>
-                    <a class="dropdown-item" href="{{ route('lable.search.amazon-order-id') }}">Search By Order/Tracking
-                        Id</a>
+                    <a class="dropdown-item" href="{{ route('lable.search.amazon-order-id') }}">Search By Order Id / AWB
+                        No.</a>
                 </div>
             </div>
             <!-- <div class="d-inline-block">
-                        <a href="search-label">
-                            <x-adminlte-button label="Search Label" theme="primary" icon="fas fa-search" class="btn-sm" />
-                        </a>
-                    </div> -->
+                                                <a href="search-label">
+                                                    <x-adminlte-button label="Search Label" theme="primary" icon="fas fa-search" class="btn-sm" />
+                                                </a>
+                                            </div> -->
             <div class="d-inline-block">
                 <a href="upload">
                     <x-adminlte-button label="Add New Records" theme="primary" icon="fas fa-file-upload" class="btn-sm" />

@@ -29,7 +29,7 @@
         </div>
         <div class="col-1 ">
             <input type="radio" class="tracking_id" name="priority" value="">
-            <label for="P3">Tracking Id</label>
+            <label for="P3">AWB No.</label>
 
         </div>
     </div>
@@ -41,7 +41,7 @@
     <div class="row ">
         <div class="col search_by_order_id">
             <label>Amazon Order Id</label>
-            <textarea class="form-control" rows="2" placeholder="Eg:- Amazon Order Id: 333-7777777-7777777" name="order_id"
+            <textarea class="form-control" rows="4" placeholder="Eg:- Amazon Order Id: 333-7777777-7777777" name="order_id"
                 id='order_id'></textarea>
             <div class="text-right m-2">
                 <x-adminlte-button label='Search' class="btn-sm search-amazon-order-id" theme="primary"
@@ -50,7 +50,7 @@
         </div>
         <div class="col search_by_tracking_id d-none">
             <label> AWB No.</label>
-            <textarea class="form-control" rows="2" placeholder="Eg:- Awb No." name="awb_no" id='awb_tracking_id'></textarea>
+            <textarea class="form-control" rows="4" placeholder="Enter Awb No." name="awb_no" id='awb_tracking_id'></textarea>
             <div class="text-right m-2">
                 <x-adminlte-button label='Search' class="btn-sm search-by-awb-tracking-no" theme="primary"
                     icon="fas fa-file-upload" type="submit" />
@@ -198,9 +198,9 @@
                                 JSON
                                 .parse(result['shipping_address']).Name +
                                 "</td><td><a href='/label/pdf-template/" + result['id'] +
-                                "' class='btn-sm btn-success' target='_blank'><i class='fas fa-eye'></i>view</a><a href='/label/download-direct/" +
+                                "' class='btn-sm btn-success' target='_blank'><i class='fas fa-eye'></i>View</a><a href='/label/download-direct/" +
                                 result['id'] +
-                                "' class='btn-sm btn-info ml-1'><i class='fas fa-download'></i>view</a></td>";
+                                "' class='btn-sm btn-info ml-1'><i class='fas fa-download'></i>Download</a></td>";
 
                         });
                         $('#checkTable').html(record_of_awb_id);
