@@ -39,6 +39,8 @@ use Spatie\Permission\Models\Permission;
 use phpDocumentor\Reflection\Types\Null_;
 use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
+use App\Models\Catalog\PricingIn;
+use App\Models\Catalog\PricingUs;
 use Symfony\Component\Validator\Constraints\File;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
 use App\Services\AWS_Business_API\Auth\AWS_Business;
@@ -59,18 +61,13 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 $delist_asins;
 Route::get('wherein', function () {
 
-    $back_file_date = Carbon::now()->subDays(4)->toDateString();
-    $files = Storage::allFiles('AsinDestination');
+    $data =  PricingIn::select('destination.asin as asin')
+        ->rightJoin("asin_destination_ins as destination", 'destination.id', '=', 'pricing_ins.id')
+        ->where('destination.priority', 1)
+        ->orWhereNull('destination.asin')
+        ->get()->toArray();
 
-    foreach ($files as $file_name) {
-
-        $FileTime = date("F d Y H:i:s.", filemtime(Storage::path("${file_name}")));
-        $current_file_date = Carbon::parse($FileTime)->toDateString();
-
-        if ($back_file_date == $current_file_date) {
-            unlink(Storage::path($file_name));
-        }
-    }
+    po($data);
     exit;
 
     $dbname = config('database.connections.catalog.database');
