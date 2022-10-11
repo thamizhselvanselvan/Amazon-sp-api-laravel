@@ -357,6 +357,7 @@ class labelManagementController extends Controller
                 }
             }
             $label_data['product'] = $product;
+            $product = [];
             $label_details_array[] = $label_data;
             $label_data = [];
         }
