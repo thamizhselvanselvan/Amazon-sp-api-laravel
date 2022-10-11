@@ -280,7 +280,6 @@ class labelManagementController extends Controller
         from ${web}.${prefix}labels as web
         JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
         JOIN ${order}.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
-        -- JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin
         WHERE $where_condition
         GROUP BY ordetail.amazon_order_identifier
     ");
@@ -339,21 +338,16 @@ class labelManagementController extends Controller
 
                     $title_array = explode('-label-title-', $label_detials);
 
+                    $title_array = array_unique($title_array);
                     foreach ($title_array as $key2 => $title) {
                         $ignore_title = str_ireplace($ignore, '', $title);
                         $product[$key2][$key1] = substr_replace($ignore_title, '....', 100);
-                    }
-                } elseif ($key1 == 'sku') {
 
-                    $sku_array = explode('-label-sku-', $label_detials);
-                    foreach ($sku_array as $key2 => $sku) {
-                        $product[$key2][$key1] = $sku;
-                    }
-                } elseif ($key1 == 'qty') {
+                        $sku_array = explode('-label-sku-', $label_value->sku);
+                        $product[$key2]['sku'] = $sku_array[$key2];
 
-                    $qty_array = explode('-label-qty-', $label_detials);
-                    foreach ($qty_array as $key2 => $qty) {
-                        $product[$key2][$key1] = $qty;
+                        $qty_array = explode('-label-qty-', $label_value->qty);
+                        $product[$key2]['qty'] = $qty_array[$key2];
                     }
                 } else {
 
