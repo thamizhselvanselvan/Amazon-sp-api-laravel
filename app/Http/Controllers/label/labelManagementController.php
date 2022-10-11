@@ -58,8 +58,8 @@ class labelManagementController extends Controller
 
     public function showTemplate($id)
     {
-        //Single view
-        $result = $this->labelDataFormating($id);
+        $result = $this->labelDataFormating("'$id'");
+        $result = $result[0];
         $awb_no = $result['awb_no'];
         $forwarder = $result['forwarder'];
 
@@ -68,7 +68,6 @@ class labelManagementController extends Controller
         }
         $result = (object)$result;
 
-        // dd($result);
         $generator = new BarcodeGeneratorPNG();
         $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39));
         return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder'));
@@ -129,18 +128,22 @@ class labelManagementController extends Controller
 
     public function PrintSelected($id)
     {
-        $allid = explode('-', $id);
+        $all_id_string = "'" . implode("','", explode('-', $id)) . "'";
+        $results = $this->labelDataFormating($all_id_string);
         $generator = new BarcodeGeneratorPNG();
-        foreach ($allid as $id) {
-            $results = $this->labelDataFormating($id);
 
-            $result[] = (object)$results;
+        $result = [];
+        $bar_code = [];
+
+        foreach ($results as $value) {
 
             $barcode_awb = 'AWB-MISSING';
 
-            if (($results['awb_no'])) {
-                $barcode_awb = $results['awb_no'];
+            $result[] = (object)$value;
+            if (($value['awb_no'])) {
+                $barcode_awb = $value['awb_no'];
             }
+
             $bar_code[] = base64_encode($generator->getBarcode($barcode_awb, $generator::TYPE_CODE_39));
         }
 
@@ -171,7 +174,6 @@ class labelManagementController extends Controller
         }
         return Storage::download('label/zip/label.zip');
     }
-
 
     public function downloadExcelTemplate()
     {
@@ -264,7 +266,8 @@ class labelManagementController extends Controller
         $web = config('database.connections.web.database');
         $prefix = config('database.connections.web.prefix');
 
-        $where_condition = "web.id = $id";
+        $where_condition = "web.id IN ($id)";
+
         $label = DB::select("SELECT ordetail.asin,
         GROUP_CONCAT(DISTINCT web.order_no)as order_no,
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
@@ -308,7 +311,9 @@ class labelManagementController extends Controller
         if (!$label) {
             return NULL;
         }
+        $label_details_array = [];
         foreach ($label as $key => $label_value) {
+
             foreach ($label_value as $key1 => $label_detials) {
 
                 if ($key1 == 'shipping_address') {
@@ -351,12 +356,12 @@ class labelManagementController extends Controller
                     $label_data[$key1] = $label_detials;
                 }
             }
+            $label_data['product'] = $product;
+            $label_details_array[] = $label_data;
+            $label_data = [];
         }
-        $label_data['product'] = $product;
-        // dd($label_data);
-        return $label_data;
+        return $label_details_array;
     }
-
 
     public function bladeOrderDetails()
     {
