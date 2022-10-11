@@ -7,17 +7,22 @@ use League\Csv\Writer;
 use AWS\CRT\HTTP\Response;
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\Eval_;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ShipNTrack\Courier\CourierPartner;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
 
 class ForwarderPacketMappingController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        return view('shipntrack.Forwarder.index');
+        $partners_lists = CourierPartner::get();
+        $selected_forwarder_1 = '';
+$selected_forwarder_2 = '';
+        return view('shipntrack.Forwarder.index',compact('partners_lists', 'selected_forwarder_1', 'selected_forwarder_2'));
     }
 
     public function Upload()
@@ -171,5 +176,58 @@ class ForwarderPacketMappingController extends Controller
     {
         $date = explode(' - ', $date);
         return [trim($date[0]), trim($date[1])];
+    }
+    public function singlesearch(Request $request)
+    {
+
+        $partners_lists = CourierPartner::get();
+        $order_id = $request->orderid;
+        // $name = PacketForwarder::where('order_id', $order_id)->get();
+        // dd($name[0]->id);
+
+        $order = config('database.connections.order.database');
+        $order_item = $order . '.orderitemdetails';
+
+        $data = DB::connection('shipntracking')
+        ->select("SELECT * from packet_forwarders as pf 
+                        join $order_item as oid on pf.order_id = oid.amazon_order_identifier
+                        where pf.order_id='$order_id'  ");
+
+        if ($data == []) {
+            // return back()->with('error', "No Data Found OR Invalid OrderID");
+            return redirect()->intended('/shipntrack/forwarder')->with('error', 'No Data Found OR Invalid OrderID');
+        }
+
+        $name = PacketForwarder::where('order_id', $order_id)->get();
+        $selected_forwarder_1 = $name[0]->forwarder_1;
+        $selected_forwarder_2 = $name[0]->forwarder_2;
+
+        return view('shipntrack.Forwarder.index', compact('partners_lists', 'data', 'selected_forwarder_1', 'selected_forwarder_2'));
+    }
+
+    public function forwarderupdate(Request $request)
+    {
+        if ($request->forwarder1 == 0 || $request->forwarder2 == 0) {
+            return redirect()->route('shipntrack.forwarder')->with('success', 'forwarder not selected properly');
+        }
+        $courire_code1 = CourierPartner::query()
+            ->select('courier_code')
+            ->where('courier_code', $request->forwarder1)
+            ->get();
+
+        $courire_code2 = CourierPartner::query()
+            ->select('courier_code')
+            ->where('courier_code', $request->forwarder2)
+            ->get();
+        // dd($request->forwarder2);
+        $order_id = $request->order_id;
+        $validated = ([
+            'forwarder_1' => $courire_code1[0]->courier_code,
+            'forwarder_1_awb' => $request->forwarder_1_awb,
+            'forwarder_2' =>  $courire_code2[0]->courier_code,
+            'forwarder_2_awb' => $request->forwarder_2_awb
+        ]);
+        PacketForwarder::where('order_id', $order_id)->update($validated);
+        return redirect()->route('shipntrack.forwarder')->with('success', 'packet forwarders has updated successfully');
     }
 }
