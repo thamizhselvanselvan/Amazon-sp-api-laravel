@@ -475,10 +475,12 @@ class labelManagementController extends Controller
     {
         $where_condition = "web.bag_no = '${id}' ";
 
-        if ($search_type) {
+        if ($search_type == 'order_id') {
             $where_condition = "web.order_no IN ($id)";
         }
-
+        if ($search_type == 'awb_tracking_id') {
+            $where_condition = "web.awb_no IN ($id)";
+        }
         $order = config('database.connections.order.database');
         $catalog = config('database.connections.catalog.database');
         $web = config('database.connections.web.database');
@@ -690,5 +692,14 @@ class labelManagementController extends Controller
                 'message' => 'student updated successfully'
             ]);
         }
+    }
+
+    public function labelSearchByAwnNo(Request $request)
+    {
+        $awb_no = array_unique(preg_split('/[\r\n| |:|,|.]/', $request->awb_no, -1, PREG_SPLIT_NO_EMPTY));
+        $awb_tracking_no = "'" . implode("','", $awb_no) . "'";
+        $label_detials = $this->labelListing($awb_tracking_no, 'awb_tracking_id');
+
+        return response()->json($label_detials);
     }
 }
