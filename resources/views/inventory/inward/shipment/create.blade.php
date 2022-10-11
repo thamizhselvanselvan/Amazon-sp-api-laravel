@@ -123,7 +123,7 @@
     /*Hide Fields Untill Selection Is Made:*/
     $("#report_table").hide();
     $("#create").hide();
-    $("#asin").hide();
+    // $("#asin").hide();
     $("#upload").hide();
     $("#clear").hide();
     $("#currency").hide();
@@ -170,6 +170,7 @@
                 table.append(existing_data(response, source));
             },
             error: function(response) {
+                console.log(response);
                 alert('Something went Wrong...');
             }
         });
@@ -178,6 +179,8 @@
     function existing_data(response) {
         let html = '';
         let source = $('#source1').val();
+        // let source_name = $("#source1 option:selected").text();
+
         $.each(response.data, function(index, value) {
 
             let asin = value[0].asin;
@@ -193,7 +196,7 @@
             html += "<td name='name[]' class='" + item_class + "'>" + item_name + "</td>";
             html += "<td name='source[]'>" + source + "</td>";
             html += `<td>
-                     <x-adminlte-select name="tag[]" id="tag">>
+                     <x-adminlte-select name="tag[]" class="tags" id="tag">>
                       <option value="0">Select Tag</option>
                        @foreach ($tags as $tag)
                        <option value="{{ $tag->id }}">{{$tag->name }}</option>
@@ -266,11 +269,15 @@
     $(".create_shipmtn_btn").on("click", function() {
         let ware_valid = $('#warehouse').val();
         let currency_valid = $('#currency_input').val();
+        let validation = true;
+        // let tag_valid = $('.tags').val();
         if (ware_valid == 0) {
             alert('warehouse field is required');
+            validation = false;
             return false;
         } else if (currency_valid == 0) {
             alert('currency field is required');
+            validation = false;
             return false;
         } else {
 
@@ -282,6 +289,12 @@
                 let cnt = 0;
                 let td = $(this).find('td');
 
+                let tag = $(td[3]).find('select').val();
+                if (tag == 0) {
+                    alert('please select the Tag for all ASIN');
+                    validation = false;
+                    return false;
+                }
 
                 data.append('asin[]', td[0].innerText);
                 data.append('name[]', td[1].innerText);
@@ -301,31 +314,33 @@
 
             let currency = $('#currency_input').val();
             data.append('currency', currency);
-
-            $.ajax({
-                method: 'POST',
-                url: '/shipment/storeshipment',
-                data: data,
-                processData: false,
-                contentType: false,
-                response: 'json',
-                success: function(response) {
-                    // console.log(response);
-                    if (response.success) {
-                        getBack();
+            if (validation) {
+                $.ajax({
+                    method: 'POST',
+                    url: '/shipment/storeshipment',
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    response: 'json',
+                    success: function(response) {
+                        console.log(response);
+                        if (response.success) {
+                            getBack();
+                        }
+                    },
+                    error: function(response) {
+                        // console.log(response);
+                        alert('error');
                     }
-                },
-                error: function(response) {
-                    // console.log(response);
-                    alert('error');
-                }
-            });
+                });
+            }
+
         }
     });
 
     //*Redirect to Index:*//
     function getBack() {
-        window.location.href = '/inventory/shipments'
+        window.location.href = '/inventory/shipments?success=Shipment has been created successfully'
     }
 
     $(document).ready(function() {

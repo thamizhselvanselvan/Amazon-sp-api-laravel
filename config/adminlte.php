@@ -438,7 +438,7 @@ return [
                         ],
                         [
 
-                            'text' => 'Rack Master',
+                            'text' => 'Rack',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory'],
                             'submenu' => [
@@ -473,7 +473,7 @@ return [
 
                         ],
                         [
-                            'text' => 'Dispose Reason',
+                            'text' => 'Dispose',
                             'icon' => 'far fa-fw fa-file',
                             'url'  => 'inventory/features',
                             'can' =>  ['Admin', 'Inventory']

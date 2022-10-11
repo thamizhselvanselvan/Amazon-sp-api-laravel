@@ -165,8 +165,6 @@
 
                 let cnt = 0;
                 let td = $(this).find('td');
-                console.log(td);
-
                 data.append('id[]', $(td[0]).attr("data-id"));
                 data.append('asin[]', td[0].innerText);
                 data.append('name[]', td[1].innerText);
@@ -196,16 +194,12 @@
                 contentType: false,
                 response: 'json',
                 success: function(response) {
-
-                    console.log(response);
-
                     if (response.success) {
                         getBack();
                     }
-
                 },
                 error: function(response) {
-                    console.log(response);
+                    alert('Something went Wrong')
                 }
 
 
@@ -215,7 +209,7 @@
     });
 
     function getBack() {
-        window.location.href = '/inventory/outwardings'
+        window.location.href = '/inventory/outwardings?success=shipment has created Successfully'
 
     }
 
@@ -418,7 +412,7 @@
                 // });
             },
             error: function(response) {
-                console.log(response);
+                alert('Something went Wrong')
             }
         });
     }

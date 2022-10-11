@@ -27,5 +27,8 @@ class Shipment_Outward_Details extends Model
     public function warehouses() {
         return $this->hasOne(Warehouse::class, 'id', 'warehouse_id');
     } 
+    public function tags() {
+        return $this->hasOne(Tag::class, 'id', 'tag');
+    } 
     
 }
