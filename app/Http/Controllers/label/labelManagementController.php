@@ -266,26 +266,22 @@ class labelManagementController extends Controller
         $web = config('database.connections.web.database');
         $prefix = config('database.connections.web.prefix');
 
-        $where_condition = "web.id IN ($id)";
+        $where_condition = "web.id in ($id)";
 
-        $label = DB::select("SELECT ordetail.asin,
+        $label = DB::select("SELECT ordetail.amazon_order_identifier,
         GROUP_CONCAT(DISTINCT web.order_no)as order_no,
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
         GROUP_CONCAT(DISTINCT web.forwarder) as forwarder,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
         GROUP_CONCAT(DISTINCT ordetail.shipping_address) as shipping_address,
-        GROUP_CONCAT(DISTINCT ordetail.item_price) as order_total,
-        -- GROUP_CONCAT(DISTINCT cat.item_dimensions) as item_dimensions,
-        -- GROUP_CONCAT(DISTINCT cat.package_dimensions) as package_dimensions,
-        GROUP_CONCAT(DISTINCT ordetail.title) as title,
-        GROUP_CONCAT(DISTINCT ordetail.seller_sku) as sku,
-        GROUP_CONCAT(DISTINCT ordetail.quantity_ordered) as qty
+        GROUP_CONCAT(ordetail.title SEPARATOR '-label-title-') as title,
+        GROUP_CONCAT(ordetail.seller_sku SEPARATOR '-label-sku-') as sku,
+        GROUP_CONCAT(ordetail.quantity_ordered SEPARATOR '-label-qty-') as qty
         from ${web}.${prefix}labels as web
         JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
         JOIN ${order}.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
-        -- JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin
         WHERE $where_condition
-        GROUP BY ordetail.asin
+        GROUP BY ordetail.amazon_order_identifier
     ");
 
         $label_data = [];
@@ -312,10 +308,10 @@ class labelManagementController extends Controller
             return NULL;
         }
         $label_details_array = [];
+        $product = [];
+
         foreach ($label as $key => $label_value) {
-
             foreach ($label_value as $key1 => $label_detials) {
-
                 if ($key1 == 'shipping_address') {
                     $buyer_address = [];
                     $shipping_address = json_decode($label_detials);
@@ -340,17 +336,19 @@ class labelManagementController extends Controller
                     $label_data[$key1] = $dimensions;
                 } elseif ($key1 == 'title') {
 
-                    $ignore_title = str_ireplace($ignore, '', $label_detials);
-                    $product[$key][$key1] = substr_replace($ignore_title, '....', 100);
-                } elseif ($key1 == 'sku') {
+                    $title_array = explode('-label-title-', $label_detials);
 
-                    $product[$key][$key1] = $label_detials;
-                } elseif ($key1 == 'qty') {
+                    $title_array = array_unique($title_array);
+                    foreach ($title_array as $key2 => $title) {
+                        $ignore_title = str_ireplace($ignore, '', $title);
+                        $product[$key2][$key1] = substr_replace($ignore_title, '....', 100);
 
-                    $product[$key][$key1] = $label_detials;
-                } elseif ($key1 == 'asin') {
-                } elseif ($key1 == 'order_total') {
-                    $product[$key][$key1] = json_decode($label_detials);
+                        $sku_array = explode('-label-sku-', $label_value->sku);
+                        $product[$key2]['sku'] = $sku_array[$key2];
+
+                        $qty_array = explode('-label-qty-', $label_value->qty);
+                        $product[$key2]['qty'] = $qty_array[$key2];
+                    }
                 } else {
 
                     $label_data[$key1] = $label_detials;
@@ -358,8 +356,10 @@ class labelManagementController extends Controller
             }
             $label_data['product'] = $product;
             $label_details_array[] = $label_data;
+            $product = [];
             $label_data = [];
         }
+
         return $label_details_array;
     }
 
