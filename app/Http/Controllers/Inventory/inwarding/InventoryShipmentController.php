@@ -208,8 +208,6 @@ class InventoryShipmentController extends Controller
 
     public function storeshipment(Request $request)
     {
-        // Log::alert($request->asin);
-        // return $request->asin;
         $uniq= random_int(1000, 99999);
         $ship_id ='INW'. $uniq;
         $items = [];

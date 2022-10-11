@@ -123,7 +123,7 @@
     /*Hide Fields Untill Selection Is Made:*/
     $("#report_table").hide();
     $("#create").hide();
-    // $("#asin").hide();
+    $("#asin").hide();
     $("#upload").hide();
     $("#clear").hide();
     $("#currency").hide();
