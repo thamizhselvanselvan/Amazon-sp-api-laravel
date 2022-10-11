@@ -96,10 +96,10 @@ class OrdersCsvImport extends Command
                 ];
 
                 $title = str_replace("'\'", "Or", $csv['Title']);
-                // $title = $csv['Title'];
+
+                $shipping_address = ($country_code == 'IN') ? $shipping_address : $shipping_address1;
 
                 $orderItemDetails_table[] = [
-
                     'seller_identifier'         => $store_id,
                     'country'                   => $country_code,
                     'amazon_order_identifier'   => $csv['Amazon_order_identifier'],
@@ -110,7 +110,7 @@ class OrdersCsvImport extends Command
                     'quantity_ordered'          => $csv['Quantity_ordered'],
                     'quantity_shipped'          => $csv['Quantity_shipped'],
                     'item_price'                => json_encode($item_price),
-                    'shipping_address'          => json_encode((($country_code == 'IN') ? $shipping_address : $shipping_address1)),
+                    'shipping_address'          => json_encode($shipping_address),
                     'created_at'                => now(),
                     'updated_at'                => now(),
                 ];
@@ -122,7 +122,6 @@ class OrdersCsvImport extends Command
                 $ldd = Carbon::parse($csv['Latest_delivery_date'])->format('Y-m-d\Th:i:\Z');
 
                 $orders_table[] = [
-
                     'our_seller_identifier'            =>  $store_id,
                     'country'                          =>  $country_code,
                     'amazon_order_identifier'          =>  $csv['Amazon_order_identifier'],
@@ -142,7 +141,7 @@ class OrdersCsvImport extends Command
                     'latest_ship_date'                 =>  $lsd,
                     'earliest_delivery_date'           =>  $edd,
                     'latest_delivery_date'             =>  $ldd,
-                    'shipping_address'                 =>  json_encode((($country_code == 'IN') ? $shipping_address : $shipping_address1)),
+                    'shipping_address'                 =>  json_encode($shipping_address),
                     'buyer_info'                       =>  json_encode($buyer_info),
                     'created_at'                       =>  now(),
                     'updated_at'                       =>  now(),
