@@ -813,6 +813,12 @@ if (!function_exists('forwarderTrackingEvent')) {
                 'Table_column' => 'activity',
                 'Model_path' => 'SMSA\\'
             ],
+            [],
+            [
+                'Table_name' => 'AramexTracking',
+                'Table_column' => 'update_description',
+                'Model_path' => 'Aramex\\'
+            ],
         ];
 
         $table_name = $array_tables[$key]['Table_name'];

@@ -58,8 +58,8 @@ class labelManagementController extends Controller
 
     public function showTemplate($id)
     {
-        //Single view
-        $result = $this->labelDataFormating($id);
+        $result = $this->labelDataFormating("'$id'");
+        $result = $result[0];
         $awb_no = $result['awb_no'];
         $forwarder = $result['forwarder'];
 
@@ -68,7 +68,6 @@ class labelManagementController extends Controller
         }
         $result = (object)$result;
 
-        // dd($result);
         $generator = new BarcodeGeneratorPNG();
         $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39));
         return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder'));
@@ -117,7 +116,7 @@ class labelManagementController extends Controller
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
 
         Browsershot::url($url)
-            ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
@@ -129,18 +128,22 @@ class labelManagementController extends Controller
 
     public function PrintSelected($id)
     {
-        $allid = explode('-', $id);
+        $all_id_string = "'" . implode("','", explode('-', $id)) . "'";
+        $results = $this->labelDataFormating($all_id_string);
         $generator = new BarcodeGeneratorPNG();
-        foreach ($allid as $id) {
-            $results = $this->labelDataFormating($id);
 
-            $result[] = (object)$results;
+        $result = [];
+        $bar_code = [];
+
+        foreach ($results as $value) {
 
             $barcode_awb = 'AWB-MISSING';
 
-            if (($results['awb_no'])) {
-                $barcode_awb = $results['awb_no'];
+            $result[] = (object)$value;
+            if (($value['awb_no'])) {
+                $barcode_awb = $value['awb_no'];
             }
+
             $bar_code[] = base64_encode($generator->getBarcode($barcode_awb, $generator::TYPE_CODE_39));
         }
 
@@ -171,7 +174,6 @@ class labelManagementController extends Controller
         }
         return Storage::download('label/zip/label.zip');
     }
-
 
     public function downloadExcelTemplate()
     {
@@ -264,25 +266,22 @@ class labelManagementController extends Controller
         $web = config('database.connections.web.database');
         $prefix = config('database.connections.web.prefix');
 
-        $where_condition = "web.id = $id";
-        $label = DB::select("SELECT ordetail.asin,
+        $where_condition = "web.id in ($id)";
+
+        $label = DB::select("SELECT ordetail.amazon_order_identifier,
         GROUP_CONCAT(DISTINCT web.order_no)as order_no,
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
         GROUP_CONCAT(DISTINCT web.forwarder) as forwarder,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
         GROUP_CONCAT(DISTINCT ordetail.shipping_address) as shipping_address,
-        GROUP_CONCAT(DISTINCT ordetail.item_price) as order_total,
-        -- GROUP_CONCAT(DISTINCT cat.item_dimensions) as item_dimensions,
-        -- GROUP_CONCAT(DISTINCT cat.package_dimensions) as package_dimensions,
-        GROUP_CONCAT(DISTINCT ordetail.title) as title,
-        GROUP_CONCAT(DISTINCT ordetail.seller_sku) as sku,
-        GROUP_CONCAT(DISTINCT ordetail.quantity_ordered) as qty
+        GROUP_CONCAT(ordetail.title SEPARATOR '-label-title-') as title,
+        GROUP_CONCAT(ordetail.seller_sku SEPARATOR '-label-sku-') as sku,
+        GROUP_CONCAT(ordetail.quantity_ordered SEPARATOR '-label-qty-') as qty
         from ${web}.${prefix}labels as web
         JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
         JOIN ${order}.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
-        -- JOIN $catalog.catalog as cat ON cat.asin = ordetail.asin
         WHERE $where_condition
-        GROUP BY ordetail.asin
+        GROUP BY ordetail.amazon_order_identifier
     ");
 
         $label_data = [];
@@ -308,9 +307,11 @@ class labelManagementController extends Controller
         if (!$label) {
             return NULL;
         }
+        $label_details_array = [];
+        $product = [];
+
         foreach ($label as $key => $label_value) {
             foreach ($label_value as $key1 => $label_detials) {
-
                 if ($key1 == 'shipping_address') {
                     $buyer_address = [];
                     $shipping_address = json_decode($label_detials);
@@ -335,28 +336,35 @@ class labelManagementController extends Controller
                     $label_data[$key1] = $dimensions;
                 } elseif ($key1 == 'title') {
 
-                    $ignore_title = str_ireplace($ignore, '', $label_detials);
-                    $product[$key][$key1] = $ignore_title;
-                } elseif ($key1 == 'sku') {
+                    $title_array = explode('-label-title-', $label_detials);
+                    $title_array = array_unique($title_array);
 
-                    $product[$key][$key1] = $label_detials;
-                } elseif ($key1 == 'qty') {
+                    foreach ($title_array as $key2 => $title) {
 
-                    $product[$key][$key1] = $label_detials;
-                } elseif ($key1 == 'asin') {
-                } elseif ($key1 == 'order_total') {
-                    $product[$key][$key1] = json_decode($label_detials);
+                        $ignore_title = str_ireplace($ignore, '', $title);
+                        $product[$key2][$key1] = substr_replace($ignore_title, '....', 100);
+
+                        $sku_array = explode('-label-sku-', $label_value->sku);
+                        $sku_array = array_unique($sku_array);
+
+                        $product[$key2]['sku'] = $sku_array[$key2];
+
+                        $qty_array = explode('-label-qty-', $label_value->qty);
+                        $product[$key2]['qty'] = $qty_array[$key2];
+                    }
                 } else {
 
                     $label_data[$key1] = $label_detials;
                 }
             }
+            $label_data['product'] = $product;
+            $label_details_array[] = $label_data;
+            $product = [];
+            $label_data = [];
         }
-        $label_data['product'] = $product;
-        // dd($label_data);
-        return $label_data;
-    }
 
+        return $label_details_array;
+    }
 
     public function bladeOrderDetails()
     {
@@ -468,10 +476,13 @@ class labelManagementController extends Controller
 
     public function labelListing($id, $search_type = NULL)
     {
-        $where_condition = "web.bag_no = ${id}";
-        if ($search_type) {
+        $where_condition = "web.bag_no = '${id}' ";
 
+        if ($search_type == 'order_id') {
             $where_condition = "web.order_no IN ($id)";
+        }
+        if ($search_type == 'awb_tracking_id') {
+            $where_condition = "web.awb_no IN ($id)";
         }
         $order = config('database.connections.order.database');
         $catalog = config('database.connections.catalog.database');
@@ -625,25 +636,23 @@ class labelManagementController extends Controller
 
     public function editOrderAddress($order_item_identifier)
     {
-    
+
         $order = config('database.connections.order.database');
         $order_details = DB::select("SELECT shipping_address,order_item_identifier
         from ${order}.orderitemdetails 
-        WHERE order_item_identifier = '$order_item_identifier'");       
+        WHERE order_item_identifier = '$order_item_identifier'");
 
-        $shipping_address=$order_details[0]->shipping_address;        
+        $shipping_address = $order_details[0]->shipping_address;
         $manage = json_decode($shipping_address, true);
 
-		return Response($manage);
-
-        
+        return Response($manage);
     }
 
-    public function updateOrderAddress(Request $request, $id )
+    public function updateOrderAddress(Request $request, $id)
     {
-        
-        $validater = Validator::make($request->all(),[
-            'name' => ['required' ],
+
+        $validater = Validator::make($request->all(), [
+            'name' => ['required'],
             'phone' => ['required'],
             'county' => ['required'],
             'countryCode' => ['required'],
@@ -651,32 +660,29 @@ class labelManagementController extends Controller
             'addressType' => ['required'],
             'addressLine1' => ['required'],
             'addressLine2' => ['required']
-        ]);       
+        ]);
 
-        if($validater->fails())
-        {
+        if ($validater->fails()) {
             return response()->json([
-                   
+
                 'status' => '400',
-                'errors' =>$validater->errors(),
-                    
+                'errors' => $validater->errors(),
+
             ]);
-        }
-        else
-        {
-            $json_data=[];
+        } else {
+            $json_data = [];
             $json_data = array(
-                                    "Name" => $request->input('name'),
-                                    "AddressLine1" => $request->input('addressLine1'),
-                                    "AddressLine2" => $request->input('addressLine2'),
-                                    "City" => $request->input('city'),
-                                    "County" => $request->input('county'),
-                                    "CountryCode" => $request->input('countryCode'),
-                                    "Phone" => $request->input('phone'),
-                                    "AddressType" => $request->input('addressType')
-                                );                                
-            $shipping_address=json_encode($json_data);         
-                       
+                "Name" => $request->input('name'),
+                "AddressLine1" => $request->input('addressLine1'),
+                "AddressLine2" => $request->input('addressLine2'),
+                "City" => $request->input('city'),
+                "County" => $request->input('county'),
+                "CountryCode" => $request->input('countryCode'),
+                "Phone" => $request->input('phone'),
+                "AddressType" => $request->input('addressType')
+            );
+            $shipping_address = json_encode($json_data);
+
             $order = config('database.connections.order.database');
             DB::select("UPDATE  ${order}.orderitemdetails 
                         SET shipping_address = '$shipping_address'
@@ -684,15 +690,19 @@ class labelManagementController extends Controller
                         ");
 
 
-             return response()->json([                   
+            return response()->json([
                 'status' => '200',
-                'message' => 'student updated successfully'                    
+                'message' => 'student updated successfully'
             ]);
-
-            
-
-
         }
     }
 
+    public function labelSearchByAwnNo(Request $request)
+    {
+        $awb_no = array_unique(preg_split('/[\r\n| |:|,|.]/', $request->awb_no, -1, PREG_SPLIT_NO_EMPTY));
+        $awb_tracking_no = "'" . implode("','", $awb_no) . "'";
+        $label_detials = $this->labelListing($awb_tracking_no, 'awb_tracking_id');
+
+        return response()->json($label_detials);
+    }
 }

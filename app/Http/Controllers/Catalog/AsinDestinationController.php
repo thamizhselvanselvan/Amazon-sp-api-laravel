@@ -54,9 +54,7 @@ class AsinDestinationController extends Controller
             foreach ($destinations as $destination) {
                 $asins = preg_split('/[\r\n| |:|,]/', $value, -1, PREG_SPLIT_NO_EMPTY);
                 $country_code = buyboxCountrycode();
-                // if ($destination == 'UK') {
-                //     return redirect('catalog/import-asin-destination')->with('error', 'Seller not available!');
-                // }
+
                 foreach ($asins as $asin) {
                     $records[] = [
                         'asin'  => $asin,
@@ -100,12 +98,12 @@ class AsinDestinationController extends Controller
             if (!$validation) {
                 return back()->with('error', "Please upload file to import it to the database");
             }
-
+            $import_file_time = date('Y-m-d-H-i-s');
             $file = file_get_contents($request->asin);
-            $path = 'AsinDestination/asin.csv';
+            $path = "AsinDestination/asin${import_file_time}.csv";
             Storage::put($path, $file);
 
-            commandExecFunc("mosh:Asin-destination-upload ${user_id} ${priority} --destination=${destination} ");
+            commandExecFunc("mosh:Asin-destination-upload ${user_id} ${priority} --destination=${destination} ${path}");
         }
         return redirect('catalog/import-asin-destination')->with('success', 'File has been uploaded successfully');
     }

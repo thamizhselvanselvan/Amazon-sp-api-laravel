@@ -40,7 +40,7 @@
             </div>
             @endif
 
-        
+
             <div class="row">
 
                 <div class="col-0">
@@ -74,7 +74,7 @@
                         </tr>
                     </thead>
                     <tbody>
-    
+
                         @foreach ($store as $key => $val)
 
                         <tr class='table_row'>
@@ -89,19 +89,19 @@
                                     <option value="0">--Select--</option>
                                     @foreach ($rack as $racks)
                                     <option value="{{$racks->rack_id}}">{{$racks->rack_id . '/' .$racks->name}}</option>
-                                    
+
                                     @endforeach
                                 </x-adminlte-select>
                             </td>
                             <td class="shelve">
                                 <x-adminlte-select name="shelve[]" class='shelve_id'>
-                                    <option value=""></option> 
+                                    <option value=""></option>
 
                                 </x-adminlte-select>
                             </td>
                             <td>
-                                <x-adminlte-select  input type="text"  name="bin[]" class='bin_id'>
-                                    <option value="">  </option>
+                                <x-adminlte-select input type="text" name="bin[]" class='bin_id'>
+                                    <option value=""> </option>
 
                                 </x-adminlte-select>
                             </td>
@@ -128,58 +128,57 @@
     });
 
     $('.rack_id').change(function() {
-            var id = $(this).val();
-            let self = $(this);
-            $.ajax({
-                url: '/Shelves/' + id,
-                method: 'POST',
-                data: {
-                    'id': id,
-                    "_token": "{{ csrf_token() }}",
-                },
-                success: function(result) {
-                    self.parent().parent().parent().next().find('.shelve_id').empty();
-                    let shelve_data = '<option>--Select--</option>';
-                    $.each(result, function(i, result) {
-                        shelve_data += "<option value='" + result.shelve_id + "'>" + result.shelve_id + "/" + result.name + "</option>";
-                    });
-                    self.parent().parent().parent().next().find('.shelve_id').append(shelve_data);
-                },
-                error: function() {
-                    alert('ERROR');
-                }
-            });
+        var id = $(this).val();
+        let self = $(this);
+        $.ajax({
+            url: '/Shelves/' + id,
+            method: 'POST',
+            data: {
+                'id': id,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(result) {
+                self.parent().parent().parent().next().find('.shelve_id').empty();
+                let shelve_data = '<option>--Select--</option>';
+                $.each(result, function(i, result) {
+                    shelve_data += "<option value='" + result.shelve_id + "'>" + result.shelve_id + "/" + result.name + "</option>";
+                });
+                self.parent().parent().parent().next().find('.shelve_id').append(shelve_data);
+            },
+            error: function() {
+                alert('ERROR');
+            }
         });
+    });
 
-        $('.shelve_id').change(function() {
-            var id = $(this).val();
-            let self = $(this);
-            // alert(id);
-            $.ajax({
-                url: '/Bins/' + id,
-                method: 'POST',
-                data: {
-                    'id': id,
-                    "_token": "{{ csrf_token() }}",
-                },
-                success: function(result) {
-            
-                    self.parent().parent().parent().next().find('.bin_id').empty();
-                    let bin_data = '<option>--Select--</option>';
-                    $.each(result, function(i, result) {
-                        bin_data += "<option value='" + result.bin_id + "'>"   + result.name + "</option>";
-                    });
-               
-                    self.parent().parent().parent().next().find('.bin_id').append(bin_data);
-                },
-                error: function() {
-                    alert('ERROR');
-                }
-            });
+    $('.shelve_id').change(function() {
+        var id = $(this).val();
+        let self = $(this);
+        // alert(id);
+        $.ajax({
+            url: '/Bins/' + id,
+            method: 'POST',
+            data: {
+                'id': id,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(result) {
+                self.parent().parent().parent().next().find('.bin_id').empty();
+                let bin_data = '<option>--Select--</option>';
+                $.each(result, function(i, result) {
+                    bin_data += "<option value='" + result.bin_id + "'>" + result.name + "</option>";
+                });
+
+                self.parent().parent().parent().next().find('.bin_id').append(bin_data);
+            },
+            error: function() {
+                alert('ERROR');
+            }
         });
+    });
 
     function pullback() {
-        window.location.href = '/inventory/shipments'
+        window.location.href = '/inventory/shipments?success=Shipment has Placed successfully'
     }
     $("#store_shipments").on("click", function() {
         let self = $(this);
@@ -197,8 +196,8 @@
             // data.append('quantity[]', td[3].innerText);
             // console.log($(td[7]).find('.bin_id').val());
 
-            data.append('bin[]', $(td[7]).find('.bin_id').val());
-           
+            data.append('shelve[]', $(td[6]).find('.shelve_id').val());
+
         });
         $.ajax({
             method: 'POST',
@@ -208,7 +207,6 @@
             contentType: false,
             response: 'json',
             success: function(response) {
-
                 console.log(response);
 
                 if (response.success) {

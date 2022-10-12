@@ -3,7 +3,6 @@
 use RedBeanPHP\R;
 use Carbon\Carbon;
 use App\Models\User;
-use League\Csv\Reader;
 use App\Events\testEvent;
 use AWS\CRT\HTTP\Request;
 use App\Events\checkEvent;
@@ -12,9 +11,12 @@ use Maatwebsite\Excel\Row;
 use App\Jobs\TestQueueFail;
 use Illuminate\Support\Str;
 use Smalot\PdfParser\Parser;
+use Maatwebsite\Excel\Reader;
 use Dflydev\DotAccessData\Data;
 use SellingPartnerApi\Endpoint;
 use App\Models\Inventory\Shelve;
+use App\Models\Catalog\PricingIn;
+use App\Models\Catalog\PricingUs;
 use App\Models\Inventory\Country;
 use App\Models\Universal_textile;
 use Illuminate\Support\Facades\DB;
@@ -36,8 +38,10 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\TestController;
 use App\Services\Inventory\ReportWeekly;
 use Spatie\Permission\Models\Permission;
+use phpDocumentor\Reflection\Types\Null_;
 use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
+use Symfony\Component\Validator\Constraints\File;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
 use App\Services\AWS_Business_API\Auth\AWS_Business;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
@@ -54,6 +58,91 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 |
 */
 // use ConfigTrait;
+
+Route::get('gh', function (Request $request) {
+    $asins = CSV_Reader("Notfound  in buybox.csv");
+    $asin_collections = [];
+    $cnt = 1;
+    foreach ($asins as $asin) {
+        $asin_check = DB::table("product_aa_custom_p1_uss")->where('asin1', $asin['Asin'])->first();
+        if (!$asin_check) {
+            DB::table("product_aa_custom_p1_uss")->insert([
+                'seller_id' => 39,
+                'asin1' => $asin['Asin'],
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+        $asin_check1 = DB::table("product_aa_custom_p1_us_offers")->where('asin', $asin['Asin'])->first();
+        if (!$asin_check1) {
+            DB::table("product_aa_custom_p1_us_offers")->insert([
+                'asin' => $asin['Asin'],
+                'priority' => 1,
+                'cyclic' => 0,
+                'delist' => 0,
+                'available' => 0,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+    }
+    dd(count($asin_collections));
+});
+
+$delist_asins;
+Route::get('wherein', function () {
+
+    $data =  PricingIn::select('destination.asin as asin')
+        ->rightJoin("asin_destination_ins as destination", 'destination.id', '=', 'pricing_ins.id')
+        ->where('destination.priority', 1)
+        ->orWhereNull('destination.asin')
+        ->get()->toArray();
+
+    po($data);
+    exit;
+
+    $dbname = config('database.connections.catalog.database');
+    $destination_table = "asin_destination_uss";
+    $buybox_table = "bb_product_aa_custom_p2_us_offers";
+
+    $table = table_model_create(country_code: 'in', model: 'Asin_destination', table_name: 'asin_destination_');
+
+    $unavailable_catalog = $table->select("asin_destination_ins.asin")
+        ->join("catalognewins as catalog", 'catalog.asin', '=', 'asin_destination_ins.asin')
+        ->groupBy('asin_destination_ins.priority');
+
+    po(($unavailable_catalog));
+    exit;
+
+    $asins = [];
+    $delist_asin_count = [];
+    $gross = 0;
+    $count = [];
+    for ($priority = 1; $priority <= 3; $priority++) {
+        $gross = 0;
+        $data = $table->select('id', 'asin')->where('priority', $priority)->chunkbyid(5000, function ($result) use ($priority, $gross) {
+            foreach ($result as $delist_asin) {
+                $asins[] = "'$delist_asin->asin'";
+            }
+            $asin = implode(',', $asins);
+            $buybox_table = "bb_product_aa_custom_p${priority}_in_offers";
+            $delist_asin_count[] = DB::connection('buybox')->select("SELECT count(asin)as asin_delist
+            FROM ${buybox_table} 
+            WHERE asin IN ($asin)
+            and delist = 1
+            group by priority
+            ");
+            foreach ($delist_asin_count as $asin_delist) {
+
+                if (isset($asin_delist[0])) {
+                    // po($gross = &$gross + $asin_delist[0]->asin_delist);
+                    // po($asin_delist[0]);
+                }
+            }
+            po($delist_asin_count);
+        });
+    }
+});
 
 Route::get('data', function () {
 

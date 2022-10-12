@@ -69,23 +69,29 @@
         <tr>
             <th>ASIN</th>
             <th>Item Name</th>
+            <th>Tag</th>
             <th>Quantity</th>
             <th>Price</th>
             <th>Storage </th>
         </tr>
     </thead>
     <tbody>
-      
-        @foreach ($outview as $key =>  $bar)
+
+        @foreach ($outview as $key => $bar)
 
         <tr>
             <td>{{ $bar['asin'] }}</td>
             <td>{{ $bar['item_name'] }}</td>
+            @if(isset($bar->tags))
+            <td>{{$bar->tags->name}}</td>
+            @else
+            <td>Not Selected</td>
+            @endif
             <td>{{ $bar['quantity'] }}</td>
             <td>{{ $bar['price']}}</td>
             <td>{{ $loc[$key]['rack_id'] ?? 'NA' }} - {{ $loc[$key]['shelve_id'] ?? 'NA' }} - {{ (isset($loc[$key])) ? $loc[$key]['bin_id'] : "NA" }}</td>
             @endforeach
-        
+
         </tr>
     </tbody>
 </table>

@@ -20,15 +20,12 @@
 
 <div class="card ">
     <!-- <h3 class="card-header text-center">{{ (isset($records)) ? 'Update Event' : 'Add Event' }}</h3> -->
-    <form class="ml-4 mt-1 mr-4"
-        action="{{(isset($records)) ? Route('shipntrack.eventMaster.update', $records->id) : Route('shipntrack.trackingEvent.save')}}"
-        method="POST">
+    <form class="ml-4 mt-1 mr-4" action="{{(isset($records)) ? Route('shipntrack.eventMaster.update', $records->id) : Route('shipntrack.trackingEvent.save')}}" method="POST">
         @csrf
         <div class="row">
 
             <div class="col">
-                <x-adminlte-input label="Event Code" name="event_code" type="text" placeholder="Event Code"
-                    value="{{ (isset($records->event_code)) ? $records->event_code : '' }}" />
+                <x-adminlte-input label="Event Code" name="event_code" type="text" placeholder="Event Code" value="{{ (isset($records->event_code)) ? $records->event_code : '' }}" />
 
                 <div class="form-group mt-0">
                     <label for="Active">Active</label>
@@ -40,8 +37,7 @@
                 </div>
             </div>
             <div class="col">
-                <x-adminlte-textarea label="Event Description" name="event_desc" type="text"
-                    placeholder="Event Description">{{ (isset($records->description)) ? $records->description : '' }}
+                <x-adminlte-textarea label="Event Description" name="event_desc" type="text" placeholder="Event Description">{{ (isset($records->description)) ? $records->description : '' }}
                 </x-adminlte-textarea>
             </div>
         </div>
@@ -53,9 +49,7 @@
             </a>
             @endif
 
-            <x-adminlte-button label="{{ (isset($records)) ? 'Update' : 'Save' }}" name="btn" type="submit"
-                theme="{{ (isset($records)) ? 'primary' : 'success' }}"
-                icon="{{ (isset($records)) ? 'fas fa-edit' : 'fas fa-check-circle' }}" class="btn-sm" />
+            <x-adminlte-button label="{{ (isset($records)) ? 'Update' : 'Save' }}" name="btn" type="submit" theme="{{ (isset($records)) ? 'primary' : 'success' }}" icon="{{ (isset($records)) ? 'fas fa-edit' : 'fas fa-check-circle' }}" class="btn-sm" />
         </h2>
     </form>
 
@@ -105,52 +99,52 @@
 
 @section('js')
 <script>
-$(function() {
+    $(function() {
 
-    let yajra_table = $('.yajra-datatable').DataTable({
+        let yajra_table = $('.yajra-datatable').DataTable({
 
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: "{{ url('/shipntrack/event-master') }}",
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ url('/shipntrack/event-master') }}",
 
-        },
-        pageLength: 200,
-        columns: [
-            // {
-            //     // data: 'id',
-            //     // name: 'id',
-            //     orderable: false,
-            //     searchable: false
-            // },
-            {
-                data: 'event_code',
-                name: 'event_code',
             },
-            {
-                data: 'description',
-                name: 'description',
-            },
-            {
-                data: 'status',
-                name: 'status',
-            },
-            {
-                data: 'action',
-                name: 'action',
-                orderable: false,
-                searchable: false
-            },
+            pageLength: 200,
+            columns: [
+                // {
+                //     // data: 'id',
+                //     // name: 'id',
+                //     orderable: false,
+                //     searchable: false
+                // },
+                {
+                    data: 'event_code',
+                    name: 'event_code',
+                },
+                {
+                    data: 'description',
+                    name: 'description',
+                },
+                {
+                    data: 'status',
+                    name: 'status',
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
+                },
 
-        ],
+            ],
+        });
     });
-});
 
-$(document).on('click', '.delete', function() {
-    let bool = confirm('Are you sure you want to delete?');
-    if (!bool) {
-        return false;
-    }
-})
+    $(document).on('click', '.delete', function() {
+        let bool = confirm('Are you sure you want to delete?');
+        if (!bool) {
+            return false;
+        }
+    })
 </script>
 @stop

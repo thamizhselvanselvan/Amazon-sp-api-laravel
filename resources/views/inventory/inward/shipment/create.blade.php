@@ -10,14 +10,6 @@
 <h1 class="m-0 text-dark">Inward Shipment</h1>
 @stop
 @section('content')
-<!-- 
-<div class="row">
-    <div class="col">
-        <a href="{{ route('shipments.index') }}" class="btn btn-primary">
-            <i class="fas fa-long-arrow-alt-left btn-sm"></i> Back
-        </a>
-    </div>
-</div> -->
 <div class="row">
     <div class="col">
 
@@ -52,6 +44,9 @@
             </x-adminlte-select>
         </div>
     </div>
+
+
+
     <div class="col-2">
         <div id="currency">
             <x-adminlte-select name="currency" id="currency_input" label="Currency:">
@@ -78,20 +73,25 @@
         <div class="form-group">
             <label>Enter ASIN:</label>
             <div class="autocomplete" style="width:400px;">
-                <textarea name="upload_asin" rows="20" placeholder="Add Asins here..." id="" type=" text" autocomplete="off" class="form-control up_asin"></textarea>
+                <textarea name="upload_asin" rows="5" placeholder="Add Asins here..." id="" type=" text" autocomplete="off" class="form-control up_asin"></textarea>
             </div>
         </div>
     </div>
 </div>
 <div class="row">
-    <div class="col-0">
+    <div class="col-0.5">
         <x-adminlte-button label="Submit" theme="primary" icon="fas fa-file-upload" id="upload" class="btn-sm upload_asin_btn" />
     </div>
-    <div class="col-1">
+    <div></div>&nbsp;
+    <div class="col-0.5">
         <x-adminlte-button label="Refresh" theme="primary" icon="fas fa-redo-alt" id="refresh" class="btn-sm refresh_btn " />
     </div>
+    <div></div>&nbsp;
+    <div class="col-0.5">
+        <x-adminlte-button label="clear" theme="success" icon="fas fa-broom" id="clear" class="btn-sm clear_btn " />
+    </div>
 </div>
-</div>
+
 
 <br>
 <table class="table table-bordered yajra-datatable table-striped" id="report_table">
@@ -99,6 +99,7 @@
         <tr>
             <th>ASIN</th>
             <th>Item Name</th>
+            <th>Source</th>
             <th>Tag</th>
             <th>Quantity</th>
             <th>Price/Unit</th>
@@ -124,6 +125,7 @@
     $("#create").hide();
     $("#asin").hide();
     $("#upload").hide();
+    $("#clear").hide();
     $("#currency").hide();
     $("#refresh").hide();
 
@@ -132,14 +134,18 @@
     });
 
     $("#asin").on('click', function(e) {
-        $("#upload,#refresh").show();
+        $("#upload,#refresh,#clear").show();
     });
 
     $("#upload").on('click', function(e) {
         $("#currency,#report_table,#create").show();
     });
 
+    $("#clear").on('click', function(e) {
+        $('.up_asin').val('');
+    });
 
+    //submit//
     $(".upload_asin_btn").on("click", function() {
         let uploaded = $('.up_asin').val();
 
@@ -148,6 +154,7 @@
             return false;
         }
         let source = $('#source1').val();
+
 
         $.ajax({
             method: 'POST',
@@ -159,119 +166,147 @@
             },
             'dataType': 'json',
             success: function(response) {
-                console.log(response[0]);
+                let table = $("#report_table_body");
+                table.append(existing_data(response, source));
+            },
+            error: function(response) {
+                console.log(response);
+                alert('Something went Wrong...');
+            }
+        });
+    });
 
-                let html = '';
-                $.each(response.data, function(index, value) {
-                    html += "<tr class='table_row'>";
-                    html += "<td name='asin[]'>" + value[0].asin + "</td>";
-                    html += "<td name='name[]'>" + value[0].item_name + "</td>";
-                    html += `<td>
-                     <x-adminlte-select name="tag[]" id="tag">>
-                      <option value=" ">Select Tag</option>
+    function existing_data(response) {
+        let html = '';
+        let source = $('#source1').val();
+        // let source_name = $("#source1 option:selected").text();
+
+        $.each(response.data, function(index, value) {
+
+            let asin = value[0].asin;
+            let item_name = value[0].item_name;
+
+            if (value == "NA") {
+                asin = index;
+                item_name = "We are fetching the data in sometime refresh it again";
+            }
+            let item_class = 'item_' + asin;
+            html += "<tr class='table_row'>";
+            html += "<td name='asin[]'>" + asin + "</td>";
+            html += "<td name='name[]' class='" + item_class + "'>" + item_name + "</td>";
+            html += "<td name='source[]'>" + source + "</td>";
+            html += `<td>
+                     <x-adminlte-select name="tag[]" class="tags" id="tag">>
+                      <option value="0">Select Tag</option>
                        @foreach ($tags as $tag)
                        <option value="{{ $tag->id }}">{{$tag->name }}</option>
                       @endforeach
                     </x-adminlte-select>
                      </td>`
-                    html += '<td><input type="text" value="1" name="quantity[]" id="quantity">  </td>'
-                    html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
-                    html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
-                    html += "</tr>";
 
-                });
-                $("#report_table").append(html);
-            },
-            error: function(response) {
-                // console.log(response);
-                alert('error');
-            }
+            html += '<td><input type="text" value="1" name="quantity[]" id="quantity">  </td>'
+            html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
+            html += '<td> <button type="button" id="remove" class="btn btn-sm btn-danger remove1">Remove</button></td>'
+            html += "</tr>";
         });
-    });
 
+        return html;
+    }
+
+    //refresh//
 
     $(".refresh_btn").on("click", function() {
         let uploaded = $('.up_asin').val();
+
+        var result = '';
+        $("#report_table tbody tr").each(function() {
+            let restasin = $(this).find("td:first").html();
+            result += restasin + ",";
+        });
+
+        let source = $('#source1').val();
         if ((uploaded.length < 10)) {
             alert('Invalid Asin');
             return false;
         }
-        let source = $('#source1').val();
 
         $.ajax({
             method: 'POST',
             url: '/shipment/upload/refresh',
             data: {
-                'asin': uploaded,
+                'asin': result,
                 'source': source,
                 "_token": "{{ csrf_token() }}",
             },
             'dataType': 'json',
             success: function(response) {
-                // console.log(response);
+                console.log(response)
+                let first_time = 1;
+                let table = $("#report_table_body");
 
-                let html = '';
-                $.each(response.data, function(index, value) {
-                    html += "<tr class='table_row'>";
-                    html += "<td name='asin[]'>" + value[0].asin + "</td>";
-                    html += "<td name='name[]'>" + value[0].item_name + "</td>";
-                    html += `<td> 
-                       <x-adminlte-select  name="tag[]"  id="tag">
-                     <option value=" ">Select Tag</option>
-                       @foreach ($tags as $tag)
-                       <option value="{{ $tag->id }}">{{$tag->name }}</option>
-                       @endforeach
-                    </x-adminlte-select>
-                    </td>`
-                    html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
-                    html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
-                    html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
-                    html += "</tr>";
-                });
+                ref_existing_data(response);
 
-                $("#report_table_body").html(html);
             },
             error: function(response) {
-                // console.log(response);
+                console.log(response)
                 alert('error');
             }
         });
     });
-    
 
+    function ref_existing_data(response) {
+        let html = '';
+        $.each(response.data, function(index, value) {
+            let asin = value[0].asin;
+            let id = '.item_' + asin;
+            let title = value[0].item_name;
+            $(id).text(title);
+        });
+        return html;
+    }
+
+    //create Shipment//
     $(".create_shipmtn_btn").on("click", function() {
         let ware_valid = $('#warehouse').val();
         let currency_valid = $('#currency_input').val();
+        let validation = true;
+        // let tag_valid = $('.tags').val();
         if (ware_valid == 0) {
             alert('warehouse field is required');
+            validation = false;
             return false;
         } else if (currency_valid == 0) {
             alert('currency field is required');
+            validation = false;
             return false;
         } else {
 
             let self = $(this);
             let table = $("#report_table tbody tr");
-            //let data = {};
             let data = new FormData();
-
             table.each(function(index, elm) {
 
                 let cnt = 0;
                 let td = $(this).find('td');
-                //  console.log(td);
+
+                let tag = $(td[3]).find('select').val();
+                if (tag == 0) {
+                    alert('please select the Tag for all ASIN');
+                    validation = false;
+                    return false;
+                }
 
                 data.append('asin[]', td[0].innerText);
                 data.append('name[]', td[1].innerText);
-                data.append('tag[]', $(td[2]).find('select').val());
-
-                data.append('quantity[]', td[3].children[0].value);
-                data.append('price[]', td[4].children[0].value);
+                data.append('source[]', td[2].innerText);
+                data.append('tag[]', $(td[3]).find('select').val());
+                data.append('quantity[]', td[4].children[0].value);
+                data.append('price[]', td[5].children[0].value);
 
             });
 
-            let source = $('#source1').val();
-            data.append('source', source);
+            // let source = $('#source1').val();
+            // data.append('source', source);
 
             let warehouse = $('#warehouse').val();
             data.append('warehouse', warehouse);
@@ -279,35 +314,34 @@
 
             let currency = $('#currency_input').val();
             data.append('currency', currency);
-
-            $.ajax({
-                method: 'POST',
-                url: '/shipment/storeshipment',
-                data: data,
-                processData: false,
-                contentType: false,
-                response: 'json',
-                success: function(response) {
-
-                    console.log(response);
-                    //alert('success');
-
-                    if (response.success) {
-                        getBack();
+            if (validation) {
+                $.ajax({
+                    method: 'POST',
+                    url: '/shipment/storeshipment',
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    response: 'json',
+                    success: function(response) {
+                        console.log(response);
+                        if (response.success) {
+                            getBack();
+                        }
+                    },
+                    error: function(response) {
+                        // console.log(response);
+                        alert('error');
                     }
-                },
-                error: function(response) {
-                    // console.log(response);
-                    alert('error');
-                }
-            });
+                });
+            }
+
         }
     });
-    /*Redirect to Index:*/
-    function getBack() {
-        window.location.href = '/inventory/shipments'
-    }
 
+    //*Redirect to Index:*//
+    function getBack() {
+        window.location.href = '/inventory/shipments?success=Shipment has been created successfully'
+    }
 
     $(document).ready(function() {
 
@@ -326,22 +360,6 @@
 
         });
     });
-
-
-    /* Display Autocomplete data:*/
-    // function getData(asin, item_name) {
-
-    //     let html = "<tr class='table_row'>";
-    //     html += "<td name='asin[]'>" + asin + "</td>";
-    //     html += "<td name='name[]'>" + item_name + "</td>";
-    //     html += '<td> <input type="text" value="1" name="quantity[]" id="quantity"> </td>'
-    //     html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
-    //     html += '<td> <button type="button" id="remove" class="btn btn-danger remove1">Remove</button></td>'
-    //     html += "</tr>";
-
-    //     $("#report_table").append(html);
-
-    // }
 
     /*Delete Row :*/
     $('#report_table').on('click', ".remove1", function() {

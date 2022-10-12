@@ -195,7 +195,7 @@ return [
         Arcanedev\LogViewer\LogViewerServiceProvider::class,
 
 
-
+        Jenssegers\Mongodb\MongodbServiceProvider::class,
 
     ],
 

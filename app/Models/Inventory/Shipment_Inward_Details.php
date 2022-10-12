@@ -29,4 +29,7 @@ class Shipment_Inward_Details extends Model
     public function vendors() {
         return $this->hasOne(Vendor::class, 'id', 'source_id');
     }
+    public function tags() {
+        return $this->hasOne(Tag::class, 'id', 'tag');
+    }
 }

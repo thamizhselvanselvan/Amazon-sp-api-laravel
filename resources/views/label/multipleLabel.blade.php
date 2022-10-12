@@ -168,7 +168,11 @@
                                     <div class="col">
                                         <div class="col">
                                             <strong>Ship To: </strong>
-                                            <strong>{{$value->shipping_address['Name']}}</strong><br>
+                                            <strong>
+                                                @if(isset($value->shipping_address['Name']))
+                                                {{$value->shipping_address['Name']}}
+                                                @endif
+                                            </strong><br>
                                             @if(isset($value->shipping_address['AddressLine1']))
                                             {{$value->shipping_address['AddressLine1']}},
                                             @endif
@@ -219,7 +223,12 @@
                         @foreach ($value->product as $key => $details)
                         <tr class="mb-0">
                             <td class="text-center p-1">{{$key+1}}</td>
-                            <td class="text-center p-1">{{$details['title']}}</td>
+                            <td class="text-center p-1">
+                                @php
+                                $new_word = wordwrap($details['title'], 20,"\n",true);
+                                echo "$new_word\n";
+                                @endphp
+                            </td>
                             <td class="text-center p-1">{{$details['sku']}}</td>
                             <td class="text-center p-1">{{$details['qty']}}</td>
                             </td>

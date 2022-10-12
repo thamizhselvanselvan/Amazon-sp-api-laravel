@@ -15,6 +15,7 @@
         "gabordemooij/redbean": "^5.7",
         "graham-campbell/digitalocean": "^8.4",
         "guzzlehttp/guzzle": "^7.4",
+        "jenssegers/mongodb": "^3.8",
         "jeroennoten/laravel-adminlte": "^3.7",
         "jlevers/selling-partner-api": "^5.3",
         "laravel/framework": "^8.75",
@@ -37,7 +38,8 @@
         "spatie/laravel-failed-job-monitor": "^3.4",
         "spatie/laravel-permission": "^5.5",
         "symfony/symfony": "5.4.x",
-        "yajra/laravel-datatables-oracle": "^9.19"
+        "yajra/laravel-datatables-oracle": "^9.19",
+        "zohocrm/php-sdk-2.0": "^6.0"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

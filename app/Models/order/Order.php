@@ -11,7 +11,7 @@ class Order extends Model
     protected $connection = 'order';
     protected $table = 'orders';
     protected $fillable = [
-        
+
         'our_seller_identifier',
         'country',
         'amazon_order_identifier',

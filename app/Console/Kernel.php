@@ -38,7 +38,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('mosh:catalog-amazon-import')->everyFiveMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
             $schedule->command('mosh:Catalog-price-import-bb-in')->everyThreeMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
             $schedule->command('mosh:Catalog-price-import-bb-us')->everyMinute()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-            $schedule->command('mosh:catalog-dashboard-file')->everyThirtyMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+            $schedule->command('mosh:catalog-dashboard-file')->hourly()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
 
             $schedule->command('mosh:feed-tracking-details-to-amazon')->everyFiveMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
             //$schedule->command('mosh:seller-asin-get-pricing')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
@@ -50,6 +50,8 @@ class Kernel extends ConsoleKernel
             //$schedule->command('mosh:catalog-amazon-import')->everyTenMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
             $schedule->command('mosh:order_cliqnshop_place')->everyMinute()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
             //$schedule->command('mosh:catalog-dashboard-file')->everyFiveMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+            // $schedule->command('mosh:Catalog-price-import-bb-in')->everyThreeMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+            // $schedule->command('mosh:Catalog-price-import-bb-us')->everyMinute()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
         }
 
         if (app()->environment() === 'local') {

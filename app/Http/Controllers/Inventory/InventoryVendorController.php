@@ -22,7 +22,7 @@ class InventoryVendorController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
 
-                ->editColumn('country_name', function ($data) {
+                ->addColumn('country_name', function ($data) {
                     return ($data->countrys) ? $data->countrys->name : "NA";
                 })
 

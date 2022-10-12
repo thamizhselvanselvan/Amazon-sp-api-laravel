@@ -148,11 +148,14 @@
 
         let ware_valid = $('#warehouse').val();
         let currency_valid = $('#currency_output').val();
+        let validation = true;
         if (ware_valid == 0) {
             alert('warehouse field is required');
+            validation = false;
             return false;
         } else if (currency_valid == 0) {
             alert('currency field is required');
+            validation = false;
             return false;
         } else {
 
@@ -165,7 +168,15 @@
 
                 let cnt = 0;
                 let td = $(this).find('td');
-                console.log(td);
+
+                let tag = $(td[6]).find('select').val();
+                if (tag == 0) {
+                    alert('please select the Tag for all ASIN');
+                    validation = false;
+                    return false;
+                }
+
+
 
                 data.append('id[]', $(td[0]).attr("data-id"));
                 data.append('asin[]', td[0].innerText);
@@ -187,35 +198,33 @@
             let destination = $('#destination').val();
             data.append('destination', destination);
 
-
-            $.ajax({
-                method: 'POST',
-                url: '/shipment/storeoutshipment',
-                data: data,
-                processData: false,
-                contentType: false,
-                response: 'json',
-                success: function(response) {
-
-                    console.log(response);
-
-                    if (response.success) {
-                        getBack();
+            if (validation) {
+                $.ajax({
+                    method: 'POST',
+                    url: '/shipment/storeoutshipment',
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    response: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            getBack();
+                        }
+                    },
+                    error: function(response) {
+                        alert('Something went Wrong')
                     }
 
-                },
-                error: function(response) {
-                    console.log(response);
-                }
 
+                });
+            }
 
-            });
         }
 
     });
 
     function getBack() {
-        window.location.href = '/inventory/outwardings'
+        window.location.href = '/inventory/outwardings?success=shipment has created Successfully'
 
     }
 
@@ -418,7 +427,7 @@
                 // });
             },
             error: function(response) {
-                console.log(response);
+                alert('Something went Wrong')
             }
         });
     }

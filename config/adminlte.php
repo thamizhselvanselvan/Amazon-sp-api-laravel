@@ -289,8 +289,8 @@ return [
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin'],
                         ],
+                    ],
                 ],
-            ],
                 [
                     'text' => 'Company Master',
                     'url' => 'company',
@@ -438,7 +438,7 @@ return [
                         ],
                         [
 
-                            'text' => 'Rack Master',
+                            'text' => 'Rack',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory'],
                             'submenu' => [
@@ -473,7 +473,7 @@ return [
 
                         ],
                         [
-                            'text' => 'Dispose Reason',
+                            'text' => 'Dispose',
                             'icon' => 'far fa-fw fa-file',
                             'url'  => 'inventory/features',
                             'can' =>  ['Admin', 'Inventory']
@@ -646,22 +646,33 @@ return [
             ]
         ],
 
-
-
         [
             'text'  => 'Ship & Track',
             'can' => ['Admin'],
             'submenu' => [
                 [
-                    'text'  =>  'SMSA Tracking',
-                    'url'   =>  'shipntrack/smsa',
-                    'can'   =>  ['Admin'],
+                    'text' => 'Courier Partner',
+                    'url' => 'shipntrack/courier',
+                    'can' => ['Admin']
                 ],
                 [
-                    'text'  =>  'Bombino Tracking',
-                    'url'   =>  'shipntrack/bombino',
-                    'can'   =>  ['Admin'],
+                    'text' => 'Tracking',
+                    'can' => ['Admin'],
+                    'submenu' =>
+                    [
+                        [
+                            'text'  =>  'SMSA Tracking',
+                            'url'   =>  'shipntrack/smsa',
+                            'can'   =>  ['Admin'],
+                        ],
+                        [
+                            'text'  =>  'Bombino Tracking',
+                            'url'   =>  'shipntrack/bombino',
+                            'can'   =>  ['Admin'],
+                        ],
+                    ],
                 ],
+
                 [
                     'text'  =>  'Forwarder Mapping',
                     'url'   =>  'shipntrack/forwarder',
@@ -669,7 +680,7 @@ return [
                 ],
 
                 [
-                    'text' => 'Tracking',
+                    'text' => 'Tracking Event',
                     'can' => ['Admin'],
                     'submenu' =>
                     [
@@ -695,8 +706,6 @@ return [
                         ],
                     ],
                 ],
-
-
             ]
         ],
 
