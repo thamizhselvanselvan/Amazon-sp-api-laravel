@@ -337,13 +337,16 @@ class labelManagementController extends Controller
                 } elseif ($key1 == 'title') {
 
                     $title_array = explode('-label-title-', $label_detials);
-
                     $title_array = array_unique($title_array);
+
                     foreach ($title_array as $key2 => $title) {
+
                         $ignore_title = str_ireplace($ignore, '', $title);
                         $product[$key2][$key1] = substr_replace($ignore_title, '....', 100);
 
                         $sku_array = explode('-label-sku-', $label_value->sku);
+                        $sku_array = array_unique($sku_array);
+
                         $product[$key2]['sku'] = $sku_array[$key2];
 
                         $qty_array = explode('-label-qty-', $label_value->qty);
