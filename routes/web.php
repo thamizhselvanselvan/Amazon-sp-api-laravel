@@ -3,7 +3,6 @@
 use RedBeanPHP\R;
 use Carbon\Carbon;
 use App\Models\User;
-use League\Csv\Reader;
 use App\Events\testEvent;
 use AWS\CRT\HTTP\Request;
 use App\Events\checkEvent;
@@ -12,9 +11,12 @@ use Maatwebsite\Excel\Row;
 use App\Jobs\TestQueueFail;
 use Illuminate\Support\Str;
 use Smalot\PdfParser\Parser;
+use Maatwebsite\Excel\Reader;
 use Dflydev\DotAccessData\Data;
 use SellingPartnerApi\Endpoint;
 use App\Models\Inventory\Shelve;
+use App\Models\Catalog\PricingIn;
+use App\Models\Catalog\PricingUs;
 use App\Models\Inventory\Country;
 use App\Models\Universal_textile;
 use Illuminate\Support\Facades\DB;
@@ -56,21 +58,47 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 |
 */
 // use ConfigTrait;
+
+Route::get('gh', function (Request $request) {
+    $asins = CSV_Reader("Notfound  in buybox.csv");
+    $asin_collections = [];
+    $cnt = 1;
+    foreach ($asins as $asin) {
+        $asin_check = DB::table("product_aa_custom_p1_uss")->where('asin1', $asin['Asin'])->first();
+        if (!$asin_check) {
+            DB::table("product_aa_custom_p1_uss")->insert([
+                'seller_id' => 39,
+                'asin1' => $asin['Asin'],
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+        $asin_check1 = DB::table("product_aa_custom_p1_us_offers")->where('asin', $asin['Asin'])->first();
+        if (!$asin_check1) {
+            DB::table("product_aa_custom_p1_us_offers")->insert([
+                'asin' => $asin['Asin'],
+                'priority' => 1,
+                'cyclic' => 0,
+                'delist' => 0,
+                'available' => 0,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+    }
+    dd(count($asin_collections));
+});
+
 $delist_asins;
 Route::get('wherein', function () {
 
-    $back_file_date = Carbon::now()->subDays(4)->toDateString();
-    $files = Storage::allFiles('AsinDestination');
+    $data =  PricingIn::select('destination.asin as asin')
+        ->rightJoin("asin_destination_ins as destination", 'destination.id', '=', 'pricing_ins.id')
+        ->where('destination.priority', 1)
+        ->orWhereNull('destination.asin')
+        ->get()->toArray();
 
-    foreach ($files as $file_name) {
-
-        $FileTime = date("F d Y H:i:s.", filemtime(Storage::path("${file_name}")));
-        $current_file_date = Carbon::parse($FileTime)->toDateString();
-
-        if ($back_file_date == $current_file_date) {
-            unlink(Storage::path($file_name));
-        }
-    }
+    po($data);
     exit;
 
     $dbname = config('database.connections.catalog.database');

@@ -10,7 +10,7 @@
             <x-adminlte-button label="Add New Records" theme="primary" icon="fas fa-plus" class="btn-sm" />
         </a>
         <a href="{{Route('shipntrack.forwarder.template')}}">
-            <x-adminlte-button label="Download Templates" theme="primary" icon="fas fa-file-download" class="btn-sm" />
+            <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-file-download" class="btn-sm" />
         </a> <a href="{{Route('shipntrack.missing.find')}}">
             <x-adminlte-button label="Export Order ID's And AWB Number" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
         </a>

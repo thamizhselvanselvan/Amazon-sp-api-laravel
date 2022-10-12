@@ -71,8 +71,7 @@ class InventoryOutwardShipmentController extends Controller
 
     public function show(Request $reques, $id)
     {
-        $outview = Shipment_Outward_Details::where('ship_id', $id)->with(['warehouses', 'vendors'])->get();
-
+        $outview = Shipment_Outward_Details::where('ship_id', $id)->with(['warehouses', 'vendors','tags'])->get();
         foreach ($outview as $key => $val) {
             $items[] =   $val['asin'];
         }
@@ -90,7 +89,7 @@ class InventoryOutwardShipmentController extends Controller
         $place = Inventory::whereIn('asin', $items)->get();
         $loc = [];
         foreach ($place as $plc) {
-// dd($plc);
+
             $loc[] = Shelve::where('shelve_id', $plc['bin'])->first();
         }
 
@@ -132,6 +131,7 @@ class InventoryOutwardShipmentController extends Controller
             ->first();
         }
     }
+
     public function storeoutshipment(Request $request)
     {
 
@@ -190,6 +190,7 @@ class InventoryOutwardShipmentController extends Controller
 
         return response()->json(['success' => 'Shipment has Created successfully']);
     }
+    
     public function outwardingview(Request $request)
     {
 

@@ -163,8 +163,6 @@
                 "_token": "{{ csrf_token() }}",
             },
             success: function(result) {
-                conole.log(response);
-                alert('ok');
                 self.parent().parent().parent().next().find('.bin_id').empty();
                 let bin_data = '<option>--Select--</option>';
                 $.each(result, function(i, result) {
@@ -180,7 +178,7 @@
     });
 
     function pullback() {
-        window.location.href = '/inventory/shipments'
+        window.location.href = '/inventory/shipments?success=Shipment has Placed successfully'
     }
     $("#store_shipments").on("click", function() {
         let self = $(this);

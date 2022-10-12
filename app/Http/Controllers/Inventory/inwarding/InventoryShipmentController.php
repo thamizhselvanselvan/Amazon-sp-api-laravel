@@ -67,14 +67,14 @@ class InventoryShipmentController extends Controller
         $ware_lists = Warehouse::get();
         $currency_lists = Currency::get();
         $tags = Tag::get();
+      
         return view('inventory.inward.shipment.create', compact('source_lists', 'ware_lists', 'currency_lists','tags'));
     }
 
     public function show($source, $id)
     {
 
-        $view = Shipment_Inward_Details::where('ship_id', $id)->where('source_id', $source)->with(['warehouses', 'vendors'])->get();
-
+        $view = Shipment_Inward_Details::where('ship_id', $id)->where('source_id', $source)->with(['warehouses', 'vendors','tags'])->get();
         $warehouse_name = '';
         $vendor_name = '';
         $currency_id = '';
@@ -87,16 +87,16 @@ class InventoryShipmentController extends Controller
             $warehouse_name = $bar->warehouses->name;
             $vendor_name = $bar->vendors->name;
             $currency_id = $bar->currency;
+            // $tag_name = $bar->tags;
+            // dd($bar->tags->name);
         }
-
         $currency = Currency::get();
         $currency_array = [];
         foreach ($currency as $key => $cur) {
             $currency_array[$cur->id] = $cur->name;
         }
 
-
-        return view('inventory.inward.shipment.view', compact('view', 'currency_array', 'bar_code', 'id', 'warehouse_name', 'vendor_name', 'currency_id'));
+        return view('inventory.inward.shipment.view', compact('view', 'currency_array', 'bar_code', 'id', 'warehouse_name', 'vendor_name','currency_id'));
     }
     public function createView(Request $request)
     {

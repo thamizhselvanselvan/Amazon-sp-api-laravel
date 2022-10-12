@@ -73,6 +73,8 @@ class AsinDestinationUpload extends Command
                     'seller_id' => $source[$this->destination],
                     'active' => 1,
                     'asin1' => $asin,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ];
 
                 $product_lowest_price[] = [
@@ -80,6 +82,8 @@ class AsinDestinationUpload extends Command
                     'cyclic' => 0,
                     'priority'  => $priority,
                     'import_type' => 'Seller',
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ];
 
                 if ($count == 999) {

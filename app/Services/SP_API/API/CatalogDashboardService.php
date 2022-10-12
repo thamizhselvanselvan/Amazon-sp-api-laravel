@@ -135,6 +135,7 @@ class CatalogDashboardService
                 ${destination_table}.priority from ${destination_table}
             join ${catalog_price}
             ON ${destination_table}.asin = ${catalog_price}.asin
+            where ${catalog_price}.available = 1
             group by ${destination_table}.priority
             ");
             foreach ($cat_pricings as $cat_pricing) {
