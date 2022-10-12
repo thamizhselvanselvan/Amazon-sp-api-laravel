@@ -13,8 +13,8 @@ Route::prefix('label/')->group(function () {
     Route::post('missing/order_id', 'label\labelManagementController@missingOrderId');
 });
 
-Route::get('label/search-label', 'label\labelManagementController@SearchLabel')->name('label.search-label');
-Route::post('label/select-label', 'label\labelManagementController@GetLabel');
+Route::match(['get', 'post'], 'label/search-label', 'label\labelManagementController@SearchLabel')->name('label.search-label');
+// Route::post('label/select-label', 'label\labelManagementController@GetLabel');
 Route::get('label/pdf-template/{id}', 'label\labelManagementController@showTemplate');
 Route::post('label/export-pdf', 'label\labelManagementController@ExportLabel');
 Route::get('label/download/{awb_no}', 'label\labelManagementController@downloadLabel');
