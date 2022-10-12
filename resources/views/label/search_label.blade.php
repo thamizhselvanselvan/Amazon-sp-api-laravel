@@ -88,13 +88,30 @@
                         </div>
                     </form>
                 </div>
-
-
             </div>
         </div>
     </div>
 </div>
 <!--  Edit address modal start -->
+
+<!-- Download label zip Modal start-->
+<div class="modal" id="label_download_zip">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Download Label</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body label_download">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Download label zip Modal end-->
 
 <div class="row">
     <h1 class="m-0 text-dark col">Label Management</h1>
@@ -108,8 +125,8 @@
         <a href="{{ route('label.manage') }}" class="btn btn-primary btn-sm">
             <i class="fas fa-long-arrow-alt-left"></i> Back
         </a>
-        <a href="zip/download">
-            <x-adminlte-button label="Download Label Zip" theme="primary" icon="fas fa-download" class="btn-md ml-2 btn-sm" id='zip-download' />
+        <a>
+            <x-adminlte-button label="Download Label" theme="primary" icon="fas fa-download" class="btn-md ml-2 btn-sm" id='zip-download' data-toggle="modal" data-target='#label_download_zip' />
         </a>
     </div>
 </div>
@@ -161,7 +178,7 @@
     <table class='table table-bordered yajra-datatable table-striped text-center'>
         <thead>
             <tr class='text-bold bg-info'>
-                <th>Selected All <br><input type='checkbox' id='selectAll' /></th>
+                <th>Selected All <input type='checkbox' id='selectAll' /></th>
                 <th>Store Name</th>
                 <th>Order No.</th>
                 <th>Awb No.</th>
@@ -321,10 +338,13 @@
         });
 
         $('#download_selected').click(function() {
+
             alert('Label is downloading please wait.');
+
             let id = '';
             let count = '';
             let arr = '';
+            let bag_no = $('#bag_no').val();
             $("input[name='options[]']:checked").each(function() {
                 if (count == 0) {
                     id += $(this).val();
@@ -339,12 +359,11 @@
                 url: "{{ url('/label/select-download') }}",
                 data: {
                     'id': id,
+                    'bag_no': bag_no,
                     "_token": "{{ csrf_token() }}",
                 },
                 success: function(response) {
-                    // arr += response;
-                    // window.location.href = '/label/zip-download/' + arr;
-                    // alert('Export pdf successfully');
+
                 }
             });
         });
@@ -526,14 +545,31 @@
                     },
                     {
                         data: 'action',
-                        name: 'action'
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+
                     },
                 ],
             });
         }
     });
-
     //Data Table end
+
+    $('#zip-download').on('click', function() {
+        $('.label_download').empty();
+        $.ajax({
+            method: 'post',
+            url: "{{ route('label.zip.download')}}",
+            data: {
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(result) {
+                $('.label_download').append(result);
+                //
+            }
+        });
+    });
 </script>
 
 @stop

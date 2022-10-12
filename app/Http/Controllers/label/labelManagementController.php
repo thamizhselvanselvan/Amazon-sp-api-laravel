@@ -66,10 +66,10 @@ class labelManagementController extends Controller
                     if (isset($name->Name)) {
                         $table .=
                             "<div class='d-flex'>
-                            <a href='/label/pdf-template/$data->id' class='edit btn btn-success btn-sm' target='_blank'>
+                            <a href='/label/pdf-template/$data->id' class='edit btn btn-success btn-sm ml-2 mr-2' target='_blank'>
                                 <i class='fas fa-eye'></i> View 
                             </a>
-                            <a href='/label/download-direct/$data->id' class='edit btn btn-info btn-sm'>
+                            <a href='/label/download-direct/$data->id' class='edit btn btn-info btn-sm mr-2'>
                             <i class='fas fa-download'></i> Download </a>";
                     }
                     $table .=
@@ -205,16 +205,17 @@ class labelManagementController extends Controller
 
     public function DownloadSelected(Request $request)
     {
-
         $passid = $request->id;
+        $bag_no = $request->bag_no;
+
         $currenturl =  URL::current();
 
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
             $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:label-bulk-zip-download $passid $currenturl > /dev/null &";
+            $command = "cd $base_path && php artisan pms:label-bulk-zip-download $passid $currenturl $bag_no > /dev/null &";
             exec($command);
         } else {
-            Artisan::call('pms:label-bulk-zip-download' . ' ' . $passid . ' ' . $currenturl);
+            Artisan::call('pms:label-bulk-zip-download' . ' ' . $passid . ' ' . $currenturl . ' ' . $bag_no);
         }
 
         return response()->json(['success' => 'Zip created successfully']);
@@ -222,10 +223,32 @@ class labelManagementController extends Controller
 
     public function zipDownload()
     {
-        if (!Storage::exists('label/zip/label.zip')) {
-            return redirect()->intended('/label/search-label')->with('success', 'File is not available right now! Please wait.');
+        $html = '';
+        $path = (Storage::path("label"));
+        $files = scandir($path);
+        foreach ($files as $key => $file) {
+            if ($key > 1) {
+
+                $html .= "<div>Bag No: $file";
+                $file_path = Storage::path('label' . '/' . $file);
+                $file_paths = scandir($file_path);
+                foreach ($file_paths as $zip_path) {
+                    if ($zip_path == 'zip') {
+                        $zip_path_array = scandir($file_path . '/' . $zip_path);
+                        foreach ($zip_path_array as $zip_key => $zip_file) {
+                            if ($zip_key > 1) {
+                                $html .=
+                                    "<a href='/label/zip/download/$file/zip/$zip_file'>
+                                        <li class='ml-4'>$zip_file</li>
+                                    </a>";
+                            }
+                        }
+                    }
+                }
+            }
         }
-        return Storage::download('label/zip/label.zip');
+        $html .= '</div>';
+        return $html;
     }
 
     public function downloadExcelTemplate()
@@ -766,5 +789,11 @@ class labelManagementController extends Controller
         $label_detials = $this->labelListing($awb_tracking_no, 'awb_tracking_id');
 
         return response()->json($label_detials);
+    }
+
+    public function zipDownloadLink($bag_no, $file_name)
+    {
+        $path = "label/$bag_no/zip/$file_name";
+        return Storage::download($path);
     }
 }
