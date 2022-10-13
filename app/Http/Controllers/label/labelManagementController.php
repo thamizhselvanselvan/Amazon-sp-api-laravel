@@ -185,7 +185,7 @@ class labelManagementController extends Controller
             ->margins(0, 0, 0, 0)
             ->savePdf($exportToPdf);
 
-        return $this->downloadLabel($awb_no, $bag_no);
+        return $this->downloadLabel($bag_no, $awb_no);
     }
 
     public function PrintSelected($id)
