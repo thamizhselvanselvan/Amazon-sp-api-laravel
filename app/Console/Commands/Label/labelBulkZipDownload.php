@@ -17,7 +17,7 @@ class labelBulkZipDownload extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:label-bulk-zip-download {passid} {currenturl} {bag_no}';
+    protected $signature = 'pms:label-bulk-zip-download {passid} {currenturl} {bag_no} {current_page_number}';
 
     /**
      * The console command description.
@@ -45,6 +45,7 @@ class labelBulkZipDownload extends Command
     {
         $passid = $this->argument('passid');
         $bag_no = $this->argument('bag_no');
+        $current_page_number = $this->argument('current_page_number');
         $currenturl = $this->argument('currenturl');
 
         $excelid = explode('-', $passid);
@@ -76,8 +77,8 @@ class labelBulkZipDownload extends Command
         }
 
         $zip = new ZipArchive;
-        $data_time = now()->format('Y-m-d-H-i-s');
-        $zip_path = 'label/' . $bag_no . '/' . 'zip/' . 'label' . $data_time . '.zip';
+        // $data_time = now()->format('Y-m-d-H-i-s');
+        $zip_path = 'label/' . $bag_no . '/' . 'zip/' . 'label' . $current_page_number . '.zip';
 
         $fileName = Storage::path($zip_path);
 
