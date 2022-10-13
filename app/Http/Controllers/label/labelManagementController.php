@@ -237,37 +237,37 @@ class labelManagementController extends Controller
     public function zipDownload()
     {
         $html = '';
+        $html_final = '';
         $count = 0;
         $path = (Storage::path("label"));
         $files = scandir($path);
         foreach ($files as $key => $file) {
             if ($key > 1) {
-                $html .= "<div>Bag No: $file";
                 $file_path = Storage::path('label' . '/' . $file);
                 if (is_dir($file_path)) {
                     $file_paths = scandir($file_path);
                     foreach ($file_paths as $zip_path) {
                         if ($zip_path == 'zip') {
                             $zip_path_array = scandir($file_path . '/' . $zip_path);
-
                             $count = 0;
                             foreach ($zip_path_array as $zip_key => $zip_file) {
                                 if ($zip_key > 1) {
                                     $count++;
+                                    if ($count == 1) {
+                                        $html .= "<div>Bag No: $file";
+                                    }
                                     $html .=
                                         "<a href='/label/zip/download/$file/zip/$zip_file'>
-                                <li class='ml-4'>Label Part " . $zip_key - 1 . ' ' . date("M-d-Y H:i:s.", filemtime("$file_path/$zip_path/$zip_file")) . "</li>
-                                </a>";
+                                             <li class='ml-4'>Label Part " . $zip_key - 1 . ' ' . date("M-d-Y H:i:s.", filemtime("$file_path/$zip_path/$zip_file")) . "</li>
+                                        </a>";
                                 }
-                            }
-                            if ($count == 0) {
-                                $html .= "<li class='ml-4'> Zip file is creating...</li>";
                             }
                         }
                     }
                 }
             }
         }
+
 
         if ($html == '') {
             return '<div> File Is Downloading....</div>';
