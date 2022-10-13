@@ -66,7 +66,7 @@ class labelManagementController extends Controller
                     if (isset($name->Name)) {
                         $table .=
                             "<div class='d-flex'>
-                            <a href='/label/pdf-template/$data->id' class='edit btn btn-success btn-sm ml-2 mr-2' target='_blank'>
+                            <a href='/label/pdf-template/$bag_no-$data->id' class='edit btn btn-success btn-sm ml-2 mr-2' target='_blank'>
                                 <i class='fas fa-eye'></i> View 
                             </a>
                             <a href='/label/download-direct/$bag_no-$data->id' class='edit btn btn-info btn-sm mr-2'>
@@ -111,12 +111,14 @@ class labelManagementController extends Controller
 
     public function showTemplate($id)
     {
-        $result = $this->labelDataFormating("'$id'");
-        // dd($result);
+        $id_array = explode('-', $id);
+        $bag_no = $id_array[0];
+        $table_id = $id_array[1];
+        $result = $this->labelDataFormating("'$table_id'");
+
         $result = $result[0];
         $awb_no = $result['awb_no'];
         $forwarder = $result['forwarder'];
-        $bag_no = $result['bag_no'];
 
         if ($awb_no == '' || $awb_no == NULL) {
             $awb_no = 'AWB-MISSING';
@@ -373,7 +375,6 @@ class labelManagementController extends Controller
         $label = DB::select("SELECT ordetail.amazon_order_identifier,
         GROUP_CONCAT(DISTINCT web.order_no)as order_no,
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
-        GROUP_CONCAT(DISTINCT web.bag_no) as bag_no,
         GROUP_CONCAT(DISTINCT web.forwarder) as forwarder,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
         GROUP_CONCAT(DISTINCT ordetail.shipping_address) as shipping_address,
