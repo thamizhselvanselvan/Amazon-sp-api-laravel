@@ -65,7 +65,7 @@ class labelBulkZipDownload extends Command
 
                 $exportToPdf = storage::path($path);
                 Browsershot::url($url)
-                    ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+                    // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
                     ->paperSize(576, 384, 'px')
                     ->pages('1')
                     ->scale(1)

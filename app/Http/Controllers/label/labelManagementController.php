@@ -209,11 +209,12 @@ class labelManagementController extends Controller
         $bag_no = $request->bag_no;
         $current_page_number = $request->current_page_number;
 
+        // Log::alert($current_page_number);
         $currenturl =  URL::current();
 
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
             $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:label-bulk-zip-download $passid $currenturl $bag_no $current_page_number> /dev/null &";
+            $command = "cd $base_path && php artisan pms:label-bulk-zip-download $passid $currenturl $bag_no $current_page_number > /dev/null &";
             exec($command);
         } else {
             Artisan::call('pms:label-bulk-zip-download' . ' ' . $passid . ' ' . $currenturl . ' ' . $bag_no . ' ' . $current_page_number);
