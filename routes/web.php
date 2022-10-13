@@ -66,6 +66,10 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
 Route::get('gh', function () {
 
+    $in = '1,22,100';
+    po(filter_var($in, FILTER_SANITIZE_NUMBER_INT));
+    exit;
+
     $destination_tables = ["asin_destination_uss", "asin_destination_ins"];
 
     $data = [];
