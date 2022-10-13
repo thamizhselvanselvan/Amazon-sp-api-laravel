@@ -88,29 +88,51 @@
                         </div>
                     </form>
                 </div>
-
-
             </div>
         </div>
     </div>
 </div>
 <!--  Edit address modal start -->
 
-<div class="row">
-    <h1 class="m-0 text-dark col">Label Management</h1>
-    <h2 class="mb-4 text-right col"></h2>
-    <label>
-        Search:<input type="text" id="Searchbox" placeholder="Search label" autocomplete="off">
-    </label>
+<!-- Download label zip Modal start-->
+<div class="modal" id="label_download_zip">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Download Label</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body label_download">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
-<div class="row mt-2">
+<!-- Download label zip Modal end-->
+<div class="row">
     <div class="col">
-        <a href="{{ route('label.manage') }}" class="btn btn-primary btn-sm">
-            <i class="fas fa-long-arrow-alt-left"></i> Back
-        </a>
-        <a href="zip/download">
-            <x-adminlte-button label="Download Label Zip" theme="primary" icon="fas fa-download" class="btn-md ml-2 btn-sm" id='zip-download' />
-        </a>
+        <h4>
+            <a href="{{ route('label.manage') }}" class="btn btn-primary btn-sm">
+                <i class="fas fa-long-arrow-alt-left"></i> Back
+            </a>
+            Label Management
+        </h4>
+    </div>
+    <div class="col">
+        <form action="">
+            @csrf
+            <!-- <label>Bag No.:</label> -->
+            <div class="input-group">
+                <input type="text" class="form-control float-right" name="bag_no" placeholder="Input Bag No." id="bag_no">
+                <x-adminlte-button label="Search" theme="primary" icon="fas fa-search" id="SearchByBag" class="btn-sm ml-2" />
+                <x-adminlte-button label="Create Selected PDF" id='download_selected' theme="primary" icon="fas fa-download" class="btn-sm ml-2" />
+                <x-adminlte-button label="Print Selected" target="_blank" id='print_selected' theme="primary" icon="fas fa-print" class="btn-sm ml-2" />
+                <x-adminlte-button label="Download Label Zip" theme="primary" icon="fas fa-download" class="btn-md ml-2 btn-sm" id='zip-download' data-toggle="modal" data-target='#label_download_zip' />
+            </div>
+        </form>
     </div>
 </div>
 @stop
@@ -118,7 +140,6 @@
 @section('content')
 <div class="row">
     <div class="col">
-
         <div class="alert_display">
             @if ($message = Session::get('success'))
             <div class="alert alert-warning alert-block">
@@ -129,39 +150,11 @@
         </div>
     </div>
 </div>
-<div class="container-fluid label-search-box">
-    <div class="row">
-        <div class="col">
-
-        </div>
-        <div class="col">
-            <form action="">
-                @csrf
-                <div class="form-group">
-                    <label>Bag No.:</label>
-                    <div class="input-group">
-                        <!-- <div class="input-group-prepend">
-                                                                        <span class="input-group-text">
-                                                                            <i class="far fa-calendar-alt"></i>
-                                                                        </span>
-                                                                    </div> -->
-
-                        <input type="text" class="form-control float-right" name="bag_no" placeholder="Input Bag No." id="bag_no">
-                        <!-- <input type="text" class="form-control float-right datepicker" name="label_date" placeholder="Select Date Range" autocomplete="off" id="label_date"> -->
-                        <x-adminlte-button label="Search" theme="primary" icon="fas fa-search" id="SearchByBag" class="btn-sm ml-2" />
-                        <x-adminlte-button label="Download Selected" id='download_selected' theme="primary" icon="fas fa-download" class="btn-sm ml-2" />
-                        <x-adminlte-button label="Print Selected" target="_blank" id='print_selected' theme="primary" icon="fas fa-print" class="btn-sm ml-2" />
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 <div id="showTable">
     <table class='table table-bordered yajra-datatable table-striped text-center'>
         <thead>
             <tr class='text-bold bg-info'>
-                <th>Selected All <br><input type='checkbox' id='selectAll' /></th>
+                <th>Selected All <input type='checkbox' id='selectAll' /></th>
                 <th>Store Name</th>
                 <th>Order No.</th>
                 <th>Awb No.</th>
@@ -175,7 +168,6 @@
 
         </tbody>
     </table>
-
 </div>
 
 @stop
@@ -321,10 +313,12 @@
         });
 
         $('#download_selected').click(function() {
-            alert('Label is downloading please wait.');
             let id = '';
-            let count = '';
+            let count = 0;
             let arr = '';
+            let bag_no = $('#bag_no').val();
+            let current_page_number = $(".check_options:first").data('current-page');
+
             $("input[name='options[]']:checked").each(function() {
                 if (count == 0) {
                     id += $(this).val();
@@ -333,18 +327,23 @@
                 }
                 count++;
             });
-            // alert(id);
+
+            if (count == 0) {
+                alert('Please Select Label Details to Download');
+                return false;
+            }
+            alert('Label is downloading please wait.');;
             $.ajax({
                 method: 'POST',
                 url: "{{ url('/label/select-download') }}",
                 data: {
                     'id': id,
+                    'bag_no': bag_no,
+                    'current_page_number': current_page_number,
                     "_token": "{{ csrf_token() }}",
                 },
                 success: function(response) {
-                    // arr += response;
-                    // window.location.href = '/label/zip-download/' + arr;
-                    // alert('Export pdf successfully');
+
                 }
             });
         });
@@ -481,16 +480,18 @@
         } else {
             let bag_no = $('#bag_no').val();
             let yajra_table = $('.yajra-datatable').DataTable({
+                // dom: '<"top"p s>',
+                // dom: '<"top"p>rt<"bottom"flp><"clear">',
                 destroy: true,
                 processing: true,
                 serverSide: true,
                 pageLength: 40,
-                searching: false,
-                lengthMenu: [10, 20, 30, 50],
+                lengthMenu: [10, 20, 30, 40],
                 ajax: {
                     url: "{{ url('label/search-label') }}",
                     type: 'get',
                     data: function(d) {
+
                         d.bag_no = bag_no;
                     },
                 },
@@ -526,14 +527,31 @@
                     },
                     {
                         data: 'action',
-                        name: 'action'
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+
                     },
                 ],
             });
         }
     });
-
     //Data Table end
+
+    $('#zip-download').on('click', function() {
+        $('.label_download').empty();
+        $.ajax({
+            method: 'post',
+            url: "{{ route('label.zip.download')}}",
+            data: {
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(result) {
+                $('.label_download').append(result);
+                //
+            }
+        });
+    });
 </script>
 
 @stop

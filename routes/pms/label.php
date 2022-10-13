@@ -22,7 +22,8 @@ Route::get('label/download-direct/{id}', 'label\labelManagementController@Downlo
 Route::get('label/print-selected/{id}', 'label\labelManagementController@PrintSelected');
 Route::POST('label/select-download', 'label\labelManagementController@DownloadSelected');
 // Route::get('label/zip-download/{arr}', 'label\labelManagementController@zipDownload');
-Route::get('label/zip/download', 'label\labelManagementController@zipDownload');
+Route::post('label/zip/download', 'label\labelManagementController@zipDownload')->name('label.zip.download');
+Route::get('label/zip/download/{bag_no}/zip/{file_name}', 'label\labelManagementController@zipDownloadLink');
 
 Route::get('label/missing/address', 'label\labelManagementController@labelMissingAddress');
 Route::post('label/missing/address', 'label\labelManagementController@labelMissingAddressUpload');

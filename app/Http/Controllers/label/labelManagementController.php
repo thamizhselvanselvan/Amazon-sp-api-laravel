@@ -41,16 +41,16 @@ class labelManagementController extends Controller
         $data = $this->labelListing(2);
         // dd($data);
         if ($request->ajax()) {
+            $currentPageNumber = $request->start / $request->length + 1;
 
             $bag_no = $request->bag_no;
             $data = $this->labelListing($bag_no);
 
             return DataTables::of($data)
-
-                ->addColumn('select_all', function ($data) {
+                ->addColumn('select_all', function ($data) use ($currentPageNumber) {
                     $name = json_decode($data->shipping_address);
                     if (isset($name->Name)) {
-                        return "<input class='check_options' type='checkbox' value='$data->id' name='options[]' id='checkid$data->id'>";
+                        return "<input class='check_options' type='checkbox' value='$data->id' data-current-page='$currentPageNumber' name='options[]' id='checkid$data->id'>";
                     }
                 })
                 ->addColumn('name', function ($data) {
@@ -66,10 +66,10 @@ class labelManagementController extends Controller
                     if (isset($name->Name)) {
                         $table .=
                             "<div class='d-flex'>
-                            <a href='/label/pdf-template/$data->id' class='edit btn btn-success btn-sm' target='_blank'>
+                            <a href='/label/pdf-template/$data->id' class='edit btn btn-success btn-sm ml-2 mr-2' target='_blank'>
                                 <i class='fas fa-eye'></i> View 
                             </a>
-                            <a href='/label/download-direct/$data->id' class='edit btn btn-info btn-sm'>
+                            <a href='/label/download-direct/$data->id' class='edit btn btn-info btn-sm mr-2'>
                             <i class='fas fa-download'></i> Download </a>";
                     }
                     $table .=
@@ -205,16 +205,19 @@ class labelManagementController extends Controller
 
     public function DownloadSelected(Request $request)
     {
-
         $passid = $request->id;
+        $bag_no = $request->bag_no;
+        $current_page_number = $request->current_page_number;
+
+        // Log::alert($current_page_number);
         $currenturl =  URL::current();
 
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
             $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:label-bulk-zip-download $passid $currenturl > /dev/null &";
+            $command = "cd $base_path && php artisan pms:label-bulk-zip-download $passid $currenturl $bag_no $current_page_number > /dev/null &";
             exec($command);
         } else {
-            Artisan::call('pms:label-bulk-zip-download' . ' ' . $passid . ' ' . $currenturl);
+            Artisan::call('pms:label-bulk-zip-download' . ' ' . $passid . ' ' . $currenturl . ' ' . $bag_no . ' ' . $current_page_number);
         }
 
         return response()->json(['success' => 'Zip created successfully']);
@@ -222,12 +225,49 @@ class labelManagementController extends Controller
 
     public function zipDownload()
     {
-        if (!Storage::exists('label/zip/label.zip')) {
-            return redirect()->intended('/label/search-label')->with('success', 'File is not available right now! Please wait.');
+        $html = '';
+        $count = 0;
+        $path = (Storage::path("label"));
+        $files = scandir($path);
+        foreach ($files as $key => $file) {
+            if ($key > 1) {
+                $html .= "<div>Bag No: $file";
+                $file_path = Storage::path('label' . '/' . $file);
+                $file_paths = scandir($file_path);
+                foreach ($file_paths as $zip_path) {
+                    if ($zip_path == 'zip') {
+                        $zip_path_array = scandir($file_path . '/' . $zip_path);
+
+                        $count = 0;
+                        foreach ($zip_path_array as $zip_key => $zip_file) {
+                            if ($zip_key > 1) {
+                                $count++;
+                                $html .=
+                                    "<a href='/label/zip/download/$file/zip/$zip_file'>
+                                        <li class='ml-4'>Label Part " . $zip_key - 1 . ' ' . date("M-d-Y H:i:s.", filemtime("$file_path/$zip_path/$zip_file")) . "</li>
+                                    </a>";
+                            }
+                        }
+                        if ($count == 0) {
+                            $html .= "<li class='ml-4'> Zip file is creating...</li>";
+                        }
+                    }
+                }
+            }
         }
-        return Storage::download('label/zip/label.zip');
+
+        if ($html == '') {
+            return '<div> File Is Downloading....</div>';
+        }
+        $html .= '</div>';
+        return $html;
     }
 
+    public function zipDownloadLink($bag_no, $file_name)
+    {
+        $path = "label/$bag_no/zip/$file_name";
+        return Storage::download($path);
+    }
     public function downloadExcelTemplate()
     {
         $filepath = public_path('template/Label-Template.xlsx');
