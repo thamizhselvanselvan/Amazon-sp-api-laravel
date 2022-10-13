@@ -84,6 +84,8 @@ class labelBulkZipDownload extends Command
 
         if (!Storage::exists($zip_path)) {
             Storage::put($zip_path, '');
+        } else {
+            unlink(Storage::path($zip_path));
         }
 
         if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
