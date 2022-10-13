@@ -145,14 +145,19 @@
                     html += "<td>" + value.item_name + "</td>";
                     html += "<td>" + value.price + "</td>";
                     html += "<td>" + value.quantity + "</td>";
-                    html += "<td>" + value.out_quantity + "</td>";
+
+                    if (value.out_quantity == null) {
+                        html += "<td>" + '0' + "</td>";
+                    } else {
+                        html += "<td>" + value.out_quantity + "</td>";
+
+                    }
                     html += "<td>" + value.balance_quantity + "</td>";
                     if (value.shelves == null) {
                         html += "<td>" + 'Not Allocated' + "</td>"
                     } else {
                         html += "<td>" + value.shelves.rack_id + '-' + value.shelves.shelve_id + "</td>";
                     }
-
                     html += "<td>" + d.toDateString() + "</td>";
                     html += "</tr>";
 
