@@ -60,7 +60,7 @@ class labelManagementController extends Controller
                     }
                     return 'NA';
                 })
-                ->addColumn('action', function ($data) {
+                ->addColumn('action', function ($data) use ($bag_no) {
                     $table = '';
                     $name = json_decode($data->shipping_address);
                     if (isset($name->Name)) {
@@ -69,7 +69,7 @@ class labelManagementController extends Controller
                             <a href='/label/pdf-template/$data->id' class='edit btn btn-success btn-sm ml-2 mr-2' target='_blank'>
                                 <i class='fas fa-eye'></i> View 
                             </a>
-                            <a href='/label/download-direct/$data->id' class='edit btn btn-info btn-sm mr-2'>
+                            <a href='/label/download-direct/$bag_no-$data->id' class='edit btn btn-info btn-sm mr-2'>
                             <i class='fas fa-download'></i> Download </a>";
                     }
                     $table .=
@@ -112,9 +112,11 @@ class labelManagementController extends Controller
     public function showTemplate($id)
     {
         $result = $this->labelDataFormating("'$id'");
+        // dd($result);
         $result = $result[0];
         $awb_no = $result['awb_no'];
         $forwarder = $result['forwarder'];
+        $bag_no = $result['bag_no'];
 
         if ($awb_no == '' || $awb_no == NULL) {
             $awb_no = 'AWB-MISSING';
@@ -123,7 +125,7 @@ class labelManagementController extends Controller
 
         $generator = new BarcodeGeneratorPNG();
         $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39));
-        return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder'));
+        return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder', 'bag_no'));
     }
     public function ExportLabel(Request $request)
     {
@@ -131,14 +133,16 @@ class labelManagementController extends Controller
         $this->deleteAllPdf();
         $url = $request->url;
         $awb_no = $request->awb_no;
-        $file_path = 'label/label' . $awb_no . '.pdf';
+        $bag_no = $request->bag_no;
+
+        $file_path = "label/$bag_no/label$awb_no.pdf";
 
         if (!Storage::exists($file_path)) {
             Storage::put($file_path, '');
         }
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
@@ -148,18 +152,23 @@ class labelManagementController extends Controller
         return response()->json(['Save pdf sucessfully']);
     }
 
-    public function downloadLabel($awb_no)
+    public function downloadLabel($bag_no, $awb_no)
     {
-        return Storage::download('label/label' . $awb_no . '.pdf');
+        return Storage::download("label/$bag_no/label$awb_no.pdf");
     }
 
     public function DownloadDirect($id)
     {
         $this->deleteAllPdf();
-        // $result = DB::connection('web')->select("select * from labels where id = '$id' ");
+
+        $id_array = explode('-', $id);
+        $id = $id_array[1];
+        $bag_no = $id_array[0];
+
         $result = Label::where('id', $id)->get();
         $awb_no = $result[0]->awb_no;
-        $file_path = 'label/label' . $awb_no . '.pdf';
+
+        $file_path = "label/$bag_no/label$awb_no.pdf";
 
         if (!Storage::exists($file_path)) {
             Storage::put($file_path, '');
@@ -169,14 +178,14 @@ class labelManagementController extends Controller
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
 
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
             ->margins(0, 0, 0, 0)
             ->savePdf($exportToPdf);
 
-        return $this->downloadLabel($awb_no);
+        return $this->downloadLabel($awb_no, $bag_no);
     }
 
     public function PrintSelected($id)
@@ -364,6 +373,7 @@ class labelManagementController extends Controller
         $label = DB::select("SELECT ordetail.amazon_order_identifier,
         GROUP_CONCAT(DISTINCT web.order_no)as order_no,
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
+        GROUP_CONCAT(DISTINCT web.bag_no) as bag_no,
         GROUP_CONCAT(DISTINCT web.forwarder) as forwarder,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
         GROUP_CONCAT(DISTINCT ordetail.shipping_address) as shipping_address,

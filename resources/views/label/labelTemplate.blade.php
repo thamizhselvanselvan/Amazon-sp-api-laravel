@@ -97,6 +97,7 @@
 
 @section('content')
 <input type="hidden" id="awb_no" value="{{$awb_no}}">
+<input type="hidden" id="bag_no" value="{{$bag_no}}">
 
 <div class="col-md-12" id="label-container">
     <div class="label p-1">
@@ -243,6 +244,7 @@
                 e.preventDefault();
                 var url = $(location).attr('href');
                 var awb_no = $('#awb_no').val();
+                var bag_no = $('#bag_no').val();
                 // alert(url);
                 $.ajax({
                     method: 'POST',
@@ -250,11 +252,12 @@
                     data: {
                         'url': url,
                         'awb_no': awb_no,
+                        'bag_no': bag_no,
                         "_token": "{{ csrf_token() }}",
                     },
                     success: function(response) {
 
-                        window.location.href = '/label/download/' + awb_no;
+                        window.location.href = '/label/download/' + bag_no + '/' + awb_no;
                         alert('Download pdf successfully');
                     }
                 });
