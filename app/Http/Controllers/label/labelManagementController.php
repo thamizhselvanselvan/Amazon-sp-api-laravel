@@ -36,8 +36,52 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 class labelManagementController extends Controller
 {
     private $order_details;
-    public function SearchLabel()
+    public function SearchLabel(Request $request)
     {
+        $data = $this->labelListing(2);
+        // dd($data);
+        if ($request->ajax()) {
+
+            $bag_no = $request->bag_no;
+            $data = $this->labelListing($bag_no);
+
+            return DataTables::of($data)
+
+                ->addColumn('select_all', function ($data) {
+                    $name = json_decode($data->shipping_address);
+                    if (isset($name->Name)) {
+                        return "<input class='check_options' type='checkbox' value='$data->id' name='options[]' id='checkid$data->id'>";
+                    }
+                })
+                ->addColumn('name', function ($data) {
+                    $name = json_decode($data->shipping_address);
+                    if (isset($name->Name)) {
+                        return $name->Name;
+                    }
+                    return 'NA';
+                })
+                ->addColumn('action', function ($data) {
+                    $table = '';
+                    $name = json_decode($data->shipping_address);
+                    if (isset($name->Name)) {
+                        $table .=
+                            "<div class='d-flex'>
+                            <a href='/label/pdf-template/$data->id' class='edit btn btn-success btn-sm' target='_blank'>
+                                <i class='fas fa-eye'></i> View 
+                            </a>
+                            <a href='/label/download-direct/$data->id' class='edit btn btn-info btn-sm'>
+                            <i class='fas fa-download'></i> Download </a>";
+                    }
+                    $table .=
+                        "<a id='edit-address' data-toggle='modal' data-id='$data->order_item_identifier' data-amazon_order_identifier='$data->order_no ' href='javascript:void(0)' class='edit btn btn-secondary btn-sm'>
+                        <i class='fas fa-address-card'></i> Address </a>
+                        </div>";
+                    return $table;
+                })
+
+                ->rawColumns(['select_all', 'action'])
+                ->make(true);
+        }
         return view('label.search_label');
     }
 
@@ -46,7 +90,16 @@ class labelManagementController extends Controller
         if ($request->ajax()) {
 
             $bag_no = $request->bag_no;
+            return $bag_no;
             $data = $this->labelListing($bag_no);
+            return DataTables::of($data)
+                ->addColumn('select_all', function ($data) {
+
+                    return "<input class='check_options' type='checkbox' value='25231' name='options[]' id='checkid25231'>";
+                })
+                ->rawColumns(['select_all'])
+                ->make(true);
+
             return response()->json($data);
         }
     }
@@ -337,13 +390,16 @@ class labelManagementController extends Controller
                 } elseif ($key1 == 'title') {
 
                     $title_array = explode('-label-title-', $label_detials);
-
                     $title_array = array_unique($title_array);
+
                     foreach ($title_array as $key2 => $title) {
+
                         $ignore_title = str_ireplace($ignore, '', $title);
                         $product[$key2][$key1] = substr_replace($ignore_title, '....', 100);
 
                         $sku_array = explode('-label-sku-', $label_value->sku);
+                        $sku_array = array_unique($sku_array);
+
                         $product[$key2]['sku'] = $sku_array[$key2];
 
                         $qty_array = explode('-label-qty-', $label_value->qty);
@@ -487,7 +543,16 @@ class labelManagementController extends Controller
         $prefix = config('database.connections.web.prefix');
 
         $data = DB::select("SELECT
-            DISTINCT web.id, web.awb_no, web.forwarder, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address,orderDetails.order_item_identifier
+            DISTINCT
+             web.id, 
+             web.awb_no, 
+             web.forwarder,
+             web.order_no,
+             ord.purchase_date,
+             store.store_name, 
+             orderDetails.seller_sku, 
+             orderDetails.shipping_address,
+             orderDetails.order_item_identifier
             from ${web}.${prefix}labels as web
             JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
             JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no

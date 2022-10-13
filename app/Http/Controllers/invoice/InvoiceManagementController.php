@@ -22,6 +22,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorHTML;
+use Type;
 use Yajra\DataTables\Facades\DataTables;
 
 
@@ -104,9 +105,9 @@ class InvoiceManagementController extends Controller
     {
         $id = $request->id;
 
-        $data = $this->invoiceDataFormating($id);
+        $data = $this->invoiceDataFormating("'$id'", type: 'Single');
+        $data = $data[0];
         $value = $data;
-        // dd($value);
         $invoice_no = $data['invoice_no'];
         $awb_no = $data['awb_no'];
         $mode = $data['mode'];
@@ -124,24 +125,22 @@ class InvoiceManagementController extends Controller
     public function selectedPrint($id)
     {
         $eachid = explode('-', $id);
+        $each_id_array = "'" . implode("','", $eachid) . "'";
 
         $generator = new BarcodeGeneratorHTML();
-        foreach ($eachid as $id) {
-            // $data []= Invoice::where('id', $id)->get();
-            $data = DB::connection('web')->select("SELECT invoice_no from invoices where id ='$id' ");
+        $result = $this->invoiceDataFormating($each_id_array);
 
-            $result = $this->invoiceDataFormating($data[0]->invoice_no);
+        foreach ($result as $details) {
 
-            $invoice_mode = $result['mode'];
+            $invoice_mode = $details['mode'];
             $invoice_mode_multi = strtolower($invoice_mode);
 
-            $invoice_bar_code[] = $generator->getBarcode($result['invoice_no'], $generator::TYPE_CODE_128);
-            $awb_bar_code[] = $generator->getBarcode($result['awb_no'], $generator::TYPE_CODE_128);
+            $invoice_bar_code[] = $generator->getBarcode($details['invoice_no'], $generator::TYPE_CODE_128);
+            $awb_bar_code[] = $generator->getBarcode($details['awb_no'], $generator::TYPE_CODE_128);
 
-            $record[] = $result;
+            $record[] = $details;
         }
 
-        // dd($invoice_mode_multi);?
         if ($invoice_mode_multi != '') {
             return view('invoice.multiple' . $invoice_mode_multi, compact(['record'], 'invoice_bar_code', 'awb_bar_code'));
         }
@@ -272,11 +271,58 @@ class InvoiceManagementController extends Controller
         return Response()->download($filepath);
     }
 
-    public function invoiceDataFormating($id)
+    public function invoiceDataFormating($id, $type = 'bulk')
     {
         $invoice_details = [];
         $grand_total = 0;
-        $invoice_data = DB::connection('web')->select("SELECT * from invoices where invoice_no ='$id' ");
+
+        $invoice_no = $id;
+
+        if ($type == 'bulk') {
+            $data = DB::connection('web')->select("SELECT invoice_no from invoices where id IN ($id) ");
+            $invoice_no = [];
+            foreach ($data as $key => $value) {
+                $invoice_no[] = "$value->invoice_no";
+            }
+            $invoice_no =  "'" . implode("','", $invoice_no) . "'";
+        }
+
+        $invoice_data_array = DB::connection('web')
+            ->select(
+                "SELECT 
+             invoice_no,
+            GROUP_CONCAT(DISTINCT invoice_date) as invoice_date,
+            GROUP_CONCAT(DISTINCT mode) as mode,
+            GROUP_CONCAT(DISTINCT channel) as channel,
+            GROUP_CONCAT(DISTINCT shipped_by) as shipped_by,
+            GROUP_CONCAT(DISTINCT awb_no) as awb_no,
+            GROUP_CONCAT(DISTINCT arn_no) as arn_no,
+            GROUP_CONCAT(DISTINCT store_name) as store_name,
+            GROUP_CONCAT(DISTINCT store_add) as store_add,
+            GROUP_CONCAT(DISTINCT bill_to_name) as bill_to_name,
+            GROUP_CONCAT(DISTINCT bill_to_add) as bill_to_add,
+            GROUP_CONCAT(DISTINCT ship_to_name) as ship_to_name,
+            GROUP_CONCAT(DISTINCT ship_to_add) as ship_to_add,
+            GROUP_CONCAT(sku SEPARATOR '-invoice-') as sku,
+            GROUP_CONCAT(item_description SEPARATOR '-invoice-') as item_description,
+            GROUP_CONCAT(hsn_code SEPARATOR '-invoice-') as hsn_code,
+            GROUP_CONCAT(qty SEPARATOR '-invoice-') as qty,
+            GROUP_CONCAT(currency SEPARATOR '-invoice-') as currency,
+            GROUP_CONCAT(product_price SEPARATOR '-invoice-') as product_price,
+            GROUP_CONCAT(taxable_value SEPARATOR '-invoice-') as taxable_value,
+            GROUP_CONCAT(total_including_taxes SEPARATOR '-invoice-') as total_including_taxes,
+            GROUP_CONCAT(grand_total SEPARATOR '-invoice-') as grand_total,
+            GROUP_CONCAT(no_of_pcs SEPARATOR '-invoice-') as no_of_pcs,
+            GROUP_CONCAT(packing SEPARATOR '-invoice-') as packing,
+            GROUP_CONCAT(dimension SEPARATOR '-invoice-') as dimension,
+            GROUP_CONCAT(actual_weight SEPARATOR '-invoice-') as actual_weight,
+            GROUP_CONCAT(charged_weight SEPARATOR '-invoice-') as charged_weight,
+            GROUP_CONCAT(clientcode SEPARATOR '-invoice-') as clientcode
+             from invoices where invoice_no IN ($invoice_no)
+             group by invoice_no"
+            );
+
+
         $item_details[] = [
             'item_description' => NULL,
             'hsn_code' => NULL,
@@ -293,21 +339,36 @@ class InvoiceManagementController extends Controller
             'charged_weight' => NULL,
         ];
 
-        foreach ($invoice_data as $key => $value) {
-            foreach ($value as $key1 => $data) {
+        $item_details_final_array = [];
+        $grand_total = 0;
+        foreach ($invoice_data_array as $key => $value) {
+            $grand_total = 0;
+            foreach ($value as $key1 => $details) {
+
                 if (array_key_exists($key1, $item_details[0])) {
-                    $item_details[$key][$key1] = $data;
+
+                    $product_array = explode('-invoice-', $details);
                     if ($key1 == 'total_including_taxes') {
-                        $grand_total += $data;
+
+                        foreach ($product_array as $key2 => $val) {
+                            $grand_total += $val;
+                        }
+                    } else {
+                        foreach ($product_array as $key2 => $val) {
+                            $item_details[$key2][$key1] = $val;
+                        }
                     }
                 } else {
-                    $invoice_details[$key1] =  $data;
+                    $invoice_details[$key1] =  str_ireplace('-invoice-', '', $details);
                 }
             }
+            $invoice_details['grand_total'] = $grand_total;
+            $invoice_details['product_details'] = $item_details;
+            $item_details_final_array[$key] = $invoice_details;
+            $invoice_details = [];
         }
-        $invoice_details['grand_total'] = $grand_total;
-        $invoice_details['product_details'] = $item_details;
-        return $invoice_details;
+        // dd($item_details_final_array);
+        return $item_details_final_array;
     }
 
     public function edit($id)

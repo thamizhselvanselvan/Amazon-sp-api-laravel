@@ -175,7 +175,7 @@
             $("#report_table").show();
         });
         $("#entire,#warehouse ").on('change', function(e) {
-            $("#export").show();
+            // $("#export").show();
         });
 
     });
