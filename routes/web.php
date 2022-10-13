@@ -59,34 +59,26 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 */
 // use ConfigTrait;
 
-Route::get('gh', function (Request $request) {
-    $asins = CSV_Reader("Notfound  in buybox.csv");
-    $asin_collections = [];
-    $cnt = 1;
-    foreach ($asins as $asin) {
-        $asin_check = DB::table("product_aa_custom_p1_uss")->where('asin1', $asin['Asin'])->first();
-        if (!$asin_check) {
-            DB::table("product_aa_custom_p1_uss")->insert([
-                'seller_id' => 39,
-                'asin1' => $asin['Asin'],
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-        }
-        $asin_check1 = DB::table("product_aa_custom_p1_us_offers")->where('asin', $asin['Asin'])->first();
-        if (!$asin_check1) {
-            DB::table("product_aa_custom_p1_us_offers")->insert([
-                'asin' => $asin['Asin'],
-                'priority' => 1,
-                'cyclic' => 0,
-                'delist' => 0,
-                'available' => 0,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-        }
+
+
+
+
+
+Route::get('gh', function () {
+
+    $destination_tables = ["asin_destination_uss", "asin_destination_ins"];
+
+    $data = [];
+
+    foreach ($destination_tables as $destination_table) {
+
+        $data[$destination_table] = DB::connection("catalog")->table($destination_table)
+            ->selectRaw("SUM(priority) as total_asin")
+            ->groupBy('priority');
     }
-    dd(count($asin_collections));
+
+    echo "<pre>";
+    print_r($data);
 });
 
 $delist_asins;
