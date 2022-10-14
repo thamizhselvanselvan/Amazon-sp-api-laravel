@@ -64,7 +64,7 @@ class asinBulkImport extends Command
             $chunk = array_chunk($csv_data, 30000);
             $class = "catalog\ImportAsinSourceDestinationCsvFile";
             $queue_name = "csv-import";
-
+            Log::notice("Enter inside command");
             foreach ($chunk as $value) {
 
                 $chunk_data  = [
@@ -75,6 +75,7 @@ class asinBulkImport extends Command
                 ];
 
                 jobDispatchFunc($class, $chunk_data, $queue_name);
+                Log::notice('chunk happening');
             }
             $csv_data = [];
         }
