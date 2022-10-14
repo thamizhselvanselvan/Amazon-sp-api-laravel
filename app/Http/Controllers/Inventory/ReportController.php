@@ -9,10 +9,13 @@ use App\Models\Inventory\Tag;
 use App\Models\Inventory\Stocks;
 use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
+use Illuminate\Support\Facades\Log;
+use App\Models\Inventory\TagStocks;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Inventory\ReportWeekly;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\Inventory\WarehouseStocks;
 use App\Services\Inventory\ReportMonthly;
 use App\Models\Inventory\Shipment_Inward_Details;
 use App\Models\Inventory\Shipment_Outward_Details;
@@ -158,13 +161,13 @@ class ReportController extends Controller
             "closing_amt" => $dayclosingamt
         ];
 
-        return view('inventory.report.daily', compact('ware_lists', 'data','tags'));
+        return view('inventory.report.daily', compact('ware_lists', 'data', 'tags'));
     }
 
     public function eportdaily()
     {
         $startTime = Carbon::today();
-      
+
 
         $week_data =  Stocks::whereDate('created_at',  Carbon::today()->toDateString())
             ->select('date', 'opeaning_stock', 'opeaning_amount', 'inwarding', 'inw_amount', 'outwarding', 'outw_amount', 'closing_stock', 'closing_amount')
@@ -360,6 +363,7 @@ class ReportController extends Controller
     public function index(Request $request)
     {
         $ware_lists = Warehouse::get();
+        $tag_lists = Tag::get();
         if ($request->ajax()) {
             $startTime = Carbon::today()->subDays(7);
             $endTimeYesterday = Carbon::yesterday()->endOfDay();
@@ -389,10 +393,10 @@ class ReportController extends Controller
         }
 
 
-        return view('inventory.report.weekly', compact('ware_lists'));
+        return view('inventory.report.weekly', compact('ware_lists', 'tag_lists'));
     }
 
-    public function eportinvweekly()
+    public function exportinvweekly()
     {
         $startTime = Carbon::today()->subDays(7);
         $endTimeYesterday = Carbon::yesterday()->endOfDay();
@@ -426,6 +430,133 @@ class ReportController extends Controller
         $writer->insertAll($week_data->toarray());
         return Storage::download($exportFilePath);
     }
+
+    public function diaplayinvweekly(Request $request)
+    {
+        if ($request->ajax()) {
+            $warehouse = $request->ware_id;
+            $startTime = Carbon::today()->subDays(7);
+            $endTimeYesterday = Carbon::yesterday()->endOfDay();
+
+            $week_data =  WarehouseStocks::whereBetween('created_at', [$startTime, $endTimeYesterday])
+                ->select('date', 'opeaning_stock', 'opeaning_amount', 'inwarding', 'inw_amount', 'outwarding', 'outw_amount', 'closing_stock', 'closing_amount')
+                ->orderBy('id', 'DESC')
+                ->where('Warehouse', $warehouse)
+                ->get();
+
+            return response()->json(['success' => 'Export has been done successfully', $week_data]);
+        }
+    }
+
+    public function expinvweeklywarewise(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $warehouse = $request->ware_id;
+            $startTime = Carbon::today()->subDays(7);
+            $endTimeYesterday = Carbon::yesterday()->endOfDay();
+
+            $week_data =  WarehouseStocks::whereBetween('created_at', [$startTime, $endTimeYesterday])
+                ->select('date', 'opeaning_stock', 'opeaning_amount', 'inwarding', 'inw_amount', 'outwarding', 'outw_amount', 'closing_stock', 'closing_amount')
+                ->orderBy('id', 'DESC')
+                ->where('Warehouse', $warehouse)
+                ->get();
+
+
+            $headers = [
+
+                'Date',
+                'Opening Stock',
+                'Opening Stock Amount',
+                'Inv Inwarded',
+                'Amount',
+                'Inv Outwarded',
+                'Amount',
+                'Closing Stock',
+                'closing Stock Amount'
+            ];
+            $exportFilePath = 'Inventory/weeklywareReport' . $warehouse . '.csv';
+            if (!Storage::exists($exportFilePath)) {
+                Storage::put($exportFilePath, '');
+            }
+            $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
+            $writer->insertOne($headers);
+
+
+            $writer->insertAll($week_data->toarray());
+            // return Storage::download($exportFilePath);
+
+            return response()->json(['success' => 'Export has been done successfully']);
+        }
+    }
+    public function downexpwarewise($ware_id)
+    {
+        return Storage::download('/Inventory/weeklywareReport' . $ware_id . '.csv');
+    }
+
+    public function tagdisplay(Request $request)
+    {
+        if ($request->ajax()) {
+            $tag = $request->tag_id;
+            $startTime = Carbon::today()->subDays(7);
+            $endTimeYesterday = Carbon::yesterday()->endOfDay();
+
+            $tag_data =  TagStocks::whereBetween('created_at', [$startTime, $endTimeYesterday])
+                ->select('date', 'opeaning_stock', 'opeaning_amount', 'inwarding', 'inw_amount', 'outwarding', 'outw_amount', 'closing_stock', 'closing_amount')
+                ->orderBy('id', 'DESC')
+                ->where('tag', $tag)
+                ->get();
+
+            return response()->json(['success' => 'tag details fetched successfully', $tag_data]);
+        }
+    }
+
+    public function tagexprt(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $tag = $request->tag_id;
+            $startTime = Carbon::today()->subDays(7);
+            $endTimeYesterday = Carbon::yesterday()->endOfDay();
+
+            $tag_data =  TagStocks::whereBetween('created_at', [$startTime, $endTimeYesterday])
+                ->select('date', 'opeaning_stock', 'opeaning_amount', 'inwarding', 'inw_amount', 'outwarding', 'outw_amount', 'closing_stock', 'closing_amount')
+                ->orderBy('id', 'DESC')
+                ->where('tag', $tag)
+                ->get();
+
+
+            $headers = [
+
+                'Date',
+                'Opening Stock',
+                'Opening Stock Amount',
+                'Inv Inwarded',
+                'Amount',
+                'Inv Outwarded',
+                'Amount',
+                'Closing Stock',
+                'closing Stock Amount'
+            ];
+            $exportFilePath = 'Inventory/weeklytagReport' . $tag . '.csv';
+            if (!Storage::exists($exportFilePath)) {
+                Storage::put($exportFilePath, '');
+            }
+            $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
+            $writer->insertOne($headers);
+
+
+            $writer->insertAll($tag_data->toarray());
+            // return Storage::download($exportFilePath);
+
+            return response()->json(['success' => 'Export has been done successfully']);
+        }
+    }
+    public function downexptagwise($tag_id)
+    {
+        return Storage::download('/Inventory/weeklytagReport' . $tag_id . '.csv');
+    }
+
 
     public function monthlyview(Request $request)
     {

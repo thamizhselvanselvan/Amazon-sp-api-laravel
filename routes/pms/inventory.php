@@ -85,7 +85,14 @@ Route::resource('inventory/outwardings', 'Inventory\Outwarding\InventoryOutwardS
 /* Report  */
 Route::get('reports/daily', 'Inventory\ReportController@daily');
 Route::get('reports/weekly', 'Inventory\ReportController@index');
-Route::get('export/weekly', 'Inventory\ReportController@eportinvweekly');
+Route::get('export/weekly', 'Inventory\ReportController@exportinvweekly');
+Route::get('export/weekly/display', 'Inventory\ReportController@diaplayinvweekly');
+Route::get('export/weekly/warehousewise', 'Inventory\ReportController@expinvweeklywarewise');
+Route::get('export/weekly/weekwareexpo/{id}', 'Inventory\ReportController@downexpwarewise');
+Route::get('tag/weekly/display', 'Inventory\ReportController@tagdisplay');
+Route::get('export/weekly/tagwise', 'Inventory\ReportController@tagexprt')->name('inventory.tagswise.weekly.export');
+Route::get('export/weekly/tags/{id}', 'Inventory\ReportController@downexptagwise')->name('inventory.weekly.tagrepo.downloag');
+
 Route::get('export/daily', 'Inventory\ReportController@eportdaily');
 Route::get('reports/monthly', 'Inventory\ReportController@monthlyview')->name('monthly.view');
 Route::get('export/monthly', 'Inventory\ReportController@eportinvmonthly');
