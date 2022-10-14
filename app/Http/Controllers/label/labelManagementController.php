@@ -112,22 +112,24 @@ class labelManagementController extends Controller
     public function showTemplate($id)
     {
         $id_array = explode('-', $id);
-        $bag_no = $id_array[0];
-        $table_id = $id_array[1];
-        $result = $this->labelDataFormating("'$table_id'");
+        if (isset($id_array[0]) && isset($id_array[1])) {
+            $bag_no = $id_array[0];
+            $table_id = $id_array[1];
+            $result = $this->labelDataFormating("'$table_id'");
 
-        $result = $result[0];
-        $awb_no = $result['awb_no'];
-        $forwarder = $result['forwarder'];
+            $result = $result[0];
+            $awb_no = $result['awb_no'];
+            $forwarder = $result['forwarder'];
 
-        if ($awb_no == '' || $awb_no == NULL) {
-            $awb_no = 'AWB-MISSING';
+            if ($awb_no == '' || $awb_no == NULL) {
+                $awb_no = 'AWB-MISSING';
+            }
+            $result = (object)$result;
+
+            $generator = new BarcodeGeneratorPNG();
+            $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39));
+            return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder', 'bag_no'));
         }
-        $result = (object)$result;
-
-        $generator = new BarcodeGeneratorPNG();
-        $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39));
-        return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder', 'bag_no'));
     }
     public function ExportLabel(Request $request)
     {
