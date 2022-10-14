@@ -55,7 +55,7 @@ class labelBulkZipDownload extends Command
             foreach ($id as $key => $value) {
 
                 $awb_no = $value->awb_no;
-                $url = str_replace('select-download', 'pdf-template', $currenturl . '/' . $getId);
+                $url = str_replace('select-download', 'pdf-template', $currenturl . '/' . $bag_no . '-' . $getId);
 
                 $path = 'label/' . $bag_no . '/label' . $awb_no . '.pdf';
 
@@ -84,6 +84,8 @@ class labelBulkZipDownload extends Command
 
         if (!Storage::exists($zip_path)) {
             Storage::put($zip_path, '');
+        } else {
+            unlink(Storage::path($zip_path));
         }
 
         if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {

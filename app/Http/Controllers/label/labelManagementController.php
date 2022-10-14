@@ -60,16 +60,16 @@ class labelManagementController extends Controller
                     }
                     return 'NA';
                 })
-                ->addColumn('action', function ($data) {
+                ->addColumn('action', function ($data) use ($bag_no) {
                     $table = '';
                     $name = json_decode($data->shipping_address);
                     if (isset($name->Name)) {
                         $table .=
                             "<div class='d-flex'>
-                            <a href='/label/pdf-template/$data->id' class='edit btn btn-success btn-sm ml-2 mr-2' target='_blank'>
+                            <a href='/label/pdf-template/$bag_no-$data->id' class='edit btn btn-success btn-sm ml-2 mr-2' target='_blank'>
                                 <i class='fas fa-eye'></i> View 
                             </a>
-                            <a href='/label/download-direct/$data->id' class='edit btn btn-info btn-sm mr-2'>
+                            <a href='/label/download-direct/$bag_no-$data->id' class='edit btn btn-info btn-sm mr-2'>
                             <i class='fas fa-download'></i> Download </a>";
                     }
                     $table .=
@@ -111,19 +111,25 @@ class labelManagementController extends Controller
 
     public function showTemplate($id)
     {
-        $result = $this->labelDataFormating("'$id'");
-        $result = $result[0];
-        $awb_no = $result['awb_no'];
-        $forwarder = $result['forwarder'];
+        $id_array = explode('-', $id);
+        if (isset($id_array[0]) && isset($id_array[1])) {
+            $bag_no = $id_array[0];
+            $table_id = $id_array[1];
+            $result = $this->labelDataFormating("'$table_id'");
 
-        if ($awb_no == '' || $awb_no == NULL) {
-            $awb_no = 'AWB-MISSING';
+            $result = $result[0];
+            $awb_no = $result['awb_no'];
+            $forwarder = $result['forwarder'];
+
+            if ($awb_no == '' || $awb_no == NULL) {
+                $awb_no = 'AWB-MISSING';
+            }
+            $result = (object)$result;
+
+            $generator = new BarcodeGeneratorPNG();
+            $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39));
+            return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder', 'bag_no'));
         }
-        $result = (object)$result;
-
-        $generator = new BarcodeGeneratorPNG();
-        $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39));
-        return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder'));
     }
     public function ExportLabel(Request $request)
     {
@@ -131,14 +137,16 @@ class labelManagementController extends Controller
         $this->deleteAllPdf();
         $url = $request->url;
         $awb_no = $request->awb_no;
-        $file_path = 'label/label' . $awb_no . '.pdf';
+        $bag_no = $request->bag_no;
+
+        $file_path = "label/$bag_no/label$awb_no.pdf";
 
         if (!Storage::exists($file_path)) {
             Storage::put($file_path, '');
         }
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
@@ -148,18 +156,23 @@ class labelManagementController extends Controller
         return response()->json(['Save pdf sucessfully']);
     }
 
-    public function downloadLabel($awb_no)
+    public function downloadLabel($bag_no, $awb_no)
     {
-        return Storage::download('label/label' . $awb_no . '.pdf');
+        return Storage::download("label/$bag_no/label$awb_no.pdf");
     }
 
     public function DownloadDirect($id)
     {
         $this->deleteAllPdf();
-        // $result = DB::connection('web')->select("select * from labels where id = '$id' ");
+
+        $id_array = explode('-', $id);
+        $id = $id_array[1];
+        $bag_no = $id_array[0];
+
         $result = Label::where('id', $id)->get();
         $awb_no = $result[0]->awb_no;
-        $file_path = 'label/label' . $awb_no . '.pdf';
+
+        $file_path = "label/$bag_no/label$awb_no.pdf";
 
         if (!Storage::exists($file_path)) {
             Storage::put($file_path, '');
@@ -169,14 +182,14 @@ class labelManagementController extends Controller
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
 
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
             ->margins(0, 0, 0, 0)
             ->savePdf($exportToPdf);
 
-        return $this->downloadLabel($awb_no);
+        return $this->downloadLabel($bag_no, $awb_no);
     }
 
     public function PrintSelected($id)
@@ -226,35 +239,37 @@ class labelManagementController extends Controller
     public function zipDownload()
     {
         $html = '';
+        $html_final = '';
         $count = 0;
         $path = (Storage::path("label"));
         $files = scandir($path);
         foreach ($files as $key => $file) {
             if ($key > 1) {
-                $html .= "<div>Bag No: $file";
                 $file_path = Storage::path('label' . '/' . $file);
-                $file_paths = scandir($file_path);
-                foreach ($file_paths as $zip_path) {
-                    if ($zip_path == 'zip') {
-                        $zip_path_array = scandir($file_path . '/' . $zip_path);
-
-                        $count = 0;
-                        foreach ($zip_path_array as $zip_key => $zip_file) {
-                            if ($zip_key > 1) {
-                                $count++;
-                                $html .=
-                                    "<a href='/label/zip/download/$file/zip/$zip_file'>
-                                        <li class='ml-4'>Label Part " . $zip_key - 1 . ' ' . date("M-d-Y H:i:s.", filemtime("$file_path/$zip_path/$zip_file")) . "</li>
-                                    </a>";
+                if (is_dir($file_path)) {
+                    $file_paths = scandir($file_path);
+                    foreach ($file_paths as $zip_path) {
+                        if ($zip_path == 'zip') {
+                            $zip_path_array = scandir($file_path . '/' . $zip_path);
+                            $count = 0;
+                            foreach ($zip_path_array as $zip_key => $zip_file) {
+                                if ($zip_key > 1) {
+                                    $count++;
+                                    if ($count == 1) {
+                                        $html .= "<div>Bag No: $file";
+                                    }
+                                    $html .=
+                                        "<a href='/label/zip/download/$file/zip/$zip_file'>
+                                             <li class='ml-4'>Label Part " . $zip_key - 1 . ' ' . date("M-d-Y H:i:s.", filemtime("$file_path/$zip_path/$zip_file")) . "</li>
+                                        </a>";
+                                }
                             }
-                        }
-                        if ($count == 0) {
-                            $html .= "<li class='ml-4'> Zip file is creating...</li>";
                         }
                     }
                 }
             }
         }
+
 
         if ($html == '') {
             return '<div> File Is Downloading....</div>';
