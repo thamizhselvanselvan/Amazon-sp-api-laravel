@@ -23,19 +23,18 @@ class CliqnshopCatalogController extends Controller
 
         $catalogfiles = [];
         $folder = $request->catalog;
-        $path = (Storage::path( $folder));
+        $path = (Storage::path($folder));
         $files = scandir($path);
-        
+
         foreach ($files as $key => $file) {
             if ($key > 1) {
-                $catalogfiles[$file] = date("F d Y H:i:s.", filemtime($path.'/'.$file ));
-      
+                $catalogfiles[$file] = date("F d Y H:i:s.", filemtime($path . '/' . $file));
             }
         }
         return response()->json($catalogfiles);
     }
     public function DownloadCatalogcloqnshop($index)
     {
-        return Storage::download('Cliqnshop/'.$index);
+        return Storage::download('Cliqnshop/' . $index);
     }
 }
