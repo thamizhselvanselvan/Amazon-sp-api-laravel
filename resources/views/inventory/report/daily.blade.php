@@ -70,6 +70,13 @@
         </x-adminlte-select>
 
     </div>
+    <!-- <div class="col-1 justify-content-right">
+        <h2>
+            <div style="margin-top: 1.8rem;">
+                <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export " id="export_ware" />
+            </div>
+        </h2>
+    </div> -->
 </div>
 <div class="row" id="tagrep">
     <div class="col-2">
@@ -79,8 +86,14 @@
             <option value="{{ $tags->id }}">{{ $tags->name }}</option>
             @endforeach
         </x-adminlte-select>
-
     </div>
+    <!-- <div class="col-1 justify-content-right">
+        <h2>
+            <div style="margin-top: 1.8rem;">
+                <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export " id="export_tag" />
+            </div>
+        </h2>
+    </div> -->
 </div>
 <table class="table table-bordered yajra-datatable table-striped " id="table">
     <thead>
@@ -174,7 +187,7 @@
         $("#entire ").on('click', function(e) {
             $("#report_table").show();
         });
-        $("#entire,#warehouse ").on('change', function(e) {
+        $("#entire ").on('change', function(e) {
             // $("#export").show();
         });
 
