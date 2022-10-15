@@ -92,10 +92,21 @@ Route::get('export/weekly/weekwareexpo/{id}', 'Inventory\ReportController@downex
 Route::get('tag/weekly/display', 'Inventory\ReportController@tagdisplay');
 Route::get('export/weekly/tagwise', 'Inventory\ReportController@tagexprt')->name('inventory.tagswise.weekly.export');
 Route::get('export/weekly/tags/{id}', 'Inventory\ReportController@downexptagwise')->name('inventory.weekly.tagrepo.downloag');
-
 Route::get('export/daily', 'Inventory\ReportController@eportdaily');
 Route::get('reports/monthly', 'Inventory\ReportController@monthlyview')->name('monthly.view');
 Route::get('export/monthly', 'Inventory\ReportController@eportinvmonthly');
 Route::get('inventory/warewise', 'Inventory\ReportController@warerepo');
 Route::get('inventory/tagwise', 'Inventory\ReportController@tagwise');
+
+
+Route::get('export/monthly/display','Inventory\ReportController@monthlywaredisp')->name('inventory.monthly.ware.display');
+
+Route::get('export/monthly/warehousewise','Inventory\ReportController@monthlywareexpo')->name('inventory.monthly.ware.export');
+Route::get('export/monthly/weekwareexpo/local/{id}','Inventory\ReportController@monthlywareexplocal')->name('inventory.monthly.ware.export.download');
+
+
+Route::get('tag/monthly/display','Inventory\ReportController@monthtagrepdisp')->name('inventory.monthly.tag.report.display');
+Route::get('tag/monthly/export','Inventory\ReportController@monthtagrepexport')->name('inventory.monthly.tag.report.export');
+Route::get('tag/monthly/download/{id}', 'Inventory\ReportController@monthlytagexplocal')->name('inventory.monthly.tag.report.download');
 Route::resource('inventory/reports', 'Inventory\ReportController');
+
