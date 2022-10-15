@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Catalog;
 
 use RedBeanPHP\R;
@@ -9,6 +10,7 @@ use App\Services\BB\PushAsin;
 use Yajra\DataTables\DataTables;
 use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\DB;
+use App\Models\Catalog\Asin_source;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -44,7 +46,7 @@ class AsinSourceController extends Controller
 
     public function editasin($id)
     {
-        $asin = AsinSource::where('id', $id)->first();
+        $asin = Asin_source::where('id', $id)->first();
         return view('Catalog.AsinSource.edit', compact('asin'));
     }
 
@@ -55,19 +57,19 @@ class AsinSourceController extends Controller
             'source' => 'required|min:2|max:15',
         ]);
         $validated['source'] = strtoupper($validated['source']);
-        AsinSource::where('id', $id)->update($validated);
+        Asin_source::where('id', $id)->update($validated);
         return redirect()->intended('/catalog/asin-source')->with('success', 'Asin has been updated successfully');
     }
 
     public function trash(Request $request)
     {
-        AsinSource::where('id', $request->id)->delete();
+        Asin_source::where('id', $request->id)->delete();
         return redirect()->intended('/catalog/asin-source')->with('success', 'Asin has been pushed to Bin successfully');
     }
 
     public function trashView(Request $request)
     {
-        $asins = AsinSource::onlyTrashed()->get();
+        $asins = Asin_source::onlyTrashed()->get();
         if ($request->ajax()) {
             return DataTables::of($asins)
                 ->addIndexColumn()
@@ -81,7 +83,8 @@ class AsinSourceController extends Controller
     }
 
     public function restore(Request $request)
-    {   AsinSource::where('id', $request->id)->restore();
+    {
+        Asin_source::where('id', $request->id)->restore();
         return response()->json(['success' => 'Asin has restored successfully']);
     }
 
@@ -92,8 +95,7 @@ class AsinSourceController extends Controller
 
     public function addBulkAsin(Request $request)
     {
-        if($request->form_type == 'text_area')
-        {
+        if ($request->form_type == 'text_area') {
             $validate = $request->validate([
                 'text_area' => 'required',
                 'source'    =>  ['required'],
@@ -103,45 +105,39 @@ class AsinSourceController extends Controller
             $user_id = Auth::user()->id;
             $record = $request->text_area;
             $sources = $request->source;
-            
-            foreach($sources as $key => $source){
+
+            foreach ($sources as $key => $source) {
                 $asins = preg_split('/[\r\n| |:|,|.]/', $record, -1, PREG_SPLIT_NO_EMPTY);
                 $country_code = buyboxCountrycode();
                 $check_table = DB::connection('catalog')->select('SHOW TABLES');
-                foreach($check_table as $key => $table_name)
-                {
-                    foreach($table_name as $name_of_table)
-                    {
-                        if($name_of_table == 'catalognew'.strtolower($source).'s'){
+                foreach ($check_table as $key => $table_name) {
+                    foreach ($table_name as $name_of_table) {
+                        if ($name_of_table == 'catalognew' . strtolower($source) . 's') {
                             $source_key_exists = 1;
                         }
                     }
                 }
-                if($source_key_exists == 0){
+                if ($source_key_exists == 0) {
                     $redbean = new NewCatalog();
                     $redbean->RedBeanConnection();
-                    $catalog_table = 'catalognew'.strtolower($source).'s';
+                    $catalog_table = 'catalognew' . strtolower($source) . 's';
                     $NewCatalogs = R::dispense($catalog_table);
                     $NewCatalogs->asin = '';
                     R::store($NewCatalogs);
                 }
 
-                foreach($asins as $asin_details)
-                {
-                    $allData [] = [
+                foreach ($asins as $asin_details) {
+                    $allData[] = [
                         'asin'  =>  $asin_details,
                         'user_id'   =>  $user_id,
                     ];
                 }
-                $table_name = table_model_create(country_code:$source, model:'Asin_source', table_name:'asin_source_');
-                $table_name->upsert($allData,['user_asin_unique'], ['asin']);
+                $table_name = table_model_create(country_code: $source, model: 'Asin_source', table_name: 'asin_source_');
+                $table_name->upsert($allData, ['user_asin_unique'], ['asin']);
                 $allData = [];
                 commandExecFunc(" mosh:catalog-amazon-import ");
             }
-           
-        }
-        elseif($request->form_type == 'file_upload')
-        {
+        } elseif ($request->form_type == 'file_upload') {
             $user_id = Auth::user()->id;
             $request->validate([
                 'asin' => 'required|mimes:txt,csv'
@@ -149,15 +145,16 @@ class AsinSourceController extends Controller
             if (!$request->hasFile('asin')) {
                 return back()->with('error', "Please upload file to import it to the database");
             }
-    
+
             $msg = "Asin import has been completed!";
 
             $source = $request->source;
             $source = implode(',', $source);
             $file = file_get_contents($request->asin);
-            $path = 'AsinMaster/asin.csv';
+            $import_file_time = date('Y-m-d-H-i-s');
+            $path = "AsinSource/asin${import_file_time}.csv";
             Storage::put($path, $file);
-            commandExecFunc("pms:asin-import ${user_id} --source=${source} ");
+            commandExecFunc("pms:asin-import ${user_id} --source=${source} ${path}");
         }
         return redirect('catalog/import-bulk-asin')->with('success', 'All Asins uploaded successfully');
     }
@@ -198,13 +195,11 @@ class AsinSourceController extends Controller
     public function AsinTruncate(Request $request)
     {
         $sources = $request->source;
-        foreach($sources as $source)
-        {
+        foreach ($sources as $source) {
             $country_code = strtolower($source);
-            $table_name = table_model_create(country_code:$country_code, model:'Asin_source', table_name:'asin_source_');
+            $table_name = table_model_create(country_code: $country_code, model: 'Asin_source', table_name: 'asin_source_');
             $table_name->truncate();
         }
         return redirect('catalog/asin-source')->with('success', 'Table Truncate successfully');
     }
-
 }

@@ -18,7 +18,7 @@ class asinBulkImport extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:asin-import {user_id} {--source=} ';
+    protected $signature = 'pms:asin-import {user_id} {--source=} {path}';
 
     /**
      * The console command description.
@@ -50,7 +50,7 @@ class asinBulkImport extends Command
         $user_id = $this->argument('user_id');
         $sources = explode(',', $this->option('source'));
 
-        $path = 'AsinMaster/asin.csv';
+        $path = $this->argument('path');
         $csv = Reader::createFromPath(Storage::path($path), 'r');
         $csv->setDelimiter(",");
         $csv->setHeaderOffset(0);
