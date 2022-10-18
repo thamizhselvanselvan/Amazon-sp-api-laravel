@@ -86,14 +86,56 @@ Route::get('import', function () {
 $delist_asins;
 Route::get('wherein', function () {
 
-    $data =  PricingIn::select('destination.asin as asin')
-        ->rightJoin("asin_destination_ins as destination", 'destination.id', '=', 'pricing_ins.id')
+    $data =  PricingIn::select('destination.asin as asin', 'cat.dimensions', 'pricing_ins.in_price', 'pricing_ins.ind_to_uae', 'pricing_ins.ind_to_sg', 'pricing_ins.updated_at')
+        ->rightJoin("asin_destination_ins as destination", 'pricing_ins.asin', '=', 'destination.asin')
+        ->leftJoin("catalognewins as cat", 'destination.asin', '=', 'cat.asin')
         ->where('destination.priority', 1)
         ->orWhereNull('destination.asin')
         ->get()->toArray();
+    $di = [];
+    $available_data = [];
+    // po($data);
+    // exit;
+    foreach ($data as $key => $record) {
+        foreach ($record as $key2 => $value) {
 
-    po($data);
+            // po($key2);
+            if ($key2 == 'dimensions' || $key2 == 'updated_at') {
+                $date = isset($record['updated_at']) ? ['updated_at' => date("d-m-Y h:i:s", strtotime($record['updated_at']))] : [];
+                $dimension = json_decode($value);
+                $package = isset($dimension[0]->package) ? $dimension[0]->package : 'NA';
+                $di[] = [
+
+                    'height' => isset($package->height->value) ? $package->height->value : 'NA',
+                    'length' => isset($package->length->value) ? $package->length->value : 'NA',
+                    'width' => isset($package->width->value) ? $package->width->value : 'NA',
+                    'unit'  =>  isset($package->width->unit) ? $package->width->unit : 'NA',
+                    'weight' => isset($package->weight->value) ? $package->weight->value : 'NA',
+                    'weight_unit' => isset($package->weight->unit) ? $package->weight->unit : 'NA',
+                    ...$date
+                ];
+            }
+
+            if ($key2 != 'dimensions' && $key2 != 'updated_at') {
+
+                $di[$key][$key2] = $value ?? 'NA';
+            }
+        }
+    }
+    po($di);
     exit;
+    if (array_key_exists('dimensions', $value)) {
+
+        $dimension = json_decode($value['dimensions']);
+        $package = isset($dimension[0]->package) ? $dimension[0]->package : 'NA';
+        $di[] = [
+
+            'height' => isset($package->height->value) ? $package->height->value : 'NA',
+            'length' => isset($package->length->value) ? $package->length->value : 'NA',
+            'weight' => isset($package->weight->value) ? $package->weight->value : 'NA',
+            'width' => isset($package->width->value) ? $package->width->value : 'NA',
+        ];
+    }
 
     $dbname = config('database.connections.catalog.database');
     $destination_table = "asin_destination_uss";
@@ -209,13 +251,13 @@ Route::get('data', function () {
 //         $marketplace_id = ['ATVPDKIKX0DER'];
 //         // $asin = 'B00000JHQ0';
 //         $asins = [
-//             'B0855KK198',
-//             'B085BLCJBT',
-//             // 'B000WA6KFK',
-//             // 'B000WH10SW',
-//             // 'B000WNAP6O',
-//             // 'B000XAL2F4',
-//             // 'B000ZHJS0G',
+//             // 'B0855KK198',
+//             // 'B085BLCJBT',
+//             'B000WA6KFK',
+//             'B000WH10SW',
+//             'B000WNAP6O',
+//             'B000XAL2F4',
+//             'B000ZHJS0G',
 //         ];
 //         $identifiers = $asins;
 //         $identifiers_type = 'ASIN';
@@ -228,7 +270,7 @@ Route::get('data', function () {
 //         $page_token = null;
 //         $keywords_locale = null;
 
-//         $includedData = ['attributes', 'dimensions', 'images', 'productTypes', 'summaries'];
+//         $includedData = ['attributes', 'dimensions', 'identifiers', 'relationships', 'salesRanks', 'images', 'productTypes', 'summaries'];
 //         echo "<pre>";
 //         try {
 //             $data = [];
@@ -258,10 +300,18 @@ Route::get('data', function () {
 //                     if ($key1 == 'summaries') {
 //                         foreach ($value1[0] as $key2 => $value2) {
 //                             $data[$key][$key2] = returnType($value2);
+//                             echo $key2;
+//                             echo '<br>';
+//                             print_r($value2);
+//                             echo '<hr>';
 //                         }
 //                     } elseif ($key1 == 'dimensions') {
 //                         if (array_key_exists('package', (array)$value1[0])) {
 //                             foreach ($value1[0]->package as $key3 => $value3) {
+//                                 echo $key3;
+//                                 echo '<br>';
+//                                 print_r($value3);
+//                                 echo '<hr>';
 //                                 $data[$key][$key3] = $value3->value;
 //                                 if ($key3 == 'width' || $key3 == 'lenght' || $key3 == 'height') {
 //                                     $data[$key]['unit'] = $value3->unit;
@@ -274,10 +324,14 @@ Route::get('data', function () {
 //                         }
 //                     } else {
 //                         $data[$key][$key1] = returnType($value1);
+//                         echo $key1;
+//                         echo '<br>';
+//                         print_r($value1);
+//                         echo '<hr>';
 //                     }
 //                 }
 //             }
-//             po($data);
+//             // po($data);
 //         } catch (Exception $e) {
 //             $error_record = [
 //                 'queue_type' => 'Catalog',

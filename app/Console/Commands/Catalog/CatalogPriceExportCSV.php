@@ -27,7 +27,7 @@ class CatalogPriceExportCSV extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:catalog-price-export-csv {priority} {country_code}';
+    protected $signature = 'mosh:catalog-price-export-csv {priority} {country_code} {headers}';
 
     /**
      * The console command description.
@@ -55,6 +55,9 @@ class CatalogPriceExportCSV extends Command
     {
         $this->country_code = $this->argument('country_code');
         $this->priority = $this->argument('priority');
+        $selected_headers = explode(',', $this->argument('headers'));
+
+
 
         $exportFilePath = "excel/downloads/catalog_price/$this->country_code/Priority" . $this->priority . '/' . $this->country_code . "_CatalogPrice";
         $deleteFilePath = "app/excel/downloads/catalog_price/" . $this->country_code;
@@ -74,30 +77,16 @@ class CatalogPriceExportCSV extends Command
         $this->check = $record_per_csv / $chunk;
         if ($this->country_code == 'IN') {
 
-            $headers = [
-                'destination.asin as asin',
-                'pricing_ins.available',
-                'pricing_ins.in_price',
-                'pricing_ins.weight',
-                'pricing_ins.ind_to_uae',
-                'pricing_ins.ind_to_sg',
-                'pricing_ins.ind_to_sa',
-                'pricing_ins.price_updated_at'
-            ];
-
-            $csv_header = [
-                'Asin',
-                'Available',
-                'India Price',
-                'Weight(kg)',
-                'IND To UAE',
-                'IND To Singapore ',
-                'IND To Saudi',
-                'Updated At'
-            ];
+            $str = ['destination.', 'cat.', 'pricing_ins.'];
+            foreach ($selected_headers as $selected_header) {
+                $headers[] = "${selected_header}";
+                $csv_title = str_replace($str, '', $selected_header);
+                $csv_header[] = str_replace('_', ' ', strtoupper($csv_title));
+            }
 
             PricingIn::select($headers)
                 ->rightJoin('asin_destination_ins as destination', 'pricing_ins.asin', '=', 'destination.asin')
+                ->leftJoin("catalognewins as cat", 'destination.asin', '=', 'cat.asin')
                 ->where('destination.priority', $this->priority)
                 ->orWhereNull('destination.asin')
                 ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
@@ -107,32 +96,16 @@ class CatalogPriceExportCSV extends Command
                 });
         } elseif ($this->country_code == 'US') {
 
-            $headers = [
-                'destination.asin as asin',
-                'pricing_uss.available',
-                'pricing_uss.weight',
-                'pricing_uss.us_price',
-                'pricing_uss.usa_to_in_b2b',
-                'pricing_uss.usa_to_in_b2c',
-                'pricing_uss.usa_to_uae',
-                'pricing_uss.usa_to_sg',
-                'pricing_uss.price_updated_at'
-            ];
-
-            $csv_header = [
-                'Asin',
-                'Available',
-                'Weight',
-                'US Price',
-                'USA To IND B2B',
-                'USA To IND B2C',
-                'USA To UAE',
-                'USA To Singapore',
-                'Updated At'
-            ];
+            $str = ['destination.', 'cat.', 'pricing_uss.'];
+            foreach ($selected_headers as $selected_header) {
+                $headers[] = "${selected_header}";
+                $csv_title = str_replace($str, '', $selected_header);
+                $csv_header[] = str_replace('_', ' ', strtoupper($csv_title));
+            }
 
             PricingUs::select($headers)
                 ->rightJoin('asin_destination_uss as destination', 'pricing_uss.asin', '=', 'destination.asin')
+                ->leftJoin("catalognewuss as cat", 'destination.asin', '=', 'cat.asin')
                 ->where('destination.priority', $this->priority)
                 ->orWhereNull('destination.asin')
                 ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
@@ -191,6 +164,7 @@ class CatalogPriceExportCSV extends Command
         $not_available = [];
 
         foreach ($records as $key => $record) {
+
             foreach ($record as $key2 => $value) {
 
                 $not_available[$key][$key2] = $value ?? "NA";
