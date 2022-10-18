@@ -351,7 +351,7 @@ class InvoiceManagementController extends Controller
                     if ($key1 == 'total_including_taxes') {
 
                         foreach ($product_array as $key2 => $val) {
-                            $grand_total += $val;
+                            $grand_total += (int) $val;
                         }
                     } else {
                         foreach ($product_array as $key2 => $val) {
