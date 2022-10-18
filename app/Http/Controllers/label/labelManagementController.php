@@ -36,8 +36,52 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 class labelManagementController extends Controller
 {
     private $order_details;
-    public function SearchLabel()
+    public function SearchLabel(Request $request)
     {
+        $data = $this->labelListing(2);
+        // dd($data);
+        if ($request->ajax()) {
+            $currentPageNumber = $request->start / $request->length + 1;
+
+            $bag_no = $request->bag_no;
+            $data = $this->labelListing($bag_no);
+
+            return DataTables::of($data)
+                ->addColumn('select_all', function ($data) use ($currentPageNumber) {
+                    $name = json_decode($data->shipping_address);
+                    if (isset($name->Name)) {
+                        return "<input class='check_options' type='checkbox' value='$data->id' data-current-page='$currentPageNumber' name='options[]' id='checkid$data->id'>";
+                    }
+                })
+                ->addColumn('name', function ($data) {
+                    $name = json_decode($data->shipping_address);
+                    if (isset($name->Name)) {
+                        return $name->Name;
+                    }
+                    return 'NA';
+                })
+                ->addColumn('action', function ($data) use ($bag_no) {
+                    $table = '';
+                    $name = json_decode($data->shipping_address);
+                    if (isset($name->Name)) {
+                        $table .=
+                            "<div class='d-flex'>
+                            <a href='/label/pdf-template/$bag_no-$data->id' class='edit btn btn-success btn-sm ml-2 mr-2' target='_blank'>
+                                <i class='fas fa-eye'></i> View 
+                            </a>
+                            <a href='/label/download-direct/$bag_no-$data->id' class='edit btn btn-info btn-sm mr-2'>
+                            <i class='fas fa-download'></i> Download </a>";
+                    }
+                    $table .=
+                        "<a id='edit-address' data-toggle='modal' data-id='$data->order_item_identifier' data-amazon_order_identifier='$data->order_no ' href='javascript:void(0)' class='edit btn btn-secondary btn-sm'>
+                        <i class='fas fa-address-card'></i> Address </a>
+                        </div>";
+                    return $table;
+                })
+
+                ->rawColumns(['select_all', 'action'])
+                ->make(true);
+        }
         return view('label.search_label');
     }
 
@@ -46,7 +90,16 @@ class labelManagementController extends Controller
         if ($request->ajax()) {
 
             $bag_no = $request->bag_no;
+            return $bag_no;
             $data = $this->labelListing($bag_no);
+            return DataTables::of($data)
+                ->addColumn('select_all', function ($data) {
+
+                    return "<input class='check_options' type='checkbox' value='25231' name='options[]' id='checkid25231'>";
+                })
+                ->rawColumns(['select_all'])
+                ->make(true);
+
             return response()->json($data);
         }
     }
@@ -58,19 +111,25 @@ class labelManagementController extends Controller
 
     public function showTemplate($id)
     {
-        $result = $this->labelDataFormating("'$id'");
-        $result = $result[0];
-        $awb_no = $result['awb_no'];
-        $forwarder = $result['forwarder'];
+        $id_array = explode('-', $id);
+        if (isset($id_array[0]) && isset($id_array[1])) {
+            $bag_no = $id_array[0];
+            $table_id = $id_array[1];
+            $result = $this->labelDataFormating("'$table_id'");
 
-        if ($awb_no == '' || $awb_no == NULL) {
-            $awb_no = 'AWB-MISSING';
+            $result = $result[0];
+            $awb_no = $result['awb_no'];
+            $forwarder = $result['forwarder'];
+
+            if ($awb_no == '' || $awb_no == NULL) {
+                $awb_no = 'AWB-MISSING';
+            }
+            $result = (object)$result;
+
+            $generator = new BarcodeGeneratorPNG();
+            $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39));
+            return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder', 'bag_no'));
         }
-        $result = (object)$result;
-
-        $generator = new BarcodeGeneratorPNG();
-        $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39));
-        return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder'));
     }
     public function ExportLabel(Request $request)
     {
@@ -78,14 +137,16 @@ class labelManagementController extends Controller
         $this->deleteAllPdf();
         $url = $request->url;
         $awb_no = $request->awb_no;
-        $file_path = 'label/label' . $awb_no . '.pdf';
+        $bag_no = $request->bag_no;
+
+        $file_path = "label/$bag_no/label$awb_no.pdf";
 
         if (!Storage::exists($file_path)) {
             Storage::put($file_path, '');
         }
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
@@ -95,18 +156,23 @@ class labelManagementController extends Controller
         return response()->json(['Save pdf sucessfully']);
     }
 
-    public function downloadLabel($awb_no)
+    public function downloadLabel($bag_no, $awb_no)
     {
-        return Storage::download('label/label' . $awb_no . '.pdf');
+        return Storage::download("label/$bag_no/label$awb_no.pdf");
     }
 
     public function DownloadDirect($id)
     {
         $this->deleteAllPdf();
-        // $result = DB::connection('web')->select("select * from labels where id = '$id' ");
+
+        $id_array = explode('-', $id);
+        $id = $id_array[1];
+        $bag_no = $id_array[0];
+
         $result = Label::where('id', $id)->get();
         $awb_no = $result[0]->awb_no;
-        $file_path = 'label/label' . $awb_no . '.pdf';
+
+        $file_path = "label/$bag_no/label$awb_no.pdf";
 
         if (!Storage::exists($file_path)) {
             Storage::put($file_path, '');
@@ -116,14 +182,14 @@ class labelManagementController extends Controller
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
 
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
             ->margins(0, 0, 0, 0)
             ->savePdf($exportToPdf);
 
-        return $this->downloadLabel($awb_no);
+        return $this->downloadLabel($bag_no, $awb_no);
     }
 
     public function PrintSelected($id)
@@ -152,16 +218,19 @@ class labelManagementController extends Controller
 
     public function DownloadSelected(Request $request)
     {
-
         $passid = $request->id;
+        $bag_no = $request->bag_no;
+        $current_page_number = $request->current_page_number;
+
+        // Log::alert($current_page_number);
         $currenturl =  URL::current();
 
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
             $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:label-bulk-zip-download $passid $currenturl > /dev/null &";
+            $command = "cd $base_path && php artisan pms:label-bulk-zip-download $passid $currenturl $bag_no $current_page_number > /dev/null &";
             exec($command);
         } else {
-            Artisan::call('pms:label-bulk-zip-download' . ' ' . $passid . ' ' . $currenturl);
+            Artisan::call('pms:label-bulk-zip-download' . ' ' . $passid . ' ' . $currenturl . ' ' . $bag_no . ' ' . $current_page_number);
         }
 
         return response()->json(['success' => 'Zip created successfully']);
@@ -169,12 +238,51 @@ class labelManagementController extends Controller
 
     public function zipDownload()
     {
-        if (!Storage::exists('label/zip/label.zip')) {
-            return redirect()->intended('/label/search-label')->with('success', 'File is not available right now! Please wait.');
+        $html = '';
+        $html_final = '';
+        $count = 0;
+        $path = (Storage::path("label"));
+        $files = scandir($path);
+        foreach ($files as $key => $file) {
+            if ($key > 1) {
+                $file_path = Storage::path('label' . '/' . $file);
+                if (is_dir($file_path)) {
+                    $file_paths = scandir($file_path);
+                    foreach ($file_paths as $zip_path) {
+                        if ($zip_path == 'zip') {
+                            $zip_path_array = scandir($file_path . '/' . $zip_path);
+                            $count = 0;
+                            foreach ($zip_path_array as $zip_key => $zip_file) {
+                                if ($zip_key > 1) {
+                                    $count++;
+                                    if ($count == 1) {
+                                        $html .= "<div>Bag No: $file";
+                                    }
+                                    $html .=
+                                        "<a href='/label/zip/download/$file/zip/$zip_file'>
+                                             <li class='ml-4'>Label Part " . $zip_key - 1 . ' ' . date("M-d-Y H:i:s.", filemtime("$file_path/$zip_path/$zip_file")) . "</li>
+                                        </a>";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-        return Storage::download('label/zip/label.zip');
+
+
+        if ($html == '') {
+            return '<div> File Is Downloading....</div>';
+        }
+        $html .= '</div>';
+        return $html;
     }
 
+    public function zipDownloadLink($bag_no, $file_name)
+    {
+        $path = "label/$bag_no/zip/$file_name";
+        return Storage::download($path);
+    }
     public function downloadExcelTemplate()
     {
         $filepath = public_path('template/Label-Template.xlsx');
@@ -490,7 +598,16 @@ class labelManagementController extends Controller
         $prefix = config('database.connections.web.prefix');
 
         $data = DB::select("SELECT
-            DISTINCT web.id, web.awb_no, web.forwarder, web.order_no, ord.purchase_date, store.store_name, orderDetails.seller_sku, orderDetails.shipping_address,orderDetails.order_item_identifier
+            DISTINCT
+             web.id, 
+             web.awb_no, 
+             web.forwarder,
+             web.order_no,
+             ord.purchase_date,
+             store.store_name, 
+             orderDetails.seller_sku, 
+             orderDetails.shipping_address,
+             orderDetails.order_item_identifier
             from ${web}.${prefix}labels as web
             JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
             JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
@@ -560,12 +677,12 @@ class labelManagementController extends Controller
                     if ($name && $courier_name && $awb_no) {
                         $html .= "<td>
                                     <div class='d-flex'>
-                                        <a href='/label/pdf-template/$id' class='edit btn btn-success btn-sm view'  target='_blank'>
+                                        <a href='/label/pdf-template/orderid-$id' class='edit btn btn-success btn-sm view'  target='_blank'>
                                             <i class='fas fa-eye'></i> View 
                                         </a>
                                     
                                         <div class='d-flex pl-2'>
-                                            <a href='/label/download-direct/$id' class='edit btn btn-info btn-sm'>
+                                            <a href='/label/download-direct/orderid-$id' class='edit btn btn-info btn-sm'>
                                                 <i class='fas fa-download'></i> Download 
                                             </a>
                                         </div>

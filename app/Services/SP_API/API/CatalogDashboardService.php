@@ -45,7 +45,7 @@ class CatalogDashboardService
 
             foreach ($Total_catalogs as $total_catalog) {
                 $cat = $total_catalog->priority;
-                $catalog[$cat] = $total_catalog->asin_catalog;
+                $catalog[$cat] = trimTrailingZeroes(formatInIndianStyle($total_catalog->asin_catalog));
             }
 
             $priority_wise = DB::connection('catalog')
@@ -54,10 +54,10 @@ class CatalogDashboardService
 
             foreach ($priority_wise as $priority) {
                 $value = $priority->priority;
-                $asin_priority[$value] = $priority->priority_wise;
+                $asin_priority[$value] = trimTrailingZeroes(formatInIndianStyle($priority->priority_wise));
 
                 // unavailable catalog start
-                $na_catalog[$value] = $priority->priority_wise - $catalog[$value];
+                $na_catalog[$value] = trimTrailingZeroes(formatInIndianStyle($priority->priority_wise - filter_var($catalog[$value], FILTER_SANITIZE_NUMBER_INT)));
             }
 
             $this->bb_delist_count = [];
@@ -120,12 +120,12 @@ class CatalogDashboardService
 
             foreach ($this->bb_delist_count as $delist_asin) {
                 $delist = $delist_asin['priority'];
-                $bb_asin_delist[$delist] = $delist_asin['asin_delist'];
+                $bb_asin_delist[$delist] = trimTrailingZeroes(formatInIndianStyle($delist_asin['asin_delist']));
             }
 
             foreach ($this->bb_unavailable_count as $asin_unavailabe) {
                 $unavail_asin = $asin_unavailabe['priority'];
-                $asin_bb_unavailable[$unavail_asin] = $asin_unavailabe['asin_unavailable'];
+                $asin_bb_unavailable[$unavail_asin] = trimTrailingZeroes(formatInIndianStyle($asin_unavailabe['asin_unavailable']));
             }
 
             // log::alert($asin_bb_unavailable);
@@ -140,7 +140,7 @@ class CatalogDashboardService
             ");
             foreach ($cat_pricings as $cat_pricing) {
                 $pr_priority = $cat_pricing->priority;
-                $cat_price[$pr_priority] = $cat_pricing->price;
+                $cat_price[$pr_priority] = trimTrailingZeroes(formatInIndianStyle($cat_pricing->price));
             }
 
             $record_arrays[]  = [

@@ -66,16 +66,20 @@ class RemoveUploadedFiles extends Command
             });
         }
         // Remove all 2 days ago file form Asin destination folder start.
-        $back_file_date = Carbon::now()->subDays(3)->toDateString();
-        $files = Storage::allFiles('AsinDestination');
-        foreach ($files as $file_name) {
+        $back_file_date = Carbon::now()->subDays(2)->toDateString();
+        $Asin_source_destination_files = ['AsinDestination', 'AsinSource'];
+        foreach ($Asin_source_destination_files as $Asin_source_destination_file) {
 
-            $FileTime = date("F d Y H:i:s.", filemtime(Storage::path("${file_name}")));
-            $current_file_date = Carbon::parse($FileTime)->toDateString();
+            $files = Storage::allFiles("${Asin_source_destination_file}");
+            foreach ($files as $file_name) {
 
-            if ($back_file_date == $current_file_date) {
-                unlink(Storage::path($file_name));
-                log::alert('All file delete successfully from AsinDestination Folder');
+                $FileTime = date("F d Y H:i:s.", filemtime(Storage::path("${file_name}")));
+                $current_file_date = Carbon::parse($FileTime)->toDateString();
+
+                if ($back_file_date == $current_file_date) {
+                    unlink(Storage::path($file_name));
+                    log::alert('All file delete successfully from AsinDestination Folder');
+                }
             }
         }
         // Remove all 2 days ago file form Asin destination folder end.
