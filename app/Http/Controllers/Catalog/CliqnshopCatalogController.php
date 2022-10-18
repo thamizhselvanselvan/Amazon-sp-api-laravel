@@ -15,6 +15,7 @@ class CliqnshopCatalogController extends Controller
     {
 
         commandExecFunc("Mosh:cliqnshop_catalog_export");
+        
         return redirect('/catalog/product')->with("success", "Cliqnshop Catalog Price is Exporting please Wait for Few Minuts.");
     }
 

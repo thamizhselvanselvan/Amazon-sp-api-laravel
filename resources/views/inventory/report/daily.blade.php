@@ -146,6 +146,7 @@
         });
         $("#tag ").on('click', function(e) {
             $("#tagrep").show();
+            $("#eport").hide();
         });
         $("#tag ").on('click', function(e) {
             $("#warehouse").hide();
@@ -182,7 +183,7 @@
             $("#table").show();
         });
         $("#ware ").on('click', function(e) {
-            $("#report_table").hide();
+            $("#report_table,#export").hide();
         });
         $("#entire ").on('click', function(e) {
             $("#report_table").show();
