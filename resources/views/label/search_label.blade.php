@@ -319,6 +319,10 @@
             let bag_no = $('#bag_no').val();
             let current_page_number = $(".check_options:first").data('current-page');
 
+            if (bag_no == '') {
+                alert('Please Input Bag No.');
+                return false;
+            }
             $("input[name='options[]']:checked").each(function() {
                 if (count == 0) {
                     id += $(this).val();
