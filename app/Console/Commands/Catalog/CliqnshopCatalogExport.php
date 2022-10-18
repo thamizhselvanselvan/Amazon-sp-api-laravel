@@ -354,7 +354,7 @@ class CliqnshopCatalogExport extends Command
 
                             $bullet = $desc['bullet_point'];
                             foreach ($bullet as $key => $val) {
-                                $sh_name = "short";
+                                $sh_name = "long";
                                 $short_desc = ($val['value']);
                             }
                         } else {
@@ -492,6 +492,10 @@ class CliqnshopCatalogExport extends Command
                 } else {
                     ++$this->count;
                 }
+
+
+
+                
             });
     }
 }
