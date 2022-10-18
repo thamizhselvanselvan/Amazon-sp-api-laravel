@@ -57,51 +57,84 @@ class AsinDestinationUpload extends Command
         $product = [];
         $product_lowest_price = [];
         $count = 0;
+        $asin = [];
         foreach ($destinations as $this->destination) {
 
-            foreach ($asins as  $asin_details) {
-                $asin = $asin_details['ASIN'];
-
-                $Asin_record[] = [
-                    'asin'  => $asin,
-                    'user_id'   => $user_id,
-                    'priority' => $priority,
-
-                ];
-
-                $product[] = [
-                    'seller_id' => $source[$this->destination],
-                    'active' => 1,
-                    'asin1' => $asin,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-
-                $product_lowest_price[] = [
-                    'asin' => $asin,
-                    'cyclic' => 0,
-                    'priority'  => $priority,
-                    'import_type' => 'Seller',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-
-                if ($count == 999) {
-
-                    $table_name = table_model_create(country_code: $this->destination, model: 'Asin_destination', table_name: 'asin_destination_');
-                    $table_name->upsert($Asin_record, ['user_asin_unique'], ['asin', 'user_id', 'priority']);
-                    $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $this->destination, priority: $priority);
-
-                    $Asin_record = [];
-                    $product = [];
-                    $product_lowest_price = [];
-                    $count = 0;
-                }
-                $count++;
+            foreach ($asins as $asin_details) {
+                $asin[] = $asin_details['ASIN'];
             }
-            $table_name = table_model_create(country_code: $this->destination, model: 'Asin_destination', table_name: 'asin_destination_');
-            $table_name->upsert($Asin_record, ['user_asin_unique'], ['asin', 'user_id', 'priority']);
-            $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $this->destination, priority: $priority);
+
+            $chunk_data = [];
+            $asin_chunk = array_chunk($asin, 30000);
+            $class = "catalog\ImportAsinSourceDestinationCsvFile";
+            $queue_name = "csv_import";
+            $delay = 0;
+
+            foreach ($asin_chunk as $value) {
+
+                $chunk_data = [
+                    'ASIN'      => $value,
+                    'user_id'   => $user_id,
+                    'source'    => $this->destination,
+                    'module'    => 'destination',
+                    'priority'  =>  $priority,
+                ];
+                jobDispatchFunc($class, $chunk_data, $queue_name, $delay);
+            }
+            log::alert($chunk_data);
+            $asin = [];
         }
+
+
+
+
+
+
+        // foreach ($destinations as $this->destination) {
+
+        //     foreach ($asins as  $asin_details) {
+        //         $asin = $asin_details['ASIN'];
+
+        //         $Asin_record[] = [
+        //             'asin'  => $asin,
+        //             'user_id'   => $user_id,
+        //             'priority' => $priority,
+
+        //         ];
+
+        //         $product[] = [
+        //             'seller_id' => $source[$this->destination],
+        //             'active' => 1,
+        //             'asin1' => $asin,
+        //             'created_at' => now(),
+        //             'updated_at' => now(),
+        //         ];
+
+        //         $product_lowest_price[] = [
+        //             'asin' => $asin,
+        //             'cyclic' => 0,
+        //             'priority'  => $priority,
+        //             'import_type' => 'Seller',
+        //             'created_at' => now(),
+        //             'updated_at' => now(),
+        //         ];
+
+        //         if ($count == 999) {
+
+        //             $table_name = table_model_create(country_code: $this->destination, model: 'Asin_destination', table_name: 'asin_destination_');
+        //             $table_name->upsert($Asin_record, ['user_asin_unique'], ['asin', 'user_id', 'priority']);
+        //             $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $this->destination, priority: $priority);
+
+        //             $Asin_record = [];
+        //             $product = [];
+        //             $product_lowest_price = [];
+        //             $count = 0;
+        //         }
+        //         $count++;
+        //     }
+        //     $table_name = table_model_create(country_code: $this->destination, model: 'Asin_destination', table_name: 'asin_destination_');
+        //     $table_name->upsert($Asin_record, ['user_asin_unique'], ['asin', 'user_id', 'priority']);
+        //     $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $this->destination, priority: $priority);
+        // }
     }
 }

@@ -19,6 +19,6 @@ class PushAsin
 
         $lp_table = "product_aa_custom_p${priority}_${country_code}_offer";
         $bb_product_lowest_price = table_model_set(country_code: $country_code, model: 'bb_product_aa_custom_offer', table_name: $lp_table);
-        $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin', 'cyclic', 'priority', 'import_type']);
+        $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin', 'cyclic', 'delist', 'available', 'priority', 'import_type']);
     }
 }

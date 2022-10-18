@@ -65,21 +65,18 @@ class asinBulkImport extends Command
             $class = "catalog\ImportAsinSourceDestinationCsvFile";
             $queue_name = "csv_import";
             $delay = 0;
-            Log::notice("Enter inside command");
-            log::alert($chunk);
+
             foreach ($chunk as $value) {
 
                 $chunk_data  = [
 
                     'ASIN'      =>  $value,
                     'user_id'   =>  $user_id,
-                    'source'   =>  $source
+                    'source'    =>  $source,
+                    'module'   =>   'source'
                 ];
 
                 jobDispatchFunc($class, $chunk_data, $queue_name, $delay);
-                log::alert($chunk_data);
-
-                Log::notice('chunk happening');
             }
             $csv_data = [];
         }
