@@ -21,9 +21,9 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('pms:b2cship-kyc-status')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
         // $schedule->command('pms:seller-order-item-import')->everyTenMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-        $schedule->command('pms:stock-tracking')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-        $schedule->command('mosh:warehouse-track')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-        $schedule->command('mosh:tag-track')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+        $schedule->command('pms:stock-tracking')->dailyAt('23:00')->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+        $schedule->command('mosh:warehouse-track')->dailyAt('23:00')->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+        $schedule->command('mosh:tag-track')->dailyAt('23:00')->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
         $schedule->command('mosh:access_token_generate')->cron('*/50 * * * *')->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
 
         if (app()->environment() === 'production') {

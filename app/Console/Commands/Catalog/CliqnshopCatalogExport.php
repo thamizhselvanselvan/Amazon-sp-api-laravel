@@ -76,6 +76,10 @@ class CliqnshopCatalogExport extends Command
             'text content',
             'text type',
             'text content',
+            'text type',
+            'text content',
+            'text type',
+            'text content',
 
             'Preview',
             'Media URL',
@@ -114,42 +118,42 @@ class CliqnshopCatalogExport extends Command
             'Price value',
             'price tax rate',
 
-            'product list type',
             'attribute code',
             'attribute type',
             'attribute label',
             'attribute position',
             'attribute status',
-
             'product list type',
+            
             'attribute code',
             'attribute type',
             'attribute label',
             'attribute position',
             'attribute status',
-
-
             'product list type',
+
+
             'attribute code',
             'attribute type',
             'attribute label',
             'attribute position',
             'attribute status',
-
             'product list type',
+
             'attribute code',
             'attribute type',
             'attribute label',
             'attribute position',
             'attribute status',
-
             'product list type',
+            
             'attribute code',
             'attribute type',
             'attribute label',
             'attribute position',
             'attribute status',
-
+            'product list type',
+            
             'subproduct code',
             'product list type',
             'subproduct code',
@@ -199,6 +203,18 @@ class CliqnshopCatalogExport extends Command
 
         ];
 
+        $second_csv_headers = [
+            'Label',
+            'Status',
+            'Text Language',
+            'Text Type',
+            'Text Content',
+            'Media Type',
+            'Media Url',
+            'Address Language Id',
+            'Country Code',
+            'City'
+        ];
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
 
         $table_name->select($select_query)
@@ -207,19 +223,14 @@ class CliqnshopCatalogExport extends Command
                 $csv_values = [];
 
                 if ($this->count == 1) {
-
                     $this->file_path = "Cliqnshop/" . "CatalogCliqnshop" . $this->offset . ".csv";
-
                     if (!Storage::exists($this->file_path)) {
                         Storage::put($this->file_path, '');
                     }
-
                     $writer = Writer::createFromPath(Storage::path($this->file_path, 'w'));
                     $writer->insertOne($csv_header);
                 }
-
                 foreach ($result as $data) {
-
                     $img1 = [
                         "Images1" => '',
                         "preview1" => '',
@@ -231,6 +242,10 @@ class CliqnshopCatalogExport extends Command
                         "preview4" => '',
                         "Images5" => '',
                         "preview5" => '',
+                        "Images6" => '',
+                        "preview6" => '',
+                        "Images7" => '',
+                        "preview7" => '',
                     ];
                     $imagedata = json_decode($data['images'], true);
 
@@ -242,27 +257,21 @@ class CliqnshopCatalogExport extends Command
 
                                 $img1["Images${counter}"] = $image_data_new['link'];
                                 $img1["preview${counter}"] = $image_data_new['link'];
-                      
                             } else {
-                                $img1["Images${counter}"] = "1";
-                                $img1["preview${counter}"] = "2";
+                                $img1["Images${counter}"] = null;
+                                $img1["preview${counter}"] = null;
                             }
 
-                            if ($counter == 5) {
+                            if ($counter == 7) {
                                 break;
                             }
                         }
-
-               
-
-  
                     } else {
                         for ($i = 1; $i <= 5; $i++) {
                             $img1["Images${i}"] = null;
                             $img1["preview${i}"] = null;
                         }
                     }
-
 
                     $cid = json_decode($data['browse_classification'], true);
                     $cat_code = 'new';
@@ -276,25 +285,30 @@ class CliqnshopCatalogExport extends Command
                         $height_unit  = null;
                         $height_val  = null;
                         $h_type = null;
-                        $hh = '0';
+                        $hh = null;
+                    $hpro_typt =null;
                         $dim = json_decode($data['dimensions'], true);
                         if (isset($dim[0]['item']['height'])) {
                             $height_unit  = $dim[0]['item']['height']['unit'];
                             $height_val  = $dim[0]['item']['height']['value'];
                             $h_type =  (key($dim[0]['item']));
                             $hh = '1';
-                        } 
+                            $hpro_typt = 'default';
+                        }
 
                         if (isset($dim[0]['item']['length'])) {
                             $length_unit  = $dim[0]['item']['length']['unit'];
                             $length_val  = $dim[0]['item']['length']['value'];
                             $ll = '1';
                             $l_type = 'length';
+                        $lpro_typt = 'default';
+
                         } else {
                             $length_unit = null;
                             $length_val = null;
                             $l_type = null;
                             $ll = null;
+                        $lpro_typt = null;
                         }
 
                         if (isset($dim[0]['item']['weight'])) {
@@ -302,22 +316,26 @@ class CliqnshopCatalogExport extends Command
                             $weight_val  = $dim[0]['item']['weight']['value'];
                             $we_type = 'weight';
                             $we = '1';
+                        $we_pro_typt ='default';
                         } else {
                             $weight_unit = null;
                             $weight_val = null;
                             $we_type = null;
                             $we = null;
+                        $we_pro_typt = null;
                         }
                         if (isset($dim[0]['item']['width'])) {
                             $width_unit  = $dim[0]['item']['width']['unit'];
                             $width_val  = $dim[0]['item']['width']['value'];
                             $wd_type = 'width';
                             $wd = '1';
+                        $wd_pro_typt = 'default';
                         } else {
                             $width_unit = null;
                             $width_val  = null;
                             $wd_type = null;
                             $wd = null;
+                        $wd_pro_typt = null;
                         }
                     } else {
                         $height_unit  = null;
@@ -336,7 +354,7 @@ class CliqnshopCatalogExport extends Command
 
                             $bullet = $desc['bullet_point'];
                             foreach ($bullet as $key => $val) {
-                                $sh_name = "Short";
+                                $sh_name = "long";
                                 $short_desc = ($val['value']);
                             }
                         } else {
@@ -346,7 +364,6 @@ class CliqnshopCatalogExport extends Command
                     }
 
                     $brand_place = str_replace(' ', '', $data['brand']);
-
                     $csv_values[] = [
                         'item code' => $data['asin'],
                         'item label' => $data['item_name'],
@@ -362,119 +379,123 @@ class CliqnshopCatalogExport extends Command
                         'Price_US_IN' => $data['usa_to_in_b2c'],
                         'price tax rate' => '19',
 
-                            'price currency id1' => 'USD',
-                            'price quantity1' => '1',
-                            'Price_US_US1' => $data['us_price'],
-                            'price tax rate1' => '19',
+                        'price currency id1' => 'USD',
+                        'price quantity1' => '1',
+                        'Price_US_US1' => $data['us_price'],
+                        'price tax rate1' => '19',
 
-                            'price currency id2' => 'AED',
-                            'price quantity2' => '1',
-                            'Price_US_UAE2' => $data['usa_to_uae'],
-                            'price tax rate2' => '19',
+                        'price currency id2' => 'AED',
+                        'price quantity2' => '1',
+                        'Price_US_UAE2' => $data['usa_to_uae'],
+                        'price tax rate2' => '19',
 
-                            'price currency id3' => null,
-                            'price quantity3' => null,
-                            'Price value3' => null,
-                            'price tax rate3' => null,
+                        'price currency id3' => null,
+                        'price quantity3' => null,
+                        'Price value3' => null,
+                        'price tax rate3' => null,
 
-                            'price currency id4' => null,
-                            'price quantity4' => null,
-                            'Price value4' => null,
-                            'price tax rate4' => null,
+                        'price currency id4' => null,
+                        'price quantity4' => null,
+                        'Price value4' => null,
+                        'price tax rate4' => null,
 
-                            'product list type0' => 'default',
-                            'attribute code0' => $height_val,
-                            'attribute type0' => $h_type,
-                            'attribute label0' => $height_val . ' ' . $height_unit,
-                            'attribute position0' => null,
-                            'attribute status0' => $hh,
-
-                            'product list type1' => 'default',
-                            'attribute code1' => $length_unit,
-                            'attribute type1' => $l_type,
-                            'attribute label' =>  $length_val . ' ' . $length_unit,
-                            'attribute position1' => null,
-                            'attribute status1' => $ll,
-
-                            'product list type2' => 'default',
-                            'attribute code2' => $weight_unit,
-                            'attribute type2' => $we_type,
-                            'attribute label2' => $weight_val . ' ' . $weight_unit,
-                            'attribute position2' => null,
-                            'attribute status2' => $we,
-
-                            'product list type3' => 'default',
-                            'attribute code3' => $width_unit,
-                            'attribute type3' => $wd_type,
-                            'attribute label3' => $width_val . ' ' . $width_unit,
-                            'attribute position3' => null,
-                            'attribute status3' => $wd,
-
-                            'product list type4' => 'default',
-                            'attribute code4' => null,
-                            'attribute type4' => null,
-                            'attribute label4' => null,
-                            'attribute position4' => null,
-                            'attribute status4' => null,
-
-                            'subproduct code0' => null,
-                            'product list typea' => null,
-                            'subproduct code1' => null,
-                            'product list typeb' => null,
-                            'subproduct code2' => null,
-                            'product list typec' => null,
-                            'subproduct code3' => null,
-                            'product list typed' => null,
-                            'subproduct code4' => null,
-                            'product list typee' => null,
-                            'subproduct code5' => null,
-                            'product list typef' => null,
-                            'subproduct code6' => null,
-                            'product list typeg' => null,
-                            'subproduct code7' => null,
-                            'product list typeh' => null,
-                            'subproduct code8' => null,
-                            'product list typei' => null,
-                            'subproduct code9' => null,
-                            'product list typej' => null,
+                        'attribute code0' => null,
+                        'attribute type0' => null,
+                        'attribute label0' => null,
+                        'attribute position0' => null,
+                        'attribute status0' => null,
+                        'product list type0' => null,
 
 
-                            'property list type' => null,
-                            'property value' => null,
-                            'catalog code' =>  $cat_code,
-                            'catalog code0' => null,
-                            'catalog code1' => null,
-                            'catalog code2' => null,
+                        'attribute code1' => $length_val,
+                        'attribute type1' => $l_type,
+                        'attribute label' =>  $length_val . ' ' . $length_unit,
+                        'attribute position1' => null,
+                        'attribute status1' => $ll,
+                        'product list type1' =>   $lpro_typt,
 
-                            'catalog list type' => null,
-                            'catalog list date start' => null,
-                            'catalog list date end' => null,
-                            'catalog list config' => null,
-                            'catalog list position' => null,
-                            'catalog list status' => '1',
-                            'supplier code' => $brand_place,
-                            'supplier list type' => null,
-                            'supplier list datestart' => null,
-                            'supplier list dateend' => null,
-                            'supplier list config' => null,
-                            'supplier list position' => null,
-                            'supplier list status' => '1',
-                            'stock level' => '500',
-                            'stock type' => 'defult',
-                            'stock dateback' => null,
+                        'attribute code2' => $weight_val,
+                        'attribute type2' => $we_type,
+                        'attribute label2' => $weight_val . ' ' . $weight_unit,
+                        'attribute position2' => null,
+                        'attribute status2' => $we,
+                        'product list type2' => $we_pro_typt,
+                        
+                        'attribute code3' => $width_val,
+                        'attribute type3' => $wd_type,
+                        'attribute label3' => $width_val . ' ' . $width_unit,
+                        'attribute position3' => null,
+                        'attribute status3' => $wd,
+                        'product list type3' =>   $wd_pro_typt,
+
+                        'attribute code4' => null,
+                        'attribute type4' => null,
+                        'attribute label4' => null,
+                        'attribute position4' => null,
+                        'attribute status4' => null,
+                        'product list type4' => null,
+
+                        'subproduct code0' => null,
+                        'product list typea' => null,
+                        'subproduct code1' => null,
+                        'product list typeb' => null,
+                        'subproduct code2' => null,
+                        'product list typec' => null,
+                        'subproduct code3' => null,
+                        'product list typed' => null,
+                        'subproduct code4' => null,
+                        'product list typee' => null,
+                        'subproduct code5' => null,
+                        'product list typef' => null,
+                        'subproduct code6' => null,
+                        'product list typeg' => null,
+                        'subproduct code7' => null,
+                        'product list typeh' => null,
+                        'subproduct code8' => null,
+                        'product list typei' => null,
+                        'subproduct code9' => null,
+                        'product list typej' => null,
+
+
+                        'property list type' => null,
+                        'property value' => null,
+                        'catalog code' =>  $cat_code,
+                        'catalog code0' => null,
+                        'catalog code1' => null,
+                        'catalog code2' => null,
+
+                        'catalog list type' => null,
+                        'catalog list date start' => null,
+                        'catalog list date end' => null,
+                        'catalog list config' => null,
+                        'catalog list position' => null,
+                        'catalog list status' => '1',
+                        'supplier code' => $brand_place,
+                        'supplier list type' => null,
+                        'supplier list datestart' => null,
+                        'supplier list dateend' => null,
+                        'supplier list config' => null,
+                        'supplier list position' => null,
+                        'supplier list status' => '1',
+                        'stock level' => '500',
+                        'stock type' => 'default',
+                        'stock dateback' => null,
                     ];
                 }
 
                 $writer->insertAll($csv_values);
-            exit;
+                exit;
                 if ($csv_number == $this->count) {
                     ++$this->offset;
-                    
+
                     $this->count = 1;
                 } else {
                     ++$this->count;
                 }
+
+
+
+                
             });
-        }
-    
     }
+}
