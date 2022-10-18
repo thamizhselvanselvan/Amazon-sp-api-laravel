@@ -399,12 +399,12 @@ class CliqnshopCatalogExport extends Command
                         'Price value4' => null,
                         'price tax rate4' => null,
 
-                        'attribute code0' => $height_val,
-                        'attribute type0' => $h_type,
-                        'attribute label0' => $height_val . ' ' . $height_unit,
+                        'attribute code0' => null,
+                        'attribute type0' => null,
+                        'attribute label0' => null,
                         'attribute position0' => null,
-                        'attribute status0' => $hh,
-                        'product list type0' => $hpro_typt,
+                        'attribute status0' => null,
+                        'product list type0' => null,
 
 
                         'attribute code1' => $length_val,
