@@ -26,6 +26,7 @@ class StockController extends Controller
             $ware =  Inventory::with('warehouses','shelves')
                 ->where('warehouse_id', $request->id)
                 ->where('balance_quantity', '>', 0)
+                ->orderBy('created_at', 'DESC')
                 ->get();
 
             return response()->json($ware);
