@@ -61,6 +61,7 @@ class CliqnshopCatalogExport extends Command
             'catalognewuss.browse_classification',
             'catalognewuss.dimensions',
             'catalognewuss.attributes',
+            'catalognewuss.color',
             'pricing_uss.usa_to_in_b2c',
             'pricing_uss.us_price',
             'pricing_uss.usa_to_uae',
@@ -124,14 +125,6 @@ class CliqnshopCatalogExport extends Command
             'attribute position',
             'attribute status',
             'product list type',
-            
-            'attribute code',
-            'attribute type',
-            'attribute label',
-            'attribute position',
-            'attribute status',
-            'product list type',
-
 
             'attribute code',
             'attribute type',
@@ -140,20 +133,28 @@ class CliqnshopCatalogExport extends Command
             'attribute status',
             'product list type',
 
+
             'attribute code',
             'attribute type',
             'attribute label',
             'attribute position',
             'attribute status',
             'product list type',
-            
+
             'attribute code',
             'attribute type',
             'attribute label',
             'attribute position',
             'attribute status',
             'product list type',
-            
+
+            'attribute code',
+            'attribute type',
+            'attribute label',
+            'attribute position',
+            'attribute status',
+            'product list type',
+
             'subproduct code',
             'product list type',
             'subproduct code',
@@ -203,18 +204,7 @@ class CliqnshopCatalogExport extends Command
 
         ];
 
-        $second_csv_headers = [
-            'Label',
-            'Status',
-            'Text Language',
-            'Text Type',
-            'Text Content',
-            'Media Type',
-            'Media Url',
-            'Address Language Id',
-            'Country Code',
-            'City'
-        ];
+
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
 
         $table_name->select($select_query)
@@ -286,7 +276,7 @@ class CliqnshopCatalogExport extends Command
                         $height_val  = null;
                         $h_type = null;
                         $hh = null;
-                    $hpro_typt =null;
+                        $hpro_typt = null;
                         $dim = json_decode($data['dimensions'], true);
                         if (isset($dim[0]['item']['height'])) {
                             $height_unit  = $dim[0]['item']['height']['unit'];
@@ -301,14 +291,13 @@ class CliqnshopCatalogExport extends Command
                             $length_val  = $dim[0]['item']['length']['value'];
                             $ll = '1';
                             $l_type = 'length';
-                        $lpro_typt = 'default';
-
+                            $lpro_typt = 'default';
                         } else {
                             $length_unit = null;
                             $length_val = null;
                             $l_type = null;
                             $ll = null;
-                        $lpro_typt = null;
+                            $lpro_typt = null;
                         }
 
                         if (isset($dim[0]['item']['weight'])) {
@@ -316,26 +305,26 @@ class CliqnshopCatalogExport extends Command
                             $weight_val  = $dim[0]['item']['weight']['value'];
                             $we_type = 'weight';
                             $we = '1';
-                        $we_pro_typt ='default';
+                            $we_pro_typt = 'default';
                         } else {
                             $weight_unit = null;
                             $weight_val = null;
                             $we_type = null;
                             $we = null;
-                        $we_pro_typt = null;
+                            $we_pro_typt = null;
                         }
                         if (isset($dim[0]['item']['width'])) {
                             $width_unit  = $dim[0]['item']['width']['unit'];
                             $width_val  = $dim[0]['item']['width']['value'];
                             $wd_type = 'width';
                             $wd = '1';
-                        $wd_pro_typt = 'default';
+                            $wd_pro_typt = 'default';
                         } else {
                             $width_unit = null;
                             $width_val  = null;
                             $wd_type = null;
                             $wd = null;
-                        $wd_pro_typt = null;
+                            $wd_pro_typt = null;
                         }
                     } else {
                         $height_unit  = null;
@@ -361,6 +350,19 @@ class CliqnshopCatalogExport extends Command
                             $sh_name = null;
                             $short_desc = null;
                         }
+                    }
+                    if (isset($data['color'])) {
+                        $color_code = str_replace(' ', '', $data['color']);
+                        $color_type = 'color';
+                        $clor_label = $data['color'];
+                        $color_status = '1';
+                        $color_list_type = 'default';
+                    } else {
+                        $color_code = null;
+                        $color_type = null;
+                        $clor_label = null;
+                        $color_status = null;
+                        $color_list_type = null;
                     }
 
                     $brand_place = str_replace(' ', '', $data['brand']);
@@ -399,12 +401,12 @@ class CliqnshopCatalogExport extends Command
                         'Price value4' => null,
                         'price tax rate4' => null,
 
-                        'attribute code0' => null,
-                        'attribute type0' => null,
-                        'attribute label0' => null,
+                        'attribute code0' => $color_code,
+                        'attribute type0' => $color_type,
+                        'attribute label0' => $clor_label,
                         'attribute position0' => null,
-                        'attribute status0' => null,
-                        'product list type0' => null,
+                        'attribute status0' => $color_status ,
+                        'product list type0' => $color_list_type ,
 
 
                         'attribute code1' => $length_val,
@@ -414,13 +416,13 @@ class CliqnshopCatalogExport extends Command
                         'attribute status1' => $ll,
                         'product list type1' =>   $lpro_typt,
 
-                        'attribute code2' => $weight_val,
-                        'attribute type2' => $we_type,
-                        'attribute label2' => $weight_val . ' ' . $weight_unit,
+                        'attribute code2' => null,
+                        'attribute type2' => null,
+                        'attribute label2' => null,
                         'attribute position2' => null,
-                        'attribute status2' => $we,
-                        'product list type2' => $we_pro_typt,
-                        
+                        'attribute status2' => null,
+                        'product list type2' => null,
+
                         'attribute code3' => $width_val,
                         'attribute type3' => $wd_type,
                         'attribute label3' => $width_val . ' ' . $width_unit,
@@ -481,10 +483,54 @@ class CliqnshopCatalogExport extends Command
                         'stock type' => 'default',
                         'stock dateback' => null,
                     ];
-                }
 
+                    $brand_place_second = str_replace(' ', '', $data['brand']);
+                    $second_csv_headers = [
+                        'Code',
+                        'Label',
+                        'Status',
+                        'Text Language',
+                        'Text Type',
+                        'Text Content',
+                        'Media Type',
+                        'Media Url',
+                        'Address Language Id',
+                        'Country Code',
+                        'City'
+                    ];
+                    $Status2 = null;
+                    $txt_lng2 = null;
+                    if (!empty($data['brand'])) {
+                        $Status2 = "1";
+                        $txt_lng2 = "default";
+                    }
+
+                    $second_csv_values[] = [
+                        'code' => $brand_place_second,
+                        'Label' =>  $data['brand'],
+                        'Status2' =>  $Status2,
+                        'Text Language2' => $txt_lng2,
+                        'Text Type' => null,
+                        'Text Content' => null,
+                        'Media Type' => null,
+                        'Media Url' => null,
+                        'Address Language Id' => null,
+                        'Country Code' => null,
+                        'City' => null,
+                    ];
+                }
                 $writer->insertAll($csv_values);
-                exit;
+
+
+                $exportFilePath = "Cliqnshop/" . "brandCliqnshop" . $this->offset . ".csv";
+                if (!Storage::exists($exportFilePath)) {
+                    Storage::put($exportFilePath, '');
+                }
+                $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
+                $writer->insertOne($second_csv_headers);
+
+                $writer->insertAll($second_csv_values);
+
                 if ($csv_number == $this->count) {
                     ++$this->offset;
 
@@ -492,10 +538,6 @@ class CliqnshopCatalogExport extends Command
                 } else {
                     ++$this->count;
                 }
-
-
-
-                
             });
     }
 }
