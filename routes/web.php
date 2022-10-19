@@ -86,6 +86,21 @@ Route::get('import', function () {
 $delist_asins;
 Route::get('wherein', function () {
 
+    $dates = [
+        '01/13/2023  9:41:18 PM',
+        '9/27/2022  6:46:44 PM',
+        '9/28/2022  4:14:23 PM',
+        '9/23/2022  2:11:04 PM',
+        '01/01/2023  9:41:18 PM',
+        '10/12/2022  1:28:47 AM',
+        '10/13/2022  9:41:18 PM',
+        '11/13/2023  9:41:18 PM',
+    ];
+    $count = array_multisort(array_map('strtotime', $dates), $dates);
+    $d = $dates[array_key_last($dates)];
+    po($d);
+    exit;
+
     $data =  PricingIn::select('destination.asin as asin', 'cat.product_types', 'cat.images', 'cat.dimensions', 'pricing_ins.in_price', 'pricing_ins.ind_to_uae', 'pricing_ins.ind_to_sg', 'pricing_ins.updated_at')
         ->rightJoin("asin_destination_ins as destination", 'pricing_ins.asin', '=', 'destination.asin')
         ->leftJoin("catalognewins as cat", 'destination.asin', '=', 'cat.asin')

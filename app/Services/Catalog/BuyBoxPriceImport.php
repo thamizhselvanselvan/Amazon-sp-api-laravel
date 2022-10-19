@@ -134,7 +134,8 @@ class BuyBoxPriceImport
                                         'asin' =>  $asin_name,
                                         'available' => $available,
                                         $price => $listing_price_amount,
-                                        'price_updated_at' => max($updated_at),
+                                        // 'price_updated_at' => max($updated_at),
+                                        'price_updated_at' => $updated_at[array_key_last($updated_at)],
                                     ];
                                 break 1;
                             } else {
@@ -145,7 +146,8 @@ class BuyBoxPriceImport
                                         'asin' =>  $asin_name,
                                         'available' => $available,
                                         $price => $listing_price_amount,
-                                        'price_updated_at' =>  max($updated_at),
+                                        // 'price_updated_at' =>  max($updated_at),
+                                        'price_updated_at' => $updated_at[array_key_last($updated_at)],
                                     ];
                             }
                         }
