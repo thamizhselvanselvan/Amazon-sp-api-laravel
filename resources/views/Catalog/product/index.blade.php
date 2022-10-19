@@ -172,9 +172,9 @@
                                         </div>
 
                                         <div class="col-2">
-                                            <input class="choose_header" type="checkbox" value="cat.dimensions"
-                                                name='header[]' id="dimensions">
-                                            <label class="ml-1" for="Dimensions">Dimensions</label>
+                                            <input class="choose_header" type="checkbox" value="cat.product_types"
+                                                name='header[]' id="product_types">
+                                            <label class="ml-1" for="Product Type">Product Type</label>
                                         </div>
 
                                         <div class="col-2">
@@ -223,10 +223,11 @@
                                         </div>
 
                                         <div class="col-2">
-                                            <input class="choose_header" type="checkbox" value="cat.product_types"
-                                                name='header[]' id="product_types">
-                                            <label class="ml-1" for="Product Type">Product Type</label>
+                                            <input class="choose_header" type="checkbox" value="cat.dimensions"
+                                                name='header[]' id="dimensions">
+                                            <label class="ml-1" for="Dimensions">Dimensions</label>
                                         </div>
+
 
                                         <div class="col-2 india_price d-none">
                                             <input class="choose_header" type="checkbox" value="pricing_ins.available"

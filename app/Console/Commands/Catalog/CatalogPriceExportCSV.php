@@ -78,12 +78,28 @@ class CatalogPriceExportCSV extends Command
         if ($this->country_code == 'IN') {
 
             $str = ['destination.', 'cat.', 'pricing_ins.'];
-            foreach ($selected_headers as $selected_header) {
+            // log::notice($selected_headers);
+            foreach ($selected_headers as $key => $selected_header) {
                 $headers[] = "${selected_header}";
                 $csv_title = str_replace($str, '', $selected_header);
-                $csv_header[] = str_replace('_', ' ', strtoupper($csv_title));
+                if ($csv_title == 'images') {
+                    $csv_head[] = ['image1', 'image2'];
+                }
+                if ($csv_title == 'dimensions') {
+                    $csv_head[] = ['height', 'length', 'width', 'unit', 'weight', 'weight_unit'];
+                }
+                if ($selected_header != 'cat.images' && $selected_header != 'cat.dimensions') {
+                    $csv_head[$key][] = str_replace('_', ' ', $csv_title);
+                }
             }
+            foreach ($csv_head as $csv_heading) {
+                foreach ($csv_heading as $csv) {
 
+                    $csv_header[] = $csv;
+                }
+            }
+            log::alert($csv_header);
+            // exit;
             PricingIn::select($headers)
                 ->rightJoin('asin_destination_ins as destination', 'pricing_ins.asin', '=', 'destination.asin')
                 ->leftJoin("catalognewins as cat", 'destination.asin', '=', 'cat.asin')
@@ -167,7 +183,41 @@ class CatalogPriceExportCSV extends Command
 
             foreach ($record as $key2 => $value) {
 
-                $not_available[$key][$key2] = $value ?? "NA";
+                // $not_available[$key][$key2] = $value ?? "NA";
+
+                if ($key2 == 'images') {
+                    $images = json_decode($value);
+                    $image = isset($images[0]->images) ? $images[0]->images : 'NA';
+                    $not_available[$key]['image1'] = isset($image[0]->link) ? $image[0]->link : 'NA';
+                    $not_available[$key]['image2'] = isset($image[1]->link) ? $image[1]->link : 'NA';
+                }
+                if ($key2 == 'product_types') {
+                    $product_types = json_decode($value);
+                    $not_available[$key]['product_types'] = isset($product_types[0]->productType) ? $product_types[0]->productType : 'NA';
+                }
+
+                if ($key2 == 'updated_at') {
+                    $not_available[$key]['updated_at'] = isset($record['updated_at']) ? date("d-m-Y h:i:s", strtotime($record['updated_at'])) : 'NA';
+                }
+
+                if ($key2 == 'dimensions') {
+
+                    $dimension = json_decode($value);
+                    $package = isset($dimension[0]->package) ? $dimension[0]->package : 'NA';
+
+                    $not_available[$key]['height'] = isset($package->height->value) ? $package->height->value : 'NA';
+                    $not_available[$key]['length'] = isset($package->length->value) ? $package->length->value : 'NA';
+                    $not_available[$key]['width'] = isset($package->width->value) ? $package->width->value : 'NA';
+                    $not_available[$key]['unit'] = isset($package->width->unit) ? $package->width->unit : 'NA';
+                    $not_available[$key]['weight'] = isset($package->weight->value) ? $package->weight->value : 'NA';
+                    $not_available[$key]['weight_unit'] = isset($package->weight->unit) ? $package->weight->unit : 'NA';
+                }
+
+
+                if ($key2 != 'dimensions' && $key2 != 'updated_at' && $key2 != 'images' && $key2 != 'product_types' && $key2 != 'updated_at') {
+
+                    $not_available[$key][$key2] = $value ?? 'NA';
+                }
             }
         }
 
