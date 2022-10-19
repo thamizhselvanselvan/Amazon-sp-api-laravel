@@ -120,29 +120,29 @@
 
             <div class="modal fade" id="catalogPriceExport" tabindex="-1" role="dialog"
                 aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
+                <div class="modal-dialog modal-xl" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Export Catalog Price</h5>
+                            <h5 class="modal-title" id="exampleModalLabel"><b>Export Catalog Price</b></h5>
                             <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <div class="modal-body" style="font-size:15px">
+                        <div class="modal-body " style="font-size:15px">
                             <form action="{{ route('catalog.price.export') }}" method="GET">
-                                <h5>Select Source</h5>
+                                <h5><b>Select Source</b></h5>
                                 <div class="row border">
                                     <div class="col-2">
                                         <label for="IN">IN</label>
-                                        <input type="radio" name="source" value="IN">
+                                        <input type="radio" name="source" value="IN" id="IN">
                                     </div>
                                     <div class="col-2">
                                         <label for="US">US</label>
-                                        <input type="radio" name="source" value="US">
+                                        <input type="radio" name="source" value="US" id="US">
                                     </div>
                                 </div><br>
 
-                                <h5>Select Priority</h5>
+                                <h5><b>Select Priority</b></h5>
                                 <div class="row border">
                                     <div class="col-2">
                                         <label for="P1">P1</label>
@@ -159,6 +159,159 @@
                                         <input type="radio" class="destination-priority" name="priority"
                                             value="3">
                                     </div>
+                                </div><br>
+                                <div class=" select_header d-none">
+
+                                    <h5><b> Select Headers </b></h5>
+                                    <div class="mt-4 row ">
+
+                                        <div class="col-2">
+                                            <input class="choose_header" type="checkbox" value="destination.asin"
+                                                name='header[]' id="asin">
+                                            <label class="ml-1" for="ASIN">ASIN</label>
+                                        </div>
+
+                                        <div class="col-2">
+                                            <input class="choose_header" type="checkbox" value="cat.dimensions"
+                                                name='header[]' id="dimensions">
+                                            <label class="ml-1" for="Dimensions">Dimensions</label>
+                                        </div>
+
+                                        <div class="col-2">
+                                            <input class="choose_header" type="checkbox" value="cat.images"
+                                                name='header[]' id="images">
+                                            <label class="ml-1" for="Images">Images</label>
+                                        </div>
+
+                                        <div class="col-2">
+                                            <input class="choose_header" type="checkbox" value="cat.item_classification"
+                                                name='header[]' id="item_classification">
+                                            <label class="ml-1" for="Classification">Item Classification</label>
+                                        </div>
+
+                                        <div class="col-2">
+                                            <input class="choose_header" type="checkbox" value="cat.item_name"
+                                                name='header[]' id="item_name">
+                                            <label class="ml-1" for="Item Name">Item Name</label>
+                                        </div>
+
+                                        <div class="col-2">
+                                            <input class="choose_header" type="checkbox" value="cat.brand"
+                                                name='header[]' id="brand">
+                                            <label class="ml-1" for="Brand">Brand</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="row ">
+
+                                        <div class="col-2">
+                                            <input class="choose_header" type="checkbox" value="cat.manufacturer"
+                                                name='header[]' id="manufacturer">
+                                            <label class="ml-1" for="Manufacturer">Manufacturer</label>
+                                        </div>
+
+                                        <div class="col-2">
+                                            <input class="choose_header" type="checkbox" value="cat.color"
+                                                name='header[]' id="color">
+                                            <label class="ml-1" for="Color">Color</label>
+                                        </div>
+
+                                        <div class="col-2">
+                                            <input class="choose_header" type="checkbox" value="cat.model_number"
+                                                name='header[]' id="model_number">
+                                            <label class="ml-1" for="Model ">Model Number</label>
+                                        </div>
+
+                                        <div class="col-2">
+                                            <input class="choose_header" type="checkbox" value="cat.product_types"
+                                                name='header[]' id="product_types">
+                                            <label class="ml-1" for="Product Type">Product Type</label>
+                                        </div>
+
+                                        <div class="col-2 india_price d-none">
+                                            <input class="choose_header" type="checkbox" value="pricing_ins.available"
+                                                name='header[]' id="available">
+                                            <label class="ml-1" for="Available">Available</label>
+                                        </div>
+
+                                        <div class="col-2 india_price d-none">
+                                            <input class="choose_header " type="checkbox" value="pricing_ins.in_price"
+                                                name='header[]' id="in_price">
+                                            <label class="ml-1" for="IND Price">IND Price</label>
+                                        </div>
+
+                                        <div class="col-2 usa_price d-none">
+                                            <input class="choose_header" type="checkbox" value="pricing_uss.available"
+                                                name='header[]' id="available">
+                                            <label class="ml-1" for="Available">Available</label>
+                                        </div>
+
+                                        <div class="col-2 usa_price d-none">
+                                            <input class="choose_header" type="checkbox" value="pricing_uss.us_price"
+                                                name='header[]' id="us_price">
+                                            <label class="ml-1" for="USA Price">USA Price</label>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row ">
+
+                                        <div class="col-2 india_price d-none">
+                                            <input class="choose_header " type="checkbox" value="pricing_ins.ind_to_uae"
+                                                name='header[]' id="ind_to_uae">
+                                            <label class="ml-1" for="IND To UAE">IND To UAE</label>
+                                        </div>
+
+                                        <div class="col-2 india_price d-none">
+                                            <input class="choose_header" type="checkbox" value="pricing_ins.ind_to_sg"
+                                                name='header[]' id="ind_to_sg">
+                                            <label class="ml-1" for="IND To SG">IND To SG</label>
+                                        </div>
+
+                                        <div class="col-2 india_price d-none">
+                                            <input class="choose_header " type="checkbox" value="pricing_ins.ind_to_sa"
+                                                name='header[]' id="ind_to_sa">
+                                            <label class="ml-1" for="IND To SA">IND To SA</label>
+                                        </div>
+
+                                        <div class="col-2 india_price d-none">
+                                            <input class="choose_header " type="checkbox" value="pricing_ins.updated_at"
+                                                name='header[]' id="updated_at">
+                                            <label class="ml-1" for="Update Date">Update Date</label>
+                                        </div>
+
+                                        <div class="col-2 usa_price d-none">
+                                            <input class="choose_header" type="checkbox"
+                                                value="pricing_uss.usa_to_in_b2b" name='header[]' id="usa_to_in_b2b">
+                                            <label class="ml-1" for="USA-IND B2B">USA-IND B2B</label>
+                                        </div>
+
+                                        <div class="col-2 usa_price d-none">
+                                            <input class="choose_header" type="checkbox"
+                                                value="pricing_uss.usa_to_in_b2c" name='header[]' id="usa_to_in_b2c">
+                                            <label class="ml-1" for="USA To IND B2C">USA To IND B2C</label>
+                                        </div>
+
+                                        <div class="col-2 usa_price d-none">
+                                            <input class="choose_header" type="checkbox" value="pricing_uss.usa_to_uae"
+                                                name='header[]' id="usa_to_uae">
+                                            <label class="ml-1" for="USA To UAE">USA To UAE</label>
+                                        </div>
+
+                                        <div class="col-2 usa_price d-none">
+                                            <input class="choose_header" type="checkbox" value="pricing_uss.usa_to_sg"
+                                                name='header[]' id="usa_to_sg">
+                                            <label class="ml-1" for="USA To SG">USA To SG</label>
+                                        </div>
+
+                                        <div class="col-2 usa_price d-none">
+                                            <input class="choose_header" type="checkbox" value="pricing_uss.updated_at"
+                                                name='header[]' id="updated_at">
+                                            <label class="ml-1" for="Update Date">Update Date</label>
+                                        </div>
+
+                                    </div>
+
                                 </div>
 
                                 <div class="col-12 float-left mt-2">
@@ -274,6 +427,21 @@
 
 @section('js')
     <script type="text/javascript">
+        $('#IN').click(function() {
+            $('.select_header').removeClass('d-none');
+            $('.india_price').removeClass('d-none');
+            $('.usa_price').addClass('d-none');
+        });
+
+        $('#US').click(function() {
+            $('.select_header').removeClass('d-none');
+            $('.india_price').addClass('d-none');
+            $('.usa_price').removeClass('d-none');
+        });
+
+
+
+
         $('#country').on('change', function() {
             let country_code = $(this).val();
             if (country_code != 'NULL') {
