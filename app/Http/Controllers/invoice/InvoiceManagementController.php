@@ -296,21 +296,22 @@ class InvoiceManagementController extends Controller
 
     public function DirectDownloadPdf(Request $request, $id)
     {
-        $this->deleteAllPdf();
+        // $this->deleteAllPdf();
         // $data = Invoice::where('id', $id)->get();
         $data = DB::connection('web')->select("SELECT * from invoices where invoice_no = '$id' ");
         $invoice_no = $data[0]->invoice_no;
+        $mode = $data[0]->mode;
 
         $currenturl =  URL::current();
         $url = str_replace('download-direct', 'convert-pdf', $currenturl);
-        $path = storage::path('invoice/invoice' . $invoice_no);
+        $path = storage::path("invoice/$mode/invoice" . $invoice_no);
         $exportToPdf = $path . '.pdf';
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf);
 
-        return $this->DownloadPdf($invoice_no);
+        return $this->DownloadPdf($invoice_no, $mode);
         // return redirect()->back();
     }
 
@@ -334,9 +335,9 @@ class InvoiceManagementController extends Controller
         return response()->json(["success" => "Export to PDF Successfully"]);
     }
 
-    public function DownloadPdf($invoice_no)
+    public function DownloadPdf($invoice_no, $mode)
     {
-        return Storage::download('invoice/invoice' . $invoice_no . '.pdf');
+        return Storage::download("invoice/$mode/invoice" . $invoice_no . '.pdf');
     }
 
     public function DownloadAll()
