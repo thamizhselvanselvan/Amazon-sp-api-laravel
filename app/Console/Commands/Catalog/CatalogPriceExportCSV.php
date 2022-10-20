@@ -71,6 +71,8 @@ class CatalogPriceExportCSV extends Command
         //         }
         //     }
         // }
+        $csv_head = [];
+        $csv_header = [];
 
         $record_per_csv = 1000000;
         $chunk = 20000;
@@ -98,7 +100,7 @@ class CatalogPriceExportCSV extends Command
                     $csv_header[] = $csv;
                 }
             }
-            log::alert($csv_header);
+            log::notice($csv_header);
             // exit;
             PricingIn::select($headers)
                 ->rightJoin('asin_destination_ins as destination', 'pricing_ins.asin', '=', 'destination.asin')
