@@ -30,50 +30,17 @@ class InvoiceManagementController extends Controller
 {
     public function Index(request $request)
     {
-
-        // if ($request->ajax()) {
-        //     // $data = Invoice::orderBy('id', 'DESC')->get();
-        //     $data = DB::connection('web')->select("select DISTINCT * from invoices order by id DESC");
-        //     foreach ($data as $key => $value) {
-        //         $result[$key]['id'] = $value;
-        //     }
-        //     return DataTables::of($data)
-        //         ->addIndexColumn()
-        //         ->addColumn('action', function ($id) use ($result) {
-
-        //             $action = '<div class="d-flex"><a href="/invoice/convert-pdf/' . $id->invoice_no . ' " class="edit btn btn-success btn-sm" target="_blank"><i class="fas fa-eye"></i> View </a>';
-        //             $action .= '<div class="d-flex pl-2"><a href="/invoice/download-direct/' . $id->invoice_no . ' " class="edit btn btn-info btn-sm"><i class="fas fa-download"></i> Download </a>';
-        //             $action .= '<div class="d-flex pl-2"><a href="/invoice/edit/' . $id->invoice_no . ' " class=" btn btn-primary btn-sm"><i class="fas fa-edit"></i> Edit </a>';
-        //             return $action;
-        //         })
-        //         ->rawColumns(['action'])
-        //         ->make(true);
-        // }
-        // return view('invoice.index');
         $mode = DB::connection('web')->select("SELECT mode from invoices group by mode");
-        return view('invoice.search_invoice', compact('mode'));
-        // $this->SearchInvoice();
-    }
 
-    public function Upload()
-    {
-        return view('invoice.upload_excel');
-    }
-
-    public function SearchInvoice()
-    {
-        $mode = DB::connection('web')->select("SELECT mode from invoices group by mode");
-        return view('invoice.search_invoice', compact('mode'));
-    }
-
-    public function SearchDateWiseInvoice(Request $request)
-    {
         if ($request->ajax()) {
+
             $mode = $request->invoice_mode;
             $bag_no = $request->bag_no;
             $Invoice_date = $request->invoice_date;
             $results = '';
-            // $results = DB::connection('web')->select("SELECT id, invoice_no, invoice_date, mode, channel, shipped_by, awb_no, store_name, bill_to_name, ship_to_name, sku, qty, currency, product_price FROM invoices WHERE mode = '$mode' and invoice_date BETWEEN '$date1' AND '$date2' "); 
+
+            $currentPageNumber = $request->start / $request->length + 1;
+
             $results = Invoice::when(!empty(trim($request->invoice_mode)), function ($query) use ($mode) {
                 $query->where('mode', $mode);
             })
@@ -83,11 +50,80 @@ class InvoiceManagementController extends Controller
                 ->when(!empty(trim($request->invoice_date)), function ($query) use ($Invoice_date) {
                     $date = $this->split_date($Invoice_date);
                     $query->whereBetween('invoice_date', [$date[0], $date[1]]);
+                });
+
+            return DataTables::of($results)
+                ->addColumn('select_all', function ($result) use ($currentPageNumber) {
+                    return "<input class='check_options' type='checkbox' data-current-page='$currentPageNumber' value='$result->id' name='options[]' id='checkid$result->id'>";
                 })
-                ->get();
+                ->addColumn('action', function ($result) {
+                    $table =
+                        "<div class='d-flex'>
+                            <a href='/invoice/convert-pdf/$result->invoice_no' class='edit btn btn-success btn-sm ml-2 mr-2' target='_blank'>
+                                <i class='fas fa-eye'></i> View 
+                            </a>
+                            <a href='/invoice/download-direct/$result->invoice_no' class='edit btn btn-info btn-sm mr-2'>
+                                <i class='fas fa-download'></i> Download
+                            </a>
+                            <a href='/invoice/edit/$result->invoice_no' class='edit btn btn-primary btn-sm mr-2'>
+                                <i class='fas fa-edit'></i> Edit 
+                            </a>
+                        </div>";
+                    return $table;
+                })
+                ->rawColumns(['select_all', 'action'])
+                ->make(true);;
         }
+        return view('invoice.search_invoice', compact('mode'));
+    }
+
+    public function Upload()
+    {
+        return view('invoice.upload_excel');
+    }
+
+    public function SearchInvoice()
+    {
+        // $mode = DB::connection('web')->select("SELECT mode from invoices group by mode");
+        // return view('invoice.search_invoice', compact('mode'));
+    }
+
+    public function SearchDateWiseInvoice(Request $request)
+    {
+        // if ($request->ajax()) {
+
+        //     $mode = $request->invoice_mode;
+        //     $bag_no = $request->bag_no;
+        //     $Invoice_date = $request->invoice_date;
+        //     $results = '';
+
+        //     // return $request->all();
+        //     $currentPageNumber = $request->start / $request->length + 1;
+
+        //     $results = Invoice::when(!empty(trim($request->invoice_mode)), function ($query) use ($mode) {
+        //         $query->where('mode', $mode);
+        //     })
+        //         ->when(!empty(trim($request->bag_no)), function ($query) use ($bag_no) {
+        //             $query->where('bag_no', $bag_no);
+        //         })
+        //         ->when(!empty(trim($request->invoice_date)), function ($query) use ($Invoice_date) {
+        //             $date = $this->split_date($Invoice_date);
+        //             $query->whereBetween('invoice_date', [$date[0], $date[1]]);
+        //         })
+        //         ->get();
+
+        //     return DataTables::of($results)
+        //         ->addColumn('select_all', function ($result) {
+        //             return 'success';
+        //         })
+        //         ->addColumn('action', function ($result) {
+        //             return 'success';
+        //         })
+        //         ->rawColumns(['select_all', 'action'])
+        //         ->make(true);;
+        // }
         // Log::alert(json_encode($results));
-        return response()->json($results);
+        // return response()->json($results);
     }
 
     public function split_date($date)
@@ -182,14 +218,23 @@ class InvoiceManagementController extends Controller
         $this->deleteAllPdf();
 
         $passid = $request->id;
+        $mode = $request->invoice_mode;
+        $invoice_date = $request->invoice_date;
+        $current_page_no = $request->current_page_no;
+
+        if ($invoice_date == '') {
+            $invoice_date = 'ALL';
+        }
+
+        $invoice_date = str_replace(' ', '', $invoice_date);
         $currenturl = request()->getSchemeAndHttpHost();
 
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
             $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:invoice-bulk-zip-download $passid $currenturl > /dev/null &";
+            $command = "cd $base_path && php artisan pms:invoice-bulk-zip-download $passid $currenturl $mode $invoice_date $current_page_no > /dev/null &";
             exec($command);
         } else {
-            Artisan::call('pms:invoice-bulk-zip-download' . ' ' . $passid . ' ' . $currenturl);
+            Artisan::call('pms:invoice-bulk-zip-download' . ' ' . $passid . ' ' . $currenturl . ' ' . $mode . ' ' . $invoice_date . ' ' . $current_page_no);
         }
 
         return response()->json(['success' => 'zip created successfully']);
@@ -197,30 +242,76 @@ class InvoiceManagementController extends Controller
 
     public function zipDownload()
     {
-        if (!Storage::exists('invoice/zip/invoice.zip')) {
-            return redirect()->intended('/invoice/search-invoice')->with('success', 'File is not available right now! Please wait.');
+        $html = '';
+        $html_final = '';
+        $count = 0;
+        $path = (Storage::path("invoice"));
+        $files = scandir($path);
+        foreach ($files as $key => $file) {
+            if ($key > 1) {
+                $file_path = Storage::path('invoice' . '/' . $file);
+                if (is_dir($file_path)) {
+                    $file_paths = array_slice(scandir($file_path), 2);
+                    foreach ($file_paths as $sub_key => $sub_folder) {
+                        $sub_folder_path = $file_path . "/$sub_folder";
+                        if (is_dir($sub_folder_path)) {
+                            $sub_folders = array_slice(scandir($sub_folder_path), 2);
+                            foreach ($sub_folders  as $zip_path) {
+                                if ($zip_path == 'zip') {
+                                    $zip_path_array = scandir($sub_folder_path . '/' . $zip_path);
+                                    $count = 0;
+                                    foreach ($zip_path_array as $zip_key => $zip_file) {
+                                        if ($zip_key > 1) {
+                                            $count++;
+                                            if ($count == 1) {
+                                                $html .= "<div>Mode: $file ($sub_folder)";
+                                            }
+                                            $html .=
+                                                "<a href='/invoice/zip/download/$file/$sub_folder/zip/$zip_file'>
+                                             <li class='ml-4'>Invoice Part " . $zip_key - 1 . ' ' . date("M-d-Y H:i:s.", filemtime("$sub_folder_path/$zip_path/$zip_file")) . "</li>
+                                        </a>";
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-        return Storage::download('invoice/zip/invoice.zip');
+
+
+        if ($html == '') {
+            return '<div> File Is Downloading....</div>';
+        }
+        $html .= '</div>';
+        return $html;
+    }
+
+    public function zipDownloadLink($mode, $date, $file)
+    {
+        return Storage::download("invoice/$mode/$date/zip/$file");
     }
 
 
     public function DirectDownloadPdf(Request $request, $id)
     {
-        $this->deleteAllPdf();
+        // $this->deleteAllPdf();
         // $data = Invoice::where('id', $id)->get();
         $data = DB::connection('web')->select("SELECT * from invoices where invoice_no = '$id' ");
         $invoice_no = $data[0]->invoice_no;
+        $mode = $data[0]->mode;
 
         $currenturl =  URL::current();
         $url = str_replace('download-direct', 'convert-pdf', $currenturl);
-        $path = storage::path('invoice/invoice' . $invoice_no);
+        $path = storage::path("invoice/$mode/invoice" . $invoice_no);
         $exportToPdf = $path . '.pdf';
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf);
 
-        return $this->DownloadPdf($invoice_no);
+        return $this->DownloadPdf($invoice_no, $mode);
         // return redirect()->back();
     }
 
@@ -244,9 +335,9 @@ class InvoiceManagementController extends Controller
         return response()->json(["success" => "Export to PDF Successfully"]);
     }
 
-    public function DownloadPdf($invoice_no)
+    public function DownloadPdf($invoice_no, $mode)
     {
-        return Storage::download('invoice/invoice' . $invoice_no . '.pdf');
+        return Storage::download("invoice/$mode/invoice" . $invoice_no . '.pdf');
     }
 
     public function DownloadAll()
