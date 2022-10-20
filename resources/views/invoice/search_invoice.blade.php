@@ -13,18 +13,11 @@
         </div>
     </h6>
 </div>
-<!-- <div class="row">
-    <div class="col">
-        <a href="{{ route('invoice.index') }}" class="btn btn-primary btn-sm">
-            <i class="fas fa-long-arrow-alt-left"></i> Back
-        </a>
-    </div>
-</div> -->
+
 @stop
 @section('content')
 <div class="row">
     <div class="col">
-
         <div class="alert_display">
             @if ($message = Session::get('success'))
             <div class="alert alert-warning alert-block">
@@ -40,16 +33,13 @@
         <div class="col pt-2">
             <div class="mt-4">
                 <a href="upload">
-                    <x-adminlte-button label="Add Records" theme="primary" icon="fas fa-file-upload"
-                        class="btn-md ml-2" />
+                    <x-adminlte-button label="Add Records" theme="primary" icon="fas fa-file-upload" class="btn-md ml-2 " />
                 </a>
                 <a href="template/download">
-                    <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-download"
-                        class="btn-md ml-1" />
+                    <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-download" class="btn-md ml-1 " />
                 </a>
-                <a href="zip/download">
-                    <x-adminlte-button label="Download Invoice Zip" theme="primary" icon="fas fa-download"
-                        class="btn-md ml-1" id='zip-download' />
+                <a>
+                    <x-adminlte-button label="Download Invoice Zip" theme="primary" icon="fas fa-download" class="btn-md ml-2 " id='zip-download' data-toggle="modal" data-target='#invoice_download_zip' />
                 </a>
             </div>
         </div>
@@ -78,21 +68,35 @@
                             <i class="far fa-calendar-alt"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control float-right datepicker" name='invoice_date'
-                        placeholder="Select Date Range" autocomplete="off" id="invoice_date">
-                    <x-adminlte-button label="Search" theme="primary" icon="fas fa-search" id="search"
-                        class="btn-sm ml-2" />
-                    <x-adminlte-button label="Download Selected" id="selected-download" theme="primary"
-                        icon="fas fa-download" class="btn-sm ml-2" />
-                    <x-adminlte-button label="Print Selected" id='select_print' theme="primary" icon="fas fa-print"
-                        class="btn-sm ml-2" />
+                    <input type="text" class="form-control float-right datepicker" name='invoice_date' placeholder="Select Date Range" autocomplete="off" id="invoice_date">
+                    <x-adminlte-button label="Search" theme="primary" icon="fas fa-search" id="search" class="btn-sm ml-2" />
+                    <x-adminlte-button label="Download Selected" id="selected-download" theme="primary" icon="fas fa-download" class="btn-sm ml-2" />
+                    <x-adminlte-button label="Print Selected" id='select_print' theme="primary" icon="fas fa-print" class="btn-sm ml-2" />
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div id="showTable" class="d-none">
-    <table class='table table-bordered table-striped text-center'>
+
+<div class="modal" id="invoice_download_zip">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Download Invoice</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body invoice_download">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="showTable" class="">
+    <table class='table table-bordered  yajra-datatable table-striped text-center'>
         <thead>
             <tr class='text-bold bg-info'>
                 <th>Select All <input type='checkbox' id='selectAll'></th>
@@ -119,179 +123,232 @@
 
 @section('js')
 <script type="text/javascript">
-$(document).ready(function() {
-    //start search invoice
-    // $('#zip-download').hide();
-    $("#Searchbox").on('keyup', function() {
-        let self = $(this);
-        let invoice_no = $.trim(self.val());
-        let invoice_no_re = invoice_no.replaceAll(/-/g, '_');
-        let tr = $("." + invoice_no_re);
-        let table = $("#checkTable");
+    $(document).ready(function() {
+        //start search invoice
+        // $('#zip-download').hide();
+        $("#Searchbox").on('keyup', function() {
+            let self = $(this);
+            let invoice_no = $.trim(self.val());
+            let invoice_no_re = invoice_no.replaceAll(/-/g, '_');
+            let tr = $("." + invoice_no_re);
+            let table = $("#checkTable");
 
-        $(tr.children().children()[0]).prop('checked', true);
-        $(tr).addClass('bg-warning');
-        tr.prependTo(table);
-    });
-    //end search invoice
+            $(tr.children().children()[0]).prop('checked', true);
+            $(tr).addClass('bg-warning');
+            tr.prependTo(table);
+        });
+        //end search invoice
 
-    // $('#showTable').css("display", "none");
-    $(".datepicker").daterangepicker({
-        autoUpdateInput: false,
-        locale: {
-            format: 'YYYY-MM-DD',
-        },
-    });
-    $('.datepicker').on('apply.daterangepicker', function(ev, picker) {
-        $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format(
-            'YYYY-MM-DD'));
-    });
+        // $('#showTable').css("display", "none");
+        $(".datepicker").daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                format: 'YYYY-MM-DD',
+            },
+        });
 
-    $('.datepicker').on('cancel.daterangepicker', function(ev, picker) {
-        $(this).val('');
-    });
-    $('#mode').on('change', function() {
-        if ($('#mode').val() != 'NULL') {
-            var id = document.getElementById('mode');
-            id.style = ' none';
-            document.getElementById('vmode').innerHTML = '';
-        }
-    });
-    $('#search').click(function() {
-        if ($('#mode').val() == 'NULL') {
-            var id = document.getElementById('mode');
-            id.style = 'border: 2px solid red';
-            let text = 'Mode must be filled out';
-            document.getElementById('vmode').innerHTML = text;
-            document.getElementById('vmode').style.color = 'red';
-        } else {
+        $('.datepicker').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format(
+                'YYYY-MM-DD'));
+        });
 
-            $('#showTable').removeClass("d-none");
-            let bag_no = $('#bag_no').val();
+        $('.datepicker').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+
+        $('#mode').on('change', function() {
+            if ($('#mode').val() != 'NULL') {
+                var id = document.getElementById('mode');
+                id.style = ' none';
+                document.getElementById('vmode').innerHTML = '';
+            }
+        });
+
+        $('#search').click(function() {
+
+            if ($('#mode').val() == 'NULL') {
+
+                var id = document.getElementById('mode');
+                id.style = 'border: 2px solid red';
+                let text = 'Mode must be filled out';
+                document.getElementById('vmode').innerHTML = text;
+                document.getElementById('vmode').style.color = 'red';
+
+            } else {
+
+                let bag_no = $('#bag_no').val();
+                let invoice_mode = $('#mode').val();
+                let invoice_date = $('#invoice_date').val();
+
+                let yajra_table = $('.yajra-datatable').DataTable({
+
+                    destroy: true,
+                    processing: true,
+                    serverSide: true,
+                    pageLength: 40,
+                    lengthMenu: [10, 20, 30, 40],
+                    ajax: {
+                        url: "{{ url('invoice/manage') }}",
+                        type: 'get',
+                        data: function(d) {
+                            d.invoice_mode = invoice_mode;
+                            d.bag_no = bag_no;
+                            d.invoice_date = invoice_date;
+                        },
+                    },
+                    columns: [{
+                            data: 'select_all',
+                            name: 'select_all',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'invoice_no',
+                            name: 'invoice_no'
+                        },
+                        {
+                            data: 'invoice_date',
+                            name: 'invoice_date'
+                        },
+                        {
+                            data: 'mode',
+                            name: 'mode'
+                        },
+                        {
+                            data: 'channel',
+                            name: 'channel'
+                        },
+                        {
+                            data: 'shipped_by',
+                            name: 'shipped_by'
+                        },
+                        {
+                            data: 'awb_no',
+                            name: 'awb_no'
+                        },
+                        {
+                            data: 'store_name',
+                            name: 'store_name',
+                        },
+                        {
+                            data: 'bill_to_name',
+                            name: 'bill_to_name',
+                        },
+                        {
+                            data: 'ship_to_name',
+                            name: 'ship_to_name',
+                        },
+                        {
+                            data: 'sku',
+                            name: 'sku',
+                        },
+                        {
+                            data: 'qty',
+                            name: 'qty',
+                        },
+                        {
+                            data: 'product_price',
+                            name: 'product_price',
+                        },
+                        {
+                            data: 'action',
+                            name: 'action',
+                        },
+                    ],
+                });
+            }
+        });
+
+
+        $('#selected-download').click(function() {
+
+            alert('Invoice is downloading please wait.');
+
             let invoice_mode = $('#mode').val();
             let invoice_date = $('#invoice_date').val();
+            var url = $(location).attr('href');
+            let current_page_number = $(".check_options:first").data('current-page');
+            let id = '';
+            let count = 0;
+            let arr = '';
+            $("input[name='options[]']:checked").each(function() {
+                if (count == 0) {
+                    id += $(this).val();
+                } else {
+                    id += '-' + $(this).val();
+                }
+                count++;
+            });
             $.ajax({
                 method: 'POST',
-                url: "{{ url('/invoice/select-invoice')}}",
+                url: "{{ url('/invoice/select-download')}}",
                 data: {
-                    "bag_no": bag_no,
+                    'id': id,
                     "invoice_date": invoice_date,
                     "invoice_mode": invoice_mode,
+                    'current_page_no': current_page_number,
                     "_token": "{{ csrf_token() }}",
                 },
                 success: function(response) {
-                    console.log(response);
-                    let table_data = '';
-
-                    $.each(response, function(i, response) {
-                        let invoice_id = response.invoice_no.replaceAll(
-                            /-/g,
-                            '_');
-
-                        table_data += "<tr class='" + invoice_id +
-                            "'><td><input class='check_options' type='checkbox' value=" +
-                            response.id + " name='options[]' id='checkid" +
-                            response
-                            .id + "'></td><td>" + response.invoice_no +
-                            "</td><td>" + response.invoice_date +
-                            "</td><td>" +
-                            response.mode + "</td><td>" + response.channel +
-                            "</td><td>" + response.shipped_by +
-                            "</td><td>" +
-                            response.awb_no + "</td><td>" + response
-                            .store_name +
-                            "</td><td>" + response.bill_to_name +
-                            "</td><td>" +
-                            response.ship_to_name + "</td><td>" + response
-                            .sku +
-                            "</td><td>" + response.qty + "</td><td>" +
-                            response
-                            .currency + ' ' + response.product_price +
-                            "</td><td><div class='d-flex'><a href=/invoice/convert-pdf/" +
-                            response.invoice_no +
-                            " class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/invoice/download-direct/" +
-                            response.invoice_no +
-                            " class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a>";
-                        table_data +=
-                            "<div class='d-flex pl-2'><a href=/invoice/edit/" +
-                            response.invoice_no +
-                            " class='edit btn btn-primary btn-sm'><i class='fas fa-edit'></i> Edit </a></td> </tr>"
-                    });
-                    $('#checkTable').html(table_data);
+                    // arr += response;
+                    // window.location.href = '/invoice/zip-download/' + arr;
+                    // alert('Export pdf successfully');
                 },
             });
-        }
+        });
+
+        $('#select_print').click(function() {
+            var url = $(location).attr('href');
+            let id = '';
+            let count = 0;
+            let arr = '';
+            $("input[name='options[]']:checked").each(function() {
+                if (count == 0) {
+                    id += $(this).val();
+                } else {
+                    id += '-' + $(this).val();
+                }
+                count++;
+                window.location.href = '/invoice/selected-print/' + id;
+            });
+        });
 
     });
+    $('#selectAll').change(function() {
 
-    $('#selected-download').click(function() {
-        alert('Invoice is downloading please wait.');
-        let invoice_mode = $('#mode').val();
-        let invoice_date = $('#invoice_date').val();
-        var url = $(location).attr('href');
-        let id = '';
-        let count = 0;
-        let arr = '';
-        $("input[name='options[]']:checked").each(function() {
-            if (count == 0) {
-                id += $(this).val();
-            } else {
-                id += '-' + $(this).val();
-            }
-            count++;
-        });
+        if ($('#selectAll').is(':checked')) {
+            $('.check_options').prop('checked', true);
+        } else {
+            $('.check_options').prop('checked', false);
+        }
+    });
+    $("input[name='options[]']").on('change', function() {
+
+        let input_checkbox = $("input[name='options[]'] ").length;
+        let total_input_checkbox = $("input[name='options[]']:checked").length;
+        alert(input_checkbox);
+        alert(total_input_checkbox);
+        if (input_checkbox === total_input_checkbox) {
+            $('#selectAll').prop('checked', true);
+        } else {
+            $('#selectAll').prop('checked', false);
+        }
+    });
+
+    $('#zip-download').on('click', function() {
+
+        $('.invoice_download').empty();
         $.ajax({
-            method: 'POST',
-            url: "{{ url('/invoice/select-download')}}",
+            method: 'post',
+            url: "{{ route('invoice.zip.download')}}",
             data: {
-                'id': id,
-                "invoice_date": invoice_date,
-                "invoice_mode": invoice_mode,
                 "_token": "{{ csrf_token() }}",
             },
-            success: function(response) {
-                // arr += response;
-                // window.location.href = '/invoice/zip-download/' + arr;
-                // alert('Export pdf successfully');
-            },
-        });
-    });
-
-    $('#select_print').click(function() {
-        var url = $(location).attr('href');
-        let id = '';
-        let count = 0;
-        let arr = '';
-        $("input[name='options[]']:checked").each(function() {
-            if (count == 0) {
-                id += $(this).val();
-            } else {
-                id += '-' + $(this).val();
+            success: function(result) {
+                $('.invoice_download').append(result);
+                //
             }
-            count++;
-            window.location.href = '/invoice/selected-print/' + id;
         });
     });
-
-});
-$('#selectAll').change(function() {
-    if ($('#selectAll').is(':checked')) {
-        $('.check_options').prop('checked', true);
-    } else {
-        $('.check_options').prop('checked', false);
-    }
-});
-$("input[name='options[]']").on('change', function() {
-
-    let input_checkbox = $("input[name='options[]'] ").length;
-    let total_input_checkbox = $("input[name='options[]']:checked").length;
-    alert(input_checkbox);
-    alert(total_input_checkbox);
-    if (input_checkbox === total_input_checkbox) {
-        $('#selectAll').prop('checked', true);
-    } else {
-        $('#selectAll').prop('checked', false);
-    }
-});
 </script>
 @stop

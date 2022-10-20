@@ -17,7 +17,7 @@ class invoiceBulkZipDownload extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:invoice-bulk-zip-download {passid} {currenturl} ';
+    protected $signature = 'pms:invoice-bulk-zip-download {passid} {currenturl} {mode} {invoice_date} {current_page_no} ';
 
     /**
      * The console command description.
@@ -45,47 +45,55 @@ class invoiceBulkZipDownload extends Command
     {
         $passid = $this->argument('passid');
         $currenturl = $this->argument('currenturl');
+        $mode = $this->argument('mode');
+        $invoice_date = $this->argument('invoice_date');
+        $current_page_no = $this->argument('current_page_no');
 
-           $path = 'invoice/zip/'.'invoice.zip';
-            Storage::delete($path);
-        Log::warning("Invoice zip download excuted handle!");
-       
+        // $path = 'invoice/zip/' . 'invoice.zip';
+        // Storage::delete($path);
+        // Log::warning("Invoice zip download excuted handle!");
+
         $excelid = explode('-', $passid);
 
         foreach ($excelid as $getId) {
-            // $id = Invoice::where('id', $getId)->get();
+
             $id = DB::connection('web')->select("SELECT * from invoices where id ='$getId' ");
+
             foreach ($id as $key => $value) {
+
                 $invoice_no = $value->invoice_no;
-                $url = $currenturl.'/invoice/convert-pdf/'.$invoice_no;
-                $path = 'invoice/invoice' . $invoice_no . '.pdf';
+                $url = $currenturl . '/invoice/convert-pdf/' . $invoice_no;
+                $path = "invoice/$mode/$invoice_date/invoice$invoice_no.pdf";
+
                 if (!Storage::exists($path)) {
                     Storage::put($path, '');
                 }
+
                 $exportToPdf = storage::path($path);
                 Browsershot::url($url)
-                    // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+                    ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
                     ->showBackground()
                     ->savePdf($exportToPdf);
 
-                $saveAsPdf [] = 'invoice' . $invoice_no . '.pdf'; 
+                $saveAsPdf[] = 'invoice' . $invoice_no . '.pdf';
             }
         }
-      
+
         $zip_path = 'invoice/';
         $zip = new ZipArchive;
-        $path = 'invoice/zip/'.'invoice.zip';
-        $file_path = Storage::path($path);
-        
-        if (!Storage::exists($path)) {
-            Storage::put($path, '');
+        $zip_path = 'invoice/' . $mode . '/' . $invoice_date . '/' . 'zip/' . 'invoice' . $current_page_no . '.zip';
+
+        $fileName = Storage::path($zip_path);
+
+        if (!Storage::exists($zip_path)) {
+            Storage::put($zip_path, '');
+        } else {
+            unlink(Storage::path($zip_path));
         }
-        
-        if($zip->open($file_path, ZipArchive::CREATE) === TRUE)
-        {
-            foreach($saveAsPdf as $key => $value)
-            {
-                $path = Storage::path('invoice/'.$value);
+
+        if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
+            foreach ($saveAsPdf as $key => $value) {
+                $path = Storage::path("invoice/$mode/$invoice_date/$value");
                 $relativeNameInZipFile = basename($path);
                 $zip->addFile($path, $relativeNameInZipFile);
             }
