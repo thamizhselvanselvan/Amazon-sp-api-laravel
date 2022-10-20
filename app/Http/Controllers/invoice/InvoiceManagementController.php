@@ -307,7 +307,7 @@ class InvoiceManagementController extends Controller
         $path = storage::path("invoice/$mode/invoice" . $invoice_no);
         $exportToPdf = $path . '.pdf';
         Browsershot::url($url)
-            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf);
 
