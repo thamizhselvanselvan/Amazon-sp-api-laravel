@@ -86,19 +86,36 @@ Route::get('import', function () {
 $delist_asins;
 Route::get('wherein', function () {
 
-    $dates = [
-        '01/13/2023  9:41:18 PM',
-        '9/27/2022  6:46:44 PM',
-        '9/28/2022  4:14:23 PM',
-        '9/23/2022  2:11:04 PM',
-        '01/01/2023  9:41:18 PM',
-        '10/12/2022  1:28:47 AM',
-        '10/13/2022  9:41:18 PM',
-        '11/13/2023  9:41:18 PM',
-    ];
-    $count = array_multisort(array_map('strtotime', $dates), $dates);
-    $d = $dates[array_key_last($dates)];
-    po($d);
+    $seller_destination = buyboxCountrycode();
+    $table_name = table_model_create(country_code: 'us', model: 'Asin_destination', table_name: 'asin_destination_');
+    $destination_data = $table_name->select('id', 'asin')->where("asin_destination_uss" . '.priority', 1)->chunkById(30000, function ($records) use ($seller_destination, $table_name) {
+        $asins = $records->toArray();
+        foreach ($asins as $asin) {
+
+            $asin1[] = $asin['asin'];
+        }
+
+        $bb_product = table_model_set(country_code: 'us', model: 'bb_product_aa_custom', table_name: "product_aa_custom_p1_us");
+        $bb_product_table = $bb_product->whereIn('asin1', $asin1)
+            ->where($bb_product->getTable() . '.seller_id', $seller_destination['US'])
+            ->delete();
+
+        $bb_product_offer_table = table_model_set(country_code: 'us', model: 'bb_product_aa_custom_offer', table_name: "product_aa_custom_p1_us_offer");
+        $offer_table = $bb_product_offer_table->whereIn('asin', $asin1)->delete();
+        $table_name->where('priority', 1)->delete();
+    });
+
+    exit;
+
+    foreach ($destination_data as $data) {
+        po($data['asin']);
+        $bb_product = table_model_set(country_code: 'us', model: 'bb_product_aa_custom', table_name: "product_aa_custom_p1_in");
+        $bb_product_table = $bb_product->select('id')->where('asin1', $data['asin'])
+            ->where($bb_product->getTable() . '.seller_id', $seller_destination['IN'])->get()->toArray();
+
+        // $bb_product->where('id', $bb_product_table[0]['id'])->delete();
+        po($bb_product_table);
+    }
     exit;
 
     $data =  PricingIn::select('destination.asin as asin', 'cat.product_types', 'cat.images', 'cat.dimensions', 'pricing_ins.in_price', 'pricing_ins.ind_to_uae', 'pricing_ins.ind_to_sg', 'pricing_ins.updated_at')
@@ -146,18 +163,6 @@ Route::get('wherein', function () {
     }
     po($di);
     exit;
-    if (array_key_exists('dimensions', $value)) {
-
-        $dimension = json_decode($value['dimensions']);
-        $package = isset($dimension[0]->package) ? $dimension[0]->package : 'NA';
-        $di[] = [
-
-            'height' => isset($package->height->value) ? $package->height->value : 'NA',
-            'length' => isset($package->length->value) ? $package->length->value : 'NA',
-            'weight' => isset($package->weight->value) ? $package->weight->value : 'NA',
-            'width' => isset($package->width->value) ? $package->width->value : 'NA',
-        ];
-    }
 
     $dbname = config('database.connections.catalog.database');
     $destination_table = "asin_destination_uss";
