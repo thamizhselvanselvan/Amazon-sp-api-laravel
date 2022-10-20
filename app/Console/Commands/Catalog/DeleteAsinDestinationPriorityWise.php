@@ -49,7 +49,7 @@ class DeleteAsinDestinationPriorityWise extends Command
             $product_table = "bb_product_aa_custom_p${priority}_${country_code}s";
 
             $table_name = table_model_create(country_code: $country_code, model: 'Asin_destination', table_name: 'asin_destination_');
-            $table_name->select('id', 'asin')->where("${asin_destination}" . '.priority', $priority)->chunkById(30000, function ($records) use ($seller_destination, $country_code, $priority, $destination, $table_name) {
+            $table_name->select('id', 'asin')->where("${asin_destination}" . '.priority', $priority)->chunkById(5000, function ($records) use ($seller_destination, $country_code, $priority, $destination, $table_name) {
                 $asins = $records->toArray();
                 foreach ($asins as $asin) {
 
