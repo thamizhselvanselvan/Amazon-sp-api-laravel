@@ -3,6 +3,7 @@
 use RedBeanPHP\R;
 use Carbon\Carbon;
 use App\Models\User;
+use League\Csv\Reader;
 use App\Events\testEvent;
 use AWS\CRT\HTTP\Request;
 use App\Events\checkEvent;
@@ -11,7 +12,6 @@ use Maatwebsite\Excel\Row;
 use App\Jobs\TestQueueFail;
 use Illuminate\Support\Str;
 use Smalot\PdfParser\Parser;
-use Maatwebsite\Excel\Reader;
 use Dflydev\DotAccessData\Data;
 use SellingPartnerApi\Endpoint;
 use App\Models\Inventory\Shelve;
@@ -64,38 +64,100 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
 
 
-Route::get('gh', function () {
+Route::get('import', function () {
 
-    $in = '1,22,100';
-    po(filter_var($in, FILTER_SANITIZE_NUMBER_INT));
-    exit;
-
-    $destination_tables = ["asin_destination_uss", "asin_destination_ins"];
-
-    $data = [];
-
-    foreach ($destination_tables as $destination_table) {
-
-        $data[$destination_table] = DB::connection("catalog")->table($destination_table)
-            ->selectRaw("SUM(priority) as total_asin")
-            ->groupBy('priority');
+    $path = (Storage::path('AsinDestination/asin2022-10-13-16-49-03.csv'));
+    $csv = Reader::createFromPath(($path), 'r');
+    $csv->setDelimiter(",");
+    $csv->setHeaderOffset(0);
+    $count = 0;
+    foreach ($csv as $data) {
+        $csv_data[] = $data['ASIN'];
     }
 
-    echo "<pre>";
-    print_r($data);
+    // po($csv_data);
+    $chunk = array_chunk($csv_data, 2000);
+    foreach ($chunk as $value) {
+        po($value);
+    }
+    // po($chunk);
 });
 
 $delist_asins;
 Route::get('wherein', function () {
 
-    $data =  PricingIn::select('destination.asin as asin')
-        ->rightJoin("asin_destination_ins as destination", 'destination.id', '=', 'pricing_ins.id')
+    $dates = [
+        '01/13/2023  9:41:18 PM',
+        '9/27/2022  6:46:44 PM',
+        '9/28/2022  4:14:23 PM',
+        '9/23/2022  2:11:04 PM',
+        '01/01/2023  9:41:18 PM',
+        '10/12/2022  1:28:47 AM',
+        '10/13/2022  9:41:18 PM',
+        '11/13/2023  9:41:18 PM',
+    ];
+    $count = array_multisort(array_map('strtotime', $dates), $dates);
+    $d = $dates[array_key_last($dates)];
+    po($d);
+    exit;
+
+    $data =  PricingIn::select('destination.asin as asin', 'cat.product_types', 'cat.images', 'cat.dimensions', 'pricing_ins.in_price', 'pricing_ins.ind_to_uae', 'pricing_ins.ind_to_sg', 'pricing_ins.updated_at')
+        ->rightJoin("asin_destination_ins as destination", 'pricing_ins.asin', '=', 'destination.asin')
+        ->leftJoin("catalognewins as cat", 'destination.asin', '=', 'cat.asin')
         ->where('destination.priority', 1)
         ->orWhereNull('destination.asin')
         ->get()->toArray();
+    $di = [];
 
-    po($data);
+    foreach ($data as $key => $record) {
+        foreach ($record as $key2 => $value) {
+
+            if ($key2 == 'images') {
+                $images = json_decode($value);
+                $image = isset($images[0]->images) ? $images[0]->images : 'NA';
+                $di[$key]['image1'] = isset($image[0]->link) ? $image[0]->link : 'NA';
+                $di[$key]['image2'] = isset($image[1]->link) ? $image[1]->link : 'NA';
+            }
+            if ($key2 == 'product_types') {
+                $product_types = json_decode($value);
+                $di[$key]['product_types'] = isset($product_types[0]->productType) ? $product_types[0]->productType : 'NA';
+            }
+
+            if ($key2 == 'dimensions' || $key2 == 'updated_at') {
+
+                $dimension = json_decode($value);
+                $package = isset($dimension[0]->package) ? $dimension[0]->package : 'NA';
+
+                $di[$key]['height'] = isset($package->height->value) ? $package->height->value : 'NA';
+                $di[$key]['length'] = isset($package->length->value) ? $package->length->value : 'NA';
+                $di[$key]['width'] = isset($package->width->value) ? $package->width->value : 'NA';
+                $di[$key]['unit'] = isset($package->width->unit) ? $package->width->unit : 'NA';
+                $di[$key]['weight'] = isset($package->weight->value) ? $package->weight->value : 'NA';
+                $di[$key]['weight_unit'] = isset($package->weight->unit) ? $package->weight->unit : 'NA';
+                $di[$key]['updated_at'] = isset($record['updated_at']) ? date("d-m-Y h:i:s", strtotime($record['updated_at'])) : 'NA';
+            }
+
+
+            if ($key2 != 'dimensions' && $key2 != 'updated_at' && $key2 != 'images' && $key2 != 'product_types') {
+
+                $di[$key][$key2] = $value ?? 'NA';
+            }
+        }
+    }
+    po($di);
     exit;
+    if (array_key_exists('dimensions', $value)) {
+
+        $dimension = json_decode($value['dimensions']);
+        $package = isset($dimension[0]->package) ? $dimension[0]->package : 'NA';
+        $di[] = [
+
+            'height' => isset($package->height->value) ? $package->height->value : 'NA',
+            'length' => isset($package->length->value) ? $package->length->value : 'NA',
+            'weight' => isset($package->weight->value) ? $package->weight->value : 'NA',
+            'width' => isset($package->width->value) ? $package->width->value : 'NA',
+        ];
+    }
 
     $dbname = config('database.connections.catalog.database');
     $destination_table = "asin_destination_uss";
@@ -174,10 +236,12 @@ Route::get('data', function () {
     po($value);
 });
 
-// route::get('newcatalog', function(){
+// route::get(
+//     'newcatalog',
+//     function () {
 
 
-//     $host = config('database.connections.catalog.host');
+//         $host = config('database.connections.catalog.host');
 //         $dbname = config('database.connections.catalog.database');
 //         $port = config('database.connections.catalog.port');
 //         $username = config('database.connections.catalog.username');
@@ -188,20 +252,20 @@ Route::get('data', function () {
 //             R::selectDatabase('catalog');
 //         }
 
-//     // $token = 'Atzr|IwEBIJbccmvWhc6q6XrigE6ja7nyYj962XdxoK8AHhgYvfi-WKo3MsrbTSLWFo79My_xmmT48DSVh2e_6w8nxgaeza9XZ9HtNnk7l4Rl_nWhhO6xzEdfIfU7Ev4hktjvU8CjMvYnRn_Cw5JveEqZSggp961Sg7CoBEDpwXZbAE3SYXSdeNxfP2Nu84y2ZzlsP3CNZqcTvXMWflLk1qqY6ittwlGAXpL0BwGxPCBRmjbXOy5xsZqwCPAQhW6l9AJtLPhwOlSSDjcxxvCTH9-LEPSWHLRP1wV3fRgosOlCsQgmuET0pm5SO7FVJTRWux8h2k5hnnM';
-//     $token = 'Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg';
-//     $country_code = 'IN';
-//     $aws_id = NULL;
+//         // $token = 'Atzr|IwEBIJbccmvWhc6q6XrigE6ja7nyYj962XdxoK8AHhgYvfi-WKo3MsrbTSLWFo79My_xmmT48DSVh2e_6w8nxgaeza9XZ9HtNnk7l4Rl_nWhhO6xzEdfIfU7Ev4hktjvU8CjMvYnRn_Cw5JveEqZSggp961Sg7CoBEDpwXZbAE3SYXSdeNxfP2Nu84y2ZzlsP3CNZqcTvXMWflLk1qqY6ittwlGAXpL0BwGxPCBRmjbXOy5xsZqwCPAQhW6l9AJtLPhwOlSSDjcxxvCTH9-LEPSWHLRP1wV3fRgosOlCsQgmuET0pm5SO7FVJTRWux8h2k5hnnM';
+//         $token = 'Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg';
+//         $country_code = 'IN';
+//         $aws_id = NULL;
 
-//     $config = new Configuration([
-//         "lwaClientId" => "amzn1.application-oa2-client.0167f1a848ae4cf0aabeeb1abbeaf8cf",
-//         "lwaClientSecret" => "5bf9add9576f83d33293b0e9e2ed5e671000a909f161214a77b93d26e7082765",
-//         "lwaRefreshToken" => $token,
-//         "awsAccessKeyId" => "AKIAZTIHMXYBD5SRG5IZ",
-//         "awsSecretAccessKey" => "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",
-//         "endpoint" => Endpoint::NA,  // or another endpoint from lib/Endpoints.php
-//         "roleArn" => 'arn:aws:iam::659829865986:role/Mosh-E-Com-SP-API-Role'
-//     ]);
+//         $config = new Configuration([
+//             "lwaClientId" => "amzn1.application-oa2-client.0167f1a848ae4cf0aabeeb1abbeaf8cf",
+//             "lwaClientSecret" => "5bf9add9576f83d33293b0e9e2ed5e671000a909f161214a77b93d26e7082765",
+//             "lwaRefreshToken" => $token,
+//             "awsAccessKeyId" => "AKIAZTIHMXYBD5SRG5IZ",
+//             "awsSecretAccessKey" => "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",
+//             "endpoint" => Endpoint::NA,  // or another endpoint from lib/Endpoints.php
+//             "roleArn" => 'arn:aws:iam::659829865986:role/Mosh-E-Com-SP-API-Role'
+//         ]);
 //         $apiInstance = new CatalogItemsV20220401Api($config);
 //         // po($apiInstance);
 //         // exit;
@@ -209,8 +273,8 @@ Route::get('data', function () {
 //         $marketplace_id = ['ATVPDKIKX0DER'];
 //         // $asin = 'B00000JHQ0';
 //         $asins = [
-//             'B00014DZL6',
-//             'B00014E9W0',
+//             // 'B0855KK198',
+//             // 'B085BLCJBT',
 //             'B000WA6KFK',
 //             'B000WH10SW',
 //             'B000WNAP6O',
@@ -228,65 +292,68 @@ Route::get('data', function () {
 //         $page_token = null;
 //         $keywords_locale = null;
 
-//         $includedData= ['attributes','dimensions', 'images', 'productTypes', 'summaries'];
-//         echo"<pre>";
+//         $includedData = ['attributes', 'dimensions', 'identifiers', 'relationships', 'salesRanks', 'images', 'productTypes', 'summaries'];
+//         echo "<pre>";
 //         try {
 //             $data = [];
 //             $miss_asin = [];
-//             $result = $apiInstance->searchCatalogItems (
-//             $marketplace_id, 
-//             $identifiers,
-//             $identifiers_type,
-//             $includedData,
-//             $locale,
-//             $seller_id_temp,
-//             $keywords,
-//             $brand_names,
-//             $classification_ids,
-//             $page_size,
-//             $page_token,
-//             $keywords_locale,
-//         );
+//             $result = $apiInstance->searchCatalogItems(
+//                 $marketplace_id,
+//                 $identifiers,
+//                 $identifiers_type,
+//                 $includedData,
+//                 $locale,
+//                 $seller_id_temp,
+//                 $keywords,
+//                 $brand_names,
+//                 $classification_ids,
+//                 $page_size,
+//                 $page_token,
+//                 $keywords_locale,
+//             );
 //             $result = json_decode(json_encode($result));
 //             // po($result);
 //             // exit;
-//             foreach($result->items as $key => $value)
-//             {   
-//                 $diff_array [] = $value->asin;
-//                 po($diff_array);
+//             foreach ($result->items as $key => $value) {
+//                 $diff_array[] = $value->asin;
+//                 // po($diff_array);
 //                 // exit;
-//                 foreach($value as $key1 => $value1)
-//                 {
-//                     if($key1 == 'summaries')
-//                     {
-//                         foreach($value1[0] as $key2 => $value2)
-//                         {
+//                 foreach ($value as $key1 => $value1) {
+//                     if ($key1 == 'summaries') {
+//                         foreach ($value1[0] as $key2 => $value2) {
 //                             $data[$key][$key2] = returnType($value2);
+//                             echo $key2;
+//                             echo '<br>';
+//                             print_r($value2);
+//                             echo '<hr>';
 //                         }
-//                     }elseif($key1 == 'dimensions')
-//                     {
-//                         if(array_key_exists('package', (array)$value1[0])){
-//                             foreach($value1[0]->package as $key3 => $value3)
-//                             {
+//                     } elseif ($key1 == 'dimensions') {
+//                         if (array_key_exists('package', (array)$value1[0])) {
+//                             foreach ($value1[0]->package as $key3 => $value3) {
+//                                 echo $key3;
+//                                 echo '<br>';
+//                                 print_r($value3);
+//                                 echo '<hr>';
 //                                 $data[$key][$key3] = $value3->value;
-//                                 if($key3 == 'width' || $key3 == 'lenght' || $key3 == 'height')
-//                                 {
+//                                 if ($key3 == 'width' || $key3 == 'lenght' || $key3 == 'height') {
 //                                     $data[$key]['unit'] = $value3->unit;
 //                                 }
-//                                 if($key3 == 'weight'){
+//                                 if ($key3 == 'weight') {
 
 //                                     $data[$key]['weight_unit'] = $value3->unit;
 //                                 }
 //                             }
 //                         }
-//                     }
-//                     else{
+//                     } else {
 //                         $data[$key][$key1] = returnType($value1);
-
+//                         echo $key1;
+//                         echo '<br>';
+//                         print_r($value1);
+//                         echo '<hr>';
 //                     }
-//                 }  
+//                 }
 //             }
-//             po($data);
+//             // po($data);
 //         } catch (Exception $e) {
 //             $error_record = [
 //                 'queue_type' => 'Catalog',
@@ -301,19 +368,18 @@ Route::get('data', function () {
 
 //             // echo 'Exception when calling CatalogItemsV20220401Api->getCatalogItem: ', $e->getMessage(), PHP_EOL;
 //         }
-// }
+//     }
 
 // );
 
-// function returnType($type){
+// function returnType($type)
+// {
 //     $data = '';
-//     if(is_object($type)){
+//     if (is_object($type)) {
 //         $data = json_encode($type);
-//     }
-//     elseif(is_string($type))
-//     {
+//     } elseif (is_string($type)) {
 //         $data = $type;
-//     }else{
+//     } else {
 //         $data = json_encode($type);
 //     }
 //     return $data;

@@ -677,12 +677,12 @@ class labelManagementController extends Controller
                     if ($name && $courier_name && $awb_no) {
                         $html .= "<td>
                                     <div class='d-flex'>
-                                        <a href='/label/pdf-template/$id' class='edit btn btn-success btn-sm view'  target='_blank'>
+                                        <a href='/label/pdf-template/orderid-$id' class='edit btn btn-success btn-sm view'  target='_blank'>
                                             <i class='fas fa-eye'></i> View 
                                         </a>
                                     
                                         <div class='d-flex pl-2'>
-                                            <a href='/label/download-direct/$id' class='edit btn btn-info btn-sm'>
+                                            <a href='/label/download-direct/orderid-$id' class='edit btn btn-info btn-sm'>
                                                 <i class='fas fa-download'></i> Download 
                                             </a>
                                         </div>
