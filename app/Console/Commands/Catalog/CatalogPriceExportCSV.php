@@ -115,11 +115,26 @@ class CatalogPriceExportCSV extends Command
         } elseif ($this->country_code == 'US') {
 
             $str = ['destination.', 'cat.', 'pricing_uss.'];
-            foreach ($selected_headers as $selected_header) {
+            foreach ($selected_headers as $key => $selected_header) {
                 $headers[] = "${selected_header}";
                 $csv_title = str_replace($str, '', $selected_header);
-                $csv_header[] = str_replace('_', ' ', strtoupper($csv_title));
+                if ($csv_title == 'images') {
+                    $csv_head[] = ['image1', 'image2'];
+                }
+                if ($csv_title == 'dimensions') {
+                    $csv_head[] = ['height', 'length', 'width', 'unit'];
+                }
+                if ($selected_header != 'cat.images' && $selected_header != 'cat.dimensions') {
+                    $csv_head[$key][] = str_replace('_', ' ', $csv_title);
+                }
             }
+            foreach ($csv_head as $csv_heading) {
+                foreach ($csv_heading as $csv) {
+
+                    $csv_header[] = $csv;
+                }
+            }
+            log::notice($csv_header);
 
             PricingUs::select($headers)
                 ->rightJoin('asin_destination_uss as destination', 'pricing_uss.asin', '=', 'destination.asin')
