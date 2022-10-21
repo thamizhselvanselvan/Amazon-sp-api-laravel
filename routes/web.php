@@ -257,7 +257,7 @@ Route::get('data', function () {
 //         $marketplace_id = ['ATVPDKIKX0DER'];
 //         // $asin = 'B00000JHQ0';
 //         $asins = [
-//             // 'B0855KK198',
+//             'B08DR3YCQ6',
 //             // 'B085BLCJBT',
 //             'B000WA6KFK',
 //             'B000WH10SW',
