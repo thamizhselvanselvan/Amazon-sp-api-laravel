@@ -36,15 +36,6 @@ class BusinessasinDetails implements ShouldQueue
      */
     public function handle()
     {
-        // $host = config('database.connections.business.host');
-        // $dbname = config('database.connections.business.database');
-        // $port = config('database.connections.business.port');
-        // $username = config('database.connections.business.username');
-        // $password = config('database.connections.business.password');
-
-        // R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-
-
         $start_time = startTime();
         $end_time = endTime($start_time);
         $rec =   $this->payload['data'];
@@ -59,7 +50,9 @@ class BusinessasinDetails implements ShouldQueue
             $asin = $data;
 
             $data = $ApiCall->getASINpr($asin);
+
             Log::notice([$data]);
+
 
             if (property_exists($data, "errors") && $data->errors[0]->code == "PRODUCT_NOT_FOUND") {
 
@@ -108,6 +101,7 @@ class BusinessasinDetails implements ShouldQueue
                     Log::info("After this $counter much request 429 error came. timing $end_time");
                 } else {
                     $offers = json_decode(json_encode($data->includedDataTypes->OFFERS[0]));
+
                     $availability = ($offers->availability);
                     $buyingGuidance = ($offers->buyingGuidance);
                     $fulfillmentType = ($offers->fulfillmentType);
@@ -125,85 +119,43 @@ class BusinessasinDetails implements ShouldQueue
                 $title = ($data->title);
                 $url = ($data->url);
                 $productOverview = json_encode($data->productOverview);
-                $productVariations = json_encode($data->productVariations);
+                $productVariations = json_encode($data->productVariations->variations);
             }
             $end_time = endTime($start_time);
-            //  Log::alert("Before  Query - $end_time");
+            Log::alert("Before  Query - $end_time");
 
-
-            // $data = R::dispense('usacatalog');
-            // $data->asin = $asin;
-            // $data->asin_type = $asin_type;
-            // $data->signedProductid_ =  $signedProductId;
-            // $data->availability = $availability;
-            // $data->buyingGuidance = $buyingGuidance;
-            // $data->fulfillmentType =  $fulfillmentType;
-            // $data->merchant   =  $merchant;
-            // $data->offerid_ =  $offerId;
-            // $data->price =   $price;
-            // $data->listPrice = $listPrice;
-            // $data->productCondition = $productCondition;
-            // $data->condition =   $condition;
-            // $data->quantityLimits =  $quantityLimits;
-            // $data->deliveryInformation =  $deliveryInformation;
-            // $data->features =     $features;
-            // $data->taxonomies = $taxonomies;
-            // $data->title = $title;
-            // $data->url = $url;
-            // $data->productOverview =  $productOverview;
-            // $data->productvariations =  $productVariations;
-
-            // R::store($data);
-            // DB::connection('business')->table('catalog_business')->insert([
-            //     'asin' =>      $asin,
-            //     'asin_type' => $asin_type,
-            //     // 'signedProductid' =>$signedProductId,
-            //     'availability' => $availability,
-            //     'buyingGuidance' => $buyingGuidance,
-            //     'fulfillmentType' =>  $fulfillmentType,
-            //     'merchant' => $merchant,
-            //     // 'offerid' =>  $offerId,
-            //     'price' =>      $price,
-            //     'listPrice' =>   $listPrice,
-            //     'productCondition' =>  $productCondition,
-            //     'condition' => $condition,
-            //     // 'quantityLimits' =>  $quantityLimits,
-            //     'deliveryInformation' =>  $deliveryInformation,
-            //     // 'features' =>$features,
-            //     // 'taxonomies' =>$taxonomies,
-            //     'title' =>    $title,
-            //     'url' =>    $url,
-            //     // 'productOverview' =>   $productOverview,
-            //     // 'productvariations' =>   $productVariations,
-            // ]);
-            DB::connection('mongodb')->table('product_details')->insert([
-                'asin' =>      $asin,
-                'asin_type' => $asin_type,
-                // 'signedProductid' =>$signedProductId,
-                'availability' => $availability,
-                'buyingGuidance' => $buyingGuidance,
-                'fulfillmentType' =>  $fulfillmentType,
-                'merchant' => $merchant,
-                // 'offerid' =>  $offerId,
-                'price' =>      $price,
-                'listPrice' =>   $listPrice,
-                'productCondition' =>  $productCondition,
-                'condition' => $condition,
-                // 'quantityLimits' =>  $quantityLimits,
-                'deliveryInformation' =>  $deliveryInformation,
-                // 'features' =>$features,
-                // 'taxonomies' =>$taxonomies,
-                'title' =>    $title,
-                'url' =>    $url,
-                // 'productOverview' =>   $productOverview,
-                // 'productvariations' =>   $productVariations,
-            ]);
-Log::info('Mongo Insertion succesfull');
+            DB::connection('mongodb')->table('product_details')->where('asin', $asin)->update(
+                [
+                    'asin' =>      $asin,
+                    'asin_type' => $asin_type,
+                    'signedProductid' => $signedProductId,
+                    'availability' => $availability,
+                    'buyingGuidance' => $buyingGuidance,
+                    'fulfillmentType' =>  $fulfillmentType,
+                    'merchant' => $merchant,
+                    'offerid' =>  $offerId,
+                    'price' =>      $price,
+                    'listPrice' =>   $listPrice,
+                    'productCondition' =>  $productCondition,
+                    'condition' => $condition,
+                    'quantityLimits' =>  $quantityLimits,
+                    'deliveryInformation' =>  $deliveryInformation,
+                    'features' => $features,
+                    'taxonomies' => $taxonomies,
+                    'title' =>    $title,
+                    'url' =>    $url,
+                    'productOverview' =>   $productOverview,
+                    'productvariations' =>   $productVariations,
+                    'created_at' => now()->format('Y-m-d H:i:s'),
+                    'updated_at'  => now()->format('Y-m-d H:i:s')
+                ],
+                ["upsert" => true]
+            );
             $end_time = endTime($start_time);
-            //   Log::alert("After Update Query - $end_time");
+            Log::alert("After Update Query - $end_time");
             $counter++;
         }
         $finished_loop = endTime($start_time);
-        // Log::info("FInal Query Time and finished at $finished_loop");
+        Log::info("FInal Query Time and finished at $finished_loop");
     }
 }

@@ -265,10 +265,13 @@ class CliqnshopCatalogExport extends Command
 
                     $cid = json_decode($data['browse_classification'], true);
                     $cat_code = 'new';
+                    $cat_code1 = 'all';
                     if ($cid == null) {
                         $cat_code = 'new';
+                        $cat_code1 = 'all';
                     } else if (isset($cid['classificationId'])) {
                         $cat_code = $cid['classificationId'];
+                        $cat_code1 = null;
                     }
 
                     if (isset($data['dimensions'])) {
@@ -405,8 +408,8 @@ class CliqnshopCatalogExport extends Command
                         'attribute type0' => $color_type,
                         'attribute label0' => $clor_label,
                         'attribute position0' => null,
-                        'attribute status0' => $color_status ,
-                        'product list type0' => $color_list_type ,
+                        'attribute status0' => $color_status,
+                        'product list type0' => $color_list_type,
 
 
                         'attribute code1' => $length_val,
@@ -462,7 +465,7 @@ class CliqnshopCatalogExport extends Command
                         'property list type' => null,
                         'property value' => null,
                         'catalog code' =>  $cat_code,
-                        'catalog code0' => null,
+                        'catalog code0' =>   $cat_code1,
                         'catalog code1' => null,
                         'catalog code2' => null,
 
