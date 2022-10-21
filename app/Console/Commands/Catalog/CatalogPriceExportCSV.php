@@ -22,12 +22,13 @@ class CatalogPriceExportCSV extends Command
     private $totalFile = [];
     private $country_code;
     private $priority;
+    private $selected_date;
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'mosh:catalog-price-export-csv {priority} {country_code} {headers}';
+    protected $signature = 'mosh:catalog-price-export-csv {priority} {country_code} {headers} {selected_date}';
 
     /**
      * The console command description.
@@ -56,7 +57,11 @@ class CatalogPriceExportCSV extends Command
         $this->country_code = $this->argument('country_code');
         $this->priority = $this->argument('priority');
         $selected_headers = explode(',', $this->argument('headers'));
+        $this->selected_date = $this->argument('selected_date');
 
+        $date = explode(',',$this->argument('selected_date'));
+        $start_date = $date[0];
+        $end_date = $date[1];
 
 
         $exportFilePath = "excel/downloads/catalog_price/$this->country_code/Priority" . $this->priority . '/' . $this->country_code . "_CatalogPrice";
@@ -75,7 +80,10 @@ class CatalogPriceExportCSV extends Command
         $record_per_csv = 1000000;
         $chunk = 20000;
         $this->check = $record_per_csv / $chunk;
+     
         if ($this->country_code == 'IN') {
+            
+
 
             $str = ['destination.', 'cat.', 'pricing_ins.'];
             foreach ($selected_headers as $selected_header) {
@@ -83,18 +91,27 @@ class CatalogPriceExportCSV extends Command
                 $csv_title = str_replace($str, '', $selected_header);
                 $csv_header[] = str_replace('_', ' ', strtoupper($csv_title));
             }
+            
 
             PricingIn::select($headers)
                 ->rightJoin('asin_destination_ins as destination', 'pricing_ins.asin', '=', 'destination.asin')
                 ->leftJoin("catalognewins as cat", 'destination.asin', '=', 'cat.asin')
                 ->where('destination.priority', $this->priority)
+                ->whereBetween('pricing_ins.updated_at',[$start_date. " 12:00:00", $end_date." 23:59:59"])
                 ->orWhereNull('destination.asin')
                 ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
 
+                   
                     $this->CreateCsvFile($csv_header, $records, $exportFilePath);
-                    //pusher
+
+                  
+                  
                 });
+
+        
+                
         } elseif ($this->country_code == 'US') {
+           
 
             $str = ['destination.', 'cat.', 'pricing_uss.'];
             foreach ($selected_headers as $selected_header) {
@@ -103,16 +120,20 @@ class CatalogPriceExportCSV extends Command
                 $csv_header[] = str_replace('_', ' ', strtoupper($csv_title));
             }
 
+          
+
             PricingUs::select($headers)
                 ->rightJoin('asin_destination_uss as destination', 'pricing_uss.asin', '=', 'destination.asin')
                 ->leftJoin("catalognewuss as cat", 'destination.asin', '=', 'cat.asin')
                 ->where('destination.priority', $this->priority)
+                ->whereBetween('pricing_uss.updated_at', [$start_date, $end_date])
                 ->orWhereNull('destination.asin')
                 ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
-
+                 
                     $this->CreateCsvFile($csv_header, $records, $exportFilePath);
-                    //pusher
+             
                 });
+
         }
 
         $path = "excel/downloads/catalog_price/" . $this->country_code . '/Priority' . $this->priority;
@@ -128,7 +149,7 @@ class CatalogPriceExportCSV extends Command
                 }
             }
         }
-
+        
         $zip = new ZipArchive;
         $path = "excel/downloads/catalog_price/" . $this->country_code . '/Priority' . $this->priority . '/' . "/zip/" . $this->country_code . "_CatalogPrice.zip";
         $file_path = Storage::path($path);
@@ -143,10 +164,11 @@ class CatalogPriceExportCSV extends Command
             }
             $zip->close();
         }
+       
     }
-
     public function CreateCsvFile($csv_header, $records, $exportFilePath)
     {
+       
         if ($this->count == 1) {
             if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv.mosh')) {
                 Storage::put($exportFilePath . $this->fileNameOffset . '.csv.mosh', '');
@@ -160,13 +182,13 @@ class CatalogPriceExportCSV extends Command
         $records = array_map(function ($datas) {
             return (array) $datas;
         }, $records);
-
+        
         $not_available = [];
-
+        
         foreach ($records as $key => $record) {
 
             foreach ($record as $key2 => $value) {
-
+                
                 $not_available[$key][$key2] = $value ?? "NA";
             }
         }
@@ -180,5 +202,6 @@ class CatalogPriceExportCSV extends Command
             ++$this->count;
         }
         return true;
+    
     }
 }

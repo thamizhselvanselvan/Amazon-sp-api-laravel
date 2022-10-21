@@ -99,11 +99,20 @@ class CatalogProductController extends Controller
         $request->validate([
             'priority' => 'required|in:1,2,3',
             'source' => 'required|in:IN,US',
+            'export_date' => 'required',
         ]);
         $priority = $request->priority;
         $country_code = $request->source;
         $headers = implode(',', $request->header);
-        commandExecFunc("mosh:catalog-price-export-csv ${priority} ${country_code} ${headers}");
+        $date = $request->export_date;
+        $data = explode(' - ', $date);
+        $split = [trim($data[0]), trim($data[1])];
+        $range = [
+            $split[0],
+            $split[1]
+        ];
+        $selected_date = implode(',',$range);
+        commandExecFunc("mosh:catalog-price-export-csv ${priority} ${country_code} ${headers} ${selected_date}");
         return redirect('/catalog/product')->with("success", "Catalog Price is Exporting");
     }
 
