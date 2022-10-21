@@ -101,8 +101,14 @@ class CatalogProductController extends Controller
             'source' => 'required|in:IN,US',
             'export_date' => 'required',
         ]);
+
         $priority = $request->priority;
         $country_code = $request->source;
+
+        if ($request->header == '') {
+            return redirect('/catalog/product')->with("error", "Please Select Header For CSV");
+        }
+
         $headers = implode(',', $request->header);
         $date = $request->export_date;
         $data = explode(' - ', $date);
