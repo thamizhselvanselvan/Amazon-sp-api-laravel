@@ -114,7 +114,7 @@ class CatalogPriceExportCSV extends Command
                 ->rightJoin('asin_destination_ins as destination', 'pricing_ins.asin', '=', 'destination.asin')
                 ->leftJoin("catalognewins as cat", 'destination.asin', '=', 'cat.asin')
                 ->where('destination.priority', $this->priority)
-                ->whereBetween('pricing_ins.updated_at',[$start_date. " 12:00:00", $end_date." 23:59:59"])
+                ->whereBetween('pricing_ins.updated_at',[$start_date. " 00:00:01", $end_date." 23:59:59"])
                 ->orWhereNull('destination.asin')
                 ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
 
@@ -158,7 +158,7 @@ class CatalogPriceExportCSV extends Command
                 ->rightJoin('asin_destination_uss as destination', 'pricing_uss.asin', '=', 'destination.asin')
                 ->leftJoin("catalognewuss as cat", 'destination.asin', '=', 'cat.asin')
                 ->where('destination.priority', $this->priority)
-                ->whereBetween('pricing_uss.updated_at', [$start_date, $end_date])
+                ->whereBetween('pricing_uss.updated_at',[$start_date. " 00:00:01", $end_date." 23:59:59"])
                 ->orWhereNull('destination.asin')
                 ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
                  
