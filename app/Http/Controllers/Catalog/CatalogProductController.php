@@ -100,8 +100,14 @@ class CatalogProductController extends Controller
             'priority' => 'required|in:1,2,3',
             'source' => 'required|in:IN,US',
         ]);
+
         $priority = $request->priority;
         $country_code = $request->source;
+
+        if ($request->header == '') {
+            return redirect('/catalog/product')->with("error", "Please Select Header For CSV");
+        }
+
         $headers = implode(',', $request->header);
         commandExecFunc("mosh:catalog-price-export-csv ${priority} ${country_code} ${headers}");
         return redirect('/catalog/product')->with("success", "Catalog Price is Exporting");
