@@ -86,37 +86,76 @@ Route::get('import', function () {
 $delist_asins;
 Route::get('wherein', function () {
 
-    $data =  PricingIn::select('destination.asin as asin', 'cat.dimensions', 'pricing_ins.in_price', 'pricing_ins.ind_to_uae', 'pricing_ins.ind_to_sg', 'pricing_ins.updated_at')
+    $seller_destination = buyboxCountrycode();
+    $table_name = table_model_create(country_code: 'us', model: 'Asin_destination', table_name: 'asin_destination_');
+    $destination_data = $table_name->select('id', 'asin')->where("asin_destination_uss" . '.priority', 1)->chunkById(30000, function ($records) use ($seller_destination, $table_name) {
+        $asins = $records->toArray();
+        foreach ($asins as $asin) {
+
+            $asin1[] = $asin['asin'];
+        }
+
+        $bb_product = table_model_set(country_code: 'us', model: 'bb_product_aa_custom', table_name: "product_aa_custom_p1_us");
+        $bb_product_table = $bb_product->whereIn('asin1', $asin1)
+            ->where($bb_product->getTable() . '.seller_id', $seller_destination['US'])
+            ->delete();
+
+        $bb_product_offer_table = table_model_set(country_code: 'us', model: 'bb_product_aa_custom_offer', table_name: "product_aa_custom_p1_us_offer");
+        $offer_table = $bb_product_offer_table->whereIn('asin', $asin1)->delete();
+        $table_name->where('priority', 1)->delete();
+    });
+
+    exit;
+
+    foreach ($destination_data as $data) {
+        po($data['asin']);
+        $bb_product = table_model_set(country_code: 'us', model: 'bb_product_aa_custom', table_name: "product_aa_custom_p1_in");
+        $bb_product_table = $bb_product->select('id')->where('asin1', $data['asin'])
+            ->where($bb_product->getTable() . '.seller_id', $seller_destination['IN'])->get()->toArray();
+
+        // $bb_product->where('id', $bb_product_table[0]['id'])->delete();
+        po($bb_product_table);
+    }
+    exit;
+
+    $data =  PricingIn::select('destination.asin as asin', 'cat.product_types', 'cat.images', 'cat.dimensions', 'pricing_ins.in_price', 'pricing_ins.ind_to_uae', 'pricing_ins.ind_to_sg', 'pricing_ins.updated_at')
         ->rightJoin("asin_destination_ins as destination", 'pricing_ins.asin', '=', 'destination.asin')
         ->leftJoin("catalognewins as cat", 'destination.asin', '=', 'cat.asin')
         ->where('destination.priority', 1)
         ->orWhereNull('destination.asin')
         ->get()->toArray();
     $di = [];
-    $available_data = [];
-    // po($data);
-    // exit;
+
     foreach ($data as $key => $record) {
         foreach ($record as $key2 => $value) {
 
-            // po($key2);
-            if ($key2 == 'dimensions' || $key2 == 'updated_at') {
-                $date = isset($record['updated_at']) ? ['updated_at' => date("d-m-Y h:i:s", strtotime($record['updated_at']))] : [];
-                $dimension = json_decode($value);
-                $package = isset($dimension[0]->package) ? $dimension[0]->package : 'NA';
-                $di[] = [
-
-                    'height' => isset($package->height->value) ? $package->height->value : 'NA',
-                    'length' => isset($package->length->value) ? $package->length->value : 'NA',
-                    'width' => isset($package->width->value) ? $package->width->value : 'NA',
-                    'unit'  =>  isset($package->width->unit) ? $package->width->unit : 'NA',
-                    'weight' => isset($package->weight->value) ? $package->weight->value : 'NA',
-                    'weight_unit' => isset($package->weight->unit) ? $package->weight->unit : 'NA',
-                    ...$date
-                ];
+            if ($key2 == 'images') {
+                $images = json_decode($value);
+                $image = isset($images[0]->images) ? $images[0]->images : 'NA';
+                $di[$key]['image1'] = isset($image[0]->link) ? $image[0]->link : 'NA';
+                $di[$key]['image2'] = isset($image[1]->link) ? $image[1]->link : 'NA';
+            }
+            if ($key2 == 'product_types') {
+                $product_types = json_decode($value);
+                $di[$key]['product_types'] = isset($product_types[0]->productType) ? $product_types[0]->productType : 'NA';
             }
 
-            if ($key2 != 'dimensions' && $key2 != 'updated_at') {
+            if ($key2 == 'dimensions' || $key2 == 'updated_at') {
+
+                $dimension = json_decode($value);
+                $package = isset($dimension[0]->package) ? $dimension[0]->package : 'NA';
+
+                $di[$key]['height'] = isset($package->height->value) ? $package->height->value : 'NA';
+                $di[$key]['length'] = isset($package->length->value) ? $package->length->value : 'NA';
+                $di[$key]['width'] = isset($package->width->value) ? $package->width->value : 'NA';
+                $di[$key]['unit'] = isset($package->width->unit) ? $package->width->unit : 'NA';
+                $di[$key]['weight'] = isset($package->weight->value) ? $package->weight->value : 'NA';
+                $di[$key]['weight_unit'] = isset($package->weight->unit) ? $package->weight->unit : 'NA';
+                $di[$key]['updated_at'] = isset($record['updated_at']) ? date("d-m-Y h:i:s", strtotime($record['updated_at'])) : 'NA';
+            }
+
+
+            if ($key2 != 'dimensions' && $key2 != 'updated_at' && $key2 != 'images' && $key2 != 'product_types') {
 
                 $di[$key][$key2] = $value ?? 'NA';
             }
@@ -124,18 +163,6 @@ Route::get('wherein', function () {
     }
     po($di);
     exit;
-    if (array_key_exists('dimensions', $value)) {
-
-        $dimension = json_decode($value['dimensions']);
-        $package = isset($dimension[0]->package) ? $dimension[0]->package : 'NA';
-        $di[] = [
-
-            'height' => isset($package->height->value) ? $package->height->value : 'NA',
-            'length' => isset($package->length->value) ? $package->length->value : 'NA',
-            'weight' => isset($package->weight->value) ? $package->weight->value : 'NA',
-            'width' => isset($package->width->value) ? $package->width->value : 'NA',
-        ];
-    }
 
     $dbname = config('database.connections.catalog.database');
     $destination_table = "asin_destination_uss";

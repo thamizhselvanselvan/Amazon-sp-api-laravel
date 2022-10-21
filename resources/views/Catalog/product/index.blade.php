@@ -411,7 +411,7 @@
         $('.select_header').removeClass('d-none');
         $('.india_price').removeClass('d-none');
         $('.usa_price').addClass('d-none');
-        $('.usa').addClass('d-none');
+        $('.usa').addClass('d- ');
         $('.india').removeClass('d-none');
 
         $('#all').click(function() {
