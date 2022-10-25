@@ -255,7 +255,7 @@ class Orders
 
         $data = curl_exec($ch);
         $send = [$data, $base, $xml];
-        Log::alert($data);
+       
         return $send;
         if (curl_errno($ch)) {
             print curl_error($ch);

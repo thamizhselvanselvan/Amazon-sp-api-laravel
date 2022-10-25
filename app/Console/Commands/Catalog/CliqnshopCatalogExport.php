@@ -533,7 +533,7 @@ class CliqnshopCatalogExport extends Command
                 $writer->insertOne($second_csv_headers);
 
                 $writer->insertAll($second_csv_values);
-
+            exit;
                 if ($csv_number == $this->count) {
                     ++$this->offset;
 
@@ -542,5 +542,6 @@ class CliqnshopCatalogExport extends Command
                     ++$this->count;
                 }
             });
+          
     }
 }

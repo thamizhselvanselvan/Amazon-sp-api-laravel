@@ -238,7 +238,7 @@
             let name = $("input[name='item_name']").val();
 
             $.ajax({
-                method: 'post',
+                method: 'get',
                 url: "/business/order/book/",
                 data: {
                     "offerid": offerid,
@@ -252,7 +252,7 @@
                 },
                 error: function(response) {
                     console.log(response);
-                    alert('not Booked')
+                    alert('Something went Wrong. Order not Booked')
                 }
             });
 
