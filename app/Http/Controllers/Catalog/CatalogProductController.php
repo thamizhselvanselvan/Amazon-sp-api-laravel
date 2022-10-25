@@ -105,11 +105,11 @@ class CatalogProductController extends Controller
         $priority = $request->priority;
         $country_code = $request->source;
 
-        if ($request->header == '') {
-            return redirect('/catalog/product')->with("error", "Please Select Header For CSV");
-        }
+        // if ($request->header == '') {
+        //     return redirect('/catalog/product')->with("error", "Please Select Header For CSV");
+        // }
 
-        $headers = implode(',', $request->header);
+        // $headers = implode(',', $request->header);
         $date = $request->export_date;
         $data = explode(' - ', $date);
         $split = [trim($data[0]), trim($data[1])];
@@ -117,8 +117,9 @@ class CatalogProductController extends Controller
             $split[0],
             $split[1]
         ];
-        $selected_date = implode(',',$range);
-        commandExecFunc("mosh:catalog-price-export-csv ${priority} ${country_code} ${headers} ${selected_date}");
+        $selected_date = implode(',', $range);
+        commandExecFunc("mosh:catalog-price-export-csv ${priority} ${country_code} ${selected_date}");
+        log::alert('working');
         return redirect('/catalog/product')->with("success", "Catalog Price is Exporting");
     }
 
