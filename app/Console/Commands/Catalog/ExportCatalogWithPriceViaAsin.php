@@ -54,7 +54,7 @@ class ExportCatalogWithPriceViaAsin extends Command
         $this->priority = $this->argument('priority');
         $selected_headers = explode(',', $this->argument('headers'));
         $asins = explode(',', $this->argument('Asins'));
-        $chunk_data = array_chunk($asins, 2000);
+        $chunk_data = array_chunk($asins, 20000);
 
         $exportFilePath = "excel/downloads/catalog_with_price/$this->country_code/Priority" . $this->priority . '/Priority' . $this->priority . "_CatalogWithPrice";
 
