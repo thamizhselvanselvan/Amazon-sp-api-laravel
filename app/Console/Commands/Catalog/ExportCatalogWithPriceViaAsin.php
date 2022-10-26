@@ -127,8 +127,11 @@ class ExportCatalogWithPriceViaAsin extends Command
             }
             foreach ($chunk_data as $asins) {
                 $records = PricingUs::select($headers)
+                    ->join("asin_destination_uss as destination", 'pricing_uss.asin', '=', 'destination.asin')
                     ->join("catalognewuss as cat", 'pricing_uss.asin', '=', 'cat.asin')
-                    ->whereIn('pricing_uss.asin', $asins)->get()->toArray();
+                    ->where('destination.priority', $this->priority)
+                    ->whereIn('destination.asin', $asins)
+                    ->get()->toArray();
 
                 $this->FormateDataForCsv($csv_header, $records, $exportFilePath);
             }
