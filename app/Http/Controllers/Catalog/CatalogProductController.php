@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use App\Services\SP_API\Config\ConfigTrait;
+use League\Csv\Reader;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 
 class CatalogProductController extends Controller
@@ -54,8 +55,15 @@ class CatalogProductController extends Controller
 
     public function GetCatalogFile(Request $request)
     {
-        $catalogfiles = [];
+
         $folder = $request->catalog;
+        $catalogfiles = $this->getFileFromFolder($folder);
+        return response()->json($catalogfiles);
+    }
+
+    public function getFileFromFolder($folder)
+    {
+        $catalogfiles = [];
         $path = (Storage::path("excel/downloads/" . $folder));
         $files = scandir($path);
         foreach ($files as $key => $file) {
@@ -83,7 +91,7 @@ class CatalogProductController extends Controller
                 }
             }
         }
-        return response()->json($catalogfiles);
+        return $catalogfiles;
     }
 
     public function DownloadCatalogIntocsv(Request $request, $country_code, $priority)
@@ -104,12 +112,6 @@ class CatalogProductController extends Controller
 
         $priority = $request->priority;
         $country_code = $request->source;
-
-        // if ($request->header == '') {
-        //     return redirect('/catalog/product')->with("error", "Please Select Header For CSV");
-        // }
-
-        // $headers = implode(',', $request->header);
         $date = $request->export_date;
         $data = explode(' - ', $date);
         $split = [trim($data[0]), trim($data[1])];
@@ -119,7 +121,6 @@ class CatalogProductController extends Controller
         ];
         $selected_date = implode(',', $range);
         commandExecFunc("mosh:catalog-price-export-csv ${priority} ${country_code} ${selected_date}");
-        log::alert('working');
         return redirect('/catalog/product')->with("success", "Catalog Price is Exporting");
     }
 
@@ -187,5 +188,85 @@ class CatalogProductController extends Controller
             }
         }
         return response()->json($final_data);
+    }
+
+    public function CatalogWithPrice()
+    {
+        return view('Catalog.product.catalogwithprice');
+    }
+
+    public function CatalogWithPriceExport(Request $request)
+    {
+        if ($request->form_type == 'text-area') {
+            $request->validate([
+                'source'    => 'required|in:IN,US',
+                'priority'  => 'required|in:1,2,3',
+                'text_area_asins'      =>  'required',
+                'header'    =>  'required',
+            ]);
+            $source = $request->source;
+            $priority = $request->priority;
+            $Asins = implode(',', preg_split('/[\r\n| |:|,|.]/', $request->text_area_asins, -1, PREG_SPLIT_NO_EMPTY));
+            $headers = implode(',', $request->header);
+            commandExecFunc("mosh:export-catalog-with-price ${source} ${priority} ${Asins} ${headers}");
+        } elseif ($request->form_type == 'file_upload') {
+            $request->validate([
+                'asin' => 'required|mimes:txt,csv',
+                'source'    => 'required',
+                'priority'  => 'required',
+            ]);
+            $source = $request->source;
+            $priority = $request->priority;
+            $headers = implode(',', $request->header);
+            $path = "CatalogWithPrice/asin.csv";
+            $file = file_get_contents($request->asin);
+            Storage::put($path, $file);
+            $asins = Reader::createFromPath(Storage::path($path), 'r');
+            $asins->setHeaderOffset(0);
+            $asin = [];
+            foreach ($asins as $asin_details) {
+                $asin[] = $asin_details['ASIN'];
+            }
+            $Asins = implode(',', $asin);
+
+            commandExecFunc("mosh:export-catalog-with-price ${source} ${priority} ${Asins} ${headers}");
+        }
+        return redirect('/catalog/export-with-price')->with("success", "Catalog with price is exporting");
+    }
+
+    public function CatalogWithPriceAsinUpload(Request $request)
+    {
+        $validation = $request->validate([
+            'csvFile' => 'required|mimes:txt,csv',
+        ]);
+        if (!$validation) {
+            return back()->with('error', "Please upload file to import it to the database");
+        }
+
+
+
+        // $path = "CatalogWithPrice/asin.csv";
+        // Storage::put($path, $file);
+    }
+
+    public function CatalogWithPriceFileShow(Request $request)
+    {
+        $folder = $request->catalog_with_price;
+        $files = $this->getFileFromFolder($folder);
+        return response()->json($files);
+    }
+
+    public function CatalogWithPriceDownloadTemplate()
+    {
+        $downloadFile = public_path('template/Catalog-Asin-Template.csv');
+        return response()->download($downloadFile);
+    }
+
+    public function CatalogWithPriceDownload($country_code, $priority)
+    {
+        $folder = "catalog_price";
+        $this->deletefile($folder, $country_code);
+        $path = "excel/downloads/catalog_with_price/" . $country_code . '/' . $priority . '/zip/' . $country_code . "_CatalogPrice.zip";
+        return Storage::download($path);
     }
 }

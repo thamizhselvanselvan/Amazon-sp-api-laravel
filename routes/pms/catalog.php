@@ -58,6 +58,13 @@ Route::get('catalog/download/csv-file/{country_code}/{priority}', 'Catalog\Catal
 Route::get('catalog/download/price/{country_code}/{priority}', 'Catalog\CatalogProductController@DownloadCatalogPrice');
 Route::POST('catalog/asin/search', 'Catalog\CatalogProductController@CatalogSearch')->name('catalog.asin.search');
 
+Route::get('catalog/export-with-price', 'Catalog\CatalogProductController@CatalogWithPrice')->name('catalog.with.price');
+Route::POST('catalog/catalog-with-price', 'Catalog\CatalogProductController@CatalogWithPriceExport')->name('catalog.with.price.export');
+Route::POST('catalog/asin/upload', 'Catalog\CatalogProductController@CatalogWithPriceAsinUpload')->name('catalog.with.price.asin.upload');
+Route::get('catalog/with-price', 'Catalog\CatalogProductController@CatalogWithPriceFileShow')->name('catalog.with.price.file.show');
+Route::get('catalog/with-price/download/template', 'Catalog\CatalogProductController@CatalogWithPriceDownloadTemplate')->name('catalo.with.price.download.template');
+Route::get('catalog/with-price/download/csv/{country_code}/{priority}', 'Catalog\CatalogProductController@CatalogWithPriceDownload')->name('catalog.with.price.download');
+
 Route::get('catalog/asin-destination', 'Catalog\AsinDestinationController@index')->name('Asin.destination.index');
 Route::get('catalog/import-asin-destination', 'Catalog\AsinDestinationController@AsinDestinationImport');
 Route::post('catalog/asin-destination-file', 'Catalog\AsinDestinationController@AsinDestinationFile')->name('catalog.asin.destination.file');

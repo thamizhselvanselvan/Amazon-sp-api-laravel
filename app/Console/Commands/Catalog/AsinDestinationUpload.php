@@ -81,7 +81,7 @@ class AsinDestinationUpload extends Command
                 ];
                 jobDispatchFunc($class, $chunk_data, $queue_name, $delay);
             }
-            log::alert($chunk_data);
+            // log::alert($chunk_data);
             $asin = [];
         }
 

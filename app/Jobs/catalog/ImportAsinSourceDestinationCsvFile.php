@@ -32,10 +32,8 @@ class ImportAsinSourceDestinationCsvFile implements ShouldQueue
      */
     public function handle()
     {
-        // Log::notice('jobs');
         $chunk_data = $this->payload;
         $csv_import = new CsvAsinImport();
         $csv_import->AsinImport($chunk_data);
-        // Log::notice('Enter on jobs');
     }
 }

@@ -384,9 +384,23 @@ return [
                 [
 
                     'text' => 'Mosh Amazon Catalog',
-                    'url'  => 'catalog/product',
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin', 'Catalog'],
+                    'submenu' => [
+                        [
+                            'text'  => 'Catalog & Price Export',
+                            'url'  => 'catalog/product',
+                            'icon' => 'fas fa-file-export',
+                            'can' =>  ['Admin', 'Catalog']
+                        ],
+
+                        [
+                            'text'  => 'Catalog With Price Export',
+                            'url'  => 'catalog/export-with-price',
+                            'icon' => 'fas fa-file-export',
+                            'can' =>  ['Admin', 'Catalog']
+                        ],
+                    ],
                 ],
                 [
 
