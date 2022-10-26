@@ -182,8 +182,6 @@
                                         <label class="ml-1" for="Available">Available</label>
                                     </div>
 
-
-
                                     <div class="col-2 usa_price d-none">
                                         <input class="choose_header" type="checkbox" value="pricing_uss.available"
                                             name='header[]' id="available">
@@ -192,6 +190,19 @@
                                 </div>
 
                                 <div class="row ">
+
+                                    <div class="col-2 india_price d-none">
+                                        <input class="choose_header" type="checkbox" value="pricing_ins.weight"
+                                            name='header[]' id="weight">
+                                        <label class="ml-1" for="Weight">Weight</label>
+                                    </div>
+
+                                    <div class="col-2 usa_price d-none">
+                                        <input class="choose_header" type="checkbox" value="pricing_uss.weight"
+                                            name='header[]' id="weight">
+                                        <label class="ml-1" for="Weight">Weight</label>
+                                    </div>
+
                                     <div class="col-2 india_price d-none">
                                         <input class="choose_header " type="checkbox" value="pricing_ins.in_price"
                                             name='header[]' id="in_price">

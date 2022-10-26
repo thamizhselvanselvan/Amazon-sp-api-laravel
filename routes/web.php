@@ -85,58 +85,50 @@ Route::get('import', function () {
 
 $delist_asins;
 Route::get('wherein', function () {
+    $asins = ['B0006KQH6A', 'B0006G5MHO'];
 
-    DB::connection('catalog')->update("UPDATE asin_source_ins as source 
-    LEFT JOIN catalognewins as cat 
-    ON source.asin = cat.asin
-    SET source.status = '0'
-    WHERE source.status = '1'
-    AND cat.asin IS NULL
-    
-    ");
-
-    exit;
-
-    $data =  PricingIn::select('destination.asin as asin', 'cat.product_types', 'cat.images', 'cat.dimensions', 'pricing_ins.in_price', 'pricing_ins.ind_to_uae', 'pricing_ins.ind_to_sg', 'pricing_ins.updated_at')
-        ->rightJoin("asin_destination_ins as destination", 'pricing_ins.asin', '=', 'destination.asin')
-        ->leftJoin("catalognewins as cat", 'destination.asin', '=', 'cat.asin')
+    $data =  PricingIn::select('destination.asin as asin', 'cat.product_types', 'cat.images', 'cat.dimensions', 'pricing_ins.in_price', 'pricing_ins.ind_to_uae', 'pricing_ins.ind_to_sg', 'pricing_ins.updated_at', 'pricing_ins.weight')
+        ->join("asin_destination_ins as destination", 'pricing_ins.asin', '=', 'destination.asin')
+        ->join("catalognewins as cat", 'pricing_ins.asin', '=', 'cat.asin')
         ->where('destination.priority', 1)
-        ->orWhereNull('destination.asin')
+        ->whereIn('destination.asin', $asins)
         ->get()->toArray();
     $di = [];
+    if (count($data) > 0) {
 
-    foreach ($data as $key => $record) {
-        foreach ($record as $key2 => $value) {
+        foreach ($data as $key => $record) {
+            foreach ($record as $key2 => $value) {
 
-            if ($key2 == 'images') {
-                $images = json_decode($value);
-                $image = isset($images[0]->images) ? $images[0]->images : 'NA';
-                $di[$key]['image1'] = isset($image[0]->link) ? $image[0]->link : 'NA';
-                $di[$key]['image2'] = isset($image[1]->link) ? $image[1]->link : 'NA';
-            }
-            if ($key2 == 'product_types') {
-                $product_types = json_decode($value);
-                $di[$key]['product_types'] = isset($product_types[0]->productType) ? $product_types[0]->productType : 'NA';
-            }
+                if ($key2 == 'images') {
+                    $images = json_decode($value);
+                    $image = isset($images[0]->images) ? $images[0]->images : 'NA';
+                    $di[$key]['image1'] = isset($image[0]->link) ? $image[0]->link : 'NA';
+                    $di[$key]['image2'] = isset($image[1]->link) ? $image[1]->link : 'NA';
+                }
+                if ($key2 == 'product_types') {
+                    $product_types = json_decode($value);
+                    $di[$key]['product_types'] = isset($product_types[0]->productType) ? $product_types[0]->productType : 'NA';
+                }
 
-            if ($key2 == 'dimensions' || $key2 == 'updated_at') {
+                if ($key2 == 'dimensions') {
 
-                $dimension = json_decode($value);
-                $package = isset($dimension[0]->package) ? $dimension[0]->package : 'NA';
+                    $dimension = json_decode($value);
+                    $package = isset($dimension[0]->package) ? $dimension[0]->package : 'NA';
 
-                $di[$key]['height'] = isset($package->height->value) ? $package->height->value : 'NA';
-                $di[$key]['length'] = isset($package->length->value) ? $package->length->value : 'NA';
-                $di[$key]['width'] = isset($package->width->value) ? $package->width->value : 'NA';
-                $di[$key]['unit'] = isset($package->width->unit) ? $package->width->unit : 'NA';
-                $di[$key]['weight'] = isset($package->weight->value) ? $package->weight->value : 'NA';
-                $di[$key]['weight_unit'] = isset($package->weight->unit) ? $package->weight->unit : 'NA';
-                $di[$key]['updated_at'] = isset($record['updated_at']) ? date("d-m-Y h:i:s", strtotime($record['updated_at'])) : 'NA';
-            }
+                    $di[$key]['height'] = isset($package->height->value) ? $package->height->value : 'NA';
+                    $di[$key]['length'] = isset($package->length->value) ? $package->length->value : 'NA';
+                    $di[$key]['width'] = isset($package->width->value) ? $package->width->value : 'NA';
+                    $di[$key]['unit'] = isset($package->width->unit) ? $package->width->unit : 'NA';
+                    // $di[$key]['weight'] = isset($package->weight->value) ? $package->weight->value : 'NA';
+                    // $di[$key]['weight_unit'] = isset($package->weight->unit) ? $package->weight->unit : 'NA';
+                    //$di[$key]['updated_at'] = isset($record['updated_at']) ? date("d-m-Y h:i:s", strtotime($record['updated_at'])) : 'NA';
+                }
 
 
-            if ($key2 != 'dimensions' && $key2 != 'updated_at' && $key2 != 'images' && $key2 != 'product_types') {
+                if ($key2 != 'dimensions' && $key2 != 'updated_at' && $key2 != 'images' && $key2 != 'product_types') {
 
-                $di[$key][$key2] = $value ?? 'NA';
+                    $di[$key][$key2] = $value ?? 'NA';
+                }
             }
         }
     }

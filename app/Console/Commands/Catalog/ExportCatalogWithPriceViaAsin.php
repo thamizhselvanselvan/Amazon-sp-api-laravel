@@ -56,6 +56,12 @@ class ExportCatalogWithPriceViaAsin extends Command
         $asins = explode(',', $this->argument('Asins'));
         $chunk_data = array_chunk($asins, 20000);
 
+        $files = glob(Storage::path("excel/downloads/catalog_with_price/$this->country_code/Priority$this->priority/*"));
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
         $exportFilePath = "excel/downloads/catalog_with_price/$this->country_code/Priority" . $this->priority . '/Priority' . $this->priority . "_CatalogWithPrice";
 
         $csv_head = [];
@@ -89,8 +95,11 @@ class ExportCatalogWithPriceViaAsin extends Command
 
             foreach ($chunk_data as $asins) {
                 $records = PricingIn::select($headers)
+                    ->join("asin_destination_ins as destination", 'pricing_ins.asin', '=', 'destination.asin')
                     ->join("catalognewins as cat", 'pricing_ins.asin', '=', 'cat.asin')
-                    ->whereIn('pricing_ins.asin', $asins)->get()->toArray();
+                    ->where('destination.priority', $this->priority)
+                    ->whereIn('destination.asin', $asins)
+                    ->get()->toArray();
 
                 $this->FormateDataForCsv($csv_header, $records, $exportFilePath);
             }
