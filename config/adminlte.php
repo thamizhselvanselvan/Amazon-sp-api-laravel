@@ -390,14 +390,14 @@ return [
                         [
                             'text'  => 'Catalog & Price Export',
                             'url'  => 'catalog/product',
-                            'icon' => 'fas fa-file-export',
+                            'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Catalog']
                         ],
 
                         [
                             'text'  => 'Catalog With Price Export',
                             'url'  => 'catalog/export-with-price',
-                            'icon' => 'fas fa-file-export',
+                            'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Catalog']
                         ],
                     ],
