@@ -46,8 +46,8 @@ class CliqnshopCatalogExport extends Command
      */
     public function handle()
     {
-        $total_csv = 10000;
-        $chunk = 10000;
+        $total_csv = 100000;
+        $chunk = 100000;
         $offset = 0;
         $writer = '';
 
@@ -77,11 +77,12 @@ class CliqnshopCatalogExport extends Command
             'text content',
             'text type',
             'text content',
-            'text type',
-            'text content',
-            'text type',
-            'text content',
+           
 
+            'Preview',
+            'Media URL',
+            'Preview',
+            'Media URL',
             'Preview',
             'Media URL',
             'Preview',

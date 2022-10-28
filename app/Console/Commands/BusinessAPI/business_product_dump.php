@@ -47,12 +47,13 @@ class business_product_dump extends Command
         $delay = 10;
         $start_time = startTime();
         $end_time = endTime($start_time);
-        Log::warning("Before Select Query - $end_time");
+        // Log::warning("Before Select Query - $end_time");
 
         $records = table_model_create(country_code: 'US', model: 'Asin_source', table_name: 'asin_source_')
             ->select('asin')
             ->chunk(100, function ($records) use ($delay, $start_time) {
-                Log::emergency("chunk occured");
+                // Log::emergency("chunk occured");
+            
                 if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
                     BusinessasinDetails::dispatch([
                         'data' => $records
@@ -70,6 +71,6 @@ class business_product_dump extends Command
                 // $delay += $delay;    
             });
         $end_time = endTime($start_time);
-        Log::warning("After 130 process Select Query - $end_time");
+        // Log::warning("After 130 process Select Query - $end_time");
     }
 }
