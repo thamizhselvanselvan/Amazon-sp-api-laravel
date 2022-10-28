@@ -205,7 +205,7 @@ class CatalogPriceExportCSV extends Command
                 // log::notice($csv_header);
 
 
-                Log::notice('price us no date quiry start');
+              
                 PricingUs::select($headers)
                     ->rightJoin('asin_destination_uss as destination', 'pricing_uss.asin', '=', 'destination.asin')
                     ->where('destination.priority', $this->priority)
@@ -244,7 +244,7 @@ class CatalogPriceExportCSV extends Command
                 }
                 $zip->close();
             }
-            Log::notice('price us no quiry end');
+           
         } else {
 
             $exportFilePath = "excel/downloads/catalog_price/$this->country_code/Priority" . $this->priority . '/' . $this->country_code . "_CatalogPrice";

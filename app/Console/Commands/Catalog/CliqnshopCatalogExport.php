@@ -46,8 +46,8 @@ class CliqnshopCatalogExport extends Command
      */
     public function handle()
     {
-        $total_csv = 100000;
-        $chunk = 100000;
+        $total_csv = 10000;
+        $chunk = 10000;
         $offset = 0;
         $writer = '';
 
@@ -477,7 +477,7 @@ class CliqnshopCatalogExport extends Command
                         'catalog list config' => null,
                         'catalog list position' => null,
                         'catalog list status' => '1',
-                        'supplier code' => strtolower($brand_place),
+                        'supplier code' =>   substr(strtolower($brand_place), 0, 10),
                         'supplier list type' => null,
                         'supplier list datestart' => null,
                         'supplier list dateend' => null,
