@@ -453,7 +453,7 @@ class labelManagementController extends Controller
                         $product[$key2][$key1] = substr_replace($ignore_title, '....', 100);
 
                         $sku_array = explode('-label-sku-', $label_value->sku);
-                        $sku_array = array_unique($sku_array);
+                        // $sku_array = array_unique($sku_array);
 
                         $product[$key2]['sku'] = $sku_array[$key2];
 
