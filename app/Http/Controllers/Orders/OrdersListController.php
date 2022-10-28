@@ -60,19 +60,17 @@ class OrdersListController extends Controller
 
     public function GetOrdersList()
     {
-        
+
         $source_key_exists = 0;
         $check_table = DB::connection('catalog')->select('SHOW TABLES');
-        foreach($check_table as $key => $table_name)
-        {
-            foreach($table_name as $name_of_table)
-            {
-                if($name_of_table == 'catalognewaes'){
+        foreach ($check_table as $key => $table_name) {
+            foreach ($table_name as $name_of_table) {
+                if ($name_of_table == 'catalognewaes') {
                     $source_key_exists = 1;
                 }
             }
         }
-        if($source_key_exists == 0){
+        if ($source_key_exists == 0) {
             $redbean = new NewCatalog();
             $redbean->RedBeanConnection();
             // $catalog_table = $catalog_table_name;
