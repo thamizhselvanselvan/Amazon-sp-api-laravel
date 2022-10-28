@@ -22,13 +22,13 @@ class CatalogPriceExportCSV extends Command
     private $totalFile = [];
     private $country_code;
     private $priority;
-    private $selected_date;
+    private $date;
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'mosh:catalog-price-export-csv {priority} {country_code} {selected_date}';
+    protected $signature = 'mosh:catalog-price-export-csv {priority} {country_code} {date}';
 
     /**
      * The console command description.
@@ -54,183 +54,368 @@ class CatalogPriceExportCSV extends Command
      */
     public function handle()
     {
+
+        $date = $this->date = $this->argument('date');
+
         $this->country_code = $this->argument('country_code');
         $this->priority = $this->argument('priority');
+        $this->date = $this->argument('date');
         // $selected_headers = explode(',', $this->argument('headers'));
-        $this->selected_date = $this->argument('selected_date');
-
-        $date = explode(',', $this->argument('selected_date'));
-        $start_date = $date[0];
-        $end_date = $date[1];
-
-
-        $exportFilePath = "excel/downloads/catalog_price/$this->country_code/Priority" . $this->priority . '/' . $this->country_code . "_CatalogPrice";
-        $deleteFilePath = "app/excel/downloads/catalog_price/" . $this->country_code;
-
-        // if (file_exists(storage_path($deleteFilePath))) {
-        //     $path = storage_path($deleteFilePath);
-        //     $files = (scandir($path));
-        //     foreach ($files as $key => $file) {
-        //         if ($key > 1) {
-        //             unlink($path . '/' . $file);
-        //         }
-        //     }
-        // }
-        $csv_head = [];
-        $csv_header = [];
-
-        $record_per_csv = 1000000;
-        $chunk = 20000;
-        $this->check = $record_per_csv / $chunk;
-
-        if ($this->country_code == 'IN') {
-
-            $headers = [
-                'destination.asin as Asin',
-                'pricing_ins.available',
-                'pricing_ins.weight',
-                'pricing_ins.in_price',
-                'pricing_ins.ind_to_uae',
-                'pricing_ins.ind_to_sg',
-                'pricing_ins.ind_to_sa',
-                'pricing_ins.updated_at',
+        $start_date = '';
+        $end_date = '';
+        $data = explode(' - ', $date);
+        if (count($data) >= 2) {
+            $split = [trim($data[0]), trim($data[1])];
+            $range = [
+                $split[0],
+                $split[1]
             ];
 
-            $csv_header = [
-                'Asin',
-                'Available',
-                'Weight',
-                'IND Price',
-                'IND To UAE',
-                'IND To SG',
-                'IND To SA',
-                'Updated At'
-            ];
-
-
-            // $str = ['destination.', 'cat.', 'pricing_ins.'];
-            // // log::notice($selected_headers);
-            // foreach ($selected_headers as $key => $selected_header) {
-            //     $headers[] = "${selected_header}";
-            //     $csv_title = str_replace($str, '', $selected_header);
-            //     if ($csv_title == 'images') {
-            //         $csv_head[] = ['image1', 'image2'];
-            //     }
-            //     if ($csv_title == 'dimensions') {
-            //         $csv_head[] = ['height', 'length', 'width', 'unit'];
-            //     }
-            //     if ($selected_header != 'cat.images' && $selected_header != 'cat.dimensions') {
-            //         $csv_head[$key][] = str_replace('_', ' ', $csv_title);
-            //     }
-            // }
-            // foreach ($csv_head as $csv_heading) {
-            //     foreach ($csv_heading as $csv) {
-
-            //         $csv_header[] = $csv;
-            //     }
-            // }
-            log::notice($csv_header);
-            // exit;
-            PricingIn::select($headers)
-                ->rightJoin('asin_destination_ins as destination', 'pricing_ins.asin', '=', 'destination.asin')
-                ->where('destination.priority', $this->priority)
-                ->whereBetween('pricing_ins.updated_at', [$start_date . " 00:00:01", $end_date . " 23:59:59"])
-                ->orWhereNull('destination.asin')
-                ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
-
-
-                    $this->CreateCsvFile($csv_header, $records, $exportFilePath);
-                });
-            // ->leftJoin("catalognewins as cat", 'destination.asin', '=', 'cat.asin')
-        } elseif ($this->country_code == 'US') {
-
-            $headers = [
-                'destination.asin as Asin',
-                'pricing_uss.available',
-                'pricing_uss.weight',
-                'pricing_uss.us_price',
-                'pricing_uss.usa_to_in_b2b',
-                'pricing_uss.usa_to_in_b2c',
-                'pricing_uss.usa_to_uae',
-                'pricing_uss.usa_to_sg',
-                'pricing_uss.updated_at',
-            ];
-
-            $csv_header = [
-                'Asin',
-                'Available',
-                'Weight',
-                'US Price',
-                'USA To IND B2B',
-                'USA To IND B2C',
-                'USA To UAE',
-                'USA To Singapore',
-                'Updated At'
-            ];
-
-            // $str = ['destination.', 'cat.', 'pricing_uss.'];
-            // foreach ($selected_headers as $key => $selected_header) {
-            //     $headers[] = "${selected_header}";
-            //     $csv_title = str_replace($str, '', $selected_header);
-            //     if ($csv_title == 'images') {
-            //         $csv_head[] = ['image1', 'image2'];
-            //     }
-            //     if ($csv_title == 'dimensions') {
-            //         $csv_head[] = ['height', 'length', 'width', 'unit'];
-            //     }
-            //     if ($selected_header != 'cat.images' && $selected_header != 'cat.dimensions') {
-            //         $csv_head[$key][] = str_replace('_', ' ', $csv_title);
-            //     }
-            // }
-            // foreach ($csv_head as $csv_heading) {
-            //     foreach ($csv_heading as $csv) {
-
-            //         $csv_header[] = $csv;
-            //     }
-            // }
-            log::notice($csv_header);
-
-
-
-            PricingUs::select($headers)
-                ->rightJoin('asin_destination_uss as destination', 'pricing_uss.asin', '=', 'destination.asin')
-                ->where('destination.priority', $this->priority)
-                ->whereBetween('pricing_uss.updated_at', [$start_date . " 00:00:01", $end_date . " 23:59:59"])
-                ->orWhereNull('destination.asin')
-                ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
-
-                    $this->CreateCsvFile($csv_header, $records, $exportFilePath);
-                });
-            // ->leftJoin("catalognewuss as cat", 'destination.asin', '=', 'cat.asin')
+            $selected_date = implode(',', $range);
+            $date = explode(',', $selected_date);
+            $start_date = $date[0];
+            $end_date = $date[1];
         }
+    
+        if ($start_date == '') {
 
-        $path = "excel/downloads/catalog_price/" . $this->country_code . '/Priority' . $this->priority;
-        $path = Storage::path($path);
-        $files = (scandir($path));
+            $exportFilePath = "excel/downloads/catalog_price/$this->country_code/Priority" . $this->priority . '/' . $this->country_code . "_CatalogPrice";
+            $deleteFilePath = "app/excel/downloads/catalog_price/" . $this->country_code;
 
-        $filesArray = [];
-        foreach ($files as $key => $file) {
-            if ($key > 1) {
-                if (str_contains($file, '.mosh')) {
-                    $new_file_name = str_replace('.csv.mosh', '.csv', $file);
-                    rename($path . '/' . $file, $path . '/' . $new_file_name);
+            // if (file_exists(storage_path($deleteFilePath))) {
+            //     $path = storage_path($deleteFilePath);
+            //     $files = (scandir($path));
+            //     foreach ($files as $key => $file) {
+            //         if ($key > 1) {
+            //             unlink($path . '/' . $file);
+            //         }
+            //     }
+            // }
+            $csv_head = [];
+            $csv_header = [];
+
+            $record_per_csv = 1000000;
+            $chunk = 20000;
+            $this->check = $record_per_csv / $chunk;
+
+            if ($this->country_code == 'IN') {
+
+                $headers = [
+                    'destination.asin as Asin',
+                    'pricing_ins.available',
+                    'pricing_ins.weight',
+                    'pricing_ins.in_price',
+                    'pricing_ins.ind_to_uae',
+                    'pricing_ins.ind_to_sg',
+                    'pricing_ins.ind_to_sa',
+                    'pricing_ins.updated_at',
+                ];
+
+                $csv_header = [
+                    'Asin',
+                    'Available',
+                    'Weight',
+                    'IND Price',
+                    'IND To UAE',
+                    'IND To SG',
+                    'IND To SA',
+                    'Updated At'
+                ];
+
+
+                // $str = ['destination.', 'cat.', 'pricing_ins.'];
+                // // log::notice($selected_headers);
+                // foreach ($selected_headers as $key => $selected_header) {
+                //     $headers[] = "${selected_header}";
+                //     $csv_title = str_replace($str, '', $selected_header);
+                //     if ($csv_title == 'images') {
+                //         $csv_head[] = ['image1', 'image2'];
+                //     }
+                //     if ($csv_title == 'dimensions') {
+                //         $csv_head[] = ['height', 'length', 'width', 'unit'];
+                //     }
+                //     if ($selected_header != 'cat.images' && $selected_header != 'cat.dimensions') {
+                //         $csv_head[$key][] = str_replace('_', ' ', $csv_title);
+                //     }
+                // }
+                // foreach ($csv_head as $csv_heading) {
+                //     foreach ($csv_heading as $csv) {
+
+                //         $csv_header[] = $csv;
+                //     }
+                // }
+                // log::notice($csv_header);
+                // exit;
+                PricingIn::select($headers)
+                    ->rightJoin('asin_destination_ins as destination', 'pricing_ins.asin', '=', 'destination.asin')
+                    ->where('destination.priority', $this->priority)
+                    ->orWhereNull('destination.asin')
+                    ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
+
+
+                        $this->CreateCsvFile($csv_header, $records, $exportFilePath);
+                    });
+                // ->leftJoin("catalognewins as cat", 'destination.asin', '=', 'cat.asin')
+            } elseif ($this->country_code == 'US') {
+
+                $headers = [
+                    'destination.asin as Asin',
+                    'pricing_uss.available',
+                    'pricing_uss.weight',
+                    'pricing_uss.us_price',
+                    'pricing_uss.usa_to_in_b2b',
+                    'pricing_uss.usa_to_in_b2c',
+                    'pricing_uss.usa_to_uae',
+                    'pricing_uss.usa_to_sg',
+                    'pricing_uss.updated_at',
+                ];
+
+                $csv_header = [
+                    'Asin',
+                    'Available',
+                    'Weight',
+                    'US Price',
+                    'USA To IND B2B',
+                    'USA To IND B2C',
+                    'USA To UAE',
+                    'USA To Singapore',
+                    'Updated At'
+                ];
+
+                // $str = ['destination.', 'cat.', 'pricing_uss.'];
+                // foreach ($selected_headers as $key => $selected_header) {
+                //     $headers[] = "${selected_header}";
+                //     $csv_title = str_replace($str, '', $selected_header);
+                //     if ($csv_title == 'images') {
+                //         $csv_head[] = ['image1', 'image2'];
+                //     }
+                //     if ($csv_title == 'dimensions') {
+                //         $csv_head[] = ['height', 'length', 'width', 'unit'];
+                //     }
+                //     if ($selected_header != 'cat.images' && $selected_header != 'cat.dimensions') {
+                //         $csv_head[$key][] = str_replace('_', ' ', $csv_title);
+                //     }
+                // }
+                // foreach ($csv_head as $csv_heading) {
+                //     foreach ($csv_heading as $csv) {
+
+                //         $csv_header[] = $csv;
+                //     }
+                // }
+                // log::notice($csv_header);
+
+
+                Log::notice('price us no date quiry start');
+                PricingUs::select($headers)
+                    ->rightJoin('asin_destination_uss as destination', 'pricing_uss.asin', '=', 'destination.asin')
+                    ->where('destination.priority', $this->priority)
+                    ->orWhereNull('destination.asin')
+                    ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
+
+                        $this->CreateCsvFile($csv_header, $records, $exportFilePath);
+                    });
+            }
+
+            $path = "excel/downloads/catalog_price/" . $this->country_code . '/Priority' . $this->priority;
+            $path = Storage::path($path);
+            $files = (scandir($path));
+
+            $filesArray = [];
+            foreach ($files as $key => $file) {
+                if ($key > 1) {
+                    if (str_contains($file, '.mosh')) {
+                        $new_file_name = str_replace('.csv.mosh', '.csv', $file);
+                        rename($path . '/' . $file, $path . '/' . $new_file_name);
+                    }
                 }
             }
-        }
 
-        $zip = new ZipArchive;
-        $path = "excel/downloads/catalog_price/" . $this->country_code . '/Priority' . $this->priority . '/' . "/zip/" . $this->country_code . "_CatalogPrice.zip";
-        $file_path = Storage::path($path);
-        if (!Storage::exists($path)) {
-            Storage::put($path, '');
-        }
-        if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
-            foreach ($this->totalFile as $key => $value) {
-                $path = Storage::path('excel/downloads/catalog_price/' . $this->country_code . '/Priority' . $this->priority . '/' . $value);
-                $relativeNameInZipFile = basename($path);
-                $zip->addFile($path, $relativeNameInZipFile);
+            $zip = new ZipArchive;
+            $path = "excel/downloads/catalog_price/" . $this->country_code . '/Priority' . $this->priority . '/' . "/zip/" . $this->country_code . "_CatalogPrice.zip";
+            $file_path = Storage::path($path);
+            if (!Storage::exists($path)) {
+                Storage::put($path, '');
             }
-            $zip->close();
+            if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
+                foreach ($this->totalFile as $key => $value) {
+                    $path = Storage::path('excel/downloads/catalog_price/' . $this->country_code . '/Priority' . $this->priority . '/' . $value);
+                    $relativeNameInZipFile = basename($path);
+                    $zip->addFile($path, $relativeNameInZipFile);
+                }
+                $zip->close();
+            }
+            Log::notice('price us no quiry end');
+        } else {
+
+            $exportFilePath = "excel/downloads/catalog_price/$this->country_code/Priority" . $this->priority . '/' . $this->country_code . "_CatalogPrice";
+            $deleteFilePath = "app/excel/downloads/catalog_price/" . $this->country_code;
+
+            // if (file_exists(storage_path($deleteFilePath))) {
+            //     $path = storage_path($deleteFilePath);
+            //     $files = (scandir($path));
+            //     foreach ($files as $key => $file) {
+            //         if ($key > 1) {
+            //             unlink($path . '/' . $file);
+            //         }
+            //     }
+            // }
+            $csv_head = [];
+            $csv_header = [];
+
+            $record_per_csv = 1000000;
+            $chunk = 20000;
+            $this->check = $record_per_csv / $chunk;
+
+            if ($this->country_code == 'IN') {
+
+                $headers = [
+                    'destination.asin as Asin',
+                    'pricing_ins.available',
+                    'pricing_ins.weight',
+                    'pricing_ins.in_price',
+                    'pricing_ins.ind_to_uae',
+                    'pricing_ins.ind_to_sg',
+                    'pricing_ins.ind_to_sa',
+                    'pricing_ins.updated_at',
+                ];
+
+                $csv_header = [
+                    'Asin',
+                    'Available',
+                    'Weight',
+                    'IND Price',
+                    'IND To UAE',
+                    'IND To SG',
+                    'IND To SA',
+                    'Updated At'
+                ];
+
+
+                // $str = ['destination.', 'cat.', 'pricing_ins.'];
+                // // log::notice($selected_headers);
+                // foreach ($selected_headers as $key => $selected_header) {
+                //     $headers[] = "${selected_header}";
+                //     $csv_title = str_replace($str, '', $selected_header);
+                //     if ($csv_title == 'images') {
+                //         $csv_head[] = ['image1', 'image2'];
+                //     }
+                //     if ($csv_title == 'dimensions') {
+                //         $csv_head[] = ['height', 'length', 'width', 'unit'];
+                //     }
+                //     if ($selected_header != 'cat.images' && $selected_header != 'cat.dimensions') {
+                //         $csv_head[$key][] = str_replace('_', ' ', $csv_title);
+                //     }
+                // }
+                // foreach ($csv_head as $csv_heading) {
+                //     foreach ($csv_heading as $csv) {
+
+                //         $csv_header[] = $csv;
+                //     }
+                // }
+                // log::notice($csv_header);
+                // exit;
+                PricingIn::select($headers)
+                    ->rightJoin('asin_destination_ins as destination', 'pricing_ins.asin', '=', 'destination.asin')
+                    ->where('destination.priority', $this->priority)
+                    ->whereBetween('pricing_ins.updated_at', [$start_date . " 00:00:01", $end_date . " 23:59:59"])
+                    ->orWhereNull('destination.asin')
+                    ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
+
+
+                        $this->CreateCsvFile($csv_header, $records, $exportFilePath);
+                    });
+                // ->leftJoin("catalognewins as cat", 'destination.asin', '=', 'cat.asin')
+            } elseif ($this->country_code == 'US') {
+
+                $headers = [
+                    'destination.asin as Asin',
+                    'pricing_uss.available',
+                    'pricing_uss.weight',
+                    'pricing_uss.us_price',
+                    'pricing_uss.usa_to_in_b2b',
+                    'pricing_uss.usa_to_in_b2c',
+                    'pricing_uss.usa_to_uae',
+                    'pricing_uss.usa_to_sg',
+                    'pricing_uss.updated_at',
+                ];
+
+                $csv_header = [
+                    'Asin',
+                    'Available',
+                    'Weight',
+                    'US Price',
+                    'USA To IND B2B',
+                    'USA To IND B2C',
+                    'USA To UAE',
+                    'USA To Singapore',
+                    'Updated At'
+                ];
+
+                // $str = ['destination.', 'cat.', 'pricing_uss.'];
+                // foreach ($selected_headers as $key => $selected_header) {
+                //     $headers[] = "${selected_header}";
+                //     $csv_title = str_replace($str, '', $selected_header);
+                //     if ($csv_title == 'images') {
+                //         $csv_head[] = ['image1', 'image2'];
+                //     }
+                //     if ($csv_title == 'dimensions') {
+                //         $csv_head[] = ['height', 'length', 'width', 'unit'];
+                //     }
+                //     if ($selected_header != 'cat.images' && $selected_header != 'cat.dimensions') {
+                //         $csv_head[$key][] = str_replace('_', ' ', $csv_title);
+                //     }
+                // }
+                // foreach ($csv_head as $csv_heading) {
+                //     foreach ($csv_heading as $csv) {
+
+                //         $csv_header[] = $csv;
+                //     }
+                // }
+                // log::notice($csv_header);
+
+
+              
+                PricingUs::select($headers)
+                    ->rightJoin('asin_destination_uss as destination', 'pricing_uss.asin', '=', 'destination.asin')
+                    ->where('destination.priority', $this->priority)
+                    ->whereBetween('pricing_uss.updated_at', [$start_date . " 00:00:01", $end_date . " 23:59:59"])
+                    ->orWhereNull('destination.asin')
+                    ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
+
+
+                        $this->CreateCsvFile($csv_header, $records, $exportFilePath);
+                    });
+            }
+
+            $path = "excel/downloads/catalog_price/" . $this->country_code . '/Priority' . $this->priority;
+            $path = Storage::path($path);
+            $files = (scandir($path));
+
+            $filesArray = [];
+            foreach ($files as $key => $file) {
+                if ($key > 1) {
+                    if (str_contains($file, '.mosh')) {
+                        $new_file_name = str_replace('.csv.mosh', '.csv', $file);
+                        rename($path . '/' . $file, $path . '/' . $new_file_name);
+                    }
+                }
+            }
+
+            $zip = new ZipArchive;
+            $path = "excel/downloads/catalog_price/" . $this->country_code . '/Priority' . $this->priority . '/' . "/zip/" . $this->country_code . "_CatalogPrice.zip";
+            $file_path = Storage::path($path);
+            if (!Storage::exists($path)) {
+                Storage::put($path, '');
+            }
+            if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
+                foreach ($this->totalFile as $key => $value) {
+                    $path = Storage::path('excel/downloads/catalog_price/' . $this->country_code . '/Priority' . $this->priority . '/' . $value);
+                    $relativeNameInZipFile = basename($path);
+                    $zip->addFile($path, $relativeNameInZipFile);
+                }
+                $zip->close();
+            }
+          
         }
     }
     public function CreateCsvFile($csv_header, $records, $exportFilePath)

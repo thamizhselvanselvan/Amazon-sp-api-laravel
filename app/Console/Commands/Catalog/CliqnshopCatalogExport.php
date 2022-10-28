@@ -369,6 +369,8 @@ class CliqnshopCatalogExport extends Command
                     }
 
                     $brand_place = str_replace(' ', '', $data['brand']);
+             
+                
                     $csv_values[] = [
                         'item code' => $data['asin'],
                         'item label' => $data['item_name'],
@@ -475,7 +477,7 @@ class CliqnshopCatalogExport extends Command
                         'catalog list config' => null,
                         'catalog list position' => null,
                         'catalog list status' => '1',
-                        'supplier code' => $brand_place,
+                        'supplier code' => strtolower($brand_place),
                         'supplier list type' => null,
                         'supplier list datestart' => null,
                         'supplier list dateend' => null,
@@ -507,10 +509,10 @@ class CliqnshopCatalogExport extends Command
                         $Status2 = "1";
                         $txt_lng2 = "default";
                     }
-
+ 
                     $second_csv_values[] = [
-                        'code' => $brand_place_second,
-                        'Label' =>  $data['brand'],
+                        'code' => substr(strtolower ($brand_place_second),0,10),
+                        'Label' =>  strtoupper($data['brand']),
                         'Status2' =>  $Status2,
                         'Text Language2' => $txt_lng2,
                         'Text Type' => null,

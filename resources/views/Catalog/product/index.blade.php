@@ -470,6 +470,7 @@
 
                     if (response == '') {
                         $('.catalogcliqnshop').append('File Downloading..');
+                        return false;
                     } else {
                         $('.catalogcliqnshop').empty();
                         let files = '';
