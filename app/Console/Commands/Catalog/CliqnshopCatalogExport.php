@@ -421,19 +421,19 @@ class CliqnshopCatalogExport extends Command
                         'attribute status1' => $ll,
                         'product list type1' =>   $lpro_typt,
 
-                        'attribute code2' => null,
-                        'attribute type2' => null,
-                        'attribute label2' => null,
+                        'attribute code2' => $width_val,
+                        'attribute type2' => $wd_type,
+                        'attribute label2' => $width_val . ' ' . $width_unit,
                         'attribute position2' => null,
-                        'attribute status2' => null,
-                        'product list type2' => null,
+                        'attribute status2' => $wd,
+                        'product list type2' => $wd_pro_typt,
 
-                        'attribute code3' => $width_val,
-                        'attribute type3' => $wd_type,
-                        'attribute label3' => $width_val . ' ' . $width_unit,
+                        'attribute code3' => null,
+                        'attribute type3' => null,
+                        'attribute label3' => null,
                         'attribute position3' => null,
-                        'attribute status3' => $wd,
-                        'product list type3' =>   $wd_pro_typt,
+                        'attribute status3' => null,
+                        'product list type3' =>  null,
 
                         'attribute code4' => null,
                         'attribute type4' => null,
@@ -535,7 +535,7 @@ class CliqnshopCatalogExport extends Command
                 $writer->insertOne($second_csv_headers);
 
                 $writer->insertAll($second_csv_values);
-            exit;
+           exit;
                 if ($csv_number == $this->count) {
                     ++$this->offset;
 
