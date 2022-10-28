@@ -381,7 +381,7 @@ class labelManagementController extends Controller
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
         GROUP_CONCAT(DISTINCT web.forwarder) as forwarder,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
-        GROUP_CONCAT(DISTINCT ordetail.shipping_address) as shipping_address,
+        GROUP_CONCAT(DISTINCT ordetail.shipping_address, '-address-separator-') as shipping_address,
         GROUP_CONCAT(ordetail.title SEPARATOR '-label-title-') as title,
         GROUP_CONCAT(ordetail.seller_sku SEPARATOR '-label-sku-') as sku,
         GROUP_CONCAT(ordetail.quantity_ordered SEPARATOR '-label-qty-') as qty
@@ -391,6 +391,9 @@ class labelManagementController extends Controller
         WHERE $where_condition
         GROUP BY ordetail.amazon_order_identifier
     ");
+
+        // po($label);
+        // exit;
 
         $label_data = [];
         $order_no = '';
@@ -419,10 +422,14 @@ class labelManagementController extends Controller
         $product = [];
 
         foreach ($label as $key => $label_value) {
-            foreach ($label_value as $key1 => $label_detials) {
+            foreach ($label_value as $key1 => $label_details) {
                 if ($key1 == 'shipping_address') {
                     $buyer_address = [];
-                    $shipping_address = json_decode($label_detials);
+
+                    $new_label_add = preg_split('/-address-separator-,?/', $label_details);
+                    $new_add = count($new_label_add) > 2 ? $new_label_add[1] : $new_label_add[0];
+                    $shipping_address = json_decode($new_add);
+
                     foreach ((array)$shipping_address as $add_key => $add_details) {
 
                         if ($add_key == 'CountryCode') {
@@ -437,17 +444,17 @@ class labelManagementController extends Controller
                     $label_data[$key1] = $buyer_address;
                 } elseif ($key1 == 'package_dimensions') {
                     $dimensions = [];
-                    $shipping_address = json_decode($label_detials);
+                    $shipping_address = json_decode($label_details);
                     foreach ((array)$shipping_address as $add_key => $add_details) {
                         $dimensions[$add_key] =  $add_details;
                     }
                     $label_data[$key1] = $dimensions;
                 } elseif ($key1 == 'title') {
 
-                    $title_array = explode('-label-title-', $label_detials);
+                    $title_array = explode('-label-title-', $label_details);
                     $title_array = array_unique($title_array);
 
-                    $array_key = 0;
+
                     foreach ($title_array as $key2 => $title) {
 
                         $ignore_title = str_ireplace($ignore, '', $title);
@@ -462,7 +469,7 @@ class labelManagementController extends Controller
                     }
                 } else {
 
-                    $label_data[$key1] = $label_detials;
+                    $label_data[$key1] = $label_details;
                 }
             }
             $label_data['product'] = $product;
