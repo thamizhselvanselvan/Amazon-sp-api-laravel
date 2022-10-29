@@ -63,7 +63,7 @@ class CsvAsinImport
                     $product_lowest_price = [];
                 }
 
-                $model_name->upsert($asin_details, ['user_asin_unique'], ['asin', 'user_id']);
+                $model_name->upsert($asin_details, ['user_asin_unique'], ['asin', 'user_id', 'priority']);
                 $count = 0;
                 $asin_details = [];
             }
@@ -78,7 +78,7 @@ class CsvAsinImport
             $product_lowest_price = [];
         }
 
-        $model_name->upsert($asin_details, ['user_asin_unique'], ['asin', 'user_id']);
+        $model_name->upsert($asin_details, ['user_asin_unique'], ['asin', 'user_id', 'priority']);
         $asin_details = [];
     }
 }
