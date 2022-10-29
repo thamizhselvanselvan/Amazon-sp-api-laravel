@@ -841,6 +841,26 @@ return [
 
             ],
         ],
+
+        [
+            'text' => 'Cliqnshop',
+            'can' => ['Admin'],
+            'submenu' => [
+                [
+                    'text' => 'Catalog',
+                    'url' => 'catalog/index',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Orders Details',
+                    'url' => 'business/orders/details',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+                ],
+            ],
+        ],
+
         [
             'text' => 'AWS-POC',
             'can' => ['Admin', 'POC'],
@@ -893,18 +913,18 @@ return [
                             'icon' => 'far fa-fw fa-file',
 
                         ],
-                        [
-                            'text' => 'Order Details',
-                            'url' => 'business/orders/details',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa-fw fa-file',
+                        // [
+                        //     'text' => 'Order Details',
+                        //     'url' => 'business/orders/details',
+                        //     'can' => ['Admin'],
+                        //     'icon' => 'far fa-fw fa-file',
 
-                        ]
+                        // ]
                     ]
 
                 ],
                 [
-                    'text' => 'View Details',
+                    'text' => 'B-API Catalog Details',
                     'url' => 'business/details',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
