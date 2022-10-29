@@ -61,7 +61,7 @@ class asinBulkImport extends Command
             }
 
             $chunk_data = [];
-            $chunk = array_chunk($csv_data, 30000);
+            $chunk = array_chunk($csv_data, 10000);
             $class = "catalog\ImportAsinSourceDestinationCsvFile";
             $queue_name = "csv_import";
             $delay = 0;
