@@ -21,6 +21,7 @@ use App\Models\Inventory\Country;
 use App\Models\Universal_textile;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use App\Services\AWS_Nitshop\Index;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
@@ -65,6 +66,11 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
 
 Route::get('import', function () {
+
+    // $test = new Index;
+    // $test->index();
+
+    // exit;
 
     $path = (Storage::path('AsinDestination/asin2022-10-13-16-49-03.csv'));
     $csv = Reader::createFromPath(($path), 'r');
