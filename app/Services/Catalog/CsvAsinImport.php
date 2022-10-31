@@ -21,6 +21,7 @@ class CsvAsinImport
         $source_lists = buyboxCountrycode();
         $product_lowest_price = [];
         $product = [];
+        $asin_details = [];
 
         $model_name = table_model_create(country_code: $country_code_lr, model: "Asin_${module}", table_name: "asin_${module}_");
         $des_priority = $records['module'] == "destination" ? ["priority" => $records['priority']] : [];
