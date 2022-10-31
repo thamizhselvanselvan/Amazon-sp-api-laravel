@@ -21,6 +21,7 @@ class CsvAsinImport
         $source_lists = buyboxCountrycode();
         $product_lowest_price = [];
         $product = [];
+        $asin_details = [];
 
         $model_name = table_model_create(country_code: $country_code_lr, model: "Asin_${module}", table_name: "asin_${module}_");
         $des_priority = $records['module'] == "destination" ? ["priority" => $records['priority']] : [];
@@ -53,7 +54,7 @@ class CsvAsinImport
                 ];
             }
 
-            if ($count == 2000) {
+            if ($count == 1000) {
 
                 if ($records['module'] == "destination") {
                     $push_to_bb = new PushAsin();
@@ -63,7 +64,7 @@ class CsvAsinImport
                     $product_lowest_price = [];
                 }
 
-                $model_name->upsert($asin_details, ['user_asin_unique'], ['asin', 'user_id']);
+                $model_name->upsert($asin_details, ['user_asin_unique'], ['asin', 'user_id', 'priority']);
                 $count = 0;
                 $asin_details = [];
             }
@@ -78,7 +79,7 @@ class CsvAsinImport
             $product_lowest_price = [];
         }
 
-        $model_name->upsert($asin_details, ['user_asin_unique'], ['asin', 'user_id']);
+        $model_name->upsert($asin_details, ['user_asin_unique'], ['asin', 'user_id', 'priority']);
         $asin_details = [];
     }
 }
