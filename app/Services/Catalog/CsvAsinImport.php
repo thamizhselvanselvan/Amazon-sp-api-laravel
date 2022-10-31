@@ -53,7 +53,7 @@ class CsvAsinImport
                 ];
             }
 
-            if ($count == 2000) {
+            if ($count == 1000) {
 
                 if ($records['module'] == "destination") {
                     $push_to_bb = new PushAsin();
