@@ -46,8 +46,8 @@ class CliqnshopCatalogExport extends Command
      */
     public function handle()
     {
-        $total_csv = 100000;
-        $chunk = 100000;
+        $total_csv = 10000;
+        $chunk = 10000;
         $offset = 0;
         $writer = '';
 
@@ -77,7 +77,7 @@ class CliqnshopCatalogExport extends Command
             'text content',
             'text type',
             'text content',
-           
+
 
             'Preview',
             'Media URL',
@@ -370,8 +370,8 @@ class CliqnshopCatalogExport extends Command
                     }
 
                     $brand_place = str_replace(' ', '', $data['brand']);
-             
-                
+
+
                     $csv_values[] = [
                         'item code' => $data['asin'],
                         'item label' => $data['item_name'],
@@ -510,9 +510,9 @@ class CliqnshopCatalogExport extends Command
                         $Status2 = "1";
                         $txt_lng2 = "default";
                     }
- 
+
                     $second_csv_values[] = [
-                        'code' => substr(strtolower ($brand_place_second),0,10),
+                        'code' => substr(strtolower($brand_place_second), 0, 10),
                         'Label' =>  strtoupper($data['brand']),
                         'Status2' =>  $Status2,
                         'Text Language2' => $txt_lng2,
@@ -536,7 +536,7 @@ class CliqnshopCatalogExport extends Command
                 $writer->insertOne($second_csv_headers);
 
                 $writer->insertAll($second_csv_values);
-           exit;
+                exit;
                 if ($csv_number == $this->count) {
                     ++$this->offset;
 
@@ -545,6 +545,5 @@ class CliqnshopCatalogExport extends Command
                     ++$this->count;
                 }
             });
-          
     }
 }
