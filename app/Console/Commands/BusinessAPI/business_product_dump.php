@@ -51,7 +51,7 @@ class business_product_dump extends Command
 
         $records = table_model_create(country_code: 'US', model: 'Asin_source', table_name: 'asin_source_')
             ->select('asin')
-            ->chunk(100, function ($records) use ($delay, $start_time) {
+            ->chunk(10, function ($records) use ($delay, $start_time) {
                 // Log::emergency("chunk occured");
             
                 if (App::environment(['Production', 'Staging', 'production', 'staging'])) {

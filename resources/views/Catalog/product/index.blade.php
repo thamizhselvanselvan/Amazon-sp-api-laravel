@@ -16,14 +16,14 @@
         <x-adminlte-button label="Fetch Catalog From Amazon" class="btn-sm" theme="primary" icon="fas fa-file-export" id="exportUniversalTextiles" />
         </a>
         </h2> --}}
-            <h2 class="ml-2">
+            <!-- <h2 class="ml-2">
                 <x-adminlte-button label="Cliqnshop Catalog Export" theme="primary" class="btn-sm" icon="fas fa-file-export"
                     id="exportcliqnshopCatalog" />
             </h2>
             <h2 class="ml-2">
                 <x-adminlte-button label="Download Cliqnshop Catalog" theme="primary" class="btn-sm" icon="fas fa-download"
                     id="catalogcliqnshopdownload" data-toggle="modal" data-target="#downloacliqdModal" />
-            </h2>
+            </h2> -->
 
             <h2 class="ml-2">
                 <x-adminlte-button label="Export Catalog" theme="primary" class="btn-sm" icon="fas fa-file-export"
@@ -43,7 +43,7 @@
                     id="download_catalog_price" data-toggle="modal" data-target="#file_download_modal" />
             </h2>
 
-            <div class="modal" id="downloacliqdModal">
+            <!-- <div class="modal" id="downloacliqdModal">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -58,7 +58,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <div class="modal fade" id="catalogExport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
@@ -453,46 +453,46 @@
 
         // END CATALOG BULK SEARCH
 
-        $('#exportcliqnshopCatalog').on('click', function() {
-            window.location.href = '/catalog/cliqnshop/export';
-        });
+        // $('#exportcliqnshopCatalog').on('click', function() {
+        //     window.location.href = '/catalog/cliqnshop/export';
+        // });
 
-        $('#catalogcliqnshopdownload').click(function() {
+        // $('#catalogcliqnshopdownload').click(function() {
 
-            $.ajax({
-                url: "/catalog/cliqnshop/get-file",
-                method: "GET",
-                data: {
-                    "catalog": "Cliqnshop",
-                    "_token": "{{ csrf_token() }}",
-                },
-                success: function(response) {
+        //     $.ajax({
+        //         url: "/catalog/cliqnshop/get-file",
+        //         method: "GET",
+        //         data: {
+        //             "catalog": "Cliqnshop",
+        //             "_token": "{{ csrf_token() }}",
+        //         },
+        //         success: function(response) {
 
-                    if (response == '') {
-                        $('.catalogcliqnshop').append('File Downloading..');
-                        return false;
-                    } else {
-                        $('.catalogcliqnshop').empty();
-                        let files = '';
-                        $.each(response, function(index, result) {
+        //             if (response == '') {
+        //                 $('.catalogcliqnshop').append('File Downloading..');
+        //                 return false;
+        //             } else {
+        //                 $('.catalogcliqnshop').empty();
+        //                 let files = '';
+        //                 $.each(response, function(index, result) {
 
-                            files += "<li class='p-0 m-0'>";
-                            files += "<a href='/catalog/cliqnshop/download/" + index + "'>" +
-                                index + '&nbsp; ' + "</a>";
-                            files += result;
+        //                     files += "<li class='p-0 m-0'>";
+        //                     files += "<a href='/catalog/cliqnshop/download/" + index + "'>" +
+        //                         index + '&nbsp; ' + "</a>";
+        //                     files += result;
 
-                            files += "</li>";
+        //                     files += "</li>";
 
-                        });
-                        $('.catalogcliqnshop').append(files);
+        //                 });
+        //                 $('.catalogcliqnshop').append(files);
 
-                    }
+        //             }
 
-                },
-                error: function(response) {
-                    console.log(response);
-                },
-            });
-        });
+        //         },
+        //         error: function(response) {
+        //             console.log(response);
+        //         },
+        //     });
+        // });
     </script>
 @stop

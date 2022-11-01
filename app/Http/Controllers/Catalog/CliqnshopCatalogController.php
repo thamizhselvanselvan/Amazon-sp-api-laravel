@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Artisan;
 
 class CliqnshopCatalogController extends Controller
 {
+
+    public function index()
+    {
+return view('Cliqnshop.catalog');
+    }
     public function catalogexport()
     {
 

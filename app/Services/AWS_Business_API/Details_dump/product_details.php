@@ -50,7 +50,7 @@ class product_details
                 $productVariations = 'Not Found';
             } else if (property_exists($data, "errors") && $data->errors[0]->message == "You exceeded your quota for the requested resource.") {
                 Log::warning('429');
-                sleep(30);
+                sleep(10);
                 break;
             } else {
 
