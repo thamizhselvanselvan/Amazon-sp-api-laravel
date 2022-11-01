@@ -26,7 +26,7 @@ class CsvAsinImport
         $model_name = table_model_create(country_code: $country_code_lr, model: "Asin_${module}", table_name: "asin_${module}_");
         $des_priority = $records['module'] == "destination" ? ["priority" => $records['priority']] : [];
         $upsert_data = $records['module'] == "destination" ? ['asin', 'user_id', 'priority'] : ['asin', 'user_id'];
-        log::alert($upsert_data);
+        // log::alert($upsert_data);
 
         foreach ($records['ASIN'] as $asin) {
 
