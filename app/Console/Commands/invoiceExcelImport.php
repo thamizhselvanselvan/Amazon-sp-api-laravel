@@ -68,7 +68,7 @@ class invoiceExcelImport extends Command
         foreach ($data as $result) {
             foreach ($result as $key2 => $record) {
                 if ($key2 != 0) {
-                    
+
                     $invoice_number = $record[0];
                     $sku = $record[13];
                     $id = NULL;
