@@ -58,13 +58,13 @@ class CatalogAmazonImport extends Command
             $current_data = date('H:i:s');
 
             $asins = [];
-            DB::connection('catalog')->update("UPDATE ${asin_table_name} as source 
-                LEFT JOIN ${catalog_table_name} as cat 
-                ON cat.asin = source.asin
-                SET source.status = '0'
-                WHERE cat.asin IS NULL
-                AND source.status = '1'
-                ");
+            // DB::connection('catalog')->update("UPDATE ${asin_table_name} as source 
+            //     LEFT JOIN ${catalog_table_name} as cat 
+            //     ON cat.asin = source.asin
+            //     SET source.status = '0'
+            //     WHERE cat.asin IS NULL
+            //     AND source.status = '1'
+            //     ");
 
             if ($current_data >= '01:00:00' && $current_data <= '01:05:00') {
                 // Log::info('UnAvaliable catalog asin dump');
