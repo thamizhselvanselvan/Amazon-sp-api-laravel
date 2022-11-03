@@ -25,6 +25,8 @@ class CsvAsinImport
 
         $model_name = table_model_create(country_code: $country_code_lr, model: "Asin_${module}", table_name: "asin_${module}_");
         $des_priority = $records['module'] == "destination" ? ["priority" => $records['priority']] : [];
+        $upsert_data = $records['module'] == "destination" ? ['asin', 'user_id', 'priority'] : ['asin', 'user_id'];
+        // log::alert($upsert_data);
 
         foreach ($records['ASIN'] as $asin) {
 
@@ -64,7 +66,7 @@ class CsvAsinImport
                     $product_lowest_price = [];
                 }
 
-                $model_name->upsert($asin_details, ['user_asin_unique'], ['asin', 'user_id', 'priority']);
+                $model_name->upsert($asin_details, ['user_asin_unique'], $upsert_data);
                 $count = 0;
                 $asin_details = [];
             }
@@ -79,7 +81,7 @@ class CsvAsinImport
             $product_lowest_price = [];
         }
 
-        $model_name->upsert($asin_details, ['user_asin_unique'], ['asin', 'user_id', 'priority']);
+        $model_name->upsert($asin_details, ['user_asin_unique'], $upsert_data);
         $asin_details = [];
     }
 }

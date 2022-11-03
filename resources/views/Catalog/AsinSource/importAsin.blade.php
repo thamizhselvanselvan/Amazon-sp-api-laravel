@@ -18,7 +18,7 @@
             <label for="Text-area" class="ml-1">Text-Area</label>
             <input type="radio" name="Asin-destination" id="bulk-asin" class="ml-2" />
             <label for="Text-area" class="ml-1">Bulk Asin Import</label>
-            <h1 class="m-0 text-dark text-center ">Add ASIN</h1>
+            <h1 class="m-0 text-dark text-center ">Add ASIN Source</h1>
         </div>
     </div>
 
@@ -58,14 +58,14 @@
 
                     <div class="col-6">
                         <!-- <x-adminlte-select name="source" label="Select Source" id="source">
-                            
-                            <option value="">Select Source</option>
-                            <option value="IN">IN</option>
-                            <option value="AE">AE</option>
-                            <option value="US">US</option>
-                            <option value="UK">UK</option>
+                                
+                                <option value="">Select Source</option>
+                                <option value="IN">IN</option>
+                                <option value="AE">AE</option>
+                                <option value="US">US</option>
+                                <option value="UK">UK</option>
 
-                        </x-adminlte-select> -->
+                            </x-adminlte-select> -->
                         <label for="Select Source">Select Source</label><br>
                         <div class="row ">
                             <div class="col-2">
