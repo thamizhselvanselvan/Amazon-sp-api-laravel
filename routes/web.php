@@ -362,18 +362,18 @@ Route::get('data', function () {
 
 // );
 
-function returnType($type)
-{
-    $data = '';
-    if (is_object($type)) {
-        $data = json_encode($type);
-    } elseif (is_string($type)) {
-        $data = $type;
-    } else {
-        $data = json_encode($type);
-    }
-    return $data;
-}
+// function returnType($type)
+// {
+//     $data = '';
+//     if (is_object($type)) {
+//         $data = json_encode($type);
+//     } elseif (is_string($type)) {
+//         $data = $type;
+//     } else {
+//         $data = json_encode($type);
+//     }
+//     return $data;
+// }
 
 
 
