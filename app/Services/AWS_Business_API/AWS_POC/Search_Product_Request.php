@@ -19,18 +19,18 @@ class Search_Product_Request
         }
         date_default_timezone_set('Asia/Jakarta');
 
-        $accessToken = file_get_contents(Storage::path('\Business\token.txt'));
+        $accessToken = file_get_contents(Storage::path('Business\token.txt'));
         $queryString = '';
         $requestUrl = "https://na.business-api.amazon.com/products/2020-08-26/products/B07HSV8DTD";
         $uri = "/products/2020-08-26/products/B07HSV8DTD";
 
-        // $new = new ApiCall();
+        $new = new ApiCall();
 
-        // $test = $new->getRequest($accessToken, $queryString, $requestUrl, $uri);
+        $test = $new->getRequest($accessToken, $queryString, $requestUrl, $uri);
 
-        // dd($test);
+        dd($test);
 
-        // exit;
+        exit;
 
 
         // require_once('refrashToken.php');
