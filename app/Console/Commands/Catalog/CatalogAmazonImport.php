@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Catalog;
 
+use App\Models\Mws_region;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -46,6 +47,7 @@ class CatalogAmazonImport extends Command
 
             $limit = $limit_array[$source];
 
+            $auth_count = 0;
             $asin_upsert_source = [];
             $seller_id = '';
             $asin_source = [];
@@ -87,6 +89,7 @@ class CatalogAmazonImport extends Command
             }
 
             $country_code_up = strtoupper($source);
+            // $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code_up)->get()->toArray();
 
             Log::info("${country_code_up} -> total asin for catalog " . count($asins));
 
@@ -106,20 +109,25 @@ class CatalogAmazonImport extends Command
                     'status' => '1'
                 ];
 
-                if ($count == 20) {
+                if ($count == 60) {
                     jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
                     $asin_source = [];
                     $count = 0;
                 }
 
                 if (strlen($asin) == 10) {
-
+                    // $token = $mws_regions[0]['aws_verified'][$auth_count]['auth_code'];
                     $asin_source[] = [
-                        'asin' => $asin,
+                        'asin'      => $asin,
                         'seller_id' => $details->user_id,
-                        'source' => $source,
+                        'source'    => $source,
+                        // 'token'     => $token,
                     ];
                     $count++;
+                    $auth_count++;
+                    if ($auth_count == 2) {
+                        $auth_count = 0;
+                    }
                 }
             }
             jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);

@@ -20,6 +20,8 @@ class NewCatalog
 
     public function Catalog($records, $seller_id = NULL)
     {
+
+        // exit;
         $this->RedBeanConnection();
         $queue_data = [];
         $upsert_asin = [];
@@ -27,12 +29,15 @@ class NewCatalog
         $asins = [];
         $count = 0;
         $miss_asins = [];
+        $auth_count = 0;
+        $token = '';
 
         foreach ($records as $record) {
             $asin = $record['asin'];
             $country_code = $record['source'];
             $country_code1 = $country_code;
             $seller_id = $record['seller_id'];
+            // $token = $record['token'];
 
             $upsert_asin[] = [
                 'asin'  => $asin,
@@ -40,24 +45,32 @@ class NewCatalog
                 'status'   => 1,
             ];
             $asins[] = $asin;
-            
-            $mws_region = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->first();
-            $token = $mws_region['aws_verified']['auth_code'];
+
+            // $mws_region = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->first();
+            // $token = $mws_region['aws_verified']['auth_code'];
+            $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', strtoupper($country_code))->get()->toArray();
+            $token = $mws_regions[0]['aws_verified'][$auth_count]['auth_code'];
             $country_code = strtolower($country_code);
             $catalog_table = 'catalognew' . $country_code . 's';
 
             $aws_id = NULL;
             if ($count == 19) {
-
+                Log::alert($asins);
+                Log::alert($token);
                 $queue_data[] = $this->FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id);
                 $count = 0;
                 $asins = [];
+                $auth_count++;
             }
             $count++;
+            if ($auth_count == 2) {
+                $auth_count = 0;
+            }
         }
 
         if ($asins) {
             $queue_data[] = $this->FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id);
+            Log::warning($token);
         }
 
         $NewCatalogs = [];
@@ -69,23 +82,26 @@ class NewCatalog
                     $NewCatalogs[] = R::dispense($catalog_table);
                     foreach ($value as $key => $data) {
                         if ($key != '0') {
-                            
+
                             $NewCatalogs[$key1]->$key = $data;
                         }
                     }
                     $NewCatalogs[$key1]->created_at = now();
                     $NewCatalogs[$key1]->updated_at = now();
 
-                    $miss_asins [] = $value['asin'];
+                    $miss_asins[] = $value['asin'];
                 }
             }
         }
         R::storeALL($NewCatalogs);
-       
     }
 
     public function FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id)
     {
+        log::notice($asins);
+        log::notice($country_code);
+        log::notice($token);
+        // exit;
         $country_code = strtoupper($country_code);
         $config =   $this->config($aws_id, $country_code, $token);
         $apiInstance = new CatalogItemsV20220401Api($config);
@@ -124,12 +140,12 @@ class NewCatalog
             $queue_data = [];
             $check_asin = [];
             foreach ($result['items'] as $key => $record) {
-                $check_asin [] = $record->asin;
+                $check_asin[] = $record->asin;
 
                 $queue_data[$key]['seller_id'] = $seller_id;
                 $queue_data[$key]['source'] = $country_code;
                 foreach ($record as $key1 => $value) {
-                    
+
                     if ($key1 == 'summaries') {
 
                         foreach ($value[0] as $key2 => $value2) {
@@ -163,17 +179,18 @@ class NewCatalog
             $miss_asin_array = [];
             $miss_asin = [];
             $diffs = array_diff($asins, $check_asin);
-            foreach($diffs as $diff){
-                $miss_asin [] = [
+            foreach ($diffs as $diff) {
+                $miss_asin[] = [
                     'asin' => $diff,
                     'user_id' => $seller_id,
-                    'source' => $country_code,   
+                    'source' => $country_code,
                 ];
             }
-            CatalogMissingAsin::upsert($miss_asin,['asin'], ['asin', 'source']);
+            CatalogMissingAsin::upsert($miss_asin, ['asin'], ['asin', 'source']);
+            log::info($queue_data);
             return $queue_data;
         } catch (Exception $e) {
-            
+
             log::alert($e);
         }
     }
