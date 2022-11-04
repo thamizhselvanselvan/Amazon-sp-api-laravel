@@ -69,6 +69,10 @@ Route::get('import', function () {
 
     // $country_code = 'IN';
 
+    $c['asin'] = ['1', '2', '3'];
+    po($c);
+    exit;
+
     $sources = ['in', 'us'];
     $limit_array = ['in' => 2500, 'us' => 2500];
     foreach ($sources as $source) {
