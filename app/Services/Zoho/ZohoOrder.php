@@ -15,7 +15,7 @@ class ZohoOrder
         $client_id = config('app.zoho_client_id');
         $client_secret = config('app.zoho_secret');
         $refres_token = config('app.zoho_refresh_token');
-
+        // dd($client_id);
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -95,6 +95,7 @@ class ZohoOrder
         if (count($orderItems) > 0) {
             foreach ($orderItems as $value) {
 
+                // dd('test');
                 $access_token = $this->getAccessToken();
                 $order_item_zoho = $this->zohoOrderFormating($value);
 
@@ -107,7 +108,7 @@ class ZohoOrder
                 $result = (json_decode($array));
                 $response['id'] = ($result->data[0]->details->id);
                 $response['status'] = ($result->data[0]->status);
-                $leadId = $response['status'];
+                $leadId = $response['id'];
                 po($response);
                 $this->zohoOrderDetails($leadId);
             }
@@ -192,10 +193,8 @@ class ZohoOrder
 
     public function zohoOrderDetails($leadId)
     {
-        // $leadId = trim($leadId, 'zcrm_');
-        // $leadId  = '389763000000274001';
+
         $token = $this->getAccessToken();
-        // $token = $accessToken['access_token'];
         $headers = [
             'Authorization' => 'Zoho-oauthtoken ' . $token,
         ];
@@ -204,7 +203,6 @@ class ZohoOrder
         $CompleteURI = $zohoURL . $leadId;
         $response = Http::withHeaders($headers)->get($CompleteURI);
         $response = json_decode($response);
-
         dd($response);
         exit;
     }

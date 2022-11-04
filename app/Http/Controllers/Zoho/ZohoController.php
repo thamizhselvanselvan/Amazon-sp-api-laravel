@@ -53,7 +53,8 @@ class ZohoController extends Controller
     public function getOrderDetails(Request $request, $leadId)
     {
         $leadId = trim($leadId, 'zcrm_');
-        $leadId  = '389763000000274001';
+        // $leadId  = '389763000000274001';
+        $leadId  = '389763000000351002';
         $accessToken = $this->getAccessToken();
         $token = $accessToken['access_token'];
         $headers = [
@@ -64,8 +65,8 @@ class ZohoController extends Controller
         $CompleteURI = $zohoURL . $leadId;
         $response = Http::withHeaders($headers)->get($CompleteURI);
         $response = json_decode($response);
-        debug($response);
-        dd($response->data->data);
+        dd($response);
+
         exit;
 
 

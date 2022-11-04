@@ -39,5 +39,4 @@ class B2CBooking implements ShouldQueue
         $responce = $booking->b2cdata($amazon_order_id);
         // Log::alert($responce);
     }
-        
 }
