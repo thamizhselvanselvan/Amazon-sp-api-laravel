@@ -38,9 +38,19 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
 
-            if (App::environment(['Production', 'production', 'Staging', 'staging'])) {
+            if (App::environment(['Production', 'production', 'Staging', 'staging']) || true) {
 
-                Log::channel('slack')->error($e);
+                $getMessage = $e->getMessage();
+                $getCode = $e->getCode();
+                $getFile = $e->getFile();
+                $getLine = $e->getLine();
+
+                $slackMessage = "Message: $getMessage
+                Code: $getCode
+                File: $getFile
+                Line: $getLine";
+                
+                Log::channel('slack')->error($slackMessage);
             }
         });
     }

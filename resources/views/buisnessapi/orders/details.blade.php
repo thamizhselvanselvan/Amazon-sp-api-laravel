@@ -140,7 +140,7 @@
                     html += "<td name='name[]'>" + value.name + "</td>";
                     html += "<td name='name[]'>" + value.price + "</td>";
                     html += "<td name='name[]'>" + value.quantity + "</td>";
-                    html += "<td name='name[]'>" + 'Booked' + "</td>";
+                    html += "<td name='name[]'>" + 'Waiting For confirmation' + "</td>";
                     html += "</tr>";
 
                 });
@@ -248,7 +248,8 @@
                 },
                 success: function(response) {
                     console.log(response);
-                    alert('Booked Successfully')
+                    alert('Request sent Successfully')
+                    location.reload();
                 },
                 error: function(response) {
                     console.log(response);
