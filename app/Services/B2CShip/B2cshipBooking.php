@@ -224,42 +224,40 @@ class B2cshipBooking
                     </PCSDescriptionDetails>
                 </ShipmentBookingRequest>';
 
-   
+
             $this->getawb($xml);
-
         }
-
     }
     public function getawb($xmldata)
     {
-     
-            $url = "https://api.b2cship.us/B2CShipAPI.svc/ShipmentBooking";
 
-            $headers = array(
-                "Content-type: text/xml",
-                "Content-length: " . strlen($xmldata),
-                "Connection: close",
-            );
+        $url = "https://api.b2cship.us/B2CShipAPI.svc/ShipmentBooking";
 
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $xmldata);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $headers = array(
+            "Content-type: text/xml",
+            "Content-length: " . strlen($xmldata),
+            "Connection: close",
+        );
 
-            $data = curl_exec($ch);
-            // return $data;
-            Log::info($data);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $xmldata);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-            if (curl_errno($ch))
-                print curl_error($ch);
-            else
-                curl_close($ch);
-            return $data;
+        $data = curl_exec($ch);
+        // return $data;
+        Log::info($data);
+
+        if (curl_errno($ch))
+            print curl_error($ch);
+        else
+            curl_close($ch);
+        return $data;
         // }
     }
 
