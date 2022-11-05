@@ -12,6 +12,7 @@ use Maatwebsite\Excel\Row;
 use App\Jobs\TestQueueFail;
 use Illuminate\Support\Str;
 use Smalot\PdfParser\Parser;
+use App\Models\Aws_credential;
 use Dflydev\DotAccessData\Data;
 use SellingPartnerApi\Endpoint;
 use App\Models\Inventory\Shelve;
@@ -66,107 +67,13 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
 
 Route::get('import', function () {
+    $auth_count = 0;
+    $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', 'US')->get()->toArray();
+    $id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
 
-    // $country_code = 'IN';
-
-    $c['asin'] = ['1', '2', '3'];
-    po($c);
-    exit;
-
-    $sources = ['in', 'us'];
-    $limit_array = ['in' => 2500, 'us' => 2500];
-    foreach ($sources as $source) {
-        $country_code = strtoupper($source);
-        $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->toArray();
-
-        $limit = $limit_array[$source];
-
-        $asin_upsert_source = [];
-        $seller_id = '';
-        $asin_source = [];
-        $count = 0;
-        $key = 0;
-        $asin_table_name = 'asin_source_' . $source . 's';
-        $catalog_table_name = 'catalognew' . $source . 's';
-
-        $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id 
-                    FROM $asin_table_name as source
-                    LEFT JOIN $catalog_table_name as cat
-                    ON cat.asin = source.asin
-                    WHERE cat.asin IS NULL 
-                    AND source.status = '0'
-                    LIMIT $limit
-                    ");
-
-
-
-        // if ($asins) {
-        //     $chunks = collect($asins)->chunk(20);
-
-
-        //     $count = 0;
-
-        //     foreach ($chunks as $chunk) {
-
-
-        //         $auth = $mws_regions[0]['aws_verified'][$count]['auth_code'];
-
-        //         $asins = $chunk->pluck('asin')->toArray();
-
-
-        //         po([
-        //             'asin' => $asins,
-        //             'token' => $auth,
-        //             'count' => $count
-        //         ]);
-
-
-
-        //         $count++;
-
-        //         if ($count == 3) {
-        //             $count = 0;
-        //         }
-        //     }
-        // }
-        // exit;
-        foreach ($asins as $details) {
-            $token = $mws_regions[0]['aws_verified'][$key]['auth_code'];
-            $seller_id  =  $details->user_id;
-            $asin = $details->asin;
-            $asin_upsert_source[] = [
-                'asin' => $asin,
-                'user_id' => $seller_id,
-                'status' => '1'
-            ];
-
-            if ($count == 20) {
-                po($asin_source);
-
-                // jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
-                $asin_source = [];
-                $count = 0;
-            }
-
-
-            if (strlen($asin) == 10) {
-
-
-                $asin_source[] = [
-                    'asin' => $asin,
-                    'seller_id' => $details->user_id,
-                    'source' => $source,
-                    'token' => $token,
-                ];
-
-                $key++;
-                $count++;
-                if ($key == 2) {
-                    $key = 0;
-                }
-            }
-        }
-    }
+    $aws_token = Aws_credential::where('id', $id)->get()->pluck('auth_code')->toArray();
+    $token = $aws_token[0] ?? '';
+    po(($token));
 });
 
 $delist_asins;
