@@ -53,7 +53,7 @@ class CatalogAmazonImport extends Command
             $asin_source = [];
             $count = 0;
             $queue_name = 'catalog';
-            $queue_delay = 0;
+            $queue_delay = 60;
             $class =  'catalog\AmazonCatalogImport';
             $asin_table_name = 'asin_source_' . $source . 's';
             $catalog_table_name = 'catalognew' . $source . 's';
