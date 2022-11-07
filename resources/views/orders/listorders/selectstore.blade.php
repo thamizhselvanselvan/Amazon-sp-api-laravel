@@ -6,8 +6,8 @@
         <h1 class="m-0 text-dark col">Select Store</h1>
         <h2 class="mb-4 text-right col">
             <!-- <a href="/orders/list">
-                            <x-adminlte-button label="Back" theme="primary" icon="fas fa-arrow-alt-circle-left" />
-                        </a> -->
+                                                                                                                                                                                                                                                                                        <x-adminlte-button label="Back" theme="primary" icon="fas fa-arrow-alt-circle-left" />
+                                                                                                                                                                                                                                                                                    </a> -->
             <x-adminlte-button label="Save Store" id='select_store' theme="primary" icon="fas fa-check-circle" />
         </h2>
     </div>
@@ -45,16 +45,16 @@
                         <th>Order</th>
                         <th>Order Item</th>
                         <th>Enable ShipNTrack</th>
-                        <th>Courier Partner</th>
                         <th>Enable Zoho Insert</th>
+                        <th>Courier Partner</th>
                         <th>Source</th>
                         <th>Destination</th>
                         <!-- <th>Enable ShipNTrack</th>
-                                    <th>
-                                        <select name="source" id="source">
-                                            <option value="">Select Source-Destination</option>
-                                        </select>
-                                    </th> -->
+                                                                                                                                                                                                                                                                                                <th>
+                                                                                                                                                                                                                                                                                                    <select name="source" id="source">
+                                                                                                                                                                                                                                                                                                        <option value="">Select Source-Destination</option>
+                                                                                                                                                                                                                                                                                                    </select>
+                                                                                                                                                                                                                                                                                                </th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -106,14 +106,14 @@
                     searchable: false
                 },
                 {
-                    data: 'partner',
-                    name: 'partner',
+                    data: 'zoho',
+                    name: 'zoho',
                     orderable: false,
                     searchable: false
                 },
                 {
-                    data: 'zoho',
-                    name: 'zoho',
+                    data: 'partner',
+                    name: 'partner',
                     orderable: false,
                     searchable: false
                 },
@@ -139,6 +139,8 @@
                         self.parent().parent().next().find('.order_item').prop('disabled', false);
                         self.parent().parent().next().next().find('.shipntrack').prop('disabled',
                             false);
+                        self.parent().parent().next().next().next().find('.zoho').prop('disabled',
+                            false);
                     }
                 });
 
@@ -152,6 +154,7 @@
 
                     self.parent().parent().next().find('.order_item').prop('disabled', bool);
                     self.parent().parent().next().next().find('.shipntrack').prop('disabled', bool);
+                    self.parent().parent().next().next().next().find('.zoho').prop('disabled', bool);
                 });
             }
         });
@@ -163,7 +166,11 @@
             let order_count = 0;
             let shipntrack = '';
             let shipntrack_count = 0;
+            let zoho_enable_count = 0;
+            let zoho_enable = '';
             let count = 0;
+            let courier_count = 0;
+            let courier = '';
             $("input[name='options[]']:checked").each(function() {
                 if (count == 0) {
 
@@ -194,7 +201,32 @@
                 }
                 shipntrack_count++;
             });
+            $("input[name='zoho[]']:checked").each(function() {
 
+                if (zoho_enable_count == 0) {
+
+                    zoho_enable += $(this).val();
+                } else {
+                    zoho_enable += '-' + $(this).val();
+                }
+                zoho_enable_count++;
+            });
+            $('#courier').change(function() {
+
+                $("select option:selected").each(function() {
+                    if ($(this).val() != 'NULL') {
+
+                        if (courier_count == 0) {
+                            courier += $(this).val();
+                        } else {
+                            courier += '-' + $(this).val();
+                        }
+                        courier_count++;
+                    }
+                });
+            }).change();
+
+            alert(courier);
             $.ajax({
                 method: 'post',
                 url: '/admin/update-store',
@@ -204,11 +236,12 @@
                     'selected_store': selected_store,
                     'order_item': order_item,
                     'shipntrack': shipntrack,
+                    'zoho_enable': zoho_enable,
                 },
                 success: function(response) {
 
-                    alert(response.success);
-                    window.location = '/admin/stores';
+                    // alert(response.success);
+                    // window.location = '/admin/stores';
                 }
             })
         });
