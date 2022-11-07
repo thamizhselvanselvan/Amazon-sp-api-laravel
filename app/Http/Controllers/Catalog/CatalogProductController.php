@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Catalog;
 use file;
 use config;
 use RedBeanPHP\R;
+use League\Csv\Reader;
+use League\Csv\Writer;
 use App\Models\Mws_region;
 use Illuminate\Http\Request;
 use App\Models\Aws_credential;
@@ -22,7 +24,6 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use App\Services\SP_API\Config\ConfigTrait;
-use League\Csv\Reader;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 
 class CatalogProductController extends Controller
@@ -107,14 +108,14 @@ class CatalogProductController extends Controller
         $request->validate([
             'priority' => 'required|in:1,2,3',
             'source' => 'required|in:IN,US',
-           
+
         ]);
         $date = '';
         $priority = $request->priority;
         $country_code = $request->source;
         $date = $request->export_date;
 
-            commandExecFunc("mosh:catalog-price-export-csv ${priority} ${country_code} '${date}'");
+        commandExecFunc("mosh:catalog-price-export-csv ${priority} ${country_code} '${date}'");
         return redirect('/catalog/product')->with("success", "Catalog Price is Exporting");
     }
 
@@ -198,11 +199,20 @@ class CatalogProductController extends Controller
                 'text_area_asins'      =>  'required',
                 'header'    =>  'required',
             ]);
+            $csv_asin = [];
             $source = $request->source;
             $priority = $request->priority;
-            $Asins = implode(',', preg_split('/[\r\n| |:|,|.]/', $request->text_area_asins, -1, PREG_SPLIT_NO_EMPTY));
+            $Asins =  preg_split('/[\r\n| |:|,|.]/', $request->text_area_asins, -1, PREG_SPLIT_NO_EMPTY);
+            foreach ($Asins as $Asin) {
+                $csv_asin[] = ['ASIN' => $Asin];
+            }
+
+            $path = "CatalogWithPrice/asin.csv";
+            $csv_import = Writer::createFromPath(Storage::path($path), "w");
+            $csv_import->insertOne(['ASIN']);
+            $csv_import->insertAll($csv_asin);
             $headers = implode(',', $request->header);
-            commandExecFunc("mosh:export-catalog-with-price ${source} ${priority} ${Asins} ${headers}");
+            commandExecFunc("mosh:export-catalog-with-price ${source} ${priority} ${headers}");
         } elseif ($request->form_type == 'file_upload') {
             $request->validate([
                 'asin' => 'required|mimes:txt,csv',
@@ -215,15 +225,8 @@ class CatalogProductController extends Controller
             $path = "CatalogWithPrice/asin.csv";
             $file = file_get_contents($request->asin);
             Storage::put($path, $file);
-            $asins = Reader::createFromPath(Storage::path($path), 'r');
-            $asins->setHeaderOffset(0);
-            $asin = [];
-            foreach ($asins as $asin_details) {
-                $asin[] = $asin_details['ASIN'];
-            }
-            $Asins = implode(',', $asin);
 
-            commandExecFunc("mosh:export-catalog-with-price ${source} ${priority} ${Asins} ${headers}");
+            commandExecFunc("mosh:export-catalog-with-price ${source} ${priority} ${headers}");
         }
         return redirect('/catalog/export-with-price')->with("success", "Catalog with price is exporting");
     }

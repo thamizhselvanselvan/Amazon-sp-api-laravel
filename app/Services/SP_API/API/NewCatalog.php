@@ -6,6 +6,7 @@ use config;
 use Exception;
 use RedBeanPHP\R;
 use App\Models\Mws_region;
+use App\Models\Aws_credential;
 use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -29,15 +30,16 @@ class NewCatalog
         $asins = [];
         $count = 0;
         $miss_asins = [];
-        $auth_count = 0;
+        $auth_id = '';
         $token = '';
 
         foreach ($records as $record) {
+
             $asin = $record['asin'];
             $country_code = $record['source'];
             $country_code1 = $country_code;
             $seller_id = $record['seller_id'];
-            // $token = $record['token'];
+            $auth_id = $record['id'];
 
             $upsert_asin[] = [
                 'asin'  => $asin,
@@ -48,29 +50,30 @@ class NewCatalog
 
             // $mws_region = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->first();
             // $token = $mws_region['aws_verified']['auth_code'];
-            $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', strtoupper($country_code))->get()->toArray();
-            $token = $mws_regions[0]['aws_verified'][$auth_count]['auth_code'];
+            // $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', strtoupper($country_code))->get()->toArray();
+            // $token = $mws_regions[0]['aws_verified'][$auth_count]['auth_code'];
+            $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
+            $token = $aws_token[0];
             $country_code = strtolower($country_code);
             $catalog_table = 'catalognew' . $country_code . 's';
 
             $aws_id = NULL;
             if ($count == 19) {
-                Log::alert($asins);
-                Log::alert($token);
+                // Log::alert($token);
+                // Log::alert($asins);
                 $queue_data[] = $this->FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id);
                 $count = 0;
                 $asins = [];
-                $auth_count++;
+                // $auth_count++;
             }
             $count++;
-            if ($auth_count == 2) {
-                $auth_count = 0;
-            }
+            // if ($auth_count == 2) {
+            //     $auth_count = 0;
+            // }
         }
 
         if ($asins) {
             $queue_data[] = $this->FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id);
-            Log::warning($token);
         }
 
         $NewCatalogs = [];
@@ -98,9 +101,9 @@ class NewCatalog
 
     public function FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id)
     {
-        log::notice($asins);
-        log::notice($country_code);
-        log::notice($token);
+        // log::notice($asins);
+        // log::notice($country_code);
+        // log::notice($token);
         // exit;
         $country_code = strtoupper($country_code);
         $config =   $this->config($aws_id, $country_code, $token);

@@ -18,6 +18,7 @@ use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
 use App\Jobs\Seller\Seller_catalog_import_job;
 use App\Models\Admin\ErrorReporting;
+use App\Models\order\OrderUpdateDetail;
 
 class OrderItem
 {
@@ -42,14 +43,11 @@ class OrderItem
         $next_token = NULL;
 
         try {
-            // Log::alert('Order Item Details Try Block');
             $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
             $result_order_address = $apiInstance->getOrderAddress($order_id);
-            // $result_order_address = [];
             $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id);
         } catch (Exception $e) {
 
-            // Log::warning($e->getMessage());
             $code =  $e->getCode();
             $msg = $e->getMessage();
             $error_reportings = ErrorReporting::create([
@@ -67,8 +65,6 @@ class OrderItem
 
     public function OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id)
     {
-        // Log::alert('Redbean connection before');
-
         $host = config('database.connections.order.host');
         $dbname = config('database.connections.order.database');
         $port = config('database.connections.order.port');
@@ -79,11 +75,12 @@ class OrderItem
             R::addDatabase('order', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
             R::selectDatabase('order');
         }
-        // Log::alert('Redbean connection done');
 
         $order_address = '';
         $amazon_order = '';
         $data  = [];
+        $order_update_details_table = [];
+
         $result_order_address = (array)$result_order_address;
         foreach ($result_order_address as $result_address) {
             foreach ((array)$result_address['payload'] as $result) {
@@ -148,6 +145,15 @@ class OrderItem
                     if ($detailsKey == 'asin') {
                         $asin = $value;
                     }
+
+                    if ($detailsKey == 'order_item_identifier') {
+
+                        $order_update_details_table[] =  [
+                            'store_id' => $aws_id,
+                            'amazon_order_id' => $order_id,
+                            'order_item_id' => $value
+                        ];
+                    }
                 }
 
                 $order_detials->amazon_order_identifier = $order_id;
@@ -168,6 +174,11 @@ class OrderItem
                     jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
                 }
             }
+        }
+
+        if ($aws_id == 5 || $aws_id == 6) {
+            Log::alert(count($order_update_details_table));
+            OrderUpdateDetail::upsert($order_update_details_table, ['store_id', 'amazon_order_id', 'order_itme_id']);
         }
 
         DB::connection('order')

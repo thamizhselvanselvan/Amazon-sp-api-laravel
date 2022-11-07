@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Catalog;
 
 use ZipArchive;
+use League\Csv\Reader;
 use League\Csv\Writer;
 use Illuminate\Console\Command;
 use App\Models\Catalog\PricingIn;
@@ -24,7 +25,7 @@ class ExportCatalogWithPriceViaAsin extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:export-catalog-with-price {source} {priority} {Asins} {headers}';
+    protected $signature = 'mosh:export-catalog-with-price {source} {priority} {headers}';
 
     /**
      * The console command description.
@@ -53,8 +54,15 @@ class ExportCatalogWithPriceViaAsin extends Command
         $this->country_code = $this->argument('source');
         $this->priority = $this->argument('priority');
         $selected_headers = explode(',', $this->argument('headers'));
-        $asins = explode(',', $this->argument('Asins'));
-        $chunk_data = array_chunk($asins, 20000);
+
+        $path = "CatalogWithPrice/asin.csv";
+        $asins = Reader::createFromPath(Storage::path($path), 'r');
+        $asins->setHeaderOffset(0);
+        $asin = [];
+        foreach ($asins as $asin_details) {
+            $asin[] = $asin_details['ASIN'];
+        }
+        $chunk_data = array_chunk($asin, 20000);
 
         $files = glob(Storage::path("excel/downloads/catalog_with_price/$this->country_code/Priority$this->priority/*"));
         foreach ($files as $file) {
@@ -215,6 +223,7 @@ class ExportCatalogWithPriceViaAsin extends Command
                 }
             }
         }
+
         $this->writer->insertall($catalogwithprice);
 
         if ($this->check == $this->count) {
