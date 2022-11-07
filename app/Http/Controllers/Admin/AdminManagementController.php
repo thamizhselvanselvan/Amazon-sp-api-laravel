@@ -220,6 +220,7 @@ class AdminManagementController extends Controller
             $store_status_array = [];
             $store_order_item = [];
             $shipntrack = [];
+            $zoho = [];
             $store_status = OrderSellerCredentials::where('dump_order', 1)->get();
             foreach ($store_status as $key => $value) {
                 $seller = $value['seller_id'];
@@ -232,6 +233,9 @@ class AdminManagementController extends Controller
                 if ($value['enable_shipntrack']) {
 
                     $shipntrack[$seller] = 1;
+                }
+                if ($value['zoho']) {
+                    $zoho[$seller] = 1;
                 }
             }
             $aws_credential = Aws_Credential::with('mws_region')->where('api_type', 1)->get();
@@ -265,21 +269,31 @@ class AdminManagementController extends Controller
                     }
                     return $action;
                 })
-                ->addColumn('partner', function () {
-                    $action = '<div class="pl-2"><select name="source"><option value="NULL">Select Courier</option><option value="B2CShip">B2CShip</option></select></div>';
+                ->addColumn('zoho', function ($id) use ($zoho) {
+                    if (array_key_exists($id['seller_id'], $zoho)) {
+
+                        $action = '<div class="pl-2"><input class="zoho" type="checkbox" checked value=' . $id['id'] . ' id="zoho' . $id['id'] . '" name="zoho[]"></div>';
+                    } else {
+                        $action = '<div class="pl-2"><input class="zoho" type="checkbox" disabled value=' . $id['id'] . ' id="zoho' . $id['id'] . '" name="zoho[]"></div>';
+                    }
                     return $action;
                 })
-                ->addColumn('zoho', function () {
-                    $action = '<div class="pl-2"><input class="shipntrack" type="checkbox"></div>';
+                ->addColumn('partner', function () {
+                    $action = '<div class="pl-2">
+                    <select name="courier[] " id="courier">
+                    <option value="NULL">Select Courier</option>
+                    <option value="B2CShip">B2CShip</option>
+                    </select>
+                    </div>';
                     return $action;
                 })
                 ->addColumn('source', function () {
-                    $action = '<div class="pl-2"><select name="source"><option value="NULL">Select Source</option><option value="IND">IND</option><option value="USA">USA</option><option value="UAE">UAE</option><option value="KSA">KSA</option></select></div>';
+                    $action = '<div class="pl-2"><select name="source[]"><option value="NULL">Select Source</option><option value="IND">IND</option><option value="USA">USA</option><option value="UAE">UAE</option><option value="KSA">KSA</option></select></div>';
 
                     return $action;
                 })
                 ->addColumn('destination', function () {
-                    $action = '<div class="pl-2"><select name="destination"><option value="NULL">Select Destination</option><option value="IND">IND</option><option value="USA">USA</option><option value="UAE">UAE</option><option value="KSA">KSA</option></select></div>';
+                    $action = '<div class="pl-2"><select name="destination[]"><option value="NULL">Select Destination</option><option value="IND">IND</option><option value="USA">USA</option><option value="UAE">UAE</option><option value="KSA">KSA</option></select></div>';
 
                     return $action;
                 })
@@ -296,7 +310,11 @@ class AdminManagementController extends Controller
         $order_items = explode('-', $request->order_item);
         $selected_store = explode('-', $request->selected_store);
         $shipntrack = explode('-', $request->shipntrack);
+        $zoho_enables = explode('-', $request->zoho_enable);
+        po($zoho_enables);
+
         $shipntrack_array = [];
+        $zoho_enable_array = [];
 
         foreach ($order_items as $key => $value) {
             $order_item[$value] = 1;
@@ -306,6 +324,12 @@ class AdminManagementController extends Controller
             $shipntrack_array[$shipntrack_value] = 1;
         }
 
+        foreach ($zoho_enables as $zoho_enable) {
+            $zoho_enable_array[$zoho_enable] = 1;
+        }
+
+        // po($zoho_enable_array);
+        // exit;
         OrderSellerCredentials::query()->update([
             'dump_order' => 0,
             'get_order_item' => 0,
@@ -328,6 +352,9 @@ class AdminManagementController extends Controller
             if (array_key_exists($id, $shipntrack_array)) {
                 $aws_cred_array['enable_shipntrack'] = 1;
             }
+            if (array_key_exists($id, $zoho_enable_array)) {
+                $aws_cred_array['zoho'] = 1;
+            }
             // return $aws_cred_array;
             OrderSellerCredentials::upsert([$aws_cred_array], ['seller_id'], [
                 'seller_id',
@@ -335,7 +362,8 @@ class AdminManagementController extends Controller
                 'country_code',
                 'dump_order',
                 'get_order_item',
-                'enable_shipntrack'
+                'enable_shipntrack',
+                'zoho',
             ]);
         }
 
