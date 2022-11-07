@@ -1,0 +1,15 @@
+Background kernal command process health monitor
+
+catalog_in_processed == last execution time
+catalog_us_processed == last execution time
+
+buybox_in_processed == last execution time
+buybox_us_processed == last execution time
+buybox_uk_processed == last execution time
+buybox_ae_processed == last execution time
+
+buybox_{store-name}_processed == last execution time
+
+order{store-name}_processed == last execution time
+order_item{store-name}_processed == last execution time
+order_address{store-name}_processed == last execution time
