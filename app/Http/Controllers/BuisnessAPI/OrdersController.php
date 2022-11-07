@@ -4,6 +4,7 @@ namespace App\Http\Controllers\BuisnessAPI;
 
 use Nette\Utils\Json;
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -123,8 +124,7 @@ class OrdersController extends Controller
     }
     public function test()
     {
-        // $asin = 'B09M2VXMQV';
-        // $asin = 'B00746NVOU';
+
         $data[] = DB::connection('cliqnshop')->table('order')
 
             ->join('order_base_product as oid', function ($query) {
@@ -164,6 +164,7 @@ class OrdersController extends Controller
             return response()->json(['success' => ' successfull', 'data' => $data_placed]);
         }
     }
+
     public function orderspending(Request $request)
     {
         if ($request->ajax()) {
@@ -174,6 +175,7 @@ class OrdersController extends Controller
             return response()->json(['success' => ' successfull', 'data' => $data_pending]);
         }
     }
+
     public function prodoffers(Request $request)
     {
         $asin = $request->asin;
@@ -181,9 +183,9 @@ class OrdersController extends Controller
         $data = $ApiCall->getASINpr($asin);
         $offers_data = $data->includedDataTypes->OFFERS;
         $rasin = $data->asin;
-        $ritem_name=$data->title;
+        $ritem_name = $data->title;
         $responce_html = '';
-        
+
         foreach ($offers_data as $data) {
             $price_amount = $data->price->value->amount;
             $responce_html .=
@@ -203,10 +205,11 @@ class OrdersController extends Controller
 
         return $responce_html;
     }
+
     public function orderbooking(Request $request)
     {
         if ($request->ajax()) {
-            
+
             $asin = $request->asin;
             $name = $request->item_name;
             $OfferID = $request->offerid;
@@ -214,16 +217,10 @@ class OrdersController extends Controller
             $ApiCall = new Orders();
             $data = $ApiCall->getOrders($asin, $name, $OfferID);
 
-
-
-
-
             $responce = ($data[0]);
 
             $parse = simplexml_load_string($responce);
             $xmlr =  json_decode(json_encode($parse), true);
-
-
 
             $details = ($data[1]);
             $responce_code = ($xmlr["Response"]["Status"]["@attributes"]["code"]);
@@ -267,18 +264,18 @@ class OrdersController extends Controller
             $xmlasin = $asin;
 
             $item_details = [
-                    $asin,
-                    $item_description,
-                    $unit,
-                    $class,
-                    $quantity,
-                    $ManufacturerName,
-                    $line,
-                    $ManufacturerPartID,
-                    $category,
-                    $sub_category,
+                $asin,
+                $item_description,
+                $unit,
+                $class,
+                $quantity,
+                $ManufacturerName,
+                $line,
+                $ManufacturerPartID,
+                $category,
+                $sub_category,
 
-                ];
+            ];
 
             $ship_address_array = [
                 $deliver1,
@@ -335,8 +332,46 @@ class OrdersController extends Controller
                 'status' => '1',
             ]);
             return $data;
-
         }
-       
+    }
+
+    public function confirmation(Request $request)
+    {
+        if ($request->ajax()) {
+         
+            $data = DB::connection('cliqnshop')->table('order_confirmation')->get();
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->make(true);
+        }
+        return view('cliqnshop.confirm');
+    }
+    public function notification(Request $request)
+    {
+        if ($request->ajax()) {
+         
+            $ship = DB::connection('cliqnshop')->table('ship_notification')->get();
+            return DataTables::of($ship)
+                ->addIndexColumn()
+                ->make(true);
+        }
+        return view('cliqnshop.notification');
+    }
+
+    public function booked(Request $request)
+    {
+        if ($request->ajax()) {
+
+        $data_placed = DB::connection('cliqnshop')->table('order_base_product')
+            ->select('prodcode', 'name', 'quantity', 'price', 'status')
+            ->where('status', '1')
+            ->orderby('baseid','desc')
+            ->get();
+
+          return DataTables::of($data_placed)
+                ->addIndexColumn()
+                ->make(true);
+         }
+        return view('cliqnshop.booked');
     }
 }

@@ -265,17 +265,25 @@ class AdminManagementController extends Controller
                     }
                     return $action;
                 })
+                ->addColumn('partner', function () {
+                    $action = '<div class="pl-2"><select name="source"><option value="NULL">Select Courier</option><option value="B2CShip">B2CShip</option></select></div>';
+                    return $action;
+                })
+                ->addColumn('zoho', function () {
+                    $action = '<div class="pl-2"><input class="shipntrack" type="checkbox"></div>';
+                    return $action;
+                })
                 ->addColumn('source', function () {
-                    $action = '<div class="pl-2"><select name="source"><option value="NULL">Select Source</option><option value="IN">IN</option><option value="US">US</option><option value="AE">AE</option></select></div>';
+                    $action = '<div class="pl-2"><select name="source"><option value="NULL">Select Source</option><option value="IND">IND</option><option value="USA">USA</option><option value="UAE">UAE</option><option value="KSA">KSA</option></select></div>';
 
                     return $action;
                 })
                 ->addColumn('destination', function () {
-                    $action = '<div class="pl-2"><select name="destination"><option value="NULL">Select Destination</option><option value="IN">IN</option><option value="US">US</option><option value="AE">AE</option></select></div>';
+                    $action = '<div class="pl-2"><select name="destination"><option value="NULL">Select Destination</option><option value="IND">IND</option><option value="USA">USA</option><option value="UAE">UAE</option><option value="KSA">KSA</option></select></div>';
 
                     return $action;
                 })
-                ->rawColumns(['region', 'order', 'order_item', 'enable_snt', 'source', 'destination'])
+                ->rawColumns(['region', 'order', 'order_item', 'enable_snt', 'partner', 'zoho', 'source', 'destination'])
                 ->make(true);
         }
 
