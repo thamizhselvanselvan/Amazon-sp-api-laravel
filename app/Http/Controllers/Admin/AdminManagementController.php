@@ -234,6 +234,9 @@ class AdminManagementController extends Controller
 
                     $shipntrack[$seller] = 1;
                 }
+                if ($value['zoho']) {
+                    $zoho[$seller] = 1;
+                }
             }
             $aws_credential = Aws_Credential::with('mws_region')->where('api_type', 1)->get();
             return DataTables::of($aws_credential)
