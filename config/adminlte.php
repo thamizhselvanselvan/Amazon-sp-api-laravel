@@ -854,7 +854,33 @@ return [
                 ],
                 [
                     'text' => 'Orders Details',
-                    'url' => 'business/orders/details',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+                    'submenu' => [
+                        [
+                            'text' => 'Orders Booked',
+                            'url' => 'business/booked/details',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa-fw fa-file',
+                        ],
+                        [
+                            'text' => 'Orders Pending',
+                            'url' => 'business/orders/details',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa-fw fa-file',
+                        ],
+                    ],
+
+                ],
+                [
+                    'text' => 'Orders Confirmation',
+                    'url' => 'business/orders/confirm',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Shipment Notification',
+                    'url' => 'business/ship/confirmation',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
                 ],

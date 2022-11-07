@@ -1,11 +1,11 @@
 @extends('adminlte::page')
 
-@section('title', 'Cliqnshop Orders')
+@section('title', 'Pending Orders')
 
 @section('content_header')
 
 <div class="row">
-    <h3>Cliqnshop Order Details</h3>
+    <h3>Pending Order Details</h3>
 
 </div>
 @stop
@@ -36,9 +36,9 @@
     </div>
 </div>
 <div class="row">
-    <h2 class="ml-2">
+    <!-- <h2 class="ml-2">
         <x-adminlte-button label="View Orders Placed" theme="primary" class="btn-sm" icon="fas fa-eye" id="vieworders" />
-    </h2>
+    </h2> -->
     <h2 class="ml-2">
         <x-adminlte-button label="View Orders Pending" theme="primary" class="btn-sm" icon="fas fa-eye" id="pendingorders" />
     </h2>
@@ -74,10 +74,10 @@
     </div>
 </div>
 
-<table class="table table-bordered yajra-datatable table-striped" id='orderstable'>
+<!-- <table class="table table-bordered yajra-datatable table-striped" id='orderstable'>
     <thead>
         <tr class='text-bold bg-info'>
-            <!-- <th>ID</th> -->
+            <th>ID</th>
             <th>ASIN</th>
             <th>Item Name</th>
             <th>Price</th>
@@ -88,7 +88,7 @@
     <tbody id="data_display">
 
     </tbody>
-</table>
+</table> -->
 <table class="table table-bordered yajra-datatable table-striped" id='orderspending'>
     <thead>
         <tr class='text-bold bg-info'>
@@ -117,41 +117,41 @@
             });
         });
     });
-    $('#vieworders').on('click', function() {
-        $('#data_display').empty();
-        $("#orderstable").show();
-        $("#orderspending").hide();
-        $(".search").show();
-        $.ajax({
-            method: 'GET',
-            url: '/business/orders/view/',
-            data: {
-                'cliq': 'cliq',
-                "_token": "{{ csrf_token() }}",
-            },
-            'dataType': 'json',
-            success: function(response) {
-                let html = '';
-                $status = '';
-                $.each(response.data, function(index, value) {
-                    html += "<tr>";
-                    html += "<tr class='table_row'>";
-                    html += "<td name='asin[]'>" + value.prodcode + "</td>";
-                    html += "<td name='name[]'>" + value.name + "</td>";
-                    html += "<td name='name[]'>" + value.price + "</td>";
-                    html += "<td name='name[]'>" + value.quantity + "</td>";
-                    html += "<td name='name[]'>" + 'Waiting For confirmation' + "</td>";
-                    html += "</tr>";
+    // $('#vieworders').on('click', function() {
+    //     $('#data_display').empty();
+    //     $("#orderstable").show();
+    //     $("#orderspending").hide();
+    //     $(".search").show();
+    //     $.ajax({
+    //         method: 'GET',
+    //         url: '/business/orders/view/',
+    //         data: {
+    //             'cliq': 'cliq',
+    //             "_token": "{{ csrf_token() }}",
+    //         },
+    //         'dataType': 'json',
+    //         success: function(response) {
+    //             let html = '';
+    //             $status = '';
+    //             $.each(response.data, function(index, value) {
+    //                 html += "<tr>";
+    //                 html += "<tr class='table_row'>";
+    //                 html += "<td name='asin[]'>" + value.prodcode + "</td>";
+    //                 html += "<td name='name[]'>" + value.name + "</td>";
+    //                 html += "<td name='name[]'>" + value.price + "</td>";
+    //                 html += "<td name='name[]'>" + value.quantity + "</td>";
+    //                 html += "<td name='name[]'>" + 'Waiting For confirmation' + "</td>";
+    //                 html += "</tr>";
 
-                });
-                $("#orderstable").append(html);
-            },
-            error: function(response) {
-                console.log(responce)
-            }
-        });
+    //             });
+    //             $("#orderstable").append(html);
+    //         },
+    //         error: function(response) {
+    //             console.log(responce)
+    //         }
+    //     });
 
-    });
+    // });
 
     $('#close').click(function() {
         $('#selectoffer').modal('hide');
