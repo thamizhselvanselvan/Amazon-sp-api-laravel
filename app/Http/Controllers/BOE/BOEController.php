@@ -434,12 +434,26 @@ class BOEController extends Controller
                             if ($duty_price->DutyHead == 'BCD') {
                                 $datas['Duty'] = $duty_price->DutyAmount;
                                 $this->csv_header[] = 'Duty';
+
+                                $datas['Duty_Per'] = $duty_price->AdValorem;
+                                $this->csv_header[] ='Duty Percentage';
+                                
                             } elseif ($duty_price->DutyHead == 'SW Srchrg') {
                                 $this->csv_header[] = 'SW Srchrg';
                                 $datas['SWsrchrg'] = $duty_price->DutyAmount;
+
+                                  $datas['sw_perc'] = $duty_price->AdValorem;
+                                  $this->csv_header[] ='SWsrchrg Percentage';
+
+
                             } elseif ($duty_price->DutyHead == 'IGST') {
                                 $this->csv_header[] = 'IGST';
                                 $datas['IGST'] = $duty_price->DutyAmount;
+
+                                  $datas['igst_perc'] = $duty_price->AdValorem;
+                                  $this->csv_header[] ='IGST Percentage';
+
+                                  
                             }
                         }
                     } else {
