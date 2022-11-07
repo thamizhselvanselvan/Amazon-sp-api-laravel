@@ -247,15 +247,21 @@ class AdminManagementController extends Controller
                 })
                 ->addColumn('order', function ($id) use ($store_status_array) {
                     if (array_key_exists($id['seller_id'], $store_status_array)) {
-                        $action = '<div class="pl-2"><input class="order" type="checkbox" checked value=' . $id['id'] . ' id="order' . $id['id'] . '"  name="options[]" ></div>';
+                        $action = '<div class="pl-2">
+                            <input class="order" type="checkbox" checked value=' . $id['id'] . ' id="order' . $id['id'] . '"  name="options[]" >
+                        </div>';
                     } else {
-                        $action = '<div class="pl-2"><input class="order" type="checkbox" value=' . $id['id'] . ' id="order' . $id['id'] . '" name="options[]" ></div>';
+                        $action = '<div class="pl-2">
+                            <input class="order" type="checkbox" value=' . $id['id'] . ' id="order' . $id['id'] . '" name="options[]" >
+                        </div>';
                     }
                     return $action;
                 })
                 ->addColumn('order_item', function ($id) use ($store_order_item) {
                     if (array_key_exists($id['seller_id'], $store_order_item)) {
-                        $action = '<div class="pl-2"><input class="order_item" type="checkbox" checked value=' . $id['id'] . ' id="orderitem' . $id['id'] . '" name="orderItem[]" ></div>';
+                        $action = '<div class="pl-2">
+                            <input class="order_item" type="checkbox" checked value=' . $id['id'] . ' id="orderitem' . $id['id'] . '" name="orderItem[]" >
+                        </div>';
                     } else {
                         $action = '<div class="pl-2"><input class="order_item" type="checkbox" disabled value=' . $id['id'] . ' id="orderitem' . $id['id'] . '" name="orderItem[]" ></div>';
                     }
@@ -263,37 +269,61 @@ class AdminManagementController extends Controller
                 })
                 ->addColumn('enable_snt', function ($id) use ($shipntrack) {
                     if (array_key_exists($id['seller_id'], $shipntrack)) {
-                        $action = '<div class="pl-2"><input class="shipntrack" type="checkbox" checked value=' . $id['id'] . ' id="shipntrack' . $id['id'] . '" name="shipntrack[]" ></div>';
+                        $action = '<div class="pl-2">
+                            <input class="shipntrack" type="checkbox" checked value=' . $id['id'] . ' id="shipntrack' . $id['id'] . '" name="shipntrack[]">
+                        </div>';
                     } else {
-                        $action = '<div class="pl-2"><input class="shipntrack" type="checkbox" disabled value=' . $id['id'] . ' id="shipntrack' . $id['id'] . '" name="shipntrack[]" ></div>';
+                        $action = '<div class="pl-2">
+                                    <input class="shipntrack" type="checkbox" disabled value=' . $id['id'] . ' id="shipntrack' . $id['id'] . '" name="shipntrack[]" >
+                                </div>';
                     }
                     return $action;
                 })
                 ->addColumn('zoho', function ($id) use ($zoho) {
                     if (array_key_exists($id['seller_id'], $zoho)) {
 
-                        $action = '<div class="pl-2"><input class="zoho" type="checkbox" checked value=' . $id['id'] . ' id="zoho' . $id['id'] . '" name="zoho[]"></div>';
+                        $action = '<div class="pl-2">
+                            <input class="zoho" type="checkbox" checked value=' . $id['id'] . ' id="zoho' . $id['id'] . '" name="zoho[]">
+                        </div>';
                     } else {
-                        $action = '<div class="pl-2"><input class="zoho" type="checkbox" disabled value=' . $id['id'] . ' id="zoho' . $id['id'] . '" name="zoho[]"></div>';
+                        $action = '<div class="pl-2">
+                            <input class="zoho" type="checkbox" disabled value=' . $id['id'] . ' id="zoho' . $id['id'] . '" name="zoho[]">
+                        </div>';
                     }
                     return $action;
                 })
-                ->addColumn('partner', function () {
+                ->addColumn('partner', function ($id) {
                     $action = '<div class="pl-2">
-                    <select name="courier[] " id="courier">
-                    <option value="NULL">Select Courier</option>
-                    <option value="B2CShip">B2CShip</option>
-                    </select>
-                    </div>';
+                                    <select name="courier[]" id="courier" class="courier_class">
+                                        <option value="NULL">Select Courier</option>
+                                        <option value="B2CShip' . $id['id'] . '">B2CShip</option>
+                                    </select>
+                                </div>';
                     return $action;
                 })
                 ->addColumn('source', function () {
-                    $action = '<div class="pl-2"><select name="source[]"><option value="NULL">Select Source</option><option value="IND">IND</option><option value="USA">USA</option><option value="UAE">UAE</option><option value="KSA">KSA</option></select></div>';
+                    $action = '<div class="pl-2">
+                                    <select name="source[]" class="source">
+                                        <option value="NULL">Select Source</option>
+                                        <option value="IND">IND</option>
+                                        <option value="USA">USA</option>
+                                        <option value="UAE">UAE</option>
+                                        <option value="KSA">KSA</option>
+                                    </select>
+                                </div>';
 
                     return $action;
                 })
                 ->addColumn('destination', function () {
-                    $action = '<div class="pl-2"><select name="destination[]"><option value="NULL">Select Destination</option><option value="IND">IND</option><option value="USA">USA</option><option value="UAE">UAE</option><option value="KSA">KSA</option></select></div>';
+                    $action = '<div class="pl-2">
+                                <select name="destination[]" class="destination">
+                                    <option value="NULL">Select Destination</option>
+                                    <option value="IND">IND</option>
+                                    <option value="USA">USA</option>
+                                    <option value="UAE">UAE</option>
+                                    <option value="KSA">KSA</option>
+                                </select>
+                             </div>';
 
                     return $action;
                 })
