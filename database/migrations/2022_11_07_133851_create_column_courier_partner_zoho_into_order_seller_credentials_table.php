@@ -14,8 +14,8 @@ class CreateColumnCourierPartnerZohoIntoOrderSellerCredentialsTable extends Migr
     public function up()
     {
         Schema::connection('order')->table('order_seller_credentials', function (Blueprint $table) {
-            // $table->string('courier_partner', 100)->nullable()->after('get_order_item');
-            // $table->string('zoho', 10)->nullable()->default(0)->after('courier_partner');
+            $table->string('courier_partner', 100)->nullable()->after('get_order_item');
+            $table->string('zoho', 10)->nullable()->default(0)->after('courier_partner');
         });
     }
 
