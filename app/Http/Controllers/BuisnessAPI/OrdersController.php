@@ -360,14 +360,14 @@ class OrdersController extends Controller
 
     public function booked(Request $request)
     {
+        if ($request->ajax()) {
 
         $data_placed = DB::connection('cliqnshop')->table('order_base_product')
             ->select('prodcode', 'name', 'quantity', 'price', 'status')
             ->where('status', '1')
+            ->orderby('baseid','desc')
             ->get();
 
-            
-         if ($request->ajax()) {
           return DataTables::of($data_placed)
                 ->addIndexColumn()
                 ->make(true);
