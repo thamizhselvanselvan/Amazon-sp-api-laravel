@@ -67,6 +67,30 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
 
 Route::get('import', function () {
+
+
+    $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id, source.status
+    FROM asin_source_ins as source
+    LEFT JOIN catalognewins as cat
+    ON cat.asin = source.asin
+    WHERE cat.asin IS NULL 
+    AND source.status = '0'
+    LIMIT 1000 
+    ");
+    if (count($asins) > 0) {
+
+        po($asins);
+    } else {
+        DB::connection('catalog')->update("UPDATE asin_source_ins as source 
+            LEFT JOIN catalognewins as cat 
+             ON cat.asin = source.asin
+             SET source.status = '0'
+             WHERE cat.asin IS NULL
+             AND source.status = '1'
+             ");
+    }
+
+    exit;
     $auth_count = 0;
     $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', 'US')->get()->toArray();
     $id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
