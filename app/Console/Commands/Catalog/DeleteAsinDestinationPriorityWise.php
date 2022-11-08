@@ -49,42 +49,29 @@ class DeleteAsinDestinationPriorityWise extends Command
             $product_table = "bb_product_aa_custom_p${priority}_${country_code}s";
 
             $table_name = table_model_create(country_code: $country_code, model: 'Asin_destination', table_name: 'asin_destination_');
-            $table_name->select('id', 'asin')->where("${asin_destination}" . '.priority', $priority)->chunkById(5000, function ($records) use ($seller_destination, $country_code, $priority, $destination, $table_name) {
-                $asins = $records->toArray();
-                foreach ($asins as $asin) {
+            // $table_name->select('id', 'asin')->where("${asin_destination}" . '.priority', $priority)->chunkById(5000, function ($records) use ($seller_destination, $country_code, $priority, $destination, $table_name) {
+            //     $asins = $records->toArray();
+            //     foreach ($asins as $asin) {
 
-                    $asin1[] = $asin['asin'];
-                }
-
-                $bb_product = table_model_set(country_code: $country_code, model: 'bb_product_aa_custom', table_name: "product_aa_custom_p${priority}_${country_code}");
-                $bb_product_table = $bb_product->whereIn('asin1', $asin1)
-                    ->where($bb_product->getTable() . '.seller_id', $seller_destination[$destination])
-                    ->delete();
-
-                $bb_product_offer_table = table_model_set(country_code: $country_code, model: 'bb_product_aa_custom_offer', table_name: "product_aa_custom_p${priority}_${country_code}_offer");
-                $offer_table = $bb_product_offer_table->whereIn('asin', $asin1)->delete();
-                $table_name->where('priority', $priority)->delete();
-            });
-
-            // $table_name = table_model_create(country_code: $country_code, model: 'Asin_destination', table_name: 'asin_destination_');
-            // $destination_data = $table_name->where($asin_destination . '.priority', $priority)->get('asin');
-            // // ->join("${dbname}.${product_table}", $asin_destination . '.asin', '=', $product_table . '.asin1')->get();
-            // // log::alert($bb_product_offer_table->getTable());
-            // // exit;
-            // foreach ($destination_data as $key => $desti_value) {
+            //         $asin1[] = $asin['asin'];
+            //     }
 
             //     $bb_product = table_model_set(country_code: $country_code, model: 'bb_product_aa_custom', table_name: "product_aa_custom_p${priority}_${country_code}");
-            //     $bb_product_table = $bb_product->select('id', 'asin1')->where('asin1', $desti_value->asin)
-            //         ->where($bb_product->getTable() . '.seller_id', $seller_destination[$destination])->get();
+            //     $bb_product_table = $bb_product->whereIn('asin1', $asin1)
+            //         ->where($bb_product->getTable() . '.seller_id', $seller_destination[$destination])
+            //         ->delete();
 
-            //     $product_table_id = isset($bb_product_table[0]->id) ? $bb_product_table[0]->id : '';
-            //     $bb_product->where('id', $product_table_id)->delete();
-            //     // log::alert($product_table_id);
-            //     $bb_product_offer_table = table_model_set(country_code: $country_code, model: 'bb_product_aa_custom_offer', table_name: "product_aa_custom_p${priority}_${country_code}_offer");
-            //     $bb_product_offer_table->where('asin', $desti_value->asin)->delete();
-            // }
-            // // exit;
-            // $table_name->where('priority', $priority)->delete();
+            //     // $bb_product_offer_table = table_model_set(country_code: $country_code, model: 'bb_product_aa_custom_offer', table_name: "product_aa_custom_p${priority}_${country_code}_offer");
+            //     // $offer_table = $bb_product_offer_table->whereIn('asin', $asin1)->delete();
+            // });
+            $bb_product = table_model_set(country_code: $country_code, model: 'bb_product_aa_custom', table_name: "product_aa_custom_p${priority}_${country_code}");
+            $bb_product->truncate();
+            $bb_product_offer_table = table_model_set(country_code: $country_code, model: 'bb_product_aa_custom_offer', table_name: "product_aa_custom_p${priority}_${country_code}_offer");
+            $bb_product_offer_table->truncate();
+            $seller_table_name = table_model_set(country_code: $country_code, model: 'bb_product_aa_custom_offer', table_name: "product_aa_custom_p${priority}_${country_code}_seller_detail");
+            $seller_table_name->truncate();
+
+            $table_name->where('priority', $priority)->delete();
         }
 
         commandExecFunc("mosh:catalog-dashboard-file");

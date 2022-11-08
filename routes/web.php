@@ -69,8 +69,11 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 Route::get('import', function () {
 
 
-
-
+    $table_name = table_model_set(country_code: 'US', model: 'bb_product_aa_custom_offer', table_name: 'product_aa_custom_p1_us_seller_detail');
+    $table = $table_name->get()->toArray();
+    po($table);
+    exit;
+    // Log::alert($asins);
 
     exit;
     $auth_count = 0;

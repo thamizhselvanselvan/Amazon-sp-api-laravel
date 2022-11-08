@@ -169,6 +169,7 @@ class OrderItem
                         'asin' => $asin,
                         'seller_id' => $aws_id,
                         'source' => $awsCountryCode,
+                        'id'    =>  '4',
                     ];
 
                     jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);

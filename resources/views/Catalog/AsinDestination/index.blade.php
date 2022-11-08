@@ -146,8 +146,8 @@
                                 <label for="P3">P3</label>
                             </div>
                         </div>
-                        <x-adminlte-textarea label="Enter ASIN" type="text-area" class="Asins" name="Asins"
-                            placeholder="Enter Asin" rows="4" />
+                        <x-adminlte-textarea label="Enter ASIN (max:10000)" type="text-area" class="Asins"
+                            name="Asins" placeholder="Enter Asin" rows="6" />
                         <b>
                             <p class="text-danger" id="error"></p>
                         </b>
