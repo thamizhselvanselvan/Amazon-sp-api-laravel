@@ -42,7 +42,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('aws:nitshop:order')->hourly();
             $schedule->command('aws:nitshop:order_details')->hourly();
 
-            $schedule->command('mosh:feed-tracking-details-to-amazon')->everyFiveMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+            $schedule->command('mosh:feed-tracking-details-to-amazon')->everyMinute()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
             //$schedule->command('mosh:seller-asin-get-pricing')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
         }
 
