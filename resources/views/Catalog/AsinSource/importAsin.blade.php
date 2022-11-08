@@ -58,14 +58,14 @@
 
                     <div class="col-6">
                         <!-- <x-adminlte-select name="source" label="Select Source" id="source">
-                                
-                                <option value="">Select Source</option>
-                                <option value="IN">IN</option>
-                                <option value="AE">AE</option>
-                                <option value="US">US</option>
-                                <option value="UK">UK</option>
+                                    
+                                    <option value="">Select Source</option>
+                                    <option value="IN">IN</option>
+                                    <option value="AE">AE</option>
+                                    <option value="US">US</option>
+                                    <option value="UK">UK</option>
 
-                            </x-adminlte-select> -->
+                                </x-adminlte-select> -->
                         <label for="Select Source">Select Source</label><br>
                         <div class="row ">
                             <div class="col-2">
@@ -76,10 +76,10 @@
                                 <label for="US">US</label>
                                 <input type="checkbox" name="source[]" value="US">
                             </div>
-                            <div class="col-2">
+                            {{-- <div class="col-2">
                                 <label for="AE">AE</label>
                                 <input type="checkbox" name="source[]" value="AE">
-                            </div>
+                            </div> --}}
                         </div>
                         <x-adminlte-textarea label="ASIN by text-area" name="text_area" id="asin" type="text"
                             rows="6" placeholder="Enter ASIN" />
@@ -115,10 +115,10 @@
                                 <label for="US">US</label>
                                 <input type="checkbox" name="source[]" value="US">
                             </div>
-                            <div class="col-2 ">
+                            {{-- <div class="col-2 ">
                                 <label for="AE">AE</label>
                                 <input type="checkbox" name="source[]" value="AE">
-                            </div>
+                            </div> --}}
                         </div>
                         <x-adminlte-input label="Upload ASIN File" name="asin" id="asin" type="file" />
                         <input type="hidden" name="form_type" value="file_upload" />
