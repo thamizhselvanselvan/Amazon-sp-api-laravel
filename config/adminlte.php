@@ -855,19 +855,19 @@ return [
                 [
                     'text' => 'Orders Details',
                     'can' => ['Admin'],
-                    'icon' => 'far fa-fw fa-file',
+                    'icon' => 'fa fa-shopping-cart',
                     'submenu' => [
                         [
                             'text' => 'Orders Booked',
                             'url' => 'business/booked/details',
                             'can' => ['Admin'],
-                            'icon' => 'far fa-fw fa-file',
+                            'icon' => 'fa fa-check',
                         ],
                         [
                             'text' => 'Orders Pending',
                             'url' => 'business/orders/details',
                             'can' => ['Admin'],
-                            'icon' => 'far fa-fw fa-file',
+                            'icon' => 'fa fa-clock-o',
                         ],
                     ],
 
@@ -876,13 +876,13 @@ return [
                     'text' => 'Orders Confirmation',
                     'url' => 'business/orders/confirm',
                     'can' => ['Admin'],
-                    'icon' => 'far fa-fw fa-file',
+                    'icon' => 'fa fa-check-circle-o',
                 ],
                 [
                     'text' => 'Shipment Notification',
                     'url' => 'business/ship/confirmation',
                     'can' => ['Admin'],
-                    'icon' => 'far fa-fw fa-file',
+                    'icon' => 'fa fa-bell',
                 ],
             ],
         ],

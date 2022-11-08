@@ -413,8 +413,9 @@ class InvoiceManagementController extends Controller
              group by invoice_no"
             );
 
+        // dd($invoice_data_array);
 
-        $item_details[] = [
+        $item_details = [
             'item_description' => NULL,
             'hsn_code' => NULL,
             'qty' => NULL,
@@ -429,14 +430,16 @@ class InvoiceManagementController extends Controller
             'actual_weight' => NULL,
             'charged_weight' => NULL,
         ];
+        $item_details_tem[] = [];
 
         $item_details_final_array = [];
         $grand_total = 0;
         foreach ($invoice_data_array as $key => $value) {
+
             $grand_total = 0;
             foreach ($value as $key1 => $details) {
 
-                if (array_key_exists($key1, $item_details[0])) {
+                if (array_key_exists($key1, $item_details)) {
 
                     $product_array = explode('-invoice-', $details);
                     if ($key1 == 'total_including_taxes') {
@@ -446,7 +449,7 @@ class InvoiceManagementController extends Controller
                         }
                     } else {
                         foreach ($product_array as $key2 => $val) {
-                            $item_details[$key2][$key1] = $val;
+                            $item_details_tem[$key2][$key1] = $val;
                         }
                     }
                 } else {
@@ -454,11 +457,12 @@ class InvoiceManagementController extends Controller
                 }
             }
             $invoice_details['grand_total'] = $grand_total;
-            $invoice_details['product_details'] = $item_details;
+            $invoice_details['product_details'] = $item_details_tem;
             $item_details_final_array[$key] = $invoice_details;
             $invoice_details = [];
+            $item_details_tem = [];
         }
-        // dd($item_details_final_array);
+
         return $item_details_final_array;
     }
 
