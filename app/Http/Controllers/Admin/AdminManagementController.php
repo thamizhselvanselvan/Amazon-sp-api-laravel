@@ -247,15 +247,21 @@ class AdminManagementController extends Controller
                 })
                 ->addColumn('order', function ($id) use ($store_status_array) {
                     if (array_key_exists($id['seller_id'], $store_status_array)) {
-                        $action = '<div class="pl-2"><input class="order" type="checkbox" checked value=' . $id['id'] . ' id="order' . $id['id'] . '"  name="options[]" ></div>';
+                        $action = '<div class="pl-2">
+                            <input class="order" type="checkbox" checked value=' . $id['id'] . ' id="order' . $id['id'] . '"  name="options[]" >
+                        </div>';
                     } else {
-                        $action = '<div class="pl-2"><input class="order" type="checkbox" value=' . $id['id'] . ' id="order' . $id['id'] . '" name="options[]" ></div>';
+                        $action = '<div class="pl-2">
+                            <input class="order" type="checkbox" value=' . $id['id'] . ' id="order' . $id['id'] . '" name="options[]" >
+                        </div>';
                     }
                     return $action;
                 })
                 ->addColumn('order_item', function ($id) use ($store_order_item) {
                     if (array_key_exists($id['seller_id'], $store_order_item)) {
-                        $action = '<div class="pl-2"><input class="order_item" type="checkbox" checked value=' . $id['id'] . ' id="orderitem' . $id['id'] . '" name="orderItem[]" ></div>';
+                        $action = '<div class="pl-2">
+                            <input class="order_item" type="checkbox" checked value=' . $id['id'] . ' id="orderitem' . $id['id'] . '" name="orderItem[]" >
+                        </div>';
                     } else {
                         $action = '<div class="pl-2"><input class="order_item" type="checkbox" disabled value=' . $id['id'] . ' id="orderitem' . $id['id'] . '" name="orderItem[]" ></div>';
                     }
@@ -263,37 +269,61 @@ class AdminManagementController extends Controller
                 })
                 ->addColumn('enable_snt', function ($id) use ($shipntrack) {
                     if (array_key_exists($id['seller_id'], $shipntrack)) {
-                        $action = '<div class="pl-2"><input class="shipntrack" type="checkbox" checked value=' . $id['id'] . ' id="shipntrack' . $id['id'] . '" name="shipntrack[]" ></div>';
+                        $action = '<div class="pl-2">
+                            <input class="shipntrack" type="checkbox" checked value=' . $id['id'] . ' id="shipntrack' . $id['id'] . '" name="shipntrack[]">
+                        </div>';
                     } else {
-                        $action = '<div class="pl-2"><input class="shipntrack" type="checkbox" disabled value=' . $id['id'] . ' id="shipntrack' . $id['id'] . '" name="shipntrack[]" ></div>';
+                        $action = '<div class="pl-2">
+                                    <input class="shipntrack" type="checkbox" disabled value=' . $id['id'] . ' id="shipntrack' . $id['id'] . '" name="shipntrack[]" >
+                                </div>';
                     }
                     return $action;
                 })
                 ->addColumn('zoho', function ($id) use ($zoho) {
                     if (array_key_exists($id['seller_id'], $zoho)) {
 
-                        $action = '<div class="pl-2"><input class="zoho" type="checkbox" checked value=' . $id['id'] . ' id="zoho' . $id['id'] . '" name="zoho[]"></div>';
+                        $action = '<div class="pl-2">
+                            <input class="zoho" type="checkbox" checked value=' . $id['id'] . ' id="zoho' . $id['id'] . '" name="zoho[]">
+                        </div>';
                     } else {
-                        $action = '<div class="pl-2"><input class="zoho" type="checkbox" disabled value=' . $id['id'] . ' id="zoho' . $id['id'] . '" name="zoho[]"></div>';
+                        $action = '<div class="pl-2">
+                            <input class="zoho" type="checkbox" disabled value=' . $id['id'] . ' id="zoho' . $id['id'] . '" name="zoho[]">
+                        </div>';
                     }
                     return $action;
                 })
-                ->addColumn('partner', function () {
+                ->addColumn('partner', function ($id) {
                     $action = '<div class="pl-2">
-                    <select name="courier[] " id="courier">
-                    <option value="NULL">Select Courier</option>
-                    <option value="B2CShip">B2CShip</option>
-                    </select>
-                    </div>';
+                                    <select name="courier[]" id="courier" class="courier_class">
+                                        <option value="NULL">Select Courier</option>
+                                        <option value="B2CShip:' . $id['id'] . '">B2CShip</option>
+                                    </select>
+                                </div>';
                     return $action;
                 })
-                ->addColumn('source', function () {
-                    $action = '<div class="pl-2"><select name="source[]"><option value="NULL">Select Source</option><option value="IND">IND</option><option value="USA">USA</option><option value="UAE">UAE</option><option value="KSA">KSA</option></select></div>';
+                ->addColumn('source', function ($id) {
+                    $action = '<div class="pl-2">
+                                    <select name="source[]" class="source">
+                                        <option value="NULL">Select Source</option>
+                                        <option value="IND:' . $id['id'] . '">IND</option>
+                                        <option value="USA:' . $id['id'] . '">USA</option>
+                                        <option value="UAE:' . $id['id'] . '">UAE</option>
+                                        <option value="KSA:' . $id['id'] . '">KSA</option>
+                                    </select>
+                                </div>';
 
                     return $action;
                 })
-                ->addColumn('destination', function () {
-                    $action = '<div class="pl-2"><select name="destination[]"><option value="NULL">Select Destination</option><option value="IND">IND</option><option value="USA">USA</option><option value="UAE">UAE</option><option value="KSA">KSA</option></select></div>';
+                ->addColumn('destination', function ($id) {
+                    $action = '<div class="pl-2">
+                                <select name="destination[]" class="destination">
+                                    <option value="NULL">Select Destination</option>
+                                    <option value="IND:' . $id['id'] . '">IND</option>
+                                    <option value="USA:' . $id['id'] . '">USA</option>
+                                    <option value="UAE:' . $id['id'] . '">UAE</option>
+                                    <option value="KSA:' . $id['id'] . '">KSA</option>
+                                </select>
+                             </div>';
 
                     return $action;
                 })
@@ -306,15 +336,19 @@ class AdminManagementController extends Controller
 
     public function updateStore(Request $request)
     {
-        // return $request->all();
         $order_items = explode('-', $request->order_item);
         $selected_store = explode('-', $request->selected_store);
         $shipntrack = explode('-', $request->shipntrack);
         $zoho_enables = explode('-', $request->zoho_enable);
-        po($zoho_enables);
+        $courier_partners = explode('-', $request->courier_partner);
+        $source = explode('-', $request->source);
+        $destination = explode('-', $request->destination);
 
         $shipntrack_array = [];
         $zoho_enable_array = [];
+        $courier_partner_arr = [];
+        $source_arr = [];
+        $des_arr = [];
 
         foreach ($order_items as $key => $value) {
             $order_item[$value] = 1;
@@ -328,12 +362,32 @@ class AdminManagementController extends Controller
             $zoho_enable_array[$zoho_enable] = 1;
         }
 
-        // po($zoho_enable_array);
-        // exit;
+        if ($request->courier_partner) {
+
+            foreach ($courier_partners as $courier_partner) {
+                $courier_partner_tem = explode(':', $courier_partner);
+                $courier_partner_arr[$courier_partner_tem[1]] = $courier_partner_tem[0];
+            }
+        }
+
+        if ($request->source && $request->destination) {
+            foreach ($source as $src) {
+                $src_tem = explode(':', $src);
+                $source_arr[$src_tem[1]] = $src_tem[0];
+            }
+            foreach ($destination as $des) {
+                $des_tem = explode(':', $des);
+                $des_arr[$des_tem[1]] = $des_tem[0];
+            }
+        }
+
         OrderSellerCredentials::query()->update([
             'dump_order' => 0,
             'get_order_item' => 0,
-            'enable_shipntrack' => 0
+            'enable_shipntrack' => 0,
+            'zoho' => 0,
+            'courier_partner' => NULL,
+            'source_destination' => NULL,
         ]);
 
         foreach ($selected_store as $key => $id) {
@@ -349,12 +403,23 @@ class AdminManagementController extends Controller
             if (array_key_exists($id, $order_item)) {
                 $aws_cred_array['get_order_item'] = 1;
             }
+
             if (array_key_exists($id, $shipntrack_array)) {
                 $aws_cred_array['enable_shipntrack'] = 1;
             }
+
             if (array_key_exists($id, $zoho_enable_array)) {
                 $aws_cred_array['zoho'] = 1;
             }
+
+            if (array_key_exists($id, $courier_partner_arr)) {
+                $aws_cred_array['courier_partner'] = $courier_partner_arr[$id];
+            }
+
+            if (array_key_exists($id, $source_arr) && array_key_exists($id, $des_arr)) {
+                $aws_cred_array['source_destination'] = $source_arr[$id] . '2' . $des_arr[$id];
+            }
+
             // return $aws_cred_array;
             OrderSellerCredentials::upsert([$aws_cred_array], ['seller_id'], [
                 'seller_id',
@@ -364,6 +429,8 @@ class AdminManagementController extends Controller
                 'get_order_item',
                 'enable_shipntrack',
                 'zoho',
+                'courier_partner',
+                'source_destination'
             ]);
         }
 
