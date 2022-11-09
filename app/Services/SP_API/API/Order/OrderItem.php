@@ -193,8 +193,10 @@ class OrderItem
 
                 $tem_add = '';
                 foreach ($inv_adrs_arr as $key => $add_value) {
-                    if (array_key_exists($key, $order_address_arr)) {
-                        $tem_add .= $order_address_arr[$key] . ', ';
+                    if ($order_address_arr) {
+                        if (array_key_exists($key, $order_address_arr)) {
+                            $tem_add .= $order_address_arr[$key] . ', ';
+                        }
                     }
                 }
 
