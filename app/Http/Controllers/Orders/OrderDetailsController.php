@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\order\OrderUpdateDetail;
+use App\Models\order\OrderSellerCredentials;
 
 class OrderDetailsController extends Controller
 {
@@ -124,7 +126,6 @@ class OrderDetailsController extends Controller
                             JOIN ${order}.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
 
                             WHERE ord.amazon_order_identifier = '$order_data'");
-                      
             }
             return response()->json(['success' => 'Searched Sucessfully', 'data' => $order_details]);
         }
@@ -176,5 +177,25 @@ class OrderDetailsController extends Controller
             $email_used = json_decode($data[0]->email);
         }
         return view('orders.orderdetails_list.view', compact('details', 'email_used', 'data', 'price_data', 'item_tax'));
+    }
+
+    public function dumptest(Request $request)
+    {
+        $stores = OrderSellerCredentials::select('store_name', 'store.store_id')
+            ->join("order_update_details as store", 'order_seller_credentials.seller_id', '=', 'store.store_id')
+            ->distinct()
+            ->get();
+
+        if ($request->ajax()) {
+
+            $data = OrderUpdateDetail::query()
+                ->where('store_id', $request->id)
+                ->orderBy('created_at', 'DESC')
+                ->limit(50)
+                ->get();
+            return response()->json(['success' => 'Searched Sucessfully', 'data' => $data]);
+        }
+
+        return view('orders.dumptest', compact('stores'));
     }
 }

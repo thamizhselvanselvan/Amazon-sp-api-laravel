@@ -623,6 +623,13 @@ return [
                     'url' => "orders/aws/dashboard",
 
                 ],
+                [
+                    'text' => 'Order Dump Test',
+                    'can' => ['Admin'],
+                    'icon' => ' fa fa-check-circle-o',
+                    'url' => "orders/dump/test",
+
+                ],
             ],
         ],
 
