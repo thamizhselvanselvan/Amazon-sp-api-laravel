@@ -42,7 +42,8 @@ class OrderItemDetailsImport extends Command
     public function handle()
     {
         $order_item = new OrderItem();
-
+        $order_item->OrderItemDetails('402-6119301-9353145', 35, 'AE');
+        exit;
         $seller_id_array  = DB::connection('order')->select('SELECT our_seller_identifier 
         from orders group by our_seller_identifier');
 
@@ -52,7 +53,7 @@ class OrderItemDetailsImport extends Command
             if ($seller_id != 44) {
 
                 $missing_order_id = DB::connection('order')
-                    ->select("SELECT ord.amazon_order_identifier, ord.our_seller_identifier, ord.country
+                    ->select("SELECT ord.amazon_order_identifier, ord.our_seller_identifier, ord.country\phpmyadmin\index.php
                     from orders as ord
                             left join 
                         orderitemdetails as oids on ord.amazon_order_identifier = oids.amazon_order_identifier 
