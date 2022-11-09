@@ -42,8 +42,8 @@ class OrderItemDetailsImport extends Command
     public function handle()
     {
         $order_item = new OrderItem();
-        $order_item->OrderItemDetails('402-6119301-9353145', 35, 'AE');
-        exit;
+        // $order_item->OrderItemDetails('402-6119301-9353145', 35, 'AE');
+        // exit;
         $seller_id_array  = DB::connection('order')->select('SELECT our_seller_identifier 
         from orders group by our_seller_identifier');
 
