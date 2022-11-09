@@ -64,11 +64,11 @@ class LabelMissingAddressUpload extends Command
                     'Name' => $Name,
                     'AddressLine1' => htmlspecialchars($AddressLine1),
                     'AddressLine2' => htmlspecialchars($AddressLine2),
-                    'City' => $City,
-                    'County' => $County,
-                    'CountryCode' => $CountryCode,
-                    'Phone' => $Phone,
-                    'AddressType' => $AddressType
+                    'City' => htmlspecialchars($City),
+                    'County' => htmlspecialchars($County),
+                    'CountryCode' => htmlspecialchars($CountryCode),
+                    'Phone' => htmlspecialchars($Phone),
+                    'AddressType' => htmlspecialchars($AddressType)
                 ];
 
                 $address_json = (json_encode($address_array));
