@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Invoice extends Model
 {
     use HasFactory;
-     
-    protected $table= 'invoices';
+
+    protected $table = 'invoices';
     public $timestamps = false;
     protected $fillable = [
 
@@ -40,7 +40,10 @@ class Invoice extends Model
         'dimension',
         'actual_weight',
         'charged_weight',
-        
+        'clientcode',
+        'bag_no',
+        'amazon_order_identifier'
+
     ];
 
     public function __construct(array $attributes = [])
