@@ -3,11 +3,56 @@
 namespace App\Services\Zoho;
 
 use Carbon\Carbon;
+use App\Models\order\Order;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use App\Models\order\OrderItemDetails;
+use App\Models\order\OrderUpdateDetail;
 
 class ZohoOrder
 {
+
+    public function index()
+    {
+        $orderItems = OrderUpdateDetail::whereNull('courier_name')->whereNull('courier_awb')->limit(1)->first();
+
+        if ($orderItems) {
+
+            $order_table_name = 'orders';
+            $order_item_table_name = 'orderitemdetails';
+
+            $order_details = [
+                "$order_item_table_name.seller_identifier",
+                "$order_item_table_name.asin",
+                "$order_item_table_name.seller_sku",
+                "$order_item_table_name.title",
+                "$order_table_name.fulfillment_channel",
+                "$order_table_name.our_seller_identifier",
+                "$order_table_name.amazon_order_identifier",
+                "$order_table_name.purchase_date",
+                "$order_item_table_name.shipping_address",
+                "$order_table_name.earliest_delivery_date",
+                "$order_table_name.buyer_info"
+            ];
+
+            $order_item_details = OrderItemDetails::select($order_details)
+                ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
+                // ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
+                ->where('orderitemdetails.amazon_order_identifier', $orderItems->amazon_order_id)
+                ->with(['store_details.mws_region'])
+                ->limit(1)
+                ->first();
+
+            if ($order_item_details) {
+
+                // dd($order_item_details);
+                dd($this->zohoOrderFormating($order_item_details));
+            }
+        }
+
+        return "No Data";
+    }
+
     public function getAccessToken()
     {
         $zohoURL = "https://accounts.zoho.in/oauth/v2/token";
@@ -91,7 +136,8 @@ class ZohoOrder
         ON
             oosc.seller_id = os.our_seller_identifier
         LIMIT 1
-    ");
+        ");
+
         if (count($orderItems) > 0) {
             foreach ($orderItems as $value) {
 
@@ -116,6 +162,101 @@ class ZohoOrder
     }
 
     public function zohoOrderFormating($value)
+    {
+        $order_data = Carbon::parse($value->purchase_date)->format('Y-m-d H:i:s');
+
+        $prod_array = [];
+        $prod_array['Alternate_Order_No'] = $value->amazon_order_identifier;
+        $prod_array['Follow_up_Status'] = 'Open';
+
+        $store_name = '';
+        $country_code = '';
+
+        if (isset($value->store_details)) {
+            $store_name = $value->store_details->store_name;
+
+            if (isset($value->store_details->mws_region)) {
+                $country_code = $value->store_details->mws_region->region_code;
+            }
+        }
+
+        if (($store_name == 'Nitrous Stores' && $country_code == 'IN') || ($store_name == 'MBM India Stores' && $country_code == 'IN')) {
+
+            $prod_array['Lead_Status'] = 'B2C Order Confirmed KYC Pending';
+        } else {
+
+            $prod_array["Lead_Status"] = 'Order Confirmed Purchase Pending';
+        }
+
+
+
+        $prod_array["Lead_Source"] = "Amazon.in";
+
+        $buyerDtls = (object)$value->shipping_address;
+        $address = $buyerDtls->AddressLine1 . '<br> ' . $buyerDtls->AddressLine2;
+        $address = str_replace("&", " and ", $address);
+
+        $prod_array["Last_Name"]                 = $buyerDtls->Name;
+        $prod_array["Mobile"]                    = substr((int) filter_var($buyerDtls->Phone, FILTER_SANITIZE_NUMBER_INT), -10);
+        $prod_array["Address"]                   = $address;
+        $prod_array["City"]                      = $buyerDtls->City;
+        $prod_array["State"]                     = '';
+        $prod_array["Zip_Code"]                  = '';
+
+        $buyerEmail = json_decode($value->buyer_info);
+        $prod_array["Email"]                     = ((isset($buyerEmail->BuyerEmail)) ? $buyerEmail->BuyerEmail : '');
+        $prod_array["Customer_Type1"]            = '';
+
+
+        po($prod_array);
+
+        exit;
+
+        $order_total = json_decode($value->order_total);
+        $prod_array["Amount_Paid_by_Customer"]   = (int)$order_total->Amount;
+        $prod_array["Designation"]               = preg_replace("/[^a-zA-Z0-9_ -\/]+/", "", substr($value->title, 0, 100));
+        $prod_array["Order_Creation_Date"]       = $order_data;
+        $prod_array["Product_Code"]              = $value->seller_sku;
+
+
+        if ($value->country_code != 'AE') {
+            $prod_array["Procurement_URL"] = 'http://www.amazon.in/gp/product/' . $value->asin;
+            $prod_array["Product_Link"] = 'http://www.amazon.ae/gp/product/' . $value->asin;
+        } else {
+            $prod_array["Procurement_URL"] = 'http://www.amazon.com/gp/product/' . $value->asin;
+            $prod_array["Product_Link"] = 'http://www.amazon.in/gp/product/' . $value->asin;
+        }
+
+        $prod_array["US_EDD"]                    = Carbon::parse($value->latest_delivery_date)->format('Y-m-d');
+
+        $item_price = json_decode($value->item_price);
+        $prod_array["Product_Cost"]              = $item_price->Amount;
+        $prod_array["Product_Category"]          = ''; //$value->product_category;
+        $prod_array["Item_Type_Category"]        = ''; //$value->item_type_category;
+
+        $product_info = json_decode($value->product_info);
+        $prod_array["Quantity"]                  = $product_info->NumberOfItems;
+        $prod_array["ASIN"]                      = $value->asin;
+        $prod_array["SKU"]                       = $value->seller_sku;
+        $prod_array["H_Code"]                    = ''; //$value->hs_code;
+        $prod_array["GST"]                       = ''; //$value->gst;
+
+        if ($value->store_name == 'Mahzuz Stores (Seller)') {
+            $prod_array["Lead_Source"] = 'Amazon.ae-Mahzuz';
+        } else {
+            $prod_array["Lead_Source"] = $value->store_name;
+        }
+
+        $prod_array["Fulfilment_Channel"]        = $value->fulfillment_channel;
+        // $prod_array["Weight_in_LBS"]             = (string)ceil($value->weight_in_lbs);
+        $prod_array["Payment_Reference_Number1"] = $value->order_item_identifier;
+        $prod_array["Exchange"]                  = 80;
+        $prod_array["Nature"]                    = "Import";
+
+        return $prod_array;
+    }
+
+    public function zohoOrderFormating_old($value)
     {
         $order_data = Carbon::parse($value->purchase_date)->format('Y-m-d H:i:s');
 

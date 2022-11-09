@@ -16,6 +16,7 @@ use App\Models\Aws_credential;
 use Dflydev\DotAccessData\Data;
 use SellingPartnerApi\Endpoint;
 use App\Models\Inventory\Shelve;
+use App\Services\Zoho\ZohoOrder;
 use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingUs;
 use App\Models\Inventory\Country;
@@ -60,6 +61,27 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 |
 */
 // use ConfigTrait;
+
+Route::get('zoho_update', function () {
+
+
+    // $robin = User::create([
+    //     'name' => 'Robin Singh',
+    //     'email' => 'cliqnshop@app360.io',
+    //     'password' => Hash::make(123456),
+    // ]);
+    // $invoice = Role::create(['name' => 'Cliqnshop']);
+    // $invoice_permission = Permission::create(['name' => 'Cliqnshop']);
+    // $invoice->givePermissionTo($invoice_permission);
+    // $robin->assignRole('Cliqnshop');
+
+
+    // exit;
+
+    $ZohoOrder = new ZohoOrder;
+
+    dd($ZohoOrder->index());
+});
 
 
 
