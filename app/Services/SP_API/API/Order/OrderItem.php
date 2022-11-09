@@ -184,9 +184,11 @@ class OrderItem
                 }
 
                 $order_address_arr = json_decode($order_address, true);
-                if (array_key_exists('Name', $order_address_arr)) {
-                    $invoice_data['bill_to_name'] = $order_address_arr['Name'];
-                    $invoice_data['ship_to_name'] = $order_address_arr['Name'];
+                if ($order_address_arr) {
+                    if (array_key_exists('Name', $order_address_arr)) {
+                        $invoice_data['bill_to_name'] = $order_address_arr['Name'];
+                        $invoice_data['ship_to_name'] = $order_address_arr['Name'];
+                    }
                 }
 
                 $tem_add = '';
