@@ -53,7 +53,7 @@ class OrderItemDetailsImport extends Command
             if ($seller_id != 44) {
 
                 $missing_order_id = DB::connection('order')
-                    ->select("SELECT ord.amazon_order_identifier, ord.our_seller_identifier, ord.country\phpmyadmin\index.php
+                    ->select("SELECT ord.amazon_order_identifier, ord.our_seller_identifier, ord.country
                     from orders as ord
                             left join 
                         orderitemdetails as oids on ord.amazon_order_identifier = oids.amazon_order_identifier 
