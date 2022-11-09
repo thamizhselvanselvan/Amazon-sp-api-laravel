@@ -42,10 +42,10 @@
                                 <form action="{{ route('catalog.asin.destination.truncate') }}">
                                     <h5>Select Destination</h5>
                                     <div class="row ">
-                                        <div class="col-2">
+                                        {{-- <div class="col-2">
                                             <label for="AE">AE</label>
                                             <input type="checkbox" name="destination[]" value="AE">
-                                        </div>
+                                        </div> --}}
                                         <div class="col-2">
                                             <label for="IN">IN</label>
                                             <input type="checkbox" name="destination[]" value="IN">

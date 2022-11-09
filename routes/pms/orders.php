@@ -24,3 +24,5 @@ Route::get('orders/details/list', 'Orders\OrderDetailsController@index')->name('
 Route::post('orders/details/update', 'Orders\OrderDetailsController@update')->name('orders.searched.update');
 Route::post('orders/bulk/search', 'Orders\OrderDetailsController@bulksearch')->name('orders.search.bulk');
 Route::get('orders/bulk/edit/{id}', 'Orders\OrderDetailsController@bulkedit');
+
+Route::get('orders/dump/test','Orders\OrderDetailsController@dumptest')->name('orders.dump.test');

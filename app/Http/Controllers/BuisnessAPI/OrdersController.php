@@ -344,7 +344,7 @@ class OrdersController extends Controller
                 ->addIndexColumn()
                 ->make(true);
         }
-        return view('cliqnshop.confirm');
+        return view('Cliqnshop.confirm');
     }
     public function notification(Request $request)
     {
@@ -355,7 +355,7 @@ class OrdersController extends Controller
                 ->addIndexColumn()
                 ->make(true);
         }
-        return view('cliqnshop.notification');
+        return view('Cliqnshop.notification');
     }
 
     public function booked(Request $request)
@@ -372,6 +372,6 @@ class OrdersController extends Controller
                 ->addIndexColumn()
                 ->make(true);
         }
-        return view('cliqnshop.booked');
+        return view('Cliqnshop.booked');
     }
 }
