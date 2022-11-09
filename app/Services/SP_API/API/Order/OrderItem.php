@@ -24,10 +24,14 @@ use App\Models\order\OrderUpdateDetail;
 class OrderItem
 {
     use ConfigTrait;
-
-    public function OrderItemDetails($order_id, $aws_id, $country_code)
+    private $zoho;
+    private $courier_partner;
+    public function OrderItemDetails($order_id, $aws_id, $country_code, $zoho, $courier_partner)
     {
         Log::alert('Order Item Details -> ' . $order_id);
+
+        $this->zoho = $zoho;
+        $this->courier_partner = $courier_partner;
 
         $config = $this->config($aws_id, $country_code);
         $marketplace_ids = $this->marketplace_id($country_code);
@@ -173,7 +177,8 @@ class OrderItem
                         $order_update_details_table[] =  [
                             'store_id' => $aws_id,
                             'amazon_order_id' => $order_id,
-                            'order_item_id' => $value
+                            'order_item_id' => $value,
+                            'courier_name' => $this->courier_partner
                         ];
                     }
                 }
@@ -234,8 +239,7 @@ class OrderItem
             }
         }
 
-        if ($aws_id == 5 || $aws_id == 6) {
-
+        if ($this->zoho == 1) {
             OrderUpdateDetail::upsert($order_update_details_table, ['store_id', 'amazon_order_id', 'order_itme_id']);
         }
 
