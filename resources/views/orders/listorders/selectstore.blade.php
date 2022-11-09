@@ -236,7 +236,7 @@
         });
 
         destination = '';
-        $(".courier_class option:selected").each(function() {
+        $(".destination option:selected").each(function() {
             if ($(this).val() != 'NULL') {
                 if (desti_count == 0) {
                     destination += $(this).val();
@@ -247,9 +247,6 @@
             }
         });
 
-
-        alert(courier);
-        alert(order_item);
         $.ajax({
             method: 'post',
             url: '/admin/update-store',
@@ -260,11 +257,14 @@
                 'order_item': order_item,
                 'shipntrack': shipntrack,
                 'zoho_enable': zoho_enable,
+                'courier_partner': courier,
+                'source': source,
+                'destination': destination
             },
             success: function(response) {
 
-                // alert(response.success);
-                // window.location = '/admin/stores';
+                alert(response.success);
+                window.location = '/admin/stores';
             }
         })
     });

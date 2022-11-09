@@ -202,7 +202,7 @@ class AsinDestinationController extends Controller
         $request->validate([
             'source'    =>  'required|in:IN,US',
             'priority'  =>  'required|in:1,2,3',
-            'Asins'     =>  'required',
+            'Asins'     =>  'required|string|min:10|max:120000',
         ]);
 
         $source = strtolower($request->source);
