@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Mws_region;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PMSPHPUnitTestController;
 
@@ -104,3 +105,9 @@ Route::get('tag/monthly/export','Inventory\ReportController@monthtagrepexport')-
 Route::get('tag/monthly/download/{id}', 'Inventory\ReportController@monthlytagexplocal')->name('inventory.monthly.tag.report.download');
 Route::resource('inventory/reports', 'Inventory\ReportController');
 
+//auth Test For AWS creds
+
+// Route::get('inv/test',function(){
+//     $mws_region = Mws_region::with('aws_verified')->where('region_code', 'IN')->first();
+//     $test = !is_null($mws_region->aws_verified->first()) ? $mws_region->aws_verified->first()->auth_code : null;
+// });
