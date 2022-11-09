@@ -206,7 +206,7 @@ class OrderItem
                 $order_detials->updated_at = now();
                 R::store($order_detials);
 
-                $invoice_data['product_price'] = number_format((float)($tem_price / $invoice_data['qty']), 2);
+                $invoice_data['product_price'] = (float)($tem_price / $invoice_data['qty']);
 
                 Invoice::upsert(
                     $invoice_data,
@@ -238,7 +238,7 @@ class OrderItem
                 }
             }
         }
-
+        Log::info($this->zoho);
         if ($this->zoho == 1) {
             OrderUpdateDetail::upsert($order_update_details_table, ['store_id', 'amazon_order_id', 'order_itme_id']);
         }
