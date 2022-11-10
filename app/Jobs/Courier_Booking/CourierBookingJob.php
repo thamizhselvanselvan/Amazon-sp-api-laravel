@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs\B2C;
+namespace App\Jobs\Courier_Booking;
 
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
