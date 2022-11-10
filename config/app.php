@@ -137,7 +137,11 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'zoho_client_id' => env('ZOHO_CLIENT_ID'),
 
+    'zoho_secret' => env('ZOHO_SECRET'),
+
+    'zoho_refresh_token' => env('ZOHO_REFRESH_TOKEN'),
 
     /*
     |--------------------------------------------------------------------------
