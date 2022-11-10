@@ -184,15 +184,19 @@ class OrderItem
                 }
 
                 $order_address_arr = json_decode($order_address, true);
-                if (array_key_exists('Name', $order_address_arr)) {
-                    $invoice_data['bill_to_name'] = $order_address_arr['Name'];
-                    $invoice_data['ship_to_name'] = $order_address_arr['Name'];
+                if ($order_address_arr) {
+                    if (array_key_exists('Name', $order_address_arr)) {
+                        $invoice_data['bill_to_name'] = $order_address_arr['Name'];
+                        $invoice_data['ship_to_name'] = $order_address_arr['Name'];
+                    }
                 }
 
                 $tem_add = '';
                 foreach ($inv_adrs_arr as $key => $add_value) {
-                    if (array_key_exists($key, $order_address_arr)) {
-                        $tem_add .= $order_address_arr[$key] . ', ';
+                    if ($order_address_arr) {
+                        if (array_key_exists($key, $order_address_arr)) {
+                            $tem_add .= $order_address_arr[$key] . ', ';
+                        }
                     }
                 }
 
@@ -206,7 +210,8 @@ class OrderItem
                 $order_detials->updated_at = now();
                 R::store($order_detials);
 
-                $invoice_data['product_price'] = (float)($tem_price / $invoice_data['qty']);
+                $qty = $invoice_data['qty'] > 0 ? $invoice_data['qty'] : 1;
+                $invoice_data['product_price'] = (float)($tem_price / $qty);
 
                 Invoice::upsert(
                     $invoice_data,
