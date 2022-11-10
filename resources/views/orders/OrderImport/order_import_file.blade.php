@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Order Dump')
+@section('title', 'Order Statistics')
 
 @section('content_header')
 

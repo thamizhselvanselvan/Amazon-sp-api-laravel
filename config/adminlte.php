@@ -624,10 +624,10 @@ return [
 
                 ],
                 [
-                    'text' => 'Order Dump Test',
+                    'text' => 'Order Statistics',
                     'can' => ['Admin'],
                     'icon' => ' fa fa-check-circle-o',
-                    'url' => "orders/dump/test",
+                    'url' => "orders/statistics",
 
                 ],
             ],
@@ -851,29 +851,29 @@ return [
 
         [
             'text' => 'Cliqnshop',
-            'can' => ['Admin','Cliqnshop'],
+            'can' => ['Admin', 'Cliqnshop'],
             'submenu' => [
                 [
                     'text' => 'Catalog',
                     'url' => 'catalog/index',
-                    'can' => ['Admin','Cliqnshop'],
+                    'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'far fa-fw fa-file',
                 ],
                 [
                     'text' => 'Orders Details',
-                    'can' => ['Admin','Cliqnshop'],
+                    'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fa fa-shopping-cart',
                     'submenu' => [
                         [
                             'text' => 'Orders Booked',
                             'url' => 'business/booked/details',
-                            'can' => ['Admin','Cliqnshop'],
+                            'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-check',
                         ],
                         [
                             'text' => 'Orders Pending',
                             'url' => 'business/orders/details',
-                            'can' => ['Admin','Cliqnshop'],
+                            'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-clock-o',
                         ],
                     ],
@@ -882,13 +882,13 @@ return [
                 [
                     'text' => 'Orders Confirmation',
                     'url' => 'business/orders/confirm',
-                    'can' => ['Admin','Cliqnshop'],
+                    'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fa fa-check-circle-o',
                 ],
                 [
                     'text' => 'Shipment Notification',
                     'url' => 'business/ship/confirmation',
-                    'can' => ['Admin','Cliqnshop'],
+                    'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fa fa-bell',
                 ],
             ],

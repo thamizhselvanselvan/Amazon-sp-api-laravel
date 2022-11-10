@@ -119,7 +119,7 @@
 
         $.ajax({
             method: 'GET',
-            url: '/orders/dump/test',
+            url: '/orders/statistics',
             data: {
                 'id': id,
                 "_token": "{{ csrf_token() }}",
