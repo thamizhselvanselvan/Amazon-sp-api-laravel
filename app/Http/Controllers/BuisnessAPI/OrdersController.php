@@ -277,7 +277,7 @@ class OrdersController extends Controller
                 'sub_category' =>   $sub_category,
 
             ];
-Log::alert($item_details);
+           
             $ship_address_array = [
                 $deliver1,
                 $deliver2,
@@ -327,8 +327,7 @@ Log::alert($item_details);
                 'responce_text',
                 'responce_code'
             ]);
-            Log::alert('ok');
-exit;
+
             $data = DB::connection('cliqnshop')->table('order_base_product')->where('prodcode', $asin)->update([
                 'sent_xml' => $xml,
                 'status' => '1',
@@ -378,13 +377,9 @@ exit;
 
     public function booked(Request $request)
     {
-        $data =
-        DB::connection('business')->table('orders')->select('sent_payload', 'order_date', 'order_id', 'item_details', 'responce_payload', 'responce_code', 'created_at')->get();
-        $val = ($data[0]->responce_code);
-// dd($val);
         if ($request->ajax()) {
             $data =
-            DB::connection('business')->table('orders')->select('sent_payload', 'order_date', 'order_id', 'item_details', 'responce_payload', 'responce_code', 'created_at')
+                DB::connection('business')->table('orders')->select('sent_payload', 'order_date', 'order_id', 'item_details', 'responce_payload', 'responce_code', 'created_at')
                 ->orderby('created_at', 'DESC')
                 ->get();
             // $data_placed = DB::connection('cliqnshop')->table('order_base_product')
@@ -399,15 +394,15 @@ exit;
                     return (json_decode($data->item_details)->asin);
                 })
                 ->addColumn('item_name', function ($data) {
-                return (json_decode($data->item_details)->item_name);
+                    return (json_decode($data->item_details)->item_name);
                 })
                 ->addColumn('quantity', function ($data) {
-                return (json_decode($data->item_details)->quantity);
+                    return (json_decode($data->item_details)->quantity);
                 })
                 ->editColumn('status', function ($data) {
-                return ($data->responce_code == '200') ? 'Order Request Sent' :'Something Went Wrong Contact Admin';
+                    return ($data->responce_code == '200') ? 'Order Request Sent' : 'Something Went Wrong Contact Admin';
                 })
-               
+
                 ->rawColumns(['asin', 'item_name', 'quantity', 'status'])
                 ->make(true);
         }
