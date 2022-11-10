@@ -55,7 +55,7 @@ class CourierBooking extends Command
                 'courier_class' => $courier_name
             ];
 
-            jobDispatchFunc('Courier_Booking/CourierBookingJob', $job_parameters);
+            jobDispatchFunc('Courier_Booking\CourierBookingJob', $job_parameters);
         }
     }
 }
