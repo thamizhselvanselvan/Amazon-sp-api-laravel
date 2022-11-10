@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\B2CShip;
+namespace App\Services\Courier_Booking;
 
 use Carbon\Carbon;
 use App\Jobs\B2C\B2CBooking;
@@ -9,10 +9,15 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 
 
-class B2cshipBooking
+class B2cshipBookingServices
 {
-    public function b2cdata($amazon_order_id)
+    private $amazon_order_id;
+    private $order_item_id;
+
+    public function b2cdata($amazon_order_id, $order_item_id)
     {
+        $this->amazon_order_id = $amazon_order_id;
+        $this->order_item_id = $order_item_id;
 
         $ord_details = DB::connection('order')
             ->select("SELECT 
@@ -27,8 +32,8 @@ class B2cshipBooking
             on  ord.amazon_order_identifier = oids.amazon_order_identifier
             where
              oids.amazon_order_identifier = '$amazon_order_id'
-              
         ");
+
         $consignee_data = [];
         foreach ($ord_details as $key => $details) {
             $OrderID = $details->order_id;
@@ -38,7 +43,6 @@ class B2cshipBooking
             } else {
                 $purchase_date = $details->order_date;
             }
-
 
             if (is_null($details->pay_method)) {
                 $payment_method = 'NA';
@@ -57,7 +61,6 @@ class B2cshipBooking
                 $invoice_no = $details->order_item_identifier;
             }
 
-
             $buyer_data = $details->mail;
 
             $buyer_info = json_decode($details->mail);
@@ -67,7 +70,6 @@ class B2cshipBooking
             } else {
                 $email = $buyer_info->BuyerEmail;
             }
-
 
             $asin = $details->asin;
             $item_name = $details->title;
@@ -79,7 +81,6 @@ class B2cshipBooking
             } else {
                 $consignee_tax_amt = $consignee_tax->Amount;
             }
-
 
             if (is_null($consignee_tax)) {
                 $consignee_tax_currency = 'NA';
@@ -106,7 +107,6 @@ class B2cshipBooking
             $consignee_AddressType = $this->objKeyVerify($consignee_details, 'AddressType');
 
             $cat_data =   DB::connection('catalog')->select("SELECT * FROM catalognewins  where asin = $asin");
-
 
             $value = $cat_data[0];
 
@@ -146,28 +146,30 @@ class B2cshipBooking
 
         $this->requestxml($consignee_data);
     }
+
     public function requestxml($consignee_data)
     {
         define('CUSTOMS_PERCENTAGE', 65);
         $consignee_values = $consignee_data;
 
+        $user_id = 'humlofatro@vusra.com';
+        $password = 'G79rC7';
+        $client = 'C10000026';
+
         foreach ($consignee_values as $data) {
 
             $orddate = Carbon::now()->format('d-M-Y');
 
-
             $xml = '<?xml version="1.0" encoding="UTF-8"?>
                     <ShipmentBookingRequest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ShipmentBookingRequest.xsd">
 
-                    <UserId>humlofatro@vusra.com</UserId>
-                    <Password>G79rC7</Password>
+                    <UserId>' . $user_id . '</UserId>
+                    <Password>' . $password . '</Password>
                     <APIVersion>1.0</APIVersion>
-                    <Client>C10000026</Client>
+                    <Client>' . $client . '</Client>
                     <AwbNo></AwbNo>
                     <RefNo></RefNo>
-
                     <BookingDate>' . $orddate . '</BookingDate>
-
                     <ConsignorName>NITROUS HAUL INC</ConsignorName>
                     <ConsignorContactPerson>NITROUS HAUL INC</ConsignorContactPerson>
                     <ConsignorAddressLine1>75 22, 37th Ave,</ConsignorAddressLine1>
@@ -224,15 +226,13 @@ class B2cshipBooking
                     </PCSDescriptionDetails>
                 </ShipmentBookingRequest>';
 
-
-            $this->getawb($xml);
+            $this->verifyApiResponse($this->getawb($xml));
         }
     }
+
     public function getawb($xmldata)
     {
-
         $url = "https://api.b2cship.us/B2CShipAPI.svc/ShipmentBooking";
-
         $headers = array(
             "Content-type: text/xml",
             "Content-length: " . strlen($xmldata),
@@ -250,7 +250,7 @@ class B2cshipBooking
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         $data = curl_exec($ch);
-        // return $data;
+
         Log::info($data);
 
         if (curl_errno($ch))
@@ -258,7 +258,6 @@ class B2cshipBooking
         else
             curl_close($ch);
         return $data;
-        // }
     }
 
     public function calculateCustomValue($Data)
@@ -271,16 +270,27 @@ class B2cshipBooking
         $string = str_replace('&', 'and', $string);
         return preg_replace('/[^A-Za-z0-9\-]/', ' ', $string); // Removes special chars.
     }
+
     public  function clean($string)
     {
         $string = str_replace('&', 'and', $string);
         return preg_replace('/[^A-Za-z0-9\-]/', ' ', $string); // Removes special chars.
     }
+
     public function objKeyVerify($obj, $key)
     {
         if (isset($obj->$key)) {
             return $obj->$key;
         }
         return 'NA';
+    }
+
+    public function verifyApiResponse($api_response)
+    {
+        /*slack notification send if failed
+        **else update Awb no into Table
+        */
+
+        Log::debug($api_response);
     }
 }

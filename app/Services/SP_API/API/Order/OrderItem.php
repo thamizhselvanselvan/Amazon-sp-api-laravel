@@ -178,7 +178,8 @@ class OrderItem
                             'store_id' => $aws_id,
                             'amazon_order_id' => $order_id,
                             'order_item_id' => $value,
-                            'courier_name' => $this->courier_partner
+                            'courier_name' => $this->courier_partner,
+                            'amzn_temp_order_status' => 'unshipped'
                         ];
                     }
                 }
@@ -239,13 +240,13 @@ class OrderItem
                         'id'    =>  '4',
                     ];
 
-                    jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
+                    //                    jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
                 }
             }
         }
-        Log::info($this->zoho);
+
         if ($this->zoho == 1) {
-            OrderUpdateDetail::upsert($order_update_details_table, ['store_id', 'amazon_order_id', 'order_itme_id']);
+            OrderUpdateDetail::upsert($order_update_details_table, ['amzn_ord_item_id_unique'], ['store_id', 'amazon_order_id', 'order_item_id']);
         }
 
         DB::connection('order')
