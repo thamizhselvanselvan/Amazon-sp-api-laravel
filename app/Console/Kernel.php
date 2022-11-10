@@ -16,44 +16,57 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('pms:textiles-import')->everyFourHours()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');;
-        $schedule->command('pms:microstatus-report')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
 
-        $schedule->command('pms:b2cship-kyc-status')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-        // $schedule->command('pms:seller-order-item-import')->everyTenMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-        $schedule->command('pms:stock-tracking')->dailyAt('23:00')->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-        $schedule->command('mosh:warehouse-track')->dailyAt('23:00')->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-        $schedule->command('mosh:tag-track')->dailyAt('23:00')->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-        $schedule->command('mosh:access_token_generate')->cron('*/50 * * * *')->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+        // $schedule->command('pms:seller-order-item-import')->everyTenMinutes();
 
         if (app()->environment() === 'production') {
 
+            /*Inventory*/
+            $schedule->command('pms:inventory-stock-tracking')->dailyAt('23:45');
+            $schedule->command('mosh:warehouse-track')->dailyAt('23:50');
+            $schedule->command('mosh:tag-track')->dailyAt('23:55');
+
+            /*Business API*/
+            $schedule->command('mosh:access_token_generate')->cron('*/55 * * * *');
+
+            /*B2CShip*/
+            $schedule->command('pms:b2cship-microstatus-report')->daily();
+            $schedule->command('pms:b2cship-kyc-status')->daily();
+
+            /*BEO*/
+            $schedule->command('pms:boe-upload-Do')->everyFourHours();
+            $schedule->command('pms:remove-uploaded-boe')->dailyAt('01:00');
+
+            /*Catalog*/
+            $schedule->command('mosh:catalog-amazon-import')->everyFiveMinutes();
+            $schedule->command('mosh:Catalog-price-import-bb-in')->everyThreeMinutes();
+            $schedule->command('mosh:Catalog-price-import-bb-us')->everyMinute();
+            $schedule->command('mosh:catalog-dashboard-file')->hourly();
+
+            /*Orders*/
+            $schedule->command('pms:sellers-orders-import')->everyTenMinutes();
+            $schedule->command('mosh:order-item-details-import')->everyMinute();
+
+            /*Misc*/
             $schedule->command('backup:run')->twiceDaily();
             $schedule->command('backup:clean')->daily()->at('01:00');
-            $schedule->command('pms:boe-upload-Do')->everyFourHours()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-            $schedule->command('pms:remove-uploaded-boe')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-            $schedule->command('pms:sellers-orders-import')->everyTenMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-            $schedule->command('mosh:order-item-details-import')->everyMinute()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
 
-            $schedule->command('mosh:catalog-amazon-import')->everyFiveMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-            $schedule->command('mosh:Catalog-price-import-bb-in')->everyThreeMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-            $schedule->command('mosh:Catalog-price-import-bb-us')->everyMinute()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-            $schedule->command('mosh:catalog-dashboard-file')->hourly()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+            /*AWS Sync - Needs to be removed*/
             $schedule->command('aws:nitshop:order')->hourly();
             $schedule->command('aws:nitshop:order_details')->hourly();
+            $schedule->command('mosh:feed-tracking-details-to-amazon')->everyMinute();
 
-            $schedule->command('mosh:feed-tracking-details-to-amazon')->everyMinute()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-            //$schedule->command('mosh:seller-asin-get-pricing')->daily()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+            /*Order CI CD*/
         }
 
         if (app()->environment() === 'staging') {
-            // $schedule->command('pms:sellers-orders-import')->everyTenMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
 
-            // $schedule->command('mosh:catalog-amazon-import')->everyFiveMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-            // $schedule->command('mosh:order_cliqnshop_place')->everyMinute()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-            //$schedule->command('mosh:catalog-dashboard-file')->everyFiveMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-            // $schedule->command('mosh:Catalog-price-import-bb-in')->everyThreeMinutes()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
-            // $schedule->command('mosh:Catalog-price-import-bb-us')->everyMinute()->thenPing('http://beats.envoyer.io/heartbeat/uoR2oSENfKrIC4z');
+            /*Order CI CD*/
+            /*
+                B2C - only one order at a time for staging
+                Zoho - only one record at a time for staging
+                Amazon Feed but this is only for prod
+            */
         }
 
         if (app()->environment() === 'local') {

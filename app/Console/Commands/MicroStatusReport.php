@@ -16,7 +16,7 @@ class MicroStatusReport extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:microstatus-report';
+    protected $signature = 'pms:b2cship-microstatus-report';
 
     /**
      * The console command description.
