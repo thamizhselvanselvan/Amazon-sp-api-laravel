@@ -39,7 +39,8 @@
                     <th>ID</th>
                     <th>Order ID</th>
                     <th>PayloadID</th>
-                    <th>Shipment Type</th>
+                    <th>Shipment ID</th>
+                    <!-- <th>Shipment Type</th> -->
                     <th>Operation</th>
                     <th>Order Date</th>
                     <th>Notice Date</th>
@@ -84,9 +85,13 @@
                     name: 'payload'
                 },
                  {
-                    data: 'shipment_type',
-                    name: 'shipment_type'
+                    data: 'shipment_id',
+                    name: 'shipment_id'
                 },
+                //  {
+                //     data: 'shipment_type',
+                //     name: 'shipment_type'
+                // },
                 
                  {
                     data: 'operation',

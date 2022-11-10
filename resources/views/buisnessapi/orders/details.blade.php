@@ -4,10 +4,6 @@
 
 @section('content_header')
 
-<div class="row">
-    <h3>Pending Order Details</h3>
-
-</div>
 @stop
 
 
@@ -36,6 +32,11 @@
     </div>
 </div>
 <div class="row">
+    <div class="col">
+        <div style="margin-top: 1.0rem;">
+            <h3>Pending Order Details</h3>
+        </div>
+    </div>
     <!-- <h2 class="ml-2">
         <x-adminlte-button label="View Orders Placed" theme="primary" class="btn-sm" icon="fas fa-eye" id="vieworders" />
     </h2> -->
@@ -43,15 +44,16 @@
         <x-adminlte-button label="View Orders Pending" theme="primary" class="btn-sm" icon="fas fa-eye" id="pendingorders" />
     </h2>
     <h5 class="mb-4 text-right col">
-        <div class="search">
-            <label>
-                Search:
-                <input type="text" id="myInput" class="d-inline-block" placeholder="search asin" autocomplete="off" />
-            </label>
+        <div style="margin-top: 1.5rem;">
+            <div class="search">
+                <label>
+                    Search:
+                    <input type="text" id="myInput" class="d-inline-block" placeholder="search asin" autocomplete="off" />
+                </label>
+            </div>
         </div>
     </h5>
 </div>
-
 <div class="modal " id="selectoffer">
     <div class="modal-dialog modal-lg">
         <div class="modal-content modal-lg">
@@ -106,17 +108,26 @@
 @stop
 @section('js')
 <script type="text/javascript">
+    $("#pendingorders").hide();
+
+    window.onload = function() {
+        $("#pendingorders").click();
+    };
+
+
     $("#orderstable").hide();
     $(".search").hide();
     $("#orderspending").hide();
     $(document).ready(function() {
         $("#myInput").on("keyup", function() {
             var value = $(this).val().toLowerCase();
-            $("#data_display tr").filter(function() {
+            $("#data_display_pending tr").filter(function() {
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
     });
+
+
     // $('#vieworders').on('click', function() {
     //     $('#data_display').empty();
     //     $("#orderstable").show();
@@ -212,11 +223,14 @@
             },
             // 'dataType': 'json',
             success: function(response) {
-
+                if (response == '') {
+                    response = 'item Might Currently unavailable. please try After some time';
+                }
                 $('#selectoffer').modal('show');
                 $('.offerselect').html(response);
             },
             error: function(response) {
+                console.log(response);
                 alert('Something Went Wrong.. or No offer found')
             }
         });
