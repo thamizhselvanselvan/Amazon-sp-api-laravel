@@ -19,6 +19,7 @@ class B2cshipBookingServices
     {
         $this->amazon_order_id = $amazon_order_id;
         $this->order_item_id = $order_item_id;
+        $this->Customs_Percentage = 65;
 
         Log::alert($amazon_order_id);
         $ord_details = DB::connection('order')
@@ -171,7 +172,7 @@ class B2cshipBookingServices
 
     public function requestxml($consignee_data)
     {
-        define('CUSTOMS_PERCENTAGE', 65);
+        // define('CUSTOMS_PERCENTAGE', 65);
         $consignee_values = $consignee_data;
 
         $user_id = 'humlofatro@vusra.com';
@@ -284,7 +285,7 @@ class B2cshipBookingServices
 
     public function calculateCustomValue($Data)
     {
-        return round(($Data * (CUSTOMS_PERCENTAGE / 100)), 2);
+        return round(($Data * ($this->Customs_Percentage / 100)), 2);
     }
 
     public function cleanPh($string)
