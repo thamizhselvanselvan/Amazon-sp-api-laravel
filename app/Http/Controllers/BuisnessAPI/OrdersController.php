@@ -265,19 +265,19 @@ class OrdersController extends Controller
             $xmlasin = $asin;
 
             $item_details = [
-                $asin,
-                $item_description,
-                $unit,
-                $class,
-                $quantity,
-                $ManufacturerName,
-                $line,
-                $ManufacturerPartID,
-                $category,
-                $sub_category,
+                'asin' => $asin,
+                'item_name'  =>  $item_description,
+                'unit' => $unit,
+                'class' => $class,
+                'quantity' => $quantity,
+                'Manufacturer' => $ManufacturerName,
+                'line' => $line,
+                'ManufID' =>    $ManufacturerPartID,
+                'category' =>    $category,
+                'sub_category' =>   $sub_category,
 
             ];
-
+Log::alert($item_details);
             $ship_address_array = [
                 $deliver1,
                 $deliver2,
@@ -327,7 +327,8 @@ class OrdersController extends Controller
                 'responce_text',
                 'responce_code'
             ]);
-
+            Log::alert('ok');
+exit;
             $data = DB::connection('cliqnshop')->table('order_base_product')->where('prodcode', $asin)->update([
                 'sent_xml' => $xml,
                 'status' => '1',
@@ -339,38 +340,37 @@ class OrdersController extends Controller
     public function confirmation(Request $request)
     {
         if ($request->ajax()) {
-            
+
             $data = DB::connection('cliqnshop')->table('order_confirmation')->get();
             return DataTables::of($data)
-            ->addIndexColumn()
-            ->editColumn('notice_date', function ($data) {
+                ->addIndexColumn()
+                ->editColumn('notice_date', function ($data) {
                     return Carbon::parse($data->notice_date)->format('M d Y');
                 })
-            ->editColumn('order_date', function ($data) {
+                ->editColumn('order_date', function ($data) {
                     return Carbon::parse($data->order_date)->format('M d Y');
                 })
-                ->rawColumns(['notice_date','order_date'])
+                ->rawColumns(['notice_date', 'order_date'])
                 ->make(true);
         }
         return view('Cliqnshop.confirm');
     }
     public function notification(Request $request)
     {
-        if ($request->ajax()) 
-        {
+        if ($request->ajax()) {
             $ship = DB::connection('cliqnshop')->table('ship_notification')->get();
             return DataTables::of($ship)
-            ->addIndexColumn()
-             ->editColumn('notice_date', function ($data) {
+                ->addIndexColumn()
+                ->editColumn('notice_date', function ($data) {
                     return Carbon::parse($data->notice_date)->format('d M Y');
                 })
-             ->editColumn('shipment_date', function ($data) {
+                ->editColumn('shipment_date', function ($data) {
                     return Carbon::parse($data->shipment_date)->format('d M Y');
                 })
-             ->editColumn('delivery_date', function ($data) {
+                ->editColumn('delivery_date', function ($data) {
                     return Carbon::parse($data->delivery_date)->format('d M Y');
                 })
-                 ->rawColumns(['notice_date','shipment_date','delivery_date'])
+                ->rawColumns(['notice_date', 'shipment_date', 'delivery_date'])
                 ->make(true);
         }
         return view('Cliqnshop.notification');
@@ -378,16 +378,37 @@ class OrdersController extends Controller
 
     public function booked(Request $request)
     {
+        $data =
+        DB::connection('business')->table('orders')->select('sent_payload', 'order_date', 'order_id', 'item_details', 'responce_payload', 'responce_code', 'created_at')->get();
+        $val = ($data[0]->responce_code);
+// dd($val);
         if ($request->ajax()) {
-
-            $data_placed = DB::connection('cliqnshop')->table('order_base_product')
-                ->select('prodcode', 'name', 'quantity', 'price', 'status')
-                ->where('status', '1')
-                ->orderby('baseid', 'desc')
+            $data =
+            DB::connection('business')->table('orders')->select('sent_payload', 'order_date', 'order_id', 'item_details', 'responce_payload', 'responce_code', 'created_at')
+                ->orderby('created_at', 'DESC')
                 ->get();
+            // $data_placed = DB::connection('cliqnshop')->table('order_base_product')
+            //     ->select('prodcode', 'name', 'quantity', 'price', 'status')
+            //     ->where('status', '1')
+            //     ->orderby('baseid', 'desc')
+            //     ->get();
 
-            return DataTables::of($data_placed)
+            return DataTables::of($data)
                 ->addIndexColumn()
+                ->addColumn('asin', function ($data) {
+                    return (json_decode($data->item_details)->asin);
+                })
+                ->addColumn('item_name', function ($data) {
+                return (json_decode($data->item_details)->item_name);
+                })
+                ->addColumn('quantity', function ($data) {
+                return (json_decode($data->item_details)->quantity);
+                })
+                ->editColumn('status', function ($data) {
+                return ($data->responce_code == '200') ? 'Order Request Sent' :'Something Went Wrong Contact Admin';
+                })
+               
+                ->rawColumns(['asin', 'item_name', 'quantity', 'status'])
                 ->make(true);
         }
         return view('Cliqnshop.booked');

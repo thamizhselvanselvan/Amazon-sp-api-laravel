@@ -40,11 +40,15 @@
     <thead>
         <tr class='text-bold bg-info'>
             <th>ID</th>
+            <th>Order ID</th>
+            <th>Sent Payload</th>
             <th>ASIN</th>
             <th>Item Name</th>
-            <th>Price</th>
+            <!-- <th>Price</th> -->
             <th>Quantity</th>
-            <th> Status</th>
+            <th>order Date</th>
+            <th>Responce Payload</th>
+            <th>Status</th>
         </tr>
     </thead>
     <tbody id="data_display">
@@ -72,22 +76,38 @@
                     searchable: false
                 },
                 {
-                    data: 'prodcode',
-                    name: 'prodcode'
+                    data: 'order_id',
+                    name: 'order_id'
                 },
 
                 {
-                    data: 'name',
-                    name: 'name'
+                    data: 'sent_payload',
+                    name: 'sent_payload'
                 },
-
                 {
-                    data: 'price',
-                    name: 'price'
+                    data: 'asin',
+                    name: 'asin'
                 },
+                {
+                    data: 'item_name',
+                    name: 'item_name'
+                },
+                // {
+                //     data: 'price',
+                //     name: 'price'
+                // },
                 {
                     data: 'quantity',
                     name: 'quantity'
+                },
+
+                {
+                    data: 'order_date',
+                    name: 'order_date'
+                },
+                {
+                    data: 'responce_payload',
+                    name: 'responce_payload'
                 },
                 {
                     data: 'status',
