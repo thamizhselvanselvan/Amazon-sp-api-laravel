@@ -210,7 +210,8 @@ class OrderItem
                 $order_detials->updated_at = now();
                 R::store($order_detials);
 
-                $invoice_data['product_price'] = (float)($tem_price / $invoice_data['qty']);
+                $qty = $invoice_data['qty'] > 0 ? $invoice_data['qty'] : 1;
+                $invoice_data['product_price'] = (float)($tem_price / $qty);
 
                 Invoice::upsert(
                     $invoice_data,
