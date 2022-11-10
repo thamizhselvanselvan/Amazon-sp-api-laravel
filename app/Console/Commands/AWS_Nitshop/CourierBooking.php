@@ -50,7 +50,7 @@ class CourierBooking extends Command
             $courier_name = $order_details[0]->courier_name;
 
             $job_parameters = [
-                'order_id' => $order_id,
+                'amazon_order_id' => $order_id,
                 'order_item_id' => $order_item_id,
                 'courier_class' => $courier_name
             ];
