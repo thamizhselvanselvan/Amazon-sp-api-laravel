@@ -39,7 +39,8 @@ class FeedTrackingDetails extends Command
      */
     public function handle()
     {
-        // Log::alert("Feed Command running");
-        (new FeedOrderDetails())->FeedOrderTrackingNo();
+        $class = 'Amazon_feed\UpdateAWBToAmazon';
+        $parms = [];
+        jobDispatchFunc($class, $parms);
     }
 }
