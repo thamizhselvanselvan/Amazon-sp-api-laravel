@@ -1,19 +1,26 @@
 <?php
 
-namespace App\Services\B2CShip;
+namespace App\Services\Courier_Booking;
 
 use Carbon\Carbon;
 use App\Jobs\B2C\B2CBooking;
+use App\Models\order\OrderUpdateDetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 
 
-class B2cshipBooking
+class B2cshipBookingServices
 {
-    public function b2cdata($amazon_order_id)
-    {
+    private $amazon_order_id;
+    private $order_item_id;
 
+    public function b2cdata($amazon_order_id, $order_item_id)
+    {
+        $this->amazon_order_id = $amazon_order_id;
+        $this->order_item_id = $order_item_id;
+
+        Log::alert($amazon_order_id);
         $ord_details = DB::connection('order')
             ->select("SELECT 
                 oids.*, 
@@ -27,8 +34,8 @@ class B2cshipBooking
             on  ord.amazon_order_identifier = oids.amazon_order_identifier
             where
              oids.amazon_order_identifier = '$amazon_order_id'
-              
         ");
+
         $consignee_data = [];
         foreach ($ord_details as $key => $details) {
             $OrderID = $details->order_id;
@@ -39,7 +46,6 @@ class B2cshipBooking
                 $purchase_date = $details->order_date;
             }
 
-
             if (is_null($details->pay_method)) {
                 $payment_method = 'NA';
             } else {
@@ -47,7 +53,7 @@ class B2cshipBooking
             }
 
             if (is_null($details->item)) {
-                $pieces = 'NA';
+                $pieces = '1';
             } else {
                 $pieces = $details->item;
             }
@@ -56,7 +62,6 @@ class B2cshipBooking
             } else {
                 $invoice_no = $details->order_item_identifier;
             }
-
 
             $buyer_data = $details->mail;
 
@@ -68,7 +73,6 @@ class B2cshipBooking
                 $email = $buyer_info->BuyerEmail;
             }
 
-
             $asin = $details->asin;
             $item_name = $details->title;
 
@@ -79,7 +83,6 @@ class B2cshipBooking
             } else {
                 $consignee_tax_amt = $consignee_tax->Amount;
             }
-
 
             if (is_null($consignee_tax)) {
                 $consignee_tax_currency = 'NA';
@@ -105,16 +108,35 @@ class B2cshipBooking
             $consignee_Phone = $this->objKeyVerify($consignee_details, 'Phone');
             $consignee_AddressType = $this->objKeyVerify($consignee_details, 'AddressType');
 
-            $cat_data =   DB::connection('catalog')->select("SELECT * FROM catalognewins  where asin = $asin");
+            $cat_data =   DB::connection('catalog')->select("SELECT dimensions FROM catalognewins  where asin = '$asin'");
 
+            $height = '';
+            $unit = '';
+            $length = '';
+            $weight = '';
+            $width = '';
 
-            $value = $cat_data[0];
+            if (isset($cat_data[0]->dimensions)) {
+                $dimensions = $cat_data[0]->dimensions;
+                $dmns_array = json_decode(($dimensions), true);
+                $height = ($dmns_array[0]['package']['height']['value']);
+                $unit = ($dmns_array[0]['package']['height']['unit']);
+                $length = ($dmns_array[0]['package']['length']['value']);
+                $weight = ($dmns_array[0]['package']['weight']['value']);
+                $width = ($dmns_array[0]['package']['width']['value']);
+            } else {
 
-            $height = $value->height;
-            $unit = $value->unit;
-            $length = $value->length;
-            $weight = $value->weight;
-            $width = $value->width;
+                $getMessage = 'Item Details Not Avaliable';
+                $operation  = 'B2CShip Booking';
+
+                $slackMessage = "Message: $getMessage
+                Asin: $asin,
+                Order_id: $amazon_order_id,
+                Operation: $operation";
+
+                Log::channel('slack')->error($slackMessage);
+                return false;
+            }
 
             $data['OrderID'] =     $OrderID;
             $data['purchase_date'] =  $purchase_date;
@@ -146,28 +168,30 @@ class B2cshipBooking
 
         $this->requestxml($consignee_data);
     }
+
     public function requestxml($consignee_data)
     {
         define('CUSTOMS_PERCENTAGE', 65);
         $consignee_values = $consignee_data;
 
+        $user_id = 'humlofatro@vusra.com';
+        $password = 'G79rC7';
+        $client = 'C10000026';
+
         foreach ($consignee_values as $data) {
 
             $orddate = Carbon::now()->format('d-M-Y');
 
-
             $xml = '<?xml version="1.0" encoding="UTF-8"?>
                     <ShipmentBookingRequest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ShipmentBookingRequest.xsd">
 
-                    <UserId>humlofatro@vusra.com</UserId>
-                    <Password>G79rC7</Password>
+                    <UserId>' . $user_id . '</UserId>
+                    <Password>' . $password . '</Password>
                     <APIVersion>1.0</APIVersion>
-                    <Client>C10000026</Client>
+                    <Client>' . $client . '</Client>
                     <AwbNo></AwbNo>
                     <RefNo></RefNo>
-
                     <BookingDate>' . $orddate . '</BookingDate>
-
                     <ConsignorName>NITROUS HAUL INC</ConsignorName>
                     <ConsignorContactPerson>NITROUS HAUL INC</ConsignorContactPerson>
                     <ConsignorAddressLine1>75 22, 37th Ave,</ConsignorAddressLine1>
@@ -224,15 +248,13 @@ class B2cshipBooking
                     </PCSDescriptionDetails>
                 </ShipmentBookingRequest>';
 
-
-            $this->getawb($xml);
+            $this->verifyApiResponse($this->getawb($xml));
         }
     }
+
     public function getawb($xmldata)
     {
-
         $url = "https://api.b2cship.us/B2CShipAPI.svc/ShipmentBooking";
-
         $headers = array(
             "Content-type: text/xml",
             "Content-length: " . strlen($xmldata),
@@ -242,7 +264,7 @@ class B2cshipBooking
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 500);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
@@ -250,7 +272,7 @@ class B2cshipBooking
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         $data = curl_exec($ch);
-        // return $data;
+
         Log::info($data);
 
         if (curl_errno($ch))
@@ -258,7 +280,6 @@ class B2cshipBooking
         else
             curl_close($ch);
         return $data;
-        // }
     }
 
     public function calculateCustomValue($Data)
@@ -271,16 +292,51 @@ class B2cshipBooking
         $string = str_replace('&', 'and', $string);
         return preg_replace('/[^A-Za-z0-9\-]/', ' ', $string); // Removes special chars.
     }
+
     public  function clean($string)
     {
         $string = str_replace('&', 'and', $string);
         return preg_replace('/[^A-Za-z0-9\-]/', ' ', $string); // Removes special chars.
     }
+
     public function objKeyVerify($obj, $key)
     {
         if (isset($obj->$key)) {
             return $obj->$key;
         }
         return 'NA';
+    }
+
+    public function verifyApiResponse($api_response)
+    {
+        /*slack notification send if failed
+        **else update Awb no into Table
+        */
+
+        Log::debug($this->amazon_order_id);
+        $data = json_decode(json_encode(simplexml_load_string($api_response)), true);
+
+        if (array_key_exists('ErrorDetailCode', $data)) {
+
+            $error = $data['ErrorDetailCode'];
+            $error_desc = $data['ErrorDetailCodeDesc'];
+            $order_id = $this->amazon_order_id;
+
+            $slackMessage = "Message: $error_desc,
+            Type: $error,
+            Order_id: $order_id,
+            Operation: 'B2Cship Booking Response'";
+
+            // Log::channel('slack')->error($slackMessage);
+        } else {
+
+            $awb_no = $data['AWBNo'];
+
+            OrderUpdateDetail::where([
+                ['amazon_order_id', $this->amazon_order_id],
+                ['order_item_id', $this->order_item_id]
+            ])->update(['courier_awb' => $awb_no]);
+        }
+        Log::debug($data);
     }
 }
