@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\BuisnessAPI;
 
+use Carbon\Carbon;
 use Nette\Utils\Json;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
@@ -171,11 +172,11 @@ class OrdersController extends Controller
             $data_pending = DB::connection('cliqnshop')->table('order_base_product')
                 ->select('prodcode', 'name', 'quantity', 'price', 'status')
                 ->where('status', '0')
+                ->orderBy('id', 'DESC')
                 ->get();
             return response()->json(['success' => ' successfull', 'data' => $data_pending]);
         }
     }
-
     public function prodoffers(Request $request)
     {
         $asin = $request->asin;
@@ -338,21 +339,38 @@ class OrdersController extends Controller
     public function confirmation(Request $request)
     {
         if ($request->ajax()) {
-
+            
             $data = DB::connection('cliqnshop')->table('order_confirmation')->get();
             return DataTables::of($data)
-                ->addIndexColumn()
+            ->addIndexColumn()
+            ->editColumn('notice_date', function ($data) {
+                    return Carbon::parse($data->notice_date)->format('M d Y');
+                })
+            ->editColumn('order_date', function ($data) {
+                    return Carbon::parse($data->order_date)->format('M d Y');
+                })
+                ->rawColumns(['notice_date','order_date'])
                 ->make(true);
         }
         return view('Cliqnshop.confirm');
     }
     public function notification(Request $request)
     {
-        if ($request->ajax()) {
-
+        if ($request->ajax()) 
+        {
             $ship = DB::connection('cliqnshop')->table('ship_notification')->get();
             return DataTables::of($ship)
-                ->addIndexColumn()
+            ->addIndexColumn()
+             ->editColumn('notice_date', function ($data) {
+                    return Carbon::parse($data->notice_date)->format('d M Y');
+                })
+             ->editColumn('shipment_date', function ($data) {
+                    return Carbon::parse($data->shipment_date)->format('d M Y');
+                })
+             ->editColumn('delivery_date', function ($data) {
+                    return Carbon::parse($data->delivery_date)->format('d M Y');
+                })
+                 ->rawColumns(['notice_date','shipment_date','delivery_date'])
                 ->make(true);
         }
         return view('Cliqnshop.notification');
