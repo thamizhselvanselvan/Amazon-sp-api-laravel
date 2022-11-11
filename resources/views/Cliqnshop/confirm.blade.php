@@ -39,9 +39,9 @@
                     <th>ID</th>
                     <th>Order ID</th>
                     <th>Order Date</th>
-                    <th>PayloadID</th>
+                    <th>Received  ID</th>
                     <th>confirm ID</th>
-                    <th>Shipment Type</th>
+                    <!-- <th>Shipment Type</th> -->
                     <th>Notice Date</th>
                     <th>Amount</th>
                     <th>Tax</th>
@@ -94,10 +94,10 @@
                     data: 'confirm_id',
                     name: 'confirm_id'
                 },
-                 {
-                    data: 'shipment_type',
-                    name: 'shipment_type'
-                },
+                //  {
+                //     data: 'shipment_type',
+                //     name: 'shipment_type'
+                // },
                  {
                     data: 'notice_date',
                     name: 'notice_date'

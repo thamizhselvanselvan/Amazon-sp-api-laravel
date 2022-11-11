@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs\B2C;
+namespace App\Jobs\Courier_Booking;
 
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -39,7 +39,10 @@ class CourierBookingJob implements ShouldQueue
         $order_item_id = $this->payload['order_item_id'];
         $courier_class_name = $this->payload['courier_class'];
 
-        $booking = new B2cshipBookingServices();
-        $booking->b2cdata($amazon_order_id, $order_item_id);
+        if ($courier_class_name == 'B2CShip') {
+
+            $booking = new B2cshipBookingServices();
+            $booking->b2cdata($amazon_order_id, $order_item_id);
+        }
     }
 }

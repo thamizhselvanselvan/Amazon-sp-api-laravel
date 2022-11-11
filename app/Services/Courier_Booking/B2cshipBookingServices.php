@@ -4,6 +4,7 @@ namespace App\Services\Courier_Booking;
 
 use Carbon\Carbon;
 use App\Jobs\B2C\B2CBooking;
+use App\Models\order\OrderUpdateDetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -18,7 +19,9 @@ class B2cshipBookingServices
     {
         $this->amazon_order_id = $amazon_order_id;
         $this->order_item_id = $order_item_id;
+        $this->Customs_Percentage = 65;
 
+        Log::alert($amazon_order_id);
         $ord_details = DB::connection('order')
             ->select("SELECT 
                 oids.*, 
@@ -51,7 +54,7 @@ class B2cshipBookingServices
             }
 
             if (is_null($details->item)) {
-                $pieces = 'NA';
+                $pieces = '1';
             } else {
                 $pieces = $details->item;
             }
@@ -106,15 +109,35 @@ class B2cshipBookingServices
             $consignee_Phone = $this->objKeyVerify($consignee_details, 'Phone');
             $consignee_AddressType = $this->objKeyVerify($consignee_details, 'AddressType');
 
-            $cat_data =   DB::connection('catalog')->select("SELECT * FROM catalognewins  where asin = $asin");
+            $cat_data =   DB::connection('catalog')->select("SELECT dimensions FROM catalognewins  where asin = '$asin'");
 
-            $value = $cat_data[0];
+            $height = '';
+            $unit = '';
+            $length = '';
+            $weight = '';
+            $width = '';
 
-            $height = $value->height;
-            $unit = $value->unit;
-            $length = $value->length;
-            $weight = $value->weight;
-            $width = $value->width;
+            if (isset($cat_data[0]->dimensions)) {
+                $dimensions = $cat_data[0]->dimensions;
+                $dmns_array = json_decode(($dimensions), true);
+                $height = ($dmns_array[0]['package']['height']['value']);
+                $unit = ($dmns_array[0]['package']['height']['unit']);
+                $length = ($dmns_array[0]['package']['length']['value']);
+                $weight = ($dmns_array[0]['package']['weight']['value']);
+                $width = ($dmns_array[0]['package']['width']['value']);
+            } else {
+
+                $getMessage = 'Item Details Not Avaliable';
+                $operation  = 'B2CShip Booking';
+
+                $slackMessage = "Message: $getMessage
+                Asin: $asin,
+                Order_id: $amazon_order_id,
+                Operation: $operation";
+
+                Log::channel('slack')->error($slackMessage);
+                return false;
+            }
 
             $data['OrderID'] =     $OrderID;
             $data['purchase_date'] =  $purchase_date;
@@ -149,7 +172,7 @@ class B2cshipBookingServices
 
     public function requestxml($consignee_data)
     {
-        define('CUSTOMS_PERCENTAGE', 65);
+        // define('CUSTOMS_PERCENTAGE', 65);
         $consignee_values = $consignee_data;
 
         $user_id = 'humlofatro@vusra.com';
@@ -242,7 +265,7 @@ class B2cshipBookingServices
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 500);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
@@ -262,7 +285,7 @@ class B2cshipBookingServices
 
     public function calculateCustomValue($Data)
     {
-        return round(($Data * (CUSTOMS_PERCENTAGE / 100)), 2);
+        return round(($Data * ($this->Customs_Percentage / 100)), 2);
     }
 
     public function cleanPh($string)
@@ -291,6 +314,30 @@ class B2cshipBookingServices
         **else update Awb no into Table
         */
 
-        Log::debug($api_response);
+        Log::debug($this->amazon_order_id);
+        $data = json_decode(json_encode(simplexml_load_string($api_response)), true);
+
+        if (array_key_exists('ErrorDetailCode', $data)) {
+
+            $error = $data['ErrorDetailCode'];
+            $error_desc = $data['ErrorDetailCodeDesc'];
+            $order_id = $this->amazon_order_id;
+
+            $slackMessage = "Message: $error_desc,
+            Type: $error,
+            Order_id: $order_id,
+            Operation: 'B2Cship Booking Response'";
+
+            // Log::channel('slack')->error($slackMessage);
+        } else {
+
+            $awb_no = $data['AWBNo'];
+
+            OrderUpdateDetail::where([
+                ['amazon_order_id', $this->amazon_order_id],
+                ['order_item_id', $this->order_item_id]
+            ])->update(['courier_awb' => $awb_no]);
+        }
+        Log::debug($data);
     }
 }
