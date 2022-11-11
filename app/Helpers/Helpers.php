@@ -962,7 +962,7 @@ if (!function_exists('fileManagement')) {
     function fileManagement()
     {
         $file_info = FileManagement::select('id', 'user_id', 'type', 'module', 'file_path', 'command_name')->where('status', '0')->get()->toArray();
-        $ignore = ['ASIN_DESTINATION_', 'ASIN_SOURCE_', 'CATALOG_EXPORT_'];
+        $ignore = ['ASIN_DESTINATION_', 'ASIN_SOURCE_', 'CATALOG_PRICE_EXPORT_', 'CATALOG_EXPORT_'];
         $file_management_update = '';
         foreach ($file_info as $file_data) {
 
@@ -978,8 +978,7 @@ if (!function_exists('fileManagement')) {
             $file_management_update = FileManagement::find($fm_id);
             $file_management_update->command_start_time = now();
             $file_management_update->status = '1';
-
-            if ($type == 'EXPORT_CATALOG' || $type == 'EXPORT_CATALOG_PRICE') {
+            if ($type == 'CATALOG_EXPORT' || $type == 'CATALOG_PRICE_EXPORT') {
 
                 commandExecFunc("${command_name} ${priority} ${destination} ${fm_id}");
             } else {
