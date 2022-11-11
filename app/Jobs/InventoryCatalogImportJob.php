@@ -46,8 +46,8 @@ class InventoryCatalogImportJob implements ShouldQueue
             $country_code = $value['source'];
 
             $mws_region = Mws_region::with('aws_verified')->where('region_code', $country_code)->get()->first();
-
-            $auth_code = ($mws_region['aws_verified']['auth_code']);
+            $auth_code = (!is_null($mws_region->aws_verified->first()) ? $mws_region->aws_verified->first()->auth_code : null);
+            // $auth_code = ($mws_region['aws_verified']['auth_code']);
             $aws_id = '';
             $config = $this->config($aws_id, $country_code, $auth_code);
 

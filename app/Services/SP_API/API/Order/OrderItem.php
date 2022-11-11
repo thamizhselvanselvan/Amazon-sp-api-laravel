@@ -18,15 +18,20 @@ use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
 use App\Jobs\Seller\Seller_catalog_import_job;
 use App\Models\Admin\ErrorReporting;
+use App\Models\Invoice;
 use App\Models\order\OrderUpdateDetail;
 
 class OrderItem
 {
     use ConfigTrait;
-
-    public function OrderItemDetails($order_id, $aws_id, $country_code)
+    private $zoho;
+    private $courier_partner;
+    public function OrderItemDetails($order_id, $aws_id, $country_code, $zoho, $courier_partner)
     {
         Log::alert('Order Item Details -> ' . $order_id);
+
+        $this->zoho = $zoho;
+        $this->courier_partner = $courier_partner;
 
         $config = $this->config($aws_id, $country_code);
         $marketplace_ids = $this->marketplace_id($country_code);
@@ -114,7 +119,23 @@ class OrderItem
         $queue_delay = 0;
         $asins = [];
         $asin_source = [];
-        // $asin_table_name = 'asin_source_' . strtolower($awsCountryCode ). 's';
+        $invoice_data = [];
+        $inv_adrs_arr = [
+            'AddressLine1' => NULL,
+            'AddressLine2' => NULL,
+            'City' => NULL,
+            'County' => NULL,
+            'Country' => NULL,
+            'CountryCode' => NULL
+        ];
+
+        $inv_req_arr = [
+            'seller_sku' => 'sku',
+            'title' => 'item_description',
+            'quantity_ordered' => 'qty'
+        ];
+
+        $tem_price = 0;
         $catalog_table_name = 'catalognew' . strtolower($awsCountryCode) . 's';
 
         foreach ($result_orderItems['payload']['order_items'] as $result_order) {
@@ -134,11 +155,13 @@ class OrderItem
                         $detailsKey = str_replace(["id", 'Id', 'ids'], "identifier", $detailsKey);
                     }
 
-                    if (is_array($value)) {
+                    if (is_array($value) || is_object($value)) {
+                        $order_detials->{$detailsKey} = json_encode($value);
+                        if ($detailsKey == 'item_price') {
 
-                        $order_detials->{$detailsKey} = json_encode($value);
-                    } elseif (is_object(($value))) {
-                        $order_detials->{$detailsKey} = json_encode($value);
+                            $invoice_data['currency'] = $value->CurrencyCode;
+                            $tem_price = $value->Amount;
+                        }
                     } else {
                         $order_detials->{$detailsKey} = ($value);
                     }
@@ -146,15 +169,41 @@ class OrderItem
                         $asin = $value;
                     }
 
-                    if ($detailsKey == 'order_item_identifier') {
+                    if (array_key_exists($detailsKey, $inv_req_arr)) {
+                        $invoice_data[$inv_req_arr[$detailsKey]] = $value;
+                    }
 
+                    if ($detailsKey == 'order_item_identifier') {
                         $order_update_details_table[] =  [
                             'store_id' => $aws_id,
                             'amazon_order_id' => $order_id,
-                            'order_item_id' => $value
+                            'order_item_id' => $value,
+                            'courier_name' => $this->courier_partner,
+                            'amzn_temp_order_status' => 'unshipped'
                         ];
                     }
                 }
+
+                $order_address_arr = json_decode($order_address, true);
+                if ($order_address_arr) {
+                    if (array_key_exists('Name', $order_address_arr)) {
+                        $invoice_data['bill_to_name'] = $order_address_arr['Name'];
+                        $invoice_data['ship_to_name'] = $order_address_arr['Name'];
+                    }
+                }
+
+                $tem_add = '';
+                foreach ($inv_adrs_arr as $key => $add_value) {
+                    if ($order_address_arr) {
+                        if (array_key_exists($key, $order_address_arr)) {
+                            $tem_add .= $order_address_arr[$key] . ', ';
+                        }
+                    }
+                }
+
+                $invoice_data['bill_to_add'] = substr_replace($tem_add, "", -2);
+                $invoice_data['ship_to_add'] = substr_replace($tem_add, "", -2);
+                $invoice_data['amazon_order_identifier'] = $order_id;
 
                 $order_detials->amazon_order_identifier = $order_id;
                 $order_detials->shipping_address = $order_address;
@@ -162,8 +211,27 @@ class OrderItem
                 $order_detials->updated_at = now();
                 R::store($order_detials);
 
-                $asins = DB::connection('catalog')->select("SELECT asin FROM $catalog_table_name where asin = '$asin' ");
+                $qty = $invoice_data['qty'] > 0 ? $invoice_data['qty'] : 1;
+                $invoice_data['product_price'] = (float)($tem_price / $qty);
 
+                Invoice::upsert(
+                    $invoice_data,
+                    ['order_id_sku_unique'],
+                    [
+                        'sku',
+                        'item_description',
+                        'qty',
+                        'currency',
+                        'product_price',
+                        'bill_to_name',
+                        'bill_to_add',
+                        'ship_to_name',
+                        'ship_to_add',
+                        'amazon_order_identifier'
+                    ]
+                );
+
+                $asins = DB::connection('catalog')->select("SELECT asin FROM $catalog_table_name where asin = '$asin' ");
                 if (count($asins) <= 0) {
                     $asin_source[] = [
                         'asin' => $asin,
@@ -172,14 +240,13 @@ class OrderItem
                         'id'    =>  '4',
                     ];
 
-                    jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
+                    //                    jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
                 }
             }
         }
 
-        if ($aws_id == 5 || $aws_id == 6) {
-            Log::alert(count($order_update_details_table));
-            OrderUpdateDetail::upsert($order_update_details_table, ['store_id', 'amazon_order_id', 'order_itme_id']);
+        if ($this->zoho == 1) {
+            OrderUpdateDetail::upsert($order_update_details_table, ['amzn_ord_item_id_unique'], ['store_id', 'amazon_order_id', 'order_item_id']);
         }
 
         DB::connection('order')

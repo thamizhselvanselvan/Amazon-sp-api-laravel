@@ -45,7 +45,7 @@
                     <th>Order</th>
                     <th>Order Item</th>
                     <th>Enable ShipNTrack</th>
-                    <th>Enable Zoho Insert</th>
+                    <th>Enable Zoho|Courier Booking|AWB Upload</th>
                     <th>Courier Partner</th>
                     <th>Source</th>
                     <th>Destination</th>

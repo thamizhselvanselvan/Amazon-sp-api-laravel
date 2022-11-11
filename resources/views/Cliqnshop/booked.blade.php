@@ -54,7 +54,7 @@
 @stop
 @section('js')
 <script type="text/javascript">
-  $(function() {
+    $(function() {
 
         $.extend($.fn.dataTable.defaults, {
             pageLength: 50,
@@ -71,29 +71,29 @@
                     orderable: false,
                     searchable: false
                 },
-                    {
+                {
                     data: 'prodcode',
                     name: 'prodcode'
                 },
-            
-                 {
+
+                {
                     data: 'name',
                     name: 'name'
                 },
-                 {
-                    data: 'quantity',
-                    name: 'quantity'
-                },
-               
-                 {
+
+                {
                     data: 'price',
                     name: 'price'
                 },
-                 {
+                {
+                    data: 'quantity',
+                    name: 'quantity'
+                },
+                {
                     data: 'status',
                     name: 'status'
                 },
-                 
+
             ]
         });
 

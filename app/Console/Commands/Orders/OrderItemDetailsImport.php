@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Orders;
 
+use App\Models\order\OrderSellerCredentials;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -42,17 +43,27 @@ class OrderItemDetailsImport extends Command
     public function handle()
     {
         $order_item = new OrderItem();
+        // $order_item->OrderItemDetails('402-6119301-9353145', 35, 'AE', 1, "");
+        // exit;
+        // $seller_id_array  = DB::connection('order')->select('SELECT our_seller_identifier 
+        // from orders group by our_seller_identifier');
 
-        $seller_id_array  = DB::connection('order')->select('SELECT our_seller_identifier 
-        from orders group by our_seller_identifier');
+        // $tem_seller_id = [];
+        // foreach ($seller_id_array as $key => $value) {
+        //     $tem_seller_id[$key] = $value->our_seller_identifier;
+        // }
 
-        $seller_id = '';
+        $seller_id_array = OrderSellerCredentials::where('dump_order', 1)->get();
+
         foreach ($seller_id_array as $value) {
-            $seller_id = $value->our_seller_identifier;
-            if ($seller_id != 44) {
+            $seller_id = $value->seller_id;
+            $zoho = $value->zoho;
+            $courier_partner = $value->courier_partner;
 
-                $missing_order_id = DB::connection('order')
-                    ->select("SELECT ord.amazon_order_identifier, ord.our_seller_identifier, ord.country
+            // if ($seller_id != 44) {
+
+            $missing_order_id = DB::connection('order')
+                ->select("SELECT ord.amazon_order_identifier, ord.our_seller_identifier, ord.country
                     from orders as ord
                             left join 
                         orderitemdetails as oids on ord.amazon_order_identifier = oids.amazon_order_identifier 
@@ -65,17 +76,15 @@ class OrderItemDetailsImport extends Command
                     limit 1
                 ");
 
-                foreach ($missing_order_id as $details) {
+            foreach ($missing_order_id as $details) {
 
-                    $country = $details->country;
-                    $order_id = $details->amazon_order_identifier;
-                    $aws_id = $details->our_seller_identifier;
+                $country = $details->country;
+                $order_id = $details->amazon_order_identifier;
+                $aws_id = $details->our_seller_identifier;
 
-                    Log::info("Command $order_id -> $aws_id");
-
-                    $order_item->OrderItemDetails($order_id, $aws_id, $country);
-                }
+                $order_item->OrderItemDetails($order_id, $aws_id, $country, $zoho, $courier_partner);
             }
+            // }
         }
     }
 }
