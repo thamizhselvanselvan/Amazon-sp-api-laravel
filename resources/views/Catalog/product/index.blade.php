@@ -18,13 +18,13 @@
                 </a>
             </h2> --}}
             <!-- <h2 class="ml-2">
-                            <x-adminlte-button label="Cliqnshop Catalog Export" theme="primary" class="btn-sm" icon="fas fa-file-export"
-                                id="exportcliqnshopCatalog" />
-                        </h2>
-                        <h2 class="ml-2">
-                            <x-adminlte-button label="Download Cliqnshop Catalog" theme="primary" class="btn-sm" icon="fas fa-download"
-                                id="catalogcliqnshopdownload" data-toggle="modal" data-target="#downloacliqdModal" />
-                        </h2> -->
+                                                                                                                                                                                                                            <x-adminlte-button label="Cliqnshop Catalog Export" theme="primary" class="btn-sm" icon="fas fa-file-export"
+                                                                                                                                                                                                                                id="exportcliqnshopCatalog" />
+                                                                                                                                                                                                                        </h2>
+                                                                                                                                                                                                                        <h2 class="ml-2">
+                                                                                                                                                                                                                            <x-adminlte-button label="Download Cliqnshop Catalog" theme="primary" class="btn-sm" icon="fas fa-download"
+                                                                                                                                                                                                                                id="catalogcliqnshopdownload" data-toggle="modal" data-target="#downloacliqdModal" />
+                                                                                                                                                                                                                        </h2> -->
 
             <h2 class="ml-2">
                 <x-adminlte-button label="Export Catalog" theme="primary" class="btn-sm" icon="fas fa-file-export"
@@ -45,21 +45,21 @@
             </h2>
 
             <!-- <div class="modal" id="downloacliqdModal">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h4 class="modal-title">Download Cliqnshop Catalog </h4>
-                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    </div>
-                                    <div class="modal-body catalogcliqnshop">
+                                                                                                                                                                                                                            <div class="modal-dialog">
+                                                                                                                                                                                                                                <div class="modal-content">
+                                                                                                                                                                                                                                    <div class="modal-header">
+                                                                                                                                                                                                                                        <h4 class="modal-title">Download Cliqnshop Catalog </h4>
+                                                                                                                                                                                                                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                    <div class="modal-body catalogcliqnshop">
 
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
+                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                    <div class="modal-footer">
+                                                                                                                                                                                                                                        <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                        </div> -->
 
             <div class="modal fade" id="catalogExport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
@@ -106,7 +106,7 @@
 
                                 <div class="col-12 float-left mt-2">
                                     <x-adminlte-button label="Export" theme="success" class="btn btn-sm "
-                                        icon="fas fa-file-export " type="submit" />
+                                        icon="fas fa-file-export " type="submit" id="catalog_export" />
                                 </div>
                             </form>
                         </div>
@@ -180,7 +180,8 @@
                                     <div class="col-2 float-left mt-2">
                                         <div style="margin-top: 2.1rem;">
                                             <x-adminlte-button label="Export" theme="success" id='ok'
-                                                class="btn btn-sm " icon="fas fa-file-export " type="submit" />
+                                                class="btn btn-sm " icon="fas fa-file-export " type="submit"
+                                                id="catalogPriceExportButton" />
                                         </div>
                                     </div>
                                 </div>
@@ -293,6 +294,50 @@
 
 @section('js')
     <script type="text/javascript">
+        // $(document).ready(function() {
+        $('#exportCatalog').click(function() {
+
+            $.ajax({
+                method: 'get',
+                url: "{{ route('catalog.export.file.management.monitor') }}",
+                data: {
+                    "module_type": "EXPORT_CATALOG",
+                    "_token": "{{ csrf_token() }}",
+                },
+                response: 'json',
+                success: function(response) {
+                    console.log(response);
+                    if (response == '0000-00-00 00:00:00') {
+
+                        $('#catalog_export').prop('disabled', true);
+                    }
+
+                },
+            });
+        });
+
+        $('#export_catalog_price').click(function() {
+
+            $.ajax({
+                method: 'get',
+                url: "{{ route('catalog.export.file.management.monitor') }}",
+                data: {
+                    "module_type": "EXPORT_CATALOG_PRICE",
+                    "_token": "{{ csrf_token() }}",
+                },
+                response: 'json',
+                success: function(response) {
+                    console.log(response);
+                    if (response == '0000-00-00 00:00:00') {
+
+                        $('#catalogPriceExportButton').prop('disabled', true);
+                    }
+
+                },
+            });
+        });
+        // });
+
         $(".datepicker").daterangepicker({
             autoUpdateInput: false,
             locale: {
@@ -308,18 +353,18 @@
             $(this).val('');
         });
 
-        $('#country').on('change', function() {
-            let country_code = $(this).val();
-            if (country_code != 'NULL') {
-                yajraTable(country_code);
-            }
-        });
+        // $('#country').on('change', function() {
+        //     let country_code = $(this).val();
+        //     if (country_code != 'NULL') {
+        //         yajraTable(country_code);
+        //     }
+        // });
 
-        $(document).ready(function() {
-            $('#country').change(function() {
-                document.getElementById('countrymsg').innerHTML = '';
-            });
-        });
+        // $(document).ready(function() {
+        //     $('#country').change(function() {
+        //         document.getElementById('countrymsg').innerHTML = '';
+        //     });
+        // });
 
         $('#catalogdownload').click(function() {
 

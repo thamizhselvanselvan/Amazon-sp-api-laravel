@@ -3,6 +3,7 @@
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use App\Models\Aws_credential;
+use App\Models\FileManagement;
 use PhpParser\Node\Expr\Eval_;
 use App\Models\Catalog\Catalog;
 use App\Models\Admin\Ratemaster;
@@ -954,5 +955,64 @@ if (!function_exists('makecomma')) {
         $length = substr($input, 0, strlen($input) - 2);
         $formatted_input = makecomma($length) . "," . substr($input, -2);
         return $formatted_input;
+    }
+}
+
+if (!function_exists('fileManagement')) {
+    function fileManagement()
+    {
+        $file_info = FileManagement::select('id', 'user_id', 'type', 'module', 'file_path', 'command_name')->where('status', '0')->get()->toArray();
+        $ignore = ['ASIN_DESTINATION_', 'ASIN_SOURCE_', 'CATALOG_EXPORT_'];
+        $file_management_update = '';
+        foreach ($file_info as $file_data) {
+
+            $fm_id = $file_data['id'];
+            $user_id = $file_data['user_id'];
+            $type = $file_data['type'];
+            $module = explode('_', str_replace($ignore, '', $file_data['module']));
+            $path = $file_data['file_path'];
+            $command_name = $file_data['command_name'];
+            $destination = isset($module[0]) ? $module[0] : '';
+            $priority = isset($module[1]) ? $module[1] : '';
+
+            $file_management_update = FileManagement::find($fm_id);
+            $file_management_update->command_start_time = now();
+            $file_management_update->status = '1';
+
+            if ($type == 'EXPORT_CATALOG' || $type == 'EXPORT_CATALOG_PRICE') {
+
+                commandExecFunc("${command_name} ${priority} ${destination} ${fm_id}");
+            } else {
+
+                commandExecFunc("${command_name} ${user_id} ${priority} --country_code=${destination} ${path} ${fm_id}");
+            }
+            $file_management_update->update();
+        }
+    }
+}
+
+if (!function_exists('fileManagementUpdate')) {
+    function fileManagementUpdate($id, $command_end_time = null)
+    {
+        // log::alert($id);
+        $file_management_update_sep = FileManagement::find($id);
+        // log::alert($command_end_time);
+        $file_management_update_sep->command_end_time = $command_end_time;
+        $file_management_update_sep->update();
+    }
+}
+
+if (!function_exists('fileManagementMonitoring')) {
+    function fileManagementMonitoring(String $module_type)
+    {
+
+        $file_data = '';
+        $type = $module_type;
+        $file_management_info = FileManagement::select('command_end_time')->where('type', $type)->where('command_end_time', '0000-00-00 00:00:00')->get()->toArray();
+
+        if (count($file_management_info) > 0) {
+            $file_data = $file_management_info[0]['command_end_time'];
+        }
+        return $file_data;
     }
 }
