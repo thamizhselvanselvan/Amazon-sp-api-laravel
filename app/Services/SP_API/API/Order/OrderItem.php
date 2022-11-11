@@ -28,7 +28,7 @@ class OrderItem
     private $courier_partner;
     public function OrderItemDetails($order_id, $aws_id, $country_code, $zoho, $courier_partner)
     {
-        Log::alert('Order Item Details -> ' . $order_id);
+        //Log::alert('Order Item Details -> ' . $order_id);
 
         $this->zoho = $zoho;
         $this->courier_partner = $courier_partner;

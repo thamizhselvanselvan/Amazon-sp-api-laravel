@@ -43,10 +43,10 @@ class FeedOrderDetailsApp360
 
         $marketplace_ids = $this->marketplace_id($country_code);
 
-        Log::alert('Merchant_id ->' . $merchant_id);
-        Log::alert('quantity ->' . $quantity);
-        Log::alert('country_code ->' . $country_code);
-        Log::alert('marketplace_ids ->' . $marketplace_ids);
+        //Log::alert('Merchant_id ->' . $merchant_id);
+        //Log::alert('quantity ->' . $quantity);
+        //Log::alert('country_code ->' . $country_code);
+        //Log::alert('marketplace_ids ->' . $marketplace_ids);
 
         $config = $this->config($store_id, $country_code, $token = NULL);
 
