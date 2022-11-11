@@ -129,10 +129,13 @@ class ZohoOrder
     public function index($amazon_order_id = null)
     {
 
-        if (!$amazon_order_id) {
-            $orderItems = OrderUpdateDetail::whereNull('courier_name')->whereNull('courier_awb')->limit(1)->first();
-            $amazon_order_id = $orderItems->amazon_order_id;
-        }
+        // if (!$amazon_order_id) {
+        //     $orderItems = OrderUpdateDetail::whereNull('zoho_id')->limit(1)->first();
+        //     $amazon_order_id = $orderItems->amazon_order_id;
+        // } else {
+        $orderItems = OrderUpdateDetail::where('amazon_order_id', $amazon_order_id)->whereNull('zoho_id')->limit(1)->first();
+        $amazon_order_id = $orderItems->amazon_order_id;
+        // }
 
         if (!$amazon_order_id) {
             Log::channel('slack')->error('Amazon Order id not passed');
