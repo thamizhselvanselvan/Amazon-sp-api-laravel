@@ -174,19 +174,19 @@ class ZohoOrder
 
             $auth_token = $this->getAccessToken();
 
-            $idToWork = 377125000000426001;
+            $idToWork = 377125000000428001;
 
             $response = Http::withoutVerifying()
                 ->withHeaders([
                     'Authorization' => 'Zoho-oauthtoken ' . $auth_token
                 ])->get('https://www.zohoapis.in/crm/v2/Leads/' . $idToWork);
 
-            //po($response->status());
-            //po($response->json()['data'][0]['Email']);
+            po($response->status());
+            po($response->json()['data'][0]['Email']);
 
 
             $recordObject = array();
-            $recordObject["Email"] = Str::random() . "robin@yahoo.com";
+            $recordObject["Email"] = Str::random() . "robin@gmail.com";
             $recordObject["id"] = $idToWork;
 
             $recordArray[] = $recordObject;
@@ -198,16 +198,16 @@ class ZohoOrder
                     "data" => $recordArray
                 ]);
 
-            //po($response->status());
-            //po($response->json());
+            po($response->status());
+            po($response->json());
 
             $response = Http::withoutVerifying()
                 ->withHeaders([
                     'Authorization' => 'Zoho-oauthtoken ' . $auth_token
                 ])->get('https://www.zohoapis.in/crm/v2/Leads/' . $idToWork);
 
-            //po($response->status());
-            //po($response->json()['data'][0]['Email']);
+            po($response->status());
+            po($response->json()['data'][0]['Email']);
 
             $prod_array = $this->zohoOrderFormating($order_item_details);
             po($prod_array);
