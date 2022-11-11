@@ -176,7 +176,7 @@ class B2cshipBookingServices
     public function requestxml($consignee_values)
     {
 
-        if (App::environment() == 'Production' || true) {
+        if (App::environment() == 'Production') {
             if ($this->store_id == 6) {
                 $user_id = 'nitroushaulinc@gmail.com';
                 $password = 'G79rC7@NIT';
