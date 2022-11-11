@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Catalog\Asin_destination;
+use App\Models\FileManagement;
 use Yajra\DataTables\Facades\DataTables;
 
 class AsinDestinationController extends Controller
@@ -103,7 +104,21 @@ class AsinDestinationController extends Controller
             $path = "AsinDestination/asin${import_file_time}.csv";
             Storage::put($path, $file);
 
-            commandExecFunc("mosh:Asin-destination-upload ${user_id} ${priority} --destination=${destination} ${path}");
+            $file = $request->asin;
+            $file_name = $file->getClientOriginalName();
+
+            $file_info = [
+                'user_id' => $user_id,
+                'type' => 'IMPORT_ASIN_DESTINATION',
+                'module' => "ASIN_DESTINATION_${destination}_${priority}",
+                'file_name' => $file_name,
+                'file_path' => $path,
+                'command_name' => 'mosh:Asin-destination-upload',
+
+            ];
+            FileManagement::create($file_info);
+            fileManagement();
+            // commandExecFunc("mosh:Asin-destination-upload ${user_id} ${priority} --destination=${destination} ${path}");
         }
         return redirect('catalog/import-asin-destination')->with('success', 'File has been uploaded successfully');
     }
@@ -212,5 +227,13 @@ class AsinDestinationController extends Controller
 
         commandExecFunc("mosh:search-asin-delete-bb-destination ${priority} ${source} ${asins}");
         return redirect('/catalog/asin-destination')->with('success', 'ASINS has been deleted successfully!');
+    }
+
+    public function DestinationFileManagementMonitor(Request $request)
+    {
+        $type = $request->module_type;
+        $file_check = fileManagementMonitoring($type);
+        // po($file_check);
+        return response()->json($file_check);
     }
 }

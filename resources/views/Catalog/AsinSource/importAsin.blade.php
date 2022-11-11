@@ -58,14 +58,14 @@
 
                     <div class="col-6">
                         <!-- <x-adminlte-select name="source" label="Select Source" id="source">
-                                    
-                                    <option value="">Select Source</option>
-                                    <option value="IN">IN</option>
-                                    <option value="AE">AE</option>
-                                    <option value="US">US</option>
-                                    <option value="UK">UK</option>
+                                                                                
+                                                                                <option value="">Select Source</option>
+                                                                                <option value="IN">IN</option>
+                                                                                <option value="AE">AE</option>
+                                                                                <option value="US">US</option>
+                                                                                <option value="UK">UK</option>
 
-                                </x-adminlte-select> -->
+                                                                            </x-adminlte-select> -->
                         <label for="Select Source">Select Source</label><br>
                         <div class="row ">
                             <div class="col-2">
@@ -128,8 +128,8 @@
 
                     <div class="col-12">
                         <div class="text-center">
-                            <x-adminlte-button label="Upload" theme="primary" class="add_asin" icon="fas fa-plus"
-                                type="submit" />
+                            <x-adminlte-button label="Upload" theme="primary" class="add_asin" id="bulk_import_button"
+                                icon="fas fa-plus" type="submit" />
 
                         </div>
                     </div>
@@ -152,6 +152,26 @@
         $('#bulk-asin').click(function() {
             $('.bulk-asin').removeClass('d-none');
             $('.text-area').addClass('d-none');
+        });
+
+        $(document).ready(function() {
+            $.ajax({
+                method: 'get',
+                url: "/catalog/source/file/monitor/",
+                data: {
+                    "module_type": "IMPORT_ASIN_SOURCE",
+                    "_token": "{{ csrf_token() }}",
+                },
+                response: 'json',
+                success: function(response) {
+                    console.log(response);
+                    if (response == '0000-00-00 00:00:00') {
+
+                        $('#bulk_import_button').prop('disabled', true);
+                    }
+
+                },
+            });
         });
     </script>
 @stop

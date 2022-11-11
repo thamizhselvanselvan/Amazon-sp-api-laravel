@@ -5,7 +5,6 @@ use Carbon\Carbon;
 use App\Models\User;
 use League\Csv\Reader;
 use App\Events\testEvent;
-use AWS\CRT\HTTP\Request;
 use App\Events\checkEvent;
 use App\Models\Mws_region;
 use Maatwebsite\Excel\Row;
@@ -14,6 +13,7 @@ use Illuminate\Support\Str;
 use Smalot\PdfParser\Parser;
 use App\Models\Aws_credential;
 use App\Services\Zoho\ZohoApi;
+use App\Models\FileManagement;
 use Dflydev\DotAccessData\Data;
 use SellingPartnerApi\Endpoint;
 use App\Models\Inventory\Shelve;
@@ -411,9 +411,7 @@ Route::get('data', function () {
 
 Route::get('country', function () {
 
-
     Log::channel('slack')->error('Hello world! for app 360');
-    exit;
 
     $path =  public_path('country.json');
     $jsonfile = json_decode(file_get_contents($path), true);
