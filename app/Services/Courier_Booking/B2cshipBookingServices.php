@@ -26,13 +26,13 @@ class B2cshipBookingServices
         Log::alert($amazon_order_id);
 
         $order_details = DB::connection('order')
-            ->select("SELECT 
-                oids.*, 
-                ord.amazon_order_identifier as order_id, 
+            ->select("SELECT
+                oids.*,
+                ord.amazon_order_identifier as order_id,
                 ord.purchase_date as order_date,
                 ord.payment_method_details as pay_method,
                 ord.order_item as item,
-                ord.buyer_info as mail 
+                ord.buyer_info as mail
             FROM orders AS ord
             INNER join orderitemdetails AS oids
             ON ord.amazon_order_identifier = oids.amazon_order_identifier
@@ -289,7 +289,7 @@ class B2cshipBookingServices
 
         $data = curl_exec($ch);
 
-        Log::info($data);
+        //Log::info($data);
 
         return $data;
     }
@@ -338,6 +338,6 @@ class B2cshipBookingServices
                 ['order_item_id', $this->order_item_id]
             ])->update(['courier_awb' => $awb_no]);
         }
-        Log::debug($data);
+        //Log::debug($data);
     }
 }
