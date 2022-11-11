@@ -23,7 +23,7 @@
     <div class="col-1.5">
         <div style="margin-top: 2.0rem;">
             <h2 class="">
-                <h1 class="m-0 text-dark"> Orders Test: &nbsp;</h1>
+                <h1 class="m-0 text-dark"> Orders Status: &nbsp;</h1>
             </h2>
         </div>
     </div>
@@ -137,11 +137,37 @@
                         html += "<tr>";
                         html += "<td>" + value.amazon_order_id + "</td>";
                         html += "<td>" + value.order_item_id + "</td>";
-                        html += "<td>" + value.courier_name + "</td>";
-                        html += "<td>" + value.courier_awb + "</td>";
-                        html += "<td>" + value.zoho_id + "</td>";
-                        html += "<td>" + value.zoho_order_id + "</td>";
-                        html += "<td>" + value.amzn_temp_order_status + "</td>";
+
+
+                        if (value.courier_name == null) {
+                            html += "<td>" + 'NA' + "</td>";
+                        } else {
+                            html += "<td>" + value.courier_name + "</td>";
+                        }
+
+                        if (value.courier_awb == null) {
+                            html += "<td>" + 'NA' + "</td>";
+                        } else {
+                            html += "<td>" + value.courier_awb + "</td>";
+                        }
+
+                        if (value.zoho_id == null) {
+                            html += "<td>" + 'NA' + "</td>";
+                        } else {
+                            html += "<td>" + value.zoho_id + "</td>";
+                        }
+
+                        if (value.zoho_order_id == null) {
+                            html += "<td>" + 'NA' + "</td>";
+                        } else {
+                            html += "<td>" + value.zoho_order_id + "</td>";
+                        }
+                        if (value.amzn_temp_order_status == null) {
+                            html += "<td>" + 'NA' + "</td>";
+                        } else {
+                            html += "<td>" + value.amzn_temp_order_status + "</td>";
+                        }
+
                         html += "<td>" + d.toDateString() + "</td>";
                         html += "</tr>";
 
