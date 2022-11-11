@@ -3,6 +3,7 @@
 namespace App\Services\Zoho;
 
 use in;
+use Str;
 use DateTime;
 use Carbon\Carbon;
 use App\Models\order\Order;
@@ -135,7 +136,7 @@ class ZohoOrder
             echo "<HR>";
         }
 
-        if(isset($orderItems) && $orderItems->zoho_id && false){
+        if (isset($orderItems) && $orderItems->zoho_id) {
             return "Zoho ID for Amazon Order id $amazon_order_id is already created";
         }
 
@@ -172,6 +173,44 @@ class ZohoOrder
         if ($order_item_details) {
 
             $auth_token = $this->getAccessToken();
+            po($auth_token);
+
+            $idToWork = 377125000000426001;
+
+            $response = Http::withoutVerifying()
+                ->withHeaders([
+                    'Authorization' => 'Zoho-oauthtoken ' . $auth_token
+                ])->get('https://www.zohoapis.in/crm/v2/Leads/' . $idToWork);
+
+            po($response->status());
+            po($response->json()['data'][0]['Email']);
+
+
+            $recordObject = array();
+            $recordObject["Email"] = Str::random()."robin@yahoo.com";
+            $recordObject["id"] = $idToWork;
+
+            $recordArray[] = $recordObject;
+
+            $response = Http::withoutVerifying()
+                ->withHeaders([
+                    'Authorization' => 'Zoho-oauthtoken ' . $auth_token
+                ])->put('https://www.zohoapis.in/crm/v2/Leads/' . $idToWork, [
+                    "data" => $recordArray
+                ]);
+
+            po($response->status());
+            po($response->json());
+
+            $response = Http::withoutVerifying()
+                ->withHeaders([
+                    'Authorization' => 'Zoho-oauthtoken ' . $auth_token
+                ])->get('https://www.zohoapis.in/crm/v2/Leads/' . $idToWork);
+
+            po($response->status());
+            po($response->json()['data'][0]['Email']);
+
+            exit;
 
             $prod_array = $this->zohoOrderFormating($order_item_details);
             //po($prod_array);
@@ -228,7 +267,7 @@ class ZohoOrder
 
     public function getAccessToken()
     {
-        $zohoURL = "https://accounts.zoho.com/oauth/v2/token";
+        $zohoURL = "https://accounts.zoho.in/oauth/v2/token";
 
         $client_id = config('app.zoho_client_id');
         $client_secret = config('app.zoho_secret');
@@ -264,6 +303,18 @@ class ZohoOrder
 
     public function insertOrderItemsToZoho($prod_array, $auth_token)
     {
+
+        $response = Http::withoutVerifying()
+            ->withHeaders([
+                'Authorization' => 'Zoho-oauthtoken ' . $auth_token
+            ])->post('https://www.zohoapis.com/crm/v2/Leads', [
+                'data' => prod_array
+            ]);
+
+        po($response->status());
+        po($response->json());
+
+        exit;
         $curl_pointer = curl_init();
 
         $curl_options = array();
