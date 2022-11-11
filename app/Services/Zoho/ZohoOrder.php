@@ -135,7 +135,7 @@ class ZohoOrder
         }
 
         if (!$amazon_order_id) {
-
+            Log::channel('slack')->error('Amazon Order id not passed');
             return true;
         }
 
