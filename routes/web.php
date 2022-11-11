@@ -65,6 +65,18 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
 Route::get('zoho_update', function () {
 
+
+    exit;
+    $test = json_decode('{"data":[{"code":"SUCCESS","details":{"Modified_Time":"2022-11-11T18:13:51+05:30","Modified_By":{"name":"Mosh","id":"1929333000000097003"},"Created_Time":"2022-11-11T18:13:51+05:30","id":"1929333000099290066","Created_By":{"name":"Mosh","id":"1929333000000097003"}},"message":"record added","status":"success"}]}', true);
+
+    if (array_key_exists('data', $test) && array_key_exists(0, $test['data']) && array_key_exists('code', $test['data'][0])) {
+        //   /  dd($test['data'][0]['details']['id']);
+    }
+
+    dd($test);
+
+    exit;
+
     // $zoho = new ZohoApi;
     // dd($zoho->getAccessToken());
 

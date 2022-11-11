@@ -6,11 +6,12 @@ use in;
 use DateTime;
 use Carbon\Carbon;
 use App\Models\order\Order;
+use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingUs;
 use App\Models\Catalog\Catalog_in;
 use App\Models\Catalog\Catalog_us;
-use App\Models\Catalog\PricingIn;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use App\Models\order\OrderItemDetails;
 use App\Models\order\OrderUpdateDetail;
@@ -128,58 +129,82 @@ class ZohoOrder
     public function index($amazon_order_id = null)
     {
 
-        $orderItems = OrderUpdateDetail::whereNull('courier_name')->whereNull('courier_awb')->limit(1)->first();
+        // if (!$amazon_order_id) {
+        //     $orderItems = OrderUpdateDetail::whereNull('zoho_id')->limit(1)->first();
+        //     $amazon_order_id = $orderItems->amazon_order_id;
+        // } else {
+        $orderItems = OrderUpdateDetail::where('amazon_order_id', $amazon_order_id)->whereNull('zoho_id')->limit(1)->first();
+        $amazon_order_id = $orderItems->amazon_order_id;
+        // }
 
-        // dd($this->getAccessToken());
+        if (!$amazon_order_id) {
+            Log::channel('slack')->error('Amazon Order id not passed');
+            return true;
+        }
 
-        if ($orderItems) {
+        $order_table_name = 'orders';
+        $order_item_table_name = 'orderitemdetails';
 
-            if ($amazon_order_id) {
-                $orderItems->amazon_order_id = $amazon_order_id;
-            }
+        $order_details = [
+            "$order_item_table_name.seller_identifier",
+            "$order_item_table_name.asin",
+            "$order_item_table_name.seller_sku",
+            "$order_item_table_name.title",
+            "$order_item_table_name.order_item_identifier",
+            "$order_item_table_name.quantity_ordered",
+            "$order_item_table_name.item_price",
+            "$order_table_name.fulfillment_channel",
+            "$order_table_name.our_seller_identifier",
+            "$order_table_name.amazon_order_identifier",
+            "$order_table_name.purchase_date",
+            "$order_item_table_name.shipping_address",
+            "$order_table_name.earliest_delivery_date",
+            "$order_table_name.buyer_info",
+            "$order_table_name.order_total",
+            "$order_table_name.latest_delivery_date",
+            "$order_table_name.is_business_order",
+        ];
 
-            $order_table_name = 'orders';
-            $order_item_table_name = 'orderitemdetails';
+        $order_item_details = OrderItemDetails::select($order_details)
+            ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
+            ->where('orderitemdetails.amazon_order_identifier', $amazon_order_id)
+            ->with(['store_details.mws_region'])
+            ->limit(1)
+            ->first();
 
-            $order_details = [
-                "$order_item_table_name.seller_identifier",
-                "$order_item_table_name.asin",
-                "$order_item_table_name.seller_sku",
-                "$order_item_table_name.title",
-                "$order_item_table_name.order_item_identifier",
-                "$order_item_table_name.quantity_ordered",
-                "$order_item_table_name.item_price",
-                "$order_table_name.fulfillment_channel",
-                "$order_table_name.our_seller_identifier",
-                "$order_table_name.amazon_order_identifier",
-                "$order_table_name.purchase_date",
-                "$order_item_table_name.shipping_address",
-                "$order_table_name.earliest_delivery_date",
-                "$order_table_name.buyer_info",
-                "$order_table_name.order_total",
-                "$order_table_name.latest_delivery_date",
-                "$order_table_name.is_business_order",
-            ];
+        if ($order_item_details) {
 
-            $order_item_details = OrderItemDetails::select($order_details)
-                ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
-                ->where('orderitemdetails.amazon_order_identifier', $orderItems->amazon_order_id)
-                ->with(['store_details.mws_region'])
-                ->limit(1)
-                ->first();
+            $auth_token = $this->getAccessToken();
+            $prod_array = $this->zohoOrderFormating($order_item_details);
 
-            if ($order_item_details) {
+            $zoho_api_save = $this->insertOrderItemsToZoho($prod_array, $auth_token);
+            $zoho_response = json_decode($zoho_api_save, true);
+            Log::channel('slack')->error("Zoho Response : " . $zoho_api_save);
+            if (array_key_exists('data', $zoho_response) && array_key_exists(0, $zoho_response['data']) && array_key_exists('code', $zoho_response['data'][0])) {
 
-                $auth_token = $this->getAccessToken();
-                $prod_array = $this->zohoOrderFormating($order_item_details);
-                po($prod_array);
-                $insert = $this->insertOrderItemsToZoho($prod_array, $auth_token);
-                po($insert);
-                exit;
+                $zoho_save_id = $zoho_response['data'][0]['details']['id'];
+
+                $order_zoho = [
+                    "amazon_order_id" => $amazon_order_id,
+                    "order_item_id" => $prod_array['Payment_Reference_Number'],
+                    "zoho_id" => $zoho_save_id
+                ];
+
+                $order_response = OrderUpdateDetail::upsert($order_zoho, ["amazon_order_id", "order_item_id"], ["zoho_id"]);
+
+                if ($order_response) {
+                    return Log::channel('slack')->error('Success');
+                } else {
+                    return Log::channel('slack')->error('Error: ' . json_encode($order_response));
+                }
+            } else {
+
+                Log::channel('slack')->error("Zoho Response : " . json_encode($zoho_response));
             }
         }
 
-        return "No Data";
+
+        return true;
     }
 
     public function getAccessToken()
@@ -250,46 +275,6 @@ class ZohoOrder
         return $result;
     }
 
-    public function getOrderDetails()
-    {
-        $orderItems = DB::connection('order')
-            ->select("SELECT *, oid.shipping_address
-        FROM
-            orders AS os
-        INNER JOIN orderitemdetails AS oid
-
-        ON
-            os.amazon_order_identifier = oid.amazon_order_identifier
-        INNER JOIN ord_order_seller_credentials AS oosc
-        ON
-            oosc.seller_id = os.our_seller_identifier
-        LIMIT 1
-        ");
-
-        if (count($orderItems) > 0) {
-            foreach ($orderItems as $value) {
-
-                // dd('test');
-                $access_token = $this->getAccessToken();
-                $order_item_zoho = $this->zohoOrderFormating($value);
-
-                $zoho_response = $this->insertOrderItemsToZoho($order_item_zoho, $access_token);
-
-
-                $content = preg_split('/[\r\n]/', $zoho_response, -1, PREG_SPLIT_NO_EMPTY);
-                $array = (($content[count($content) - 1]));
-
-                $result = (json_decode($array));
-                $response['id'] = ($result->data[0]->details->id);
-                $response['status'] = ($result->data[0]->status);
-                $leadId = $response['id'];
-                po($response);
-                exit;
-                $this->zohoOrderDetails($leadId);
-            }
-        }
-    }
-
     public function zohoOrderFormating($value)
     {
         $DOLLAR_EXCHANGE_RATE = 82;
@@ -344,41 +329,22 @@ class ZohoOrder
         $prod_array["Product_Category"]   = $catalog_details['category']; //$value->product_category;
         $prod_array["Quantity"]           = "$value->quantity_ordered";
 
-
-
-
         ###############################
         ### Procurement Information ###
         ###############################
 
-        $prod_array["Product_Link"]            = $this->get_product_link($country_code, $value->asin);
-        $prod_array["US_EDD"]                  = Carbon::parse($value->latest_delivery_date)->format('Y-m-d');
+        $prod_array["Product_Link"]              = $this->get_product_link($country_code, $value->asin);
+        $prod_array["US_EDD"]                    = Carbon::parse($value->latest_delivery_date)->format('Y-m-d');
 
-        $prod_array["ASIN"]                    = $value->asin;
-        $prod_array["SKU"]                     = $value->seller_sku;
-        $prod_array["Product_Cost"]            = $catalog_details['price'];
+        $prod_array["ASIN"]                      = $value->asin;
+        $prod_array["SKU"]                       = $value->seller_sku;
+        $prod_array["Product_Cost"]              = $catalog_details['price'];
 
-        $prod_array["Weight_in_LBS"]          = (string)$catalog_details['weight'];
+        $prod_array["Weight_in_LBS"]             = (string)$catalog_details['weight'];
         $prod_array["Payment_Reference_Number"]  = $value->order_item_identifier;
         $prod_array["Exchange"]                  = $DOLLAR_EXCHANGE_RATE;
 
         return $prod_array;
-    }
-
-    public function zohoOrderDetails($leadId)
-    {
-
-        $token = $this->getAccessToken();
-        $headers = [
-            'Authorization' => 'Zoho-oauthtoken ' . $token,
-        ];
-        $zohoURL = 'https://www.zohoapis.in/crm/v2/Leads/';
-
-        $CompleteURI = $zohoURL . $leadId;
-        $response = Http::withHeaders($headers)->get($CompleteURI);
-        $response = json_decode($response);
-        dd($response);
-        exit;
     }
 
     public function lead_source($store_name, $country_code)
