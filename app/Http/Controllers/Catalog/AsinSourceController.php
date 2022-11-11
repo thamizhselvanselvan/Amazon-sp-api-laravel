@@ -7,6 +7,7 @@ use App\Models\Catalog;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Services\BB\PushAsin;
+use App\Models\FileManagement;
 use Yajra\DataTables\DataTables;
 use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\DB;
@@ -140,6 +141,7 @@ class AsinSourceController extends Controller
         } elseif ($request->form_type == 'file_upload') {
             $user_id = Auth::user()->id;
             $request->validate([
+                'source' => ['required'],
                 'asin' => 'required|mimes:txt,csv'
             ]);
             if (!$request->hasFile('asin')) {
@@ -154,7 +156,22 @@ class AsinSourceController extends Controller
             $import_file_time = date('Y-m-d-H-i-s');
             $path = "AsinSource/asin${import_file_time}.csv";
             Storage::put($path, $file);
-            commandExecFunc("pms:asin-import ${user_id} --source=${source} ${path}");
+
+            $file = $request->asin;
+            $file_name = $file->getClientOriginalName();
+
+            $file_info = [
+                'user_id' => $user_id,
+                'type' => 'IMPORT_ASIN_SOURCE',
+                'module' => "ASIN_SOURCE_${source}",
+                'file_name' => $file_name,
+                'file_path' => $path,
+                'command_name' => 'pms:asin-import',
+            ];
+
+            FileManagement::create($file_info);
+            fileManagement();
+            // commandExecFunc("pms:asin-import ${user_id} --source=${source} ${path}");
         }
         return redirect('catalog/import-bulk-asin')->with('success', 'All Asins uploaded successfully');
     }
@@ -201,5 +218,11 @@ class AsinSourceController extends Controller
             $table_name->truncate();
         }
         return redirect('catalog/asin-source')->with('success', 'Table Truncate successfully');
+    }
+
+    public function SourceFileManagementMonitor(Request $request)
+    {
+        $data = fileManagementMonitoring($request->module_type);
+        return response()->json($data);
     }
 }

@@ -37,10 +37,9 @@ class FeedTrackingDetails extends Command
      *
      * @return int
      */
+
     public function handle()
     {
-        $class = 'Amazon_Feed\UpdateAWBToAmazon';
-        $parms = [];
-        jobDispatchFunc($class, $parms);
+        (new FeedOrderDetails())->FeedOrderTrackingNo();
     }
 }

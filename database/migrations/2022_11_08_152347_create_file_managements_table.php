@@ -16,7 +16,7 @@ class CreateFileManagementsTable extends Migration
         Schema::create('file_managements', function (Blueprint $table) {
             $table->id();
             $table->string('user_id', 10)->nullable();
-            $table->string('type', 20)->nullable();
+            $table->string('type', 60)->nullable();
             $table->string('module', 50)->nullable();
             $table->string('file_name', 100)->nullable();
             $table->string('file_path', 1000)->nullable();

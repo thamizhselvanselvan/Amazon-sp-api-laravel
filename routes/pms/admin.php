@@ -14,8 +14,8 @@ Route::get('admin/password_reset_view/{id}', 'Admin\AdminManagementController@pa
 Route::post('admin/password_reset_save/{id}', 'Admin\AdminManagementController@password_reset_save')->name('admin.password_reset_save');
 Route::get('admin/user/create', 'Admin\AdminManagementController@create')->name('add_user.create');
 Route::post('admin/save_user', 'Admin\AdminManagementController@save_user')->name('admin_save_user');
-Route::get('admin/{id}/edit','Admin\AdminManagementController@edit')->name('admin.edit');
-Route::post('admin/update/{id}','Admin\AdminManagementController@update')->name('admin.update_user');
+Route::get('admin/{id}/edit', 'Admin\AdminManagementController@edit')->name('admin.edit');
+Route::post('admin/update/{id}', 'Admin\AdminManagementController@update')->name('admin.update_user');
 Route::get('admin/{id}/remove', 'Admin\AdminManagementController@delete');
 Route::get('admin/bin', 'Admin\AdminManagementController@bin')->name('admin.bin');
 Route::get('admin/role-restore/{id}', 'Admin\AdminManagementController@restore');
@@ -31,7 +31,7 @@ Route::post('admin/catalog/user_save', 'Admin\CatalogManagementController@user_s
 Route::delete('admin/catalog/{id}/user_delete', 'Admin\CatalogManagementController@trash')->name('catalog_user_delete');
 
 Route::get('admin/stores', 'Admin\AdminManagementController@selectStore')->name('admin.store');
-Route::post('admin/update-store', 'Admin\AdminManagementController@updateStore'); 
+Route::post('admin/update-store', 'Admin\AdminManagementController@updateStore');
 
 
 Route::get('admin/system-setting', 'SystemSetting\SystemSettingController@index')->name('system.setting.home');
@@ -42,3 +42,5 @@ Route::get('admin/system-setting/remove/{id}', 'SystemSetting\SystemSettingContr
 Route::get('admin/system-setting/recycle', 'SystemSetting\SystemSettingController@RecycleSystemSetting')->name('recycle.system.setting');
 Route::get('admin/system-setting/restore/{id}', 'SystemSetting\SystemSettingController@RestoreSystemSetting')->name('restore.system.setting');
 
+
+Route::get('admin/file-management', 'FileManagement\FileManagementController@index')->name('file.management.home');

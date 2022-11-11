@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\FileManagement;
 use Illuminate\Support\Facades\Auth;
 use SellingPartnerApi\Configuration;
 use App\Services\SP_API\API\NewCatalog;
@@ -46,10 +47,19 @@ class CatalogProductController extends Controller
             'priority' => 'required|in:1,2,3',
             'source' => 'required|in:IN,US',
         ]);
-
+        $user_id = Auth::user()->id;
         $priority = $request->priority;
         $country_code = $request->source;
-        commandExecFunc("mosh:catalog-export-csv ${priority} ${country_code} ");
+
+        $file_info = [
+            "user_id" => $user_id,
+            "type" => "CATALOG_EXPORT",
+            "module" => "CATALOG_EXPORT_${country_code}_${priority}",
+            "command_name" => "mosh:catalog-export-csv"
+        ];
+        FileManagement::create($file_info);
+        fileManagement();
+        // commandExecFunc("mosh:catalog-export-csv ${priority} ${country_code} ");
 
         return redirect('/catalog/product')->with("success", "Catalog is Exporting");;
     }
@@ -114,8 +124,18 @@ class CatalogProductController extends Controller
         $priority = $request->priority;
         $country_code = $request->source;
         $date = $request->export_date;
+        $user_id = Auth::user()->id;
 
-        commandExecFunc("mosh:catalog-price-export-csv ${priority} ${country_code} '${date}'");
+        $file_info = [
+            "user_id" => $user_id,
+            "type" => "CATALOG_PRICE_EXPORT",
+            "module" => "CATALOG_PRICE_EXPORT_${country_code}_${priority}",
+            "command_name" => "mosh:catalog-price-export-csv"
+
+        ];
+        FileManagement::create($file_info);
+        fileManagement();
+        // commandExecFunc("mosh:catalog-price-export-csv ${priority} ${country_code} '${date}'");
         return redirect('/catalog/product')->with("success", "Catalog Price is Exporting");
     }
 
@@ -265,5 +285,11 @@ class CatalogProductController extends Controller
         $this->deletefile($folder, $country_code);
         $path = "excel/downloads/catalog_with_price/" . $country_code . '/' . $priority . '/zip/' . $country_code . "_CatalogPrice.zip";
         return Storage::download($path);
+    }
+
+    public function fileManagementMonitor(Request $request)
+    {
+        $command_end_time = fileManagementMonitoring($request->module_type);
+        return response()->json($command_end_time);
     }
 }

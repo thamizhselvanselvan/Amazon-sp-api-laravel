@@ -10,12 +10,22 @@ class CsvAsinImport
 {
     public function AsinImport($records)
     {
-
+        log::alert($records);
         $count = 0;
         $country_code = $records['source'];
         $country_code_lr = strtolower($country_code);
         $source = $records['source'];
+        $fm_id = $records['fm_id'];
         $priority = isset($records['priority']) ? $records['priority'] : '';
+
+        if (isset($records['Last_queue'])) {
+
+            $command_end_time = $records['Last_queue']->toDateTimeString();
+            fileManagementUpdate($fm_id, $command_end_time);
+            log::notice($command_end_time);
+            log::notice($fm_id);
+        }
+
 
         $module = $records['module'];
         $source_lists = buyboxCountrycode();
