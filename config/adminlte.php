@@ -340,6 +340,13 @@ return [
                     'can' => ['Admin', 'Account'],
                     'icon' => 'far fa fa-cog',
                 ],
+
+                [
+                    'text' => 'File Management',
+                    'url' => 'admin/file-management',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+                ],
             ],
         ],
 
@@ -851,29 +858,29 @@ return [
 
         [
             'text' => 'Cliqnshop',
-            'can' => ['Admin','Cliqnshop'],
+            'can' => ['Admin', 'Cliqnshop'],
             'submenu' => [
                 [
                     'text' => 'Catalog',
                     'url' => 'catalog/index',
-                    'can' => ['Admin','Cliqnshop'],
+                    'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'far fa-fw fa-file',
                 ],
                 [
                     'text' => 'Orders Details',
-                    'can' => ['Admin','Cliqnshop'],
+                    'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fa fa-shopping-cart',
                     'submenu' => [
                         [
                             'text' => 'Orders Booked',
                             'url' => 'business/booked/details',
-                            'can' => ['Admin','Cliqnshop'],
+                            'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-check',
                         ],
                         [
                             'text' => 'Orders Pending',
                             'url' => 'business/orders/details',
-                            'can' => ['Admin','Cliqnshop'],
+                            'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-clock-o',
                         ],
                     ],
@@ -882,13 +889,13 @@ return [
                 [
                     'text' => 'Orders Confirmation',
                     'url' => 'business/orders/confirm',
-                    'can' => ['Admin','Cliqnshop'],
+                    'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fa fa-check-circle-o',
                 ],
                 [
                     'text' => 'Shipment Notification',
                     'url' => 'business/ship/confirmation',
-                    'can' => ['Admin','Cliqnshop'],
+                    'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fa fa-bell',
                 ],
             ],
