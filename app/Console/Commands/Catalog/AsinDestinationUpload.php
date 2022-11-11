@@ -97,6 +97,7 @@ class AsinDestinationUpload extends Command
                         'Last_queue' => now(),
                     ];
                     jobDispatchFunc($class, $chunk_data, $queue_name, $delay);
+                    log::info($chunk_data);
                 }
 
                 jobDispatchFunc($class, $chunk_data, $queue_name, $delay);
