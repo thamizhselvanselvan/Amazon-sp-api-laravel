@@ -162,8 +162,8 @@ class ZohoOrder
     public function getOrderDetails()
     {
         $orderItems = DB::connection('order')
-            ->select("SELECT *, oid.shipping_address 
-        FROM 
+            ->select("SELECT *, oid.shipping_address
+        FROM
             orders AS os
         INNER JOIN orderitemdetails AS oid
 
@@ -384,57 +384,118 @@ class ZohoOrder
 
     public function lead_source($store_name, $country_code)
     {
-
         if (is_null($store_name)) {
             return "Amazon.in";
         }
 
         $store_lists = [
-            "Amazon.sa-nit" => [
-                "SA" => "Nit Shopp"
+            "Gotech-Saudi" => [
+                "SA" => "Nit Shopp",
+                "sku" => "NT_",
+                "source" => "India",
+                "desination" => "KSA"
             ],
-            "Amazon.ae-nit" => [
-                "AE" => "Nit Shopp"
+            "Gotech UAE" => [
+                "AE" => "Nit Shopp",
+                "sku" => "NT_",
+                "source" => "India",
+                "desination" => "UAE"
             ],
-            "Amazon.com-nit" => [
-                "US" => "NitShopp"
+            "Gotech USA" => [
+                "US" => "Nit Shopp",
+                "sku" => "NT_",
+                "source" => "India",
+                "desination" => "USA"
+            ],
+            "Amazon.in-Pram" => [
+                "IN" => "Infinitikart",
+                "sku" => "PR_",
+                "source" => "USA",
+                "desination" => "India"
+            ],
+            "Amazon.sa-Infinitikart" => [
+                "SA" => "Infinitikart_ksa",
+                "sku" => "PR_",
+                "source" => "India",
+                "desination" => "KSA"
             ],
 
-            "Amazon.in-infi" => [
-                "IN" => "Infinitikart"
+            "PRAM UAE" => [
+                "AE" => "Infinitikart",
+                "sku" => "IFWH_",
+                "source" => "India",
+                "desination" => "UAE"
             ],
-            "Amazon.sa-infi" => [
-                "SA" => "Infinitikart_ksa"
+            "Amazon.in-MBM" => [
+                "IN" => "MBM India Stores",
+                "sku" => "MBM_",
+                "source" => "USA",
+                "desination" => "India"
             ],
-            "Amazon.ae-infi" => [
-                "AE" => "Infinitikart"
+            "MBM-SAUDI" => [
+                "SA" => "MBM Stores_ksa",
+                "sku" => "MBM_",
+                "source" => "USA",
+                "desination" => "KSA"
+            ],
+            "Amazon.ae-MBM" => [
+                "AE" => "MBM Stores",
+                "sku" => "MBM_",
+                "source" => "USA",
+                "desination" => "UAE"
+            ],
+            "Amazon.ae-New Media" => [
+                "AE" => "New Media Store",
+                "sku" => "NM_",
+                "source" => "India",
+                "desination" => "UAE"
             ],
 
-            "Amazon.in-mbm" => [
-                "IN" => "MBM India Stores"
+            "Amazon.in-Nitrous" => [
+                "IN" => "Nitrous Stores",
+                "sku" => "NS_",
+                "source" => "USA",
+                "desination" => "India"
             ],
-            "Amazon.sa-mbm" => [
-                "SA" => "MBM Stores_ksa"
+            "Amazon.ae-Mahzuz" => [
+                "AE" => "Mahzuz Stores (Seller)",
+                "sku" => "MZ_",
+                "source" => "USA",
+                "desination" => "UAE"
             ],
-            "Amazon.ae-mbm" => [
-                "AE" => "MBM Stores"
+            "CKSHOP-Amazon.in" => [
+                "IN" => "STS Shop",
+                "sku" => "CK_",
+                "source" => "USA",
+                "desination" => "India"
+            ],
+            "Amazon.in-Gotech" => [
+                "IN" => "M.A.Y. Store",
+                "sku" => "NT_",
+                "source" => "USA",
+                "desination" => "India"
             ],
 
-            "Amazon.ae-new_media_store" => [
-                "AE" => "New Media Store"
+            /*
+            "Amazon.ae-Nitrous" => [
+                "IN" => "WIP",
+                "sku" => "NS_",
+                "source" => "USA",
+                "desination" => "UAE"
             ],
-            "Amazon.in-nitrous" => [
-                "IN" => "Nitrous Stores"
+            "Amazon.sg-Gotech" => [
+                "IN" => "WIP",
+                "sku" => "NT_",
+                "source" => "India",
+                "desination" => "SG"
             ],
-            "Amazon.ae-mahzuz" => [
-                "AE" => "Mahzuz Stores (Seller)"
-            ],
-            "Amazon.in-sts" => [
-                "IN" => "STS Shop"
-            ],
-            "Amazon.in-may_store" => [
-                "IN" => "M.A.Y. Store"
+            "Amazon.sg-Nitrous" => [
+                "IN" => "WIP",
+                "sku" => "NS_",
+                "source" => "USA",
+                "desination" => "SG"
             ]
+            */
         ];
 
         $lead_name = '';
