@@ -631,10 +631,10 @@ return [
 
                 ],
                 [
-                    'text' => 'Order Dump Test',
+                    'text' => 'Order Statistics',
                     'can' => ['Admin'],
                     'icon' => ' fa fa-check-circle-o',
-                    'url' => "orders/dump/test",
+                    'url' => "orders/statistics",
 
                 ],
             ],

@@ -17,7 +17,7 @@ Route::get('orders/aws/dashboard', 'Orders\OrdersDashboardController@AwsOrderDas
 
 Route::get('orders/csv/import', 'Orders\OrdersDashboardController@OrderCsvImport')->name('orders.csv.import');
 Route::POST('orders/import/file', 'Orders\OrdersDashboardController@ImortOrdersFile')->name('import.orders.file');
-Route::get('orders/csv/download','Orders\OrdersDashboardController@OrderCsvDownload')->name('download.order.csv.template');
+Route::get('orders/csv/download', 'Orders\OrdersDashboardController@OrderCsvDownload')->name('download.order.csv.template');
 
 Route::get('orders/details/list', 'Orders\OrderDetailsController@index')->name('orders.search.index');
 // Route::post('orders/search/details', 'Orders\OrderDetailsController@search')->name('orders.search');
@@ -25,4 +25,4 @@ Route::post('orders/details/update', 'Orders\OrderDetailsController@update')->na
 Route::post('orders/bulk/search', 'Orders\OrderDetailsController@bulksearch')->name('orders.search.bulk');
 Route::get('orders/bulk/edit/{id}', 'Orders\OrderDetailsController@bulkedit');
 
-Route::get('orders/dump/test','Orders\OrderDetailsController@dumptest')->name('orders.dump.test');
+Route::get('orders/statistics', 'Orders\OrderDetailsController@orderStatistics')->name('orders.statistics');

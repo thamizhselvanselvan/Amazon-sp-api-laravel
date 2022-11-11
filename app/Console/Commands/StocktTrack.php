@@ -18,7 +18,7 @@ class StocktTrack extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:stock-tracking';
+    protected $signature = 'pms:inventory-stock-tracking';
 
     /**
      * The console command description.
