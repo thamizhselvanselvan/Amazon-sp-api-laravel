@@ -128,16 +128,16 @@ class ZohoOrder
 
     public function index($amazon_order_id = null)
     {
+        $orderItems = OrderUpdateDetail::where('amazon_order_id', $amazon_order_id)->limit(1)->first();
 
-        // $orderItems = OrderUpdateDetail::where('amazon_order_id', $amazon_order_id)->whereNull('zoho_id')->limit(1)->first();
+        if (!$orderItems) {
+            echo "No records found in the database for Amazon Order ID: $amazon_order_id";
+            echo "<HR>";
+        }
 
-        // if (!$orderItems) {
-        //     Log::error('Amazon Order id not passed');
-        //     return "Amazon Order id not passed";
-        // }
-
-        // $amazon_order_id = $orderItems->amazon_order_id;
-
+        if(isset($orderItems) && $orderItems->zoho_id && false){
+            return "Zoho ID for Amazon Order id $amazon_order_id is already created";
+        }
 
         $order_table_name = 'orders';
         $order_item_table_name = 'orderitemdetails';
@@ -173,11 +173,20 @@ class ZohoOrder
 
             $auth_token = $this->getAccessToken();
 
-            dd("Auth Code " . $auth_token);
             $prod_array = $this->zohoOrderFormating($order_item_details);
+            //po($prod_array);
+            //exit;
 
             $zoho_api_save = $this->insertOrderItemsToZoho($prod_array, $auth_token);
+            echo "zoho_api_save" . PHP_EOL;
+            po($zoho_api_save);
+            echo "zoho_api_save" . PHP_EOL;
+
             $zoho_response = json_decode($zoho_api_save, true);
+            echo "zoho_response" . PHP_EOL;
+            po($zoho_response);
+            echo "zoho_response" . PHP_EOL;
+
             Log::error("Zoho Response : " . $zoho_api_save);
             if (isset($zoho_response) && array_key_exists('data', $zoho_response) && array_key_exists(0, $zoho_response['data']) && array_key_exists('code', $zoho_response['data'][0])) {
 
@@ -189,13 +198,23 @@ class ZohoOrder
                     "zoho_id" => $zoho_save_id
                 ];
 
-                $order_response = OrderUpdateDetail::upsert($order_zoho, ["amazon_order_id", "order_item_id"], ["zoho_id"]);
+                $order_response = OrderUpdateDetail::upsert(
+                    $order_zoho,
+                    [
+                        "amazon_order_id",
+                        "order_item_id"
+                    ],
+                    [
+                        "zoho_id"
+                    ]
+                );
 
                 if ($order_response) {
                     Log::error('Success');
                     return "Success";
                 } else {
                     Log::error('Error: ' . json_encode($order_response));
+                    Log::channel('slack')->error(json_encode($zoho_response));
                     return "Error";
                 }
             } else {
@@ -236,7 +255,6 @@ class ZohoOrder
         ));
 
         $response = curl_exec($curl);
-        po($response);
 
         curl_close($curl);
         $response = json_decode($response, true);
@@ -253,6 +271,14 @@ class ZohoOrder
 
         $curl_options[CURLOPT_URL] = $url;
         $curl_options[CURLOPT_RETURNTRANSFER] = true;
+        $curl_options[CURLOPT_ENCODING] = "";
+        $curl_options[CURLOPT_MAXREDIRS] = 10;
+        $curl_options[CURLOPT_FOLLOWLOCATION] = true;
+        $curl_options[CURLOPT_HTTP_VERSION] = CURL_HTTP_VERSION_1_1;
+        $curl_options[CURLOPT_POST] = 1;
+        $curl_options[CURLOPT_TIMEOUT] = 0;
+        $curl_options[CURLOPT_SSL_VERIFYHOST] = false;
+        $curl_options[CURLOPT_SSL_VERIFYPEER] = false;
         $curl_options[CURLOPT_HEADER] = 1;
         $curl_options[CURLOPT_CUSTOMREQUEST] = "POST";
         $requestBody = array();
@@ -265,12 +291,20 @@ class ZohoOrder
         $headersArray = array();
 
         $headersArray[] = "Authorization" . ":" . "Zoho-oauthtoken $auth_token";
+        $headersArray[] = 'Content-Type: text/plain';
 
         $curl_options[CURLOPT_HTTPHEADER] = $headersArray;
 
         curl_setopt_array($curl_pointer, $curl_options);
 
         $result = curl_exec($curl_pointer);
+
+        if (curl_errno($curl_pointer)) {
+            $error_msg = curl_error($curl_pointer);
+            echo "curl_errno" . PHP_EOL;
+            po($error_msg);
+            echo "curl_errno" . PHP_EOL;
+        }
 
         return $result;
     }
@@ -298,11 +332,16 @@ class ZohoOrder
         $prod_array['Alternate_Order_No'] = $value->amazon_order_identifier;
         $prod_array['Follow_up_Status'] = 'Open';
 
-        $prod_array["Last_Name"]   = "Testing $buyerDtls->Name";
+        $prod_array["Last_Name"]   = $buyerDtls->Name;
         $prod_array["Lead_Source"] = $this->lead_source($store_name, $country_code);
         $prod_array['Lead_Status'] = $this->lead_status($store_name, $country_code);
 
-        $address = $buyerDtls->AddressLine1 . '<br> ' . $buyerDtls->AddressLine2;
+        if (isset($buyerDtls->AddressLine2)) {
+            $address = $buyerDtls->AddressLine1 . '<br> ' . $buyerDtls->AddressLine2 ?? "";
+        } else {
+            $address = $buyerDtls->AddressLine1;
+        }
+
         $address = str_replace("&", " and ", $address);
 
         $prod_array["Mobile"]      = substr((int) filter_var($buyerDtls->Phone, FILTER_SANITIZE_NUMBER_INT), -10);
