@@ -53,7 +53,7 @@ class CatalogProductController extends Controller
 
         $file_info = [
             "user_id" => $user_id,
-            "type" => "EXPORT_CATALOG",
+            "type" => "CATALOG_EXPORT",
             "module" => "CATALOG_EXPORT_${country_code}_${priority}",
             "command_name" => "mosh:catalog-export-csv"
         ];
@@ -128,8 +128,8 @@ class CatalogProductController extends Controller
 
         $file_info = [
             "user_id" => $user_id,
-            "type" => "EXPORT_CATALOG_PRICE",
-            "module" => "CATALOG_EXPORT_${country_code}_${priority}",
+            "type" => "CATALOG_PRICE_EXPORT",
+            "module" => "CATALOG_PRICE_EXPORT_${country_code}_${priority}",
             "command_name" => "mosh:catalog-price-export-csv"
 
         ];
