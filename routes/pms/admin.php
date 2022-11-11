@@ -43,4 +43,4 @@ Route::get('admin/system-setting/recycle', 'SystemSetting\SystemSettingControlle
 Route::get('admin/system-setting/restore/{id}', 'SystemSetting\SystemSettingController@RestoreSystemSetting')->name('restore.system.setting');
 
 
-Route::get('admin/file/management', 'FileManagement\FileManagementController@index')->name('file.management.home');
+Route::get('admin/file-management', 'FileManagement\FileManagementController@index')->name('file.management.home');

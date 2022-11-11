@@ -42,17 +42,19 @@ class CourierBooking extends Command
     {
         $order_details = OrderUpdateDetail::where([['courier_awb', NULL], ['courier_name', '!=', NULL]])
             ->limit(1)
-            ->get(['amazon_order_id', 'order_item_id', 'courier_name', 'courier_awb']);
+            ->get(['amazon_order_id', 'order_item_id', 'courier_name', 'courier_awb', 'store_id']);
 
         if (count($order_details) > 0) {
             $order_id = $order_details[0]->amazon_order_id;
             $order_item_id = $order_details[0]->order_item_id;
             $courier_name = $order_details[0]->courier_name;
+            $store_id = $order_details[0]->store_id;
 
             $job_parameters = [
                 'amazon_order_id' => $order_id,
                 'order_item_id' => $order_item_id,
-                'courier_class' => $courier_name
+                'courier_class' => $courier_name,
+                'store_id' => $store_id
             ];
 
             jobDispatchFunc('Courier_Booking\CourierBookingJob', $job_parameters);
