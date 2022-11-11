@@ -2,8 +2,13 @@
 
 namespace App\Services\Zoho;
 
+use in;
 use Carbon\Carbon;
 use App\Models\order\Order;
+use App\Models\Catalog\PricingUs;
+use App\Models\Catalog\Catalog_in;
+use App\Models\Catalog\Catalog_us;
+use App\Models\Catalog\PricingIn;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use App\Models\order\OrderItemDetails;
@@ -11,13 +16,123 @@ use App\Models\order\OrderUpdateDetail;
 
 class ZohoOrder
 {
+    public $store_lists = [
+        "Gotech-Saudi" => [
+            "SA" => "Nit Shopp KSA",
+            "sku" => "NT_",
+            "source" => "India",
+            "desination" => "KSA"
+        ],
+        "Gotech UAE" => [
+            "AE" => "Nit Shopp UAE",
+            "sku" => "NT_",
+            "source" => "India",
+            "desination" => "UAE"
+        ],
+        "Gotech USA" => [
+            "US" => "Nit Shopp USA",
+            "sku" => "NT_",
+            "source" => "India",
+            "desination" => "USA"
+        ],
+        "Amazon.in-Pram" => [
+            "IN" => "Infinitikart India",
+            "sku" => "PR_",
+            "source" => "USA",
+            "desination" => "India"
+        ],
+        "Amazon.sa-Infinitikart" => [
+            "SA" => "Infinitikart KSA",
+            "sku" => "PR_",
+            "source" => "India",
+            "desination" => "KSA"
+        ],
+        "PRAM UAE" => [
+            "AE" => "Infinitikart UAE",
+            "sku" => "IFWH_",
+            "source" => "India",
+            "desination" => "UAE"
+        ],
+        "Amazon.in-MBM" => [
+            "IN" => "MBM India",
+            "sku" => "MBM_",
+            "source" => "USA",
+            "desination" => "India"
+        ],
+        "MBM-SAUDI" => [
+            "SA" => "MBM KSA",
+            "sku" => "MBM_",
+            "source" => "USA",
+            "desination" => "KSA"
+        ],
+        "Amazon.ae-MBM" => [
+            "AE" => "MBM UAE",
+            "sku" => "MBM_",
+            "source" => "USA",
+            "desination" => "UAE"
+        ],
+        "Amazon.ae-New Media" => [
+            "AE" => "New Media Store",
+            "sku" => "NM_",
+            "source" => "India",
+            "desination" => "UAE"
+        ],
+        "Amazon.in-Nitrous" => [
+            "IN" => "Nitrous Stores India",
+            "sku" => "NS_",
+            "source" => "USA",
+            "desination" => "India"
+        ],
+        "Amazon.ae-Mahzuz" => [
+            "AE" => "Mahzuz Stores UAE",
+            "sku" => "MZ_",
+            "source" => "USA",
+            "desination" => "UAE"
+        ],
+        "CKSHOP-Amazon.in" => [
+            "IN" => "STS Shop India",
+            "sku" => "CK_",
+            "source" => "USA",
+            "desination" => "India"
+        ],
+        "Amazon.in-Gotech" => [
+            "IN" => "M.A.Y. Store India (Nit)",
+            "sku" => "NT_",
+            "source" => "USA",
+            "desination" => "India"
+        ],
+
+        /*
+        "Amazon.ae-Nitrous" => [
+            "IN" => "WIP",
+            "sku" => "NS_",
+            "source" => "USA",
+            "desination" => "UAE"
+        ],
+        "Amazon.sg-Gotech" => [
+            "IN" => "WIP",
+            "sku" => "NT_",
+            "source" => "India",
+            "desination" => "SG"
+        ],
+        "Amazon.sg-Nitrous" => [
+            "IN" => "WIP",
+            "sku" => "NS_",
+            "source" => "USA",
+            "desination" => "SG"
+        ]
+        */
+    ];
 
     public function index()
     {
         $orderItems = OrderUpdateDetail::whereNull('courier_name')->whereNull('courier_awb')->limit(1)->first();
 
+        // dd($this->getAccessToken());
+
         if ($orderItems) {
 
+            //$orderItems->amazon_order_id = '408-1253151-7733136';
             $order_table_name = 'orders';
             $order_item_table_name = 'orderitemdetails';
 
@@ -52,7 +167,11 @@ class ZohoOrder
             if ($order_item_details) {
 
                 // dd($order_item_details);
-                dd($this->zohoOrderFormating($order_item_details));
+                // dd();
+                $auth_token = $this->getAccessToken();
+                $prod_array = $this->zohoOrderFormating($order_item_details);
+                $insert = $this->insertOrderItemsToZoho($prod_array, $auth_token);
+                dd($auth_token, $prod_array, $insert);
             }
         }
 
@@ -93,7 +212,7 @@ class ZohoOrder
         $response = json_decode($response, true);
 
         // dd($response);
-        return $response['access_token'];
+        return $response['access_token'] ?? null;
     }
 
     public function insertOrderItemsToZoho_old($prod_array, $auth_token)
@@ -157,7 +276,6 @@ class ZohoOrder
 
         return $result;
     }
-
 
     public function getOrderDetails()
     {
@@ -244,13 +362,18 @@ class ZohoOrder
         ### Inventory Management ###
         ############################
 
+        $catalog_details = $this->get_catalog($value->asin, $country_code, $store_name);
+
         $prod_array["Title"]              = preg_replace("/[^a-zA-Z0-9_ -\/]+/", "", substr($value->title, 0, 100));
         $prod_array["Product_Code"]       = $value->seller_sku;
         $prod_array["Product_Cost"]       = $item_price->Amount;
         $prod_array["Procurement_URL"]    = $this->get_procurement_link($country_code, $value->asin);
         $prod_array["Nature"]             = "Import";
-        $prod_array["Product_Category"]   = ''; //$value->product_category;
+        $prod_array["Product_Category"]   = $catalog_details['category']; //$value->product_category;
         $prod_array["Quantity"]           = $value->quantity_ordered;
+
+
+
 
         ###############################
         ### Procurement Information ###
@@ -261,25 +384,9 @@ class ZohoOrder
 
         $prod_array["ASIN"]                    = $value->asin;
         $prod_array["SKU"]                     = $value->seller_sku;
-        $prod_array["Product_Cost"]            = $item_price->Amount;
-        $prod_array['Purchase_date']           = Carbon::parse($value->purchase_date)->format('Y-m-d');
+        $prod_array["Product_Cost"]            = $catalog_details['price'];
 
-        $prod_array["Amount_Paid_by_Customer"] = (int)$order_total->Amount;
-        $prod_array["Item_Type_Category"]      = ''; //$value->item_type_category;
-
-        //$product_info = json_decode($value->product_info);
-        $prod_array["H_Code"]                    = ''; //$value->hs_code;
-
-        ###############################
-        ###### India Landed Cost ######
-        ###############################
-
-        $prod_array["Product_Cost_INR"]   = $item_price->Amount;
-        $prod_array["GST"]                = ''; //$value->gst;
-        $prod_array["Duty&TaxesINR"]      = ''; //$value->gst;
-
-
-        // $prod_array["Weight_in_LBS"]          = (string)ceil($value->weight_in_lbs);
+        $prod_array["Weight_in_LBS"]          = (string)$catalog_details['weight'];
         $prod_array["Payment_Reference_Number"]  = $value->order_item_identifier;
         $prod_array["Exchange"]                  = $DOLLAR_EXCHANGE_RATE;
 
@@ -388,123 +495,11 @@ class ZohoOrder
             return "Amazon.in";
         }
 
-        $store_lists = [
-            "Gotech-Saudi" => [
-                "SA" => "Nit Shopp",
-                "sku" => "NT_",
-                "source" => "India",
-                "desination" => "KSA"
-            ],
-            "Gotech UAE" => [
-                "AE" => "Nit Shopp",
-                "sku" => "NT_",
-                "source" => "India",
-                "desination" => "UAE"
-            ],
-            "Gotech USA" => [
-                "US" => "Nit Shopp",
-                "sku" => "NT_",
-                "source" => "India",
-                "desination" => "USA"
-            ],
-            "Amazon.in-Pram" => [
-                "IN" => "Infinitikart",
-                "sku" => "PR_",
-                "source" => "USA",
-                "desination" => "India"
-            ],
-            "Amazon.sa-Infinitikart" => [
-                "SA" => "Infinitikart_ksa",
-                "sku" => "PR_",
-                "source" => "India",
-                "desination" => "KSA"
-            ],
-
-            "PRAM UAE" => [
-                "AE" => "Infinitikart",
-                "sku" => "IFWH_",
-                "source" => "India",
-                "desination" => "UAE"
-            ],
-            "Amazon.in-MBM" => [
-                "IN" => "MBM India Stores",
-                "sku" => "MBM_",
-                "source" => "USA",
-                "desination" => "India"
-            ],
-            "MBM-SAUDI" => [
-                "SA" => "MBM Stores_ksa",
-                "sku" => "MBM_",
-                "source" => "USA",
-                "desination" => "KSA"
-            ],
-            "Amazon.ae-MBM" => [
-                "AE" => "MBM Stores",
-                "sku" => "MBM_",
-                "source" => "USA",
-                "desination" => "UAE"
-            ],
-            "Amazon.ae-New Media" => [
-                "AE" => "New Media Store",
-                "sku" => "NM_",
-                "source" => "India",
-                "desination" => "UAE"
-            ],
-
-            "Amazon.in-Nitrous" => [
-                "IN" => "Nitrous Stores",
-                "sku" => "NS_",
-                "source" => "USA",
-                "desination" => "India"
-            ],
-            "Amazon.ae-Mahzuz" => [
-                "AE" => "Mahzuz Stores (Seller)",
-                "sku" => "MZ_",
-                "source" => "USA",
-                "desination" => "UAE"
-            ],
-            "CKSHOP-Amazon.in" => [
-                "IN" => "STS Shop",
-                "sku" => "CK_",
-                "source" => "USA",
-                "desination" => "India"
-            ],
-            "Amazon.in-Gotech" => [
-                "IN" => "M.A.Y. Store",
-                "sku" => "NT_",
-                "source" => "USA",
-                "desination" => "India"
-            ],
-
-            /*
-            "Amazon.ae-Nitrous" => [
-                "IN" => "WIP",
-                "sku" => "NS_",
-                "source" => "USA",
-                "desination" => "UAE"
-            ],
-            "Amazon.sg-Gotech" => [
-                "IN" => "WIP",
-                "sku" => "NT_",
-                "source" => "India",
-                "desination" => "SG"
-            ],
-            "Amazon.sg-Nitrous" => [
-                "IN" => "WIP",
-                "sku" => "NS_",
-                "source" => "USA",
-                "desination" => "SG"
-            ]
-            */
-        ];
-
         $lead_name = '';
 
-        foreach ($store_lists as $lead_key_name => $store_list) {
+        foreach ($this->store_lists as $lead_key_name => $store_list) {
 
-            $loop_key = array_search($store_name, $store_list);
-
-            if ($loop_key == $country_code) {
+            if (isset($store_list[$country_code]) && $store_list[$country_code] == $store_name) {
                 $lead_name = $lead_key_name;
                 break;
             }
@@ -524,10 +519,10 @@ class ZohoOrder
         return 'Order Confirmed Purchase Pending';
     }
 
-    public function fulfillment_channel($value)
+    public function fulfillment_channel($fulfillment_channel)
     {
 
-        if ($value == 'AFN') {
+        if ($fulfillment_channel == 'AFN') {
             return 'Amazon Fulfilment';
         }
 
@@ -543,18 +538,18 @@ class ZohoOrder
         return $value->store_name;
     }
 
-    public function get_country_code($value)
+    public function get_country_code($mws_region_object)
     {
 
-        if (!isset($value)) {
+        if (!isset($mws_region_object)) {
             return '';
         }
 
-        if (!isset($value->mws_region)) {
+        if (!isset($mws_region_object->mws_region)) {
             return '';
         }
 
-        return $value->mws_region->region_code;
+        return $mws_region_object->mws_region->region_code;
     }
 
     public function get_procurement_link($country_code, $asin)
@@ -578,6 +573,7 @@ class ZohoOrder
 
     public function get_state_pincode($country_code, $buyerDtls, $return = 'state')
     {
+
         if ($country_code == 'AE') {
 
             if ($return == "state") {
@@ -591,10 +587,45 @@ class ZohoOrder
             return $buyerDtls->StateOrRegion;
         }
 
-        return $buyerDtls->PostalCode;
+        return $buyerDtls->PostalCode ?? '00000';
     }
 
-    public function get_weight($asin)
+    public function get_catalog($asin, $country_code, $store_name)
     {
+        $result = null;
+        $price = 0;
+        $weight = 0;
+        $category = '';
+
+        foreach ($this->store_lists as $store_list) {
+
+            if (isset($store_list[$country_code]) && $store_list[$country_code] == $store_name) {
+
+                if ($store_list['source'] == "USA") {
+
+                    $result = Catalog_us::where('asin', $asin)->limit(1)->first();
+                    $result_price = PricingUs::where('asin', $asin)->limit(1)->first();
+                    $price = $result_price->us_price;
+                } else {
+                    $result = Catalog_in::where('asin', $asin)->limit(1)->first();
+                    $result_price = PricingIn::where('asin', $asin)->limit(1)->first();
+                    $price = $result_price->in_price;
+                }
+
+                if (isset($result) && isset($result->dimensions[0]['package']['weight']) && $result->dimensions[0]['package']['weight']['unit'] == 'pounds') {
+
+                    $weight = ceil($result->dimensions[0]['package']['weight']['value']);
+                }
+
+                if (isset($result) && isset($result->browse_classification['displayName'])) {
+
+                    $category = $result->browse_classification['displayName'];
+                }
+
+                break;
+            }
+        }
+
+        return ['price' => $price, 'weight' => $weight, 'category' => $category];
     }
 }

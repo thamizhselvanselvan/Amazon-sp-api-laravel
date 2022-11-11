@@ -65,8 +65,8 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
 Route::get('zoho_update', function () {
 
-    $zoho = new ZohoApi;
-    dd($zoho->getAccessToken());
+    // $zoho = new ZohoApi;
+    // dd($zoho->getAccessToken());
 
 
     //
