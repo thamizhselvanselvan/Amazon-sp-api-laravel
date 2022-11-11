@@ -60,13 +60,13 @@ class FeedOrderDetails
 
             $store_data = DB::connection('aws')
                 ->select("SELECT amazon_order_id, courier_awb, order_item_id, purchase_date, quantity
-                    FROM 
-                        ${store_name}_amazon_order_details 
+                    FROM
+                        ${store_name}_amazon_order_details
                     WHERE courier_awb <> ''
-                             AND 
-                        amzn_temp_order_status = 'unshipped'
                              AND
-                         id > $limit_id 
+                        order_status = 'unshipped'
+                             AND
+                         id > $limit_id
                     LIMIT 1");
 
             if (count($store_data) > 0) {
@@ -170,9 +170,9 @@ class FeedOrderDetails
         $table_update_string = 'updated on amazon: ' . $feed_id;
 
         DB::connection('aws')
-            ->select("UPDATE ${store_name}_amazon_order_details 
-                SET 
-                    amzn_temp_order_status = '$table_update_string' 
+            ->select("UPDATE ${store_name}_amazon_order_details
+                SET
+                    order_status = '$table_update_string'
                 WHERE
                      amazon_order_id = '$amazon_order_id'
                         AND
