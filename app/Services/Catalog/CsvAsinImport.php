@@ -17,7 +17,7 @@ class CsvAsinImport
         $source = $records['source'];
         $fm_id = $records['fm_id'];
         $priority = isset($records['priority']) ? $records['priority'] : '';
-        $command_end_time = isset($records['Last_queue']) ? $records['Last_queue'] : '0000-00-00 00:00:00';
+        $command_end_time = isset($records['Last_queue']) ? $records['Last_queue']->toDateTimeString() : '0000-00-00 00:00:00';
 
         $module = $records['module'];
         $source_lists = buyboxCountrycode();

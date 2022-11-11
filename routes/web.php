@@ -68,6 +68,9 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
 
 Route::get('import', function () {
+    $time = ['Last_queue' => now()];
+    po($time['Last_queue']->toDateTimeString());
+    exit;
 
     $robin = User::create([
         'name' => 'Robin Singh',
