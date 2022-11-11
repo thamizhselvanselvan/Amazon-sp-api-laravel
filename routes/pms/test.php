@@ -131,3 +131,16 @@ Route::get('test/emirate/tracking/{tracking_id}', 'TestController@emiratePostTra
 Route::get('test/emirate/booking', 'TestController@emiratePostBooking');
 
 Route::get('test/aramex/tracking/{tracking_id}', 'TestController@AramexTracking');
+
+Route::get('test/removenewline', function () {
+
+
+    $string = '{"Name":"Dhouha 
+        Amara Test1","AddressLine1":"Sheikh 
+        Mohammed Bin Zayed Rd - Nadd Al Hamar - Dubai","AddressLine2":"Hassani 20 building , apt 819","City":"Dubai","County":"Nadd Al Hamar","CountryCode":"AE","Phone":"+971586044042","AddressType":"Residential"}';
+
+    $new_string = json_decode(preg_replace('/\s+/', ' ', $string));
+
+    po($new_string);
+    //
+});
