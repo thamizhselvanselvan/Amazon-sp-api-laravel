@@ -17,7 +17,15 @@ class CsvAsinImport
         $source = $records['source'];
         $fm_id = $records['fm_id'];
         $priority = isset($records['priority']) ? $records['priority'] : '';
-        $command_end_time = isset($records['Last_queue']) ? $records['Last_queue']->toDateTimeString() : '0000-00-00 00:00:00';
+
+        if (isset($records['Last_queue'])) {
+
+            $command_end_time = $records['Last_queue']->toDateTimeString();
+            fileManagementUpdate($fm_id, $command_end_time);
+            log::notice($command_end_time);
+            log::notice($fm_id);
+        }
+
 
         $module = $records['module'];
         $source_lists = buyboxCountrycode();
@@ -85,10 +93,5 @@ class CsvAsinImport
 
         $model_name->upsert($asin_details, ['user_asin_unique'], $upsert_data);
         $asin_details = [];
-
-
-        fileManagementUpdate($fm_id, $command_end_time);
-        log::notice($command_end_time);
-        log::notice($fm_id);
     }
 }
