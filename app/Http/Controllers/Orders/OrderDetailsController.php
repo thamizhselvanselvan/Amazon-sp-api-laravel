@@ -179,7 +179,7 @@ class OrderDetailsController extends Controller
         return view('orders.orderdetails_list.view', compact('details', 'email_used', 'data', 'price_data', 'item_tax'));
     }
 
-    public function dumptest(Request $request)
+    public function orderStatistics(Request $request)
     {
         $stores = OrderSellerCredentials::select('store_name', 'store.store_id')
             ->join("order_update_details as store", 'order_seller_credentials.seller_id', '=', 'store.store_id')
@@ -196,6 +196,6 @@ class OrderDetailsController extends Controller
             return response()->json(['success' => 'Searched Sucessfully', 'data' => $data]);
         }
 
-        return view('orders.dumptest', compact('stores'));
+        return view('orders.statistics', compact('stores'));
     }
 }

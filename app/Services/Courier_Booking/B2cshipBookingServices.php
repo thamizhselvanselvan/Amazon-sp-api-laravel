@@ -19,10 +19,11 @@ class B2cshipBookingServices
     {
         $this->amazon_order_id = $amazon_order_id;
         $this->order_item_id = $order_item_id;
-        $this->Customs_Percentage = 65;
+        $this->custom_percentage = 65;
 
         Log::alert($amazon_order_id);
-        $ord_details = DB::connection('order')
+
+        $order_details = DB::connection('order')
             ->select("SELECT 
                 oids.*, 
                 ord.amazon_order_identifier as order_id, 
@@ -31,14 +32,14 @@ class B2cshipBookingServices
                 ord.order_item as item,
                 ord.buyer_info as mail 
             FROM orders AS ord
-           INNER join orderitemdetails AS oids
-            on  ord.amazon_order_identifier = oids.amazon_order_identifier
-            where
-             oids.amazon_order_identifier = '$amazon_order_id'
+            INNER join orderitemdetails AS oids
+            ON ord.amazon_order_identifier = oids.amazon_order_identifier
+            WHERE
+            oids.amazon_order_identifier = '$amazon_order_id'
         ");
 
         $consignee_data = [];
-        foreach ($ord_details as $key => $details) {
+        foreach ($order_details as $key => $details) {
             $OrderID = $details->order_id;
 
             if (is_null($details->order_date)) {
@@ -172,12 +173,18 @@ class B2cshipBookingServices
 
     public function requestxml($consignee_data)
     {
-        // define('CUSTOMS_PERCENTAGE', 65);
+        // define('custom_pERCENTAGE', 65);
         $consignee_values = $consignee_data;
 
-        $user_id = 'humlofatro@vusra.com';
-        $password = 'G79rC7';
-        $client = 'C10000026';
+        if (App::environment() == 'Production') {
+            $user_id = '';
+            $password = '';
+            $client = '';
+        } else {
+            $user_id = 'humlofatro@vusra.com';
+            $password = 'G79rC7';
+            $client = 'C10000026';
+        }
 
         foreach ($consignee_values as $data) {
 
@@ -206,21 +213,21 @@ class B2cshipBookingServices
                     <ConsignorEmailID>nitroushaulinc@gmail.com</ConsignorEmailID>
                     <ConsignorTaxID></ConsignorTaxID>
 
-                    <ConsigneeName>' . $this->clean($data['consignee_name']) . '</ConsigneeName>
+                    <ConsigneeName>' . $this->cleanSpecialCharacters($data['consignee_name']) . '</ConsigneeName>
                     <ConsigneeContactPerson></ConsigneeContactPerson>
-                    <ConsigneeAddressLine1> ' . (!empty($data['consignee_AddressLine1']) ? $this->clean($data['consignee_AddressLine1']) : ',') . '</ConsigneeAddressLine1>
-                    <ConsigneeAddressLine2>' . (!empty($data['consignee_AddressLine2']) ? $this->clean($data['consignee_AddressLine2']) : ',') . '</ConsigneeAddressLine2>
+                    <ConsigneeAddressLine1> ' . (!empty($data['consignee_AddressLine1']) ? $this->cleanSpecialCharacters($data['consignee_AddressLine1']) : ',') . '</ConsigneeAddressLine1>
+                    <ConsigneeAddressLine2>' . (!empty($data['consignee_AddressLine2']) ? $this->cleanSpecialCharacters($data['consignee_AddressLine2']) : ',') . '</ConsigneeAddressLine2>
                     <ConsigneeAddressLine3></ConsigneeAddressLine3>
                     <ConsigneeCountry>IN</ConsigneeCountry>
                     <ConsigneeState>karnataka</ConsigneeState>
                     <ConsigneeCity> ' . strtolower($data['consignee_city']) . ' </ConsigneeCity>
                     <ConsigneePinCode> ' . $data['consignee_pincode'] . '</ConsigneePinCode>
-                    <ConsigneeMobile>' . (($data['consignee_Phone'] == "") ? '9897654565' : $this->cleanph($data['consignee_Phone'])) . ' </ConsigneeMobile>
+                    <ConsigneeMobile>' . (($data['consignee_Phone'] == "") ? '9897654565' : $this->cleanSpecialCharacters($data['consignee_Phone'])) . ' </ConsigneeMobile>
                     <ConsigneeEmailID> ' . $data['email'] . ' </ConsigneeEmailID>
                     <ConsigneeTaxID></ConsigneeTaxID>
                     <PacketType>SPX</PacketType>
                     <PaymentType>CREDIT</PaymentType>
-                    <PacketDescription>' . $this->clean($data['item_name']) . '.</PacketDescription>
+                    <PacketDescription>' . $this->cleanSpecialCharacters($data['item_name']) . '.</PacketDescription>
                     <InvoiceNo>' .  $data['invoice_no'] . '</InvoiceNo>
                     <InvoiceValue>' . $this->calculateCustomValue($data['invoice_value']) . '</InvoiceValue>
                     <CurrencyCode>USD</CurrencyCode>
@@ -241,7 +248,7 @@ class B2cshipBookingServices
 
                     <PCSDescriptionDetails>
                         <PCSDescriptionDetail>
-                            <Description>' . $this->clean($data['item_name']) . '.</Description>
+                            <Description>' . $this->cleanSpecialCharacters($data['item_name']) . '.</Description>
                             <HSNCode>1</HSNCode>
                             <Unit>' . $data['pieces'] . '</Unit>
                             <UnitValue>' . $this->calculateCustomValue($data['invoice_value']) . '</UnitValue>
@@ -276,25 +283,15 @@ class B2cshipBookingServices
 
         Log::info($data);
 
-        if (curl_errno($ch))
-            print curl_error($ch);
-        else
-            curl_close($ch);
         return $data;
     }
 
-    public function calculateCustomValue($Data)
+    public function calculateCustomValue($invoice_amount)
     {
-        return round(($Data * ($this->Customs_Percentage / 100)), 2);
+        return round(($invoice_amount * ($this->custom_percentage / 100)), 2);
     }
 
-    public function cleanPh($string)
-    {
-        $string = str_replace('&', 'and', $string);
-        return preg_replace('/[^A-Za-z0-9\-]/', ' ', $string); // Removes special chars.
-    }
-
-    public  function clean($string)
+    public function cleanSpecialCharacters($string)
     {
         $string = str_replace('&', 'and', $string);
         return preg_replace('/[^A-Za-z0-9\-]/', ' ', $string); // Removes special chars.
@@ -310,11 +307,6 @@ class B2cshipBookingServices
 
     public function verifyApiResponse($api_response)
     {
-        /*slack notification send if failed
-        **else update Awb no into Table
-        */
-
-        Log::debug($this->amazon_order_id);
         $data = json_decode(json_encode(simplexml_load_string($api_response)), true);
 
         if (array_key_exists('ErrorDetailCode', $data)) {
@@ -328,7 +320,7 @@ class B2cshipBookingServices
             Order_id: $order_id,
             Operation: 'B2Cship Booking Response'";
 
-            // Log::channel('slack')->error($slackMessage);
+            Log::channel('slack')->error($slackMessage);
         } else {
 
             $awb_no = $data['AWBNo'];
