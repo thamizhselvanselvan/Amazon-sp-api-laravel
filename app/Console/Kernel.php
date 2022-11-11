@@ -54,9 +54,11 @@ class Kernel extends ConsoleKernel
             /*AWS Sync - Needs to be removed*/
             $schedule->command('aws:nitshop:order')->hourly();
             $schedule->command('aws:nitshop:order_details')->hourly();
-            $schedule->command('mosh:feed-tracking-details-to-amazon')->everyMinute();
+            //$schedule->command('mosh:feed-tracking-details-to-amazon')->everyMinute();
 
             /*Order CI CD*/
+            //$schedule->command('aws:courier-booking')->everyMinute();
+            //$schedule->command('mosh:feed-app360-tracking-details')->everyMinute();
         }
 
         if (app()->environment() === 'staging') {
