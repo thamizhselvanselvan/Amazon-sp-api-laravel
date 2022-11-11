@@ -72,7 +72,7 @@ class AsinDestinationUpload extends Command
             $count = 0;
             $asin_chunk_count = count($asin_chunk) - 1;
 
-
+            log::warning($asin_chunk_count);
             foreach ($asin_chunk as $value) {
 
                 $chunk_data = [
@@ -86,7 +86,7 @@ class AsinDestinationUpload extends Command
 
                 if ($count == $asin_chunk_count) {
                     // LAST CHUNK
-
+                    log::warning($count);
                     $chunk_data = [
                         'ASIN'      => $value,
                         'user_id'   => $user_id,

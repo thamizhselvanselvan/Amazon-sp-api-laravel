@@ -10,13 +10,14 @@ class CsvAsinImport
 {
     public function AsinImport($records)
     {
-
+        log::alert($records);
         $count = 0;
         $country_code = $records['source'];
         $country_code_lr = strtolower($country_code);
         $source = $records['source'];
         $fm_id = $records['fm_id'];
         $priority = isset($records['priority']) ? $records['priority'] : '';
+        $command_end_time = isset($records['Last_queue']) ? $records['Last_queue'] : '0000-00-00 00:00:00';
 
         $module = $records['module'];
         $source_lists = buyboxCountrycode();
@@ -85,7 +86,7 @@ class CsvAsinImport
         $model_name->upsert($asin_details, ['user_asin_unique'], $upsert_data);
         $asin_details = [];
 
-        $command_end_time = isset($records['Last_queue']) ? $records['Last_queue'] : '0000-00-00 00:00:00';
+
         fileManagementUpdate($fm_id, $command_end_time);
         log::notice($command_end_time);
         log::notice($fm_id);
