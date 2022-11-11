@@ -39,7 +39,7 @@ class UpdateAWBToAmazon implements ShouldQueue
         $courier_name = $this->payload['courier_name'];
         $courier_awb = $this->payload['courier_awb'];
 
-        Log::info($this->payload);
+        //Log::info($this->payload);
 
         (new FeedOrderDetailsApp360())->FeedOrderTrackingNo($store_id, $amazon_order_id, $order_item_id, $courier_name, $courier_awb);
     }

@@ -24,6 +24,6 @@ class OrderUpdateDetail extends Model
         'courier_awb',
         'zoho_id',
         'zoho_order_id',
-        'amzn_temp_order_status',
+        'order_status',
     ];
 }

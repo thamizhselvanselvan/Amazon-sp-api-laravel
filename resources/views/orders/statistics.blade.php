@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Orders dump Test')
+@section('title', 'Amazon Orders Statistics')
 
 @section('css')
 
@@ -162,10 +162,10 @@
                         } else {
                             html += "<td>" + value.zoho_order_id + "</td>";
                         }
-                        if (value.amzn_temp_order_status == null) {
+                        if (value.order_status == null) {
                             html += "<td>" + 'NA' + "</td>";
                         } else {
-                            html += "<td>" + value.amzn_temp_order_status + "</td>";
+                            html += "<td>" + value.order_status + "</td>";
                         }
 
                         html += "<td>" + d.toDateString() + "</td>";
