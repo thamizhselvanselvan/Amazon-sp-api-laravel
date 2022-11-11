@@ -7,6 +7,7 @@ Route::get('zoho/dashboard', 'Zoho\ZohoController@Dashboard');
 Route::get('zoho/getLeadsDetails/{leadId}', 'Zoho\ZohoController@getOrderDetails');
 Route::get('zoho/insertZohoOrder', 'Zoho\ZohoController@addOrderItemsToZoho');
 
+Route::get('zoho/test/{order_id}', 'Zoho\ZohoController@Order');
 
 /*
 
