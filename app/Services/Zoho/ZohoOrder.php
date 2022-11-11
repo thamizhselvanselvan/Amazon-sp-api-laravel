@@ -129,18 +129,15 @@ class ZohoOrder
     public function index($amazon_order_id = null)
     {
 
-        // if (!$amazon_order_id) {
-        //     $orderItems = OrderUpdateDetail::whereNull('zoho_id')->limit(1)->first();
-        //     $amazon_order_id = $orderItems->amazon_order_id;
-        // } else {
-        $orderItems = OrderUpdateDetail::where('amazon_order_id', $amazon_order_id)->whereNull('zoho_id')->limit(1)->first();
-        $amazon_order_id = $orderItems->amazon_order_id;
+        // $orderItems = OrderUpdateDetail::where('amazon_order_id', $amazon_order_id)->whereNull('zoho_id')->limit(1)->first();
+
+        // if (!$orderItems) {
+        //     Log::error('Amazon Order id not passed');
+        //     return "Amazon Order id not passed";
         // }
 
-        if (!$amazon_order_id) {
-            Log::channel('slack')->error('Amazon Order id not passed');
-            return true;
-        }
+        // $amazon_order_id = $orderItems->amazon_order_id;
+
 
         $order_table_name = 'orders';
         $order_item_table_name = 'orderitemdetails';
@@ -175,12 +172,14 @@ class ZohoOrder
         if ($order_item_details) {
 
             $auth_token = $this->getAccessToken();
+
+            dd("Auth Code " . $auth_token);
             $prod_array = $this->zohoOrderFormating($order_item_details);
 
             $zoho_api_save = $this->insertOrderItemsToZoho($prod_array, $auth_token);
             $zoho_response = json_decode($zoho_api_save, true);
-            Log::channel('slack')->error("Zoho Response : " . $zoho_api_save);
-            if (array_key_exists('data', $zoho_response) && array_key_exists(0, $zoho_response['data']) && array_key_exists('code', $zoho_response['data'][0])) {
+            Log::error("Zoho Response : " . $zoho_api_save);
+            if (isset($zoho_response) && array_key_exists('data', $zoho_response) && array_key_exists(0, $zoho_response['data']) && array_key_exists('code', $zoho_response['data'][0])) {
 
                 $zoho_save_id = $zoho_response['data'][0]['details']['id'];
 
@@ -193,18 +192,19 @@ class ZohoOrder
                 $order_response = OrderUpdateDetail::upsert($order_zoho, ["amazon_order_id", "order_item_id"], ["zoho_id"]);
 
                 if ($order_response) {
-                    return Log::channel('slack')->error('Success');
+                    Log::error('Success');
+                    return "Success";
                 } else {
-                    return Log::channel('slack')->error('Error: ' . json_encode($order_response));
+                    Log::error('Error: ' . json_encode($order_response));
+                    return "Error";
                 }
             } else {
-
-                Log::channel('slack')->error("Zoho Response : " . json_encode($zoho_response));
+                Log::error("Zoho Response : " . json_encode($zoho_response));
+                return "Error";
             }
         }
 
-
-        return true;
+        return "Catalog Item details did not get";
     }
 
     public function getAccessToken()
