@@ -2,6 +2,7 @@
 
 namespace App\Models\order;
 
+use App\Models\Aws_credential;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,7 +12,7 @@ class OrderItemDetails extends Model
     protected $connection = 'order';
     protected $table = 'orderitemdetails';
     protected $fillable = [
-        'seller-identifier',
+        'seller_identifier',
         'status',
         'country',
         'asin',
@@ -56,6 +57,16 @@ class OrderItemDetails extends Model
     {
         parent::__construct($attributes);
         $this->getConnection()->setTablePrefix('');
+    }
+
+    public function getShippingAddressAttribute($value)
+    {
+        return json_decode($this->attributes['shipping_address'], true);
+    }
+
+    public function store_details()
+    {
+        return $this->hasOne(Aws_credential::class, 'seller_id', 'seller_identifier');
     }
 
     // public function orders()
