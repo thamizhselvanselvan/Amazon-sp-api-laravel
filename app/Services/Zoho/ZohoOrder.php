@@ -3,6 +3,7 @@
 namespace App\Services\Zoho;
 
 use in;
+use DateTime;
 use Carbon\Carbon;
 use App\Models\order\Order;
 use App\Models\Catalog\PricingUs;
@@ -162,7 +163,6 @@ class ZohoOrder
 
             $order_item_details = OrderItemDetails::select($order_details)
                 ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
-                // ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
                 ->where('orderitemdetails.amazon_order_identifier', $orderItems->amazon_order_id)
                 ->with(['store_details.mws_region'])
                 ->limit(1)
@@ -170,12 +170,12 @@ class ZohoOrder
 
             if ($order_item_details) {
 
-                // dd($order_item_details);
-                // dd();
                 $auth_token = $this->getAccessToken();
                 $prod_array = $this->zohoOrderFormating($order_item_details);
+                po($prod_array);
                 $insert = $this->insertOrderItemsToZoho($prod_array, $auth_token);
-                dd($auth_token, $prod_array, $insert);
+                po($insert);
+                exit;
             }
         }
 
@@ -184,12 +184,11 @@ class ZohoOrder
 
     public function getAccessToken()
     {
-        $zohoURL = "https://accounts.zoho.in/oauth/v2/token";
+        $zohoURL = "https://accounts.zoho.com/oauth/v2/token";
 
         $client_id = config('app.zoho_client_id');
         $client_secret = config('app.zoho_secret');
         $refres_token = config('app.zoho_refresh_token');
-        // dd($client_id);
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -212,42 +211,12 @@ class ZohoOrder
         ));
 
         $response = curl_exec($curl);
+        po($response);
+
         curl_close($curl);
         $response = json_decode($response, true);
 
-        // dd($response);
         return $response['access_token'] ?? null;
-    }
-
-    public function insertOrderItemsToZoho_old($prod_array, $auth_token)
-    {
-        $curl_pointer = curl_init();
-
-        $curl_options = array();
-        $url = "https://www.zohoapis.in/crm/v2/Leads";
-
-        $curl_options[CURLOPT_URL] = $url;
-        $curl_options[CURLOPT_RETURNTRANSFER] = true;
-        $curl_options[CURLOPT_HEADER] = 1;
-        $curl_options[CURLOPT_CUSTOMREQUEST] = "POST";
-        $requestBody = array();
-        $recordArray = array();
-        $recordObject = array();
-
-        $recordArray[] = $prod_array;
-        $requestBody["data"] = $recordArray;
-        $curl_options[CURLOPT_POSTFIELDS] = json_encode($requestBody);
-        $headersArray = array();
-
-        $headersArray[] = "Authorization" . ":" . "Zoho-oauthtoken $auth_token";
-
-        $curl_options[CURLOPT_HTTPHEADER] = $headersArray;
-
-        curl_setopt_array($curl_pointer, $curl_options);
-
-        $result = curl_exec($curl_pointer);
-
-        return $result;
     }
 
     public function insertOrderItemsToZoho($prod_array, $auth_token)
@@ -255,7 +224,7 @@ class ZohoOrder
         $curl_pointer = curl_init();
 
         $curl_options = array();
-        $url = "https://www.zohoapis.in/crm/v2/Leads";
+        $url = "https://www.zohoapis.com/crm/v2/Leads";
 
         $curl_options[CURLOPT_URL] = $url;
         $curl_options[CURLOPT_RETURNTRANSFER] = true;
@@ -315,6 +284,7 @@ class ZohoOrder
                 $response['status'] = ($result->data[0]->status);
                 $leadId = $response['id'];
                 po($response);
+                exit;
                 $this->zohoOrderDetails($leadId);
             }
         }
@@ -322,8 +292,6 @@ class ZohoOrder
 
     public function zohoOrderFormating($value)
     {
-
-
         $DOLLAR_EXCHANGE_RATE = 82;
         $AED_EXCHANGE_RATE = 3.8;
 
@@ -334,18 +302,18 @@ class ZohoOrder
         $order_total = json_decode($value->order_total);
         $item_price = json_decode($value->item_price);
 
-
         $prod_array = [];
 
         ############################
         ### Customer Information ###
         ############################
 
-        $prod_array["Order_Creation_Date"]  = Carbon::parse($value->purchase_date)->format('Y-m-d H:i:s');
+        $prod_array["Order_Creation_Date"]  = Carbon::parse($value->purchase_date)->format(DateTime::ATOM);
+
         $prod_array['Alternate_Order_No'] = $value->amazon_order_identifier;
         $prod_array['Follow_up_Status'] = 'Open';
 
-        $prod_array["Last_Name"]   = $buyerDtls->Name;
+        $prod_array["Last_Name"]   = "Testing $buyerDtls->Name";
         $prod_array["Lead_Source"] = $this->lead_source($store_name, $country_code);
         $prod_array['Lead_Status'] = $this->lead_status($store_name, $country_code);
 
@@ -368,13 +336,13 @@ class ZohoOrder
 
         $catalog_details = $this->get_catalog($value->asin, $country_code, $store_name);
 
-        $prod_array["Title"]              = preg_replace("/[^a-zA-Z0-9_ -\/]+/", "", substr($value->title, 0, 100));
+        $prod_array["Designation"]              = preg_replace("/[^a-zA-Z0-9_ -\/]+/", "", substr($value->title, 0, 100));
         $prod_array["Product_Code"]       = $value->seller_sku;
         $prod_array["Product_Cost"]       = $item_price->Amount;
         $prod_array["Procurement_URL"]    = $this->get_procurement_link($country_code, $value->asin);
         $prod_array["Nature"]             = "Import";
         $prod_array["Product_Category"]   = $catalog_details['category']; //$value->product_category;
-        $prod_array["Quantity"]           = $value->quantity_ordered;
+        $prod_array["Quantity"]           = "$value->quantity_ordered";
 
 
 
@@ -393,86 +361,6 @@ class ZohoOrder
         $prod_array["Weight_in_LBS"]          = (string)$catalog_details['weight'];
         $prod_array["Payment_Reference_Number"]  = $value->order_item_identifier;
         $prod_array["Exchange"]                  = $DOLLAR_EXCHANGE_RATE;
-
-        return $prod_array;
-    }
-
-    public function zohoOrderFormating_old($value)
-    {
-        $order_data = Carbon::parse($value->purchase_date)->format('Y-m-d H:i:s');
-
-        $prod_array = [];
-        $prod_array['Alternate_Order_No'] = $value->amazon_order_identifier;
-        $prod_array['Follow_up_Status'] = 'Open';
-
-
-
-        if (($value->store_name == 'Nitrous Stores' && $value->country_code == 'IN') || ($value->store_name == 'MBM India Stores' && $value->country_code == 'IN')) {
-
-            $prod_array['Lead_Status'] = 'B2C Order Confirmed KYC Pending';
-        } else {
-
-            $prod_array["Lead_Status"] = 'Order Confirmed Purchase Pending';
-        }
-        $prod_array["Lead_Source"] = "Amazon.in";
-
-        $buyerDtls = json_decode($value->shipping_address);
-        $address = $buyerDtls->AddressLine1 . '<br> ' . $buyerDtls->AddressLine2;
-        $address = str_replace("&", " and ", $address);
-
-        $prod_array["Last_Name"]                 = $buyerDtls->Name;
-        $prod_array["Mobile"]                    = substr((int) filter_var($buyerDtls->Phone, FILTER_SANITIZE_NUMBER_INT), -10);
-        $prod_array["Address"]                   = $address;
-        $prod_array["City"]                      = $buyerDtls->City;
-        $prod_array["State"]                     = '';
-        $prod_array["Zip_Code"]                  = '';
-
-        $buyerEmail = json_decode($value->buyer_info);
-        $prod_array["Email"]                     = ((isset($buyerEmail->BuyerEmail)) ? $buyerEmail->BuyerEmail : '');
-        $prod_array["Customer_Type1"]            = '';
-
-        $order_total = json_decode($value->order_total);
-        $prod_array["Amount_Paid_by_Customer"]   = (int)$order_total->Amount;
-        $prod_array["Designation"]               = preg_replace("/[^a-zA-Z0-9_ -\/]+/", "", substr($value->title, 0, 100));
-        $prod_array["Order_Creation_Date"]       = $order_data;
-        $prod_array["Product_Code"]              = $value->seller_sku;
-
-
-        if ($value->country_code != 'AE') {
-            $prod_array["Procurement_URL"] = 'http://www.amazon.in/gp/product/' . $value->asin;
-            $prod_array["Product_Link"] = 'http://www.amazon.ae/gp/product/' . $value->asin;
-        } else {
-            $prod_array["Procurement_URL"] = 'http://www.amazon.com/gp/product/' . $value->asin;
-            $prod_array["Product_Link"] = 'http://www.amazon.in/gp/product/' . $value->asin;
-        }
-
-        $prod_array["US_EDD"]                    = Carbon::parse($value->latest_delivery_date)->format('Y-m-d');
-
-        $item_price = json_decode($value->item_price);
-        $prod_array["Product_Cost"]              = $item_price->Amount;
-        $prod_array["Product_Category"]          = ''; //$value->product_category;
-        $prod_array["Item_Type_Category"]        = ''; //$value->item_type_category;
-
-        $product_info = json_decode($value->product_info);
-        $prod_array["Quantity"]                  = $product_info->NumberOfItems;
-        $prod_array["ASIN"]                      = $value->asin;
-        $prod_array["SKU"]                       = $value->seller_sku;
-        $prod_array["H_Code"]                    = ''; //$value->hs_code;
-        $prod_array["GST"]                       = ''; //$value->gst;
-
-        if ($value->store_name == 'Mahzuz Stores (Seller)') {
-            $prod_array["Lead_Source"] = 'Amazon.ae-Mahzuz';
-        } else {
-            $prod_array["Lead_Source"] = $value->store_name;
-        }
-
-        $prod_array["Fulfilment_Channel"]        = $value->fulfillment_channel;
-        // $prod_array["Weight_in_LBS"]             = (string)ceil($value->weight_in_lbs);
-        $prod_array["Payment_Reference_Number1"] = $value->order_item_identifier;
-        $prod_array["Exchange"]                  = 80;
-        $prod_array["Nature"]                    = "Import";
-
-
 
         return $prod_array;
     }
