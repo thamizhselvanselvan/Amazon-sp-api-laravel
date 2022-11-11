@@ -124,15 +124,19 @@ class ZohoOrder
         */
     ];
 
-    public function index()
+    public function index($amazon_order_id = null)
     {
+
         $orderItems = OrderUpdateDetail::whereNull('courier_name')->whereNull('courier_awb')->limit(1)->first();
 
         // dd($this->getAccessToken());
 
         if ($orderItems) {
 
-            //$orderItems->amazon_order_id = '408-1253151-7733136';
+            if ($amazon_order_id) {
+                $orderItems->amazon_order_id = $amazon_order_id;
+            }
+
             $order_table_name = 'orders';
             $order_item_table_name = 'orderitemdetails';
 
