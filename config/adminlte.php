@@ -340,6 +340,13 @@ return [
                     'can' => ['Admin', 'Account'],
                     'icon' => 'far fa fa-cog',
                 ],
+
+                [
+                    'text' => 'File Management',
+                    'url' => 'admin/file-management',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+                ],
             ],
         ],
 
