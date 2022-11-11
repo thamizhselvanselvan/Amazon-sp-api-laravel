@@ -17,7 +17,7 @@ class AsinDestinationUpload extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:Asin-destination-upload {user_id} {priority} {--destination=} {path}';
+    protected $signature = 'mosh:Asin-destination-upload {user_id} {priority} {--country_code=} {path} {fm_id}';
 
     /**
      * The console command description.
@@ -46,9 +46,9 @@ class AsinDestinationUpload extends Command
         $push_to_bb = new PushAsin();
         $user_id = $this->argument('user_id');
         $priority = $this->argument('priority');
-        $destinations = explode(',', $this->option('destination'));
-
+        $destinations = explode(',', $this->option('country_code'));
         $path = $this->argument('path');
+        $file_management_id = $this->argument('fm_id');
         $asins = Reader::createFromPath(Storage::path($path), 'r');
         $asins->setHeaderOffset(0);
 
@@ -69,7 +69,10 @@ class AsinDestinationUpload extends Command
             $class = "catalog\ImportAsinSourceDestinationCsvFile";
             $queue_name = "csv_import";
             $delay = 0;
+            $count = 0;
+            $asin_chunk_count = count($asin_chunk) - 1;
 
+            log::warning($asin_chunk_count);
             foreach ($asin_chunk as $value) {
 
                 $chunk_data = [
@@ -78,8 +81,27 @@ class AsinDestinationUpload extends Command
                     'source'    => $this->destination,
                     'module'    => 'destination',
                     'priority'  =>  $priority,
+                    'fm_id'     =>  $file_management_id
                 ];
+
+                if ($count == $asin_chunk_count) {
+                    // LAST CHUNK
+                    log::warning($count);
+                    $chunk_data = [
+                        'ASIN'      => $value,
+                        'user_id'   => $user_id,
+                        'source'    => $this->destination,
+                        'module'    => 'destination',
+                        'priority'  =>  $priority,
+                        'fm_id'     =>  $file_management_id,
+                        'Last_queue' => now(),
+                    ];
+                    jobDispatchFunc($class, $chunk_data, $queue_name, $delay);
+                    log::info($chunk_data);
+                }
+
                 jobDispatchFunc($class, $chunk_data, $queue_name, $delay);
+                $count++;
             }
             // log::alert($chunk_data);
             $asin = [];

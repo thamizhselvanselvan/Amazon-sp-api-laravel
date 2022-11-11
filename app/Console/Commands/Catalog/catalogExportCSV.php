@@ -24,7 +24,7 @@ class catalogExportCSV extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:catalog-export-csv {priority} {country_code}';
+    protected $signature = 'mosh:catalog-export-csv {priority} {destination} {fm_id}';
 
     /**
      * The console command description.
@@ -53,10 +53,9 @@ class catalogExportCSV extends Command
         $total_csv = 1000000;
         $chunk = 20000;
         $this->remender = $total_csv / $chunk;
-        $this->country_code = $this->argument('country_code');
-
+        $this->country_code = $this->argument('destination');
         $this->priority = $this->argument('priority');
-
+        $fm_id = $this->argument('fm_id');
         $asin_cat = 'catalognew' . strtolower($this->country_code) . 's';
 
         $header = [
@@ -174,5 +173,8 @@ class catalogExportCSV extends Command
             }
             $zip->close();
         }
+        // FILE MANAGEMENT UPDATE
+        $command_end_time = now();
+        fileManagementUpdate($fm_id, $command_end_time);
     }
 }
