@@ -14,11 +14,13 @@ class B2cshipBookingServices
 {
     private $amazon_order_id;
     private $order_item_id;
+    private $store_id;
 
-    public function b2cdata($amazon_order_id, $order_item_id)
+    public function b2cdata($amazon_order_id, $order_item_id, $store_id)
     {
         $this->amazon_order_id = $amazon_order_id;
         $this->order_item_id = $order_item_id;
+        $this->store_id = $store_id;
         $this->custom_percentage = 65;
 
         Log::alert($amazon_order_id);
@@ -173,10 +175,19 @@ class B2cshipBookingServices
 
     public function requestxml($consignee_values)
     {
+
         if (App::environment() == 'Production') {
-            $user_id = '';
-            $password = '';
-            $client = '';
+            if ($this->store_id == 6) {
+                $user_id = 'nitroushaulinc@gmail.com';
+                $password = 'G79rC7@NIT';
+                $client = 'NITROUS1';
+            } else if ($this->store_id == 5) {
+                $user_id = 'mm@newmedia.in';
+                $password = 'G79rC7$$';
+                $client = 'C1013';
+            } else {
+                Log::channel('slack')->error("B2C API Creds Issue");
+            }
         } else {
             $user_id = 'humlofatro@vusra.com';
             $password = 'G79rC7';
