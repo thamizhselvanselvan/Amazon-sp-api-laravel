@@ -12,8 +12,8 @@ use App\Jobs\TestQueueFail;
 use Illuminate\Support\Str;
 use Smalot\PdfParser\Parser;
 use App\Models\Aws_credential;
-use App\Models\FileManagement;
 use App\Services\Zoho\ZohoApi;
+use App\Models\FileManagement;
 use Dflydev\DotAccessData\Data;
 use SellingPartnerApi\Endpoint;
 use App\Models\Inventory\Shelve;
@@ -65,8 +65,8 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
 Route::get('zoho_update', function () {
 
-    $zoho = new ZohoApi;
-    dd($zoho->getAccessToken());
+    // $zoho = new ZohoApi;
+    // dd($zoho->getAccessToken());
 
 
     //
@@ -94,55 +94,12 @@ Route::get('zoho_update', function () {
 
 
 Route::get('import', function () {
-    $time = ['Last_queue' => now()];
-    po($time['Last_queue']->toDateTimeString());
-    exit;
 
-    $robin = User::create([
-        'name' => 'Robin Singh',
-        'email' => 'cliqnshop@app360.io',
-        'password' => Hash::make(123456),
-    ]);
-
-    $invoice = Role::create(['name' => 'Cliqnshop']);
-    $invoice_permission = Permission::create(['name' => 'Cliqnshop']);
-
-    $invoice->givePermissionTo($invoice_permission);
-
-
-    $robin->assignRole('Cliqnshop');
-    exit;
-
-    $file_info = FileManagement::select('id', 'user_id', 'module', 'file_path', 'command_name')->where('status', '0')->get()->toArray();
-    $ignore = ['ASIN_DESTINATION_', 'ASIN_SOURCE_'];
-    foreach ($file_info as $file_data) {
-
-        $id = $file_data['id'];
-        $user_id = $file_data['user_id'];
-        $module = explode('_', str_replace($ignore, '', $file_data['module']));
-        $path = $file_data['file_path'];
-        $command_name = $file_data['command_name'];
-        $destination = isset($module[0]) ? $module[0] : '';
-        $priority = isset($module[1]) ? $module[1] : '';
-
-        po($id);
-        po($user_id);
-        po($destination);
-        po($priority);
-        po($path);
-        po($command_name);
-
-        $file_management_update = FileManagement::find($id);
-        $file_management_update->command_start_time = now();
-        $file_management_update->status = '1';
-
-        commandExecFunc("${command_name} ${user_id} ${priority} --country_code=${destination} ${path}");
-
-        $file_management_update->command_end_time = now();
-        $file_management_update->update();
-    }
-
-
+    $word = "string's";
+    $string = [
+        'text' => $word,
+    ];
+    po($string);
     exit;
     $auth_count = 0;
     $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', 'US')->get()->toArray();
