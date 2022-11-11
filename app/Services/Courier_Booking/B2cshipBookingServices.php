@@ -110,7 +110,7 @@ class B2cshipBookingServices
             $consignee_Phone = $this->objKeyVerify($consignee_details, 'Phone');
             $consignee_AddressType = $this->objKeyVerify($consignee_details, 'AddressType');
 
-            $cat_data =   DB::connection('catalog')->select("SELECT dimensions FROM catalognewins  where asin = '$asin'");
+            $cat_data =   DB::connection('catalog')->select("SELECT dimensions FROM catalognewuss  where asin = '$asin'");
 
             $height = '';
             $unit = '';
@@ -171,11 +171,8 @@ class B2cshipBookingServices
         $this->requestxml($consignee_data);
     }
 
-    public function requestxml($consignee_data)
+    public function requestxml($consignee_values)
     {
-        // define('custom_pERCENTAGE', 65);
-        $consignee_values = $consignee_data;
-
         if (App::environment() == 'Production') {
             $user_id = '';
             $password = '';
@@ -198,7 +195,7 @@ class B2cshipBookingServices
                     <APIVersion>1.0</APIVersion>
                     <Client>' . $client . '</Client>
                     <AwbNo></AwbNo>
-                    <RefNo></RefNo>
+                    <RefNo>' . $data['OrderID'] . '</RefNo>
                     <BookingDate>' . $orddate . '</BookingDate>
                     <ConsignorName>NITROUS HAUL INC</ConsignorName>
                     <ConsignorContactPerson>NITROUS HAUL INC</ConsignorContactPerson>
