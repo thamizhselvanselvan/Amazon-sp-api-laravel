@@ -173,7 +173,6 @@ class ZohoOrder
         if ($order_item_details) {
 
             $auth_token = $this->getAccessToken();
-            po($auth_token);
 
             $idToWork = 377125000000426001;
 
@@ -182,12 +181,12 @@ class ZohoOrder
                     'Authorization' => 'Zoho-oauthtoken ' . $auth_token
                 ])->get('https://www.zohoapis.in/crm/v2/Leads/' . $idToWork);
 
-            po($response->status());
-            po($response->json()['data'][0]['Email']);
+            //po($response->status());
+            //po($response->json()['data'][0]['Email']);
 
 
             $recordObject = array();
-            $recordObject["Email"] = Str::random()."robin@yahoo.com";
+            $recordObject["Email"] = Str::random() . "robin@yahoo.com";
             $recordObject["id"] = $idToWork;
 
             $recordArray[] = $recordObject;
@@ -199,27 +198,23 @@ class ZohoOrder
                     "data" => $recordArray
                 ]);
 
-            po($response->status());
-            po($response->json());
+            //po($response->status());
+            //po($response->json());
 
             $response = Http::withoutVerifying()
                 ->withHeaders([
                     'Authorization' => 'Zoho-oauthtoken ' . $auth_token
                 ])->get('https://www.zohoapis.in/crm/v2/Leads/' . $idToWork);
 
-            po($response->status());
-            po($response->json()['data'][0]['Email']);
-
-            exit;
+            //po($response->status());
+            //po($response->json()['data'][0]['Email']);
 
             $prod_array = $this->zohoOrderFormating($order_item_details);
-            //po($prod_array);
-            //exit;
+            po($prod_array);
 
             $zoho_api_save = $this->insertOrderItemsToZoho($prod_array, $auth_token);
-            echo "zoho_api_save" . PHP_EOL;
             po($zoho_api_save);
-            echo "zoho_api_save" . PHP_EOL;
+            exit;
 
             $zoho_response = json_decode($zoho_api_save, true);
             echo "zoho_response" . PHP_EOL;
@@ -303,18 +298,20 @@ class ZohoOrder
 
     public function insertOrderItemsToZoho($prod_array, $auth_token)
     {
+        $recordArray[] = $prod_array;
 
         $response = Http::withoutVerifying()
             ->withHeaders([
                 'Authorization' => 'Zoho-oauthtoken ' . $auth_token
-            ])->post('https://www.zohoapis.com/crm/v2/Leads', [
-                'data' => prod_array
+            ])->post('https://www.zohoapis.in/crm/v2/Leads', [
+                "data" => $recordArray
             ]);
 
         po($response->status());
         po($response->json());
 
         exit;
+
         $curl_pointer = curl_init();
 
         $curl_options = array();
