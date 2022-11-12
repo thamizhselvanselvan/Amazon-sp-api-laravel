@@ -796,14 +796,14 @@ class labelManagementController extends Controller
         } else {
             $json_data = [];
             $json_data = array(
-                "Name" => htmlspecialchars($request->input('name')),
-                "AddressLine1" => htmlspecialchars($request->input('addressLine1')),
-                "AddressLine2" => htmlspecialchars($request->input('addressLine2')),
-                "City" => htmlspecialchars($request->input('city')),
-                "County" => htmlspecialchars($request->input('county')),
-                "CountryCode" => htmlspecialchars($request->input('countryCode')),
-                "Phone" => htmlspecialchars($request->input('phone')),
-                "AddressType" => htmlspecialchars($request->input('addressType'))
+                "Name" => addslashes($request->input('name')),
+                "AddressLine1" => addslashes($request->input('addressLine1')),
+                "AddressLine2" => addslashes($request->input('addressLine2')),
+                "City" => addslashes($request->input('city')),
+                "County" => addslashes($request->input('county')),
+                "CountryCode" => addslashes($request->input('countryCode')),
+                "Phone" => addslashes($request->input('phone')),
+                "AddressType" => addslashes($request->input('addressType'))
             );
             $shipping_address = json_encode($json_data);
 
