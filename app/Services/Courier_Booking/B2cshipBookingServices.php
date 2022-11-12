@@ -217,6 +217,7 @@ class B2cshipBookingServices
                 <ConsignorEmailID>mailboxmartinc@gmail.com</ConsignorEmailID>
                 <ConsignorTaxID></ConsignorTaxID>';
             } else {
+
                 Log::channel('slack')->error("B2C API Creds Issue");
             }
         } else {
@@ -226,15 +227,15 @@ class B2cshipBookingServices
 
             $consignor_xml = '<ConsignorName>Mosh Test</ConsignorName>
             <ConsignorContactPerson>Mosh Ecom pvt</ConsignorContactPerson>
-            <ConsignorAddressLine1>75 22, 37th Ave,</ConsignorAddressLine1>
-            <ConsignorAddressLine2>Bangalore,</ConsignorAddressLine2>
+            <ConsignorAddressLine1>210, UNIT NO.7B. BUSSA INDUSTRIAL ESTATE NEAR CENTURY BAZAAR,</ConsignorAddressLine1>
+            <ConsignorAddressLine2>WORLI,</ConsignorAddressLine2>
             <ConsignorAddressLine3></ConsignorAddressLine3>
             <ConsignorCountry>IN</ConsignorCountry>
-            <ConsignorState>KA</ConsignorState>
-            <ConsignorCity>Bangalore</ConsignorCity>
-            <ConsignorPinCode>560001</ConsignorPinCode>
+            <ConsignorState>MH</ConsignorState>
+            <ConsignorCity>MUMBAI</ConsignorCity>
+            <ConsignorPinCode>400025</ConsignorPinCode>
             <ConsignorMobileNo>2019170336</ConsignorMobileNo>
-            <ConsignorEmailID>nu.palmate@gmail.com</ConsignorEmailID>
+            <ConsignorEmailID>admin@moshecom.com</ConsignorEmailID>
             <ConsignorTaxID></ConsignorTaxID>';
         }
 
