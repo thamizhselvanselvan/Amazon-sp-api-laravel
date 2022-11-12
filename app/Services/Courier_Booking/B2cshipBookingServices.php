@@ -176,15 +176,46 @@ class B2cshipBookingServices
     public function requestxml($consignee_values)
     {
 
+        $consignor_xml = '';
         if (App::environment() == 'production') {
             if ($this->store_id == 6) {
+
+                //Nitrouse
                 $user_id = 'nitroushaulinc@gmail.com';
                 $password = 'G79rC7@NIT';
                 $client = 'NITROUS1';
+
+                $consignor_xml = '<ConsignorName>NITROUS HAUL INC</ConsignorName>
+                <ConsignorContactPerson>NITROUS HAUL INC</ConsignorContactPerson>
+                <ConsignorAddressLine1>75 22, 37th Ave,</ConsignorAddressLine1>
+                <ConsignorAddressLine2>Jackson Heights,</ConsignorAddressLine2>
+                <ConsignorAddressLine3></ConsignorAddressLine3>
+                <ConsignorCountry>USA</ConsignorCountry>
+                <ConsignorState>NY</ConsignorState>
+                <ConsignorCity>NY</ConsignorCity>
+                <ConsignorPinCode>11372</ConsignorPinCode>
+                <ConsignorMobileNo>16318127010</ConsignorMobileNo>
+                <ConsignorEmailID>nitroushaulinc@gmail.com</ConsignorEmailID>
+                <ConsignorTaxID></ConsignorTaxID>';
             } else if ($this->store_id == 5) {
+
+                //MBM Cred
                 $user_id = 'mm@newmedia.in';
                 $password = 'G79rC7$$';
                 $client = 'C1013';
+
+                $consignor_xml = '<ConsignorName>Mailbox Mart INC</ConsignorName>
+                <ConsignorContactPerson>Mailbox Mart INC</ConsignorContactPerson>
+                <ConsignorAddressLine1>75 22, 37th Ave,</ConsignorAddressLine1>
+                <ConsignorAddressLine2>Jackson Heights,</ConsignorAddressLine2>
+                <ConsignorAddressLine3></ConsignorAddressLine3>
+                <ConsignorCountry>US</ConsignorCountry>
+                <ConsignorState>NY</ConsignorState>
+                <ConsignorCity>NY</ConsignorCity>
+                <ConsignorPinCode>11372</ConsignorPinCode>
+                <ConsignorMobileNo>2019170336</ConsignorMobileNo>
+                <ConsignorEmailID>mailboxmartinc@gmail.com</ConsignorEmailID>
+                <ConsignorTaxID></ConsignorTaxID>';
             } else {
                 Log::channel('slack')->error("B2C API Creds Issue");
             }
@@ -192,6 +223,19 @@ class B2cshipBookingServices
             $user_id = 'humlofatro@vusra.com';
             $password = 'G79rC7';
             $client = 'C10000026';
+
+            $consignor_xml = '<ConsignorName>Mosh Test</ConsignorName>
+            <ConsignorContactPerson>Mosh Ecom pvt</ConsignorContactPerson>
+            <ConsignorAddressLine1>75 22, 37th Ave,</ConsignorAddressLine1>
+            <ConsignorAddressLine2>Bangalore,</ConsignorAddressLine2>
+            <ConsignorAddressLine3></ConsignorAddressLine3>
+            <ConsignorCountry>IN</ConsignorCountry>
+            <ConsignorState>KA</ConsignorState>
+            <ConsignorCity>Bangalore</ConsignorCity>
+            <ConsignorPinCode>560001</ConsignorPinCode>
+            <ConsignorMobileNo>2019170336</ConsignorMobileNo>
+            <ConsignorEmailID>nu.palmate@gmail.com</ConsignorEmailID>
+            <ConsignorTaxID></ConsignorTaxID>';
         }
 
         foreach ($consignee_values as $data) {
@@ -208,18 +252,8 @@ class B2cshipBookingServices
                     <AwbNo></AwbNo>
                     <RefNo>' . $data['OrderID'] . '</RefNo>
                     <BookingDate>' . $orddate . '</BookingDate>
-                    <ConsignorName>NITROUS HAUL INC</ConsignorName>
-                    <ConsignorContactPerson>NITROUS HAUL INC</ConsignorContactPerson>
-                    <ConsignorAddressLine1>75 22, 37th Ave,</ConsignorAddressLine1>
-                    <ConsignorAddressLine2>Jackson Heights,</ConsignorAddressLine2>
-                    <ConsignorAddressLine3></ConsignorAddressLine3>
-                    <ConsignorCountry>USA</ConsignorCountry>
-                    <ConsignorState>NY</ConsignorState>
-                    <ConsignorCity>NY</ConsignorCity>
-                    <ConsignorPinCode>11372</ConsignorPinCode>
-                    <ConsignorMobileNo>16318127010</ConsignorMobileNo>
-                    <ConsignorEmailID>nitroushaulinc@gmail.com</ConsignorEmailID>
-                    <ConsignorTaxID></ConsignorTaxID>
+                    
+                    ' . $consignor_xml . '
 
                     <ConsigneeName>' . $this->cleanSpecialCharacters($data['consignee_name']) . '</ConsigneeName>
                     <ConsigneeContactPerson></ConsigneeContactPerson>
