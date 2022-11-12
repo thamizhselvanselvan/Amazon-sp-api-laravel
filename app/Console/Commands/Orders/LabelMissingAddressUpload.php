@@ -61,14 +61,14 @@ class LabelMissingAddressUpload extends Command
                 $AddressType = $data[10];
 
                 $address_array = [
-                    'Name' => addslashes($Name),
-                    'AddressLine1' => addslashes($AddressLine1),
-                    'AddressLine2' => addslashes($AddressLine2),
-                    'City' => addslashes($City),
-                    'County' => addslashes($County),
-                    'CountryCode' => addslashes($CountryCode),
-                    'Phone' => addslashes($Phone),
-                    'AddressType' => addslashes($AddressType)
+                    'Name' => htmlspecialchars($Name),
+                    'AddressLine1' => htmlspecialchars($AddressLine1),
+                    'AddressLine2' => htmlspecialchars($AddressLine2),
+                    'City' => htmlspecialchars($City),
+                    'County' => htmlspecialchars($County),
+                    'CountryCode' => htmlspecialchars($CountryCode),
+                    'Phone' => htmlspecialchars($Phone),
+                    'AddressType' => htmlspecialchars($AddressType)
                 ];
 
                 $address_json = (json_encode($address_array));
