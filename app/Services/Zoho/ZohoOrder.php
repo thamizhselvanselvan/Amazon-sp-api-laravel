@@ -127,17 +127,19 @@ class ZohoOrder
         */
     ];
 
-    public function index($amazon_order_id = null)
+    public function lead_preview($amazon_order_id = null)
     {
+        $prod_array = [];
         $orderItems = OrderUpdateDetail::where('amazon_order_id', $amazon_order_id)->limit(1)->first();
 
         if (!$orderItems) {
-            echo "No records found in the database for Amazon Order ID: $amazon_order_id";
-            echo "<HR>";
+            $prod_array['note_1'] = "No zoho id found in the database for this Amazon Order ID: $amazon_order_id";
         }
 
         if (isset($orderItems) && $orderItems->zoho_id) {
-            return "Zoho ID for Amazon Order id $amazon_order_id is already created";
+            $prod_array['note_2'] = "Zoho ID for Amazon Order id $amazon_order_id is already created";
+
+            return $prod_array;
         }
 
         $order_table_name = 'orders';
@@ -172,61 +174,78 @@ class ZohoOrder
 
         if ($order_item_details) {
 
-            $auth_token = $this->getAccessToken();
+            $store_name = $this->get_store_name($order_item_details->store_details);
+            $country_code = $this->get_country_code($order_item_details->store_details);
 
-            $idToWork = 377125000000428001;
+            $prod_array['data'] = $this->zohoOrderFormating($order_item_details, $store_name, $country_code);
+        }
 
-            $response = Http::withoutVerifying()
-                ->withHeaders([
-                    'Authorization' => 'Zoho-oauthtoken ' . $auth_token
-                ])->get('https://www.zohoapis.in/crm/v2/Leads/' . $idToWork);
+        return $prod_array;
+    }
 
-            po($response->status());
-            po($response->json()['data'][0]['Email']);
+    public function index($amazon_order_id = null)
+    {
+        $notes = [];
 
+        $orderItems = OrderUpdateDetail::where('amazon_order_id', $amazon_order_id)->limit(1)->first();
 
-            $recordObject = array();
-            $recordObject["Email"] = Str::random() . "robin@gmail.com";
-            $recordObject["id"] = $idToWork;
+        if (!$orderItems) {
+            $notes['notes'][] = "No zoho id found in the database for this Amazon Order ID: $amazon_order_id";
+        }
 
-            $recordArray[] = $recordObject;
+        if (isset($orderItems) && $orderItems->zoho_id) {
+            $notes['notes'][] = "Zoho ID for Amazon Order id $amazon_order_id is already created";
+            return $notes;
+        }
 
-            $response = Http::withoutVerifying()
-                ->withHeaders([
-                    'Authorization' => 'Zoho-oauthtoken ' . $auth_token
-                ])->put('https://www.zohoapis.in/crm/v2/Leads/' . $idToWork, [
-                    "data" => $recordArray
-                ]);
+        $order_table_name = 'orders';
+        $order_item_table_name = 'orderitemdetails';
 
-            po($response->status());
-            po($response->json());
+        $order_details = [
+            "$order_item_table_name.seller_identifier",
+            "$order_item_table_name.asin",
+            "$order_item_table_name.seller_sku",
+            "$order_item_table_name.title",
+            "$order_item_table_name.order_item_identifier",
+            "$order_item_table_name.quantity_ordered",
+            "$order_item_table_name.item_price",
+            "$order_table_name.fulfillment_channel",
+            "$order_table_name.our_seller_identifier",
+            "$order_table_name.amazon_order_identifier",
+            "$order_table_name.purchase_date",
+            "$order_item_table_name.shipping_address",
+            "$order_table_name.earliest_delivery_date",
+            "$order_table_name.buyer_info",
+            "$order_table_name.order_total",
+            "$order_table_name.latest_delivery_date",
+            "$order_table_name.is_business_order",
+        ];
 
-            $response = Http::withoutVerifying()
-                ->withHeaders([
-                    'Authorization' => 'Zoho-oauthtoken ' . $auth_token
-                ])->get('https://www.zohoapis.in/crm/v2/Leads/' . $idToWork);
+        $order_item_details = OrderItemDetails::select($order_details)
+            ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
+            ->where('orderitemdetails.amazon_order_identifier', $amazon_order_id)
+            ->with(['store_details.mws_region'])
+            ->limit(1)
+            ->first();
 
-            po($response->status());
-            po($response->json()['data'][0]['Email']);
+        if ($order_item_details) {
 
-            $prod_array = $this->zohoOrderFormating($order_item_details);
-            po($prod_array);
+            $store_name = $this->get_store_name($order_item_details->store_details);
+            $country_code = $this->get_country_code($order_item_details->store_details);
 
-            $zoho_api_save = $this->insertOrderItemsToZoho($prod_array, $auth_token);
-            po($zoho_api_save);
-            exit;
+            $prod_array = $this->zohoOrderFormating($order_item_details, $store_name, $country_code);
 
-            $zoho_response = json_decode($zoho_api_save, true);
-            echo "zoho_response" . PHP_EOL;
-            po($zoho_response);
-            echo "zoho_response" . PHP_EOL;
+            $zohoApi = new ZohoApi;
+            $zoho_api_save = $zohoApi->storeLead($prod_array);
 
-            Log::error("Zoho Response : " . $zoho_api_save);
+            $zoho_response = ($zoho_api_save) ? $zoho_api_save : null;
+
             if (isset($zoho_response) && array_key_exists('data', $zoho_response) && array_key_exists(0, $zoho_response['data']) && array_key_exists('code', $zoho_response['data'][0])) {
 
                 $zoho_save_id = $zoho_response['data'][0]['details']['id'];
 
                 $order_zoho = [
+                    "store_id" => $order_item_details->seller_identifier,
                     "amazon_order_id" => $amazon_order_id,
                     "order_item_id" => $prod_array['Payment_Reference_Number'],
                     "zoho_id" => $zoho_save_id
@@ -239,132 +258,40 @@ class ZohoOrder
                         "order_item_id"
                     ],
                     [
-                        "zoho_id"
+                        "zoho_id",
+                        "store_id"
                     ]
                 );
 
                 if ($order_response) {
-                    Log::error('Success');
-                    return "Success";
+                    $notes['success'] = "Success!";
+                    return $notes;
                 } else {
-                    Log::error('Error: ' . json_encode($order_response));
                     Log::channel('slack')->error(json_encode($zoho_response));
-                    return "Error";
+
+                    $notes['notes'][] = "While saving data error found!";
+                    return $notes;
                 }
             } else {
-                Log::error("Zoho Response : " . json_encode($zoho_response));
-                return "Error";
+                Log::channel('slack')->error("Zoho Response : " . json_encode($zoho_response));
+
+                $notes['notes'][] = "Error No Response After Updating Zoho!";
+                return $notes;
             }
         }
 
-        return "Catalog Item details did not get";
+        $notes['notes'][] = "Catalog Item details did not get";
+
+        return $notes;
     }
 
-    public function getAccessToken()
-    {
-        $zohoURL = "https://accounts.zoho.in/oauth/v2/token";
-
-        $client_id = config('app.zoho_client_id');
-        $client_secret = config('app.zoho_secret');
-        $refres_token = config('app.zoho_refresh_token');
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $zohoURL,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_SSL_VERIFYHOST => false,
-            CURLOPT_SSL_VERIFYPEER =>  false,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => array(
-                'client_id' => $client_id,
-                'client_secret' => $client_secret,
-                'refresh_token' => $refres_token,
-                'grant_type' => 'refresh_token'
-            ),
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-        $response = json_decode($response, true);
-
-        return $response['access_token'] ?? null;
-    }
-
-    public function insertOrderItemsToZoho($prod_array, $auth_token)
-    {
-        $recordArray[] = $prod_array;
-
-        $response = Http::withoutVerifying()
-            ->withHeaders([
-                'Authorization' => 'Zoho-oauthtoken ' . $auth_token
-            ])->post('https://www.zohoapis.in/crm/v2/Leads', [
-                "data" => $recordArray
-            ]);
-
-        po($response->status());
-        po($response->json());
-
-        exit;
-
-        $curl_pointer = curl_init();
-
-        $curl_options = array();
-        $url = "https://www.zohoapis.com/crm/v2/Leads";
-
-        $curl_options[CURLOPT_URL] = $url;
-        $curl_options[CURLOPT_RETURNTRANSFER] = true;
-        $curl_options[CURLOPT_ENCODING] = "";
-        $curl_options[CURLOPT_MAXREDIRS] = 10;
-        $curl_options[CURLOPT_FOLLOWLOCATION] = true;
-        $curl_options[CURLOPT_HTTP_VERSION] = CURL_HTTP_VERSION_1_1;
-        $curl_options[CURLOPT_POST] = 1;
-        $curl_options[CURLOPT_TIMEOUT] = 0;
-        $curl_options[CURLOPT_SSL_VERIFYHOST] = false;
-        $curl_options[CURLOPT_SSL_VERIFYPEER] = false;
-        $curl_options[CURLOPT_HEADER] = 1;
-        $curl_options[CURLOPT_CUSTOMREQUEST] = "POST";
-        $requestBody = array();
-        $recordArray = array();
-        $recordObject = array();
-
-        $recordArray[] = $prod_array;
-        $requestBody["data"] = $recordArray;
-        $curl_options[CURLOPT_POSTFIELDS] = json_encode($requestBody);
-        $headersArray = array();
-
-        $headersArray[] = "Authorization" . ":" . "Zoho-oauthtoken $auth_token";
-        $headersArray[] = 'Content-Type: text/plain';
-
-        $curl_options[CURLOPT_HTTPHEADER] = $headersArray;
-
-        curl_setopt_array($curl_pointer, $curl_options);
-
-        $result = curl_exec($curl_pointer);
-
-        if (curl_errno($curl_pointer)) {
-            $error_msg = curl_error($curl_pointer);
-            echo "curl_errno" . PHP_EOL;
-            po($error_msg);
-            echo "curl_errno" . PHP_EOL;
-        }
-
-        return $result;
-    }
-
-    public function zohoOrderFormating($value)
+    public function zohoOrderFormating($value, $store_name, $country_code)
     {
         $DOLLAR_EXCHANGE_RATE = 82;
         $AED_EXCHANGE_RATE = 3.8;
 
         $buyerDtls = (object)$value->shipping_address;
-        $store_name = $this->get_store_name($value->store_details);
-        $country_code = $this->get_country_code($value->store_details);
+
         $buyerEmail = json_decode($value->buyer_info);
         $order_total = json_decode($value->order_total);
         $item_price = json_decode($value->item_price);
@@ -456,7 +383,7 @@ class ZohoOrder
     public function lead_status($store_name, $country_code)
     {
 
-        if (($store_name == 'Nitrous Stores' && $country_code == 'IN') || ($store_name == 'MBM India Stores' && $country_code == 'IN')) {
+        if (($store_name == 'Nitrous Stores India' && $country_code == 'IN') || ($store_name == 'MBM India' && $country_code == 'IN')) {
 
             return 'B2C Order Confirmed KYC Pending';
         }
