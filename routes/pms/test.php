@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\seller\SellerAsinDetails;
 use Illuminate\Support\Facades\Response;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
+use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
 Route::get('test/catalog/{asin}/{country}', 'TestController@getASIN');
@@ -125,7 +126,7 @@ Route::get('test/get/zoho/data/{lead}', 'TestController@TestGetZoho');
 
 Route::get('test/smsa/booking', 'Testcontroller@SmsaBooking');
 
-Route::get('test/amazon-feed/{lead_id}/{seller_id}', 'Testcontroller@TestAmazonFeed');
+Route::get('test/amazon-feed/{lead_id}/{seller_id}', 'TestController@TestAmazonFeed');
 
 Route::get('test/emirate/tracking/{tracking_id}', 'TestController@emiratePostTracking');
 Route::get('test/emirate/booking', 'TestController@emiratePostBooking');
