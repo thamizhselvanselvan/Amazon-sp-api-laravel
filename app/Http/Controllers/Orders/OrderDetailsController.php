@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\order\OrderUpdateDetail;
+use Yajra\DataTables\Facades\DataTables;
 use App\Models\order\OrderSellerCredentials;
 
 class OrderDetailsController extends Controller
@@ -179,6 +180,26 @@ class OrderDetailsController extends Controller
         return view('orders.orderdetails_list.view', compact('details', 'email_used', 'data', 'price_data', 'item_tax'));
     }
 
+    // public function orderStatistics(Request $request)
+    // {
+    //     $stores = OrderSellerCredentials::select('store_name', 'store.store_id')
+    //         ->join("order_update_details as store", 'order_seller_credentials.seller_id', '=', 'store.store_id')
+    //         ->distinct()
+    //         ->get();
+
+    //     if ($request->ajax()) {
+
+    //         $data = OrderUpdateDetail::query()
+    //             ->where('store_id', $request->id)
+    //             ->orderBy('created_at', 'DESC')
+    //             ->limit(50)
+    //             ->get();
+    //         return response()->json(['success' => 'Searched Sucessfully', 'data' => $data]);
+    //     }
+
+    //     return view('orders.statistics', compact('stores'));
+    // }
+
     public function orderStatistics(Request $request)
     {
         $stores = OrderSellerCredentials::select('store_name', 'store.store_id')
@@ -189,11 +210,30 @@ class OrderDetailsController extends Controller
         if ($request->ajax()) {
 
             $data = OrderUpdateDetail::query()
-                ->where('store_id', $request->id)
+                ->with(['aws_credential' => function ($query) {
+                    $query->select("id", "store_name", 'seller_id');
+                }])
+                ->when($request->store_id, function ($query, $role) use ($request) {
+                    return $query->where('store_id', $role);
+                })
                 ->orderBy('created_at', 'DESC')
-                ->limit(50)
-                ->get();
-            return response()->json(['success' => 'Searched Sucessfully', 'data' => $data]);
+                ->limit(50);
+
+            return DataTables::of($data)
+                ->addColumn('store_name', function ($aws_credentials) {
+
+                    if ($aws_credentials->aws_credential) {
+                        return $aws_credentials->aws_credential->store_name;
+                    }
+
+                    return 'NA';
+                })
+                ->editColumn('created_at', function ($row) {
+
+                    return $row->created_at->toDateTimeString();
+                })
+                ->rawColumns(['store_name'])
+                ->make(true);
         }
 
         return view('orders.statistics', compact('stores'));
