@@ -225,14 +225,20 @@ class OrderDetailsController extends Controller
                     if ($aws_credentials->aws_credential) {
                         return $aws_credentials->aws_credential->store_name;
                     }
-
                     return 'NA';
                 })
                 ->editColumn('created_at', function ($row) {
 
                     return $row->created_at->toDateTimeString();
                 })
-                ->rawColumns(['store_name'])
+                ->editColumn('order_status', function ($row) {
+                    if ($row['order_status'] == 'unshipped') {
+                        return $row['order_status'];
+                    } else {
+                        return '<a href="https://app.360ecom.io/test/amazon-feed/' .  $row['order_status'] . '/' . $row['store_id'] . '">' . $row['order_status'] . '</a>';
+                    }
+                })
+                ->rawColumns(['store_name', 'order_status'])
                 ->make(true);
         }
 
