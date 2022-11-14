@@ -27,6 +27,7 @@ class FeedOrderDetailsApp360
     public function FeedOrderTrackingNo($store_id, $amazon_order_id, $amazon_order_item_id, $courier_name, $courier_awb)
     {
         $data = [];
+
         $merchant = Aws_credential::where('seller_id', $store_id)->get();
         $merchant_id = $merchant[0]->merchant_id;
 
@@ -38,15 +39,10 @@ class FeedOrderDetailsApp360
         )
             ->get(['quantity_ordered', 'country']);
 
-        $quantity = isset($order_qty[0]->quantity_ordered) ?: '1';
+        $quantity = $order_qty[0]->quantity_ordered;
         $country_code = $order_qty[0]->country;
 
         $marketplace_ids = $this->marketplace_id($country_code);
-
-        //Log::alert('Merchant_id ->' . $merchant_id);
-        //Log::alert('quantity ->' . $quantity);
-        //Log::alert('country_code ->' . $country_code);
-        //Log::alert('marketplace_ids ->' . $marketplace_ids);
 
         $config = $this->config($store_id, $country_code, $token = NULL);
 

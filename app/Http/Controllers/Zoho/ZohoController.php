@@ -12,13 +12,29 @@ use Illuminate\Support\Facades\Http;
 class ZohoController extends Controller
 {
 
-    public function Order(Request $request)
+    public function save(Request $request)
     {
-        if (!isset($request->order_id)) {
-            return "Enter Order ID";
+        if (!isset($request->amazon_order_id)) {
+            return response()->json(["note_3" => "Enter Order ID"]);
         }
 
         $zoho_order = new ZohoOrder;
-        return $zoho_order->index($request->order_id);
+        $response = $zoho_order->index($request->amazon_order_id);
+
+        return response()->json($response);
+    }
+
+    public function form()
+    {
+
+        return view('zoho/form');
+    }
+
+    public function preview(Request $request)
+    {
+        $zoho_order = new ZohoOrder;
+        $response = $zoho_order->lead_preview($request->amazon_order_id);
+
+        return response()->json($response);
     }
 }

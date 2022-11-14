@@ -35,3 +35,7 @@ Route::match(['get', 'post'], 'label/update/tracking-details', 'label\labelManag
 
 Route::get('label/edit-order-address/{id}', 'label\labelManagementController@editOrderAddress');
 Route::put('label/update-order-address/{id}', 'label\labelManagementController@updateOrderAddress');
+
+Route::get('label/edit-order-address-search-id/{id}', 'label\labelManagementController@editordersearchbyid');
+Route::put('label/update-order-address-search-id/{id}', 'label\labelManagementController@updateordersearchbyid');
+

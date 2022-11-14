@@ -6,6 +6,7 @@ use App\Models\Mws_region;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Services\SP_API\API\NewCatalog;
 
 class CatalogAmazonImport extends Command
 {
@@ -59,6 +60,7 @@ class CatalogAmazonImport extends Command
             $catalog_table_name = 'catalognew' . $source . 's';
             $current_data = date('H:i:s');
 
+            $catalog_class = new NewCatalog();
             $asins = [];
 
             if ($current_data >= '01:00:00' && $current_data <= '01:05:00') {
@@ -106,7 +108,8 @@ class CatalogAmazonImport extends Command
                     $aws_id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
                     if ($count == 20) {
 
-                        jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
+                        // jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
+                        $catalog_class->Catalog($asin_source);
                         $auth_count++;
                         $asin_source = [];
                         $count = 0;
@@ -126,7 +129,9 @@ class CatalogAmazonImport extends Command
                         $auth_count = 0;
                     }
                 }
-                jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
+
+                $catalog_class->Catalog($asin_source);
+                // jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
 
                 $model = 'Asin_source';
                 $table_name = "asin_source_";

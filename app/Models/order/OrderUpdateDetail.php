@@ -2,6 +2,7 @@
 
 namespace App\Models\order;
 
+use App\Models\Aws_credential;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -26,4 +27,9 @@ class OrderUpdateDetail extends Model
         'zoho_order_id',
         'order_status',
     ];
+
+    public function aws_credential()
+    {
+        return $this->hasOne(Aws_credential::class, 'seller_id', 'store_id');
+    }
 }
