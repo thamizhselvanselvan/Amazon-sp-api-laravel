@@ -53,7 +53,13 @@ class access_token_generate extends Command
             $request_json_decode = $request->json();
             $access_token = $request_json_decode['access_token'];
 
-            Storage::put('Business\token.txt', $access_token);
+            $file_path = 'Business\token.txt';
+
+            if (!Storage::exists($file_path)) {
+                Storage::put($file_path, '');
+            }
+
+            Storage::put($file_path, $access_token);
 
             print("Business API Access Token Generated Successfully");
             return true;

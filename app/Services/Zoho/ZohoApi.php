@@ -27,6 +27,10 @@ class ZohoApi
 
     public function getAccessToken()
     {
+        if (!Storage::exists($this->zoho_token_path)) {
+            return false;
+        }
+
         $response = json_decode(Storage::get($this->zoho_token_path), true);
 
         return $response['access_token'] ?? null;
@@ -42,6 +46,10 @@ class ZohoApi
         ]);
 
         if ($request->ok()) {
+
+            if (!Storage::exists($this->zoho_token_path)) {
+                Storage::put($this->zoho_token_path, '');
+            }
 
             Storage::put($this->zoho_token_path, json_encode($request->json()));
 
