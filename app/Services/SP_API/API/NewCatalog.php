@@ -113,12 +113,13 @@ class NewCatalog
         }
 
         //catalognewins
-        $new_catalog = table_model_create(country_code: $country_code, model: "Catalog_$country_code1", table_name: "catalognew");
-        foreach ($NewCatalogs as $NewCatalog) {
+        if (isset($country_code1)) {
+            $new_catalog = table_model_create(country_code: $country_code1, model: "Catalog_$country_code1", table_name: "catalognew");
+            foreach ($NewCatalogs as $NewCatalog) {
 
-            $new_catalog->insert($NewCatalog);
+                $new_catalog->insert($NewCatalog);
+            }
         }
-
         //R::storeALL($NewCatalogs);
     }
 
