@@ -62,8 +62,8 @@ class FeedOrderDetailsApp360
             'carrier_code' => $courier_name,
             'shipping_method' => 'Standard',
             'tracking_number' => $courier_awb,
-            'AmazonOrderItemCode' => $amazon_order_item_id,
-            'Quantity' => $quantity,
+            'amazonOrderItemCode' => $amazon_order_item_id,
+            'quantity' => $quantity,
         ];
 
         $response = $this->feedAWBToAmz($marketplace_ids, $config, $data);
@@ -93,12 +93,10 @@ class FeedOrderDetailsApp360
         );
 
         try {
-
             $result = $apiInstance->createFeed($body);
             return $result;
         } catch (Exception $e) {
             Log::channel('slack')->error('Exception when calling FeedAPI->createFeed' . $e->getMessage());
-            // Log::warning('Exception when calling FeedAPI->createFeed: ' . $e->getMessage());
         }
     }
 
@@ -123,8 +121,8 @@ class FeedOrderDetailsApp360
                 <ShipperTrackingNumber>' . $data['tracking_number'] . '</ShipperTrackingNumber>
               </FulfillmentData>
               <Item>
-                <AmazonOrderItemCode>' . $data['AmazonOrderItemCode'] . '</AmazonOrderItemCode>
-                <Quantity>' . $data['Quantity'] . '</Quantity>
+                <AmazonOrderItemCode>' . $data['amazonOrderItemCode'] . '</AmazonOrderItemCode>
+                <Quantity>' . $data['quantity'] . '</Quantity>
               </Item>
             </OrderFulfillment>
           </Message>
@@ -139,7 +137,7 @@ class FeedOrderDetailsApp360
         $feed_id = $response->feedId;
 
         Log::info("${amazon_order_id} updated on amazon: ${feed_id}");
-        $table_update_string = 'updated on amazon: ' . $feed_id;
+        $table_update_string = $feed_id;
 
         OrderUpdateDetail::where([
             ['amazon_order_id', $amazon_order_id],

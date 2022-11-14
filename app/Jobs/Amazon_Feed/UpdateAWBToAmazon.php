@@ -9,7 +9,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
-use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetails;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 
 class UpdateAWBToAmazon implements ShouldQueue

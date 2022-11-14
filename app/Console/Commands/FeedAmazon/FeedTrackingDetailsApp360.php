@@ -45,6 +45,10 @@ class FeedTrackingDetailsApp360 extends Command
             ->get(['id', 'store_id', 'amazon_order_id', 'order_item_id', 'courier_name', 'courier_awb']);
         $groups = $data->groupBy('store_id');
 
+        if ($data->isEmpty()) {
+            return false;
+        }
+
         $results = [];
         foreach ($groups as $group) {
             $results[] = head($group);

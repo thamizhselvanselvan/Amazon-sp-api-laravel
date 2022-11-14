@@ -43,15 +43,6 @@ class OrderItemDetailsImport extends Command
     public function handle()
     {
         $order_item = new OrderItem();
-        // $order_item->OrderItemDetails('402-6119301-9353145', 35, 'AE', 1, "");
-        // exit;
-        // $seller_id_array  = DB::connection('order')->select('SELECT our_seller_identifier 
-        // from orders group by our_seller_identifier');
-
-        // $tem_seller_id = [];
-        // foreach ($seller_id_array as $key => $value) {
-        //     $tem_seller_id[$key] = $value->our_seller_identifier;
-        // }
 
         $seller_id_array = OrderSellerCredentials::where('dump_order', 1)->get();
 
@@ -84,7 +75,6 @@ class OrderItemDetailsImport extends Command
 
                 $order_item->OrderItemDetails($order_id, $aws_id, $country, $zoho, $courier_partner);
             }
-            // }
         }
     }
 }
