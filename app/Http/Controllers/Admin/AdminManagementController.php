@@ -419,9 +419,9 @@ class AdminManagementController extends Controller
             'get_order_item' => 0,
             'enable_shipntrack' => 0,
             'zoho' => 0,
-            'courier_partner' => NULL,
-            'source' => NULL,
-            'destination' => NULL,
+            // 'courier_partner' => NULL,
+            // 'source' => NULL,
+            // 'destination' => NULL,
         ]);
 
         foreach ($selected_store as $key => $id) {
