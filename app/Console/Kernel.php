@@ -57,7 +57,7 @@ class Kernel extends ConsoleKernel
             //$schedule->command('mosh:feed-tracking-details-to-amazon')->everyMinute();
 
             /*Order CI CD*/
-            $schedule->command('aws:courier-booking')->everyTwoMinutes();
+            $schedule->command('aws:courier-booking')->everyFiveMinutes();
             $schedule->command('mosh:feed-app360-tracking-details')->everyMinute();
         }
 
