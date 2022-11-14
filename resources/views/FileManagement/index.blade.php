@@ -16,7 +16,7 @@
 
 @section('content')
     <div class="row">
-        <table class="table table-striped table-bordered text-center">
+        <table class="table table-striped table-bordered text-center table-sm">
             <thead class="table-info">
                 <th>User Name</th>
                 <th>Type</th>
