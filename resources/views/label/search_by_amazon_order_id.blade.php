@@ -401,7 +401,7 @@
                             "</td><td>" +
                             JSON
                             .parse(result['shipping_address']).Name +
-                            "</td><td><a href='/label/pdf-template/" + result['id'] +
+                            "</td><td><a href='/label/pdf-template/orderid-" + result['id'] +
                             "' class='btn-sm btn-success' target='_blank'><i class='fas fa-eye'></i>View</a><a href='/label/download-direct/" +
                             result['id'] +
                             "' class='btn-sm btn-info ml-1'><i class='fas fa-download'></i>Download</a> <a href='javascript:void(0)'" +
