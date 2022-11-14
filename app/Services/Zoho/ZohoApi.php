@@ -10,7 +10,7 @@ class ZohoApi
     public $auth_token = null;
     public $zoho_lead_base_url = "";
     public $zoho_token_base_url = "";
-    public $zoho_token_path = "zoho\access_token.txt";
+    public $zoho_token_path = "zoho/access_token.txt";
 
     public function __construct()
     {
@@ -27,6 +27,10 @@ class ZohoApi
 
     public function getAccessToken()
     {
+        if (!Storage::exists($this->zoho_token_path)) {
+            return false;
+        }
+
         $response = json_decode(Storage::get($this->zoho_token_path), true);
 
         return $response['access_token'] ?? null;
