@@ -3,97 +3,100 @@
 namespace App\Services\Zoho;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class ZohoApi
 {
+    public $auth_token = null;
+    public $zoho_lead_base_url = "";
+    public $zoho_token_base_url = "";
+    public $zoho_token_path = "zoho/access_token.txt";
+
+    public function __construct()
+    {
+        $this->auth_token = $this->getAccessToken();
+
+        if (app()->environment() === 'production') {
+            $this->zoho_lead_base_url = "https://www.zohoapis.com/crm/v2/Leads";
+            $this->zoho_token_base_url = "https://accounts.zoho.com/oauth/v2/token";
+        } else {
+            $this->zoho_lead_base_url = "https://www.zohoapis.in/crm/v2/Leads";
+            $this->zoho_token_base_url = "https://accounts.zoho.in/oauth/v2/token";
+        }
+    }
 
     public function getAccessToken()
     {
+        $response = json_decode(Storage::get($this->zoho_token_path), true);
 
-        $client_id = config('app.zoho_client_id');
-        $client_secret = config('app.zoho_secret');
-        $refres_token = config('app.zoho_refresh_token');
-
-        // $request = Http::asForm()->post("https://accounts.zoho.in/oauth/v2/token", [
-        //     'client_id' => $client_id,
-        //     'client_secret' => $client_secret,
-        //     'refresh_token' => $refres_token,
-        //     'grant_type' => 'refresh_token'
-        // ]);
-
-        // if ($request->ok()) {
-        //     return $request->json();
-        // }
-
-        // return false;
-
-        // dd($client_id);
-        $zohoURL = "https://accounts.zoho.in/oauth/v2/token";
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $zohoURL,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_SSL_VERIFYHOST => false,
-            CURLOPT_SSL_VERIFYPEER =>  false,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => array(
-                'client_id' => $client_id,
-                'client_secret' => $client_secret,
-                'refresh_token' => $refres_token,
-                'grant_type' => 'refresh_token'
-            ),
-        ));
-
-        $response = curl_exec($curl);
-        curl_close($curl);
-        $response = json_decode($response, true);
-        // dd($response);
-        return $response['access_token'];
+        return $response['access_token'] ?? null;
     }
 
-    public function insert($prod_array)
+    public function generateAccessToken()
     {
-        $auth_token = $this->getAccessToken();
+        $request = Http::asForm()->post($this->zoho_token_base_url, [
+            'client_id' => config('app.zoho_client_id'),
+            'client_secret' => config('app.zoho_secret'),
+            'refresh_token' => config('app.zoho_refresh_token'),
+            'grant_type' => 'refresh_token'
+        ]);
 
-        // $request = Http::withHeaders([
-        //     'Authorization' => "Zoho-oauthtoken $auth_token"
-        // ])->post("https://www.zohoapis.in/crm/v2/Leads", ['data' => [$prod_array]]);
+        if ($request->ok()) {
 
-        // if ($request->ok()) {
-        // }
+            Storage::put($this->zoho_token_path, json_encode($request->json()));
 
-        $curl_pointer = curl_init();
+            print("Zoho Access Token Generated Successfully");
+            return true;
+        }
 
-        $curl_options = array();
-        $url = "https://www.zohoapis.in/crm/v2/Leads";
+        return false;
+    }
 
-        $curl_options[CURLOPT_URL] = $url;
-        $curl_options[CURLOPT_RETURNTRANSFER] = true;
-        $curl_options[CURLOPT_HEADER] = 1;
-        $curl_options[CURLOPT_CUSTOMREQUEST] = "POST";
-        $requestBody = array();
-        $recordArray = array();
-        $recordObject = array();
+    public function getLead($lead_id)
+    {
+        $response = Http::withoutVerifying()
+            ->withHeaders([
+                'Authorization' => 'Zoho-oauthtoken ' . $this->auth_token
+            ])->get($this->zoho_lead_base_url . '/' . $lead_id);
 
-        $recordArray[] = $prod_array;
-        $requestBody["data"] = $recordArray;
-        $curl_options[CURLOPT_POSTFIELDS] = json_encode($requestBody);
-        $headersArray = array();
+        if ($response->ok()) {
+            return $response->json();
+        }
 
-        $headersArray[] = "Authorization" . ":" . "Zoho-oauthtoken $auth_token";
+        return false;
+    }
 
-        $curl_options[CURLOPT_HTTPHEADER] = $headersArray;
+    public function updateLead($lead_id, $parameters)
+    {
+        $parameters["id"] = $lead_id;
 
-        curl_setopt_array($curl_pointer, $curl_options);
+        $response = Http::withoutVerifying()
+            ->withHeaders([
+                'Authorization' => 'Zoho-oauthtoken ' . $this->auth_token
+            ])->put($this->zoho_lead_base_url . '/' . $lead_id, [
+                "data" => [$parameters]
+            ]);
 
-        $result = curl_exec($curl_pointer);
+        if ($response->ok()) {
+            return $response->json();
+        }
 
-        return $result;
+        return false;
+    }
+
+    public function storeLead($parameters)
+    {
+        $response = Http::withoutVerifying()
+            ->withHeaders([
+                'Authorization' => 'Zoho-oauthtoken ' . $this->auth_token
+            ])->post($this->zoho_lead_base_url, [
+                "data" => [$parameters]
+            ]);
+
+        if ($response->status() == 201) {
+            return $response->json();
+        }
+
+        return false;
     }
 }

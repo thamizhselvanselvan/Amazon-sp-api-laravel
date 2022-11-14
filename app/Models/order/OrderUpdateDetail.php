@@ -2,6 +2,7 @@
 
 namespace App\Models\order;
 
+use App\Models\Aws_credential;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,6 +25,11 @@ class OrderUpdateDetail extends Model
         'courier_awb',
         'zoho_id',
         'zoho_order_id',
-        'amzn_temp_order_status',
+        'order_status',
     ];
+
+    public function aws_credential()
+    {
+        return $this->hasOne(Aws_credential::class, 'seller_id', 'store_id');
+    }
 }

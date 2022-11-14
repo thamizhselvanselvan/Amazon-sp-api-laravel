@@ -190,7 +190,7 @@ class NewCatalog
                 ];
             }
             CatalogMissingAsin::upsert($miss_asin, ['asin'], ['asin', 'source']);
-            log::info($queue_data);
+            //log::info($queue_data);
             return $queue_data;
         } catch (Exception $e) {
 
