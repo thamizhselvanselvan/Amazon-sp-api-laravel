@@ -19,7 +19,7 @@ class OrdersCsvImport extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:order-csv-import {store_id}';
+    protected $signature = 'mosh:order-csv-import {store_id} {fm_id}';
 
     /**
      * The console command description.
@@ -47,6 +47,7 @@ class OrdersCsvImport extends Command
     {
         $store_id = $this->argument('store_id');
         // $store_id = 44;
+        $file_management_id = $this->argument('fm_id');
         $country = OrderSellerCredentials::where('seller_id', $store_id)->get();
         $country_code = $country[0]->country_code;
 
@@ -193,5 +194,9 @@ class OrdersCsvImport extends Command
                 'buyer_info',
             ]
         );
+        log::alert($file_management_id);
+
+        $command_end_time = now();
+        fileManagementUpdate($file_management_id, $command_end_time);
     }
 }

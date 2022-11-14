@@ -16,7 +16,7 @@ class invoiceExcelImport extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:invoice-excel-import';
+    protected $signature = 'pms:invoice-excel-import {fm_id}';
 
     /**
      * The console command description.
@@ -42,6 +42,7 @@ class invoiceExcelImport extends Command
      */
     public function handle()
     {
+        $file_managemnet_id = $this->argument('fm_id');
         $path = 'invoiceExcel/invoice.xlsx';
 
         $file = Storage::path($path);
@@ -113,5 +114,8 @@ class invoiceExcelImport extends Command
                 }
             }
         }
+
+        $command_end_time = now();
+        fileManagementUpdate($file_managemnet_id, $command_end_time);
     }
 }
