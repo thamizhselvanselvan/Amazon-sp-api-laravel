@@ -7,10 +7,13 @@ use Exception;
 use RedBeanPHP\R;
 use App\Models\Mws_region;
 use App\Models\Aws_credential;
+use App\Models\Catalog\Catalog;
 use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Admin\ErrorReporting;
+use App\Models\Catalog\Catalog_in;
+use App\Models\Catalog\Catalog_us;
 use App\Models\Catalog\CatalogMissingAsin;
 use App\Services\SP_API\Config\ConfigTrait;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
@@ -22,14 +25,13 @@ class NewCatalog
     public function Catalog($records, $seller_id = NULL)
     {
 
-        // exit;
-        $this->RedBeanConnection();
+        //     $this->RedBeanConnection();
         $queue_data = [];
         $upsert_asin = [];
         $country_code1 = '';
         $asins = [];
         $count = 0;
-        $miss_asins = [];
+        // $miss_asins = [];
         $auth_id = '';
         $token = '';
 
@@ -78,25 +80,46 @@ class NewCatalog
 
         $NewCatalogs = [];
         $country_code1 = strtolower($country_code1);
-        $catalog_table = 'catalognew' . $country_code1 . 's';
+        //$catalog_table = 'catalognew' . $country_code1 . 's';
         foreach ($queue_data as $record) {
             if ($record) {
                 foreach ($record as $key1 => $value) {
-                    $NewCatalogs[] = R::dispense($catalog_table);
+                    // $NewCatalogs[] = R::dispense($catalog_table);
+                    //  $NewCatalogs[$key1] = $value;
+
                     foreach ($value as $key => $data) {
+
+
                         if ($key != '0') {
 
-                            $NewCatalogs[$key1]->$key = $data;
+                            $key = ($key == "browseClassification") ? "browse_classification" : $key;
+                            $key = ($key == "itemClassification") ? "item_classification" : $key;
+                            $key = ($key == "modelNumber") ? "model_number" : $key;
+                            $key = ($key == "packageQuantity") ? "package_quantity" : $key;
+                            $key = ($key == "productTypes") ? "product_types" : $key;
+                            $key = ($key == "websiteDisplayGroup") ? "product_types" : $key;
+                            $key = ($key == "itemName") ? "item_name" : $key;
+                            $key = ($key == "partNumber") ? "part_number" : $key;
+
+                            $NewCatalogs[$key1][$key] = $data;
                         }
                     }
-                    $NewCatalogs[$key1]->created_at = now();
-                    $NewCatalogs[$key1]->updated_at = now();
+                    $NewCatalogs[$key1]['created_at'] = now();
+                    $NewCatalogs[$key1]['updated_at'] = now();
 
-                    $miss_asins[] = $value['asin'];
+                    // $miss_asins[] = $value['asin'];
                 }
             }
         }
-        R::storeALL($NewCatalogs);
+
+        //catalognewins
+        $new_catalog = table_model_create(country_code: $country_code, model: "Catalog_$country_code1", table_name: "catalognew");
+        foreach ($NewCatalogs as $NewCatalog) {
+
+            $new_catalog->insert($NewCatalog);
+        }
+
+        //R::storeALL($NewCatalogs);
     }
 
     public function FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id)
@@ -194,23 +217,23 @@ class NewCatalog
             return $queue_data;
         } catch (Exception $e) {
 
-            log::alert($e);
+            //log::alert($e);
         }
     }
 
-    public function RedBeanConnection()
-    {
-        $host = config('database.connections.catalog.host');
-        $dbname = config('database.connections.catalog.database');
-        $port = config('database.connections.catalog.port');
-        $username = config('database.connections.catalog.username');
-        $password = config('database.connections.catalog.password');
+    // public function RedBeanConnection()
+    // {
+    //     $host = config('database.connections.catalog.host');
+    //     $dbname = config('database.connections.catalog.database');
+    //     $port = config('database.connections.catalog.port');
+    //     $username = config('database.connections.catalog.username');
+    //     $password = config('database.connections.catalog.password');
 
-        if (!R::testConnection('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password)) {
-            R::addDatabase('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-            R::selectDatabase('catalog');
-        }
-    }
+    //     if (!R::testConnection('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password)) {
+    //         R::addDatabase('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+    //         R::selectDatabase('catalog');
+    //     }
+    // }
 
     public function returnDataType($type)
     {
