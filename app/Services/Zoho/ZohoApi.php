@@ -43,6 +43,10 @@ class ZohoApi
 
         if ($request->ok()) {
 
+            if (!Storage::exists($this->zoho_token_path)) {
+                Storage::put($this->zoho_token_path, '');
+            }
+
             Storage::put($this->zoho_token_path, json_encode($request->json()));
 
             print("Zoho Access Token Generated Successfully");
