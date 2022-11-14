@@ -10,7 +10,7 @@ class ZohoApi
     public $auth_token = null;
     public $zoho_lead_base_url = "";
     public $zoho_token_base_url = "";
-    public $zoho_token_path = "zoho/access_token.txt";
+    public $zoho_token_path = "zoho\access_token.txt";
 
     public function __construct()
     {
