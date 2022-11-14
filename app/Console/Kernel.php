@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
 
             /*Business API*/
             $schedule->command('mosh:access_token_generate')->cron('*/55 * * * *');
-            $schedule->command('mosh:zoho:generate_token')->cron('*/55 * * * *');
+            // $schedule->command('mosh:zoho:generate_token')->cron('*/55 * * * *');
 
             /*B2CShip*/
             $schedule->command('pms:b2cship-microstatus-report')->daily();
