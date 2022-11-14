@@ -215,8 +215,6 @@
                 $('#form-content').show();
                 $('#spinner-container').hide();
             }, 50); // How long you want the delay to be, measured in milliseconds.
-
-
         });
         $('#crud-modal').modal('show');
     }
@@ -290,10 +288,6 @@
         });
     });
 
-
-
-
-
     $('#closemodal').click(function() {
         $('#crud-modal').modal('hide');
     });
@@ -306,26 +300,6 @@
             // document.orderAddressForm.btnsave.disabled=true;
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     $(document).ready(function() {
         $('.search-amazon-order-id').on('click', function() {
@@ -430,13 +404,28 @@
                             "</td><td><a href='/label/pdf-template/" + result['id'] +
                             "' class='btn-sm btn-success' target='_blank'><i class='fas fa-eye'></i>View</a><a href='/label/download-direct/" +
                             result['id'] +
-                            "' class='btn-sm btn-info ml-1'><i class='fas fa-download'></i>Download</a></td>";
-                        
+                            "' class='btn-sm btn-info ml-1'><i class='fas fa-download'></i>Download</a> <a href='javascript:void(0)'" +
+                            " data-order_item_identifier=" + result['order_item_identifier'] +
+                            " data-amazon_order_identifier=" + result['order_no'] +
+                            " class='btn-sm btn-primary ml-1' data-toggle='modal' id='search_awb'><i class='fas fa-edit'></i>Edit Adress</a> </td>";
+
                     });
                     $('#checkTable').html(record_of_awb_id);
                 }
             });
         }
+    });
+    $('#checkTable').on('click', '#search_awb', function() {
+        var order_item_identifier = $(this).data('order_item_identifier');
+        var amazon_order_identifier = $(this).data('amazon_order_identifier');
+
+        console.log(order_item_identifier)
+        console.log(amazon_order_identifier)
+
+        loadOrderAddressFormFunction(order_item_identifier, amazon_order_identifier);
+
+        $('#danger').hide();
+        $('#success').hide();
 
     });
 </script>
