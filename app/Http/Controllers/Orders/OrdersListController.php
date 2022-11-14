@@ -53,7 +53,7 @@ class OrdersListController extends Controller
                     return $price;
                 })
                 ->rawColumns(['order_total'])
-                ->make(true);;
+                ->make(true);
         }
         return view('orders.listorders.index');
     }

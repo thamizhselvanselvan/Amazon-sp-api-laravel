@@ -84,7 +84,7 @@ class BombinoPacketActivitie extends Command
                 $end_date = $year . '-02-29' . ' 23:59:59';
             }
             else{
-                
+
                 $end_date = $year . '-02-28' . ' 23:59:59';
             }
         }
@@ -95,10 +95,10 @@ class BombinoPacketActivitie extends Command
         }
 
         $packet_detials = DB::connection('b2cship')->select("SELECT DISTINCT
-        AwbNo, PODLocation, StatusDetails,FPCode,CreatedDate 
+        AwbNo, PODLocation, StatusDetails,FPCode,CreatedDate
         from PODTrans
         WHERE CreatedDate BETWEEN convert(datetime, '$start_date') AND convert(datetime,'$end_date')
-        AND FPCode ='BOMBINO' 
+        AND FPCode ='BOMBINO'
         ORDER BY CreatedDate DESC");
 
         $file_path = 'Bombino/bombino_' . $month_name . '_' . $year . '.json';
@@ -107,6 +107,6 @@ class BombinoPacketActivitie extends Command
         }
         Storage::put($file_path, json_encode($packet_detials));
 
-        Log::alert($month . "file created");
+        //Log::alert($month . "file created");
     }
 }

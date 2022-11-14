@@ -65,7 +65,7 @@ class FeedTrackingDetailsApp360 extends Command
         }
 
         $class = 'Amazon_Feed\UpdateAWBToAmazon';
-        Log::debug($store_details);
+        //Log::debug($store_details);
         jobDispatchFunc($class, $store_details);
     }
 }

@@ -3,14 +3,16 @@
 namespace App\Services\Zoho;
 
 use in;
+use Str;
 use DateTime;
 use Carbon\Carbon;
 use App\Models\order\Order;
+use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingUs;
 use App\Models\Catalog\Catalog_in;
 use App\Models\Catalog\Catalog_us;
-use App\Models\Catalog\PricingIn;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use App\Models\order\OrderItemDetails;
 use App\Models\order\OrderUpdateDetail;
@@ -125,179 +127,171 @@ class ZohoOrder
         */
     ];
 
+    public function lead_preview($amazon_order_id = null)
+    {
+        $prod_array = [];
+        $orderItems = OrderUpdateDetail::where('amazon_order_id', $amazon_order_id)->limit(1)->first();
+
+        if (!$orderItems) {
+            $prod_array['note_1'] = "No zoho id found in the database for this Amazon Order ID: $amazon_order_id";
+        }
+
+        if (isset($orderItems) && $orderItems->zoho_id) {
+            $prod_array['note_2'] = "Zoho ID for Amazon Order id $amazon_order_id is already created";
+
+            return $prod_array;
+        }
+
+        $order_table_name = 'orders';
+        $order_item_table_name = 'orderitemdetails';
+
+        $order_details = [
+            "$order_item_table_name.seller_identifier",
+            "$order_item_table_name.asin",
+            "$order_item_table_name.seller_sku",
+            "$order_item_table_name.title",
+            "$order_item_table_name.order_item_identifier",
+            "$order_item_table_name.quantity_ordered",
+            "$order_item_table_name.item_price",
+            "$order_table_name.fulfillment_channel",
+            "$order_table_name.our_seller_identifier",
+            "$order_table_name.amazon_order_identifier",
+            "$order_table_name.purchase_date",
+            "$order_item_table_name.shipping_address",
+            "$order_table_name.earliest_delivery_date",
+            "$order_table_name.buyer_info",
+            "$order_table_name.order_total",
+            "$order_table_name.latest_delivery_date",
+            "$order_table_name.is_business_order",
+        ];
+
+        $order_item_details = OrderItemDetails::select($order_details)
+            ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
+            ->where('orderitemdetails.amazon_order_identifier', $amazon_order_id)
+            ->with(['store_details.mws_region'])
+            ->limit(1)
+            ->first();
+
+        if ($order_item_details) {
+
+            $store_name = $this->get_store_name($order_item_details->store_details);
+            $country_code = $this->get_country_code($order_item_details->store_details);
+
+            $prod_array['data'] = $this->zohoOrderFormating($order_item_details, $store_name, $country_code);
+        }
+
+        return $prod_array;
+    }
+
     public function index($amazon_order_id = null)
     {
+        $notes = [];
 
-        $orderItems = OrderUpdateDetail::whereNull('courier_name')->whereNull('courier_awb')->limit(1)->first();
+        $orderItems = OrderUpdateDetail::where('amazon_order_id', $amazon_order_id)->limit(1)->first();
 
-        // dd($this->getAccessToken());
+        if (!$orderItems) {
+            $notes['notes'][] = "No zoho id found in the database for this Amazon Order ID: $amazon_order_id";
+        }
 
-        if ($orderItems) {
+        if (isset($orderItems) && $orderItems->zoho_id) {
+            $notes['notes'][] = "Zoho ID for Amazon Order id $amazon_order_id is already created";
+            return $notes;
+        }
 
-            if ($amazon_order_id) {
-                $orderItems->amazon_order_id = $amazon_order_id;
-            }
+        $order_table_name = 'orders';
+        $order_item_table_name = 'orderitemdetails';
 
-            $order_table_name = 'orders';
-            $order_item_table_name = 'orderitemdetails';
+        $order_details = [
+            "$order_item_table_name.seller_identifier",
+            "$order_item_table_name.asin",
+            "$order_item_table_name.seller_sku",
+            "$order_item_table_name.title",
+            "$order_item_table_name.order_item_identifier",
+            "$order_item_table_name.quantity_ordered",
+            "$order_item_table_name.item_price",
+            "$order_table_name.fulfillment_channel",
+            "$order_table_name.our_seller_identifier",
+            "$order_table_name.amazon_order_identifier",
+            "$order_table_name.purchase_date",
+            "$order_item_table_name.shipping_address",
+            "$order_table_name.earliest_delivery_date",
+            "$order_table_name.buyer_info",
+            "$order_table_name.order_total",
+            "$order_table_name.latest_delivery_date",
+            "$order_table_name.is_business_order",
+        ];
 
-            $order_details = [
-                "$order_item_table_name.seller_identifier",
-                "$order_item_table_name.asin",
-                "$order_item_table_name.seller_sku",
-                "$order_item_table_name.title",
-                "$order_item_table_name.order_item_identifier",
-                "$order_item_table_name.quantity_ordered",
-                "$order_item_table_name.item_price",
-                "$order_table_name.fulfillment_channel",
-                "$order_table_name.our_seller_identifier",
-                "$order_table_name.amazon_order_identifier",
-                "$order_table_name.purchase_date",
-                "$order_item_table_name.shipping_address",
-                "$order_table_name.earliest_delivery_date",
-                "$order_table_name.buyer_info",
-                "$order_table_name.order_total",
-                "$order_table_name.latest_delivery_date",
-                "$order_table_name.is_business_order",
-            ];
+        $order_item_details = OrderItemDetails::select($order_details)
+            ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
+            ->where('orderitemdetails.amazon_order_identifier', $amazon_order_id)
+            ->with(['store_details.mws_region'])
+            ->limit(1)
+            ->first();
 
-            $order_item_details = OrderItemDetails::select($order_details)
-                ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
-                ->where('orderitemdetails.amazon_order_identifier', $orderItems->amazon_order_id)
-                ->with(['store_details.mws_region'])
-                ->limit(1)
-                ->first();
+        if ($order_item_details) {
 
-            if ($order_item_details) {
+            $store_name = $this->get_store_name($order_item_details->store_details);
+            $country_code = $this->get_country_code($order_item_details->store_details);
 
-                $auth_token = $this->getAccessToken();
-                $prod_array = $this->zohoOrderFormating($order_item_details);
-                po($prod_array);
-                $insert = $this->insertOrderItemsToZoho($prod_array, $auth_token);
-                po($insert);
-                exit;
+            $prod_array = $this->zohoOrderFormating($order_item_details, $store_name, $country_code);
+
+            $zohoApi = new ZohoApi;
+            $zoho_api_save = $zohoApi->storeLead($prod_array);
+
+            $zoho_response = ($zoho_api_save) ? $zoho_api_save : null;
+
+            if (isset($zoho_response) && array_key_exists('data', $zoho_response) && array_key_exists(0, $zoho_response['data']) && array_key_exists('code', $zoho_response['data'][0])) {
+
+                $zoho_save_id = $zoho_response['data'][0]['details']['id'];
+
+                $order_zoho = [
+                    "store_id" => $order_item_details->seller_identifier,
+                    "amazon_order_id" => $amazon_order_id,
+                    "order_item_id" => $prod_array['Payment_Reference_Number'],
+                    "zoho_id" => $zoho_save_id
+                ];
+
+                $order_response = OrderUpdateDetail::upsert(
+                    $order_zoho,
+                    [
+                        "amazon_order_id",
+                        "order_item_id"
+                    ],
+                    [
+                        "zoho_id",
+                        "store_id"
+                    ]
+                );
+
+                if ($order_response) {
+                    $notes['success'] = "Success!";
+                    return $notes;
+                } else {
+                    Log::channel('slack')->error(json_encode($zoho_response));
+
+                    $notes['notes'][] = "While saving data error found!";
+                    return $notes;
+                }
+            } else {
+                Log::channel('slack')->error("Zoho Response : " . json_encode($zoho_response));
+
+                $notes['notes'][] = "Error No Response After Updating Zoho!";
+                return $notes;
             }
         }
 
-        return "No Data";
+        $notes['notes'][] = "Catalog Item details did not get";
+
+        return $notes;
     }
 
-    public function getAccessToken()
-    {
-        $zohoURL = "https://accounts.zoho.com/oauth/v2/token";
-
-        $client_id = config('app.zoho_client_id');
-        $client_secret = config('app.zoho_secret');
-        $refres_token = config('app.zoho_refresh_token');
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $zohoURL,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_SSL_VERIFYHOST => false,
-            CURLOPT_SSL_VERIFYPEER =>  false,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => array(
-                'client_id' => $client_id,
-                'client_secret' => $client_secret,
-                'refresh_token' => $refres_token,
-                'grant_type' => 'refresh_token'
-            ),
-        ));
-
-        $response = curl_exec($curl);
-        po($response);
-
-        curl_close($curl);
-        $response = json_decode($response, true);
-
-        return $response['access_token'] ?? null;
-    }
-
-    public function insertOrderItemsToZoho($prod_array, $auth_token)
-    {
-        $curl_pointer = curl_init();
-
-        $curl_options = array();
-        $url = "https://www.zohoapis.com/crm/v2/Leads";
-
-        $curl_options[CURLOPT_URL] = $url;
-        $curl_options[CURLOPT_RETURNTRANSFER] = true;
-        $curl_options[CURLOPT_HEADER] = 1;
-        $curl_options[CURLOPT_CUSTOMREQUEST] = "POST";
-        $requestBody = array();
-        $recordArray = array();
-        $recordObject = array();
-
-        $recordArray[] = $prod_array;
-        $requestBody["data"] = $recordArray;
-        $curl_options[CURLOPT_POSTFIELDS] = json_encode($requestBody);
-        $headersArray = array();
-
-        $headersArray[] = "Authorization" . ":" . "Zoho-oauthtoken $auth_token";
-
-        $curl_options[CURLOPT_HTTPHEADER] = $headersArray;
-
-        curl_setopt_array($curl_pointer, $curl_options);
-
-        $result = curl_exec($curl_pointer);
-
-        return $result;
-    }
-
-    public function getOrderDetails()
-    {
-        $orderItems = DB::connection('order')
-            ->select("SELECT *, oid.shipping_address
-        FROM
-            orders AS os
-        INNER JOIN orderitemdetails AS oid
-
-        ON
-            os.amazon_order_identifier = oid.amazon_order_identifier
-        INNER JOIN ord_order_seller_credentials AS oosc
-        ON
-            oosc.seller_id = os.our_seller_identifier
-        LIMIT 1
-        ");
-
-        if (count($orderItems) > 0) {
-            foreach ($orderItems as $value) {
-
-                // dd('test');
-                $access_token = $this->getAccessToken();
-                $order_item_zoho = $this->zohoOrderFormating($value);
-
-                $zoho_response = $this->insertOrderItemsToZoho($order_item_zoho, $access_token);
-
-
-                $content = preg_split('/[\r\n]/', $zoho_response, -1, PREG_SPLIT_NO_EMPTY);
-                $array = (($content[count($content) - 1]));
-
-                $result = (json_decode($array));
-                $response['id'] = ($result->data[0]->details->id);
-                $response['status'] = ($result->data[0]->status);
-                $leadId = $response['id'];
-                po($response);
-                exit;
-                $this->zohoOrderDetails($leadId);
-            }
-        }
-    }
-
-    public function zohoOrderFormating($value)
+    public function zohoOrderFormating($value, $store_name, $country_code)
     {
         $DOLLAR_EXCHANGE_RATE = 82;
         $AED_EXCHANGE_RATE = 3.8;
 
         $buyerDtls = (object)$value->shipping_address;
-        $store_name = $this->get_store_name($value->store_details);
-        $country_code = $this->get_country_code($value->store_details);
+
         $buyerEmail = json_decode($value->buyer_info);
         $order_total = json_decode($value->order_total);
         $item_price = json_decode($value->item_price);
@@ -313,11 +307,16 @@ class ZohoOrder
         $prod_array['Alternate_Order_No'] = $value->amazon_order_identifier;
         $prod_array['Follow_up_Status'] = 'Open';
 
-        $prod_array["Last_Name"]   = "Testing $buyerDtls->Name";
+        $prod_array["Last_Name"]   = $buyerDtls->Name;
         $prod_array["Lead_Source"] = $this->lead_source($store_name, $country_code);
         $prod_array['Lead_Status'] = $this->lead_status($store_name, $country_code);
 
-        $address = $buyerDtls->AddressLine1 . '<br> ' . $buyerDtls->AddressLine2;
+        if (isset($buyerDtls->AddressLine2)) {
+            $address = $buyerDtls->AddressLine1 . '<br> ' . $buyerDtls->AddressLine2 ?? "";
+        } else {
+            $address = $buyerDtls->AddressLine1;
+        }
+
         $address = str_replace("&", " and ", $address);
 
         $prod_array["Mobile"]      = substr((int) filter_var($buyerDtls->Phone, FILTER_SANITIZE_NUMBER_INT), -10);
@@ -344,41 +343,22 @@ class ZohoOrder
         $prod_array["Product_Category"]   = $catalog_details['category']; //$value->product_category;
         $prod_array["Quantity"]           = "$value->quantity_ordered";
 
-
-
-
         ###############################
         ### Procurement Information ###
         ###############################
 
-        $prod_array["Product_Link"]            = $this->get_product_link($country_code, $value->asin);
-        $prod_array["US_EDD"]                  = Carbon::parse($value->latest_delivery_date)->format('Y-m-d');
+        $prod_array["Product_Link"]              = $this->get_product_link($country_code, $value->asin);
+        $prod_array["US_EDD"]                    = Carbon::parse($value->latest_delivery_date)->format('Y-m-d');
 
-        $prod_array["ASIN"]                    = $value->asin;
-        $prod_array["SKU"]                     = $value->seller_sku;
-        $prod_array["Product_Cost"]            = $catalog_details['price'];
+        $prod_array["ASIN"]                      = $value->asin;
+        $prod_array["SKU"]                       = $value->seller_sku;
+        $prod_array["Product_Cost"]              = $catalog_details['price'];
 
-        $prod_array["Weight_in_LBS"]          = (string)$catalog_details['weight'];
+        $prod_array["Weight_in_LBS"]             = (string)$catalog_details['weight'];
         $prod_array["Payment_Reference_Number"]  = $value->order_item_identifier;
         $prod_array["Exchange"]                  = $DOLLAR_EXCHANGE_RATE;
 
         return $prod_array;
-    }
-
-    public function zohoOrderDetails($leadId)
-    {
-
-        $token = $this->getAccessToken();
-        $headers = [
-            'Authorization' => 'Zoho-oauthtoken ' . $token,
-        ];
-        $zohoURL = 'https://www.zohoapis.in/crm/v2/Leads/';
-
-        $CompleteURI = $zohoURL . $leadId;
-        $response = Http::withHeaders($headers)->get($CompleteURI);
-        $response = json_decode($response);
-        dd($response);
-        exit;
     }
 
     public function lead_source($store_name, $country_code)
@@ -403,7 +383,7 @@ class ZohoOrder
     public function lead_status($store_name, $country_code)
     {
 
-        if (($store_name == 'Nitrous Stores' && $country_code == 'IN') || ($store_name == 'MBM India Stores' && $country_code == 'IN')) {
+        if (($store_name == 'Nitrous Stores India' && $country_code == 'IN') || ($store_name == 'MBM India' && $country_code == 'IN')) {
 
             return 'B2C Order Confirmed KYC Pending';
         }

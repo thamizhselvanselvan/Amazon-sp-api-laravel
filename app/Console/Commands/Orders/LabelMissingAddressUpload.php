@@ -61,7 +61,7 @@ class LabelMissingAddressUpload extends Command
                 $AddressType = $data[10];
 
                 $address_array = [
-                    'Name' => $Name,
+                    'Name' => htmlspecialchars($Name),
                     'AddressLine1' => htmlspecialchars($AddressLine1),
                     'AddressLine2' => htmlspecialchars($AddressLine2),
                     'City' => htmlspecialchars($City),
