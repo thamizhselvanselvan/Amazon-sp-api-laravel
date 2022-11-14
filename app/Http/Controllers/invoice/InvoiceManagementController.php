@@ -4,25 +4,27 @@ namespace App\Http\Controllers\invoice;
 
 use File;
 
+use Type;
 use DateTime;
 use ZipArchive;
 use RedBeanPHP\R;
 use League\Csv\Reader;
 use App\Models\Invoice;
-use Illuminate\Http\Request;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\URL;
 
+use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
+use App\Models\FileManagement;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorHTML;
-use Type;
 use Yajra\DataTables\Facades\DataTables;
 
 
@@ -199,15 +201,28 @@ class InvoiceManagementController extends Controller
         }
         Storage::put($path, $data);
 
-        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+        // if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
-            $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:invoice-excel-import > /dev/null &";
-            exec($command);
-        } else {
+        //     $base_path = base_path();
+        //     $command = "cd $base_path && php artisan pms:invoice-excel-import > /dev/null &";
+        //     exec($command);
+        // } else {
 
-            Artisan::call('pms:invoice-excel-import');
-        }
+        //     Artisan::call('pms:invoice-excel-import');
+        // }
+        $user_id = Auth::user()->id;
+        $file_name = $file->getClientOriginalName();
+
+        $file_info = [
+            'user_id' => $user_id,
+            'type' => 'IMPORT_INVOICE',
+            'module' => 'INVOICE',
+            'file_name' => $file_name,
+            'file_path' => $path,
+            'command_name' => 'pms:invoice-excel-import',
+        ];
+        FileManagement::create($file_info);
+        fileManagement();
 
         return response()->json(["success" => "All file uploaded successfully"]);
     }
@@ -525,5 +540,13 @@ class InvoiceManagementController extends Controller
                 unlink($file);
             }
         }
+    }
+
+    public function InvoiceFileManagementMonitor(Request $request)
+    {
+        $type = $request->module_type;
+        $file_check = fileManagementMonitoring($type);
+        // po($file_check);
+        return response()->json($file_check);
     }
 }

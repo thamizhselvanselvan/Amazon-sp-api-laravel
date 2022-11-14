@@ -22,3 +22,4 @@ Route::get('invoice/edit/{id}', 'invoice\InvoiceManagementController@edit');
 Route::post('invoice/update/{id}', 'invoice\InvoiceManagementController@update')->name('invoice.update');
 Route::post('invoice/zip/download', 'invoice\InvoiceManagementController@zipDownload')->name('invoice.zip.download');
 Route::get('invoice/zip/download/{mode}/{date}/zip/{file}', 'invoice\InvoiceManagementController@zipDownloadLink');
+Route::get('invoice/file/management/monitor', 'invoice\InvoiceManagementController@InvoiceFileManagementMonitor')->name('invoice.file.management');
