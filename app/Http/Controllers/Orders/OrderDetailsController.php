@@ -232,8 +232,11 @@ class OrderDetailsController extends Controller
                     return $row->created_at->toDateTimeString();
                 })
                 ->editColumn('order_status', function ($row) {
-
-                    return '<a href="https://app.360ecom.io/test/amazon-feed/' .  $row['order_status'] . '/' . $row['store_id'] . '">' . $row['order_status'] . '</a>';
+                    if ($row['order_status'] == 'unshipped') {
+                        return $row['order_status'];
+                    } else {
+                        return '<a href="https://app.360ecom.io/test/amazon-feed/' .  $row['order_status'] . '/' . $row['store_id'] . '">' . $row['order_status'] . '</a>';
+                    }
                 })
                 ->rawColumns(['store_name', 'order_status'])
                 ->make(true);
