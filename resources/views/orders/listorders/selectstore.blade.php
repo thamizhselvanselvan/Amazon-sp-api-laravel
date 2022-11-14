@@ -247,6 +247,11 @@
             }
         });
 
+        if (selected_store == '') {
+            alert('Please Select Store');
+            return false;
+        }
+
         $.ajax({
             method: 'post',
             url: '/admin/update-store',
