@@ -364,7 +364,7 @@ class B2cshipBookingServices
             Type: $error,
             Order_id: $order_id,
             Operation: 'B2Cship Booking Response'";
-
+            // po($slackMessage);
             Log::channel('slack')->error($slackMessage);
         } else {
 
@@ -372,8 +372,14 @@ class B2cshipBookingServices
 
             OrderUpdateDetail::where([
                 ['amazon_order_id', $this->amazon_order_id],
-                ['order_item_id', $this->order_item_id]
-            ])->update(['courier_awb' => $awb_no]);
+                ['order_item_id', $this->order_item_id],
+
+            ])->update(
+                [
+                    'courier_awb' => $awb_no,
+                    'booking_status' => '1'
+                ]
+            );
         }
         //Log::debug($data);
     }
