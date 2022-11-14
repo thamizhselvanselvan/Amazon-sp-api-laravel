@@ -49,6 +49,8 @@
 
 @section('js')
 <script type="text/javascript">
+    
+
     let yajra_table = $('.yajra-datatable').DataTable({
         processing: true,
         serverSide: true,

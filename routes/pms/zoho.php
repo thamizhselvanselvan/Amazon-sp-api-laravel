@@ -7,7 +7,10 @@ Route::get('zoho/dashboard', 'Zoho\ZohoController@Dashboard');
 Route::get('zoho/getLeadsDetails/{leadId}', 'Zoho\ZohoController@getOrderDetails');
 Route::get('zoho/insertZohoOrder', 'Zoho\ZohoController@addOrderItemsToZoho');
 
-Route::get('zoho/test/{order_id}', 'Zoho\ZohoController@Order');
+Route::get('zoho/test/{order_id}', 'Zoho\ZohoController@save');
+Route::get('zoho/form', 'Zoho\ZohoController@form');
+Route::get('zoho/preview', 'Zoho\ZohoController@preview');
+Route::get('zoho/save', 'Zoho\ZohoController@save');
 
 /*
 

@@ -15,7 +15,12 @@ class FileManagementController extends Controller
         $file_info = [];
         $type_replace = ['_ASIN_DESTINATION', '_ASIN_SOURCE', 'CATALOG_', 'PRICE_'];
         $module_replace = ['_US_1', '_US_2', '_US_3', '_IN_1', '_IN_2', '_IN_3', '_IN', '_US', '_EXPORT'];
-        $file_managements = FileManagement::select('user_id', 'type', 'module', 'file_name', 'command_start_time', 'command_end_time')->get()->toArray();
+        $file_managements = FileManagement::query()
+            ->select('user_id', 'type', 'module', 'file_name', 'command_start_time', 'command_end_time')
+            ->orderBy('id', 'DESC')
+            ->get()
+            ->toArray();
+
         foreach ($file_managements as $file_management) {
 
             $user_name = User::where('id', $file_management['user_id'])->get('name')->toArray();

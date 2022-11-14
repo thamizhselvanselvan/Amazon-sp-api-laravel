@@ -65,6 +65,10 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
 Route::get('zoho_update', function () {
 
+    $idToWork = 377125000000428001;
+
+    $zoho = new ZohoApi;
+    dd($zoho->getLead($idToWork));
 
     exit;
     $test = json_decode('{"data":[{"code":"SUCCESS","details":{"Modified_Time":"2022-11-11T18:13:51+05:30","Modified_By":{"name":"Mosh","id":"1929333000000097003"},"Created_Time":"2022-11-11T18:13:51+05:30","id":"1929333000099290066","Created_By":{"name":"Mosh","id":"1929333000000097003"}},"message":"record added","status":"success"}]}', true);
@@ -491,154 +495,150 @@ Route::get('channel', function () {
     return view('checkChannel');
 });
 
-Route::get('test', function (ReportWeekly $report_weekly) {
+// Route::get('test', function (ReportWeekly $report_weekly) {
 
-    $host = "na.business-api.amazon.com";
-    $accessKey = 'AKIARVGPJZCJHLW5MH63';
-    $secretKey = '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';
-    $region = "us-east-1";
-    $service = "execute-api";
-    $requestUrl =
-        "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
-    $uri = 'products/2020-08-26/products/B081G4G8N8';
-    $httpRequestMethod = 'GET';
-    $data = '';
+//     $host = "na.business-api.amazon.com";
+//     $accessKey = 'AKIARVGPJZCJHLW5MH63';
+//     $secretKey = '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';
+//     $region = "us-east-1";
+//     $service = "execute-api";
+//     $requestUrl =
+//         "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
+//     $uri = 'products/2020-08-26/products/B081G4G8N8';
+//     $httpRequestMethod = 'GET';
+//     $data = '';
 
-    $sign = new AWS_Business;
-    $headers = $sign->sign(
-        $host,
-        $uri,
-        $requestUrl,
-        $accessKey,
-        $secretKey,
-        $region,
-        $service,
-        $httpRequestMethod,
-        $data
-    );
+//     $sign = new AWS_Business;
+//     $headers = $sign->sign(
+//         $host,
+//         $uri,
+//         $requestUrl,
+//         $accessKey,
+//         $secretKey,
+//         $region,
+//         $service,
+//         $httpRequestMethod,
+//         $data
+//     );
 
-    apiCall($headers);
+//     apiCall($headers);
 
-    exit;
+//     exit;
 
-    $data = '';
-    $host = "na.business-api.amazon.com";
-    $accessKey = "AKIARVGPJZCJHLW5MH63";
-    $secretKey = "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";
-    $region = "us-east-1";
-    $service = "execute-api";
-    $requestUrl =
-        "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
-    $uri = 'products/2020-08-26/products';
-    $httpRequestMethod = 'GET';
+//     $data = '';
+//     $host = "na.business-api.amazon.com";
+//     $accessKey = "AKIARVGPJZCJHLW5MH63";
+//     $secretKey = "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";
+//     $region = "us-east-1";
+//     $service = "execute-api";
+//     $requestUrl =
+//         "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
+//     $uri = 'products/2020-08-26/products';
+//     $httpRequestMethod = 'GET';
 
-    $headers = calcualteAwsSignatureAndReturnHeaders(
-        $host,
-        $uri,
-        $requestUrl,
-        $accessKey,
-        $secretKey,
-        $region,
-        $service,
-        $httpRequestMethod,
-        $data
-    );
+//     $headers = calcualteAwsSignatureAndReturnHeaders(
+//         $host,
+//         $uri,
+//         $requestUrl,
+//         $accessKey,
+//         $secretKey,
+//         $region,
+//         $service,
+//         $httpRequestMethod,
+//         $data
+//     );
 
-    apiCall($headers);
+//     apiCall($headers);
 
-    exit;
-
-    // $requestUrl = "https://na.business-api.amazon.com";
-    // $httpRequestMethod = "GET";
-    // $headers = calcualteAwsSignatureAndReturnHeaders();
-    $data = '';
-
-    $host = "na.business-api.amazon.com";
-    // $accessKey = ACCESS_KEY;
-    // $secretKey = SECRET_KEY;
-    $accessKey = "AKIARVGPJZCJHLW5MH63";
-    $secretKey = "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";
-    $region = "us-east-1";
-    $service = "execute-api";
-    $requestUrl =
-        "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
-    //?productRegion=US&locale=es_US
-    //productRegion=US&locale=es_US
-    $uri = 'products/2020-08-26/products/B081G4G8N8';
-    $httpRequestMethod = 'GET';
-
-    $headers = calcualteAwsSignatureAndReturnHeaders(
-        $host,
-        $uri,
-        $requestUrl,
-        $accessKey,
-        $secretKey,
-        $region,
-        $service,
-        $httpRequestMethod,
-        $data
-    );
-
-    $call = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, $debug = TRUE);
-    dd($headers, $call);
-    exit;
-
-    $host = "na.business-api.amazon.com";
-    $uri = "products/2020-08-26/products/B081G4G8N8";
-    $requestUrl = "https://na.business-api.amazon.com";
-    $accessKey = "AKIARVGPJZCJHLW5MH63";
-    $secretKey = "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";
-    $region = "us-east-1";
-    $service = "execute-api";
-    $httpRequestMethod = "";
-    $data = "";
-
-    $headers = calcualteAwsSignatureAndReturnHeaders(
-        $host,
-        $uri,
-        $requestUrl,
-        $accessKey,
-        $secretKey,
-        $region,
-        $service,
-        $httpRequestMethod,
-        $data,
-        $debug = TRUE
-    );
+//     exit;
 
 
-    $result = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, TRUE);
+//     $data = '';
+
+//     $host = "na.business-api.amazon.com";
+
+//     $accessKey = "AKIARVGPJZCJHLW5MH63";
+//     $secretKey = "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";
+//     $region = "us-east-1";
+//     $service = "execute-api";
+//     $requestUrl =
+//         "https://na.business-api.amazon.com/products/2020-08-26/products/B081G4G8N8?productRegion=US&locale=es_US";
+
+//     $uri = 'products/2020-08-26/products/B081G4G8N8';
+//     $httpRequestMethod = 'GET';
+
+//     $headers = calcualteAwsSignatureAndReturnHeaders(
+//         $host,
+//         $uri,
+//         $requestUrl,
+//         $accessKey,
+//         $secretKey,
+//         $region,
+//         $service,
+//         $httpRequestMethod,
+//         $data
+//     );
+
+//     $call = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, $debug = TRUE);
+//     dd($headers, $call);
+//     exit;
+
+//     $host = "na.business-api.amazon.com";
+//     $uri = "products/2020-08-26/products/B081G4G8N8";
+//     $requestUrl = "https://na.business-api.amazon.com";
+//     $accessKey = "AKIARVGPJZCJHLW5MH63";
+//     $secretKey = "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";
+//     $region = "us-east-1";
+//     $service = "execute-api";
+//     $httpRequestMethod = "";
+//     $data = "";
+
+//     $headers = calcualteAwsSignatureAndReturnHeaders(
+//         $host,
+//         $uri,
+//         $requestUrl,
+//         $accessKey,
+//         $secretKey,
+//         $region,
+//         $service,
+//         $httpRequestMethod,
+//         $data,
+//         $debug = TRUE
+//     );
 
 
-    exit;
-    $aws = new AWS_Business;
+//     $result = callToAPI($requestUrl, $httpRequestMethod, $headers, $data, TRUE);
 
-    dd($aws->signTest());
 
-    exit;
+//     exit;
+//     $aws = new AWS_Business;
+
+//     dd($aws->signTest());
+
+//     exit;
 
 
 
 
 
 
-    exit;
+//     exit;
 
-    $url = 'https://amazon-sp-api-laravel.test/admin/rolespermissions';
-    $file_path = 'product/label.pdf';
+//     $url = 'https://amazon-sp-api-laravel.test/admin/rolespermissions';
+//     $file_path = 'product/label.pdf';
 
-    if (!Storage::exists($file_path)) {
-        Storage::put($file_path, '');
-    }
+//     if (!Storage::exists($file_path)) {
+//         Storage::put($file_path, '');
+//     }
 
-    $exportToPdf = Storage::path($file_path);
-    Browsershot::url($url)
-        ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
-        ->showBackground()
-        ->savePdf($exportToPdf);
+//     $exportToPdf = Storage::path($file_path);
+//     Browsershot::url($url)
+//         ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+//         ->showBackground()
+//         ->savePdf($exportToPdf);
 
-    return Storage::download($exportToPdf);
-});
+//     return Storage::download($exportToPdf);
+// });
 
 Route::get('command', function () {
 
