@@ -179,7 +179,7 @@ class OrderItem
                             'amazon_order_id' => $order_id,
                             'order_item_id' => $value,
                             'courier_name' => $this->courier_partner,
-                            'amzn_temp_order_status' => 'unshipped'
+                            'order_status' => 'unshipped'
                         ];
                     }
                 }
@@ -231,6 +231,8 @@ class OrderItem
                     ]
                 );
 
+                /*
+                Check if ASIN is in source catalog table. if not then auto add and make product sp api request
                 $asins = DB::connection('catalog')->select("SELECT asin FROM $catalog_table_name where asin = '$asin' ");
                 if (count($asins) <= 0) {
                     $asin_source[] = [
@@ -240,8 +242,9 @@ class OrderItem
                         'id'    =>  '4',
                     ];
 
-                    //                    jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
+                    //jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
                 }
+                */
             }
         }
 

@@ -38,10 +38,11 @@ class CourierBookingJob implements ShouldQueue
         $amazon_order_id = $this->payload['amazon_order_id'];
         $order_item_id = $this->payload['order_item_id'];
         $courier_class_name = $this->payload['courier_class'];
+        $store_id = $this->payload['store_id'];
 
         if ($courier_class_name == 'B2CShip') {
             $booking = new B2cshipBookingServices();
-            $booking->b2cdata($amazon_order_id, $order_item_id);
+            $booking->b2cdata($amazon_order_id, $order_item_id, $store_id);
         }
     }
 }
