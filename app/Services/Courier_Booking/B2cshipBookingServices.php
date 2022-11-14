@@ -38,6 +38,8 @@ class B2cshipBookingServices
             ON ord.amazon_order_identifier = oids.amazon_order_identifier
             WHERE
             oids.amazon_order_identifier = '$amazon_order_id'
+            AND
+            oids.order_item_identifier = '$order_item_id'
         ");
 
         $consignee_data = [];
