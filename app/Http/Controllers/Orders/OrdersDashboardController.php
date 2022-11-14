@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Orders;
 
 use Illuminate\Http\Request;
+use App\Models\FileManagement;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\order\OrderSellerCredentials;
 
@@ -246,7 +248,7 @@ class OrdersDashboardController extends Controller
         return view('orders.OrderImport.order_import_file', compact('order_sellers'));
     }
 
-    public function ImortOrdersFile(Request $request)
+    public function ImportOrdersFile(Request $request)
     {
         $request->validate([
 
@@ -262,7 +264,23 @@ class OrdersDashboardController extends Controller
         $csv_file = file_get_contents($request->order_csv);
         $store_id = $request->store_name;
         Storage::put($file_path, $csv_file);
-        commandExecFunc("mosh:order-csv-import ${store_id} ");
+        // commandExecFunc("mosh:order-csv-import ${store_id} ");
+
+
+        $user_id = Auth::user()->id;
+        $file = $request->order_csv;
+        $file_name = $file->getClientOriginalName();
+        $file_info = [
+            "user_id"   => $user_id,
+            "type"      => "IMPORT_ORDER",
+            "module"    => "ORDER_${store_id}",
+            "file_name" => $file_name,
+            "file_path" => $file_path,
+            "command_name"   => "mosh:order-csv-import",
+
+        ];
+        FileManagement::create($file_info);
+        fileManagement();
 
         return back()->with('success', 'Orders file has been uploaded successfully !');
     }
@@ -270,5 +288,13 @@ class OrdersDashboardController extends Controller
     public function OrderCsvDownload()
     {
         return response()->download(public_path("template/order-csv.csv"));
+    }
+
+    public function OrderFileManagementMonitor(Request $request)
+    {
+        $type = $request->module_type;
+        $file_check = fileManagementMonitoring($type);
+        // po($file_check);
+        return response()->json($file_check);
     }
 }

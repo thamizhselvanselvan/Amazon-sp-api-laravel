@@ -390,7 +390,7 @@ class labelManagementController extends Controller
         JOIN ${order}.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
         WHERE $where_condition
         GROUP BY ordetail.amazon_order_identifier
-    ");
+        ");
 
         // po($label);
         // exit;
@@ -766,7 +766,7 @@ class labelManagementController extends Controller
 
     public function editOrderAddress($order_item_identifier)
     {
-      
+
         $order = config('database.connections.order.database');
         $order_details = DB::select("SELECT shipping_address,order_item_identifier
         from ${order}.orderitemdetails 
@@ -774,7 +774,7 @@ class labelManagementController extends Controller
 
         $shipping_address = $order_details[0]->shipping_address;
         $manage = json_decode($shipping_address, true);
-        
+
         return Response($manage);
     }
 
@@ -819,7 +819,7 @@ class labelManagementController extends Controller
                          WHERE amazon_order_identifier = '$id'
                         ");
 
-           
+
             return response()->json([
                 'status' => '200',
                 'message' => 'student updated successfully'
@@ -838,7 +838,7 @@ class labelManagementController extends Controller
 
     public function editordersearchbyid($order_item_identifier)
     {
-       
+
         $order = config('database.connections.order.database');
         $order_details = DB::select("SELECT shipping_address,order_item_identifier
         from ${order}.orderitemdetails 
@@ -847,13 +847,13 @@ class labelManagementController extends Controller
         $shipping_address = $order_details[0]->shipping_address;
         $data = json_decode($shipping_address, true);
 
-        
+
         return Response($data);
     }
 
     public function updateordersearchbyid(Request $request, $id)
     {
-    
+
         $validater = Validator::make($request->all(), [
             'name' => ['required'],
             'phone' => ['required'],
@@ -864,7 +864,7 @@ class labelManagementController extends Controller
             'addressLine1' => ['required'],
             'addressLine2' => ['required']
         ]);
-      
+
         if ($validater->fails()) {
             return response()->json([
 
@@ -873,7 +873,7 @@ class labelManagementController extends Controller
 
             ]);
         } else {
-           
+
             $json_data = [];
             $json_data = array(
                 "Name" => $request->input('name'),
@@ -886,14 +886,14 @@ class labelManagementController extends Controller
                 "AddressType" => $request->input('addressType')
             );
             $shipping_address = json_encode($json_data);
-          
+
             $order = config('database.connections.order.database');
             DB::select("UPDATE  ${order}.orderitemdetails 
                         SET shipping_address = '$shipping_address'
                          WHERE amazon_order_identifier = '$id'
                         ");
 
-            
+
             return response()->json([
                 'status' => '200',
                 'message' => 'student updated successfully'
