@@ -693,6 +693,12 @@ class labelManagementController extends Controller
                                                 <i class='fas fa-download'></i> Download 
                                             </a>
                                         </div>
+                                        <div class='d-flex pl-2'>
+                                            
+                                         <a id='edit-address' data-toggle='modal' data-id='$label_det->order_item_identifier' data-amazon_order_identifier='$order_id ' href='javascript:void(0)'  class='edit btn btn-primary btn-sm'>
+                                            <i class='fas fa-address-card'></i> Edit Address</a>
+                                            
+                                        </div>
                                     </div>
                                     </td>
                                 </tr>";
@@ -760,7 +766,7 @@ class labelManagementController extends Controller
 
     public function editOrderAddress($order_item_identifier)
     {
-
+      
         $order = config('database.connections.order.database');
         $order_details = DB::select("SELECT shipping_address,order_item_identifier
         from ${order}.orderitemdetails 
@@ -768,7 +774,7 @@ class labelManagementController extends Controller
 
         $shipping_address = $order_details[0]->shipping_address;
         $manage = json_decode($shipping_address, true);
-
+        
         return Response($manage);
     }
 
@@ -813,7 +819,7 @@ class labelManagementController extends Controller
                          WHERE amazon_order_identifier = '$id'
                         ");
 
-
+           
             return response()->json([
                 'status' => '200',
                 'message' => 'student updated successfully'
@@ -828,5 +834,70 @@ class labelManagementController extends Controller
         $label_detials = $this->labelListing($awb_tracking_no, 'awb_tracking_id');
 
         return response()->json($label_detials);
+    }
+
+    public function editordersearchbyid($order_item_identifier)
+    {
+       
+        $order = config('database.connections.order.database');
+        $order_details = DB::select("SELECT shipping_address,order_item_identifier
+        from ${order}.orderitemdetails 
+        WHERE order_item_identifier = '$order_item_identifier'");
+
+        $shipping_address = $order_details[0]->shipping_address;
+        $data = json_decode($shipping_address, true);
+
+        
+        return Response($data);
+    }
+
+    public function updateordersearchbyid(Request $request, $id)
+    {
+    
+        $validater = Validator::make($request->all(), [
+            'name' => ['required'],
+            'phone' => ['required'],
+            'county' => ['required'],
+            'countryCode' => ['required'],
+            'city' => ['required'],
+            'addressType' => ['required'],
+            'addressLine1' => ['required'],
+            'addressLine2' => ['required']
+        ]);
+      
+        if ($validater->fails()) {
+            return response()->json([
+
+                'status' => '400',
+                'errors' => $validater->errors(),
+
+            ]);
+        } else {
+           
+            $json_data = [];
+            $json_data = array(
+                "Name" => $request->input('name'),
+                "AddressLine1" => $request->input('addressLine1'),
+                "AddressLine2" => $request->input('addressLine2'),
+                "City" => $request->input('city'),
+                "County" => $request->input('county'),
+                "CountryCode" => $request->input('countryCode'),
+                "Phone" => $request->input('phone'),
+                "AddressType" => $request->input('addressType')
+            );
+            $shipping_address = json_encode($json_data);
+          
+            $order = config('database.connections.order.database');
+            DB::select("UPDATE  ${order}.orderitemdetails 
+                        SET shipping_address = '$shipping_address'
+                         WHERE amazon_order_identifier = '$id'
+                        ");
+
+            
+            return response()->json([
+                'status' => '200',
+                'message' => 'student updated successfully'
+            ]);
+        }
     }
 }
