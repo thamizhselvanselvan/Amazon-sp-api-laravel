@@ -26,6 +26,6 @@ Route::post('orders/bulk/search', 'Orders\OrderDetailsController@bulksearch')->n
 Route::get('orders/bulk/edit/{id}', 'Orders\OrderDetailsController@bulkedit');
 
 Route::get('orders/statistics', 'Orders\OrderDetailsController@orderStatistics')->name('orders.statistics');
-Route::get('orders/statistics/{store_id}', 'Orders\OrderDetailsController@orderStatistics')->name('orders.statistics');
+Route::get('orders/statistics/{store_id}', 'Orders\OrderDetailsController@orderStatistics')->name('orders.statistics.store_id');
 
 Route::get('orders/file/management/monitor', 'Orders\OrdersDashboardController@OrderFileManagementMonitor')->name('orders.file.management.monitor');
