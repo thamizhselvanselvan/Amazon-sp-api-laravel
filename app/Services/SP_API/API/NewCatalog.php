@@ -12,6 +12,7 @@ use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Admin\ErrorReporting;
+use App\Models\Catalog\Catalog_ae;
 use App\Models\Catalog\Catalog_in;
 use App\Models\Catalog\Catalog_us;
 use App\Models\Catalog\CatalogMissingAsin;
@@ -113,11 +114,17 @@ class NewCatalog
         }
 
         //catalognewins
-        if (isset($country_code1)) {
-            $new_catalog = table_model_create(country_code: $country_code1, model: "Catalog_$country_code1", table_name: "catalognew");
+        if (isset($country_code1) && !empty($country_code1)) {
+            // $new_catalog = table_model_create(country_code: $country_code1, model: "Catalog_$country_code1", table_name: "catalognew");
             foreach ($NewCatalogs as $NewCatalog) {
 
-                $new_catalog->insert($NewCatalog);
+                if (strtolower($country_code1) == "us") {
+                    Catalog_us::insert($NewCatalog);
+                } else  if (strtolower($country_code1) == "in") {
+                    Catalog_in::insert($NewCatalog);
+                } else  if (strtolower($country_code1) == "ae") {
+                    Catalog_ae::insert($NewCatalog);
+                }
             }
         }
         //R::storeALL($NewCatalogs);

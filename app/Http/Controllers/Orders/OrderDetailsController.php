@@ -213,7 +213,7 @@ class OrderDetailsController extends Controller
                 ->with(['aws_credential' => function ($query) {
                     $query->select("id", "store_name", 'seller_id');
                 }])
-                ->when($request->store_id, function ($query, $role) use ($request) {
+                ->when($request->store_id, function ($query, $role) {
                     return $query->where('store_id', $role);
                 })
                 ->orderBy('created_at', 'DESC')
