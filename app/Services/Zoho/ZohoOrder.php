@@ -353,6 +353,7 @@ class ZohoOrder
         $prod_array["ASIN"]                      = $value->asin;
         $prod_array["SKU"]                       = $value->seller_sku;
         $prod_array["Product_Cost"]              = $catalog_details['price'];
+        $prod_array["Amount_Paid_by_Customer"]   = $item_price->Amount;
 
         $prod_array["Weight_in_LBS"]             = (string)$catalog_details['weight'];
         $prod_array["Payment_Reference_Number"]  = $value->order_item_identifier;
