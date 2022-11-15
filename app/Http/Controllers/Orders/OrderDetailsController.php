@@ -180,32 +180,20 @@ class OrderDetailsController extends Controller
         return view('orders.orderdetails_list.view', compact('details', 'email_used', 'data', 'price_data', 'item_tax'));
     }
 
-    // public function orderStatistics(Request $request)
-    // {
-    //     $stores = OrderSellerCredentials::select('store_name', 'store.store_id')
-    //         ->join("order_update_details as store", 'order_seller_credentials.seller_id', '=', 'store.store_id')
-    //         ->distinct()
-    //         ->get();
-
-    //     if ($request->ajax()) {
-
-    //         $data = OrderUpdateDetail::query()
-    //             ->where('store_id', $request->id)
-    //             ->orderBy('created_at', 'DESC')
-    //             ->limit(50)
-    //             ->get();
-    //         return response()->json(['success' => 'Searched Sucessfully', 'data' => $data]);
-    //     }
-
-    //     return view('orders.statistics', compact('stores'));
-    // }
-
     public function orderStatistics(Request $request)
     {
         $stores = OrderSellerCredentials::select('store_name', 'store.store_id')
             ->join("order_update_details as store", 'order_seller_credentials.seller_id', '=', 'store.store_id')
             ->distinct()
             ->get();
+
+        $request_store_id = $request->store_id;
+        $url = "/orders/statistics";
+
+        if (isset($request_store_id)) {
+            $url = "/orders/statistics/" . $request_store_id;
+        }
+
 
         if ($request->ajax()) {
 
@@ -242,6 +230,6 @@ class OrderDetailsController extends Controller
                 ->make(true);
         }
 
-        return view('orders.statistics', compact('stores'));
+        return view('orders.statistics', compact('stores', 'request_store_id', 'url'));
     }
 }
