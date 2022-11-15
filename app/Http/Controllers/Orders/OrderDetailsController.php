@@ -215,10 +215,35 @@ class OrderDetailsController extends Controller
                     }
                     return 'NA';
                 })
-                ->editColumn('created_at', function ($row) {
+                ->editColumn('updated_at', function ($row) {
 
-                    return $row->created_at->toDateTimeString();
+                    return $row->updated_at->toDateTimeString();
                 })
+                ->editColumn('booking_status', function ($row) {
+                    if ($row['booking_status'] == '0') {
+                        return 'Not processed';
+                    } else if ($row['booking_status'] == '1') {
+                        return 'Booked';
+                    } else if ($row['booking_status'] == '5') {
+                        return 'Under processing';
+                    } else {
+                        return $row['booking_status'];
+                    }
+                })
+
+                ->editColumn('zoho_status', function ($row) {
+                    if ($row['zoho_status'] == '0') {
+                        return 'Not processed';
+                    } else if ($row['zoho_status'] == '1') {
+                        return 'Booked';
+                    } else if ($row['zoho_status'] == '5') {
+                        return 'Under processing';
+                    } else {
+                        return $row['zoho_status'];
+                    }
+                })
+
+
                 ->editColumn('order_status', function ($row) {
                     if ($row['order_status'] == 'unshipped') {
                         return $row['order_status'];

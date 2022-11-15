@@ -67,10 +67,11 @@
             <th>Order Item ID</th>
             <th>Courier Name</th>
             <th>Courier AWB</th>
+            <th>Booking Status</th>
             <th>Zoho ID</th>
-            <th>Zoho Order Id</th>
+            <th>Zoho Status</th>
             <th>Amazon Order Status</th>
-            <th>Created Time</th>
+            <th>Updated Time</th>
         </tr>
     </thead>
     <tbody>
@@ -133,20 +134,24 @@
                 name: 'courier_awb'
             },
             {
+                data: 'booking_status',
+                name: 'booking_status'
+            },
+            {
                 data: 'zoho_id',
                 name: 'zoho_id',
             },
             {
-                data: 'zoho_order_id',
-                name: 'zoho_order_id'
+                data: 'zoho_status',
+                name: 'zoho_status',
             },
             {
                 data: 'order_status',
                 name: 'order_status'
             },
             {
-                data: 'created_at',
-                name: 'created_at'
+                data: 'updated_at',
+                name: 'updated_at'
             }
         ]
     });
