@@ -15,6 +15,7 @@ class Asin_source extends Model
         'user_id'
     ];
 
+
     public function mws_region()
     {
         return $this->hasOne(Mws_region::class, 'region_code', 'destination_1');

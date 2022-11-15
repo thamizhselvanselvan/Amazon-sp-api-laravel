@@ -48,7 +48,7 @@ class access_token_generate extends Command
             "refresh_token" =>  "Atzr|IwEBIGBnur8ckY5T1BPQTCvdM-LDHEQ1rqpBrKNAy44n_6HQKhz2DstKC0hOFUkWowyUN64k99Fj6BVJCR0nXTXn_MD6dLaoAHtsKQW6_VDStqyR8FImcHm94A6SLuGukK6qHNF0-4c9hY3nx03jBHQ9K4TOLg55O-vDTkr6T6WCn4q0hcJ05e4324qZdOBvoAzaJb9NFQkQyjX1ken_o9Wf55aZzbbgPcRmxqKy35o9k2HdcLFFnr9Qj737MMXQQ0AUT8f5YhMg7cNF6DM2VIX43wK3WMG6JwGjkszmL-4TWKbv4bRjRZXHLs1WkgUmwMGyH_0Lr6bgtQbvj76m9WQGg11H",
             "grant_type" => "refresh_token",
         ]);
-
+        
         if ($request->ok()) {
             $request_json_decode = $request->json();
             $access_token = $request_json_decode['access_token'];
@@ -65,7 +65,8 @@ class access_token_generate extends Command
             return true;
         }
 
-        print("Business API Access Token Did Not Generated!");
+        $slackMessage = "Business API Access Token Did Not Generated!";
+        Log::channel('slack')->info($slackMessage);
         return true;
     }
 }

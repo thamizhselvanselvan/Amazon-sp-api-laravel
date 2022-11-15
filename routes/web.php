@@ -111,11 +111,13 @@ Route::get('zoho_update', function () {
 
 Route::get('import', function () {
 
-    $word = "string's";
-    $string = [
-        'text' => $word,
-    ];
-    po($string);
+    $command_info = json_encode([
+        'fm_id' => 12,
+        'user_id' => 13
+    ]);
+
+    $test = ($command_info);
+    po(json_decode($command_info));
     exit;
     $auth_count = 0;
     $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', 'US')->get()->toArray();

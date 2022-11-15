@@ -962,7 +962,7 @@ if (!function_exists('fileManagement')) {
     function fileManagement()
     {
         $file_info = FileManagement::select('id', 'user_id', 'type', 'module', 'file_path', 'command_name')->where('status', '0')->get()->toArray();
-        $ignore = ['ASIN_DESTINATION_', 'ASIN_SOURCE_', 'CATALOG_PRICE_EXPORT_', 'CATALOG_EXPORT_'];
+        $ignore = ['ASIN_DESTINATION_', 'ASIN_SOURCE_', 'CATALOG_PRICE_EXPORT_', 'CATALOG_EXPORT_', 'ORDER_'];
         $file_management_update = '';
         foreach ($file_info as $file_data) {
 
@@ -978,7 +978,22 @@ if (!function_exists('fileManagement')) {
             $file_management_update = FileManagement::find($fm_id);
             $file_management_update->command_start_time = now();
             $file_management_update->status = '1';
-            if ($type == 'CATALOG_EXPORT' || $type == 'CATALOG_PRICE_EXPORT') {
+
+            // $store_id = $type == 'IMPORT_ORDER' ? ['store_id' => $destination] : [];
+            // $command_info = implode(',', [
+            //     'fm_id' => $fm_id,
+            //     ...$store_id
+            // ]);
+            // commandExecFunc("${command_name} ${command_info}");
+            // log::alert($command_info);
+            // exit;
+            if ($type == 'IMPORT_INVOICE') {
+
+                commandExecFunc("${command_name} ${fm_id}");
+            } else if ($type == 'IMPORT_ORDER') {
+
+                commandExecFunc("${command_name} ${destination} ${fm_id}");
+            } else if ($type == 'CATALOG_EXPORT' || $type == 'CATALOG_PRICE_EXPORT') {
 
                 commandExecFunc("${command_name} ${priority} ${destination} ${fm_id}");
             } else {
@@ -993,7 +1008,7 @@ if (!function_exists('fileManagement')) {
 if (!function_exists('fileManagementUpdate')) {
     function fileManagementUpdate($id, $command_end_time = null)
     {
-        // log::alert($id);
+        log::alert($id);
         $file_management_update_sep = FileManagement::find($id);
         // log::alert($command_end_time);
         $file_management_update_sep->command_end_time = $command_end_time;

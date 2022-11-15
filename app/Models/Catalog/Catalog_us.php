@@ -50,6 +50,26 @@ class Catalog_us extends Model
         $this->getConnection()->setTablePrefix('');
     }
 
+    public function setAttributesAttribute($value)
+    {
+        return json_encode($this->attributes['attributes']);
+    }
+
+    public function setDimensionsAttribute($value)
+    {
+        return json_encode($this->attributes['dimensions']);
+    }
+
+    public function setImagesAttribute($value)
+    {
+        return json_encode($this->attributes['images']);
+    }
+
+    public function setBrowseClassificationAttribute($value)
+    {
+        return json_encode($this->attributes['browse_classification']);
+    }
+
     public function getAttributesAttribute($value)
     {
         return json_decode($this->attributes['attributes'], true);

@@ -5,14 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Models\User;
 use App\Models\Roles;
 use Illuminate\Http\Request;
+use App\Models\Aws_credential;
 use App\Models\Admin\BB\BB_User;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Company\CompanyMaster;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\order\OrderSellerCredentials;
-use App\Models\Aws_credential;
 
 class AdminManagementController extends Controller
 {
@@ -221,6 +222,20 @@ class AdminManagementController extends Controller
             $store_order_item = [];
             $shipntrack = [];
             $zoho = [];
+            $source_check = [];
+            $destination_check = [];
+            $courier_partner_check = [];
+
+            $source_destination = [
+                'IN' => 'IND',
+                'US' => 'USA',
+                'AE' => 'UAE',
+                'SA' => 'KSA'
+            ];
+            $courier_partner = [
+                'B2CShip' => 'B2CShip'
+            ];
+
             $store_status = OrderSellerCredentials::where('dump_order', 1)->get();
             foreach ($store_status as $key => $value) {
                 $seller = $value['seller_id'];
@@ -237,7 +252,17 @@ class AdminManagementController extends Controller
                 if ($value['zoho']) {
                     $zoho[$seller] = 1;
                 }
+                if ($value['source']) {
+                    $source_check[$seller] = $value['source'];
+                }
+                if ($value['destination']) {
+                    $destination_check[$seller] = $value['destination'];
+                }
+                if ($value['courier_partner']) {
+                    $courier_partner_check[$seller] = $value['courier_partner'];
+                }
             }
+
             $aws_credential = Aws_Credential::with('mws_region')->where('api_type', 1)->get();
             return DataTables::of($aws_credential)
                 ->addIndexColumn()
@@ -292,40 +317,46 @@ class AdminManagementController extends Controller
                     }
                     return $action;
                 })
-                ->addColumn('partner', function ($id) {
+                ->addColumn('partner', function ($id) use ($courier_partner, $courier_partner_check) {
                     $action = '<div class="pl-2">
                                     <select name="courier[]" id="courier" class="courier_class">
-                                        <option value="NULL">Select Courier</option>
-                                        <option value="B2CShip:' . $id['id'] . '">B2CShip</option>
-                                    </select>
-                                </div>';
-                    return $action;
-                })
-                ->addColumn('source', function ($id) {
-                    $action = '<div class="pl-2">
-                                    <select name="source[]" class="source">
-                                        <option value="NULL">Select Source</option>
-                                        <option value="IND:' . $id['id'] . '">IND</option>
-                                        <option value="USA:' . $id['id'] . '">USA</option>
-                                        <option value="UAE:' . $id['id'] . '">UAE</option>
-                                        <option value="KSA:' . $id['id'] . '">KSA</option>
-                                    </select>
-                                </div>';
+                                        <option value="NULL">Select Courier</option>';
+                    foreach ($courier_partner as $key => $value) {
 
-                    return $action;
+                        if (array_key_exists($id['seller_id'], $courier_partner_check) && $courier_partner_check[$id['seller_id']] == $key) {
+                            $action .= '<option value="' . $key . ':' . $id['id'] . ' "selected>' . $value . '</option>';
+                        } else {
+                            $action .= '<option value="' . $key . ':' . $id['id'] . '">' . $value . '</option>';
+                        }
+                    }
+                    return $action .= '</select></div>';
                 })
-                ->addColumn('destination', function ($id) {
+                ->addColumn('source', function ($id) use ($source_destination, $source_check) {
+                    $action = '';
+                    $action .= '<div class="pl-2">
+                                    <select name="source[]" class="source">
+                                        <option value="NULL">Select Destination</option>';
+                    foreach ($source_destination as $key => $value) {
+                        if (array_key_exists($id['seller_id'], $source_check) && $source_check[$id['seller_id']] == $key) {
+                            $action .= '<option value="' . $key . ':' . $id['id'] . ' "selected>' . $value . '</option>';
+                        } else {
+                            $action .= '<option value="' . $key . ':' . $id['id'] . '">' . $value . '</option>';
+                        }
+                    }
+                    return $action .= '</select></div>';
+                })
+                ->addColumn('destination', function ($id) use ($source_destination, $destination_check) {
                     $action = '<div class="pl-2">
                                 <select name="destination[]" class="destination">
-                                    <option value="NULL">Select Destination</option>
-                                    <option value="IND:' . $id['id'] . '">IND</option>
-                                    <option value="USA:' . $id['id'] . '">USA</option>
-                                    <option value="UAE:' . $id['id'] . '">UAE</option>
-                                    <option value="KSA:' . $id['id'] . '">KSA</option>
-                                </select>
-                             </div>';
-
-                    return $action;
+                                    <option value="NULL">Select Destination</option>';
+                    foreach ($source_destination as $key => $value) {
+                        if (array_key_exists($id['seller_id'], $destination_check) && $destination_check[$id['seller_id']] == $key) {
+                            $action .= '<option value="' . $key . ':' . $id['id'] . ' "selected>' . $value . '</option>';
+                        } else {
+                            $action .= '<option value="' . $key . ':' . $id['id'] . '">' . $value . '</option>';
+                        }
+                    }
+                    return $action .= '</select></div>';
                 })
                 ->rawColumns(['region', 'order', 'order_item', 'enable_snt', 'partner', 'zoho', 'source', 'destination'])
                 ->make(true);
@@ -336,6 +367,8 @@ class AdminManagementController extends Controller
 
     public function updateStore(Request $request)
     {
+        // return $request->all();
+
         $order_items = explode('-', $request->order_item);
         $selected_store = explode('-', $request->selected_store);
         $shipntrack = explode('-', $request->shipntrack);
@@ -386,8 +419,9 @@ class AdminManagementController extends Controller
             'get_order_item' => 0,
             'enable_shipntrack' => 0,
             'zoho' => 0,
-            'courier_partner' => NULL,
-            'source_destination' => NULL,
+            // 'courier_partner' => NULL,
+            // 'source' => NULL,
+            // 'destination' => NULL,
         ]);
 
         foreach ($selected_store as $key => $id) {
@@ -412,15 +446,19 @@ class AdminManagementController extends Controller
                 $aws_cred_array['zoho'] = 1;
             }
 
-            if (array_key_exists($id, $courier_partner_arr)) {
-                $aws_cred_array['courier_partner'] = $courier_partner_arr[$id];
-            }
+            // if (array_key_exists($id, $courier_partner_arr)) {
 
-            if (array_key_exists($id, $source_arr) && array_key_exists($id, $des_arr)) {
-                $aws_cred_array['source_destination'] = $source_arr[$id] . '2' . $des_arr[$id];
-            }
+            //     $aws_cred_array['courier_partner'] = $courier_partner_arr[$id];
+            // }
 
-            // return $aws_cred_array;
+            // if (array_key_exists($id, $source_arr)) {
+
+            //     $aws_cred_array['source'] = $source_arr[$id];
+            // }
+            // if (array_key_exists($id, $des_arr)) {
+            //     $aws_cred_array['destination'] =  $des_arr[$id];
+            // }
+
             OrderSellerCredentials::upsert([$aws_cred_array], ['seller_id'], [
                 'seller_id',
                 'store_name',
@@ -429,11 +467,8 @@ class AdminManagementController extends Controller
                 'get_order_item',
                 'enable_shipntrack',
                 'zoho',
-                'courier_partner',
-                'source_destination'
             ]);
         }
-
         return response()->json(['success' => 'Store Selected']);
     }
 }
