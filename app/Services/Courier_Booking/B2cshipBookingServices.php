@@ -33,7 +33,7 @@ class B2cshipBookingServices
                 ord.amazon_order_identifier as order_id,
                 ord.purchase_date as order_date,
                 ord.payment_method_details as pay_method,
-                ord.order_item as item,
+                oids.quantity_ordered as item,
                 ord.buyer_info as mail
             FROM orders AS ord
             INNER join orderitemdetails AS oids
@@ -322,8 +322,6 @@ class B2cshipBookingServices
                         </PCSDescriptionDetail>
                     </PCSDescriptionDetails>
                 </ShipmentBookingRequest>';
-
-            po($xml);
             $this->verifyApiResponse($this->getawb($xml));
         }
     }
