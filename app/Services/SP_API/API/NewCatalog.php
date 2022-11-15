@@ -25,7 +25,7 @@ class NewCatalog
 
     public function Catalog($records, $seller_id = NULL)
     {
-
+        log::alert($records);
         //     $this->RedBeanConnection();
         $queue_data = [];
         $upsert_asin = [];

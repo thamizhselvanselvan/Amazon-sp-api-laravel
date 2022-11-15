@@ -44,7 +44,6 @@ class CourierBooking extends Command
             ->limit(1)
             ->get(['amazon_order_id', 'order_item_id', 'courier_name', 'courier_awb', 'store_id']);
 
-        po($order_details);
         if (count($order_details) > 0) {
             $order_id = $order_details[0]->amazon_order_id;
             $order_item_id = $order_details[0]->order_item_id;

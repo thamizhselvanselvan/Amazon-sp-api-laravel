@@ -5,12 +5,12 @@ namespace App\Models\Catalog;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Catalog_in extends Model
+class Catalog_ae extends Model
 {
     use HasFactory;
 
     protected $connection = 'catalog';
-    protected $table = 'catalognewins';
+    protected $table = 'catalognewaes';
 
     protected $fillable = [
         'asin',
