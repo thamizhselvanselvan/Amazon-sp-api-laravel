@@ -5,7 +5,7 @@ namespace App\Models\Catalog;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Catalog_us extends Model
+class Catalog_ae extends Model
 {
     use HasFactory;
 
