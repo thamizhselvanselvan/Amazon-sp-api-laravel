@@ -45,7 +45,7 @@ class CatalogAmazonImport extends Command
         $limit_array = ['in' => 2500, 'us' => 2500];
 
         foreach ($sources as $source) {
-
+            log::notice($source);
             $limit = $limit_array[$source];
 
             $auth_count = 0;
@@ -86,7 +86,7 @@ class CatalogAmazonImport extends Command
             $country_code_up = strtoupper($source);
             $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code_up)->get()->toArray();
 
-            Log::info("${country_code_up} -> total asin for catalog " . count($asins));
+            // Log::info("${country_code_up} -> total asin for catalog " . count($asins));
 
             if ($country_code_up == 'IN') {
                 $queue_name = 'catalog_IN';
@@ -107,7 +107,7 @@ class CatalogAmazonImport extends Command
 
                     $aws_id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
                     if ($count == 20) {
-
+                        log::alert($asin_source);
                         // jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
                         $catalog_class->Catalog($asin_source);
                         $auth_count++;
