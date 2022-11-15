@@ -43,12 +43,12 @@ class Catalog_us extends Model
         'width'
     ];
 
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
+    // public function __construct(array $attributes = [])
+    // {
+    //     parent::__construct($attributes);
 
-        $this->getConnection()->setTablePrefix('');
-    }
+    //     $this->getConnection()->setTablePrefix('');
+    // }
 
     public function setAttributesAttribute($value)
     {
