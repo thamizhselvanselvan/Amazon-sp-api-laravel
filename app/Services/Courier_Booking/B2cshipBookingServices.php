@@ -132,11 +132,26 @@ class B2cshipBookingServices
 
                 $dimensions = $cat_data[0]->dimensions;
                 $dmns_array = json_decode(($dimensions), true);
-                $height = ($dmns_array[0]['package']['height']['value']);
-                $unit = ($dmns_array[0]['package']['height']['unit']);
-                $length = ($dmns_array[0]['package']['length']['value']);
-                $weight = ($dmns_array[0]['package']['weight']['value']);
-                $width = ($dmns_array[0]['package']['width']['value']);
+
+                if (isset($dmns_array[0]['package'])) {
+
+                    $length = $dmns_array[0]['package']['length']['value'] ? $dmns_array[0]['package']['length']['value'] : 4;
+                    $width = $dmns_array[0]['package']['width']['value'] ? $dmns_array[0]['package']['width']['value'] : 4;
+                    $height = $dmns_array[0]['package']['height']['value'] ? $dmns_array[0]['package']['height']['value'] : 4;
+
+                    $unit = $dmns_array[0]['package']['height']['unit'] ? $dmns_array[0]['package']['height']['unit'] : 'inch';
+
+                    $weight = $dmns_array[0]['package']['weight']['value'] ? $dmns_array[0]['package']['weight']['value'] : 1;
+                } else {
+
+                    $length = 4;
+                    $width = 4;
+                    $height = 4;
+
+                    $unit = 'inches';
+
+                    $weight = 1;
+                }
 
                 $us_price = $price[0]->us_price;
             } else {
@@ -277,7 +292,7 @@ class B2cshipBookingServices
                     <AwbNo></AwbNo>
                     <RefNo>' . $data['OrderID'] . '</RefNo>
                     <BookingDate>' . $orddate . '</BookingDate>
-                    
+
                     ' . $consignor_xml . '
 
                     <ConsigneeName>' . $this->cleanSpecialCharacters($data['consignee_name']) . '</ConsigneeName>
