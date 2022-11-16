@@ -193,6 +193,10 @@ class ExportCatalogWithPriceViaAsin extends Command
             }
             $zip->close();
         }
+        //FILE MANAGEMENT
+
+        $command_end_time = now();
+        fileManagementUpdate($fm_id, $command_end_time);
     }
     public function FormateDataForCsv($csv_header, $records, $exportFilePath)
     {
