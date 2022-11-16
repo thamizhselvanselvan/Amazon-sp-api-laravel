@@ -318,7 +318,7 @@ class B2cshipBookingServices
                             <Description>' . $this->cleanSpecialCharacters($data['item_name']) . '.</Description>
                             <HSNCode>1</HSNCode>
                             <Unit>' . $data['pieces'] . '</Unit>
-                            <UnitValue>' . $this->calculateCustomValue($data['invoice_value']) . '</UnitValue>
+                            <UnitValue>' . $this->calculateCustomValue($data['USA_price']) . '</UnitValue>
                         </PCSDescriptionDetail>
                     </PCSDescriptionDetails>
                 </ShipmentBookingRequest>';
