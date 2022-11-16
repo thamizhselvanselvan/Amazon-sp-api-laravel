@@ -139,7 +139,7 @@ class B2cshipBookingServices
                     $width = $dmns_array[0]['package']['width']['value'] ? $dmns_array[0]['package']['width']['value'] : 4;
                     $height = $dmns_array[0]['package']['height']['value'] ? $dmns_array[0]['package']['height']['value'] : 4;
 
-                    $unit = $dmns_array[0]['package']['height']['unit'] ? $dmns_array[0]['package']['height']['unit'] : 'inch';
+                    $unit = $dmns_array[0]['package']['height']['unit'] ? $dmns_array[0]['package']['height']['unit'] : 'inches';
 
                     $weight = $dmns_array[0]['package']['weight']['value'] ? $dmns_array[0]['package']['weight']['value'] : 1;
                 } else {
