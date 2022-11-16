@@ -39,6 +39,9 @@ class FeedOrderDetailsApp360
         )
             ->get(['quantity_ordered', 'country']);
 
+        $order_date = Order::where(['amazon_order_identifier' => $amazon_order_id])
+            ->get(['purchase_date']);
+
         $quantity = $order_qty[0]->quantity_ordered;
         $country_code = $order_qty[0]->country;
 
@@ -49,7 +52,19 @@ class FeedOrderDetailsApp360
         $current_date = Carbon::now()->format('Y-m-d H:i:s');
         $date = Carbon::createFromFormat('Y-m-d H:i:s', $current_date, 'UTC')
             ->setTimezone('America/Los_Angeles');
-        $date_time_uat = Carbon::parse($date)->format('Y-m-d\TH:i:s\Z');
+        $date_time_uat_now = Carbon::parse($date)->format('Y-m-d\TH:i:s\Z');
+
+        // po($date_time_uat_now);
+
+        if ($order_date[0]->purchase_date == '') {
+            $date_time_uat = $date_time_uat_now;
+        } else {
+            $date_time_uat = Carbon::parse($order_date[0]->purchase_date)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        // po($amazon_order_id);
+        // po($date_time_uat);
+        // exit;
 
         $data = [
             'merchant_id' => $merchant_id,

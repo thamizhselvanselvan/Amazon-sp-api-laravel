@@ -11,7 +11,7 @@ fi
 
 cb=$(git symbolic-ref --short HEAD)
 
-git pull origin live
+# git pull origin live
 git pull origin staging
 
 npm run dev

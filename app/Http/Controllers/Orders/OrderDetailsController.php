@@ -180,26 +180,6 @@ class OrderDetailsController extends Controller
         return view('orders.orderdetails_list.view', compact('details', 'email_used', 'data', 'price_data', 'item_tax'));
     }
 
-    // public function orderStatistics(Request $request)
-    // {
-    //     $stores = OrderSellerCredentials::select('store_name', 'store.store_id')
-    //         ->join("order_update_details as store", 'order_seller_credentials.seller_id', '=', 'store.store_id')
-    //         ->distinct()
-    //         ->get();
-
-    //     if ($request->ajax()) {
-
-    //         $data = OrderUpdateDetail::query()
-    //             ->where('store_id', $request->id)
-    //             ->orderBy('created_at', 'DESC')
-    //             ->limit(50)
-    //             ->get();
-    //         return response()->json(['success' => 'Searched Sucessfully', 'data' => $data]);
-    //     }
-
-    //     return view('orders.statistics', compact('stores'));
-    // }
-
     public function orderStatistics(Request $request)
     {
         $stores = OrderSellerCredentials::select('store_name', 'store.store_id')
@@ -207,13 +187,21 @@ class OrderDetailsController extends Controller
             ->distinct()
             ->get();
 
+        $request_store_id = $request->store_id;
+        $url = "/orders/statistics";
+
+        if (isset($request_store_id)) {
+            $url = "/orders/statistics/" . $request_store_id;
+        }
+
+
         if ($request->ajax()) {
 
             $data = OrderUpdateDetail::query()
                 ->with(['aws_credential' => function ($query) {
                     $query->select("id", "store_name", 'seller_id');
                 }])
-                ->when($request->store_id, function ($query, $role) use ($request) {
+                ->when($request->store_id, function ($query, $role) {
                     return $query->where('store_id', $role);
                 })
                 ->orderBy('created_at', 'DESC')
@@ -227,10 +215,35 @@ class OrderDetailsController extends Controller
                     }
                     return 'NA';
                 })
-                ->editColumn('created_at', function ($row) {
+                ->editColumn('updated_at', function ($row) {
 
-                    return $row->created_at->toDateTimeString();
+                    return $row->updated_at->toDateTimeString();
                 })
+                ->editColumn('booking_status', function ($row) {
+                    if ($row['booking_status'] == '0') {
+                        return 'Not processed';
+                    } else if ($row['booking_status'] == '1') {
+                        return 'Booked';
+                    } else if ($row['booking_status'] == '5') {
+                        return 'Under processing';
+                    } else {
+                        return $row['booking_status'];
+                    }
+                })
+
+                ->editColumn('zoho_status', function ($row) {
+                    if ($row['zoho_status'] == '0') {
+                        return 'Not processed';
+                    } else if ($row['zoho_status'] == '1') {
+                        return 'Booked';
+                    } else if ($row['zoho_status'] == '5') {
+                        return 'Under processing';
+                    } else {
+                        return $row['zoho_status'];
+                    }
+                })
+
+
                 ->editColumn('order_status', function ($row) {
                     if ($row['order_status'] == 'unshipped') {
                         return $row['order_status'];
@@ -242,6 +255,6 @@ class OrderDetailsController extends Controller
                 ->make(true);
         }
 
-        return view('orders.statistics', compact('stores'));
+        return view('orders.statistics', compact('stores', 'request_store_id', 'url'));
     }
 }

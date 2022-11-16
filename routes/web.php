@@ -65,10 +65,13 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
 Route::get('zoho_update', function () {
 
-    $idToWork = 377125000000428001;
+    //$idToWork = 377125000000428001;
+    //$idToWork = 377125000000428035;
 
     $zoho = new ZohoApi;
-    dd($zoho->getLead($idToWork));
+    // dd($zoho->getLead($idToWork));
+    // dd($zoho->search('403-4468830-9728365', '28528755520011'));
+    dd($zoho->search('405-3078074-2714731', '14324755670403'));
 
     exit;
     $test = json_decode('{"data":[{"code":"SUCCESS","details":{"Modified_Time":"2022-11-11T18:13:51+05:30","Modified_By":{"name":"Mosh","id":"1929333000000097003"},"Created_Time":"2022-11-11T18:13:51+05:30","id":"1929333000099290066","Created_By":{"name":"Mosh","id":"1929333000000097003"}},"message":"record added","status":"success"}]}', true);
