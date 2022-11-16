@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\order\OrderUpdateDetail;
+use App\Services\Zoho\ZohoApi;
 
 class zoho_id_dump_fororders extends Command
 {
@@ -14,7 +15,7 @@ class zoho_id_dump_fororders extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:zoho-id-fetch';
+    protected $signature = 'mosh:zoho-id-fetch-from-crm';
 
     /**
      * The console command description.
@@ -43,56 +44,36 @@ class zoho_id_dump_fororders extends Command
 
         $datas[] = OrderUpdateDetail::query()
             ->select('store_id', 'amazon_order_id', 'order_item_id')
-            ->whereIn('store_id', [5, 6])
-            ->chunk(100, function ($result) {
+            ->whereIn('store_id', [20])
+            ->whereNull('zoho_id')
+            ->chunk(100, function ($amazon) {
 
-                $table_nitrous = 'nitrous_amazon_order_details';
-                $table_mbm = 'in_mbm_amazon_order_details';
-                $nitrous_order_id = [];
-                $mbm_order_id = [];
-                foreach ($result as $data) {
-                    $store = $data->store_id;
+                foreach ($amazon as $key => $result) {
 
-                    if ($store === '6') {
-                        $nitrous_order_id[] = $data['order_item_id'];
-                    } else if ($store === '5') {
-                        $mbm_order_id[] = $data['order_item_id'];
+                    $amazon_order_id = $result->amazon_order_id;
+                    $order_item_id = $result->order_item_id;
+
+                    msg($amazon_order_id);
+                    msg($order_item_id);
+
+                    $zohoApi = new ZohoApi;
+                    $zoho_search_order_exists = $zohoApi->search($amazon_order_id, $order_item_id);
+
+                    if ($zoho_search_order_exists) {
+
+                        $zoho_id = $zoho_search_order_exists['data'][0]['id'];
+
+                        $update = [
+                            'zoho_id' => $zoho_id,
+                            'zoho_status' => 1
+                        ];
+
+                        $answer = OrderUpdateDetail::query()
+                            ->where('order_item_id', $order_item_id)
+                            ->where('amazon_order_id', $amazon_order_id)
+                            ->update($update);
                     }
                 }
-                $zoho_nitrous_data[] = DB::connection('aws')->table($table_nitrous)
-                    ->select('amazon_order_id', 'order_item_id', 'zoho_id')
-                    ->whereIn('order_item_id', $nitrous_order_id)
-                    ->get();
-
-                $zoho_mbm_data[] = DB::connection('aws')->table($table_mbm)
-                    ->select('amazon_order_id', 'order_item_id', 'zoho_id')
-                    ->whereIn('order_item_id', $mbm_order_id)
-                    ->get();
-
-                $this->insert_zohoid($zoho_nitrous_data);
-                $this->insert_zohoid($zoho_mbm_data);
             });
-    }
-    function insert_zohoid($zoho_nitrous_data)
-    {
-        foreach ($zoho_nitrous_data as $data) {
-
-            if (count($data) == '0') {
-                Log::alert('no data Found In AWS  table');
-            } else {
-                $values = (json_decode(json_encode($data)));
-                foreach ($values as $index => $key) {
-                    $data_forated = ($key);
-
-                    $zoho_id = str_replace('zcrm_', '', ($data_forated->zoho_id));
-                    $order_item_id =  $data_forated->order_item_id;
-                    $update = ['zoho_id' => $zoho_id];
-
-                    OrderUpdateDetail::query()
-                        ->where('order_item_id', $order_item_id)
-                        ->update($update);
-                }
-            }
-        }
     }
 }

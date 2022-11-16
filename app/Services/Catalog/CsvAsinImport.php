@@ -22,8 +22,6 @@ class CsvAsinImport
 
             $command_end_time = $records['Last_queue']->toDateTimeString();
             fileManagementUpdate($fm_id, $command_end_time);
-            log::notice($command_end_time);
-            log::notice($fm_id);
         }
 
 

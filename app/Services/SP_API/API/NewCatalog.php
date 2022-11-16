@@ -209,7 +209,6 @@ class NewCatalog
 
             return $queue_data;
         } catch (Exception $e) {
-
             Log::alert($e);
         }
     }
