@@ -58,14 +58,10 @@ class catalogExportCSV extends Command
             list($key, $value) = explode('=', $value);
             $final_data[$key] = $value;
         }
-        log::notice($final_data);
+
         $fm_id = $final_data['fm_id'];
         $this->country_code = $final_data['destination'];
         $this->priority = $final_data['priority'];
-        log::alert($fm_id);
-        log::alert($this->country_code);
-        log::alert($this->priority);
-        // exit;
 
         $total_csv = 1000000;
         $chunk = 20000;

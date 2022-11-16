@@ -61,11 +61,6 @@ class AsinDestinationUpload extends Command
         $user_id = $final_data['user_id'];
         $path = $final_data['path'];
         $priority = $final_data['priority'];
-        log::alert($path);
-        log::alert($file_management_id);
-        log::alert($user_id);
-        log::alert($priority);
-        log::alert($destination);
 
         $destinations = explode(',', $destination);
         // $push_to_bb = new PushAsin();

@@ -59,21 +59,16 @@ class asinBulkImport extends Command
             }
         }
 
-        // log::notice($final_data);
         $file_management_id = $final_data['fm_id'];
         $user_id = $final_data['user_id'];
         $path = $final_data['path'];
-        log::alert($path);
-        log::alert($file_management_id);
-        log::alert($user_id);
-
 
         // $user_id = $this->argument('user_id');
         // $path = $this->argument('path');
         // $file_management_id = $this->argument('fm_id');
         // exit;
         $sources = explode(',', $destination);
-        log::warning($sources);
+
         $csv = Reader::createFromPath(Storage::path($path), 'r');
         $csv->setDelimiter(",");
         $csv->setHeaderOffset(0);

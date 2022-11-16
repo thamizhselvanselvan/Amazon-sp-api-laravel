@@ -63,13 +63,6 @@ class invoiceBulkZipDownload extends Command
         $invoice_date = isset($headers_data[3]) ? $headers_data[3] : '';
         $current_page_no = isset($headers_data[4]) ? $headers_data[4] : '';
 
-
-        log::alert($file_management_id);
-        log::alert($currenturl);
-        log::alert($mode);
-        log::alert($invoice_date);
-        log::alert($current_page_no);
-
         // $passid = $this->argument('passid');
         // $currenturl = $this->argument('currenturl');
         // $mode = $this->argument('mode');
@@ -81,8 +74,6 @@ class invoiceBulkZipDownload extends Command
         // Log::warning("Invoice zip download excuted handle!");
 
         $excelid = explode('-', $passid);
-        log::alert($excelid);
-        // exit;
 
         foreach ($excelid as $getId) {
 

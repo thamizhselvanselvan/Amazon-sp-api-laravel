@@ -51,9 +51,7 @@ class invoiceExcelImport extends Command
             list($key, $value) = explode('=', $value);
             $final_data[$key] = $value;
         }
-
         $file_management_id = $final_data['fm_id'];
-        log::alert($file_management_id);
 
         $path = 'invoiceExcel/invoice.xlsx';
 

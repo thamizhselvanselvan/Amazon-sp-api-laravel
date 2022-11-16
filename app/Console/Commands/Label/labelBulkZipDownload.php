@@ -56,14 +56,11 @@ class labelBulkZipDownload extends Command
         $file_management_id = $final_data['fm_id'];
         $headers = $final_data['header'];
         $headers_data = explode('_', $headers);
-        log::notice($headers_data);
         $passid = isset($headers_data[0]) ? $headers_data[0] : '';
         $currenturl = isset($headers_data[1]) ? $headers_data[1] : '';
         $bag_no = isset($headers_data[2]) ? $headers_data[2] : '';
         $current_page_number = isset($headers_data[3]) ? $headers_data[3] : '';
-        log::notice($currenturl);
-        log::notice($bag_no);
-        log::notice($current_page_number);
+
 
         // $passid = $this->argument('passid');
         // $bag_no = $this->argument('bag_no');
@@ -71,8 +68,7 @@ class labelBulkZipDownload extends Command
         // $currenturl = $this->argument('currenturl');
 
         $excelid = explode('-', $passid);
-        log::notice($excelid);
-        // exit;
+
         foreach ($excelid as $getId) {
 
             $id = Label::where('id', $getId)->get();

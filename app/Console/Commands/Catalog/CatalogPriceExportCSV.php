@@ -62,14 +62,10 @@ class CatalogPriceExportCSV extends Command
             list($key, $value) = explode('=', $value);
             $final_data[$key] = $value;
         }
-        log::notice($final_data);
+
         $fm_id = $final_data['fm_id'];
         $this->country_code = $final_data['destination'];
         $this->priority = $final_data['priority'];
-        log::alert($fm_id);
-        log::alert($this->country_code);
-        log::alert($this->priority);
-        // exit;
 
         // $date = $this->date = $this->argument('date');
         // $fm_id = $this->argument('fm_id');

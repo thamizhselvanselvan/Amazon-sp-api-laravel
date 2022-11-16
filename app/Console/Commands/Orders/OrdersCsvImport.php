@@ -56,9 +56,7 @@ class OrdersCsvImport extends Command
 
         $file_management_id = $final_data['fm_id'];
         $store_id = $final_data['store_id'];
-        log::alert($file_management_id);
-        log::alert($store_id);
-        // exit;
+
 
         // $store_id = $this->argument('store_id');
         // $store_id = 44;

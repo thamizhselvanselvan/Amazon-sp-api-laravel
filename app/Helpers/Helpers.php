@@ -982,7 +982,7 @@ if (!function_exists('fileManagement')) {
             $store_id = $type == 'IMPORT_ORDER' ?  $destination : '';
 
             $destination = str_replace(',', '_', $destination);
-            log::info($header);
+            // log::info($header);
             commandExecFunc("${command_name} --columns=fm_id=${fm_id},store_id=${store_id},user_id=${user_id},destination=${destination},priority=${priority},path=${path},header=${header}");
             // exit;
             // if ($type == 'IMPORT_INVOICE') {
@@ -1006,7 +1006,7 @@ if (!function_exists('fileManagement')) {
 if (!function_exists('fileManagementUpdate')) {
     function fileManagementUpdate($id, $command_end_time = null)
     {
-        log::alert($id);
+        // log::alert($id);
         $file_management_update_sep = FileManagement::find($id);
         // log::alert($command_end_time);
         $file_management_update_sep->command_end_time = $command_end_time;
