@@ -242,6 +242,7 @@
 
                 $(".note_1").addClass('d-none').removeClass('d-block').html('');
                 $(".note_2").addClass('d-none').removeClass('d-block').html('');
+                $(".notes").addClass('d-none').removeClass('d-block').html('');
                 
             });
 
@@ -283,7 +284,7 @@
                             $.each(response.notes, function(index, elem) {
                                 html += elem + " \n";
                             });
-                           // alert(html);
+                     
                             $(".notes").addClass('d-block').removeClass('d-none').html(html);
                         } else {
                             $(".notes").addClass('d-none').removeClass('d-block').html('');
@@ -361,8 +362,6 @@
                             modal.modal('show');
                         } else {
                             
-                            alert(response.note_2);
-
                             $(".Order_Creation_Date").html('');
                             $(".Alternate_Order_No").html('');
                             $(".Follow_up_Status").html('');
@@ -393,6 +392,8 @@
                             $(".Payment_Reference_Number").html('');
                             $(".Exchange").html('');
                             $(".Amount_Paid_by_Customer").html('');
+
+                            $(".notes").addClass('d-none').removeClass('d-block').html('');
                         }
 
                         if(response.hasOwnProperty('note_1')) {
@@ -407,7 +408,11 @@
                             $(".note_2").addClass('d-none').removeClass('d-block').html('');
                         }
 
-                        
+                        if(response.hasOwnProperty('notes')) {
+                            $(".notes").addClass('d-block').removeClass('d-none').html(response.notes);
+                        } else {
+                            $(".notes").addClass('d-none').removeClass('d-block').html('');
+                        }                        
 
                     },
                     error: function(response) {
