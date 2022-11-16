@@ -121,6 +121,11 @@ Route::get('zoho_update', function () {
 
 Route::get('import', function () {
 
+    $currenturl = URL::current();
+    po($currenturl);
+    exit;
+
+
     $to = Carbon::parse('2015-5-5 3:30:34');
     $from = Carbon::parse('2015-5-6 9:20:34');
     po($to);

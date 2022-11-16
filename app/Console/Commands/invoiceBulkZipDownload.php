@@ -57,12 +57,13 @@ class invoiceBulkZipDownload extends Command
         $file_management_id = $final_data['fm_id'];
         $headers = $final_data['header'];
         $headers_data = explode('_', $headers);
-        $passid = isset($headers_data[0]) ? $headers_data[0] : '';
-        $currenturl = isset($headers_data[1]) ? $headers_data[1] : '';
-        $mode = isset($headers_data[2]) ? $headers_data[2] : '';
-        $invoice_date = isset($headers_data[3]) ? $headers_data[3] : '';
-        $current_page_no = isset($headers_data[4]) ? $headers_data[4] : '';
+        $passid =  $headers_data[0];
+        $currenturl =  $headers_data[1];
+        $mode =  $headers_data[2];
+        $invoice_date = $headers_data[3];
+        $current_page_no =  $headers_data[4];
 
+        log::alert($currenturl);
         // $passid = $this->argument('passid');
         // $currenturl = $this->argument('currenturl');
         // $mode = $this->argument('mode');
@@ -84,7 +85,7 @@ class invoiceBulkZipDownload extends Command
                 $invoice_no = $value->invoice_no;
                 $url = $currenturl . '/invoice/convert-pdf/' . $invoice_no;
                 $path = "invoice/$mode/$invoice_date/invoice$invoice_no.pdf";
-
+                log::alert($url);
                 if (!Storage::exists($path)) {
                     Storage::put($path, '');
                 }
