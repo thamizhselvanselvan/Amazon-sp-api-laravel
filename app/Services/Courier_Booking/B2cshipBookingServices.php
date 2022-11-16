@@ -301,7 +301,7 @@ class B2cshipBookingServices
                     <InvoiceValueINR>' . $data['invoice_value']  . '</InvoiceValueINR>
                     <CurrencyCodeINR>INR</CurrencyCodeINR>
                     <Pieces>' . $data['pieces'] . '</Pieces>
-                    <ActualWeight>2</ActualWeight>
+                    <ActualWeight>' . (($data['weight'] > 0) ? $data['weight'] : 1) . '</ActualWeight>
 
                     <PCSWeightDetails>
                         <PCSWeightDetail>
