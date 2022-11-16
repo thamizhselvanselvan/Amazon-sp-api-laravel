@@ -176,9 +176,13 @@
                         <p class="pt-0 pb-0 mt-1 mb-0 font-weight-bold">Product_Link</p>
                         <p class="pt-0 pb-0 mt-0 mb-1 text-break Product_Link"></p>
                     </td>
-                    <td colspan="2" class="pt-0 pb-0 font-weight-bold">
+                    <td class="pt-0 pb-0 font-weight-bold">
                         <p class="pt-0 pb-0 mt-1 mb-0">US_EDD</p>
                         <p class="pt-0 pb-0 mt-0 mb-1 US_EDD"></p>
+                    </td>
+                    <td class="pt-0 pb-0 font-weight-bold">
+                        <p class="pt-0 pb-0 mt-1 mb-0">Amount_Paid_by_Customer</p>
+                        <p class="pt-0 pb-0 mt-0 mb-1 Amount_Paid_by_Customer"></p>
                     </td>
                 </tr>
             </table>
@@ -233,6 +237,7 @@
                 $(".Weight_in_LBS").html('');
                 $(".Payment_Reference_Number").html('');
                 $(".Exchange").html('');
+                $(".Amount_Paid_by_Customer").html('');
 
                 $(".note_1").addClass('d-none').removeClass('d-block').html('');
                 $(".note_2").addClass('d-none').removeClass('d-block').html('');
@@ -345,6 +350,7 @@
                             $(".Weight_in_LBS").html(response.data.Weight_in_LBS);
                             $(".Payment_Reference_Number").html(response.data.Payment_Reference_Number);
                             $(".Exchange").html(response.data.Exchange);
+                            $(".Amount_Paid_by_Customer").html(response.data.Amount_Paid_by_Customer);
 
                             modal.modal('show');
                         } else {
@@ -380,6 +386,7 @@
                             $(".Weight_in_LBS").html('');
                             $(".Payment_Reference_Number").html('');
                             $(".Exchange").html('');
+                            $(".Amount_Paid_by_Customer").html('');
                         }
 
                         if(response.hasOwnProperty('note_1')) {
