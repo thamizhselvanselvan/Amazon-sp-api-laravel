@@ -69,11 +69,11 @@ Route::get('zoho_update', function () {
 
     $zoho = new ZohoApi;
 
-    dd($zoho->getLead($idToWork));
+    //dd($zoho->getLead($idToWork));
 
     // dd($zoho->getLead($idToWork));
     // dd($zoho->search('403-4468830-9728365', '28528755520011'));
-    //dd($zoho->search('406-7669097-5932326', '42065874482483'));
+    dd($zoho->search('407-3606012-9559513', '48342010436331'));
 
     // dd($zoho->updateLead('377125000000430025', [
     //     "Amount_Paid_by_Customer" => "10"

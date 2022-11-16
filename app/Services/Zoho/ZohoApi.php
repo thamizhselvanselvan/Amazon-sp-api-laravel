@@ -127,6 +127,6 @@ class ZohoApi
             return $response->json();
         }
 
-        return false;
+        return $response->body();
     }
 }

@@ -505,7 +505,7 @@ class ZohoOrder
         $prod_array['Zip_Code']       = $this->get_state_pincode($country_code, $buyerDtls, 'pincode');
 
         $prod_array["Email"]              = ((isset($buyerEmail->BuyerEmail)) ? $buyerEmail->BuyerEmail : '');
-        $prod_array["Customer_Type"]      = ($value->is_business_order == 'true') ? 'B2B' : 'B2C';
+        $prod_array["Customer_Type1"]      = ($value->is_business_order == 'true') ? 'B2B' : 'B2C';
         $prod_array["Fulfilment_Channel"] = $this->fulfillment_channel($value->fulfillment_channel);
 
         ############################
@@ -532,7 +532,7 @@ class ZohoOrder
         $prod_array["ASIN"]                      = $value->asin;
         $prod_array["SKU"]                       = $value->seller_sku;
         $prod_array["Product_Cost"]              = $catalog_details['price'];
-        $prod_array["Amount_Paid_by_Customer"]   = $item_price->Amount;
+        $prod_array["Amount_Paid_by_Customer"]   = (int)$item_price->Amount;
 
         $prod_array["Weight_in_LBS"]             = (string)$catalog_details['weight'];
         $prod_array["Payment_Reference_Number1"]  = $value->order_item_identifier;
@@ -669,7 +669,10 @@ class ZohoOrder
                     $weight = ceil($result->dimensions[0]['package']['weight']['value']);
                 }
 
-                if (isset($result) && isset($result->browse_classification['displayName'])) {
+                if (isset($result) && isset($result->product_types[0]) && isset($result->product_types[0]['productType'])) {
+
+                    $category = $result->product_types[0]['productType'];
+                } else if (isset($result) && isset($result->browse_classification['displayName'])) {
 
                     $category = $result->browse_classification['displayName'];
                 }
