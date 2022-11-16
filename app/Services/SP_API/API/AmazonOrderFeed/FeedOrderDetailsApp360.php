@@ -54,11 +54,18 @@ class FeedOrderDetailsApp360
             ->setTimezone('America/Los_Angeles');
         $date_time_uat_now = Carbon::parse($date)->format('Y-m-d\TH:i:s\Z');
 
+        // po($date_time_uat_now);
+
         if ($order_date[0]->purchase_date == '') {
             $date_time_uat = $date_time_uat_now;
         } else {
             $date_time_uat = Carbon::parse($order_date[0]->purchase_date)->format('Y-m-d\TH:i:s\Z');
         }
+
+        // po($amazon_order_id);
+        // po($date_time_uat);
+        // exit;
+
         $data = [
             'merchant_id' => $merchant_id,
             'amazon_order_id' => $amazon_order_id,
