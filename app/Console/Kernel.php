@@ -60,6 +60,9 @@ class Kernel extends ConsoleKernel
             $schedule->command('aws:courier-booking')->everyMinute();
             $schedule->command('mosh:feed-app360-tracking-details')->everyMinute();
             $schedule->command('mosh:feed-status')->everyTwoMinutes();
+
+            /*Zoho Lead Save */
+            $schedule->command('mosh:zoho:save')->everyMinute();
         }
 
         if (app()->environment() === 'staging') {
