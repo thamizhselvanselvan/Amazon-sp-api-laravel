@@ -15,33 +15,69 @@
 @stop
 
 @section('content')
-    <div class="row">
-        <table class="table table-striped table-bordered text-center table-sm">
-            <thead class="table-info">
-                <th>Id</th>
-                <th>User Name</th>
-                <th>Type</th>
-                <th>Module</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Status</th>
-            </thead>
-            <tbody>
-                @foreach ($file_info as $file_value)
-                    <tr>
-                        <td>{{ $file_value['id'] }}</td>
-                        <td>{{ $file_value['user_name'] }}</td>
-                        <td>{{ $file_value['type'] }}</td>
-                        <td>{{ $file_value['module'] }}</td>
-                        <td>{{ $file_value['start_time'] }}</td>
-                        <td>{{ $file_value['end_time'] }}</td>
-                        <td>{{ $file_value['process'] }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+    <table class="table table-striped yajra-datatable table-bordered text-center table-sm">
+
+        <thead class="table-info">
+            <th>Id</th>
+            <th>User Name</th>
+            <th>Type</th>
+            <th>Module</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Status</th>
+        </thead>
+
+    </table>
 @stop
 
 @section('js')
+    <script>
+        let yajra_table = $('.yajra-datatable').DataTable({
+
+            processing: true,
+            serverSide: true,
+            ajax: "{{ url('/admin/file-management') }}",
+            pageLength: 50,
+            columns: [{
+                    data: 'id',
+                    name: 'id',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'user_name',
+                    name: 'user_name',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'type',
+                    name: 'type',
+                },
+                {
+                    data: 'module',
+                    name: 'module',
+                },
+                {
+                    data: 'start_time',
+                    name: 'start_time',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'end_time',
+                    name: 'end_time',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'status',
+                    name: 'status',
+                    orderable: false,
+                    searchable: false
+                },
+
+            ],
+        });
+    </script>
 @stop

@@ -214,10 +214,10 @@ class CatalogProductController extends Controller
     {
         if ($request->form_type == 'text-area') {
             $request->validate([
-                'source'    => 'required|in:IN,US',
-                'priority'  => 'required|in:1,2,3',
-                'text_area_asins'      =>  'required',
-                'header'    =>  'required',
+                'source'            => 'required|in:IN,US',
+                'priority'          => 'required|in:1,2,3',
+                'text_area_asins'   =>  'required',
+                'header'            =>  'required',
             ]);
             $csv_asin = [];
             $source = $request->source;
@@ -241,12 +241,23 @@ class CatalogProductController extends Controller
             ]);
             $source = $request->source;
             $priority = $request->priority;
-            $headers = implode(',', $request->header);
+            $headers = ["data" => implode('-', $request->header)];
+
             $path = "CatalogWithPrice/asin.csv";
             $file = file_get_contents($request->asin);
             Storage::put($path, $file);
+            $user_id = Auth::user()->id;
+            $file_info = [
+                "user_id" => $user_id,
+                "type" => "CATALOG_PRICE_EXPORT",
+                "module" => "CATALOG_PRICE_EXPORT_${source}_${priority}",
+                "command_name" => "mosh:export-catalog-with-price",
+                "header" => json_encode($headers)
+            ];
+            FileManagement::create($file_info);
+            fileManagement();
 
-            commandExecFunc("mosh:export-catalog-with-price ${source} ${priority} ${headers}");
+            // commandExecFunc("mosh:export-catalog-with-price ${source} ${priority} ${headers}");
         }
         return redirect('/catalog/export-with-price')->with("success", "Catalog with price is exporting");
     }

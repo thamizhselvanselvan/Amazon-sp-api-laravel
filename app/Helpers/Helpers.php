@@ -982,22 +982,9 @@ if (!function_exists('fileManagement')) {
             $store_id = $type == 'IMPORT_ORDER' ?  $destination : '';
 
             $destination = str_replace(',', '_', $destination);
-            // log::info($header);
+            log::info($header);
             commandExecFunc("${command_name} --columns=fm_id=${fm_id},store_id=${store_id},user_id=${user_id},destination=${destination},priority=${priority},path=${path},header=${header}");
-            // exit;
-            // if ($type == 'IMPORT_INVOICE') {
 
-            //     commandExecFunc("${command_name} ${fm_id}");
-            // } else if ($type == 'IMPORT_ORDER') {
-
-            //     commandExecFunc("${command_name} ${destination} ${fm_id}");
-            // } else if ($type == 'CATALOG_EXPORT' || $type == 'CATALOG_PRICE_EXPORT') {
-
-            //     commandExecFunc("${command_name} ${priority} ${destination} ${fm_id}");
-            // } else {
-
-            //     commandExecFunc("${command_name} ${user_id} ${priority} --country_code=${destination} ${path} ${fm_id}");
-            // }
             $file_management_update->update();
         }
     }
