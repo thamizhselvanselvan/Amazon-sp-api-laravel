@@ -85,14 +85,12 @@ class ZohoApi
                 'Authorization' => 'Zoho-oauthtoken ' . $this->auth_token
             ])->get($this->zoho_lead_base_url . '/search' . $search_criteria);
 
-        // return $response->body();
         if ($response->ok()) {
             return $response->json();
         }
 
-
-
-        return false;
+        //Log::channel('slack')->info($response->body());
+        return $response->body();
     }
 
     public function updateLead($lead_id, $parameters)
