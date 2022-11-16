@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
 
             /*Business API*/
             $schedule->command('mosh:access_token_generate')->cron('*/55 * * * *');
-            // $schedule->command('mosh:zoho:generate_token')->cron('*/55 * * * *');
+            $schedule->command('mosh:zoho:generate_token')->cron('*/55 * * * *');
 
             /*B2CShip*/
             $schedule->command('pms:b2cship-microstatus-report')->daily();
@@ -55,7 +55,6 @@ class Kernel extends ConsoleKernel
             /*AWS Sync - Needs to be removed*/
             $schedule->command('aws:nitshop:order')->hourly();
             $schedule->command('aws:nitshop:order_details')->hourly();
-            //$schedule->command('mosh:feed-tracking-details-to-amazon')->everyMinute();
 
             /*Order CI CD*/
             $schedule->command('aws:courier-booking')->everyMinute();
@@ -66,9 +65,7 @@ class Kernel extends ConsoleKernel
 
             /*Order CI CD*/
             /*
-                B2C - only one order at a time for staging
                 Zoho - only one record at a time for staging
-                Amazon Feed but this is only for prod
             */
         }
 
