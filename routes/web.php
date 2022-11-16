@@ -12,8 +12,8 @@ use App\Jobs\TestQueueFail;
 use Illuminate\Support\Str;
 use Smalot\PdfParser\Parser;
 use App\Models\Aws_credential;
-use App\Services\Zoho\ZohoApi;
 use App\Models\FileManagement;
+use App\Services\Zoho\ZohoApi;
 use Dflydev\DotAccessData\Data;
 use SellingPartnerApi\Endpoint;
 use App\Models\Inventory\Shelve;
@@ -48,8 +48,12 @@ use App\Jobs\Seller\Seller_catalog_import_job;
 use Symfony\Component\Validator\Constraints\File;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
 use App\Services\AWS_Business_API\Auth\AWS_Business;
+use SellingPartnerApi\Api\FeedsV20210630Api as FeedsApi;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
+use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
+// use ConfigTrait;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -752,6 +756,29 @@ where status = 0 ");
             $data = [];
             // exit;
         }
+    }
+});
+
+// use ConfigTrait;
+
+Route::get('test/url', function () {
+
+    $feed_id = '129877019312';
+    $seller_id = '6';
+
+    $url  = (new FeedOrderDetailsApp360())->getFeedStatus($feed_id, $seller_id);
+    $data = file_get_contents($url);
+
+    $data_json = json_decode(json_encode(simplexml_load_string($data)), true);
+
+    $report = $data_json['Message']['ProcessingReport'];
+    $success_message = $report['ProcessingSummary']['MessagesSuccessful'];
+
+    if ($success_message == 1) {
+
+        echo $success_message;
+    } else {
+        po($report['Result']['ResultDescription']);
     }
 });
 

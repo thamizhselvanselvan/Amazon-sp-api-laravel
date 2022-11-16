@@ -60,6 +60,7 @@ class Kernel extends ConsoleKernel
             /*Order CI CD*/
             $schedule->command('aws:courier-booking')->everyMinute();
             $schedule->command('mosh:feed-app360-tracking-details')->everyMinute();
+            $schedule->command('mosh:feed-status')->everyMinute();
         }
 
         if (app()->environment() === 'staging') {

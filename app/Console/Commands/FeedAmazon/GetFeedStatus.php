@@ -43,47 +43,41 @@ class GetFeedStatus extends Command
     use ConfigTrait;
     public function handle()
     {
-        $seller_id = '6';
-        $feed_id = '129897019312';
-        // $feed_id = '129877019312';
-        $feed_details = OrderUpdateDetail::where([
+        OrderUpdateDetail::where([
             ['order_status', '!=', 'unshipped'],
             ['order_feed_status', NULL]
 
-        ])->get(['order_status', 'store_id']);
+        ])->chunk(1, function ($result) {
 
-        $groups = $feed_details->groupBy('store_id');
+            foreach ($result as $value) {
 
-        if ($feed_details->isEmpty()) {
-            return false;
-        }
+                $feed_id = $value->order_status;
+                $seller_id = $value->store_id;
+                $amazon_order_id = $value->amazon_order_id;
+                $order_item_id = $value->order_item_id;
 
-        foreach ($groups as $group) {
-            $results[] = head($group);
-        }
+                $url  = (new FeedOrderDetailsApp360())->getFeedStatus($feed_id, $seller_id);
 
-        po($results);
-        exit;
+                $data = file_get_contents($url);
+                $data_json = json_decode(json_encode(simplexml_load_string($data)), true);
+                $report = $data_json['Message']['ProcessingReport'];
+                $success_message = $report['ProcessingSummary']['MessagesSuccessful'];
 
-        po($feed_details);
-        exit;
+                $msg = '';
+                if ($success_message == 1) {
+                    $msg = 'success';
+                } else {
+                    $msg = $report['Result']['ResultDescription'];
+                }
 
-        $url  = (new FeedOrderDetailsApp360())->getFeedStatus($feed_id, $seller_id);
-
-        $data = file_get_contents($url);
-        $data_json = json_decode(json_encode(simplexml_load_string($data)), true);
-        $report = $data_json['Message']['ProcessingReport'];
-        $success_message = $report['ProcessingSummary']['MessagesSuccessful'];
-
-        $msg = '';
-        if ($success_message == 1) {
-            $msg = $success_message;
-        } else {
-            $msg = $report['Result']['ResultDescription'];
-        }
-
-        OrderUpdateDetail::where([
-            ['order_status', $feed_id]
-        ])->update(['order_feed_status' => $msg]);
+                OrderUpdateDetail::where([
+                    [
+                        ['order_status' => $feed_id],
+                        ['amazon_order_id' => $amazon_order_id],
+                        ['order_item_id' => $order_item_id]
+                    ]
+                ])->update(['order_feed_status' => $msg]);
+            }
+        });
     }
 }
