@@ -17,7 +17,8 @@ class AsinDestinationUpload extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:Asin-destination-upload {user_id} {priority} {--country_code=} {path} {fm_id}';
+    // protected $signature = 'mosh:Asin-destination-upload {user_id} {priority} {--country_code=} {path} {fm_id}';
+    protected $signature = 'mosh:Asin-destination-upload {--columns=} ';
 
     /**
      * The console command description.
@@ -43,12 +44,31 @@ class AsinDestinationUpload extends Command
      */
     public function handle()
     {
-        $push_to_bb = new PushAsin();
-        $user_id = $this->argument('user_id');
-        $priority = $this->argument('priority');
-        $destinations = explode(',', $this->option('country_code'));
-        $path = $this->argument('path');
-        $file_management_id = $this->argument('fm_id');
+        $column_data = $this->option('columns');
+        $final_data = [];
+        $destination = '';
+        $explode_array = explode(',', $column_data);
+
+        foreach ($explode_array as $key => $value) {
+            list($key, $value) = explode('=', $value);
+            $final_data[$key] = $value;
+            if ($key == 'destination') {
+                $des = $value;
+                $destination = str_replace('_', ',', $des);
+            }
+        }
+        $file_management_id = $final_data['fm_id'];
+        $user_id = $final_data['user_id'];
+        $path = $final_data['path'];
+        $priority = $final_data['priority'];
+
+        $destinations = explode(',', $destination);
+        // $push_to_bb = new PushAsin();
+        // $user_id = $this->argument('user_id');
+        // $priority = $this->argument('priority');
+        // $path = $this->argument('path');
+        // $file_management_id = $this->argument('fm_id');
+        // exit;
         $asins = Reader::createFromPath(Storage::path($path), 'r');
         $asins->setHeaderOffset(0);
 

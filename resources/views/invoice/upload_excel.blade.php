@@ -95,6 +95,7 @@
                     if (response == '0000-00-00 00:00:00') {
 
                         $('#upload_excel').prop('disabled', true);
+                        $('#upload_excel').attr("title", "File is importing...");
                     }
 
                 },

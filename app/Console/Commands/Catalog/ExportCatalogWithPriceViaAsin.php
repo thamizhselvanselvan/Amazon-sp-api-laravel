@@ -25,7 +25,8 @@ class ExportCatalogWithPriceViaAsin extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:export-catalog-with-price {source} {priority} {headers}';
+    // protected $signature = 'mosh:export-catalog-with-price {source} {priority} {headers}';
+    protected $signature = 'mosh:export-catalog-with-price {--columns=} ';
 
     /**
      * The console command description.
@@ -51,9 +52,28 @@ class ExportCatalogWithPriceViaAsin extends Command
      */
     public function handle()
     {
-        $this->country_code = $this->argument('source');
-        $this->priority = $this->argument('priority');
-        $selected_headers = explode(',', $this->argument('headers'));
+        $columns_data = $this->option('columns');
+        $final_data = [];
+        $explode_array = explode(',', $columns_data);
+        foreach ($explode_array as $value) {
+            list($key, $value) = explode('=', $value);
+            $final_data[$key] = $value;
+        }
+
+        $fm_id = $final_data['fm_id'];
+        $this->country_code = $final_data['destination'];
+        $this->priority = $final_data['priority'];
+        $selected_headers = explode('-', $final_data['header']);
+
+        log::alert($this->country_code);
+        log::alert($this->priority);
+        log::alert($selected_headers);
+
+        // exit;
+
+        // $this->country_code = $this->argument('source');
+        // $this->priority = $this->argument('priority');
+        // $selected_headers = explode('_', $selected_headers);
 
         $path = "CatalogWithPrice/asin.csv";
         $asins = Reader::createFromPath(Storage::path($path), 'r');
@@ -173,6 +193,10 @@ class ExportCatalogWithPriceViaAsin extends Command
             }
             $zip->close();
         }
+        //FILE MANAGEMENT
+
+        $command_end_time = now();
+        fileManagementUpdate($fm_id, $command_end_time);
     }
     public function FormateDataForCsv($csv_header, $records, $exportFilePath)
     {

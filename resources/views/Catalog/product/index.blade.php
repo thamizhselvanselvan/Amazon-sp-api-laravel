@@ -18,13 +18,13 @@
                 </a>
             </h2>
             <!-- <h2 class="ml-2">
-                                                                                                                                                                                                                                    <x-adminlte-button label="Cliqnshop Catalog Export" theme="primary" class="btn-sm" icon="fas fa-file-export"
-                                                                                                                                                                                                                                        id="exportcliqnshopCatalog" />
-                                                                                                                                                                                                                                </h2>
-                                                                                                                                                                                                                                <h2 class="ml-2">
-                                                                                                                                                                                                                                    <x-adminlte-button label="Download Cliqnshop Catalog" theme="primary" class="btn-sm" icon="fas fa-download"
-                                                                                                                                                                                                                                        id="catalogcliqnshopdownload" data-toggle="modal" data-target="#downloacliqdModal" />
-                                                                                                                                                                                                                                </h2> -->
+                                                                                                                                                                                                                                        <x-adminlte-button label="Cliqnshop Catalog Export" theme="primary" class="btn-sm" icon="fas fa-file-export"
+                                                                                                                                                                                                                                            id="exportcliqnshopCatalog" />
+                                                                                                                                                                                                                                    </h2>
+                                                                                                                                                                                                                                    <h2 class="ml-2">
+                                                                                                                                                                                                                                        <x-adminlte-button label="Download Cliqnshop Catalog" theme="primary" class="btn-sm" icon="fas fa-download"
+                                                                                                                                                                                                                                            id="catalogcliqnshopdownload" data-toggle="modal" data-target="#downloacliqdModal" />
+                                                                                                                                                                                                                                    </h2> -->
 
             <h2 class="ml-2">
                 <x-adminlte-button label="Export Catalog" theme="primary" class="btn-sm" icon="fas fa-file-export"
@@ -45,21 +45,21 @@
             </h2>
 
             <!-- <div class="modal" id="downloacliqdModal">
-                                                                                                                                                                                                                                    <div class="modal-dialog">
-                                                                                                                                                                                                                                        <div class="modal-content">
-                                                                                                                                                                                                                                            <div class="modal-header">
-                                                                                                                                                                                                                                                <h4 class="modal-title">Download Cliqnshop Catalog </h4>
-                                                                                                                                                                                                                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                            <div class="modal-body catalogcliqnshop">
+                                                                                                                                                                                                                                        <div class="modal-dialog">
+                                                                                                                                                                                                                                            <div class="modal-content">
+                                                                                                                                                                                                                                                <div class="modal-header">
+                                                                                                                                                                                                                                                    <h4 class="modal-title">Download Cliqnshop Catalog </h4>
+                                                                                                                                                                                                                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                <div class="modal-body catalogcliqnshop">
 
-                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                            <div class="modal-footer">
-                                                                                                                                                                                                                                                <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                <div class="modal-footer">
+                                                                                                                                                                                                                                                    <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+                                                                                                                                                                                                                                                </div>
                                                                                                                                                                                                                                             </div>
                                                                                                                                                                                                                                         </div>
-                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                </div> -->
+                                                                                                                                                                                                                                    </div> -->
 
             <div class="modal fade" id="catalogExport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
@@ -310,6 +310,7 @@
                     if (response == '0000-00-00 00:00:00') {
 
                         $('#catalog_export').prop('disabled', true);
+                        $('#catalog_export').attr("title", "File is exporting...");
                     }
 
                 },
@@ -331,6 +332,7 @@
                     if (response == '0000-00-00 00:00:00') {
 
                         $('#catalogPriceExportButton').prop('disabled', true);
+                        $('#catalogPriceExportButton').attr("title", "File is exporting...");
                     }
 
                 },

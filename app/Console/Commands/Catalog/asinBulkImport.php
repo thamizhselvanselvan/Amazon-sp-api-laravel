@@ -18,7 +18,8 @@ class asinBulkImport extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:asin-import {user_id} {--country_code=} {path} {fm_id}';
+    // protected $signature = 'pms:asin-import {user_id} {--country_code=} {path} {fm_id}';
+    protected $signature = 'pms:asin-import {--columns=} ';
 
     /**
      * The console command description.
@@ -44,11 +45,29 @@ class asinBulkImport extends Command
      */
     public function handle()
     {
+        $column_data = $this->option('columns');
+        $final_data = [];
+        $destination = '';
+        $explode_array = explode(',', $column_data);
 
-        $user_id = $this->argument('user_id');
-        $sources = explode(',', $this->option('country_code'));
-        $path = $this->argument('path');
-        $file_management_id = $this->argument('fm_id');
+        foreach ($explode_array as $key => $value) {
+            list($key, $value) = explode('=', $value);
+            $final_data[$key] = $value;
+            if ($key == 'destination') {
+                $des = $value;
+                $destination = str_replace('_', ',', $des);
+            }
+        }
+
+        $file_management_id = $final_data['fm_id'];
+        $user_id = $final_data['user_id'];
+        $path = $final_data['path'];
+
+        // $user_id = $this->argument('user_id');
+        // $path = $this->argument('path');
+        // $file_management_id = $this->argument('fm_id');
+        // exit;
+        $sources = explode(',', $destination);
 
         $csv = Reader::createFromPath(Storage::path($path), 'r');
         $csv->setDelimiter(",");

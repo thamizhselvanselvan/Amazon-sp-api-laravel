@@ -189,6 +189,26 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
+
+            $.ajax({
+                method: 'get',
+                url: "/label/file/management/monitor/",
+                data: {
+                    "module_type": "EXPORT_LABEL",
+                    "_token": "{{ csrf_token() }}",
+                },
+                response: 'json',
+                success: function(response) {
+                    // console.log(response);
+
+                    if (response == '0000-00-00 00:00:00') {
+
+                        $('#download_selected').prop('disabled', true);
+                        $('#download_selected').attr("title", "File is downloading...");
+                    }
+
+                },
+            });
             // begin search label
             $('#Searchbox').on('keyup', function() {
 

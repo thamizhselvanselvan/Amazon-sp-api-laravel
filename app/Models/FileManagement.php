@@ -22,5 +22,6 @@ class FileManagement extends Model
         'command_end_time',
         'status',
         'info',
+        'header',
     ];
 }

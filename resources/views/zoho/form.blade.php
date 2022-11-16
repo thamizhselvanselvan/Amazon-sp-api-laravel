@@ -189,6 +189,7 @@
 
             <div class="alert alert-warning note_1 d-none"></div>
             <div class="alert alert-warning note_2 d-none"></div>
+            <div class="alert alert-warning notes d-none"></div>
             
         </div>
         <div class="modal-footer justify-content-center">
@@ -241,6 +242,7 @@
 
                 $(".note_1").addClass('d-none').removeClass('d-block').html('');
                 $(".note_2").addClass('d-none').removeClass('d-block').html('');
+                $(".notes").addClass('d-none').removeClass('d-block').html('');
                 
             });
 
@@ -269,6 +271,8 @@
                         self.prop('disabled', false);
                         self.html(btn_content);
 
+                        console.log(response);
+
                         if(response.hasOwnProperty('success')) {
                             alert("Zoho Created Successfully for Amazon Order ID "+ amazon_order_id);
                             modal.modal('hide');
@@ -280,9 +284,10 @@
                             $.each(response.notes, function(index, elem) {
                                 html += elem + " \n";
                             });
-
-                            alert(html);
-
+                     
+                            $(".notes").addClass('d-block').removeClass('d-none').html(html);
+                        } else {
+                            $(".notes").addClass('d-none').removeClass('d-block').html('');
                         }
 
                     },
@@ -318,6 +323,8 @@
                     success: function(response) {
                         self.prop('disabled', false);
                         self.html(btn_content);
+
+                        console.log(response);
 
                         if(response.hasOwnProperty('data')) {
 
@@ -355,8 +362,6 @@
                             modal.modal('show');
                         } else {
                             
-                            alert(response.note_2);
-
                             $(".Order_Creation_Date").html('');
                             $(".Alternate_Order_No").html('');
                             $(".Follow_up_Status").html('');
@@ -387,6 +392,8 @@
                             $(".Payment_Reference_Number").html('');
                             $(".Exchange").html('');
                             $(".Amount_Paid_by_Customer").html('');
+
+                            $(".notes").addClass('d-none').removeClass('d-block').html('');
                         }
 
                         if(response.hasOwnProperty('note_1')) {
@@ -400,6 +407,12 @@
                         } else {
                             $(".note_2").addClass('d-none').removeClass('d-block').html('');
                         }
+
+                        if(response.hasOwnProperty('notes')) {
+                            $(".notes").addClass('d-block').removeClass('d-none').html(response.notes);
+                        } else {
+                            $(".notes").addClass('d-none').removeClass('d-block').html('');
+                        }                        
 
                     },
                     error: function(response) {

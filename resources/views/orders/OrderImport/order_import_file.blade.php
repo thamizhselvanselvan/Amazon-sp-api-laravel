@@ -12,8 +12,8 @@
     <div class="row">
         <div class="col-4">
             <!-- <a href="{{ route('label.manage') }}" class="btn btn-primary btn-sm">
-                                                        <i class="fas fa-long-arrow-alt-left"></i> Back
-                                                    </a> -->
+                                                                    <i class="fas fa-long-arrow-alt-left"></i> Back
+                                                                </a> -->
 
             <a href=" {{ route('download.order.csv.template') }} ">
                 <x-adminlte-button label="Download Order Template" theme="primary" icon="fas fa-file-download"
@@ -102,6 +102,7 @@
                     if (response == '0000-00-00 00:00:00') {
 
                         $('#order_upload').prop('disabled', true);
+                        $('#order_upload').attr("title", "File is importing...");
                     }
 
                 },
