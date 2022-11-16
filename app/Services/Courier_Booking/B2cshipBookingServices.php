@@ -4,7 +4,9 @@ namespace App\Services\Courier_Booking;
 
 use Carbon\Carbon;
 use App\Jobs\B2C\B2CBooking;
+use App\Models\Catalog\PricingUs;
 use App\Models\order\OrderUpdateDetail;
+use App\Services\BB\PushAsin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -31,7 +33,7 @@ class B2cshipBookingServices
                 ord.amazon_order_identifier as order_id,
                 ord.purchase_date as order_date,
                 ord.payment_method_details as pay_method,
-                ord.order_item as item,
+                oids.quantity_ordered as item,
                 ord.buyer_info as mail
             FROM orders AS ord
             INNER join orderitemdetails AS oids
@@ -43,6 +45,7 @@ class B2cshipBookingServices
         ");
 
         $consignee_data = [];
+
         foreach ($order_details as $key => $details) {
             $OrderID = $details->order_id;
 
@@ -116,13 +119,17 @@ class B2cshipBookingServices
 
             $cat_data =   DB::connection('catalog')->select("SELECT dimensions FROM catalognewuss  where asin = '$asin'");
 
+            $price = PricingUs::where('asin', $asin)->get('us_price');
+
             $height = '';
             $unit = '';
             $length = '';
             $weight = '';
             $width = '';
+            $us_price = 'NA';
 
-            if (isset($cat_data[0]->dimensions)) {
+            if (isset($cat_data[0]->dimensions) && isset($price[0])) {
+
                 $dimensions = $cat_data[0]->dimensions;
                 $dmns_array = json_decode(($dimensions), true);
                 $height = ($dmns_array[0]['package']['height']['value']);
@@ -130,6 +137,8 @@ class B2cshipBookingServices
                 $length = ($dmns_array[0]['package']['length']['value']);
                 $weight = ($dmns_array[0]['package']['weight']['value']);
                 $width = ($dmns_array[0]['package']['width']['value']);
+
+                $us_price = $price[0]->us_price;
             } else {
 
                 $getMessage = 'Item Details Not Avaliable';
@@ -140,7 +149,19 @@ class B2cshipBookingServices
                 Order_id: $amazon_order_id,
                 Operation: $operation";
 
-                Log::channel('slack')->error($slackMessage);
+                OrderUpdateDetail::where([
+                    ['amazon_order_id', $this->amazon_order_id],
+                    ['order_item_id', $this->order_item_id],
+                ])->update(
+                    [
+                        'booking_status' => '0'
+                    ]
+                );
+
+                $this->missingASINDetails($asin);
+
+                Log::alert($slackMessage);
+                // Log::channel('slack')->error($slackMessage);
                 return false;
             }
 
@@ -168,6 +189,7 @@ class B2cshipBookingServices
             $data['length'] = $length;
             $data['weight'] =  $weight;
             $data['width'] = $width;
+            $data['USA_price'] = $us_price;
 
             $consignee_data[] = $data;
         }
@@ -274,7 +296,7 @@ class B2cshipBookingServices
                     <PaymentType>CREDIT</PaymentType>
                     <PacketDescription>' . $this->cleanSpecialCharacters($data['item_name']) . '.</PacketDescription>
                     <InvoiceNo>' .  $data['invoice_no'] . '</InvoiceNo>
-                    <InvoiceValue>' . $this->calculateCustomValue($data['invoice_value']) . '</InvoiceValue>
+                    <InvoiceValue>' . $this->calculateCustomValue($data['USA_price']) . '</InvoiceValue>
                     <CurrencyCode>USD</CurrencyCode>
                     <InvoiceValueINR>' . $data['invoice_value']  . '</InvoiceValueINR>
                     <CurrencyCodeINR>INR</CurrencyCodeINR>
@@ -296,11 +318,10 @@ class B2cshipBookingServices
                             <Description>' . $this->cleanSpecialCharacters($data['item_name']) . '.</Description>
                             <HSNCode>1</HSNCode>
                             <Unit>' . $data['pieces'] . '</Unit>
-                            <UnitValue>' . $this->calculateCustomValue($data['invoice_value']) . '</UnitValue>
+                            <UnitValue>' . $this->calculateCustomValue($data['USA_price']) . '</UnitValue>
                         </PCSDescriptionDetail>
                     </PCSDescriptionDetails>
                 </ShipmentBookingRequest>';
-
             $this->verifyApiResponse($this->getawb($xml));
         }
     }
@@ -369,11 +390,9 @@ class B2cshipBookingServices
         } else {
 
             $awb_no = $data['AWBNo'];
-
             OrderUpdateDetail::where([
                 ['amazon_order_id', $this->amazon_order_id],
                 ['order_item_id', $this->order_item_id],
-
             ])->update(
                 [
                     'courier_awb' => $awb_no,
@@ -381,6 +400,50 @@ class B2cshipBookingServices
                 ]
             );
         }
-        //Log::debug($data);
+    }
+
+    public function missingASINDetails($asin)
+    {
+        $model_name = table_model_create(country_code: 'us', model: "Asin_source", table_name: "asin_source_");
+        $model_name->upsert(
+            [
+                'asin' => $asin,
+                'user_id' => '1',
+                'status' => '0'
+            ],
+            ['user_asin_unique'],
+            ['asin', 'user_id', 'status']
+        );
+
+        $model_name_des = table_model_create(country_code: 'us', model: "Asin_destination", table_name: "asin_destination_");
+        $model_name_des->upsert(
+            [
+                'asin' => $asin,
+                'user_id' => '1',
+                'status' => '0',
+                'priority' => '1'
+            ],
+            ['user_asin_unique'],
+            ['asin', 'user_id', 'status', 'priority']
+        );
+
+        $product[] = [
+            'seller_id' => '40',
+            'active' => 1,
+            'asin1' => $asin,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $product_lowest_price[] = [
+            'asin' => $asin,
+            'cyclic' => 0,
+            'delist' => 0,
+            'available' => 0,
+            'priority'  => '1',
+            'import_type' => 'Seller'
+        ];
+
+        (new PushAsin())->PushAsinToBBTable($product, $product_lowest_price, 'us', '1');
     }
 }

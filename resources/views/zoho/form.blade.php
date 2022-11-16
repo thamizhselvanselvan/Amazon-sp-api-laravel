@@ -176,15 +176,20 @@
                         <p class="pt-0 pb-0 mt-1 mb-0 font-weight-bold">Product_Link</p>
                         <p class="pt-0 pb-0 mt-0 mb-1 text-break Product_Link"></p>
                     </td>
-                    <td colspan="2" class="pt-0 pb-0 font-weight-bold">
+                    <td class="pt-0 pb-0 font-weight-bold">
                         <p class="pt-0 pb-0 mt-1 mb-0">US_EDD</p>
                         <p class="pt-0 pb-0 mt-0 mb-1 US_EDD"></p>
+                    </td>
+                    <td class="pt-0 pb-0 font-weight-bold">
+                        <p class="pt-0 pb-0 mt-1 mb-0">Amount_Paid_by_Customer</p>
+                        <p class="pt-0 pb-0 mt-0 mb-1 Amount_Paid_by_Customer"></p>
                     </td>
                 </tr>
             </table>
 
             <div class="alert alert-warning note_1 d-none"></div>
             <div class="alert alert-warning note_2 d-none"></div>
+            <div class="alert alert-warning notes d-none"></div>
             
         </div>
         <div class="modal-footer justify-content-center">
@@ -233,9 +238,11 @@
                 $(".Weight_in_LBS").html('');
                 $(".Payment_Reference_Number").html('');
                 $(".Exchange").html('');
+                $(".Amount_Paid_by_Customer").html('');
 
                 $(".note_1").addClass('d-none').removeClass('d-block').html('');
                 $(".note_2").addClass('d-none').removeClass('d-block').html('');
+                $(".notes").addClass('d-none').removeClass('d-block').html('');
                 
             });
 
@@ -264,6 +271,8 @@
                         self.prop('disabled', false);
                         self.html(btn_content);
 
+                        console.log(response);
+
                         if(response.hasOwnProperty('success')) {
                             alert("Zoho Created Successfully for Amazon Order ID "+ amazon_order_id);
                             modal.modal('hide');
@@ -275,9 +284,10 @@
                             $.each(response.notes, function(index, elem) {
                                 html += elem + " \n";
                             });
-
-                            alert(html);
-
+                     
+                            $(".notes").addClass('d-block').removeClass('d-none').html(html);
+                        } else {
+                            $(".notes").addClass('d-none').removeClass('d-block').html('');
                         }
 
                     },
@@ -314,6 +324,8 @@
                         self.prop('disabled', false);
                         self.html(btn_content);
 
+                        console.log(response);
+
                         if(response.hasOwnProperty('data')) {
 
                             $(".Order_Creation_Date").html(response.data.Order_Creation_Date);
@@ -345,12 +357,11 @@
                             $(".Weight_in_LBS").html(response.data.Weight_in_LBS);
                             $(".Payment_Reference_Number").html(response.data.Payment_Reference_Number);
                             $(".Exchange").html(response.data.Exchange);
+                            $(".Amount_Paid_by_Customer").html(response.data.Amount_Paid_by_Customer);
 
                             modal.modal('show');
                         } else {
                             
-                            alert(response.note_2);
-
                             $(".Order_Creation_Date").html('');
                             $(".Alternate_Order_No").html('');
                             $(".Follow_up_Status").html('');
@@ -380,6 +391,9 @@
                             $(".Weight_in_LBS").html('');
                             $(".Payment_Reference_Number").html('');
                             $(".Exchange").html('');
+                            $(".Amount_Paid_by_Customer").html('');
+
+                            $(".notes").addClass('d-none').removeClass('d-block').html('');
                         }
 
                         if(response.hasOwnProperty('note_1')) {
@@ -393,6 +407,12 @@
                         } else {
                             $(".note_2").addClass('d-none').removeClass('d-block').html('');
                         }
+
+                        if(response.hasOwnProperty('notes')) {
+                            $(".notes").addClass('d-block').removeClass('d-none').html(response.notes);
+                        } else {
+                            $(".notes").addClass('d-none').removeClass('d-block').html('');
+                        }                        
 
                     },
                     error: function(response) {

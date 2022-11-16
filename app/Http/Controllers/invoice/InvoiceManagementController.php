@@ -244,13 +244,25 @@ class InvoiceManagementController extends Controller
         $invoice_date = str_replace(' ', '', $invoice_date);
         $currenturl = request()->getSchemeAndHttpHost();
 
-        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-            $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:invoice-bulk-zip-download $passid $currenturl $mode $invoice_date $current_page_no > /dev/null &";
-            exec($command);
-        } else {
-            Artisan::call('pms:invoice-bulk-zip-download' . ' ' . $passid . ' ' . $currenturl . ' ' . $mode . ' ' . $invoice_date . ' ' . $current_page_no);
-        }
+        // if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+        //     $base_path = base_path();
+        //     $command = "cd $base_path && php artisan pms:invoice-bulk-zip-download $passid $currenturl $mode $invoice_date $current_page_no > /dev/null &";
+        //     exec($command);
+        // } else {
+        //     Artisan::call('pms:invoice-bulk-zip-download' . ' ' . $passid . ' ' . $currenturl . ' ' . $mode . ' ' . $invoice_date . ' ' . $current_page_no);
+        // }
+        $user_id = Auth::user()->id;
+        $header = ["data" => "${passid}_${currenturl}_${mode}_${invoice_date}_${current_page_no}"];
+        $file_info = [
+            "user_id"       => $user_id,
+            "type"          => "EXPORT_INVOICE",
+            "module"        => "INVOICE_EXPORT",
+            "command_name"  => "pms:invoice-bulk-zip-download",
+            "header"        => json_encode($header)
+
+        ];
+        FileManagement::create($file_info);
+        fileManagement();
 
         return response()->json(['success' => 'zip created successfully']);
     }

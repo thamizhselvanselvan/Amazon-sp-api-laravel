@@ -2,6 +2,7 @@
 
 namespace App\Services\Zoho;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
@@ -74,6 +75,26 @@ class ZohoApi
         return false;
     }
 
+    public function search($amazon_order, $item_order)
+    {
+
+        $search_criteria = "?criteria=((Alternate_Order_No:equals:$amazon_order)and(Payment_Reference_Number1:equals:$item_order))";
+
+        $response = Http::withoutVerifying()
+            ->withHeaders([
+                'Authorization' => 'Zoho-oauthtoken ' . $this->auth_token
+            ])->get($this->zoho_lead_base_url . '/search' . $search_criteria);
+
+        // return $response->body();
+        if ($response->ok()) {
+            return $response->json();
+        }
+
+
+
+        return false;
+    }
+
     public function updateLead($lead_id, $parameters)
     {
         $parameters["id"] = $lead_id;
@@ -89,6 +110,8 @@ class ZohoApi
             return $response->json();
         }
 
+        dd($response->body());
+
         return false;
     }
 
@@ -100,6 +123,7 @@ class ZohoApi
             ])->post($this->zoho_lead_base_url, [
                 "data" => [$parameters]
             ]);
+        Log::warning($response->body());
 
         if ($response->status() == 201) {
             return $response->json();

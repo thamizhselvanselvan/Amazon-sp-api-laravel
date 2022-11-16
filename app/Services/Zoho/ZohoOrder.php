@@ -130,7 +130,10 @@ class ZohoOrder
     public function lead_preview($amazon_order_id = null)
     {
         $prod_array = [];
-        $orderItems = OrderUpdateDetail::where('amazon_order_id', $amazon_order_id)->limit(1)->first();
+        $orderItems = OrderUpdateDetail::query()
+            ->where('amazon_order_id', $amazon_order_id)
+            ->limit(1)
+            ->first();
 
         if (!$orderItems) {
             $prod_array['note_1'] = "No zoho id found in the database for this Amazon Order ID: $amazon_order_id";
@@ -165,7 +168,8 @@ class ZohoOrder
             "$order_table_name.is_business_order",
         ];
 
-        $order_item_details = OrderItemDetails::select($order_details)
+        $order_item_details = OrderItemDetails::query()
+            ->select($order_details)
             ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
             ->where('orderitemdetails.amazon_order_identifier', $amazon_order_id)
             ->with(['store_details.mws_region'])
@@ -183,7 +187,182 @@ class ZohoOrder
         return $prod_array;
     }
 
-    public function index($amazon_order_id = null)
+    public function index($amazon_order_id = null, $force_update = null)
+    {
+        $notes = [];
+
+        $order_items = $this->get_orders_with_amazon_order_id($amazon_order_id);
+
+        if (!$order_items) {
+            Log::info($order_items);
+            $notes['notes'][] = "No data found to update Zoho in the database for this Amazon Order ID: $amazon_order_id";
+            return $notes;
+        }
+
+        if ($order_items && $order_items->zoho_id) {
+            $notes['notes'][] = "Zoho ID for Amazon Order id $amazon_order_id is already created";
+            return $notes;
+        }
+
+        $amazon_order_id = ($amazon_order_id) ? $amazon_order_id : $order_items->amazon_order_id;
+
+        $order_table_name = 'orders';
+        $order_item_table_name = 'orderitemdetails';
+
+        $order_details = [
+            "$order_item_table_name.seller_identifier",
+            "$order_item_table_name.asin",
+            "$order_item_table_name.seller_sku",
+            "$order_item_table_name.title",
+            "$order_item_table_name.order_item_identifier",
+            "$order_item_table_name.quantity_ordered",
+            "$order_item_table_name.item_price",
+            "$order_table_name.fulfillment_channel",
+            "$order_table_name.our_seller_identifier",
+            "$order_table_name.amazon_order_identifier",
+            "$order_table_name.purchase_date",
+            "$order_item_table_name.shipping_address",
+            "$order_table_name.earliest_delivery_date",
+            "$order_table_name.buyer_info",
+            "$order_table_name.order_total",
+            "$order_table_name.latest_delivery_date",
+            "$order_table_name.is_business_order",
+        ];
+
+        $order_item_details = OrderItemDetails::select($order_details)
+            ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
+            ->where('orderitemdetails.amazon_order_identifier', $amazon_order_id)
+            ->with(['store_details.mws_region'])
+            ->limit(1)
+            ->first();
+
+        if ($order_item_details) {
+
+            $order_item_id = $order_item_details->order_item_identifier;
+
+            $zohoApi = new ZohoApi;
+            $zoho_search_order_exists = $zohoApi->search($amazon_order_id, $order_item_id);
+
+            $store_name = $this->get_store_name($order_item_details->store_details);
+            $country_code = $this->get_country_code($order_item_details->store_details);
+
+            $prod_array = $this->zohoOrderFormating($order_item_details, $store_name, $country_code);
+
+
+            if ($zoho_search_order_exists && $force_update) {
+
+                return $this->zoho_update($zohoApi, $zoho_search_order_exists, $prod_array);
+            } else if ($zoho_search_order_exists && !$force_update) {
+                $notes['notes'][] = "With this Amazon Order ID: $amazon_order_id & Order Item ID: $order_item_id already Zoho Lead exists";
+                return $notes;
+            }
+
+            $zoho_api_save = $zohoApi->storeLead($prod_array);
+
+            $zoho_response = ($zoho_api_save) ? $zoho_api_save : null;
+
+            if (isset($zoho_response) && array_key_exists('data', $zoho_response) && array_key_exists(0, $zoho_response['data']) && array_key_exists('code', $zoho_response['data'][0])) {
+
+                $zoho_save_id = $zoho_response['data'][0]['details']['id'];
+
+                $order_zoho = [
+                    "store_id" => $order_item_details->seller_identifier,
+                    "amazon_order_id" => $amazon_order_id,
+                    "order_item_id" => $prod_array['Payment_Reference_Number1'],
+                    "zoho_id" => $zoho_save_id,
+                    "zoho_status" => 1
+                ];
+
+                $order_response = OrderUpdateDetail::upsert(
+                    $order_zoho,
+                    [
+                        "amazon_order_id",
+                        "order_item_id"
+                    ],
+                    [
+                        "zoho_id",
+                        "store_id",
+                        "zoho_status"
+                    ]
+                );
+
+                if ($order_response) {
+                    $notes['success'] = "Success!";
+                    return $notes;
+                } else {
+                    Log::error(json_encode($zoho_response));
+
+                    $notes['notes'][] = "While saving data error found!";
+                    return $notes;
+                }
+            } else {
+                Log::error("Zoho Response : " . json_encode($zoho_response));
+
+                $notes['notes'][] = "Error No Response After Updating Zoho!";
+                return $notes;
+            }
+        }
+
+        $notes['notes'][] = "Catalog Item details did not get";
+
+        return $notes;
+    }
+
+    public function zoho_update($zohoApi, $zoho_search_order_exists, $prod_array)
+    {
+        $notes = [];
+        $zoho_lead_id = $zoho_search_order_exists['data'][0]['id'];
+        $amazon_order_id = $zoho_search_order_exists['data'][0]['Alternate_Order_No'];
+        $order_item_id = $zoho_search_order_exists['data'][0]['Payment_Reference_Number1'];
+
+        $zoho_response = $zohoApi->updateLead($zoho_lead_id, $prod_array);
+
+        if (isset($zoho_response) && array_key_exists('data', $zoho_response) && array_key_exists(0, $zoho_response['data']) && array_key_exists('code', $zoho_response['data'][0]) && $zoho_response['data'][0]['code'] == "SUCCESS") {
+            $notes['notes'][] = "Amazon Order id: $amazon_order_id with Order Item ID: $order_item_id updated in Zoho successful";
+        } else {
+            $notes['notes'][] = "Amazon Order id: $amazon_order_id with Order Item ID: $order_item_id updated in Zoho failed";
+        }
+
+        return $notes;
+    }
+
+
+    public function get_orders_with_amazon_order_id($amazon_order_id)
+    {
+        $orderItems = OrderUpdateDetail::query()
+            //->where('amazon_order_id', $amazon_order_id)
+            ->when($amazon_order_id, function ($query, $role) {
+                return $query->where('amazon_order_id', $role);
+            })
+            ->where("zoho_status", 0)
+            ->where('zoho_id', null)
+            ->where('courier_name', 'B2CShip')
+            ->whereNotNull('courier_awb')
+            ->where('booking_status', 1)
+            ->limit(1)
+            ->first();
+
+        if (!$orderItems) {
+            $orderItems = OrderUpdateDetail::query()
+                //->where('amazon_order_id', $amazon_order_id)
+                ->when($amazon_order_id, function ($query, $role) {
+                    return $query->where('amazon_order_id', $role);
+                })
+                ->where("zoho_status", 0)
+                ->where('zoho_id', null)
+                ->limit(1)
+                ->first();
+        }
+
+        if ($orderItems) {
+            return $orderItems;
+        }
+
+        return false;
+    }
+
+
+    public function index_working($amazon_order_id = null)
     {
         $notes = [];
 
@@ -356,7 +535,7 @@ class ZohoOrder
         $prod_array["Amount_Paid_by_Customer"]   = $item_price->Amount;
 
         $prod_array["Weight_in_LBS"]             = (string)$catalog_details['weight'];
-        $prod_array["Payment_Reference_Number"]  = $value->order_item_identifier;
+        $prod_array["Payment_Reference_Number1"]  = $value->order_item_identifier;
         $prod_array["Exchange"]                  = $DOLLAR_EXCHANGE_RATE;
 
         return $prod_array;

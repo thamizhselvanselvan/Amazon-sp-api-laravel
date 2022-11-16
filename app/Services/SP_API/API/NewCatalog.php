@@ -12,6 +12,7 @@ use App\Models\Catalog\AsinSource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Admin\ErrorReporting;
+use App\Models\Catalog\Catalog_ae;
 use App\Models\Catalog\Catalog_in;
 use App\Models\Catalog\Catalog_us;
 use App\Models\Catalog\CatalogMissingAsin;
@@ -24,14 +25,12 @@ class NewCatalog
 
     public function Catalog($records, $seller_id = NULL)
     {
-        log::alert($records);
-        //     $this->RedBeanConnection();
+
         $queue_data = [];
         $upsert_asin = [];
         $country_code1 = '';
         $asins = [];
         $count = 0;
-        // $miss_asins = [];
         $auth_id = '';
         $token = '';
 
@@ -48,30 +47,24 @@ class NewCatalog
                 'user_id' => $seller_id,
                 'status'   => 1,
             ];
+
             $asins[] = $asin;
 
-            // $mws_region = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->first();
-            // $token = $mws_region['aws_verified']['auth_code'];
-            // $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', strtoupper($country_code))->get()->toArray();
-            // $token = $mws_regions[0]['aws_verified'][$auth_count]['auth_code'];
             $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
             $token = $aws_token[0];
             $country_code = strtolower($country_code);
             $catalog_table = 'catalognew' . $country_code . 's';
 
             $aws_id = NULL;
+
             if ($count == 19) {
-                // Log::alert($token);
-                // Log::alert($asins);
+
                 $queue_data[] = $this->FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id);
                 $count = 0;
                 $asins = [];
-                // $auth_count++;
             }
+
             $count++;
-            // if ($auth_count == 2) {
-            //     $auth_count = 0;
-            // }
         }
 
         if ($asins) {
@@ -80,15 +73,14 @@ class NewCatalog
 
         $NewCatalogs = [];
         $country_code1 = strtolower($country_code1);
-        //$catalog_table = 'catalognew' . $country_code1 . 's';
+
         foreach ($queue_data as $record) {
+
             if ($record) {
+
                 foreach ($record as $key1 => $value) {
-                    // $NewCatalogs[] = R::dispense($catalog_table);
-                    //  $NewCatalogs[$key1] = $value;
 
                     foreach ($value as $key => $data) {
-
 
                         if ($key != '0') {
 
@@ -104,31 +96,31 @@ class NewCatalog
                             $NewCatalogs[$key1][$key] = $data;
                         }
                     }
+
                     $NewCatalogs[$key1]['created_at'] = now();
                     $NewCatalogs[$key1]['updated_at'] = now();
-
-                    // $miss_asins[] = $value['asin'];
                 }
             }
         }
 
-        //catalognewins
-        if (isset($country_code1)) {
-            $new_catalog = table_model_create(country_code: $country_code1, model: "Catalog_$country_code1", table_name: "catalognew");
+        if (isset($country_code1) && !empty($country_code1)) {
+
             foreach ($NewCatalogs as $NewCatalog) {
 
-                $new_catalog->insert($NewCatalog);
+                if (strtolower($country_code1) == "us") {
+                    Catalog_us::insert($NewCatalog);
+                } else  if (strtolower($country_code1) == "in") {
+                    Catalog_in::insert($NewCatalog);
+                } else  if (strtolower($country_code1) == "ae") {
+                    Catalog_ae::insert($NewCatalog);
+                }
             }
         }
-        //R::storeALL($NewCatalogs);
     }
 
     public function FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id)
     {
-        // log::notice($asins);
-        // log::notice($country_code);
-        // log::notice($token);
-        // exit;
+
         $country_code = strtoupper($country_code);
         $config =   $this->config($aws_id, $country_code, $token);
         $apiInstance = new CatalogItemsV20220401Api($config);
@@ -214,27 +206,13 @@ class NewCatalog
                 ];
             }
             CatalogMissingAsin::upsert($miss_asin, ['asin'], ['asin', 'source']);
-            //log::info($queue_data);
+
             return $queue_data;
         } catch (Exception $e) {
 
-            //log::alert($e);
+            Log::alert($e);
         }
     }
-
-    // public function RedBeanConnection()
-    // {
-    //     $host = config('database.connections.catalog.host');
-    //     $dbname = config('database.connections.catalog.database');
-    //     $port = config('database.connections.catalog.port');
-    //     $username = config('database.connections.catalog.username');
-    //     $password = config('database.connections.catalog.password');
-
-    //     if (!R::testConnection('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password)) {
-    //         R::addDatabase('catalog', "mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
-    //         R::selectDatabase('catalog');
-    //     }
-    // }
 
     public function returnDataType($type)
     {
