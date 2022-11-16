@@ -479,7 +479,7 @@
                             <input type='hidden' name='form_type' value='file_upload'>
 
                             <x-adminlte-button label='Export' type='submit' theme='success' icon='fas fa-file-export'
-                                class=" btn-sm float-right mt-2 " />
+                                class=" btn-sm float-right mt-2 " id="catalogwithprice" />
 
                         </form>
                     </div>
@@ -492,6 +492,26 @@
 
 @section('js')
     <script>
+        $(document).ready(function() {
+            $.ajax({
+                method: 'get',
+                url: "{{ route('catalog.export.file.management.monitor') }}",
+                data: {
+                    "module_type": "CATALOG_PRICE_EXPORT",
+                    "_token": "{{ csrf_token() }}",
+                },
+                response: 'json',
+                success: function(response) {
+                    console.log(response);
+                    if (response == '0000-00-00 00:00:00') {
+
+                        $('#catalogwithprice').prop('disabled', true);
+                        $('#catalogwithprice').attr("title", "File is exporting...");
+                    }
+
+                },
+            });
+        });
         $('.text-area').on('click', '#IN', function() {
             India_Headers();
         });

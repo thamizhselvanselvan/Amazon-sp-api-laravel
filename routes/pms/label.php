@@ -39,3 +39,4 @@ Route::put('label/update-order-address/{id}', 'label\labelManagementController@u
 Route::get('label/edit-order-address-search-id/{id}', 'label\labelManagementController@editordersearchbyid');
 Route::put('label/update-order-address-search-id/{id}', 'label\labelManagementController@updateordersearchbyid');
 
+Route::get('label/file/management/monitor', 'label\labelManagementController@LabelFileManagementMonitor')->name('label.file.management.monitor');

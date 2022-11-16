@@ -117,10 +117,15 @@ Route::get('zoho_update', function () {
 
 
 Route::get('import', function () {
-    $country_code1 = 'in';
-    $new_catalog = table_model_create(country_code: $country_code1, model: "Catalog_$country_code1", table_name: "catalognew");
-    po($new_catalog->getTable());
-    exit;
+
+    // $command_info =  implode(',', [
+    //     'fm_id' => 12, 11,
+    //     'user_id' => 13
+    // ]);
+
+    // $test = (explode(',', $command_info));
+    // po(($test));
+    // exit;
     $auth_count = 0;
     $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', 'US')->get()->toArray();
     $id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
