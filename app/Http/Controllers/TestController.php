@@ -116,7 +116,7 @@ class TestController extends Controller
 
   public function getSellerOrder($seller_id, $country_code)
   {
-    echo "Order Lst";
+    echo "Order List";
     //new media new token
     $token = NULL;
     $config = $this->config($seller_id, $country_code, $token);
@@ -172,7 +172,7 @@ class TestController extends Controller
     $marketplace_ids = [$marketplace_ids];
 
     $apiInstance = new OrdersV0Api($config);
-    $startTime = Carbon::now()->subDays(1)->toISOString();
+    $startTime = Carbon::now()->subDays(3)->toISOString();
     $createdAfter = $startTime;
     $max_results_per_page = 100;
 
