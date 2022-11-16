@@ -65,10 +65,12 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
 Route::get('zoho_update', function () {
 
-    //$idToWork = 377125000000428001;
-    //$idToWork = 377125000000428035;
+    $idToWork = 377125000000428001;
 
     $zoho = new ZohoApi;
+
+    dd($zoho->getLead($idToWork));
+
     // dd($zoho->getLead($idToWork));
     // dd($zoho->search('403-4468830-9728365', '28528755520011'));
     //dd($zoho->search('406-7669097-5932326', '42065874482483'));
@@ -76,6 +78,7 @@ Route::get('zoho_update', function () {
     // dd($zoho->updateLead('377125000000430025', [
     //     "Amount_Paid_by_Customer" => "10"
     // ]));
+
 
     exit;
     $test = json_decode('{"data":[{"code":"SUCCESS","details":{"Modified_Time":"2022-11-11T18:13:51+05:30","Modified_By":{"name":"Mosh","id":"1929333000000097003"},"Created_Time":"2022-11-11T18:13:51+05:30","id":"1929333000099290066","Created_By":{"name":"Mosh","id":"1929333000000097003"}},"message":"record added","status":"success"}]}', true);
@@ -118,14 +121,14 @@ Route::get('zoho_update', function () {
 
 Route::get('import', function () {
 
-    // $command_info =  implode(',', [
-    //     'fm_id' => 12, 11,
-    //     'user_id' => 13
-    // ]);
+    $command_info =  implode(',', [
+        'fm_id' => 12, 11,
+        'user_id' => 13
+    ]);
 
-    // $test = (explode(',', $command_info));
-    // po(($test));
-    // exit;
+    $test = (explode(',', $command_info));
+    po(($test));
+    exit;
     $auth_count = 0;
     $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', 'US')->get()->toArray();
     $id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
