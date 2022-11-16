@@ -69,13 +69,20 @@ use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 
 Route::get('zoho_update', function () {
 
-    //$idToWork = 377125000000428001;
-    //$idToWork = 377125000000428035;
+    $idToWork = 377125000000428001;
 
     $zoho = new ZohoApi;
+
+    dd($zoho->getLead($idToWork));
+
     // dd($zoho->getLead($idToWork));
     // dd($zoho->search('403-4468830-9728365', '28528755520011'));
-    dd($zoho->search('405-3078074-2714731', '14324755670403'));
+    //dd($zoho->search('406-7669097-5932326', '42065874482483'));
+
+    // dd($zoho->updateLead('377125000000430025', [
+    //     "Amount_Paid_by_Customer" => "10"
+    // ]));
+
 
     exit;
     $test = json_decode('{"data":[{"code":"SUCCESS","details":{"Modified_Time":"2022-11-11T18:13:51+05:30","Modified_By":{"name":"Mosh","id":"1929333000000097003"},"Created_Time":"2022-11-11T18:13:51+05:30","id":"1929333000099290066","Created_By":{"name":"Mosh","id":"1929333000000097003"}},"message":"record added","status":"success"}]}', true);
@@ -117,9 +124,14 @@ Route::get('zoho_update', function () {
 
 
 Route::get('import', function () {
-    $country_code1 = 'in';
-    $new_catalog = table_model_create(country_code: $country_code1, model: "Catalog_$country_code1", table_name: "catalognew");
-    po($new_catalog->getTable());
+
+    $to = Carbon::parse('2015-5-5 3:30:34');
+    $from = Carbon::parse('2015-5-6 9:20:34');
+    po($to);
+    $diff_in_days = $to->diff($from);
+    po($diff_in_days);
+    po($diff_in_days->h . ' hours');
+    po($diff_in_days->i . ' minutes');
     exit;
     $auth_count = 0;
     $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', 'US')->get()->toArray();

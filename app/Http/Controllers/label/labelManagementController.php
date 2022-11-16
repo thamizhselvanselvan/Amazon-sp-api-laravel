@@ -13,22 +13,24 @@ use League\Csv\Writer;
 use App\Models\Mws_region;
 use Illuminate\Http\Request;
 use App\Jobs\Orders\GetOrder;
+use App\Models\FileManagement;
 use GuzzleHttp\Promise\Create;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
-use Spatie\Browsershot\Browsershot;
 
+use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
+
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use Illuminate\Support\Facades\Validator;
-
 use App\Models\order\OrderSellerCredentials;
 use App\Services\SP_API\API\Order\missingOrder;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
@@ -225,13 +227,26 @@ class labelManagementController extends Controller
         // Log::alert($current_page_number);
         $currenturl =  URL::current();
 
-        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-            $base_path = base_path();
-            $command = "cd $base_path && php artisan pms:label-bulk-zip-download $passid $currenturl $bag_no $current_page_number > /dev/null &";
-            exec($command);
-        } else {
-            Artisan::call('pms:label-bulk-zip-download' . ' ' . $passid . ' ' . $currenturl . ' ' . $bag_no . ' ' . $current_page_number);
-        }
+        // if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+        //     $base_path = base_path();
+        //     $command = "cd $base_path && php artisan pms:label-bulk-zip-download $passid $currenturl $bag_no $current_page_number > /dev/null &";
+        //     exec($command);
+        // } else {
+        //     Artisan::call('pms:label-bulk-zip-download' . ' ' . $passid . ' ' . $currenturl . ' ' . $bag_no . ' ' . $current_page_number);
+        // }
+
+        $user_id = Auth::user()->id;
+        $header = ["data" => "${passid}_${currenturl}_${bag_no}_${current_page_number}"];
+        $file_info = [
+            "user_id"       => $user_id,
+            "type"          => "EXPORT_LABEL",
+            "module"        => "LABEL_EXPORT",
+            "command_name"  => "pms:label-bulk-zip-download",
+            "header"        => json_encode($header)
+
+        ];
+        FileManagement::create($file_info);
+        fileManagement();
 
         return response()->json(['success' => 'Zip created successfully']);
     }
@@ -899,5 +914,13 @@ class labelManagementController extends Controller
                 'message' => 'student updated successfully'
             ]);
         }
+    }
+
+    public function LabelFileManagementMonitor(Request $request)
+    {
+        $type = $request->module_type;
+        $file_check = fileManagementMonitoring($type);
+        // po($file_check);
+        return response()->json($file_check);
     }
 }

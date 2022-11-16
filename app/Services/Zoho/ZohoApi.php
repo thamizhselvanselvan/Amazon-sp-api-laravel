@@ -2,6 +2,7 @@
 
 namespace App\Services\Zoho;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
@@ -16,13 +17,13 @@ class ZohoApi
     {
         $this->auth_token = $this->getAccessToken();
 
-        //   if (app()->environment() !== 'production') {
-        $this->zoho_lead_base_url = "https://www.zohoapis.com/crm/v2/Leads";
-        $this->zoho_token_base_url = "https://accounts.zoho.com/oauth/v2/token";
-        // } else {
-        //     $this->zoho_lead_base_url = "https://www.zohoapis.in/crm/v2/Leads";
-        //     $this->zoho_token_base_url = "https://accounts.zoho.in/oauth/v2/token";
-        // }
+        if (app()->environment() === 'production') {
+            $this->zoho_lead_base_url = "https://www.zohoapis.com/crm/v2/Leads";
+            $this->zoho_token_base_url = "https://accounts.zoho.com/oauth/v2/token";
+        } else {
+            $this->zoho_lead_base_url = "https://www.zohoapis.in/crm/v2/Leads";
+            $this->zoho_token_base_url = "https://accounts.zoho.in/oauth/v2/token";
+        }
     }
 
     public function getAccessToken()
@@ -77,9 +78,9 @@ class ZohoApi
     public function search($amazon_order, $item_order)
     {
 
-        $search_criteria = "?criteria=((Alternate_Order_No:equals:$amazon_order)and(Payment_Reference_Number:equals:$item_order))";
+        $search_criteria = "?criteria=((Alternate_Order_No:equals:$amazon_order)and(Payment_Reference_Number1:equals:$item_order))";
 
-        $response = Http::dd()->withoutVerifying()
+        $response = Http::withoutVerifying()
             ->withHeaders([
                 'Authorization' => 'Zoho-oauthtoken ' . $this->auth_token
             ])->get($this->zoho_lead_base_url . '/search' . $search_criteria);
@@ -88,9 +89,8 @@ class ZohoApi
             return $response->json();
         }
 
+        //Log::channel('slack')->info($response->body());
         return $response->body();
-
-        return false;
     }
 
     public function updateLead($lead_id, $parameters)
@@ -108,6 +108,8 @@ class ZohoApi
             return $response->json();
         }
 
+        dd($response->body());
+
         return false;
     }
 
@@ -119,6 +121,7 @@ class ZohoApi
             ])->post($this->zoho_lead_base_url, [
                 "data" => [$parameters]
             ]);
+        Log::warning($response->body());
 
         if ($response->status() == 201) {
             return $response->json();

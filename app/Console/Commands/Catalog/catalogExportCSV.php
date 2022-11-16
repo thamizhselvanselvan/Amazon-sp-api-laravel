@@ -24,7 +24,8 @@ class catalogExportCSV extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:catalog-export-csv {priority} {destination} {fm_id}';
+    // protected $signature = 'mosh:catalog-export-csv {priority} {destination} {fm_id}';
+    protected $signature = 'mosh:catalog-export-csv {--columns=}';
 
     /**
      * The console command description.
@@ -50,12 +51,24 @@ class catalogExportCSV extends Command
      */
     public function handle()
     {
+        $column_data = $this->option('columns');
+        $final_data = [];
+        $explode_array = explode(',', $column_data);
+        foreach ($explode_array as $value) {
+            list($key, $value) = explode('=', $value);
+            $final_data[$key] = $value;
+        }
+
+        $fm_id = $final_data['fm_id'];
+        $this->country_code = $final_data['destination'];
+        $this->priority = $final_data['priority'];
+
         $total_csv = 1000000;
         $chunk = 20000;
         $this->remender = $total_csv / $chunk;
-        $this->country_code = $this->argument('destination');
-        $this->priority = $this->argument('priority');
-        $fm_id = $this->argument('fm_id');
+        // $this->country_code = $this->argument('destination');
+        // $this->priority = $this->argument('priority');
+        // $fm_id = $this->argument('fm_id');
         $asin_cat = 'catalognew' . strtolower($this->country_code) . 's';
 
         $header = [

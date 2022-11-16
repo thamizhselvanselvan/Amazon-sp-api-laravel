@@ -124,15 +124,35 @@ if (!function_exists('aws_credentials')) {
 }
 
 if (!function_exists('slack_notification')) {
-    function slack_notification($title, $message)
+    function slack_notification($channel, $title, $message)
     {
-        $webhook = config('pms.PMS_SLACK_NOTIFICATION_WEBHOOK');
+        switch ($channel) {
+            case 'monitor':
+                $webhook = 'slack_monitor';
+                break;
 
-        if (empty($webhook)) {
-            throw new Exception("Please update your ENV with PMS_SLACK slack webhook url", 1);
-        } else {
-            //Notification::route('slack', $webhook)->notify(new SlackMessages($title, $message));
+            case 'buybox':
+                $webhook = 'slack_bb';
+                break;
+
+            case 'app360':
+                $webhook = 'slack_360';
+                break;
+
+            case 'aimeos':
+                $webhook = 'slack_aimeos';
+                break;
+
+            default:
+                $webhook = 'slack';
+                break;
         }
+
+        $slackMessage = $title;
+        $slackMessage .= PHP_EOL;
+        $slackMessage .= $message;
+
+        Log::channel($webhook)->error($slackMessage);
     }
 }
 
@@ -711,25 +731,25 @@ if (!function_exists('mungXML')) {
             $rgx
                 = '#' // REGEX DELIMITER
                 . '(' // GROUP PATTERN 1
-                . '\<' // LOCATE A LEFT WICKET 
-                . '/?' // MAYBE FOLLOWED BY A SLASH 
-                . preg_quote($key) // THE NAMESPACE 
-                . ')' // END GROUP PATTERN 
-                . '(' // GROUP PATTERN 2 
-                . ':{1}' // A COLON (EXACTLY ONE) 
-                . ')' // END GROUP PATTERN 
-                . '#' //REGEXDELIMITER 
+                . '\<' // LOCATE A LEFT WICKET
+                . '/?' // MAYBE FOLLOWED BY A SLASH
+                . preg_quote($key) // THE NAMESPACE
+                . ')' // END GROUP PATTERN
+                . '(' // GROUP PATTERN 2
+                . ':{1}' // A COLON (EXACTLY ONE)
+                . ')' // END GROUP PATTERN
+                . '#' //REGEXDELIMITER
             ;
-            // INSERT THE UNDERSCORE INTO THE TAG NAME 
+            // INSERT THE UNDERSCORE INTO THE TAG NAME
             $rep
-                = '$1' // BACKREFERENCE TO GROUP 1 
-                . '_' // LITERAL UNDERSCORE IN PLACE OF GROUP 2 
+                = '$1' // BACKREFERENCE TO GROUP 1
+                . '_' // LITERAL UNDERSCORE IN PLACE OF GROUP 2
             ;
-            // PERFORM THE REPLACEMENT 
+            // PERFORM THE REPLACEMENT
             $xml = preg_replace($rgx, $rep, $xml);
         }
         return $xml;
-    } //End :: mungXML() 
+    } //End :: mungXML()
 }
 
 if (!function_exists('BombinoTrackingResponse')) {
@@ -961,7 +981,7 @@ if (!function_exists('makecomma')) {
 if (!function_exists('fileManagement')) {
     function fileManagement()
     {
-        $file_info = FileManagement::select('id', 'user_id', 'type', 'module', 'file_path', 'command_name')->where('status', '0')->get()->toArray();
+        $file_info = FileManagement::select('id', 'user_id', 'type', 'module', 'file_path', 'command_name', 'header')->where('status', '0')->get()->toArray();
         $ignore = ['ASIN_DESTINATION_', 'ASIN_SOURCE_', 'CATALOG_PRICE_EXPORT_', 'CATALOG_EXPORT_', 'ORDER_'];
         $file_management_update = '';
         foreach ($file_info as $file_data) {
@@ -972,34 +992,19 @@ if (!function_exists('fileManagement')) {
             $module = explode('_', str_replace($ignore, '', $file_data['module']));
             $path = $file_data['file_path'];
             $command_name = $file_data['command_name'];
+            $header = isset($file_data['header']) ? json_decode($file_data['header'])->data : '';
             $destination = isset($module[0]) ? $module[0] : '';
             $priority = isset($module[1]) ? $module[1] : '';
 
             $file_management_update = FileManagement::find($fm_id);
             $file_management_update->command_start_time = now();
             $file_management_update->status = '1';
+            $store_id = $type == 'IMPORT_ORDER' ?  $destination : '';
 
-            // $store_id = $type == 'IMPORT_ORDER' ? ['store_id' => $destination] : [];
-            // $command_info = implode(',', [
-            //     'fm_id' => $fm_id,
-            //     ...$store_id
-            // ]);
-            // commandExecFunc("${command_name} ${command_info}");
-            // log::alert($command_info);
-            // exit;
-            if ($type == 'IMPORT_INVOICE') {
+            $destination = str_replace(',', '_', $destination);
+            log::info($header);
+            commandExecFunc("${command_name} --columns=fm_id=${fm_id},store_id=${store_id},user_id=${user_id},destination=${destination},priority=${priority},path=${path},header=${header}");
 
-                commandExecFunc("${command_name} ${fm_id}");
-            } else if ($type == 'IMPORT_ORDER') {
-
-                commandExecFunc("${command_name} ${destination} ${fm_id}");
-            } else if ($type == 'CATALOG_EXPORT' || $type == 'CATALOG_PRICE_EXPORT') {
-
-                commandExecFunc("${command_name} ${priority} ${destination} ${fm_id}");
-            } else {
-
-                commandExecFunc("${command_name} ${user_id} ${priority} --country_code=${destination} ${path} ${fm_id}");
-            }
             $file_management_update->update();
         }
     }
@@ -1008,7 +1013,7 @@ if (!function_exists('fileManagement')) {
 if (!function_exists('fileManagementUpdate')) {
     function fileManagementUpdate($id, $command_end_time = null)
     {
-        log::alert($id);
+        // log::alert($id);
         $file_management_update_sep = FileManagement::find($id);
         // log::alert($command_end_time);
         $file_management_update_sep->command_end_time = $command_end_time;

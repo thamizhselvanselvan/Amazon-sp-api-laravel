@@ -15,7 +15,7 @@ class ZohoController extends Controller
     public function save(Request $request)
     {
         if (!isset($request->amazon_order_id)) {
-            return response()->json(["note_3" => "Enter Order ID"]);
+            return response()->json(["note_2" => "Enter Order ID"]);
         }
 
         $zoho_order = new ZohoOrder;

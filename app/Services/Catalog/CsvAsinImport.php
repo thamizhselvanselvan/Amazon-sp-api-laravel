@@ -10,7 +10,7 @@ class CsvAsinImport
 {
     public function AsinImport($records)
     {
-        log::alert($records);
+        // log::alert($records);
         $count = 0;
         $country_code = $records['source'];
         $country_code_lr = strtolower($country_code);
@@ -22,8 +22,6 @@ class CsvAsinImport
 
             $command_end_time = $records['Last_queue']->toDateTimeString();
             fileManagementUpdate($fm_id, $command_end_time);
-            log::notice($command_end_time);
-            log::notice($fm_id);
         }
 
 

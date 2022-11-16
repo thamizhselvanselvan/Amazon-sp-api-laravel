@@ -28,7 +28,8 @@ class CatalogPriceExportCSV extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:catalog-price-export-csv {priority} {destination} {fm_id}';
+    // protected $signature = 'mosh:catalog-price-export-csv {priority} {destination} {fm_id}';
+    protected $signature = 'mosh:catalog-price-export-csv {--columns=} ';
 
     /**
      * The console command description.
@@ -54,11 +55,22 @@ class CatalogPriceExportCSV extends Command
      */
     public function handle()
     {
+        $columns_data = $this->option('columns');
+        $final_data = [];
+        $explode_array = explode(',', $columns_data);
+        foreach ($explode_array as $value) {
+            list($key, $value) = explode('=', $value);
+            $final_data[$key] = $value;
+        }
+
+        $fm_id = $final_data['fm_id'];
+        $this->country_code = $final_data['destination'];
+        $this->priority = $final_data['priority'];
 
         // $date = $this->date = $this->argument('date');
-        $fm_id = $this->argument('fm_id');
-        $this->country_code = $this->argument('destination');
-        $this->priority = $this->argument('priority');
+        // $fm_id = $this->argument('fm_id');
+        // $this->country_code = $this->argument('destination');
+        // $this->priority = $this->argument('priority');
         // $this->date = $this->argument('date');
         // $selected_headers = explode(',', $this->argument('headers'));
         $start_date = '';
