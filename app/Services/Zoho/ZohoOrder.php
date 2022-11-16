@@ -288,6 +288,8 @@ class ZohoOrder
 
                 if ($order_response) {
                     $notes['success'] = "Success!";
+                    $notes['amazon_order_id'] = $amazon_order_id;
+                    $notes['order_item_id'] = $prod_array['Payment_Reference_Number1'];
                     return $notes;
                 } else {
                     Log::error(json_encode($zoho_response));
@@ -353,6 +355,9 @@ class ZohoOrder
                 ->limit(1)
                 ->first();
         }
+
+        // Log::info($orderItems);
+        // exit;
 
         if ($orderItems) {
             return $orderItems;
@@ -636,7 +641,8 @@ class ZohoOrder
         }
 
         if ($return == "state") {
-            return $buyerDtls->StateOrRegion;
+            Log::info(json_encode($buyerDtls));
+            return $buyerDtls->StateOrRegion ?? $buyerDtls->County;
         }
 
         return $buyerDtls->PostalCode ?? '00000';
