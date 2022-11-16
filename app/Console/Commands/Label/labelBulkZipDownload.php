@@ -56,12 +56,12 @@ class labelBulkZipDownload extends Command
         $file_management_id = $final_data['fm_id'];
         $headers = $final_data['header'];
         $headers_data = explode('_', $headers);
-        $passid = isset($headers_data[0]) ? $headers_data[0] : '';
-        $currenturl = isset($headers_data[1]) ? $headers_data[1] : '';
-        $bag_no = isset($headers_data[2]) ? $headers_data[2] : '';
-        $current_page_number = isset($headers_data[3]) ? $headers_data[3] : '';
+        $passid =  $headers_data[0];
+        $currenturl =  $headers_data[1];
+        $bag_no =  $headers_data[2];
+        $current_page_number =  $headers_data[3];
 
-
+        log::alert($currenturl);
         // $passid = $this->argument('passid');
         // $bag_no = $this->argument('bag_no');
         // $current_page_number = $this->argument('current_page_number');
@@ -76,7 +76,7 @@ class labelBulkZipDownload extends Command
 
                 $awb_no = $value->awb_no;
                 $url = str_replace('select-download', 'pdf-template', $currenturl . '/' . $bag_no . '-' . $getId);
-
+                log::alert($url);
                 $path = 'label/' . $bag_no . '/label' . $awb_no . '.pdf';
 
                 if (!Storage::exists($path)) {
