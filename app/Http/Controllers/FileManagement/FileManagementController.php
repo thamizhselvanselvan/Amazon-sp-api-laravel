@@ -19,6 +19,7 @@ class FileManagementController extends Controller
             ->orderBy('id', 'DESC')
             ->get()
             ->toArray();
+
         if ($request->ajax()) {
 
             return DataTables::of($file_managements)
@@ -49,11 +50,20 @@ class FileManagementController extends Controller
                     $end_time = $file_management['command_end_time'] != '0000-00-00 00:00:00' ? Carbon::parse($file_management['command_end_time'])->toDayDateTimeString() : '0000-00-00 00:00:00';
                     return $end_time;
                 })
+                ->addColumn('processed_time', function ($file_management) {
+                    $start_time =  Carbon::parse($file_management['command_start_time']);
+                    $end_time = Carbon::parse($file_management['command_end_time']);
+                    $date_difference = $start_time->diff($end_time);
+                    $hour = $date_difference->h . ' hours';
+                    $sec = $date_difference->i . ' minutes';
+                    $processed_time = $hour . ' ' . $sec;
+                    return $processed_time;
+                })
                 ->addColumn('status', function ($file_management) {
                     $process = $file_management['command_end_time'] == '0000-00-00 00:00:00' ? 'Processing...' : 'Processed';
                     return $process;
                 })
-                ->rawColumns(['id', 'user_name', 'type', 'module', 'start_time', 'end_time', 'status'])
+                ->rawColumns(['id', 'user_name', 'type', 'module', 'start_time', 'end_time', 'processed_time', 'status'])
                 ->make(true);;
         }
         return view('FileManagement.index');
