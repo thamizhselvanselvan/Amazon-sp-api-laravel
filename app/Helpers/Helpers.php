@@ -124,15 +124,35 @@ if (!function_exists('aws_credentials')) {
 }
 
 if (!function_exists('slack_notification')) {
-    function slack_notification($title, $message)
+    function slack_notification($channel, $title, $message)
     {
-        $webhook = config('pms.PMS_SLACK_NOTIFICATION_WEBHOOK');
+        switch ($channel) {
+            case 'monitor':
+                $webhook = 'slack_monitor';
+                break;
 
-        if (empty($webhook)) {
-            throw new Exception("Please update your ENV with PMS_SLACK slack webhook url", 1);
-        } else {
-            //Notification::route('slack', $webhook)->notify(new SlackMessages($title, $message));
+            case 'buybox':
+                $webhook = 'slack_bb';
+                break;
+
+            case 'app360':
+                $webhook = 'slack_360';
+                break;
+
+            case 'aimeos':
+                $webhook = 'slack_aimeos';
+                break;
+
+            default:
+                $webhook = 'slack';
+                break;
         }
+
+        $slackMessage = $title;
+        $slackMessage .= PHP_EOL;
+        $slackMessage .= $message;
+
+        Log::channel($webhook)->error($slackMessage);
     }
 }
 
@@ -711,25 +731,25 @@ if (!function_exists('mungXML')) {
             $rgx
                 = '#' // REGEX DELIMITER
                 . '(' // GROUP PATTERN 1
-                . '\<' // LOCATE A LEFT WICKET 
-                . '/?' // MAYBE FOLLOWED BY A SLASH 
-                . preg_quote($key) // THE NAMESPACE 
-                . ')' // END GROUP PATTERN 
-                . '(' // GROUP PATTERN 2 
-                . ':{1}' // A COLON (EXACTLY ONE) 
-                . ')' // END GROUP PATTERN 
-                . '#' //REGEXDELIMITER 
+                . '\<' // LOCATE A LEFT WICKET
+                . '/?' // MAYBE FOLLOWED BY A SLASH
+                . preg_quote($key) // THE NAMESPACE
+                . ')' // END GROUP PATTERN
+                . '(' // GROUP PATTERN 2
+                . ':{1}' // A COLON (EXACTLY ONE)
+                . ')' // END GROUP PATTERN
+                . '#' //REGEXDELIMITER
             ;
-            // INSERT THE UNDERSCORE INTO THE TAG NAME 
+            // INSERT THE UNDERSCORE INTO THE TAG NAME
             $rep
-                = '$1' // BACKREFERENCE TO GROUP 1 
-                . '_' // LITERAL UNDERSCORE IN PLACE OF GROUP 2 
+                = '$1' // BACKREFERENCE TO GROUP 1
+                . '_' // LITERAL UNDERSCORE IN PLACE OF GROUP 2
             ;
-            // PERFORM THE REPLACEMENT 
+            // PERFORM THE REPLACEMENT
             $xml = preg_replace($rgx, $rep, $xml);
         }
         return $xml;
-    } //End :: mungXML() 
+    } //End :: mungXML()
 }
 
 if (!function_exists('BombinoTrackingResponse')) {
