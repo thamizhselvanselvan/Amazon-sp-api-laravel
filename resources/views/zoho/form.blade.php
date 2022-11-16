@@ -189,6 +189,7 @@
 
             <div class="alert alert-warning note_1 d-none"></div>
             <div class="alert alert-warning note_2 d-none"></div>
+            <div class="alert alert-warning notes d-none"></div>
             
         </div>
         <div class="modal-footer justify-content-center">
@@ -269,6 +270,8 @@
                         self.prop('disabled', false);
                         self.html(btn_content);
 
+                        console.log(response);
+
                         if(response.hasOwnProperty('success')) {
                             alert("Zoho Created Successfully for Amazon Order ID "+ amazon_order_id);
                             modal.modal('hide');
@@ -280,9 +283,10 @@
                             $.each(response.notes, function(index, elem) {
                                 html += elem + " \n";
                             });
-
-                            alert(html);
-
+                           // alert(html);
+                            $(".notes").addClass('d-block').removeClass('d-none').html(html);
+                        } else {
+                            $(".notes").addClass('d-none').removeClass('d-block').html('');
                         }
 
                     },
@@ -318,6 +322,8 @@
                     success: function(response) {
                         self.prop('disabled', false);
                         self.html(btn_content);
+
+                        console.log(response);
 
                         if(response.hasOwnProperty('data')) {
 
@@ -400,6 +406,8 @@
                         } else {
                             $(".note_2").addClass('d-none').removeClass('d-block').html('');
                         }
+
+                        
 
                     },
                     error: function(response) {

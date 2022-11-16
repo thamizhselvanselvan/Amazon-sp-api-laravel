@@ -12,7 +12,7 @@ class Zoho extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:zoho:save {amazon_order_id}';
+    protected $signature = 'mosh:zoho:save {amazon_order_id} {--force}';
 
     /**
      * The console command description.
@@ -40,8 +40,13 @@ class Zoho extends Command
     {
 
         $amazon_order_id = $this->argument('amazon_order_id');
+        $force_update = $this->option('force');
 
         $zoho_order = new ZohoOrder;
-        return $zoho_order->index($amazon_order_id);
+        $data = $zoho_order->index($amazon_order_id, $force_update);
+
+        po($data);
+
+        return true;
     }
 }
