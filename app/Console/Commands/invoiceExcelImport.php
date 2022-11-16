@@ -16,7 +16,7 @@ class invoiceExcelImport extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:invoice-excel-import {fm_id}';
+    protected $signature = 'pms:invoice-excel-import {--columns=}';
 
     /**
      * The console command description.
@@ -42,7 +42,19 @@ class invoiceExcelImport extends Command
      */
     public function handle()
     {
-        $file_managemnet_id = $this->argument('fm_id');
+        $column_data = $this->option('columns');
+
+        $final_data = [];
+        $explode_array = explode(',', $column_data);
+
+        foreach ($explode_array as $key => $value) {
+            list($key, $value) = explode('=', $value);
+            $final_data[$key] = $value;
+        }
+
+        $file_management_id = $final_data['fm_id'];
+        log::alert($file_management_id);
+
         $path = 'invoiceExcel/invoice.xlsx';
 
         $file = Storage::path($path);
@@ -116,6 +128,6 @@ class invoiceExcelImport extends Command
         }
 
         $command_end_time = now();
-        fileManagementUpdate($file_managemnet_id, $command_end_time);
+        fileManagementUpdate($file_management_id, $command_end_time);
     }
 }

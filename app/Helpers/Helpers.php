@@ -961,7 +961,7 @@ if (!function_exists('makecomma')) {
 if (!function_exists('fileManagement')) {
     function fileManagement()
     {
-        $file_info = FileManagement::select('id', 'user_id', 'type', 'module', 'file_path', 'command_name')->where('status', '0')->get()->toArray();
+        $file_info = FileManagement::select('id', 'user_id', 'type', 'module', 'file_path', 'command_name', 'header')->where('status', '0')->get()->toArray();
         $ignore = ['ASIN_DESTINATION_', 'ASIN_SOURCE_', 'CATALOG_PRICE_EXPORT_', 'CATALOG_EXPORT_', 'ORDER_'];
         $file_management_update = '';
         foreach ($file_info as $file_data) {
@@ -972,34 +972,32 @@ if (!function_exists('fileManagement')) {
             $module = explode('_', str_replace($ignore, '', $file_data['module']));
             $path = $file_data['file_path'];
             $command_name = $file_data['command_name'];
+            $header = isset($file_data['header']) ? json_decode($file_data['header'])->data : '';
             $destination = isset($module[0]) ? $module[0] : '';
             $priority = isset($module[1]) ? $module[1] : '';
 
             $file_management_update = FileManagement::find($fm_id);
             $file_management_update->command_start_time = now();
             $file_management_update->status = '1';
+            $store_id = $type == 'IMPORT_ORDER' ?  $destination : '';
 
-            // $store_id = $type == 'IMPORT_ORDER' ? ['store_id' => $destination] : [];
-            // $command_info = implode(',', [
-            //     'fm_id' => $fm_id,
-            //     ...$store_id
-            // ]);
-            // commandExecFunc("${command_name} ${command_info}");
-            // log::alert($command_info);
+            $destination = str_replace(',', '_', $destination);
+            log::info($header);
+            commandExecFunc("${command_name} --columns=fm_id=${fm_id},store_id=${store_id},user_id=${user_id},destination=${destination},priority=${priority},path=${path},header=${header}");
             // exit;
-            if ($type == 'IMPORT_INVOICE') {
+            // if ($type == 'IMPORT_INVOICE') {
 
-                commandExecFunc("${command_name} ${fm_id}");
-            } else if ($type == 'IMPORT_ORDER') {
+            //     commandExecFunc("${command_name} ${fm_id}");
+            // } else if ($type == 'IMPORT_ORDER') {
 
-                commandExecFunc("${command_name} ${destination} ${fm_id}");
-            } else if ($type == 'CATALOG_EXPORT' || $type == 'CATALOG_PRICE_EXPORT') {
+            //     commandExecFunc("${command_name} ${destination} ${fm_id}");
+            // } else if ($type == 'CATALOG_EXPORT' || $type == 'CATALOG_PRICE_EXPORT') {
 
-                commandExecFunc("${command_name} ${priority} ${destination} ${fm_id}");
-            } else {
+            //     commandExecFunc("${command_name} ${priority} ${destination} ${fm_id}");
+            // } else {
 
-                commandExecFunc("${command_name} ${user_id} ${priority} --country_code=${destination} ${path} ${fm_id}");
-            }
+            //     commandExecFunc("${command_name} ${user_id} ${priority} --country_code=${destination} ${path} ${fm_id}");
+            // }
             $file_management_update->update();
         }
     }

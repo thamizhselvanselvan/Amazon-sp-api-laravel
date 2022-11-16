@@ -19,7 +19,7 @@ class OrdersCsvImport extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:order-csv-import {store_id} {fm_id}';
+    protected $signature = 'mosh:order-csv-import {--columns=}';
 
     /**
      * The console command description.
@@ -45,9 +45,23 @@ class OrdersCsvImport extends Command
      */
     public function handle()
     {
-        $store_id = $this->argument('store_id');
+        $column_data = $this->option('columns');
+        $final_data = [];
+        $explode_array = explode(',', $column_data);
+
+        foreach ($explode_array as $key => $value) {
+            list($key, $value) = explode('=', $value);
+            $final_data[$key] = $value;
+        }
+
+        $file_management_id = $final_data['fm_id'];
+        $store_id = $final_data['store_id'];
+        log::alert($file_management_id);
+        log::alert($store_id);
+        // exit;
+
+        // $store_id = $this->argument('store_id');
         // $store_id = 44;
-        $file_management_id = $this->argument('fm_id');
         $country = OrderSellerCredentials::where('seller_id', $store_id)->get();
         $country_code = $country[0]->country_code;
 

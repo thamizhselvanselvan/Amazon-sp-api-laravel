@@ -17,7 +17,8 @@ class labelBulkZipDownload extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:label-bulk-zip-download {passid} {currenturl} {bag_no} {current_page_number}';
+    // protected $signature = 'pms:label-bulk-zip-download {passid} {currenturl} {bag_no} {current_page_number}';
+    protected $signature = 'pms:label-bulk-zip-download {--columns=} ';
 
     /**
      * The console command description.
@@ -43,12 +44,35 @@ class labelBulkZipDownload extends Command
      */
     public function handle()
     {
-        $passid = $this->argument('passid');
-        $bag_no = $this->argument('bag_no');
-        $current_page_number = $this->argument('current_page_number');
-        $currenturl = $this->argument('currenturl');
+        $column_data = $this->option('columns');
+        $final_data = [];
+        $explode_array = explode(',', $column_data);
+
+        foreach ($explode_array as $key => $value) {
+            list($key, $value) = explode('=', $value);
+            $final_data[$key] = $value;
+        }
+
+        $file_management_id = $final_data['fm_id'];
+        $headers = $final_data['header'];
+        $headers_data = explode('_', $headers);
+        log::notice($headers_data);
+        $passid = isset($headers_data[0]) ? $headers_data[0] : '';
+        $currenturl = isset($headers_data[1]) ? $headers_data[1] : '';
+        $bag_no = isset($headers_data[2]) ? $headers_data[2] : '';
+        $current_page_number = isset($headers_data[3]) ? $headers_data[3] : '';
+        log::notice($currenturl);
+        log::notice($bag_no);
+        log::notice($current_page_number);
+
+        // $passid = $this->argument('passid');
+        // $bag_no = $this->argument('bag_no');
+        // $current_page_number = $this->argument('current_page_number');
+        // $currenturl = $this->argument('currenturl');
 
         $excelid = explode('-', $passid);
+        log::notice($excelid);
+        // exit;
         foreach ($excelid as $getId) {
 
             $id = Label::where('id', $getId)->get();
@@ -65,7 +89,7 @@ class labelBulkZipDownload extends Command
 
                 $exportToPdf = storage::path($path);
                 Browsershot::url($url)
-                    // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+                    // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
                     ->paperSize(576, 384, 'px')
                     ->pages('1')
                     ->scale(1)
@@ -99,5 +123,8 @@ class labelBulkZipDownload extends Command
 
             $zip->close();
         }
+
+        $command_end_time = now();
+        fileManagementUpdate($file_management_id, $command_end_time);
     }
 }

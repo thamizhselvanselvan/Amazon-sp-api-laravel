@@ -17,7 +17,8 @@ class invoiceBulkZipDownload extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:invoice-bulk-zip-download {passid} {currenturl} {mode} {invoice_date} {current_page_no} ';
+    // protected $signature = 'pms:invoice-bulk-zip-download {passid} {currenturl} {mode} {invoice_date} {current_page_no} ';
+    protected $signature = 'pms:invoice-bulk-zip-download {--columns=} ';
 
     /**
      * The console command description.
@@ -43,17 +44,45 @@ class invoiceBulkZipDownload extends Command
      */
     public function handle()
     {
-        $passid = $this->argument('passid');
-        $currenturl = $this->argument('currenturl');
-        $mode = $this->argument('mode');
-        $invoice_date = $this->argument('invoice_date');
-        $current_page_no = $this->argument('current_page_no');
+
+        $column_data = $this->option('columns');
+        $final_data = [];
+        $explode_array = explode(',', $column_data);
+
+        foreach ($explode_array as $key => $value) {
+            list($key, $value) = explode('=', $value);
+            $final_data[$key] = $value;
+        }
+
+        $file_management_id = $final_data['fm_id'];
+        $headers = $final_data['header'];
+        $headers_data = explode('_', $headers);
+        $passid = isset($headers_data[0]) ? $headers_data[0] : '';
+        $currenturl = isset($headers_data[1]) ? $headers_data[1] : '';
+        $mode = isset($headers_data[2]) ? $headers_data[2] : '';
+        $invoice_date = isset($headers_data[3]) ? $headers_data[3] : '';
+        $current_page_no = isset($headers_data[4]) ? $headers_data[4] : '';
+
+
+        log::alert($file_management_id);
+        log::alert($currenturl);
+        log::alert($mode);
+        log::alert($invoice_date);
+        log::alert($current_page_no);
+
+        // $passid = $this->argument('passid');
+        // $currenturl = $this->argument('currenturl');
+        // $mode = $this->argument('mode');
+        // $invoice_date = $this->argument('invoice_date');
+        // $current_page_no = $this->argument('current_page_no');
 
         // $path = 'invoice/zip/' . 'invoice.zip';
         // Storage::delete($path);
         // Log::warning("Invoice zip download excuted handle!");
 
         $excelid = explode('-', $passid);
+        log::alert($excelid);
+        // exit;
 
         foreach ($excelid as $getId) {
 
@@ -71,7 +100,7 @@ class invoiceBulkZipDownload extends Command
 
                 $exportToPdf = storage::path($path);
                 Browsershot::url($url)
-                    // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+                    // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
                     ->showBackground()
                     ->savePdf($exportToPdf);
 
@@ -99,5 +128,8 @@ class invoiceBulkZipDownload extends Command
             }
             $zip->close();
         }
+
+        $command_end_time = now();
+        fileManagementUpdate($file_management_id, $command_end_time);
     }
 }

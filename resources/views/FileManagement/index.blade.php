@@ -18,6 +18,7 @@
     <div class="row">
         <table class="table table-striped table-bordered text-center table-sm">
             <thead class="table-info">
+                <th>Id</th>
                 <th>User Name</th>
                 <th>Type</th>
                 <th>Module</th>
@@ -28,6 +29,7 @@
             <tbody>
                 @foreach ($file_info as $file_value)
                     <tr>
+                        <td>{{ $file_value['id'] }}</td>
                         <td>{{ $file_value['user_name'] }}</td>
                         <td>{{ $file_value['type'] }}</td>
                         <td>{{ $file_value['module'] }}</td>
