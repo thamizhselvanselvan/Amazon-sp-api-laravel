@@ -24,7 +24,6 @@ class product_details
         foreach ($fetched as $data) {
             $asin = $data;
             $data = $ApiCall->getASINpr($asin);
-            Log::notice([$data]);
 
             if (property_exists($data, "errors") && $data->errors[0]->code == "PRODUCT_NOT_FOUND") {
                 $asin = 'Not Found';

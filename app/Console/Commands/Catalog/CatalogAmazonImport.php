@@ -45,7 +45,6 @@ class CatalogAmazonImport extends Command
         $limit_array = ['in' => 2500, 'us' => 2500];
 
         foreach ($sources as $source) {
-            log::notice($source);
             $limit = $limit_array[$source];
 
             $auth_count = 0;
