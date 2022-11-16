@@ -114,14 +114,14 @@ Route::get('zoho_update', function () {
 
 Route::get('import', function () {
 
-    $command_info =  implode(',', [
-        'fm_id' => 12, 11,
-        'user_id' => 13
-    ]);
+    // $command_info =  implode(',', [
+    //     'fm_id' => 12, 11,
+    //     'user_id' => 13
+    // ]);
 
-    $test = (explode(',', $command_info));
-    po(($test));
-    exit;
+    // $test = (explode(',', $command_info));
+    // po(($test));
+    // exit;
     $auth_count = 0;
     $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', 'US')->get()->toArray();
     $id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
