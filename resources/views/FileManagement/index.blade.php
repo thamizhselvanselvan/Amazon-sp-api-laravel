@@ -24,6 +24,7 @@
             <th>Module</th>
             <th>Start Time</th>
             <th>End Time</th>
+            <th>Processed Time</th>
             <th>Status</th>
         </thead>
 
@@ -67,6 +68,12 @@
                 {
                     data: 'end_time',
                     name: 'end_time',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'processed_time',
+                    name: 'processed_time',
                     orderable: false,
                     searchable: false
                 },

@@ -121,13 +121,13 @@ Route::get('zoho_update', function () {
 
 Route::get('import', function () {
 
-    $command_info =  implode(',', [
-        'fm_id' => 12, 11,
-        'user_id' => 13
-    ]);
-
-    $test = (explode(',', $command_info));
-    po(($test));
+    $to = Carbon::parse('2015-5-5 3:30:34');
+    $from = Carbon::parse('2015-5-6 9:20:34');
+    po($to);
+    $diff_in_days = $to->diff($from);
+    po($diff_in_days);
+    po($diff_in_days->h . ' hours');
+    po($diff_in_days->i . ' minutes');
     exit;
     $auth_count = 0;
     $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', 'US')->get()->toArray();
