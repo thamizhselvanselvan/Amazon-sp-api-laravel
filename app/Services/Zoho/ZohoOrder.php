@@ -205,6 +205,7 @@ class ZohoOrder
         }
 
         $amazon_order_id = ($amazon_order_id) ? $amazon_order_id : $order_items->amazon_order_id;
+        $order_item_identifier = isset($order_items->order_item_id) ? $order_items->order_item_id : null;
 
         $order_table_name = 'orders';
         $order_item_table_name = 'orderitemdetails';
@@ -232,6 +233,9 @@ class ZohoOrder
         $order_item_details = OrderItemDetails::select($order_details)
             ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
             ->where('orderitemdetails.amazon_order_identifier', $amazon_order_id)
+            ->when($order_item_identifier, function ($query, $role) {
+                return $query->where('order_item_identifier', $role);
+            })
             ->with(['store_details.mws_region'])
             ->limit(1)
             ->first();
@@ -495,10 +499,10 @@ class ZohoOrder
         $prod_array["Lead_Source"] = $this->lead_source($store_name, $country_code);
         $prod_array['Lead_Status'] = $this->lead_status($store_name, $country_code);
 
-        if (isset($buyerDtls->AddressLine2)) {
+        if (isset($buyerDtls->AddressLine1) && isset($buyerDtls->AddressLine2)) {
             $address = $buyerDtls->AddressLine1 . '<br> ' . $buyerDtls->AddressLine2 ?? "";
         } else {
-            $address = $buyerDtls->AddressLine1;
+            $address = $buyerDtls->AddressLine1 ?? "" . '<br> ' . $buyerDtls->AddressLine2 ?? "";;
         }
 
         $address = str_replace("&", " and ", $address);
