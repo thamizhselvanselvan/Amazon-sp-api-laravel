@@ -346,13 +346,19 @@ class CliqnshopCatalogExport extends Command
                         if (isset($desc['bullet_point'])) {
 
                             $bullet = $desc['bullet_point'];
+                        $long_desc = '';
                             foreach ($bullet as $key => $val) {
                                 $sh_name = "long";
-                                $short_desc = ($val['value']);
+                                $long_desc .= "<p>".$val['value']."</p>";
+                                $sh_name1 = "short";
+                                $short_desc1 = ($val['value']);
                             }
+                    
                         } else {
                             $sh_name = null;
                             $short_desc = null;
+                            $sh_name1 = null;
+                            $short_desc1 = null;
                         }
                     }
                     if (isset($data['color'])) {
@@ -377,10 +383,10 @@ class CliqnshopCatalogExport extends Command
                         'item label' => $data['item_name'],
                         'item type' =>  'default',
                         'item status' => '1',
-                        'text type' => $sh_name,
-                        'text content' => $short_desc,
-                        'text type0' => null,
-                        'text content0' => null,
+                        'text type' => $sh_name1,
+                        'text content' => $short_desc1,
+                        'text type0' => $sh_name,
+                        'text content0' => ($long_desc),
                         ...$img1,
                         'price currency id' => 'INR',
                         'price quantity' => '1',

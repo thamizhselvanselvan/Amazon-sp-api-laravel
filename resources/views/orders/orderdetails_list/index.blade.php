@@ -76,10 +76,10 @@
     <div class="col-12">
         <table class="table table-bordered yajra-datatable table-striped" id="report_table">
             <thead>
-                <tr class="bordercss">
+                <tr class="bordercss  table-info">
                     <th>Amazon Order Identifier</th>
                     <th>Order Item Identifier</th>
-                    <th>Marketplace Identifier:</th>
+                    <th>Marketplace Identifier</th>
                     <th>ASIN</th>
                     <th>Store Name</th>
                     <th>Action</th>
@@ -101,7 +101,7 @@
             alert("Enter OrderID");
             return false;
         }
-       $('#report_table_body').empty();
+        $('#report_table_body').empty();
         $("#report_table").show();
         $.ajax({
             method: 'POST',
