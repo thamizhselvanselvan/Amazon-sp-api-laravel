@@ -269,9 +269,9 @@ class OrderDetailsController extends Controller
                     $yest = Carbon::now()->subdays(1);
                     $date = $row->created_at->toDateTimeString();
                     if ($date > $yest && $date < $now) {
-                        return $date . ' ' . 'IST';
+                         return   $this->CarbonGetDateDiff($row->created_at . '.000');
                     } else {
-                        return   $this->CarbonGetDateDiff($row->created_at . '.000');
+                        return $date . ' ' . 'IST';
                     }
                 })
                 ->rawColumns(['store_name', 'order_status', 'order_date'])
