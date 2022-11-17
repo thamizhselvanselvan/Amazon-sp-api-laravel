@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Orders;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -16,6 +17,7 @@ class OrderDetailsController extends Controller
     {
         return view('orders.orderdetails_list.index');
     }
+
     public function update(Request $request)
     {
         $details = [
@@ -86,6 +88,7 @@ class OrderDetailsController extends Controller
 
         return redirect()->intended('/orders/details/list')->with('success', 'Order  has  updated successfully');
     }
+
     public function bulksearch(Request $request)
     {
         if ($request->ajax()) {
@@ -131,6 +134,7 @@ class OrderDetailsController extends Controller
             return response()->json(['success' => 'Searched Sucessfully', 'data' => $order_details]);
         }
     }
+
     public function bulkedit(Request $request)
     {
         $order_id  = $request->id;
@@ -194,18 +198,19 @@ class OrderDetailsController extends Controller
             $url = "/orders/statistics/" . $request_store_id;
         }
 
-
+        
+        
         if ($request->ajax()) {
 
             $data = OrderUpdateDetail::query()
                 ->with(['aws_credential' => function ($query) {
                     $query->select("id", "store_name", 'seller_id');
                 }])
-                ->when($request->store_id, function ($query, $role) {
+                ->when($request->store_id, function ($query, $role) use ($request) {
                     return $query->where('store_id', $role);
                 })
                 ->orderBy('created_at', 'DESC')
-                ->limit(50);
+                ->limit(100);
 
             return DataTables::of($data)
                 ->addColumn('store_name', function ($aws_credentials) {
@@ -221,40 +226,81 @@ class OrderDetailsController extends Controller
                 })
                 ->editColumn('booking_status', function ($row) {
                     if ($row['booking_status'] == '0') {
-                        return 'Not processed';
+                        // return 'Not processed';
+                        return '<i class="fa fa-minus "  aria-hidden="true"></i>';
                     } else if ($row['booking_status'] == '1') {
-                        return 'Booked';
+                        // return 'Booked';
+                        return '<i class="fa fa-check click" color-"blue" aria-hidden="true"></i>';
                     } else if ($row['booking_status'] == '5') {
-                        return 'Under processing';
+                        // return 'Under processing';
+                        return  '<i class="fa fa-spinner under" aria-hidden="true"></i>';
                     } else {
                         return $row['booking_status'];
                     }
                 })
-
                 ->editColumn('zoho_status', function ($row) {
                     if ($row['zoho_status'] == '0') {
-                        return 'Not processed';
+                        // return 'Not Processed';
+                        return '<i class="fa fa-minus "  aria-hidden="true"></i>';
+                        // return $te;
                     } else if ($row['zoho_status'] == '1') {
-                        return 'Booked';
+                        // return 'Booked';
+                        return '<i class="fa fa-check click" color-"blue" aria-hidden="true"></i>';
                     } else if ($row['zoho_status'] == '5') {
-                        return 'Under processing';
+                        // return 'Under processing';
+                        return  '<i class="fa fa-spinner under" aria-hidden="true"></i>';
                     } else {
                         return $row['zoho_status'];
                     }
                 })
+                ->editColumn('order_feed_status', function ($row) {
+                    $message = $row['order_feed_status'];
+                    if ($row['order_feed_status'] == 'success') {
+                        return  '<a href="#" data-toggle="tooltip" title="AWB successfully updated to Amazon"><i class="fa fa-check click" color-"blue" aria-hidden="true" ></i> </a>';
+                    } else  if ($row['order_feed_status'] == '') {
 
-
-                ->editColumn('order_status', function ($row) {
-                    if ($row['order_status'] == 'unshipped') {
-                        return $row['order_status'];
+                        return '<a href="#" data-toggle="tooltip" title="Not Processed"><i class="fa fa-minus not" aria-hidden="true"></i> </a>';
                     } else {
-                        return '<a href="https://app.360ecom.io/test/amazon-feed/' .  $row['order_status'] . '/' . $row['store_id'] . '">' . $row['order_status'] . '</a>';
+                        return "<a href='#' data-toggle='tooltip' title='$message'><i class='fa fa-times wrong' color-'blue' aria-hidden='true' ></i> </a>";
                     }
                 })
-                ->rawColumns(['store_name', 'order_status'])
+                ->addColumn('order_date', function ($row) {
+                    $now = Carbon::now();
+                    $yest = Carbon::now()->subdays(1);
+                    $date = $row->created_at->toDateTimeString();
+                    if ($date > $yest && $date < $now) {
+                        return $date . ' ' . 'IST';
+                    } else {
+                        return   $this->CarbonGetDateDiff($row->created_at . '.000');
+                    }
+                })
+                ->rawColumns(['store_name', 'order_status', 'order_date'])
+                ->escapeColumns([])
                 ->make(true);
         }
-
         return view('orders.statistics', compact('stores', 'request_store_id', 'url'));
+    }
+
+
+    public function CarbonGetDateDiff($date)
+    {
+        $date_details_array = ['Year', 'Month', 'Day', 'Hour', 'Minute'];
+        $date = substr($date, 0, strpos($date, "."));
+        $created = new Carbon($date);
+        $now = Carbon::now();
+        $differnce = $created->diff($now);
+
+        $final_date = '';
+        $count = 0;
+        foreach ((array)$differnce as $key => $value) {
+            if ($value != 0 && $count < 5 && $count > 2) {
+                $final_date .= $value > 1 ? $value . ' ' . $date_details_array[$count] . 's, ' : $value . ' ' . $date_details_array[$count] . ',  ';
+            }
+            $count++;
+        }
+        $time = rtrim($final_date, ' ,') . ' Before';
+        $date =  $differnce->days > 0 ? $differnce->days . ' Days' : 'Today';
+
+        return $date . ', ' . $time;
     }
 }
