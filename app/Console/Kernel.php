@@ -39,7 +39,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('pms:remove-uploaded-boe')->dailyAt('01:00');
 
             /*Catalog*/
-            $schedule->command('mosh:catalog-amazon-import')->everyFiveMinutes();
+            $schedule->command('mosh:catalog-amazon-import')->everyTenMinutes();
             $schedule->command('mosh:Catalog-price-import-bb-in')->everyThreeMinutes();
             $schedule->command('mosh:Catalog-price-import-bb-us')->everyMinute();
             $schedule->command('mosh:catalog-dashboard-file')->hourly();
@@ -59,7 +59,7 @@ class Kernel extends ConsoleKernel
             /*Order CI CD*/
             $schedule->command('aws:courier-booking')->everyMinute();
             $schedule->command('mosh:feed-app360-tracking-details')->everyMinute();
-            $schedule->command('mosh:feed-status')->everyMinute();
+            $schedule->command('mosh:feed-status')->everyThreeMinutes();
         }
 
         if (app()->environment() === 'staging') {
