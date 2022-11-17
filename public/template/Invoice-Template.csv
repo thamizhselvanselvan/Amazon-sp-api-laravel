@@ -1,0 +1,1 @@
+Amazon_order_id,Invoice_no,Invoice_date,Mode,Channel,Shipped_by,Awb_no,Arn_no,Store_name,Store_add,Bill_to_name,Bill_to_add,Ship_to_name,Ship_to_add,Sku,Item_description,Hsn_code,Qty,Currency,Product_price,Taxable_value,Total_including_taxes,Grand_total,No_of_pcs,Packing,Dimension,Actual_weight,Charged_weight,Bag_no,Client_code,Sr_no

@@ -12,8 +12,8 @@
     <div class="row">
         <div class="col-4">
             <!-- <a href="{{ route('label.manage') }}" class="btn btn-primary btn-sm">
-                                                                    <i class="fas fa-long-arrow-alt-left"></i> Back
-                                                                </a> -->
+                                                                            <i class="fas fa-long-arrow-alt-left"></i> Back
+                                                                        </a> -->
 
             <a href=" {{ route('download.order.csv.template') }} ">
                 <x-adminlte-button label="Download Order Template" theme="primary" icon="fas fa-file-download"
@@ -107,6 +107,10 @@
 
                 },
             });
+        });
+
+        $('#order_upload').click(function() {
+            $('#order_upload').html('<i class="fa fa-circle-o-notch fa-spin"></i> Uploading...');
         });
     </script>
 @stop

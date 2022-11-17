@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use ZipArchive;
 use League\Csv\Reader;
+use App\Models\Invoice;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -78,7 +79,8 @@ class invoiceBulkZipDownload extends Command
 
         foreach ($excelid as $getId) {
 
-            $id = DB::connection('web')->select("SELECT * from invoices where id ='$getId' ");
+            // $id = DB::connection('web')->select("SELECT * from invoices where id ='$getId' ");
+            $id = Invoice::where("id", "${getId}")->get();
 
             foreach ($id as $key => $value) {
 

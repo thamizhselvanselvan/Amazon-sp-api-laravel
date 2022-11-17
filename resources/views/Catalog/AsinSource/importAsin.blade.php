@@ -58,14 +58,14 @@
 
                     <div class="col-6">
                         <!-- <x-adminlte-select name="source" label="Select Source" id="source">
-                                                                                    
-                                                                                    <option value="">Select Source</option>
-                                                                                    <option value="IN">IN</option>
-                                                                                    <option value="AE">AE</option>
-                                                                                    <option value="US">US</option>
-                                                                                    <option value="UK">UK</option>
+                                                                                            
+                                                                                            <option value="">Select Source</option>
+                                                                                            <option value="IN">IN</option>
+                                                                                            <option value="AE">AE</option>
+                                                                                            <option value="US">US</option>
+                                                                                            <option value="UK">UK</option>
 
-                                                                                </x-adminlte-select> -->
+                                                                                        </x-adminlte-select> -->
                         <label for="Select Source">Select Source</label><br>
                         <div class="row ">
                             <div class="col-2">
@@ -173,6 +173,9 @@
 
                 },
             });
+        });
+        $('#bulk_import_button').click(function() {
+            $('#bulk_import_button').html('<i class="fa fa-circle-o-notch fa-spin"></i> Uploading...');
         });
     </script>
 @stop

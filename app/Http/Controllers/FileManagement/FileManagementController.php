@@ -52,7 +52,7 @@ class FileManagementController extends Controller
                 })
                 ->addColumn('processed_time', function ($file_management) {
                     $start_time =  Carbon::parse($file_management['command_start_time']);
-                    $end_time = Carbon::parse($file_management['command_end_time']);
+                    $end_time = $file_management['command_end_time'] == '0000-00-00 00:00:00' ? now() : Carbon::parse($file_management['command_end_time']);
                     $date_difference = $start_time->diff($end_time);
                     $hour = $date_difference->h . ' hours';
                     $sec = $date_difference->i . ' minutes';
