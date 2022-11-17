@@ -2,9 +2,11 @@
 
 namespace App\Models\order;
 
+use App\Models\order\Order;
 use App\Models\Aws_credential;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\order\OrderSellerCredentials;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class OrderUpdateDetail extends Model
 {
@@ -28,8 +30,8 @@ class OrderUpdateDetail extends Model
         'order_status',
     ];
 
-    public function aws_credential()
+    public function order_seller_cred()
     {
-        return $this->hasOne(Aws_credential::class, 'seller_id', 'store_id');
+        return $this->hasOne(OrderSellerCredentials::class, 'seller_id', 'store_id');
     }
 }

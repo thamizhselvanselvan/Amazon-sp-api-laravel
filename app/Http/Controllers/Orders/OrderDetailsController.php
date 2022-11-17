@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Orders;
 
+use App\Models\order\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -198,12 +199,11 @@ class OrderDetailsController extends Controller
             $url = "/orders/statistics/" . $request_store_id;
         }
 
-        
-        
+
         if ($request->ajax()) {
 
             $data = OrderUpdateDetail::query()
-                ->with(['aws_credential' => function ($query) {
+                ->with(['order_seller_cred' => function ($query) {
                     $query->select("id", "store_name", 'seller_id');
                 }])
                 ->when($request->store_id, function ($query, $role) use ($request) {
@@ -211,12 +211,11 @@ class OrderDetailsController extends Controller
                 })
                 ->orderBy('created_at', 'DESC')
                 ->limit(100);
-
             return DataTables::of($data)
                 ->addColumn('store_name', function ($aws_credentials) {
 
-                    if ($aws_credentials->aws_credential) {
-                        return $aws_credentials->aws_credential->store_name;
+                    if ($aws_credentials->order_seller_cred) {
+                        return $aws_credentials->order_seller_cred->store_name;
                     }
                     return 'NA';
                 })
@@ -267,11 +266,18 @@ class OrderDetailsController extends Controller
                 ->addColumn('order_date', function ($row) {
                     $now = Carbon::now();
                     $yest = Carbon::now()->subdays(1);
-                    $date = $row->created_at->toDateTimeString();
-                    if ($date > $yest && $date < $now) {
-                         return   $this->CarbonGetDateDiff($row->created_at . '.000');
+                    $purchase_date = Order::where('amazon_order_identifier', $row->amazon_order_id)
+                        ->get('purchase_date')
+                        ->first();
+                    if (isset($purchase_date->purchase_date)) {
+                        $date =  date('Y-m-d H:i:s', strtotime($purchase_date->purchase_date));
+                        if ($date > $yest && $date < $now) {
+                            return $this->CarbonGetDateDiff($date . '.000');
+                        } else {
+                            return ($date). ' '. 'IST';
+                        }
                     } else {
-                        return $date . ' ' . 'IST';
+                        return 'NA';
                     }
                 })
                 ->rawColumns(['store_name', 'order_status', 'order_date'])
