@@ -28,6 +28,10 @@
             </div>
         </div>
     </div>
+    <div class="alert alert-warning alert-block">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>Excel is no longer accepted please download CSV format and upload the data.</strong>
+    </div>
     <div class="container-fluid search-box">
         <div class="row">
             <div class="col pt-2">
