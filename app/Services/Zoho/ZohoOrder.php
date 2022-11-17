@@ -205,6 +205,7 @@ class ZohoOrder
         }
 
         $amazon_order_id = ($amazon_order_id) ? $amazon_order_id : $order_items->amazon_order_id;
+        $order_item_identifier = isset($order_items->order_item_id) ? $order_items->order_item_id : null;
 
         $order_table_name = 'orders';
         $order_item_table_name = 'orderitemdetails';
@@ -232,6 +233,9 @@ class ZohoOrder
         $order_item_details = OrderItemDetails::select($order_details)
             ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
             ->where('orderitemdetails.amazon_order_identifier', $amazon_order_id)
+            ->when($order_item_identifier, function ($query, $role) {
+                return $query->where('order_item_identifier', $role);
+            })
             ->with(['store_details.mws_region'])
             ->limit(1)
             ->first();
@@ -288,6 +292,8 @@ class ZohoOrder
 
                 if ($order_response) {
                     $notes['success'] = "Success!";
+                    $notes['amazon_order_id'] = $amazon_order_id;
+                    $notes['order_item_id'] = $prod_array['Payment_Reference_Number1'];
                     return $notes;
                 } else {
                     Log::error(json_encode($zoho_response));
@@ -353,6 +359,9 @@ class ZohoOrder
                 ->limit(1)
                 ->first();
         }
+
+        // Log::info($orderItems);
+        // exit;
 
         if ($orderItems) {
             return $orderItems;
@@ -490,10 +499,10 @@ class ZohoOrder
         $prod_array["Lead_Source"] = $this->lead_source($store_name, $country_code);
         $prod_array['Lead_Status'] = $this->lead_status($store_name, $country_code);
 
-        if (isset($buyerDtls->AddressLine2)) {
+        if (isset($buyerDtls->AddressLine1) && isset($buyerDtls->AddressLine2)) {
             $address = $buyerDtls->AddressLine1 . '<br> ' . $buyerDtls->AddressLine2 ?? "";
         } else {
-            $address = $buyerDtls->AddressLine1;
+            $address = $buyerDtls->AddressLine1 ?? "" . '<br> ' . $buyerDtls->AddressLine2 ?? "";;
         }
 
         $address = str_replace("&", " and ", $address);
@@ -505,7 +514,7 @@ class ZohoOrder
         $prod_array['Zip_Code']       = $this->get_state_pincode($country_code, $buyerDtls, 'pincode');
 
         $prod_array["Email"]              = ((isset($buyerEmail->BuyerEmail)) ? $buyerEmail->BuyerEmail : '');
-        $prod_array["Customer_Type"]      = ($value->is_business_order == 'true') ? 'B2B' : 'B2C';
+        $prod_array["Customer_Type1"]      = ($value->is_business_order == 'true') ? 'B2B' : 'B2C';
         $prod_array["Fulfilment_Channel"] = $this->fulfillment_channel($value->fulfillment_channel);
 
         ############################
@@ -532,7 +541,7 @@ class ZohoOrder
         $prod_array["ASIN"]                      = $value->asin;
         $prod_array["SKU"]                       = $value->seller_sku;
         $prod_array["Product_Cost"]              = $catalog_details['price'];
-        $prod_array["Amount_Paid_by_Customer"]   = $item_price->Amount;
+        $prod_array["Amount_Paid_by_Customer"]   = (int)$item_price->Amount;
 
         $prod_array["Weight_in_LBS"]             = (string)$catalog_details['weight'];
         $prod_array["Payment_Reference_Number1"]  = $value->order_item_identifier;
@@ -636,7 +645,8 @@ class ZohoOrder
         }
 
         if ($return == "state") {
-            return $buyerDtls->StateOrRegion;
+            Log::info(json_encode($buyerDtls));
+            return $buyerDtls->StateOrRegion ?? $buyerDtls->County;
         }
 
         return $buyerDtls->PostalCode ?? '00000';
@@ -669,7 +679,10 @@ class ZohoOrder
                     $weight = ceil($result->dimensions[0]['package']['weight']['value']);
                 }
 
-                if (isset($result) && isset($result->browse_classification['displayName'])) {
+                if (isset($result) && isset($result->product_types[0]) && isset($result->product_types[0]['productType'])) {
+
+                    $category = $result->product_types[0]['productType'];
+                } else if (isset($result) && isset($result->browse_classification['displayName'])) {
 
                     $category = $result->browse_classification['displayName'];
                 }

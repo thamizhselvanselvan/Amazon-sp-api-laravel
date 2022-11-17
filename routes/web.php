@@ -37,6 +37,7 @@ use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 use SellingPartnerApi\Configuration;
 use Illuminate\Support\Facades\Route;
+use App\Models\order\OrderUpdateDetail;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\TestController;
@@ -74,11 +75,70 @@ Route::get('zoho_update', function () {
 
     $zoho = new ZohoApi;
 
-    dd($zoho->getLead($idToWork));
+    //dd($zoho->getLead($idToWork));
 
     // dd($zoho->getLead($idToWork));
     // dd($zoho->search('403-4468830-9728365', '28528755520011'));
-    //dd($zoho->search('406-7669097-5932326', '42065874482483'));
+    dd($zoho->search('171-0025073-8185147', '00833820335579'));
+    // $arr = [
+    //     '403-4468830-9728365' => '28528755520011',
+    //     '405-5975951-9369919' => '60352544295723',
+    //     '405-5975951-9369919' => '68176659119171',
+    //     '405-5975951-9369919' => '33695761317547',
+    //     '405-3385739-8887536' => '21884352209507',
+    //     '171-0261229-6734710' => '08383981077699',
+    //     '171-0261229-6734710' => '40432120399659',
+    //     '403-2754361-0677162' => '13760017410923',
+    //     '404-1747820-2952316' => '10426055274587',
+    //     '407-9854470-8257961' => '17482747878531',
+    //     '406-2648150-0469153' => '20246001263371',
+    //     '404-9406628-2138711' => '67713220610859',
+    //     '171-7179008-3885149' => '63921990258419',
+    //     '404-1026015-5364304' => '49209144630627',
+    //     '404-5094380-3920316' => '68863774156619',
+    //     '403-3718951-4984366' => '46891822679339',
+    //     '406-1082464-3316313' => '34657410508939',
+    //     '406-4594531-8515531' => '30779677369323',
+    //     '405-2554593-8689161' => '07832700763739',
+    //     '407-5269454-5865920' => '61454793179955',
+    //     '407-4786768-2308335' => '45829069593707',
+    //     '405-9187281-4283560' => '25045679026907',
+    //     '407-3012412-2101101' => '14615693671035',
+    //     '402-0623894-0767520' => '22965823140227',
+    //     '408-6202519-5411507' => '47869477866355',
+    //     '405-5549061-8191564' => '69831488214699',
+    //     '406-4813941-5875547' => '18621762162171'
+    // ];
+    // foreach ($arr as $ama => $ord) {
+
+    //     $exists = $zoho->search($ama, $ord);
+
+    //     if ($exists && array_key_exists('data', $exists) && array_key_exists(0, $exists['data']) && array_key_exists('Alternate_Order_No', $exists['data'][0])) {
+
+    //         $order_zoho = [
+    //             'store_id' => 20,
+    //             "amazon_order_id" => $ama,
+    //             "order_item_id" => $ord,
+    //             "zoho_id" => $exists['data'][0]['id'],
+    //             "zoho_status" => 1
+    //         ];
+
+    //         $order_response = OrderUpdateDetail::upsert(
+    //             $order_zoho,
+    //             [
+    //                 "amazon_order_id",
+    //                 "order_item_id"
+    //             ],
+    //             [
+    //                 "zoho_id",
+    //                 "store_id",
+    //                 "zoho_status"
+    //             ]
+    //         );
+    //     }
+    // }
+
+    dd('all done');
 
     // dd($zoho->updateLead('377125000000430025', [
     //     "Amount_Paid_by_Customer" => "10"

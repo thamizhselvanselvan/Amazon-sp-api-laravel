@@ -60,6 +60,11 @@ class Catalog_us extends Model
         return json_encode($this->attributes['dimensions']);
     }
 
+    public function setProductTypesAttribute($value)
+    {
+        return json_encode($this->attributes['product_types']);
+    }
+
     public function setImagesAttribute($value)
     {
         return json_encode($this->attributes['images']);
@@ -78,6 +83,11 @@ class Catalog_us extends Model
     public function getDimensionsAttribute($value)
     {
         return json_decode($this->attributes['dimensions'], true);
+    }
+
+    public function getProductTypesAttribute($value)
+    {
+        return json_decode($this->attributes['product_types'], true);
     }
 
     public function getImagesAttribute($value)
