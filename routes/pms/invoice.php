@@ -23,3 +23,6 @@ Route::post('invoice/update/{id}', 'invoice\InvoiceManagementController@update')
 Route::post('invoice/zip/download', 'invoice\InvoiceManagementController@zipDownload')->name('invoice.zip.download');
 Route::get('invoice/zip/download/{mode}/{date}/zip/{file}', 'invoice\InvoiceManagementController@zipDownloadLink');
 Route::get('invoice/file/management/monitor', 'invoice\InvoiceManagementController@InvoiceFileManagementMonitor')->name('invoice.file.management');
+
+Route::get('invoice/upload/csv', 'invoice\InvoiceManagementController@UploadCsv')->name('invoice.upload.csv');
+Route::post('invoice/csv/upload', 'invoice\InvoiceManagementController@InvoiceCsvFileUpload')->name('invoice.csv.file.import');

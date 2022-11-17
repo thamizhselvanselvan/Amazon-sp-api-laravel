@@ -32,7 +32,7 @@
         <div class="row">
             <div class="col pt-2">
                 <div class="mt-4">
-                    <a href="upload">
+                    <a href="{{ route('invoice.upload.csv') }}">
                         <x-adminlte-button label="Add Records" theme="primary" icon="fas fa-file-upload"
                             class="btn-md ml-2 " />
                     </a>
@@ -291,7 +291,8 @@
             $('#selected-download').click(function() {
 
                 alert('Invoice is downloading please wait.');
-
+                $('#selected-download').attr('disabled', true);
+                $('#selected-download').attr("title", "File is downloading...");
                 let invoice_mode = $('#mode').val();
                 let invoice_date = $('#invoice_date').val();
                 var url = $(location).attr('href');

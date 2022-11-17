@@ -370,7 +370,9 @@
                     alert('Please Select Label Details to Download');
                     return false;
                 }
-                alert('Label is downloading please wait.');;
+                alert('Label is downloading please wait.');
+                $('#download_selected').attr('disabled', true);
+                $('#download_selected').attr("title", "File is downloading...");
                 $.ajax({
                     method: 'POST',
                     url: "{{ url('/label/select-download') }}",
