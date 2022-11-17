@@ -66,7 +66,7 @@
                     </td>
                     <td class="pt-0 pb-0">
                         <p class="pt-0 pb-0 mt-1 mb-0 font-weight-bold">Order Item Id</p>
-                        <p class="pt-0 pb-0 mt-0 mb-1 Payment_Reference_Number"></p>
+                        <p class="pt-0 pb-0 mt-0 mb-1 Payment_Reference_Number1"></p>
                     </td>
                     <td class="pt-0 pb-0">
                         <p class="pt-0 pb-0 mt-1 mb-0 font-weight-bold">ASIN</p>
@@ -236,7 +236,7 @@
                 $(".SKU").html('');
                 $(".Product_Cost").html('');
                 $(".Weight_in_LBS").html('');
-                $(".Payment_Reference_Number").html('');
+                $(".Payment_Reference_Number1").html('');
                 $(".Exchange").html('');
                 $(".Amount_Paid_by_Customer").html('');
 
@@ -340,7 +340,7 @@
                             $(".State").html(response.data.State);
                             $(".Zip_Code").html(response.data.Zip_Code);
                             $(".Email").html(response.data.Email);
-                            $(".Customer_Type").html(response.data.Customer_Type);
+                            $(".Customer_Type").html(response.data.Customer_Type1);
                             $(".Fulfilment_Channel").html(response.data.Fulfilment_Channel);
                             $(".Designation").html(response.data.Designation);
                             $(".Product_Code").html(response.data.Product_Code);
@@ -355,7 +355,7 @@
                             $(".SKU").html(response.data.SKU);
                             $(".Product_Cost").html(response.data.Product_Cost);
                             $(".Weight_in_LBS").html(response.data.Weight_in_LBS);
-                            $(".Payment_Reference_Number").html(response.data.Payment_Reference_Number);
+                            $(".Payment_Reference_Number1").html(response.data.Payment_Reference_Number1);
                             $(".Exchange").html(response.data.Exchange);
                             $(".Amount_Paid_by_Customer").html(response.data.Amount_Paid_by_Customer);
 
@@ -389,7 +389,7 @@
                             $(".SKU").html('');
                             $(".Product_Cost").html('');
                             $(".Weight_in_LBS").html('');
-                            $(".Payment_Reference_Number").html('');
+                            $(".Payment_Reference_Number1").html('');
                             $(".Exchange").html('');
                             $(".Amount_Paid_by_Customer").html('');
 

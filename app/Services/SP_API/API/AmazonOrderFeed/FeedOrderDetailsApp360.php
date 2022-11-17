@@ -157,4 +157,22 @@ class FeedOrderDetailsApp360
 
         return true;
     }
+
+    public function  getFeedStatus($feed_id, $seller_id)
+    {
+        $country_code = 'IN';
+
+        $config = $this->config($seller_id, $country_code, $token = NULL);
+        $apiInstance = new FeedsApi($config);
+        $result = ($apiInstance->getFeed($feed_id));
+
+        $result = json_decode(json_encode($result));
+        $feed_doc_id = $result->resultFeedDocumentId;
+
+        $doc_result = $apiInstance->getFeedDocument($feed_doc_id);
+
+        $doc_result = json_decode(json_encode($doc_result));
+
+        return $doc_result->url;
+    }
 }

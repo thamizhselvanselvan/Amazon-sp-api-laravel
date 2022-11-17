@@ -33,6 +33,7 @@ use App\Models\order\OrderSellerCredentials;
 use App\Services\ShipNTrack\Tracking\AramexTracking;
 use App\Services\ShipNTrack\Tracking\AramexTrackingServices;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetails;
+use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 use SellingPartnerApi\Api\FeedsV20210630Api as FeedsApi;
 use App\Services\Zoho\ZohoOrder;
 use Hamcrest\Arrays\IsArray;
@@ -739,20 +740,7 @@ class TestController extends Controller
 
   public function TestAmazonFeed($feed_id, $seller_id)
   {
-
-    $country_code = 'IN';
-
-    $config = $this->config($seller_id, $country_code, $token = NULL);
-    $apiInstance = new FeedsApi($config);
-    $result = ($apiInstance->getFeed($feed_id));
-
-    $result = json_decode(json_encode($result));
-    $feed_doc_id = $result->resultFeedDocumentId;
-
-    $doc_result = $apiInstance->getFeedDocument($feed_doc_id);
-
-    $doc_result = json_decode(json_encode($doc_result));
-    $url  = $doc_result->url;
+    $url  = (new FeedOrderDetailsApp360())->getFeedStatus($feed_id, $seller_id);
 
     echo "<script> window.open('" . $url . "','_blank')</script>";
     exit;

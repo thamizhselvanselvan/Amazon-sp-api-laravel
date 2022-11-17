@@ -108,9 +108,7 @@ class ZohoApi
             return $response->json();
         }
 
-        dd($response->body());
-
-        return false;
+        return $response->body();
     }
 
     public function storeLead($parameters)
@@ -121,12 +119,12 @@ class ZohoApi
             ])->post($this->zoho_lead_base_url, [
                 "data" => [$parameters]
             ]);
-        Log::warning($response->body());
+        //Log::warning($response->body());
 
         if ($response->status() == 201) {
             return $response->json();
         }
 
-        return false;
+        return $response->body();
     }
 }
