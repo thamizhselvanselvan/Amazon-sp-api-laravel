@@ -232,6 +232,10 @@ class OrderItem
                 // );
 
                 // /Check if ASIN is in source catalog table. if not then auto add and make product sp api request
+                if ($aws_id == 20) {
+                    $catalog_table_name = 'catalognewins';
+                }
+
                 $asins = DB::connection('catalog')->select("SELECT asin FROM $catalog_table_name where asin = '$asin' ");
                 if (count($asins) <= 0) {
                     $asin_source[] = [
