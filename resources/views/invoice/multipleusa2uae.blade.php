@@ -111,8 +111,13 @@
                                     @foreach ($value['product_details'] as $key1 => $data)
                                         <tr>
                                             <td class="text-center"> {{ $key1 + 1 }} </td>
-                                            <td class="text-center"> {{ $data['item_description'] }} </td>
-
+                                            <td class="text-center">
+                                                @if (array_key_exists('item_description', $data))
+                                                    {{ $data['item_description'] }}
+                                                @else
+                                                    NA
+                                                @endif
+                                            </td>
                                             @if ($data['hsn_code'] == '')
                                                 <td class="text-center">{{ $data['hsn_code'] }}</td>
                                             @else
@@ -197,7 +202,7 @@
                             </div>
                             <div class="col">
                                 <!-- <div class="row"><p class="text-center">SERVICE</p></div><hr>
-                                        <div class="row"><p class="text-center">SELF</p></div><hr> -->
+                                                                            <div class="row"><p class="text-center">SELF</p></div><hr> -->
                                 <div class="table-responsive">
                                     <table
                                         class="table table-invoice table-bordered table-bordered-dark table-sm text-center">
@@ -268,7 +273,14 @@
                                     <tr>
                                         <td>{{ $data['no_of_pcs'] }}</td>
                                         <td>{{ $data['packing'] }}</td>
-                                        <td>{{ $data['item_description'] }}</td>
+
+                                        <td>
+                                            @if (array_key_exists('item_description', $data))
+                                                {{ $data['item_description'] }}
+                                            @else
+                                                NA
+                                            @endif
+                                        </td>
                                         <td>{{ $data['dimension'] }}</td>
                                         <td>{{ $data['actual_weight'] }}</td>
                                         <td>{{ $data['charged_weight'] }}</td>

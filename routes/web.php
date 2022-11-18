@@ -46,6 +46,7 @@ use Spatie\Permission\Models\Permission;
 use phpDocumentor\Reflection\Types\Null_;
 use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
+use App\Models\Invoice;
 use Symfony\Component\Validator\Constraints\File;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
 use App\Services\AWS_Business_API\Auth\AWS_Business;
@@ -259,18 +260,8 @@ Route::get('zoho_update', function () {
 
 Route::get('import', function () {
 
-    $currenturl = URL::current();
-    po($currenturl);
-    exit;
-
-
-    $to = Carbon::parse('2015-5-5 3:30:34');
-    $from = Carbon::parse('2015-5-6 9:20:34');
-    po($to);
-    $diff_in_days = $to->diff($from);
-    po($diff_in_days);
-    po($diff_in_days->h . ' hours');
-    po($diff_in_days->i . ' minutes');
+    $test = Invoice::get();
+    po($test);
     exit;
     $auth_count = 0;
     $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', 'US')->get()->toArray();

@@ -111,7 +111,13 @@
                                     @foreach ($value['product_details'] as $key1 => $data)
                                         <tr>
                                             <td class="text-center"> {{ $key1 + 1 }} </td>
-                                            <td class="text-center"> {{ $data['item_description'] }} </td>
+                                            <td class="text-center">
+                                                @if (array_key_exists('item_description', $data))
+                                                    {{ $data['item_description'] }}
+                                                @else
+                                                    NA
+                                                @endif
+                                            </td>
 
                                             @if ($data['hsn_code'] == '')
                                                 <td class="text-center">{{ $data['hsn_code'] }}</td>

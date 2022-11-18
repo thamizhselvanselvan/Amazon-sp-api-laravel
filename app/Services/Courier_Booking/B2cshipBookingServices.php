@@ -156,7 +156,7 @@ class B2cshipBookingServices
                 $us_price = $price[0]->us_price;
             } else {
 
-                $getMessage = 'Item Details Not Avaliable';
+                $getMessage = 'Asin Item Details Not Avaliable';
                 $operation  = 'B2CShip Booking';
 
                 $slackMessage = "Message: $getMessage
@@ -169,13 +169,12 @@ class B2cshipBookingServices
                     ['order_item_id', $this->order_item_id],
                 ])->update(
                     [
-                        'booking_status' => '0'
+                        'booking_status' => '5'
                     ]
                 );
 
                 $this->missingASINDetails($asin);
-
-                Log::alert($slackMessage);
+                slack_notification('app360', 'B2cship Booking', $slackMessage);
                 // Log::channel('slack')->error($slackMessage);
                 return false;
             }
@@ -257,7 +256,8 @@ class B2cshipBookingServices
                 <ConsignorTaxID></ConsignorTaxID>';
             } else {
 
-                Log::channel('slack')->error("B2C API Creds Issue");
+                slack_notification('slack_360', 'B2cship Booking', 'Api Creds Issue');
+                // Log::channel('slack')->error("B2C API Creds Issue");
             }
         } else {
             $user_id = 'humlofatro@vusra.com';
@@ -304,7 +304,7 @@ class B2cshipBookingServices
                     <ConsigneeState>karnataka</ConsigneeState>
                     <ConsigneeCity> ' . strtolower($data['consignee_city']) . ' </ConsigneeCity>
                     <ConsigneePinCode> ' . $data['consignee_pincode'] . '</ConsigneePinCode>
-                    <ConsigneeMobile>' . (($data['consignee_Phone'] == "") ? '9897654565' : $this->cleanSpecialCharacters($data['consignee_Phone'])) . ' </ConsigneeMobile>
+                    <ConsigneeMobile>' . (($data['consignee_Phone'] == "") ? '9897654565' : $this->mobileNumberCleanUp($data['consignee_Phone'])) . ' </ConsigneeMobile>
                     <ConsigneeEmailID> ' . $data['email'] . ' </ConsigneeEmailID>
                     <ConsigneeTaxID></ConsigneeTaxID>
                     <PacketType>SPX</PacketType>
@@ -362,8 +362,6 @@ class B2cshipBookingServices
 
         $data = curl_exec($ch);
 
-        //Log::info($data);
-
         return $data;
     }
 
@@ -400,8 +398,7 @@ class B2cshipBookingServices
             Type: $error,
             Order_id: $order_id,
             Operation: 'B2Cship Booking Response'";
-            // po($slackMessage);
-            Log::channel('slack')->error($slackMessage);
+            slack_notification('slack_360', 'B2cship Booking', $slackMessage);
         } else {
 
             $awb_no = $data['AWBNo'];
@@ -415,6 +412,11 @@ class B2cshipBookingServices
                 ]
             );
         }
+    }
+
+    public function mobileNumberCleanUp($mobile_number)
+    {
+        return substr(str_replace(' ', '', $mobile_number), -10);
     }
 
     public function missingASINDetails($asin)

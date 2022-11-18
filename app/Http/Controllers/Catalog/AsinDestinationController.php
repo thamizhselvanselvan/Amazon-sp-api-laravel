@@ -87,6 +87,12 @@ class AsinDestinationController extends Controller
             }
         } elseif ($request->form_type == 'file_upload') {
 
+            $request->validate([
+                'asin' => 'required',
+                'destination'    => 'required',
+                'priority'  => 'required',
+            ]);
+
             $user_id = Auth::user()->id;
             $priority = $request->priority;
             $destination = implode(',', $request->destination);

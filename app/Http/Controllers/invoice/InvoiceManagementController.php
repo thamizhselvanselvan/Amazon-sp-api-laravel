@@ -32,7 +32,8 @@ class InvoiceManagementController extends Controller
 {
     public function Index(request $request)
     {
-        $mode = DB::connection('web')->select("SELECT mode from invoices group by mode");
+        // $mode = DB::connection('web')->select("SELECT mode from invoices group by mode");
+        $mode = Invoice::select('mode')->groupBy('mode')->get();
 
         if ($request->ajax()) {
 
@@ -163,10 +164,10 @@ class InvoiceManagementController extends Controller
     public function selectedPrint($id)
     {
         $eachid = explode('-', $id);
-        $each_id_array = "'" . implode("','", $eachid) . "'";
+        // $each_id_array = "'" . implode("','", $eachid) . "'";
 
         $generator = new BarcodeGeneratorHTML();
-        $result = $this->invoiceDataFormating($each_id_array);
+        $result = $this->invoiceDataFormating($eachid);
 
         foreach ($result as $details) {
 
@@ -325,7 +326,8 @@ class InvoiceManagementController extends Controller
     {
         // $this->deleteAllPdf();
         // $data = Invoice::where('id', $id)->get();
-        $data = DB::connection('web')->select("SELECT * from invoices where invoice_no = '$id' ");
+        // $data = DB::connection('web')->select("SELECT * from invoices where invoice_no = '$id' ");
+        $data = Invoice::where("invoice_no", "${id}")->get();
         $invoice_no = $data[0]->invoice_no;
         $mode = $data[0]->mode;
 
@@ -334,7 +336,7 @@ class InvoiceManagementController extends Controller
         $path = storage::path("invoice/$mode/invoice" . $invoice_no);
         $exportToPdf = $path . '.pdf';
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf);
 
@@ -385,7 +387,7 @@ class InvoiceManagementController extends Controller
 
     public function downloadTemplate()
     {
-        $filepath = public_path('template/Invoice-Template.xlsx');
+        $filepath = public_path('template/Invoice-Template.csv');
         return Response()->download($filepath);
     }
 
@@ -393,11 +395,13 @@ class InvoiceManagementController extends Controller
     {
         $invoice_details = [];
         $grand_total = 0;
-
         $invoice_no = $id;
 
+        $web = config('database.connections.web.database');
+        $prefix = config('database.connections.web.prefix');
         if ($type == 'bulk') {
-            $data = DB::connection('web')->select("SELECT invoice_no from invoices where id IN ($id) ");
+            // $data = DB::connection('web')->select("SELECT invoice_no from invoices where id IN ($id) ");
+            $data = Invoice::select('invoice_no')->whereIn('id', $id)->get();
             $invoice_no = [];
             foreach ($data as $key => $value) {
                 $invoice_no[] = "$value->invoice_no";
@@ -435,8 +439,8 @@ class InvoiceManagementController extends Controller
             GROUP_CONCAT(dimension SEPARATOR '-invoice-') as dimension,
             GROUP_CONCAT(actual_weight SEPARATOR '-invoice-') as actual_weight,
             GROUP_CONCAT(charged_weight SEPARATOR '-invoice-') as charged_weight,
-            GROUP_CONCAT(clientcode SEPARATOR '-invoice-') as clientcode
-             from invoices where invoice_no IN ($invoice_no)
+            GROUP_CONCAT(client_code SEPARATOR '-invoice-') as clientcode
+             from ${prefix}invoices where invoice_no IN ($invoice_no)
              group by invoice_no"
             );
 
@@ -496,13 +500,14 @@ class InvoiceManagementController extends Controller
     public function edit($id)
     {
         // $url = URL::previous();
-        $data = DB::connection('web')->select("SELECT * FROM invoices WHERE invoice_no = '$id' ");
+        // $data = DB::connection('web')->select("SELECT * FROM invoices WHERE invoice_no = '$id' ");
+        $data = Invoice::where("invoice_no", "${id}")->get();
         return view('invoice.edit', compact('data'));
     }
 
     public function update(Request $request, $id)
     {
-        $invoice = invoice::find($id);
+        $invoice = Invoice::find($id);
         $url = $request->url;
 
         $invoice->invoice_no = $request->invoice_no;
@@ -560,5 +565,37 @@ class InvoiceManagementController extends Controller
         $file_check = fileManagementMonitoring($type);
         // po($file_check);
         return response()->json($file_check);
+    }
+
+    public function UploadCsv()
+    {
+        return view('invoice.uploadCsv');
+    }
+
+    public function InvoiceCsvFileUpload(Request $request)
+    {
+        $request->validate([
+            'invoice_csv' => 'required|mimes:txt,csv'
+        ]);
+
+        $file = $request->invoice_csv;
+        $path = 'invoiceCSV/invoice.csv';
+        $file_data = file_get_contents($request->invoice_csv);
+        Storage::put($path, $file_data);
+
+        $user_id = Auth::user()->id;
+        $file_name = $file->getClientOriginalName();
+
+        $file_info = [
+            'user_id' => $user_id,
+            'type' => 'IMPORT_INVOICE',
+            'module' => 'INVOICE',
+            'file_name' => $file_name,
+            'file_path' => $path,
+            'command_name' => 'mosh:invoice-csv-import',
+        ];
+        FileManagement::create($file_info);
+        fileManagement();
+        return redirect('invoice/upload/csv')->with('success', 'Invoice File has been uploaded successfully');
     }
 }

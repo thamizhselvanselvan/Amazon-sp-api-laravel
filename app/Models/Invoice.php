@@ -9,13 +9,15 @@ class Invoice extends Model
 {
     use HasFactory;
 
-    protected $table = 'invoices';
-    public $timestamps = false;
+    // protected $table = 'invoices';
     protected $fillable = [
 
+        'amazon_order_id',
         'invoice_no',
-        'invoice_date',
         'mode',
+        'bag_no',
+        'invoice_date',
+        'sku',
         'channel',
         'shipped_by',
         'awb_no',
@@ -23,10 +25,9 @@ class Invoice extends Model
         'store_name',
         'store_add',
         'bill_to_name',
-        'bll_to_add',
+        'bill_to_add',
         'ship_to_name',
         'ship_to_add',
-        'sku',
         'item_description',
         'hsn_code',
         'qty',
@@ -40,21 +41,20 @@ class Invoice extends Model
         'dimension',
         'actual_weight',
         'charged_weight',
+        'sr_no',
         'clientcode',
-        'bag_no',
-        'amazon_order_identifier'
 
     ];
 
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-        $this->getConnection()->setTablePrefix('');
-    }
+    // public function __construct(array $attributes = [])
+    // {
+    //     parent::__construct($attributes);
+    //     $this->getConnection()->setTablePrefix('');
+    // }
 
-    public function __distruct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-        $this->getConnection()->setTablePrefix('sp_');
-    }
+    // public function __distruct(array $attributes = [])
+    // {
+    //     parent::__construct($attributes);
+    //     $this->getConnection()->setTablePrefix('sp_');
+    // }
 }

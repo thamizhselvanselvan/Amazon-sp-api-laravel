@@ -15,13 +15,29 @@
         padding: 2;
         padding-left: 5px;
     }
+
+    .click {
+        color: green;
+    }
+
+    .not {
+        color: black;
+    }
+
+    .under {
+        color: blue;
+    }
+
+    .wrong {
+        color: red;
+    }
 </style>
 @stop
 
 @section('content_header')
 <div class="row">
     <div class="col-1.5">
-        <div style="margin-top: 2.0rem;">
+        <div style="margin-top: 1.6rem;">
             <h3 class="m-0 text-dark font-weight-bold">
                 Orders Status: &nbsp;
             </h3>
@@ -60,18 +76,17 @@
 
 <table class="table table-bordered yajra-datatable table-striped" id="detail_table">
     <thead>
-        <tr>
+        <tr class="table-info">
             <th>ID</th>
             <th>Store Name</th>
+            <th>Order Date</th>
             <th>Amazon Order ID</th>
             <th>Order Item ID</th>
-            <th>Courier Name</th>
-            <th>Courier AWB</th>
-            <th>Booking Status</th>
-            <th>Zoho ID</th>
-            <th>Zoho Status</th>
-            <th>Amazon Order Status</th>
-            <th>Updated Time</th>
+            <th>Courier</th>
+            <th>AWB</th>
+            <th>Booking</th>
+            <th>Zoho</th>
+            <th>Amazon</th>
         </tr>
     </thead>
     <tbody>
@@ -79,12 +94,14 @@
 </table>
 @stop
 
-
-
-
 @section('js')
 
 <script type="text/javascript">
+    $(document).ready(function() {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+
     $.extend($.fn.dataTable.defaults, {
         pageLength: 50,
     });
@@ -98,6 +115,8 @@
     let yajra_table = $('.yajra-datatable').DataTable({
         processing: true,
         serverSide: true,
+        lengthChange: false,
+        // searching: false,
         ajax: {
             url: "{{ url($url) }}",
             type: 'get',
@@ -116,6 +135,10 @@
             {
                 data: 'store_name',
                 name: 'store_name'
+            },
+            {
+                data: 'order_date',
+                name: 'order_date'
             },
             {
                 data: 'amazon_order_id',
@@ -138,20 +161,12 @@
                 name: 'booking_status'
             },
             {
-                data: 'zoho_id',
-                name: 'zoho_id',
-            },
-            {
                 data: 'zoho_status',
                 name: 'zoho_status',
             },
             {
-                data: 'order_status',
-                name: 'order_status'
-            },
-            {
-                data: 'updated_at',
-                name: 'updated_at'
+                data: 'order_feed_status',
+                name: 'order_feed_status'
             }
         ]
     });

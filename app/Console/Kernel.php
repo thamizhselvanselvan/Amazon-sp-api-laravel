@@ -39,9 +39,9 @@ class Kernel extends ConsoleKernel
             $schedule->command('pms:remove-uploaded-boe')->dailyAt('01:00');
 
             /*Catalog*/
-            $schedule->command('mosh:catalog-amazon-import')->everyFiveMinutes();
+            $schedule->command('mosh:catalog-amazon-import')->everyTenMinutes();
             $schedule->command('mosh:Catalog-price-import-bb-in')->everyThreeMinutes();
-            $schedule->command('mosh:Catalog-price-import-bb-us')->everyMinute();
+            $schedule->command('mosh:Catalog-price-import-bb-us')->everyThreeMinutes();
             $schedule->command('mosh:catalog-dashboard-file')->hourly();
 
             /*Orders*/

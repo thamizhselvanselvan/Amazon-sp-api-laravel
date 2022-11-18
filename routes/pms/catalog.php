@@ -3,7 +3,8 @@
 use App\Http\Controllers\PMSPHPUnitTestController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('catalog/dashboard', 'Catalog\CatalogDashboardController@Metrics');
+Route::get('catalog/dashboard', 'Catalog\CatalogDashboardController@Metrics')->name('catalog.dashboard');
+Route::get('catalog/dashboard/update', 'Catalog\CatalogDashboardController@DashboardUpdate')->name('catalog.dashboard.update');
 
 Route::resource('textiles', 'textilesController');
 Route::post('import-csv', 'textilesController@importTextiles')->name('import.csv');
