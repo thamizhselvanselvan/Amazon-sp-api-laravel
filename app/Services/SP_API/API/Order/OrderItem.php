@@ -246,6 +246,8 @@ class OrderItem
             }
         }
 
+        Log::debug('Store_id -> ' . $aws_id . 'zoho-> ' . $this->zoho);
+
         if ($this->zoho == 1) {
             OrderUpdateDetail::upsert($order_update_details_table, ['amzn_ord_item_id_unique'], ['store_id', 'amazon_order_id', 'order_item_id']);
         }
