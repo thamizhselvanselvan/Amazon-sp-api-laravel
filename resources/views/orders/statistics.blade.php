@@ -84,11 +84,9 @@
             <th>Order Item ID</th>
             <th>Courier</th>
             <th>AWB</th>
-            <th>Booking Status</th>
-            <!-- <th>Zoho ID</th> -->
+            <th>Booking</th>
             <th>Zoho</th>
-            <th>Feed Status</th>
-            <th>Updated Time</th>
+            <th>Amazon</th>
         </tr>
     </thead>
     <tbody>
@@ -162,10 +160,6 @@
                 data: 'booking_status',
                 name: 'booking_status'
             },
-            // {
-            //     data: 'zoho_id',
-            //     name: 'zoho_id',
-            // },
             {
                 data: 'zoho_status',
                 name: 'zoho_status',
@@ -173,10 +167,6 @@
             {
                 data: 'order_feed_status',
                 name: 'order_feed_status'
-            },
-            {
-                data: 'updated_at',
-                name: 'updated_at'
             }
         ]
     });
