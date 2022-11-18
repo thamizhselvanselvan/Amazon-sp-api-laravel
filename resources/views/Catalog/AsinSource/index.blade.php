@@ -5,8 +5,8 @@
 @section('css')
 <!-- <link rel="stylesheet" href="/css/styles.css"> -->
 <style type="text/css">
-    #error{
-        margin-top : -20px;
+    #error {
+        margin-top: -20px;
     }
 </style>
 
@@ -33,15 +33,13 @@
                 data-target="#exampleModal" class="btn-sm"></x-adminlte-button> -->
 
             <a href="{{ route('catalog.download.template') }}">
-                <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-file-download"
-                    id="exportUniversalTextiles" class="btn-sm" />
+                <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-file-download" id="exportUniversalTextiles" class="btn-sm" />
             </a>
 
-            <x-adminlte-button label="Asin Truncate" theme="primary" icon="fas fa-trash text-danger"
-                class="btn-sm" data-toggle="modal" data-target="#asinTruncate"></x-adminlte-button>
+            <!-- <x-adminlte-button label="Asin Truncate" theme="primary" icon="fas fa-trash text-danger"
+                class="btn-sm" data-toggle="modal" data-target="#asinTruncate"></x-adminlte-button> -->
 
-            <div class="modal fade" id="asinTruncate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
+            <div class="modal fade" id="asinTruncate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -56,13 +54,13 @@
                                 <div class="row">
                                     <div class="col-2">
                                         <label for="IN">IN</label>
-                                        <input type="checkbox" name="source[]" value="IN" >
+                                        <input type="checkbox" name="source[]" value="IN">
                                     </div>
                                     <div class="col-2">
                                         <label for="US">US</label>
-                                        <input type="checkbox" name="source[]" value="US" >
+                                        <input type="checkbox" name="source[]" value="US">
                                     </div>
-                                    
+
                                 </div><br>
                                 <div class="col-12 float-left">
                                     <x-adminlte-button label="Truncate" theme="danger" class="btn btn-sm truncate" icon="fas fa-trash " type="submit" />
@@ -71,7 +69,7 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary btn-danger" data-dismiss="modal"  >Close</button>
+                            <button type="button" class="btn btn-secondary btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -85,7 +83,7 @@
 
 <div class="row">
     <div class="col">
-        
+
         <div class="alert_display">
             @if ($message = Session::get('success'))
             <div class="alert alert-success alert-block">
@@ -100,7 +98,6 @@
 
 @section('js')
 <script type="text/javascript">
-    
     $(document).on('click', ".delete", function(e) {
         e.preventDefault();
         let bool = confirm('Are you sure you want to push this asin to Bin?');
@@ -126,12 +123,11 @@
 
     });
 
-    $(document).on('click', '.truncate', function(){
+    $(document).on('click', '.truncate', function() {
         let bool = confirm('Are you sure you want to truncate this selected table?');
         if (!bool) {
             return false;
         }
     });
-
 </script>
 @stop

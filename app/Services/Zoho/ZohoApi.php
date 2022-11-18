@@ -46,7 +46,7 @@ class ZohoApi
             'grant_type' => 'refresh_token'
         ]);
 
-        if ($request->ok()) {
+        if ($request->status() == 200) {
 
             if (!Storage::exists($this->zoho_token_path)) {
                 Storage::put($this->zoho_token_path, '');
@@ -58,6 +58,8 @@ class ZohoApi
             return true;
         }
 
+        $slackMessage = json_encode($request->json());
+        Log::channel('slack')->info($slackMessage);
         return false;
     }
 

@@ -83,8 +83,8 @@ class InvoiceCsvImport extends Command
             'dimension',
             'actual_weight',
             'charged_weight',
-            'sr_no',
-            'client_code',
+            // 'sr_no',
+            // 'client_code',
         ];
 
         $records = Reader::createFromPath(Storage::path($file_path), 'r');
@@ -92,8 +92,8 @@ class InvoiceCsvImport extends Command
         foreach ($records as $record) {
 
             $invoice_data[] = [
-                'amazon_order_id' => $record['Amazon_order_id'],
-                'invoice_no'              => $record['Invoice_no'],
+                'amazon_order_id'         => htmlspecialchars(trim($record['Amazon_order_id'])),
+                'invoice_no'              => htmlspecialchars(trim($record['Invoice_no'])),
                 'mode'                    => $record['Mode'],
                 'bag_no'                  => $record['Bag_no'],
                 'invoice_date'            => $record['Invoice_date'],
@@ -121,8 +121,6 @@ class InvoiceCsvImport extends Command
                 'dimension'               => $record['Dimension'],
                 'actual_weight'           => $record['Actual_weight'],
                 'charged_weight'          => $record['Charged_weight'],
-                'sr_no'                   => $record['Sr_no'],
-                'client_code'              => $record['Client_code'],
             ];
 
             if ($count == 20) {
