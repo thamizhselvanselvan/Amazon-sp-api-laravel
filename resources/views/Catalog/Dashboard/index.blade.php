@@ -22,7 +22,7 @@
         <div class="col">
             <div class="alert_display">
                 @if ($message = Session::get('success'))
-                    <div class="alert alert-success alert-block">
+                    <div class="alert alert-info alert-block">
                         <button type="button" class="close" data-dismiss="alert">×</button>
                         <strong>{{ $message }}</strong>
                     </div>

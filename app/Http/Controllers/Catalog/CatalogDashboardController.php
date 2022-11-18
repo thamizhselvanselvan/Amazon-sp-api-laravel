@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Catalog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 
 class CatalogDashboardController extends Controller
@@ -25,6 +26,6 @@ class CatalogDashboardController extends Controller
     public function DashboardUpdate()
     {
         commandExecFunc('mosh:catalog-dashboard-file');
-        return redirect('catalog/dashboard')->with('success', 'Catalog Dashboard refreshing..');
+        return Redirect::back()->with('success', 'Catalog dashboard is refreshing..... please wait few minutes.');
     }
 }
