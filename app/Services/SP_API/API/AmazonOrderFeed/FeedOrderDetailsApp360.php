@@ -147,7 +147,7 @@ class FeedOrderDetailsApp360
         $response = json_decode(json_encode($response));
         $feed_id = $response->feedId;
 
-        Log::info("${amazon_order_id} updated on amazon: ${feed_id}");
+        // Log::info("${amazon_order_id} updated on amazon: ${feed_id}");
         $table_update_string = $feed_id;
 
         OrderUpdateDetail::where([
