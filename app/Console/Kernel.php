@@ -22,46 +22,44 @@ class Kernel extends ConsoleKernel
         if (app()->environment() === 'production') {
 
             /*Inventory*/
-            $schedule->command('pms:inventory-stock-tracking')->dailyAt('23:45');
-            $schedule->command('mosh:warehouse-track')->dailyAt('23:50');
-            $schedule->command('mosh:tag-track')->dailyAt('23:55');
+            $schedule->command('pms:inventory-stock-tracking')->dailyAt('23:45'); //PM
+            $schedule->command('mosh:warehouse-track')->dailyAt('23:50');  //PM
+            $schedule->command('mosh:tag-track')->dailyAt('23:55'); //PM
 
             /*Business API*/
             $schedule->command('mosh:access_token_generate')->cron('*/55 * * * *');
             $schedule->command('mosh:zoho:generate_token')->cron('*/55 * * * *');
 
             /*B2CShip*/
-            $schedule->command('pms:b2cship-microstatus-report')->daily();
-            $schedule->command('pms:b2cship-kyc-status')->daily();
+            $schedule->command('pms:b2cship-microstatus-report')->daily(); //PM
+            $schedule->command('pms:b2cship-kyc-status')->daily(); //PM
 
             /*BEO*/
-            $schedule->command('pms:boe-upload-Do')->everyFourHours();
-            $schedule->command('pms:remove-uploaded-boe')->dailyAt('01:00');
+            $schedule->command('pms:boe-upload-Do')->everyFourHours(); //PM
+            $schedule->command('pms:remove-uploaded-boe')->dailyAt('01:00'); //PM
 
             /*Catalog*/
-            $schedule->command('mosh:catalog-amazon-import')->everyTenMinutes();
-            $schedule->command('mosh:Catalog-price-import-bb-in')->everyThreeMinutes();
-            $schedule->command('mosh:Catalog-price-import-bb-us')->everyThreeMinutes();
-            $schedule->command('mosh:catalog-dashboard-file')->hourly();
+            $schedule->command('mosh:catalog-amazon-import')->everyTenMinutes(); //PM
+            $schedule->command('mosh:Catalog-price-import-bb-in')->everyThreeMinutes(); //PM
+            $schedule->command('mosh:Catalog-price-import-bb-us')->everyThreeMinutes(); //PM
+            $schedule->command('mosh:catalog-dashboard-file')->hourly(); //PM
 
             /*Orders*/
-            $schedule->command('pms:sellers-orders-import')->everyTenMinutes();
-            $schedule->command('mosh:order-item-details-import')->everyMinute();
+            $schedule->command('pms:sellers-orders-import')->everyTenMinutes(); //PM
+            $schedule->command('mosh:order-item-details-import')->everyMinute(); //PM
 
             /*Misc*/
             $schedule->command('backup:run')->twiceDaily();
             $schedule->command('backup:clean')->daily()->at('01:00');
 
             /*AWS Sync - Needs to be removed*/
-            $schedule->command('aws:nitshop:order')->hourly();
-            $schedule->command('aws:nitshop:order_details')->hourly();
+            $schedule->command('aws:nitshop:order')->hourly(); //PM
+            $schedule->command('aws:nitshop:order_details')->hourly(); //PM
 
             /*Order CI CD*/
             $schedule->command('aws:courier-booking')->everyMinute();
             $schedule->command('mosh:feed-app360-tracking-details')->everyMinute();
             $schedule->command('mosh:feed-status')->everyTwoMinutes();
-
-            /*Zoho Lead Save */
             $schedule->command('mosh:zoho:save')->everyMinute();
         }
 

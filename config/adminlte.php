@@ -382,12 +382,15 @@ return [
                     ],
                 ],
 
+                /*
                 [
                     'text' => 'Universal Textiles',
                     'url'  => 'textiles',
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin']
                 ],
+                */
+
                 [
 
                     'text' => 'Mosh Amazon Catalog',
@@ -409,6 +412,8 @@ return [
                         ],
                     ],
                 ],
+
+                /*
                 [
 
                     'text' => 'Other Amazon.com',
@@ -423,6 +428,9 @@ return [
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin', 'Catalog'],
                 ],
+                */
+
+                /*
                 [
 
                     'text' => 'fragrancenet.com',
@@ -430,6 +438,8 @@ return [
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin']
                 ],
+                */
+
                 [
 
                     'text' => 'Catalog Exchange Rate',

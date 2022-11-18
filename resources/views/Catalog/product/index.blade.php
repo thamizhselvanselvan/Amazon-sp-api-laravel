@@ -13,8 +13,8 @@
         <div class="col d-flex justify-content-end">
             <h2 class=" ml-2">
                 <a href="{{ route('catalog.amazon.product') }}">
-                    <x-adminlte-button label="Fetch Catalog From Amazon" class="btn-sm" theme="primary"
-                        icon="fas fa-file-export" id="exportUniversalTextiles" />
+                    <!-- <x-adminlte-button label="Fetch Catalog From Amazon" class="btn-sm" theme="primary"
+                        icon="fas fa-file-export" id="exportUniversalTextiles" /> -->
                 </a>
             </h2>
             <!-- <h2 class="ml-2">
