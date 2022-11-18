@@ -121,8 +121,6 @@ class InvoiceCsvImport extends Command
                 'dimension'               => $record['Dimension'],
                 'actual_weight'           => $record['Actual_weight'],
                 'charged_weight'          => $record['Charged_weight'],
-                'sr_no'                   => $record['Sr_no'],
-                'client_code'              => $record['Client_code'],
             ];
 
             if ($count == 20) {
