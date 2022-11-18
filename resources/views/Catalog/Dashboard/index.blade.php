@@ -36,9 +36,14 @@
         $header = ['Sold Listing', 'Inventory Listing', 'Unlisted'];
         
     @endphp
+    <a href="{{ route('catalog.dashboard.update') }}">
 
+        <x-adminlte-button label="Refresh" type="submit" name="Refresh" theme="primary" icon="fa fa-refresh"
+            class="float-right" id="dashboard_refresh" />
+    </a>
     @foreach ($json_arrays as $key1 => $record_array)
         <h3>{{ $country[$key1] }}</h3>
+
         <div class="row">
             @foreach ($record_array->priority_wise_asin as $key2 => $records)
                 <div class="col">
@@ -127,4 +132,13 @@
         </div>
     @endforeach
 
+@stop
+
+@section('js')
+    <script>
+        $('#dashboard_refresh').click(function() {
+            $('#dashboard_refresh').html('<i class="fa fa-circle-o-notch fa-spin"></i> Refreshing...');
+            $('#dashboard_refresh').attr("title", "Dashboard is refreshing wait...");
+        });
+    </script>
 @stop
