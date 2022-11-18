@@ -119,12 +119,12 @@ class AsinSourceController extends Controller
                     }
                 }
                 if ($source_key_exists == 0) {
-                    $redbean = new NewCatalog();
-                    $redbean->RedBeanConnection();
-                    $catalog_table = 'catalognew' . strtolower($source) . 's';
-                    $NewCatalogs = R::dispense($catalog_table);
-                    $NewCatalogs->asin = '';
-                    R::store($NewCatalogs);
+                    // $redbean = new NewCatalog();
+                    // $redbean->RedBeanConnection();
+                    // $catalog_table = 'catalognew' . strtolower($source) . 's';
+                    // $NewCatalogs = R::dispense($catalog_table);
+                    // $NewCatalogs->asin = '';
+                    // R::store($NewCatalogs);
                 }
 
                 foreach ($asins as $asin_details) {
