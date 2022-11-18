@@ -181,7 +181,7 @@ class ZohoOrder
             $store_name = $this->get_store_name($order_item_details->store_details);
             $country_code = $this->get_country_code($order_item_details->store_details);
 
-            $prod_array['data'] = $this->zohoOrderFormating($order_item_details, $store_name, $country_code);
+            $prod_array['data'] = $this->zohoOrderFormating($order_item_details, $store_name, $country_code, $orderItems);
         }
 
         return $prod_array;
@@ -251,7 +251,7 @@ class ZohoOrder
             $store_name = $this->get_store_name($order_item_details->store_details);
             $country_code = $this->get_country_code($order_item_details->store_details);
 
-            $prod_array = $this->zohoOrderFormating($order_item_details, $store_name, $country_code);
+            $prod_array = $this->zohoOrderFormating($order_item_details, $store_name, $country_code, $order_items);
 
 
             if ($zoho_search_order_exists && $force_update) {
@@ -367,7 +367,7 @@ class ZohoOrder
         return false;
     }
 
-    public function zohoOrderFormating($value, $store_name, $country_code)
+    public function zohoOrderFormating($value, $store_name, $country_code, $order_items)
     {
         $DOLLAR_EXCHANGE_RATE = 82;
         $AED_EXCHANGE_RATE = 3.8;
@@ -379,6 +379,17 @@ class ZohoOrder
         $item_price = json_decode($value->item_price);
 
         $prod_array = [];
+
+        if ($order_items->courier_name == "B2CShip" && $order_items->store_id == 6) {
+            $prod_array["us_shipper"] = 'Nitroushaulinc';
+        } else if ($order_items->courier_name == "B2CShip" && $order_items->store_id == 5) {
+            $prod_array["us_shipper"]  = 'MailboxMartIndia';
+        }
+
+        if ($order_items->courier_name == "B2CShip") {
+            $prod_array["International_Shipment_ID"]  = $order_items->courier_awb;
+            $prod_array["International_Courier_Name"]  = 'B2CShip';
+        }
 
         ############################
         ### Customer Information ###
