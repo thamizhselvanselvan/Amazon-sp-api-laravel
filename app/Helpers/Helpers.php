@@ -1011,7 +1011,8 @@ if (!function_exists('fileManagement')) {
 }
 
 if (!function_exists('fileManagementUpdate')) {
-    function fileManagementUpdate($id, $command_end_time = null)
+
+    function fileManagementUpdate($id, $command_end_time = null, $staus = NULL, $msg = NULL)
     {
         $file_management_update_sep = FileManagement::find($id);
         $file_management_update_sep->command_end_time = $command_end_time;

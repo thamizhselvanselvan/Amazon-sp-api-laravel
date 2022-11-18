@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use League\Csv\Reader;
 use App\Models\Invoice;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
@@ -87,51 +88,82 @@ class InvoiceCsvImport extends Command
             // 'client_code',
         ];
 
-        $records = Reader::createFromPath(Storage::path($file_path), 'r');
-        $records->setHeaderOffset(0);
-        foreach ($records as $record) {
+        try {
 
-            $invoice_data[] = [
-                'amazon_order_id'         => htmlspecialchars(trim($record['Amazon_order_id'])),
-                'invoice_no'              => htmlspecialchars(trim($record['Invoice_no'])),
-                'mode'                    => $record['Mode'],
-                'bag_no'                  => $record['Bag_no'],
-                'invoice_date'            => $record['Invoice_date'],
-                'sku'                     => $record['Sku'],
-                'channel'                 => $record['Channel'],
-                'shipped_by'              => htmlspecialchars($record['Shipped_by']),
-                'awb_no'                  => $record['Awb_no'],
-                'arn_no'                  => $record['Arn_no'],
-                'store_name'              => htmlspecialchars($record['Store_name']),
-                'store_add'               => htmlspecialchars($record['Store_add']),
-                'bill_to_name'            => htmlspecialchars($record['Bill_to_name']),
-                'bill_to_add'             => htmlspecialchars($record['Bill_to_add']),
-                'ship_to_name'            => htmlspecialchars($record['Ship_to_name']),
-                'ship_to_add'             => htmlspecialchars($record['Ship_to_add']),
-                'item_description'        => htmlspecialchars($record['Item_description']),
-                'hsn_code'                => $record['Hsn_code'],
-                'qty'                     => $record['Qty'],
-                'currency'                => $record['Currency'],
-                'product_price'           => $record['Product_price'],
-                'taxable_value'           => $record['Taxable_value'],
-                'total_including_taxes'   => $record['Total_including_taxes'],
-                'grand_total'             => $record['Grand_total'],
-                'no_of_pcs'               => $record['No_of_pcs'],
-                'packing'                 => $record['Packing'],
-                'dimension'               => $record['Dimension'],
-                'actual_weight'           => $record['Actual_weight'],
-                'charged_weight'          => $record['Charged_weight'],
-            ];
+            $records = Reader::createFromPath(Storage::path($file_path), 'r');
+            $records->setHeaderOffset(0);
+            foreach ($records as $record) {
 
-            if ($count == 20) {
-                Invoice::upsert($invoice_data, ['invoice_no_sku_unique'], $upsert_columns);
-                $count = 0;
-                $invoice_data = [];
+                $invoice_data[] = [
+                    'amazon_order_id'         => htmlspecialchars(trim($record['Amazon_order_id'])),
+                    'invoice_no'              => htmlspecialchars(trim($record['Invoice_no'])),
+                    'mode'                    => $record['Mode'],
+                    'bag_no'                  => $record['Bag_no'],
+                    'invoice_date'            => $record['Invoice_date'],
+                    'sku'                     => $record['Sku'],
+                    'channel'                 => $record['Channel'],
+                    'shipped_by'              => htmlspecialchars($record['Shipped_by']),
+                    'awb_no'                  => $record['Awb_no'],
+                    'arn_no'                  => $record['Arn_no'],
+                    'store_name'              => htmlspecialchars($record['Store_name']),
+                    'store_add'               => htmlspecialchars($record['Store_add']),
+                    'bill_to_name'            => htmlspecialchars($record['Bill_to_name']),
+                    'bill_to_add'             => htmlspecialchars($record['Bill_to_add']),
+                    'ship_to_name'            => htmlspecialchars($record['Ship_to_name']),
+                    'ship_to_add'             => htmlspecialchars($record['Ship_to_add']),
+                    'item_description'        => htmlspecialchars($record['Item_description']),
+                    'hsn_code'                => $record['Hsn_code'],
+                    'qty'                     => $record['Qty'],
+                    'currency'                => $record['Currency'],
+                    'product_price'           => $record['Product_price'],
+                    'taxable_value'           => $record['Taxable_value'],
+                    'total_including_taxes'   => $record['Total_including_taxes'],
+                    'grand_total'             => $record['Grand_total'],
+                    'no_of_pcs'               => $record['No_of_pcs'],
+                    'packing'                 => $record['Packing'],
+                    'dimension'               => $record['Dimension'],
+                    'actual_weight'           => $record['Actual_weight'],
+                    'charged_weight'          => $record['Charged_weight'],
+                ];
+
+                if ($count == 20) {
+                    Invoice::upsert($invoice_data, ['invoice_no_sku_unique'], $upsert_columns);
+                    $count = 0;
+                    $invoice_data = [];
+                }
+                $count++;
             }
-            $count++;
+        } catch (Exception $e) {
+
+            $this->throwError($e, $file_management_id);
         }
-        Invoice::upsert($invoice_data, ['invoice_no_sku_unique'], $upsert_columns);
+
+        try {
+
+            Invoice::upsert($invoice_data, ['invoice_no_sku_unique'], $upsert_columns);
+            $command_end_time = now();
+            fileManagementUpdate($file_management_id, $command_end_time);
+        } catch (Exception $e) {
+
+            $this->throwError($e, $file_management_id);
+        }
+    }
+
+    public function throwError($e, $file_management_id)
+    {
+        $getMessage = $e->getMessage();
+        $getCode = $e->getCode();
+        $getFile = $e->getFile();
+        $getLine = $e->getLine();
+
+        $slackMessage = "Message: $getMessage
+        Code: $getCode
+        File: $getFile
+        Line: $getLine";
+
+        slack_notification('app360', 'Invoic Import', $slackMessage);
         $command_end_time = now();
-        fileManagementUpdate($file_management_id, $command_end_time);
+        $status = '3'; //Failed
+        fileManagementUpdate($file_management_id, $command_end_time, $status, $getMessage);
     }
 }
