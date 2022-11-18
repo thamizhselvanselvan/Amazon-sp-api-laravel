@@ -83,8 +83,8 @@ class InvoiceCsvImport extends Command
             'dimension',
             'actual_weight',
             'charged_weight',
-            'sr_no',
-            'client_code',
+            // 'sr_no',
+            // 'client_code',
         ];
 
         $records = Reader::createFromPath(Storage::path($file_path), 'r');
