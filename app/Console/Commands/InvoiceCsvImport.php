@@ -92,8 +92,8 @@ class InvoiceCsvImport extends Command
         foreach ($records as $record) {
 
             $invoice_data[] = [
-                'amazon_order_id' => $record['Amazon_order_id'],
-                'invoice_no'              => $record['Invoice_no'],
+                'amazon_order_id'         => htmlspecialchars(trim($record['Amazon_order_id'])),
+                'invoice_no'              => htmlspecialchars(trim($record['Invoice_no'])),
                 'mode'                    => $record['Mode'],
                 'bag_no'                  => $record['Bag_no'],
                 'invoice_date'            => $record['Invoice_date'],
