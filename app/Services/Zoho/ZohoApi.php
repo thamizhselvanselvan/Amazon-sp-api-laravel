@@ -89,8 +89,9 @@ class ZohoApi
             return $response->json();
         }
 
+        Log::warning($response->body());
         //Log::channel('slack')->info($response->body());
-        return $response->body();
+        return false;
     }
 
     public function updateLead($lead_id, $parameters)
