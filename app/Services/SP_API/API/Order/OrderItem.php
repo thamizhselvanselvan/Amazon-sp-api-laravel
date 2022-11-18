@@ -214,23 +214,22 @@ class OrderItem
                 $qty = $invoice_data['qty'] > 0 ? $invoice_data['qty'] : 1;
                 $invoice_data['product_price'] = (float)($tem_price / $qty);
 
-                Invoice::upsert(
-                    $invoice_data,
-                    ['order_id_sku_unique'],
-                    [
-                        'sku',
-                        'item_description',
-                        'qty',
-                        'currency',
-                        'product_price',
-                        'bill_to_name',
-                        'bill_to_add',
-                        'ship_to_name',
-                        'ship_to_add',
-                        'amazon_order_identifier'
-                    ]
-                );
-
+                // Invoice::upsert(
+                //     $invoice_data,
+                //     ['order_id_sku_unique'],
+                //     [
+                //         'sku',
+                //         'item_description',
+                //         'qty',
+                //         'currency',
+                //         'product_price',
+                //         'bill_to_name',
+                //         'bill_to_add',
+                //         'ship_to_name',
+                //         'ship_to_add',
+                //         'amazon_order_identifier'
+                //     ]
+                // );
 
                 // /Check if ASIN is in source catalog table. if not then auto add and make product sp api request
                 $asins = DB::connection('catalog')->select("SELECT asin FROM $catalog_table_name where asin = '$asin' ");
