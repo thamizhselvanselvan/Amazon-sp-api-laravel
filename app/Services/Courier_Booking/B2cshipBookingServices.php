@@ -169,7 +169,7 @@ class B2cshipBookingServices
                     ['order_item_id', $this->order_item_id],
                 ])->update(
                     [
-                        'booking_status' => '0'
+                        'booking_status' => '5'
                     ]
                 );
 
