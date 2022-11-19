@@ -178,7 +178,7 @@ class FeedOrderDetailsApp360
 
             return $doc_result->url;
         } else {
-            return true;
+            return false;
         }
     }
 }

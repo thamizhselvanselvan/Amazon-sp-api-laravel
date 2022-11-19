@@ -99,7 +99,7 @@ class InvoiceCsvImport extends Command
                     'invoice_no'              => htmlspecialchars(trim($record['Invoice_no'])),
                     'mode'                    => $record['Mode'],
                     'bag_no'                  => $record['Bag_no'],
-                    'invoice_date'            => $record['Invoice_date'],
+                    'invoice_date'            => date('Y-m-d', strtotime($record['Invoice_date'])),
                     'sku'                     => $record['Sku'],
                     'channel'                 => $record['Channel'],
                     'shipped_by'              => htmlspecialchars($record['Shipped_by']),
@@ -133,13 +133,6 @@ class InvoiceCsvImport extends Command
                 }
                 $count++;
             }
-        } catch (Exception $e) {
-
-            $this->throwError($e, $file_management_id);
-        }
-
-        try {
-
             Invoice::upsert($invoice_data, ['invoice_no_sku_unique'], $upsert_columns);
             $command_end_time = now();
             fileManagementUpdate($file_management_id, $command_end_time);
