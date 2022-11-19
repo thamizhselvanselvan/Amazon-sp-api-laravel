@@ -70,6 +70,41 @@ use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 
 Route::get('t', function () {
     exit;
+    $zoho = new ZohoApi;
+
+    OrderUpdateDetail::where('courier_name', "B2CShip")->chunk(600, function ($records) use ($zoho) {
+
+        foreach ($records as $record) {
+
+            $exists = $zoho->search($record->amazon_order_id, $record->order_item_id);
+
+            if ($exists && array_key_exists('data', $exists) && array_key_exists(0, $exists['data']) && array_key_exists('id', $exists['data'][0])) {
+
+                $lead_id = $exists['data'][0]['id'];
+                $parameters = [];
+
+                if ($record->courier_name == "B2CShip" && $record->store_id == 6) {
+                    $parameters["US_Shipper"] = empty($exists['data'][0]['us_shipper']) ? 'Nitroushaulinc' : $exists['data'][0]['us_shipper'];
+                    //$parameters["International_Shipment_ID"]  = empty($exists['data'][0]['International_Shipment_ID']) ? $record->courier_awb : $exists['data'][0]['International_Shipment_ID'];
+                    //$parameters["International_Courier_Name"]  = empty($exists['data'][0]['International_Courier_Name']) ? 'B2CShip.us' : $exists['data'][0]['International_Courier_Name'];
+                } else if ($record->courier_name == "B2CShip" && $record->store_id == 5) {
+                    $parameters["US_Shipper"]  = empty($exists['data'][0]['us_shipper']) ? 'MailboxMartIndia' : $exists['data'][0]['us_shipper'];
+                    //$parameters["International_Shipment_ID"]  = empty($exists['data'][0]['International_Shipment_ID']) ? $record->courier_awb : $exists['data'][0]['International_Shipment_ID'];
+                    // $parameters["International_Courier_Name"]  = empty($exists['data'][0]['International_Courier_Name']) ? 'B2CShip' : $exists['data'][0]['International_Courier_Name'];
+                }
+
+                $zoho->updateLead($lead_id, $parameters);
+
+                $store_name = $record->store_id == 6 ? "Nitrous" : "MBM";
+
+                echo "$store_name $lead_id :- " . json_encode($parameters) . " <br>";
+            }
+        }
+    });
+
+
+
+    exit;
     $test = [
         "408-0314297-2349941" => "33649360107739",
         "171-9103234-3571541" => "30433303327395",

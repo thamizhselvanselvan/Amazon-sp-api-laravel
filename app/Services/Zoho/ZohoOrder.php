@@ -341,7 +341,7 @@ class ZohoOrder
                 return $query->where('amazon_order_id', $role);
             })
             ->where("zoho_status", 0)
-            ->where('zoho_id', null)
+            ->whereNull('zoho_id')
             ->where('courier_name', 'B2CShip')
             ->whereNotNull('courier_awb')
             ->where('booking_status', 1)
@@ -353,9 +353,9 @@ class ZohoOrder
                 ->when($amazon_order_id, function ($query, $role) {
                     return $query->where('amazon_order_id', $role);
                 })
-                ->where('courier_name', '!=', 'B2CShip')
+                ->whereNull('courier_name')
                 ->where("zoho_status", 0)
-                ->where('zoho_id', null)
+                ->whereNull('zoho_id')
                 ->limit(1)
                 ->first();
         }
@@ -381,9 +381,9 @@ class ZohoOrder
         $prod_array = [];
 
         if ($order_items->courier_name == "B2CShip" && $order_items->store_id == 6) {
-            $prod_array["us_shipper"] = 'Nitroushaulinc';
+            $prod_array["US_Shipper"] = 'Nitroushaulinc';
         } else if ($order_items->courier_name == "B2CShip" && $order_items->store_id == 5) {
-            $prod_array["us_shipper"]  = 'MailboxMartIndia';
+            $prod_array["US_Shipper"]  = 'MailboxMartIndia';
         }
 
         if ($order_items->courier_name == "B2CShip") {
