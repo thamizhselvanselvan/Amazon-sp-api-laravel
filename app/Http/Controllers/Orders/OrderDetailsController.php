@@ -238,16 +238,13 @@ class OrderDetailsController extends Controller
                     }
                 })
                 ->editColumn('zoho_status', function ($row) {
+                    $zoho_id = $row['zoho_id'];
                     if ($row['zoho_status'] == '0') {
-                        // return 'Not Processed';
-                        return '<i class="fa fa-minus "  aria-hidden="true"></i>';
-                        // return $te;
+                        return "<a href='#' data-toggle='tooltip' title='Not Processed'><i class='fa fa-minus not '  aria-hidden='true'></i> </a>";
                     } else if ($row['zoho_status'] == '1') {
-                        // return 'Booked';
-                        return '<i class="fa fa-check click" color-"blue" aria-hidden="true"></i>';
+                        return "<a href='#' data-toggle='tooltip' title='$zoho_id'><i class='fa fa-check click'  aria-hidden='true' ></i> </a>";
                     } else if ($row['zoho_status'] == '5') {
-                        // return 'Under processing';
-                        return  '<i class="fa fa-spinner under" aria-hidden="true"></i>';
+                        return "<a href='#' data-toggle='tooltip' title='Under Processing'><i class='fa fa-spinner under' aria-hidden='true'></i> </a>";
                     } else {
                         return $row['zoho_status'];
                     }
@@ -263,6 +260,14 @@ class OrderDetailsController extends Controller
                         return "<a href='#' data-toggle='tooltip' title='$message'><i class='fa fa-times wrong' color-'blue' aria-hidden='true' ></i> </a>";
                     }
                 })
+                ->editColumn('courier_awb', function ($row) {
+                    $awb =  $row['courier_awb'];
+                    if ($awb == '') {
+                        return '';
+                    } else {
+                        return "<a href='https://b2cship.us/tracking/?$awb' target='_blank'>$awb</a>";
+                    }
+                })
                 ->addColumn('order_date', function ($row) {
                     $now = Carbon::now();
                     $yest = Carbon::now()->subdays(1);
@@ -274,12 +279,21 @@ class OrderDetailsController extends Controller
                         if ($date > $yest && $date < $now) {
                             return $this->CarbonGetDateDiff($date . '.000');
                         } else {
-                            return ($date). ' '. 'IST';
+                            // return ($date) . ' ' . 'IST';
+                            return $this->daysdiffrence($date . '.000');
                         }
                     } else {
                         return 'NA';
                     }
                 })
+                ->editColumn('amazon_order_id', function ($row) {
+                    $order_id = $row['amazon_order_id'];
+                    if ($order_id == '') {
+                        return '';
+                    }
+                    return $order_id. ' '. "<a href='javascript:void(0)' value ='$order_id'   class='badge badge-success' id='clipboard'><i class='fa fa-copy'></i></a>";
+                })
+
                 ->rawColumns(['store_name', 'order_status', 'order_date'])
                 ->escapeColumns([])
                 ->make(true);
@@ -305,8 +319,34 @@ class OrderDetailsController extends Controller
             $count++;
         }
         $time = rtrim($final_date, ' ,') . ' Before';
-        $date =  $differnce->days > 0 ? $differnce->days . ' Days' : 'Today';
+        $date =  $differnce->days > 0 ? $differnce->days . ' Days' : '';
 
-        return $date . ', ' . $time;
+        return $date . ' ' . $time;
+    }
+    public function daysdiffrence($date)
+    {
+        $date_details_array = ['Year', 'Month', 'Day',];
+        $date = substr($date, 0, strpos($date, "."));
+        $created = new Carbon($date);
+        $now = Carbon::now();
+        $differnce = $created->diff($now);
+
+        $final_date = '';
+        $count = 0;
+        foreach ((array)$differnce as $key => $value) {
+            if ($value != 0 && $count < 3 && $count > 2) {
+                $final_date .= $value > 1 ? $value . ' ' . $date_details_array[$count] . 's, ' : $value . ' ' . $date_details_array[$count] . ', ';
+            }
+            $count++;
+        }
+        $time = rtrim($final_date, ' ,') . ' Before';
+        // $date =  $differnce->days > 0 ? $differnce->days . ' Days' : '';
+        if ($differnce->days > 0 && $differnce->days  < 2) {
+            $date =   $differnce->days . ' Day' . '';
+        } else {
+            $date =   $differnce->days . ' Days' . '';
+        }
+
+        return $date . ' ' . $time;
     }
 }

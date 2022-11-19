@@ -11,7 +11,6 @@ class Invoice extends Model
 
     // protected $table = 'invoices';
     protected $fillable = [
-
         'amazon_order_id',
         'invoice_no',
         'mode',

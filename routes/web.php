@@ -892,6 +892,8 @@ where status = 0 ");
                         'seller_id' => NULL,
                         'datas' => $data,
                         'type' => 1
+
+
                     ]
                 );
             }
@@ -976,4 +978,11 @@ Route::resource('/tests', 'TestController');
 Route::get('test/seller', 'TestController@SellerTest');
 Route::get('/asin/{asin}/{code}', 'TestController@getASIN');
 
+Route::get('test/date', function () {
+    $date = '12-11-2022';
+
+    return  date('Y-m-d', strtotime($date));
+
+    //
+});
 include_route_files(__DIR__ . '/pms/');

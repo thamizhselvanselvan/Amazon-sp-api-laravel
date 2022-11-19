@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\SP_API\Config\ConfigTrait;
 use JeroenNoten\LaravelAdminLte\View\Components\Widget\Card;
+use Monolog\Handler\ElasticaHandler;
 use SellingPartnerApi\Model\FeedsV20210630 as Feeds;
 use SellingPartnerApi\Api\FeedsV20210630Api as FeedsApi;
 use SellingPartnerApi\Model\FeedsV20210630\CreateFeedSpecification;
@@ -170,12 +171,14 @@ class FeedOrderDetailsApp360
 
         if (isset($result->resultFeedDocumentId)) {
             $feed_doc_id = $result->resultFeedDocumentId;
+
+            $doc_result = $apiInstance->getFeedDocument($feed_doc_id);
+
+            $doc_result = json_decode(json_encode($doc_result));
+
+            return $doc_result->url;
+        } else {
+            return false;
         }
-
-        $doc_result = $apiInstance->getFeedDocument($feed_doc_id);
-
-        $doc_result = json_decode(json_encode($doc_result));
-
-        return $doc_result->url;
     }
 }
