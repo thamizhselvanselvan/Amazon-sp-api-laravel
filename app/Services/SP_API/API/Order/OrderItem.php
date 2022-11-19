@@ -211,6 +211,12 @@ class OrderItem
                 $order_detials->updated_at = now();
                 R::store($order_detials);
 
+                if ($this->zoho == 1) {
+                    OrderUpdateDetail::upsert($order_update_details_table, ['amzn_ord_item_id_unique'], ['store_id', 'amazon_order_id', 'order_item_id']);
+                }
+
+                $order_update_details_table = [];
+
                 $qty = $invoice_data['qty'] > 0 ? $invoice_data['qty'] : 1;
                 $invoice_data['product_price'] = (float)($tem_price / $qty);
 
@@ -248,12 +254,6 @@ class OrderItem
                     (new NewCatalog())->Catalog($asin_source);
                 }
             }
-        }
-
-        Log::debug('Store_id -> ' . $aws_id . 'zoho-> ' . $this->zoho);
-
-        if ($this->zoho == 1) {
-            OrderUpdateDetail::upsert($order_update_details_table, ['amzn_ord_item_id_unique'], ['store_id', 'amazon_order_id', 'order_item_id']);
         }
 
         DB::connection('order')
