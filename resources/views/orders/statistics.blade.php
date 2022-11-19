@@ -31,10 +31,61 @@
     .wrong {
         color: red;
     }
+
+    :root {
+        --main-color: #111;
+        --loader-color: #4CAF50;
+        --back-color: #A5D6A7;
+        --time: 60s;
+        --size: 3px;
+    }
+
+    .loader {
+        background-color: transparent;
+        overflow: hidden;
+        width: 100%;
+        height: 10%;
+        position: inherit;
+        top: 59px;
+        left: 0;
+        display: flex;
+        align-items: center;
+        align-content: center;
+        justify-content: flex-start;
+        z-index: 100000;
+    }
+
+    .loader__element {
+        height: var(--size);
+        width: 100%;
+        background: var(--back-color);
+
+    }
+
+    .loader__element:before {
+        content: '';
+        display: block;
+        background-color: var(--loader-color);
+        height: var(--size);
+        width: 0;
+        animation: getWidth var(--time) ease-in infinite;
+    }
+
+    @keyframes getWidth {
+        100% {
+            width: 100%;
+        }
+    }
 </style>
 @stop
 
 @section('content_header')
+<div class="loader">
+    <div class="loader__element"></div>
+</div>
+
+
+
 <div class="row">
     <div class="col-1.5">
         <div style="margin-top: 1.6rem;">
@@ -97,19 +148,26 @@
 @section('js')
 
 <script type="text/javascript">
+    setInterval(function() {
+        window.location.reload(1);
+    }, 60000);
+
     $(document).ready(function() {
         $('[data-toggle="tooltip"]').tooltip();
     });
 
-
     $.extend($.fn.dataTable.defaults, {
-        pageLength: 50,
+        pageLength: 100,
     });
 
     $('#store_select').on('change', function() {
-
         window.location = "/orders/statistics/" + $(this).val();
+    });
 
+
+    $(document).on('click', '#clipboard', function() {
+        data = $(this).attr('value');
+        navigator.clipboard.writeText(data);
     });
 
     let yajra_table = $('.yajra-datatable').DataTable({
@@ -134,11 +192,15 @@
             },
             {
                 data: 'store_name',
-                name: 'store_name'
+                name: 'store_name',
+                orderable: false,
+                searchable: false
             },
             {
                 data: 'order_date',
-                name: 'order_date'
+                name: 'order_date',
+                orderable: false,
+                searchable: false
             },
             {
                 data: 'amazon_order_id',
@@ -150,7 +212,9 @@
             },
             {
                 data: 'courier_name',
-                name: 'courier_name'
+                name: 'courier_name',
+                orderable: false,
+                searchable: false
             },
             {
                 data: 'courier_awb',
@@ -158,7 +222,9 @@
             },
             {
                 data: 'booking_status',
-                name: 'booking_status'
+                name: 'booking_status',
+                orderable: false,
+                searchable: false
             },
             {
                 data: 'zoho_status',
@@ -166,7 +232,9 @@
             },
             {
                 data: 'order_feed_status',
-                name: 'order_feed_status'
+                name: 'order_feed_status',
+                orderable: false,
+                searchable: false
             }
         ]
     });
