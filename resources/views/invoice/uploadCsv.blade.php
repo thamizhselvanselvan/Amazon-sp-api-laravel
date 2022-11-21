@@ -96,7 +96,7 @@
             response: 'json',
             success: function(response) {
 
-                console.log(response);
+                // console.log(response);
                 if (response.status == 'Processing') {
                     $('#invoice_upload_button').prop('disabled', true);
 
