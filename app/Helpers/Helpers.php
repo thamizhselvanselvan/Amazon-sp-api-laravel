@@ -1083,9 +1083,8 @@ if (!function_exists('fileManagementMonitoringNew')) {
                 <br>
                      Uploaded Time: $created_at 
                 <br>
-                    Status: Failed 
-                <br>
-                    Remark: Processing";
+                    Status: Processing 
+                <br>";
         } else if ($info != '') {
 
             $html_txt = "Previous uploaded file has error 
