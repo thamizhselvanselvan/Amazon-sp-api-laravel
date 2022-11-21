@@ -42,11 +42,11 @@ class cliqnshop_orders_call extends Command
     {
         $data = DB::connection('cliqnshop')->table('order')
 
-            ->join('order_base_product as oid', function ($query) {
-                $query->on('oid.baseid', '=', 'order.baseid')
+            ->join('mshop_order_base_product as oid', function ($query) {
+                $query->on('oid.baseid', '=', 'mshop_order.baseid')
                 ->where('status','0');
             })
-            ->join('product as pid', function ($query) {
+            ->join('mshop_product as pid', function ($query) {
                 $query->on('pid.id', '=', 'oid.prodid');
             })
             ->select('code', 'label')
@@ -174,7 +174,7 @@ class cliqnshop_orders_call extends Command
             //     'responce_code'
             // ]);
 
-            $data = DB::connection('cliqnshop')->table('order_base_product')->where('prodcode', $asin)->update([
+            $data = DB::connection('cliqnshop')->table('mshop_order_base_product')->where('prodcode', $asin)->update([
                 'sent_xml' => $xml,
                 'status' =>'1',
             ]);
