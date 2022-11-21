@@ -242,7 +242,8 @@ class OrderDetailsController extends Controller
                     if ($row['zoho_status'] == '0') {
                         return "<a href='#' data-toggle='tooltip' title='Not Processed'><i class='fa fa-minus not '  aria-hidden='true'></i> </a>";
                     } else if ($row['zoho_status'] == '1') {
-                        return "<a href='#' data-toggle='tooltip' title='$zoho_id'><i class='fa fa-check click'  aria-hidden='true' ></i> </a>";
+                        return "<a href='#' data-toggle='tooltip' title='$zoho_id'><i class='fa fa-check click'  aria-hidden='true' ></i> </a>".
+                         '  '. "<a href='javascript:void(0)' value ='$zoho_id'   class='badge badge-success' id='zoho_clipboard'><i class='fa fa-copy'></i></a>";
                     } else if ($row['zoho_status'] == '5') {
                         return "<a href='#' data-toggle='tooltip' title='Under Processing'><i class='fa fa-spinner under' aria-hidden='true'></i> </a>";
                     } else {

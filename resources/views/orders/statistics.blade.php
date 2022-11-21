@@ -170,6 +170,11 @@
         navigator.clipboard.writeText(data);
     });
 
+    $(document).on('click', '#zoho_clipboard', function() {
+        data = $(this).attr('value');
+        navigator.clipboard.writeText(data);
+    });
+
     let yajra_table = $('.yajra-datatable').DataTable({
         processing: true,
         serverSide: true,
