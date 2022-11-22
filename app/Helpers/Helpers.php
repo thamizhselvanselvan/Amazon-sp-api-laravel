@@ -1,6 +1,7 @@
 <?php
 
 use Carbon\Carbon;
+use App\Models\User;
 use Carbon\CarbonInterval;
 use App\Models\Aws_credential;
 use App\Models\FileManagement;
@@ -169,7 +170,7 @@ if (!function_exists('healthCheck')) {
                 }
             }
             if (!empty($msg)) {
-                slack_notification("Health Check", $msg);
+                slack_notification("", "Health Check", $msg);
             }
         }
     }
@@ -981,8 +982,19 @@ if (!function_exists('makecomma')) {
 if (!function_exists('fileManagement')) {
     function fileManagement()
     {
-        $file_info = FileManagement::select('id', 'user_id', 'type', 'module', 'file_path', 'command_name', 'header')->where('status', '0')->get()->toArray();
-        $ignore = ['ASIN_DESTINATION_', 'ASIN_SOURCE_', 'CATALOG_PRICE_EXPORT_', 'CATALOG_EXPORT_', 'ORDER_'];
+        $file_info = FileManagement::select('id', 'user_id', 'type', 'module', 'file_path', 'command_name', 'header')
+            ->where('status', '0')
+            ->get()
+            ->toArray();
+
+        $ignore = [
+            'ASIN_DESTINATION_',
+            'ASIN_SOURCE_',
+            'CATALOG_PRICE_EXPORT_',
+            'CATALOG_EXPORT_',
+            'ORDER_'
+        ];
+
         $file_management_update = '';
         foreach ($file_info as $file_data) {
 
@@ -1002,7 +1014,7 @@ if (!function_exists('fileManagement')) {
             $store_id = $type == 'IMPORT_ORDER' ?  $destination : '';
 
             $destination = str_replace(',', '_', $destination);
-            log::info($header);
+
             commandExecFunc("${command_name} --columns=fm_id=${fm_id},store_id=${store_id},user_id=${user_id},destination=${destination},priority=${priority},path=${path},header=${header}");
 
             $file_management_update->update();
@@ -1012,9 +1024,15 @@ if (!function_exists('fileManagement')) {
 
 if (!function_exists('fileManagementUpdate')) {
 
-    function fileManagementUpdate($id, $command_end_time = null, $staus = NULL, $msg = NULL)
+    function fileManagementUpdate($id, $command_end_time = NULL, $status = NULL, $msg = NULL)
     {
+        if ($status == NULL) {
+            $status = '1';
+        }
+
         $file_management_update_sep = FileManagement::find($id);
+        $file_management_update_sep->status = $status;
+        $file_management_update_sep->info = $msg;
         $file_management_update_sep->command_end_time = $command_end_time;
         $file_management_update_sep->update();
     }
@@ -1023,14 +1041,66 @@ if (!function_exists('fileManagementUpdate')) {
 if (!function_exists('fileManagementMonitoring')) {
     function fileManagementMonitoring(String $module_type)
     {
-
         $file_data = '';
         $type = $module_type;
-        $file_management_info = FileManagement::select('command_end_time')->where('type', $type)->where('command_end_time', '0000-00-00 00:00:00')->get()->toArray();
+        $file_management_info =
+            FileManagement::select('command_end_time')
+            ->where('type', $type)
+            ->where('command_end_time', '0000-00-00 00:00:00')
+            ->get()
+            ->toArray();
 
         if (count($file_management_info) > 0) {
             $file_data = $file_management_info[0]['command_end_time'];
         }
         return $file_data;
+    }
+}
+
+if (!function_exists('fileManagementMonitoringNew')) {
+    function fileManagementMonitoringNew(String $module_type)
+    {
+        $file_check =   FileManagement::select('user_id', 'created_at', 'command_end_time', 'info')
+            ->where('type', $module_type)
+            ->orderBy('id', 'desc')
+            ->first()
+            ->toArray();
+
+        $user_name = User::where('id', $file_check['user_id'])->get('name')->toArray();
+
+        $user_name = $user_name[0]['name'];
+        $created_at = date('d-m-Y h:i:s', strtotime($file_check['created_at']));
+        $info = $file_check['info'];
+
+        $html_txt = '';
+        $status = '';
+
+        if ($file_check['command_end_time'] == '0000-00-00 00:00:00') {
+            $status = 'Processing';
+            $html_txt = "Previous uploaded file is still processing 
+                <br>
+                    Uploaded By: $user_name
+                <br>
+                     Uploaded Time: $created_at 
+                <br>
+                    Status: Processing 
+                <br>";
+        } else if ($info != '') {
+
+            $html_txt = "Previous uploaded file has error 
+            <br>
+                Uploaded By: $user_name
+            <br>
+              Uploaded Time: $created_at<br>
+             <br>
+                Status: Failed 
+            <br>
+                 Remark: $info";
+        }
+
+        return [
+            'status' => $status,
+            'description' => $html_txt
+        ];
     }
 }

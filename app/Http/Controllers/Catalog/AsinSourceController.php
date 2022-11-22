@@ -173,7 +173,7 @@ class AsinSourceController extends Controller
             fileManagement();
             // commandExecFunc("pms:asin-import ${user_id} --source=${source} ${path}");
         }
-        return redirect('catalog/import-bulk-asin')->with('success', 'All Asins uploaded successfully');
+        return redirect('catalog/import-bulk-asin')->with('success', 'Asins file uploaded, checking file\'s data');
     }
 
     public function exportAsinToCSV()
@@ -222,7 +222,7 @@ class AsinSourceController extends Controller
 
     public function SourceFileManagementMonitor(Request $request)
     {
-        $data = fileManagementMonitoring($request->module_type);
+        $data = fileManagementMonitoringNew($request->module_type);
         return response()->json($data);
     }
 }

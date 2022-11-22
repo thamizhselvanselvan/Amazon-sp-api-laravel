@@ -2,10 +2,11 @@
 
 namespace App\Console\Commands;
 
+use Exception;
 use League\Csv\Reader;
 use App\Models\Invoice;
-use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class InvoiceCsvImport extends Command
@@ -135,6 +136,7 @@ class InvoiceCsvImport extends Command
             }
             Invoice::upsert($invoice_data, ['invoice_no_sku_unique'], $upsert_columns);
             $command_end_time = now();
+
             fileManagementUpdate($file_management_id, $command_end_time);
         } catch (Exception $e) {
 

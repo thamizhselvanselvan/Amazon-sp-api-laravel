@@ -238,7 +238,7 @@ class AsinDestinationController extends Controller
     public function DestinationFileManagementMonitor(Request $request)
     {
         $type = $request->module_type;
-        $file_check = fileManagementMonitoring($type);
+        $file_check = fileManagementMonitoringNew($type);
         // po($file_check);
         return response()->json($file_check);
     }
