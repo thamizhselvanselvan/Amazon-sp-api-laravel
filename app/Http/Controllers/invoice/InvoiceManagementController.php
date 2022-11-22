@@ -8,18 +8,19 @@ use Type;
 use DateTime;
 use ZipArchive;
 use RedBeanPHP\R;
+use App\Models\User;
 use League\Csv\Reader;
-use App\Models\Invoice;
 
+use App\Models\Invoice;
 use Illuminate\Http\Request;
+use App\Models\FileManagement;
 use Illuminate\Support\Facades\DB;
+
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
-
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
-use App\Models\FileManagement;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Artisan;
@@ -202,15 +203,6 @@ class InvoiceManagementController extends Controller
         }
         Storage::put($path, $data);
 
-        // if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-
-        //     $base_path = base_path();
-        //     $command = "cd $base_path && php artisan pms:invoice-excel-import > /dev/null &";
-        //     exec($command);
-        // } else {
-
-        //     Artisan::call('pms:invoice-excel-import');
-        // }
         $user_id = Auth::user()->id;
         $file_name = $file->getClientOriginalName();
 
@@ -222,6 +214,7 @@ class InvoiceManagementController extends Controller
             'file_path' => $path,
             'command_name' => 'pms:invoice-excel-import',
         ];
+
         FileManagement::create($file_info);
         fileManagement();
 
@@ -562,8 +555,8 @@ class InvoiceManagementController extends Controller
     public function InvoiceFileManagementMonitor(Request $request)
     {
         $type = $request->module_type;
-        $file_check = fileManagementMonitoring($type);
-        // po($file_check);
+
+        $file_check = fileManagementMonitoringNew($type);
         return response()->json($file_check);
     }
 
@@ -594,8 +587,9 @@ class InvoiceManagementController extends Controller
             'file_path' => $path,
             'command_name' => 'mosh:invoice-csv-import',
         ];
+
         FileManagement::create($file_info);
         fileManagement();
-        return redirect('invoice/upload/csv')->with('success', 'Invoice File has been uploaded successfully');
+        return redirect('invoice/upload/csv')->with('success', 'Invoice File has been uploaded, checking file\'s data');
     }
 }

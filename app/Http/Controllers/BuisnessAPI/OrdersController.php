@@ -126,25 +126,25 @@ class OrdersController extends Controller
     public function test()
     {
 
-        $data[] = DB::connection('cliqnshop')->table('order')
+        $data[] = DB::connection('cliqnshop')->table('mshop_order')
 
-            ->join('order_base_product as oid', function ($query) {
-                $query->on('oid.baseid', '=', 'order.baseid')
+            ->join('mshop_order_base_product as oid', function ($query) {
+                $query->on('oid.baseid', '=', 'mshop_order.baseid')
                     ->where('status', '1');
             })
-            ->join('product as pid', function ($query) {
+            ->join('mshop_product as pid', function ($query) {
                 $query->on('pid.id', '=', 'oid.prodid');
             })
             ->get();
 
 
-        $data_pending = DB::connection('cliqnshop')->table('order_base_product')
+        $data_pending = DB::connection('cliqnshop')->table('mshop_order_base_product')
             ->select('prodcode')
             ->where('status', '0')
             ->get();
         $order_unplaced = count($data_pending);
 
-        $data_orders = DB::connection('cliqnshop')->table('order_base_product')
+        $data_orders = DB::connection('cliqnshop')->table('mshop_order_base_product')
             ->select('prodcode', 'name', 'quantity', 'price', 'status')
             ->get();
 
@@ -156,7 +156,7 @@ class OrdersController extends Controller
     {
 
         if ($request->ajax()) {
-            $data_placed = DB::connection('cliqnshop')->table('order_base_product')
+            $data_placed = DB::connection('cliqnshop')->table('mshop_order_base_product')
                 ->select('prodcode', 'name', 'quantity', 'price', 'status')
                 ->where('status', '1')
                 ->get();
@@ -169,7 +169,7 @@ class OrdersController extends Controller
     public function orderspending(Request $request)
     {
         if ($request->ajax()) {
-            $data_pending = DB::connection('cliqnshop')->table('order_base_product')
+            $data_pending = DB::connection('cliqnshop')->table('mshop_order_base_product')
                 ->select('prodcode', 'name', 'quantity', 'price', 'status')
                 ->where('status', '0')
                 ->orderBy('id', 'DESC')
@@ -328,7 +328,7 @@ class OrdersController extends Controller
                 'responce_code'
             ]);
 
-            $data = DB::connection('cliqnshop')->table('order_base_product')->where('prodcode', $asin)->update([
+            $data = DB::connection('cliqnshop')->table('mshop_order_base_product')->where('prodcode', $asin)->update([
                 'sent_xml' => $xml,
                 'status' => '1',
             ]);
@@ -340,7 +340,7 @@ class OrdersController extends Controller
     {
         if ($request->ajax()) {
 
-            $data = DB::connection('cliqnshop')->table('order_confirmation')->get();
+            $data = DB::connection('cliqnshop')->table('mshop_order_confirmation')->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->editColumn('notice_date', function ($data) {
@@ -357,7 +357,7 @@ class OrdersController extends Controller
     public function notification(Request $request)
     {
         if ($request->ajax()) {
-            $ship = DB::connection('cliqnshop')->table('ship_notification')->get();
+            $ship = DB::connection('cliqnshop')->table('mshop_ship_notification')->get();
             return DataTables::of($ship)
                 ->addIndexColumn()
                 ->editColumn('notice_date', function ($data) {
