@@ -411,9 +411,9 @@ class ZohoOrder
         $prod_array['Lead_Status'] = $this->lead_status($store_name, $country_code);
 
         if (isset($buyerDtls->AddressLine1) && isset($buyerDtls->AddressLine2)) {
-            $address = $buyerDtls->AddressLine1 . '<br> ' . $buyerDtls->AddressLine2 ?? "";
+            $address = $buyerDtls->AddressLine1 . ' ' . $buyerDtls->AddressLine2 ?? "";
         } else {
-            $address = $buyerDtls->AddressLine1 ?? "" . '<br> ' . $buyerDtls->AddressLine2 ?? "";;
+            $address = $buyerDtls->AddressLine1 ?? "" . ' ' . $buyerDtls->AddressLine2 ?? "";
         }
 
         $address = str_replace("&", " and ", $address);
