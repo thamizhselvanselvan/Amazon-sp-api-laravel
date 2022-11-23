@@ -19,7 +19,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-if ('staging' === App::environment() || 'production' === App::environment()) {
+if ('staging' === App::environment() || 'production' === App::environment() || 'Production' === App::environment()) {
 
     Artisan::command('migrate:fresh', function () {
         $this->comment('You are not allowed to do this in production!');
