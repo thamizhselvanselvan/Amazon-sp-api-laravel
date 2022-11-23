@@ -992,7 +992,8 @@ if (!function_exists('fileManagement')) {
             'ASIN_SOURCE_',
             'CATALOG_PRICE_EXPORT_',
             'CATALOG_EXPORT_',
-            'ORDER_'
+            'ORDER_',
+            'CATALOG_PRICE_EXPORT_ALL_'
         ];
 
         $file_management_update = '';
@@ -1077,14 +1078,27 @@ if (!function_exists('fileManagementMonitoringNew')) {
 
         if ($file_check['command_end_time'] == '0000-00-00 00:00:00') {
             $status = 'Processing';
-            $html_txt = "Previous uploaded file is still processing 
-                <br>
-                    Uploaded By: $user_name
-                <br>
-                     Uploaded Time: $created_at 
-                <br>
-                    Status: Processing 
-                <br>";
+            if (str_contains($module_type, 'EXPORT')) {
+
+                $html_txt = "Previous file export is still processing 
+                    <br>
+                        Exported By: $user_name
+                    <br>
+                        Export Time: $created_at 
+                    <br>
+                        Status: Processing 
+                    <br>";
+            } elseif (str_contains($module_type, 'IMPORT')) {
+
+                $html_txt = "Previous Uploaded file is still processing 
+                    <br>
+                        Uploaded By: $user_name
+                    <br>
+                         Uploaded Time: $created_at 
+                    <br>
+                        Status: Processing 
+                    <br>";
+            }
         } else if ($info != '') {
 
             $html_txt = "Previous uploaded file has error 
