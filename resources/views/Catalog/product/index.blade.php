@@ -270,7 +270,7 @@
 </div>
 <div class="row">
     <div class="col-2">
-        <div class="alert alert-warning alert-block info-msg">
+        <div class="alert alert-warning alert-block info-msg d-none">
             <strong id='info-value'></strong>
         </div>
     </div>
