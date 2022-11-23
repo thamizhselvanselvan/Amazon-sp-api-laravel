@@ -10,6 +10,7 @@ use League\Csv\Writer;
 use App\Models\Mws_region;
 use Illuminate\Http\Request;
 use App\Models\Aws_credential;
+use App\Models\FileManagement;
 use App\Models\Catalog\catalog;
 use SellingPartnerApi\Endpoint;
 use App\Models\Catalog\AsinSource;
@@ -17,7 +18,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Models\FileManagement;
 use Illuminate\Support\Facades\Auth;
 use SellingPartnerApi\Configuration;
 use App\Services\SP_API\API\NewCatalog;
@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use App\Services\SP_API\Config\ConfigTrait;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
+use App\Services\Catalog\AllPriceExportCsvServices;
 
 class CatalogProductController extends Controller
 {
@@ -270,11 +271,6 @@ class CatalogProductController extends Controller
         if (!$validation) {
             return back()->with('error', "Please upload file to import it to the database");
         }
-
-
-
-        // $path = "CatalogWithPrice/asin.csv";
-        // Storage::put($path, $file);
     }
 
     public function CatalogWithPriceFileShow(Request $request)
@@ -300,7 +296,31 @@ class CatalogProductController extends Controller
 
     public function fileManagementMonitor(Request $request)
     {
-        $command_end_time = fileManagementMonitoring($request->module_type);
+        $command_end_time = fileManagementMonitoringNew($request->module_type);
+
         return response()->json($command_end_time);
+    }
+
+    public function ExportAllPrice(Request $request)
+    {
+        $destination = $request['source'];
+
+        if ($destination == '') {
+            return redirect('/catalog/product')->with("error", "Please Select Source...");
+        }
+
+        $user_id = Auth::user()->id;
+
+        $file_info = [
+            'user_id' => $user_id,
+            'type' => 'EXPORT_ALL_PRICE',
+            'module' => "CATALOG_PRICE_EXPORT_${destination}_ALL",
+            'command_name' => 'mosh:ExportAllCatalogPrice',
+        ];
+
+        FileManagement::create($file_info);
+        fileManagement();
+
+        return redirect('/catalog/product')->with("success", "Catalog Price is Exporting");
     }
 }

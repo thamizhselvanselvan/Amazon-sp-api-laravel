@@ -92,3 +92,5 @@ Route::get('catalog/cliqnshop/download/{index}', 'Catalog\CliqnshopCatalogContro
 Route::get('catalog/file/monitor', 'Catalog\AsinDestinationController@DestinationFileManagementMonitor')->name('file.management.monitor');
 Route::get('catalog/source/file/monitor', 'Catalog\AsinSourceController@SourceFileManagementMonitor')->name('source.file.management.monitor');
 Route::get('catalog/price/file/monitor', 'Catalog\CatalogProductController@FileManagementMonitor')->name('catalog.export.file.management.monitor');
+
+Route::match(['get', 'post'], 'catalog/export/all-price', 'Catalog\CatalogProductController@ExportAllPrice')->name('catalog.export.all-price');
