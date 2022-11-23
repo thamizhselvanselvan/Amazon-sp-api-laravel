@@ -347,6 +347,12 @@ return [
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
                 ],
+                [
+                    'text' => 'Jobs Management',
+                    'url' => 'admin/job-management',
+                    'can' => ['Admin'],
+                    'icon' => 'fa fa-tasks',
+                ],
             ],
         ],
 
