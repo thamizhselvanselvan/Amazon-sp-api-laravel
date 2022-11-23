@@ -908,6 +908,12 @@ return [
                     'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fa fa-bell',
                 ],
+                [
+                    'text' => 'KYC',
+                    'url' => 'cliqnshop/kyc',
+                    'can' => ['Admin', 'Cliqnshop'],
+                    'icon' => 'fa fa-file',
+                ],
             ],
         ],
 
