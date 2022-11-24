@@ -34,7 +34,7 @@ class JobsManagementController extends Controller
                 ->make(true);;
         }
 
-        return view('admin.jobmanagement.index');
+        return view('admin.jobManagement.index');
     }
 
     public function exceptiondetails(Request $request)
