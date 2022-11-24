@@ -915,7 +915,7 @@ return [
                     'icon' => 'fa fa-bell',
                 ],
                 [
-                    'text' => 'KYC',
+                    'text' => 'KYC Details',
                     'url' => 'cliqnshop/kyc',
                     'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fa fa-file',
