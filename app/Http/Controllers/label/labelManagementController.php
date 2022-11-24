@@ -623,9 +623,7 @@ class labelManagementController extends Controller
             $where_condition = "web.created_at BETWEEN '$v1' AND '$v2' ";
         }
 
-
         $order = config('database.connections.order.database');
-        $catalog = config('database.connections.catalog.database');
         $web = config('database.connections.web.database');
         $prefix = config('database.connections.web.prefix');
 
@@ -644,7 +642,6 @@ class labelManagementController extends Controller
             JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
             JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
             JOIN ${order}.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
-            -- JOIN $catalog.catalog as cat ON cat.asin = orderDetails.asin
             WHERE $where_condition
         ");
         return $data;
