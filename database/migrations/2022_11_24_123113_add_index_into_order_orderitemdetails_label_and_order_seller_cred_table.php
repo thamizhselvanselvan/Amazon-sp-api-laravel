@@ -21,17 +21,17 @@ class AddIndexIntoOrderOrderitemdetailsLabelAndOrderSellerCredTable extends Migr
 
         Schema::connection('order_no_prefix')->table('orders', function (Blueprint $table) {
 
-            $table->index('amazon_order_identifier', 'amazon_order_identifier_unique');
+            $table->index('amazon_order_identifier', 'amazon_order_identifier_index');
         });
 
         Schema::connection('order_no_prefix')->table('orderitemdetails', function (Blueprint $table) {
 
-            $table->index('amazon_order_identifier', 'amazon_order_identifier_unique');
+            $table->index('amazon_order_identifier', 'amazon_order_identifier_index');
         });
 
         Schema::connection('order')->table('order_seller_credentials', function (Blueprint $table) {
 
-            $table->index('seller_id', 'seller_id_unique');
+            $table->index('seller_id', 'seller_id_index');
         });
     }
 
@@ -49,15 +49,15 @@ class AddIndexIntoOrderOrderitemdetailsLabelAndOrderSellerCredTable extends Migr
         });
         Schema::connection('order_no_prefix')->table('orders', function (Blueprint $table) {
 
-            $table->dropIndex('amazon_order_identifier_unique');
+            $table->dropIndex('amazon_order_identifier_index');
         });
         Schema::connection('order_no_prefix')->table('orderitemdetails', function (Blueprint $table) {
 
-            $table->dropIndex('amazon_order_identifier_unique');
+            $table->dropIndex('amazon_order_identifier_index');
         });
         Schema::connection('order')->table('order_seller_credentials', function (Blueprint $table) {
 
-            $table->dropIndex('seller_id_unique');
+            $table->dropIndex('seller_id_index');
         });
     }
 }
