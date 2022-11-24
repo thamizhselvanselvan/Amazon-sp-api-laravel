@@ -994,7 +994,8 @@ if (!function_exists('fileManagement')) {
             'ASIN_SOURCE_',
             'CATALOG_PRICE_EXPORT_',
             'CATALOG_EXPORT_',
-            'ORDER_'
+            'ORDER_',
+            'CATALOG_PRICE_EXPORT_ALL_'
         ];
 
         $file_management_update = '';
@@ -1065,31 +1066,46 @@ if (!function_exists('fileManagementMonitoringNew')) {
         $file_check =   FileManagement::select('user_id', 'created_at', 'command_end_time', 'info')
             ->where('type', $module_type)
             ->orderBy('id', 'desc')
-            ->first()
-            ->toArray();
+            ->first();
+        if ($file_check) {
 
-        $user_name = User::where('id', $file_check['user_id'])->get('name')->toArray();
+            $file_check = $file_check->toArray();
 
-        $user_name = $user_name[0]['name'];
-        $created_at = date('d-m-Y h:i:s', strtotime($file_check['created_at']));
-        $info = $file_check['info'];
+            $user_name = User::where('id', $file_check['user_id'])->get('name')->toArray();
 
-        $html_txt = '';
-        $status = '';
+            $user_name = $user_name[0]['name'];
+            $created_at = date('d-m-Y h:i:s', strtotime($file_check['created_at']));
+            $info = $file_check['info'];
 
-        if ($file_check['command_end_time'] == '0000-00-00 00:00:00') {
-            $status = 'Processing';
-            $html_txt = "Previous uploaded file is still processing 
-                <br>
-                    Uploaded By: $user_name
-                <br>
-                     Uploaded Time: $created_at 
-                <br>
-                    Status: Processing 
-                <br>";
-        } else if ($info != '') {
+            $html_txt = '';
+            $status = '';
 
-            $html_txt = "Previous uploaded file has error 
+            if ($file_check['command_end_time'] == '0000-00-00 00:00:00') {
+                $status = 'Processing';
+                if (str_contains($module_type, 'EXPORT')) {
+
+                    $html_txt = "Previous file export is still processing 
+                    <br>
+                        Exported By: $user_name
+                    <br>
+                        Export Time: $created_at 
+                    <br>
+                        Status: Processing 
+                    <br>";
+                } elseif (str_contains($module_type, 'IMPORT')) {
+
+                    $html_txt = "Previous Uploaded file is still processing 
+                    <br>
+                        Uploaded By: $user_name
+                    <br>
+                         Uploaded Time: $created_at 
+                    <br>
+                        Status: Processing 
+                    <br>";
+                }
+            } else if ($info != '') {
+
+                $html_txt = "Previous uploaded file has error 
             <br>
                 Uploaded By: $user_name
             <br>
@@ -1098,12 +1114,19 @@ if (!function_exists('fileManagementMonitoringNew')) {
                 Status: Failed 
             <br>
                  Remark: $info";
-        }
+            }
 
-        return [
-            'status' => $status,
-            'description' => $html_txt
-        ];
+            return [
+                'status' => $status,
+                'description' => $html_txt
+            ];
+        } else {
+
+            return [
+                'status' => '',
+                'description' => ''
+            ];
+        }
     }
 }
 

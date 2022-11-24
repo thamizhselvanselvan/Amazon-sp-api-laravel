@@ -34,6 +34,7 @@
                     <a class="dropdown-item" href="search-label">Search By Bag No.</a>
                     <a class="dropdown-item" href="{{ route('lable.search.amazon-order-id') }}">Search By Order Id / AWB
                         No.</a>
+                    <a class="dropdown-item" href="{{ route('lable.search.date') }}">Search By Date</a>
                 </div>
             </div>
             <!-- <div class="d-inline-block">
