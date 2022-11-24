@@ -16,7 +16,7 @@ class AllPriceExportCsvServices
     private $totalFile = [];
     private $country_code;
     private $writer;
-    private $record_per_csv = 10;
+    private $record_per_csv = 1000000;
     private $export_file_path;
     private $fileNameOffset = 0;
 
@@ -24,7 +24,7 @@ class AllPriceExportCsvServices
     {
         $this->country_code = strtoupper($country_code);
 
-        $chunk = 199;
+        $chunk = 4000;
 
         $us_csv_header = [
             'Priority',
