@@ -45,3 +45,9 @@ Route::get('business/ship/confirmation','BuisnessAPI\OrdersController@notificati
 Route::get('business/orders/shipment/list','BuisnessAPI\OrdersController@notification')->name('business.orders.shipment.list');
 
 Route::resource('business/orders', 'BuisnessAPI\OrdersController');
+
+
+
+Route::get('cliqnshop/kyc', 'Cliqnshop\CliqnshopKycController@kyc_index')->name('cliqnshop.kyc');
+Route::get('cliqnshop/kyc/details/{id}/{name}', 'Cliqnshop\CliqnshopKycController@kyc_details');
+Route::post('cliqnshop/kyc/update/{id}', 'Cliqnshop\CliqnshopKycController@kyc_status');
