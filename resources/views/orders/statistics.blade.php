@@ -179,6 +179,7 @@
         processing: true,
         serverSide: true,
         lengthChange: false,
+        stateSave: true,
         // searching: false,
         ajax: {
             url: "{{ url($url) }}",

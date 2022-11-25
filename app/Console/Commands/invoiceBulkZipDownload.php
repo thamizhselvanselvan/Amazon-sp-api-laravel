@@ -64,6 +64,7 @@ class invoiceBulkZipDownload extends Command
         $invoice_date = $headers_data[3];
         $current_page_no =  $headers_data[4];
 
+        $saveAsPdf = [];
         log::alert($currenturl);
         // $passid = $this->argument('passid');
         // $currenturl = $this->argument('currenturl');
