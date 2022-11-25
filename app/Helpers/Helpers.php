@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use App\Models\User;
+use League\Csv\Reader;
 use Carbon\CarbonInterval;
 use App\Models\Aws_credential;
 use App\Models\FileManagement;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
 use App\Models\SystemSetting\SystemSetting;
 use App\Models\ShipNTrack\SMSA\SmsaTrackings;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
@@ -1125,5 +1127,20 @@ if (!function_exists('fileManagementMonitoringNew')) {
                 'description' => ''
             ];
         }
+    }
+}
+
+if (!function_exists('CSV_Reader')) {
+    function CSV_Reader(string $file_path, string $delimiter = ','): object
+    {
+        if (!Storage::exists($file_path)) {
+            return false;
+        }
+
+        $reader = Reader::createFromPath(Storage::path($file_path), 'r');
+        $reader->setDelimiter($delimiter);
+        $reader->setHeaderOffset(0);
+
+        return $reader->getRecords();
     }
 }
