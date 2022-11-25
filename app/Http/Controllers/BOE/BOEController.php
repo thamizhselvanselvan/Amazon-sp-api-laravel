@@ -77,7 +77,7 @@ class BOEController extends Controller
     public function index(Request $request)
     {
 
-         
+
         if ($request->ajax()) {
             $user = Auth::user();
             $roles = ($user->roles->first()->name);
@@ -430,30 +430,56 @@ class BOEController extends Controller
                     if ($key == 'duty_details') {
 
                         $duty_details = (json_decode($val));
+                        $this->csv_header[] = 'Duty';
+                        $this->csv_header[] = 'Duty Forgon';
+                        $this->csv_header[] = 'Duty Percentage';
+                        $this->csv_header[] = 'SW Srchrg';
+                        $this->csv_header[] = 'SWsrchrg Percentage';
+                        $this->csv_header[] = 'IGST';
+                        $this->csv_header[] = 'IGST Percentage';
+                        $this->csv_header[] = 'HLTH';
+                        $this->csv_header[] = 'HLTH Percentage';
+                        $this->csv_header[] = 'CESSCVD';
+                        $this->csv_header[] = 'CESSCVD Percentage';
+
+                        $datas['Duty'] = '';
+                        $datas['Duty Forgon'] = '';
+                        $datas['Duty_Per'] = '';
+                        $datas['SWsrchrg'] = '';
+                        $datas['sw_perc'] = '';
+                        $datas['IGST'] = '';
+                        $datas['igst_perc'] = '';
+                        $datas['HLTH'] = '';
+                        $datas['hlth_perc'] = '';
+                        $datas['CESSCVD'] = '';
+                        $datas['cesscvd_perc'] = '';
+
                         foreach ($duty_details as $duty_price) {
+                          
                             if ($duty_price->DutyHead == 'BCD') {
                                 $datas['Duty'] = $duty_price->DutyAmount;
-                                $this->csv_header[] = 'Duty';
-
+                                $datas['Duty Forgon'] = $duty_price->DutyAmount;
                                 $datas['Duty_Per'] = $duty_price->AdValorem;
-                                $this->csv_header[] ='Duty Percentage';
-                                
+                               
                             } elseif ($duty_price->DutyHead == 'SW Srchrg') {
-                                $this->csv_header[] = 'SW Srchrg';
+                               
                                 $datas['SWsrchrg'] = $duty_price->DutyAmount;
-
-                                  $datas['sw_perc'] = $duty_price->AdValorem;
-                                  $this->csv_header[] ='SWsrchrg Percentage';
-
-
+                                $datas['sw_perc'] = $duty_price->AdValorem;
+                               
                             } elseif ($duty_price->DutyHead == 'IGST') {
-                                $this->csv_header[] = 'IGST';
                                 $datas['IGST'] = $duty_price->DutyAmount;
-
-                                  $datas['igst_perc'] = $duty_price->AdValorem;
-                                  $this->csv_header[] ='IGST Percentage';
-
-                                  
+                                $datas['igst_perc'] = $duty_price->AdValorem;
+                               
+                            } elseif ($duty_price->DutyHead == 'HLTH') {
+                               
+                                $datas['HLTH'] = $duty_price->DutyAmount;
+                                $datas['hlth_perc'] = $duty_price->AdValorem;
+                               
+                            } elseif ($duty_price->DutyHead == 'CESSCVD') {
+                               
+                                $datas['CESSCVD'] = $duty_price->DutyAmount;
+                                $datas['cesscvd_perc'] = $duty_price->AdValorem;
+                               
                             }
                         }
                     } else {
@@ -531,7 +557,7 @@ class BOEController extends Controller
         }
         foreach ($company_lists as $id => $company_name) {
             $query_results = BOE::where('company_id', $id)->count();
-            $Total_array [] = [
+            $Total_array[] = [
                 "Total_boe" => $query_results,
                 "Comapny_Name" => $company_name,
                 "id" => $id
