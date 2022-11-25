@@ -410,19 +410,19 @@ class ZohoOrder
         $prod_array["Lead_Source"] = $this->lead_source($store_name, $country_code);
         $prod_array['Lead_Status'] = $this->lead_status($store_name, $country_code);
 
-        if (isset($buyerDtls->AddressLine1) && isset($buyerDtls->AddressLine2)) {
-            $address = $buyerDtls->AddressLine1 . ' ' . $buyerDtls->AddressLine2 ?? "";
-        } else {
-            $address = $buyerDtls->AddressLine1 ?? "" . ' ' . $buyerDtls->AddressLine2 ?? "";
-        }
+        // if (isset($buyerDtls->AddressLine1) && isset($buyerDtls->AddressLine2)) {
+        //     $address = $buyerDtls->AddressLine1 . ' ' . $buyerDtls->AddressLine2 ?? "";
+        // } else {
+        //     $address = $buyerDtls->AddressLine1 ?? "" . ' ' . $buyerDtls->AddressLine2 ?? "";
+        // }
 
-        $address = str_replace("&", " and ", $address);
+        // $address = str_replace("&", " and ", $address);
 
         $prod_array["Mobile"]      = substr((int) filter_var($buyerDtls->Phone, FILTER_SANITIZE_NUMBER_INT), -10);
-        $prod_array["Address"]     = $address;
+        $prod_array["Address"]     = $this->get_address($value->shipping_address, $country_code);
         $prod_array["City"]        = $buyerDtls->City;
-        $prod_array['State']          = $this->get_state_pincode($country_code, $buyerDtls);
-        $prod_array['Zip_Code']       = $this->get_state_pincode($country_code, $buyerDtls, 'pincode');
+        $prod_array['State']       = $this->get_state_pincode($country_code, $buyerDtls);
+        $prod_array['Zip_Code']    = $this->get_state_pincode($country_code, $buyerDtls, 'pincode');
 
         $prod_array["Email"]              = ((isset($buyerEmail->BuyerEmail)) ? $buyerEmail->BuyerEmail : '');
         $prod_array["Customer_Type1"]      = ($value->is_business_order == 'true') ? 'B2B' : 'B2C';
@@ -543,6 +543,35 @@ class ZohoOrder
         return 'http://www.amazon.in/gp/product/' . $asin;
     }
 
+    public function get_address($shipping_address, $country_code)
+    {
+        $buyerDtls = (object)$shipping_address;
+        $address = '';
+
+        if (isset($buyerDtls->AddressLine1) && isset($buyerDtls->AddressLine2)) {
+            $address = $buyerDtls->AddressLine1 . ' ' . $buyerDtls->AddressLine2 ?? "";
+        } else {
+            $address = $buyerDtls->AddressLine1 ?? "" . ' ' . $buyerDtls->AddressLine2 ?? "";
+        }
+
+        $name =  $buyerDtls->Name ?? "";
+        $city = $buyerDtls->City ?? "";
+        $state = $this->get_state_pincode($country_code, $buyerDtls);
+        $pincode = $this->get_state_pincode($country_code, $buyerDtls, 'pincode');
+
+        $country = $this->get_country($country_code);
+
+        if ($pincode == "00000") {
+            $address = $name . ", " . $address . ", " . $city . ", " . $state . ", " . $country;
+        } else {
+            $address = $name . ", " . $address . ", " . $city . ", " . $state . ", " . $pincode . ", " . $country;
+        }
+
+        $address = str_replace("&", " and ", $address);
+
+        return $address;
+    }
+
     public function get_state_pincode($country_code, $buyerDtls, $return = 'state')
     {
 
@@ -603,5 +632,40 @@ class ZohoOrder
         }
 
         return ['price' => $price, 'weight' => $weight, 'category' => $category];
+    }
+
+    public function get_country($country_code)
+    {
+        $region_code = [
+            "BR" => "Brazil",
+            "CA" => "Canada",
+            "MX" => "Mexico",
+            "US" => "US",
+
+            "AE" => "UAE",
+            "DE" => "Germany",
+            "EG" => "Egypt",
+            "ES" => "Spain",
+            "FR" => "France",
+            "BE" => "Belgium",
+            "GB" => "UK",
+            "IN" => "India",
+            "IT" => "Italy",
+            "NL" => "Netherlands",
+            "PL" => "Poland",
+            "SA" => "Saudi Arabia",
+            "SE" => "Sweden",
+            "TR" => "Turkey",
+
+            "SG" => "Singapore",
+            "AU" => "Australia",
+            "JP" => "Japan",
+        ];
+
+        if (isset($region_code[$country_code])) {
+            return $region_code[$country_code];
+        }
+
+        return '';
     }
 }

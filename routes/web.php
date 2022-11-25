@@ -37,6 +37,7 @@ use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 use SellingPartnerApi\Configuration;
 use Illuminate\Support\Facades\Route;
+use App\Models\order\OrderItemDetails;
 use App\Models\order\OrderUpdateDetail;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
@@ -53,6 +54,8 @@ use SellingPartnerApi\Api\FeedsV20210630Api as FeedsApi;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
+use Illuminate\Validation\Rules\Exists;
+
 // use ConfigTrait;
 
 
@@ -71,36 +74,74 @@ use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 Route::get('t', function () {
     exit;
     $zoho = new ZohoApi;
+    $zohoOrder = new ZohoOrder;
 
-    OrderUpdateDetail::where('courier_name', "B2CShip")->chunk(600, function ($records) use ($zoho) {
+    $cnt = 0;
 
-        foreach ($records as $record) {
+    $records = CSV_Reader('ord_order_update_details (1).csv');
 
-            $exists = $zoho->search($record->amazon_order_id, $record->order_item_id);
+    foreach ($records as $record) {
 
-            if ($exists && array_key_exists('data', $exists) && array_key_exists(0, $exists['data']) && array_key_exists('id', $exists['data'][0])) {
+        $amazon_order_id = $record['amazon_order_id'];
+        $order_item_id = $record['order_item_id'];
 
-                $lead_id = $exists['data'][0]['id'];
-                $parameters = [];
+        $exists = $zoho->search($amazon_order_id, $order_item_id);
 
-                if ($record->courier_name == "B2CShip" && $record->store_id == 6) {
-                    $parameters["US_Shipper"] = empty($exists['data'][0]['us_shipper']) ? 'Nitroushaulinc' : $exists['data'][0]['us_shipper'];
-                    //$parameters["International_Shipment_ID"]  = empty($exists['data'][0]['International_Shipment_ID']) ? $record->courier_awb : $exists['data'][0]['International_Shipment_ID'];
-                    //$parameters["International_Courier_Name"]  = empty($exists['data'][0]['International_Courier_Name']) ? 'B2CShip.us' : $exists['data'][0]['International_Courier_Name'];
-                } else if ($record->courier_name == "B2CShip" && $record->store_id == 5) {
-                    $parameters["US_Shipper"]  = empty($exists['data'][0]['us_shipper']) ? 'MailboxMartIndia' : $exists['data'][0]['us_shipper'];
-                    //$parameters["International_Shipment_ID"]  = empty($exists['data'][0]['International_Shipment_ID']) ? $record->courier_awb : $exists['data'][0]['International_Shipment_ID'];
-                    // $parameters["International_Courier_Name"]  = empty($exists['data'][0]['International_Courier_Name']) ? 'B2CShip' : $exists['data'][0]['International_Courier_Name'];
+        if ($exists && array_key_exists('data', $exists) && array_key_exists(0, $exists['data']) && array_key_exists('id', $exists['data'][0])) {
+
+            $lead_id = $exists['data'][0]['id'];
+            $lead_source = $exists['data'][0]['Lead_Source'];
+            $zip_code = $exists['data'][0]['Zip_Code'];
+
+            $shipping_address = OrderItemDetails::query()
+                ->select('shipping_address', 'seller_identifier')
+                ->where("amazon_order_identifier", $amazon_order_id)
+                ->where("order_item_identifier", $order_item_id)
+                ->with(['store_details.mws_region'])
+                ->first();
+
+            if ($shipping_address) {
+
+                $country_code = $zohoOrder->get_country_code($shipping_address->store_details);
+
+                if (!empty($country_code)) {
+
+                    $parameters = [];
+
+                    $parameters["Address"] = $zohoOrder->get_address($shipping_address->shipping_address, $country_code);
+
+                    if (!$zip_code) {
+                        $parameters["Zip_Code"] = $zohoOrder->get_state_pincode($country_code, (object)$shipping_address->shipping_address, 'pincode');
+                    }
+
+                    echo "$lead_source -- $lead_id :- " . $parameters["Address"] . " ZIP CODE MIZZ ->"  . " <br>";
+
+                    if (isset($parameters['Zip_Code'])) {
+                        echo $parameters['Zip_Code'] . "<br>";
+                    }
+
+                    if ($cnt == 5) {
+                        $cnt = 0;
+                    }
+
+                    $cnt++;
+                    $zoho->updateLead($lead_id, $parameters);
+                } else {
+                    po("Ignore Amazon Order ID: $amazon_order_id Order Item ID: $order_item_id. Did not find Country Code ");
+                    echo "<br>";
+                    exit;
                 }
-
-                $zoho->updateLead($lead_id, $parameters);
-
-                $store_name = $record->store_id == 6 ? "Nitrous" : "MBM";
-
-                echo "$store_name $lead_id :- " . json_encode($parameters) . " <br>";
+            } else {
+                po("Ignore Amazon Order ID: $amazon_order_id Order Item ID: $order_item_id. Did not find Shipping Address ");
+                echo "<br>";
+                exit;
             }
+        } else {
+            po("Ignore Amazon Order ID: $amazon_order_id Order Item ID: $order_item_id. Did not find in API");
+            echo "<br>";
+            exit;
         }
-    });
+    }
 
 
 
@@ -316,7 +357,6 @@ Route::get('import', function () {
     po(($token));
 });
 
-$delist_asins;
 Route::get('wherein', function () {
     $asins = ['B0006KQH6A', 'B0006G5MHO'];
 
