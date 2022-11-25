@@ -29,15 +29,15 @@
             </div>
             <div class="modal-body">
 
-          <input type="hidden" name="cust_id" id="cust_id">
+                <input type="hidden" name="cust_id" id="cust_id">
 
                 <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-content">
-                       
-                          <img src="" class="showPicfront"> 
-                    </div>
+
+                                <img src="" class="showPicfront">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -46,7 +46,7 @@
                 <div class="modal pic_back" tabindex="-1" role="dialog" aria-labelledby="pic_back" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
-                           <img src="" class="showPicback"> 
+                            <img src="" class="showPicback">
                         </div>
                     </div>
                 </div>
@@ -91,23 +91,23 @@
     {{ session()->get('success') }}
 </div>
 @endif
-  <div class="alert_display">
-            @if (request('success'))
-            <div class="alert alert-success alert-block">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>{{request('success')}}</strong>
-            </div>
-            @endif
-     </div>
+<div class="alert_display">
+    @if (request('success'))
+    <div class="alert alert-success alert-block">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>{{request('success')}}</strong>
+    </div>
+    @endif
+</div>
 
-     <div class="alert_display">
-            @if (request('error'))
-            <div class="alert alert-warning alert-block">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>{{request('error')}}</strong>
-            </div>
-            @endif
-     </div>
+<div class="alert_display">
+    @if (request('error'))
+    <div class="alert alert-warning alert-block">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>{{request('error')}}</strong>
+    </div>
+    @endif
+</div>
 
 @if (session()->has('error'))
 <div class="alert alert-warning" role="alert">
@@ -122,6 +122,7 @@
             <th>Name</th>
             <th>Email</th>
             <th>Mobile No.</th>
+            <th>Recived Document</th>
             <th>KYC Status</th>
             <th>KYC Updted Date</th>
             <th>Rejection Reason</th>
@@ -168,6 +169,10 @@
                     name: 'telephone'
                 },
                 {
+                    data: 'document_type',
+                    name: 'document_type'
+                },
+                {
                     data: 'kyc_status',
                     name: 'kyc_status'
                 },
@@ -189,9 +194,10 @@
         });
 
     });
+    
     $('.rea').hide();
     $(document).on('click', '#kyc_aprove', function() {
-        
+
         let selected_date = $('#search_date').val();
         let customer_id = $(this).attr('value');
         if (customer_id == '') {
@@ -206,13 +212,12 @@
                     "_token": "{{ csrf_token() }}",
                 },
                 success: function(response) {
-                    if(response == 'no kyc found' )
-                    {
-               window.location.href = '/cliqnshop/kyc?error= No KYC Found'
+                    if (response == 'no kyc found') {
+                        window.location.href = '/cliqnshop/kyc?error= No KYC Found'
                     } else {
 
                         $('#kyc_modal').modal('show');
-                     
+
                         $(".modal-body #cname").text(response['kyc'][0]['name']);
                         $(".modal-body #cust_id").val(response['kyc'][0]['customer_id']);
                         $(".modal-body #dtype").text(response['kyc'][0]['document_type']);
@@ -222,62 +227,58 @@
                     }
                 },
                 error: function(response) {
-    
+
                     alert('something went wrong');
                 }
             });
         }
     });
+
     $('#close').click(function() {
         $('#kyc_modal').modal('hide');
     });
 
 
-
-$('#kyc_status').on('change',function() {
-   let  status = $('#kyc_status').val();
- if (status == '2') {
+    $('#kyc_status').on('change', function() {
+        let status = $('#kyc_status').val();
+        if (status == '2') {
             $('.rea').show();
-} else if(status == '1'|| status == 0)
-{
-     $('.rea').hide();
-}
-});
-
-
+        } else if (status == '1' || status == 0) {
+            $('.rea').hide();
+        }
+    });
 
     $('#save_changes').click(function() {
-      let  rea = $('#reason').val();
-      let  status = $('#kyc_status').val();
-      let  id = $('#cust_id').val();
-      
+        let rea = $('#reason').val();
+        let status = $('#kyc_status').val();
+        let id = $('#cust_id').val();
+
         if (status == '0') {
             alert('Please Select The KYC Status');
             return false;
-        } else if(rea == '')
-        {
+        } else if (status == 2 && rea == '') {
             alert('Please fill The reason For Rejecting The KYC');
             return false;
         }
 
         $.ajax({
-                method: 'get',
-                url: "{{ route('cliqnshop.kyc.update') }}",
-                data: {
-                    'id': id,
-                    'rea' :rea,
-                    'status' : status,
-                    "_token": "{{ csrf_token() }}",
-                },
-                success: function(response) {
-              
+            method: 'get',
+            url: "{{ route('cliqnshop.kyc.update') }}",
+            data: {
+                'id': id,
+                'rea': rea,
+                'status': status,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(response) {
+
                 window.location.href = '/cliqnshop/kyc?success=KYC Status has  updated successfully'
-                },
-                error: function(response) {
-                  
-                    alert('something went wrong');
-                }
-            });
+            },
+            error: function(response) {
+
+                alert('something went wrong');
+            }
+        });
     });
 </script>
 
