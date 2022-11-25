@@ -55,7 +55,7 @@ class OrderItem
 
             $code =  $e->getCode();
             $msg = $e->getMessage();
-            $error_reportings = ErrorReporting::create([
+            ErrorReporting::create([
                 'queue_type' => "order",
                 'identifier' => $order_id,
                 'identifier_type' => "order_id",
@@ -64,6 +64,8 @@ class OrderItem
                 'error_code' => $code,
                 'message' => $msg,
             ]);
+
+            //slack msg
         }
         return true;
     }
@@ -220,38 +222,37 @@ class OrderItem
                 $qty = $invoice_data['qty'] > 0 ? $invoice_data['qty'] : 1;
                 $invoice_data['product_price'] = (float)($tem_price / $qty);
 
-                // Invoice::upsert(
-                //     $invoice_data,
-                //     ['order_id_sku_unique'],
-                //     [
-                //         'sku',
-                //         'item_description',
-                //         'qty',
-                //         'currency',
-                //         'product_price',
-                //         'bill_to_name',
-                //         'bill_to_add',
-                //         'ship_to_name',
-                //         'ship_to_add',
-                //         'amazon_order_identifier'
-                //     ]
-                // );
-
                 // /Check if ASIN is in source catalog table. if not then auto add and make product sp api request
                 if ($aws_id == 20) {
                     $catalog_table_name = 'catalognewins';
                 }
 
-                $asins = DB::connection('catalog')->select("SELECT asin FROM $catalog_table_name where asin = '$asin' ");
-                if (count($asins) <= 0) {
-                    $asin_source[] = [
-                        'asin' => $asin,
-                        'seller_id' => $aws_id,
-                        'source' => $awsCountryCode,
-                        'id'    =>  '4',
-                    ];
+                try {
 
-                    (new NewCatalog())->Catalog($asin_source);
+                    $asins = DB::connection('catalog')->select("SELECT asin FROM $catalog_table_name where asin = '$asin' ");
+                    if (count($asins) <= 0) {
+                        $asin_source[] = [
+                            'asin' => $asin,
+                            'seller_id' => $aws_id,
+                            'source' => $awsCountryCode,
+                            'id'    =>  '4',
+                        ];
+
+                        (new NewCatalog())->Catalog($asin_source);
+                    }
+                } catch (Exception $e) {
+
+                    $getMessage = $e->getMessage();
+                    $getCode = $e->getCode();
+                    $getFile = $e->getFile();
+                    $getLine = $e->getLine();
+
+                    $slackMessage = "Message: $getMessage 
+                    Code: $getCode,
+                    File: $getFile,
+                    Line: $getLine";
+
+                    slack_notification('app360', 'Order Item Details', $slackMessage);
                 }
             }
         }
