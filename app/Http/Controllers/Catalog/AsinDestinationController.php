@@ -18,19 +18,6 @@ class AsinDestinationController extends Controller
 {
     public function index(Request $request)
     {
-        // if ($request->ajax()) {
-
-        //     $data = AsinDestination::orderBy('id', 'DESC')->get();
-        //     return DataTables::of($data)
-        //         ->addIndexColumn()
-        //         ->addColumn('action', function ($row) {
-        //             $actionBtn = '<div class="d-flex"><a href="edit-asin-destination/' . $row->id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
-        //             $actionBtn .= '<div class="d-flex pl-2 trash"><a href="trash-asin-destination/' . $row->id . ' " class=" btn btn-sm btn-danger "><i class="fa fa-trash"></i> Remove</a>';
-
-        //             return $actionBtn;
-        //         })
-        //         ->make(true);
-        // }
         return view('Catalog.AsinDestination.index');
     }
 
@@ -124,7 +111,6 @@ class AsinDestinationController extends Controller
             ];
             FileManagement::create($file_info);
             fileManagement();
-            // commandExecFunc("mosh:Asin-destination-upload ${user_id} ${priority} --destination=${destination} ${path}");
         }
         return redirect('catalog/import-asin-destination')->with('success', 'File has been uploaded successfully');
     }
