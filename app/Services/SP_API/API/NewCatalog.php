@@ -121,10 +121,6 @@ class NewCatalog
 
     public function FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id)
     {
-        Log::alert($asins);
-        Log::alert('C C> ' . $country_code);
-        Log::alert('Seller Id' . $seller_id);
-
         $country_code = strtoupper($country_code);
         $config =   $this->config($aws_id, $country_code, $token);
         $apiInstance = new CatalogItemsV20220401Api($config);

@@ -254,8 +254,8 @@ class OrderItem
                     Code: $getCode,
                     File: $getFile,
                     Line: $getLine";
-                    Log::debug($slackMessage);
-                    // slack_notification('app360', 'Order Item Details', $slackMessage);
+                    // Log::debug($slackMessage);
+                    slack_notification('app360', 'Order Item Details', $slackMessage);
                 }
             }
         }
