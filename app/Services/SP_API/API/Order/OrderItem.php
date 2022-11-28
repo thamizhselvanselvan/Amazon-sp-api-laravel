@@ -19,6 +19,7 @@ use App\Models\order\OrderSellerCredentials;
 use App\Jobs\Seller\Seller_catalog_import_job;
 use App\Models\Admin\ErrorReporting;
 use App\Models\Invoice;
+use App\Models\Mws_region;
 use App\Models\order\OrderUpdateDetail;
 
 class OrderItem
@@ -26,10 +27,8 @@ class OrderItem
     use ConfigTrait;
     private $zoho;
     private $courier_partner;
-    public function OrderItemDetails($order_id, $aws_id, $country_code, $zoho, $courier_partner)
+    public function OrderItemDetails($order_id, $aws_id, $country_code, $source, $zoho, $courier_partner)
     {
-        //Log::alert('Order Item Details -> ' . $order_id);
-
         $this->zoho = $zoho;
         $this->courier_partner = $courier_partner;
 
@@ -38,11 +37,11 @@ class OrderItem
         $marketplace_ids = [$marketplace_ids];
 
         $apiInstance = new OrdersV0Api($config);
-        $this->SelectedSellerOrderItem($apiInstance, $country_code, $order_id, $aws_id);
+        $this->SelectedSellerOrderItem($apiInstance, $country_code, $source, $order_id, $aws_id);
         return true;
     }
 
-    public function SelectedSellerOrderItem($apiInstance, $awsCountryCode, $order_id, $aws_id)
+    public function SelectedSellerOrderItem($apiInstance, $awsCountryCode, $source, $order_id, $aws_id)
     {
         $data_element = array('buyerInfo');
         $next_token = NULL;
@@ -50,7 +49,7 @@ class OrderItem
         try {
             $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
             $result_order_address = $apiInstance->getOrderAddress($order_id);
-            $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id);
+            $this->OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $source, $aws_id);
         } catch (Exception $e) {
 
             $code =  $e->getCode();
@@ -70,7 +69,7 @@ class OrderItem
         return true;
     }
 
-    public function OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $aws_id)
+    public function OrderItemDataFormating($result_orderItems, $result_order_address, $order_id, $awsCountryCode, $source, $aws_id)
     {
         $host = config('database.connections.order.host');
         $dbname = config('database.connections.order.database');
@@ -103,11 +102,11 @@ class OrderItem
                     }
 
                     if (is_array($value) || is_object($value)) {
-                        // $order_detials->$detailsKey = json_encode($value);
+
                         $order_address = json_encode($value);
                     } else {
                         $count = 1;
-                        // $order_detials->$detailsKey = $value;
+
                         $amazon_order = $value;
                     }
                 }
@@ -138,7 +137,7 @@ class OrderItem
         ];
 
         $tem_price = 0;
-        $catalog_table_name = 'catalognew' . strtolower($awsCountryCode) . 's';
+        $catalog_table_name = 'catalognew' . strtolower($source) . 's';
 
         foreach ($result_orderItems['payload']['order_items'] as $result_order) {
             foreach ((array)$result_order as $result) {
@@ -147,6 +146,7 @@ class OrderItem
                 $order_detials->seller_identifier = $aws_id;
                 $order_detials->status = '0';
                 $order_detials->country = $awsCountryCode;
+                $order_detials->source = $source;
 
                 foreach ($result as $key => $value) {
                     $detailsKey = lcfirst($key);
@@ -223,19 +223,22 @@ class OrderItem
                 $invoice_data['product_price'] = (float)($tem_price / $qty);
 
                 // /Check if ASIN is in source catalog table. if not then auto add and make product sp api request
-                if ($aws_id == 20) {
-                    $catalog_table_name = 'catalognewins';
-                }
 
                 try {
-
                     $asins = DB::connection('catalog')->select("SELECT asin FROM $catalog_table_name where asin = '$asin' ");
+
+                    $country_code_up = strtoupper($source);
+                    $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code_up)->get()->toArray();
+
+                    $aws_id = $mws_regions[0]['aws_verified'][0]['id'];
+
                     if (count($asins) <= 0) {
+
                         $asin_source[] = [
                             'asin' => $asin,
                             'seller_id' => $aws_id,
-                            'source' => $awsCountryCode,
-                            'id'    =>  '4',
+                            'source' => $source,
+                            'id'    =>  $aws_id,
                         ];
 
                         (new NewCatalog())->Catalog($asin_source);
@@ -251,7 +254,7 @@ class OrderItem
                     Code: $getCode,
                     File: $getFile,
                     Line: $getLine";
-
+                    // Log::debug($slackMessage);
                     slack_notification('app360', 'Order Item Details', $slackMessage);
                 }
             }
