@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use App\Models\User;
+use League\Csv\Reader;
 use Carbon\CarbonInterval;
 use App\Models\Aws_credential;
 use App\Models\FileManagement;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
 use App\Models\SystemSetting\SystemSetting;
 use App\Models\ShipNTrack\SMSA\SmsaTrackings;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
@@ -992,7 +994,8 @@ if (!function_exists('fileManagement')) {
             'ASIN_SOURCE_',
             'CATALOG_PRICE_EXPORT_',
             'CATALOG_EXPORT_',
-            'ORDER_'
+            'ORDER_',
+            'CATALOG_PRICE_EXPORT_ALL_'
         ];
 
         $file_management_update = '';
@@ -1063,31 +1066,46 @@ if (!function_exists('fileManagementMonitoringNew')) {
         $file_check =   FileManagement::select('user_id', 'created_at', 'command_end_time', 'info')
             ->where('type', $module_type)
             ->orderBy('id', 'desc')
-            ->first()
-            ->toArray();
+            ->first();
+        if ($file_check) {
 
-        $user_name = User::where('id', $file_check['user_id'])->get('name')->toArray();
+            $file_check = $file_check->toArray();
 
-        $user_name = $user_name[0]['name'];
-        $created_at = date('d-m-Y h:i:s', strtotime($file_check['created_at']));
-        $info = $file_check['info'];
+            $user_name = User::where('id', $file_check['user_id'])->get('name')->toArray();
 
-        $html_txt = '';
-        $status = '';
+            $user_name = $user_name[0]['name'];
+            $created_at = date('d-m-Y h:i:s', strtotime($file_check['created_at']));
+            $info = $file_check['info'];
 
-        if ($file_check['command_end_time'] == '0000-00-00 00:00:00') {
-            $status = 'Processing';
-            $html_txt = "Previous uploaded file is still processing 
-                <br>
-                    Uploaded By: $user_name
-                <br>
-                     Uploaded Time: $created_at 
-                <br>
-                    Status: Processing 
-                <br>";
-        } else if ($info != '') {
+            $html_txt = '';
+            $status = '';
 
-            $html_txt = "Previous uploaded file has error 
+            if ($file_check['command_end_time'] == '0000-00-00 00:00:00') {
+                $status = 'Processing';
+                if (str_contains($module_type, 'EXPORT')) {
+
+                    $html_txt = "Previous file export is still processing 
+                    <br>
+                        Exported By: $user_name
+                    <br>
+                        Export Time: $created_at 
+                    <br>
+                        Status: Processing 
+                    <br>";
+                } elseif (str_contains($module_type, 'IMPORT')) {
+
+                    $html_txt = "Previous Uploaded file is still processing 
+                    <br>
+                        Uploaded By: $user_name
+                    <br>
+                         Uploaded Time: $created_at 
+                    <br>
+                        Status: Processing 
+                    <br>";
+                }
+            } else if ($info != '') {
+
+                $html_txt = "Previous uploaded file has error 
             <br>
                 Uploaded By: $user_name
             <br>
@@ -1096,11 +1114,33 @@ if (!function_exists('fileManagementMonitoringNew')) {
                 Status: Failed 
             <br>
                  Remark: $info";
+            }
+
+            return [
+                'status' => $status,
+                'description' => $html_txt
+            ];
+        } else {
+
+            return [
+                'status' => '',
+                'description' => ''
+            ];
+        }
+    }
+}
+
+if (!function_exists('CSV_Reader')) {
+    function CSV_Reader(string $file_path, string $delimiter = ','): object
+    {
+        if (!Storage::exists($file_path)) {
+            return false;
         }
 
-        return [
-            'status' => $status,
-            'description' => $html_txt
-        ];
+        $reader = Reader::createFromPath(Storage::path($file_path), 'r');
+        $reader->setDelimiter($delimiter);
+        $reader->setHeaderOffset(0);
+
+        return $reader->getRecords();
     }
 }

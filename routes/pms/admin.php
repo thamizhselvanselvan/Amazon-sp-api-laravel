@@ -44,3 +44,7 @@ Route::get('admin/system-setting/restore/{id}', 'SystemSetting\SystemSettingCont
 
 
 Route::get('admin/file-management', 'FileManagement\FileManagementController@index')->name('file.management.home');
+
+
+Route::get('admin/job-management', 'Admin\JobsManagementController@index')->name('jobs.management.index');
+Route::get('admin/job-management/exception', 'Admin\JobsManagementController@exceptiondetails')->name('jobs.management.exception');
