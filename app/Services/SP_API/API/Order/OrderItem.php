@@ -19,6 +19,7 @@ use App\Models\order\OrderSellerCredentials;
 use App\Jobs\Seller\Seller_catalog_import_job;
 use App\Models\Admin\ErrorReporting;
 use App\Models\Invoice;
+use App\Models\Mws_region;
 use App\Models\order\OrderUpdateDetail;
 
 class OrderItem
@@ -225,12 +226,19 @@ class OrderItem
 
                 try {
                     $asins = DB::connection('catalog')->select("SELECT asin FROM $catalog_table_name where asin = '$asin' ");
+
+                    $country_code_up = strtoupper($source);
+                    $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code_up)->get()->toArray();
+
+                    $aws_id = $mws_regions[0]['aws_verified'][0]['id'];
+
                     if (count($asins) <= 0) {
+
                         $asin_source[] = [
                             'asin' => $asin,
                             'seller_id' => $aws_id,
                             'source' => $source,
-                            'id'    =>  '4',
+                            'id'    =>  $aws_id,
                         ];
 
                         (new NewCatalog())->Catalog($asin_source);

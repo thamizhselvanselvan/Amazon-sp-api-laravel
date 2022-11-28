@@ -36,7 +36,6 @@ class NewCatalog
 
         foreach ($records as $record) {
 
-            Log::info($record);
             $asin = $record['asin'];
             $country_code = $record['source'];
             $country_code1 = $country_code;
@@ -53,7 +52,7 @@ class NewCatalog
 
             $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
             $token = $aws_token[0];
-            Log::warning('US->dsfasdfaf' . $token);
+
             $country_code = strtolower($country_code);
             $catalog_table = 'catalognew' . $country_code . 's';
 
