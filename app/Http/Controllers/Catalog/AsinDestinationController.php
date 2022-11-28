@@ -92,6 +92,7 @@ class AsinDestinationController extends Controller
             if (!$validation) {
                 return back()->with('error', "Please upload file to import it to the database");
             }
+
             $import_file_time = date('Y-m-d-H-i-s');
             $file = file_get_contents($request->asin);
             $path = "AsinDestination/asin${import_file_time}.csv";
@@ -109,6 +110,7 @@ class AsinDestinationController extends Controller
                 'command_name' => 'mosh:Asin-destination-upload',
 
             ];
+
             FileManagement::create($file_info);
             fileManagement();
         }
