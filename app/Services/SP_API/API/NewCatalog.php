@@ -36,6 +36,7 @@ class NewCatalog
 
         foreach ($records as $record) {
 
+            Log::info($record);
             $asin = $record['asin'];
             $country_code = $record['source'];
             $country_code1 = $country_code;
@@ -52,12 +53,13 @@ class NewCatalog
 
             $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
             $token = $aws_token[0];
+            Log::warning('US->dsfasdfaf' . $token);
             $country_code = strtolower($country_code);
             $catalog_table = 'catalognew' . $country_code . 's';
 
             $aws_id = NULL;
 
-            if ($count == 19) {
+            if ($count == 9) {
 
                 $queue_data[] = $this->FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id);
                 $count = 0;
@@ -120,6 +122,9 @@ class NewCatalog
 
     public function FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id)
     {
+        Log::alert($asins);
+        Log::alert('C C> ' . $country_code);
+        Log::alert('Seller Id' . $seller_id);
 
         $country_code = strtoupper($country_code);
         $config =   $this->config($aws_id, $country_code, $token);
@@ -128,7 +133,7 @@ class NewCatalog
         $marketplace_id = [$marketplace_id];
 
         $identifiers_type = 'ASIN';
-        $page_size = 20;
+        $page_size = 10;
         $locale = null;
         $seller_id_temp = null;
         $keywords = null;
