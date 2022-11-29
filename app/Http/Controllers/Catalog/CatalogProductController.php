@@ -216,38 +216,36 @@ class CatalogProductController extends Controller
         if ($request->form_type == 'text-area') {
             $request->validate([
                 'source'            => 'required|in:IN,US',
-                'priority'          => 'required|in:1,2,3',
+                'priority'          => 'required|in:1,2,3,All',
                 'text_area_asins'   =>  'required',
                 'header'            =>  'required',
             ]);
+
+            // return $request->all();
+
             $csv_asin = [];
             $source = $request->source;
             $priority = $request->priority;
+
             $Asins =  preg_split('/[\r\n| |:|,|.]/', $request->text_area_asins, -1, PREG_SPLIT_NO_EMPTY);
+
             foreach ($Asins as $Asin) {
                 $csv_asin[] = ['ASIN' => $Asin];
             }
 
             $path = "CatalogWithPrice/asin.csv";
+
+            if (!Storage::exists($path)) {
+                Storage::put($path, '');
+            }
+
             $csv_import = Writer::createFromPath(Storage::path($path), "w");
             $csv_import->insertOne(['ASIN']);
             $csv_import->insertAll($csv_asin);
-            $headers = implode(',', $request->header);
-            commandExecFunc("mosh:export-catalog-with-price ${source} ${priority} ${headers}");
-        } elseif ($request->form_type == 'file_upload') {
-            $request->validate([
-                'asin' => 'required|mimes:txt,csv',
-                'source'    => 'required',
-                'priority'  => 'required',
-            ]);
-            $source = $request->source;
-            $priority = $request->priority;
-            $headers = ["data" => implode('-', $request->header)];
 
-            $path = "CatalogWithPrice/asin.csv";
-            $file = file_get_contents($request->asin);
-            Storage::put($path, $file);
+            $headers = ['data' => implode('-', $request->header)];
             $user_id = Auth::user()->id;
+
             $file_info = [
                 "user_id" => $user_id,
                 "type" => "CATALOG_PRICE_EXPORT",
@@ -255,10 +253,39 @@ class CatalogProductController extends Controller
                 "command_name" => "mosh:export-catalog-with-price",
                 "header" => json_encode($headers)
             ];
+
             FileManagement::create($file_info);
             fileManagement();
 
             // commandExecFunc("mosh:export-catalog-with-price ${source} ${priority} ${headers}");
+        } elseif ($request->form_type == 'file_upload') {
+            $request->validate([
+                'asin' => 'required|mimes:txt,csv',
+                'source'    => 'required',
+                'priority'  => 'required',
+            ]);
+
+            $source = $request->source;
+            $priority = $request->priority;
+
+            $headers = ["data" => implode('-', $request->header)];
+
+            $path = "CatalogWithPrice/asin.csv";
+            $file = file_get_contents($request->asin);
+            Storage::put($path, $file);
+
+            $user_id = Auth::user()->id;
+
+            $file_info = [
+                "user_id" => $user_id,
+                "type" => "CATALOG_PRICE_EXPORT",
+                "module" => "CATALOG_PRICE_EXPORT_${source}_${priority}",
+                "command_name" => "mosh:export-catalog-with-price",
+                "header" => json_encode($headers)
+            ];
+
+            FileManagement::create($file_info);
+            fileManagement();
         }
         return redirect('/catalog/export-with-price')->with("success", "Catalog with price is exporting");
     }

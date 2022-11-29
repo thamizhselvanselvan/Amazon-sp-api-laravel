@@ -53,6 +53,7 @@ class ExportCatalogWithPriceViaAsin extends Command
     public function handle()
     {
         $columns_data = $this->option('columns');
+
         $final_data = [];
         $explode_array = explode(',', $columns_data);
         foreach ($explode_array as $value) {
@@ -62,18 +63,14 @@ class ExportCatalogWithPriceViaAsin extends Command
 
         $fm_id = $final_data['fm_id'];
         $this->country_code = $final_data['destination'];
+
         $this->priority = $final_data['priority'];
+
+        if ($final_data['priority'] == 'All') {
+            $this->priority = NULL;
+        }
+
         $selected_headers = explode('-', $final_data['header']);
-
-        log::alert($this->country_code);
-        log::alert($this->priority);
-        log::alert($selected_headers);
-
-        // exit;
-
-        // $this->country_code = $this->argument('source');
-        // $this->priority = $this->argument('priority');
-        // $selected_headers = explode('_', $selected_headers);
 
         $path = "CatalogWithPrice/asin.csv";
         $asins = Reader::createFromPath(Storage::path($path), 'r');
@@ -92,9 +89,6 @@ class ExportCatalogWithPriceViaAsin extends Command
         }
         $exportFilePath = "excel/downloads/catalog_with_price/$this->country_code/Priority" . $this->priority . '/Priority' . $this->priority . "_CatalogWithPrice";
 
-        $csv_head = [];
-        $csv_header = [];
-
         $record_per_csv = 1000000;
         $chunk = 20000;
         $this->check = $record_per_csv / $chunk;
@@ -102,74 +96,19 @@ class ExportCatalogWithPriceViaAsin extends Command
         if ($this->country_code == 'IN') {
 
             $str = ['destination.', 'cat.', 'pricing_ins.'];
-            foreach ($selected_headers as $key => $selected_header) {
-                $headers[] = "${selected_header}";
-                $csv_title = str_replace($str, '', $selected_header);
-                if ($csv_title == 'images') {
-                    $csv_head[] = ['image1', 'image2'];
-                }
-                if ($csv_title == 'dimensions') {
-                    $csv_head[] = ['height', 'length', 'width', 'unit'];
-                }
-                if ($selected_header != 'cat.images' && $selected_header != 'cat.dimensions') {
-                    $csv_head[$key][] = str_replace('_', ' ', $csv_title);
-                }
-            }
-            foreach ($csv_head as $csv_heading) {
-                foreach ($csv_heading as $csv) {
-                    $csv_header[] = $csv;
-                }
-            }
-
-            foreach ($chunk_data as $asins) {
-                $records = PricingIn::select($headers)
-                    ->join("asin_destination_ins as destination", 'pricing_ins.asin', '=', 'destination.asin')
-                    ->join("catalognewins as cat", 'pricing_ins.asin', '=', 'cat.asin')
-                    ->where('destination.priority', $this->priority)
-                    ->whereIn('destination.asin', $asins)
-                    ->get()->toArray();
-
-                $this->FormateDataForCsv($csv_header, $records, $exportFilePath);
-            }
+            $this->catalogPriceIN($selected_headers, $chunk_data, $exportFilePath, $str);
         } elseif ($this->country_code == 'US') {
 
+            Log::alert($selected_headers);
             $str = ['destination.', 'cat.', 'pricing_uss.'];
-            foreach ($selected_headers as $key => $selected_header) {
-                $headers[] = "${selected_header}";
-                $csv_title = str_replace($str, '', $selected_header);
-                if ($csv_title == 'images') {
-                    $csv_head[] = ['image1', 'image2'];
-                }
-                if ($csv_title == 'dimensions') {
-                    $csv_head[] = ['height', 'length', 'width', 'unit'];
-                }
-                if ($selected_header != 'cat.images' && $selected_header != 'cat.dimensions') {
-                    $csv_head[$key][] = str_replace('_', ' ', $csv_title);
-                }
-            }
-            foreach ($csv_head as $csv_heading) {
-                foreach ($csv_heading as $csv) {
-
-                    $csv_header[] = $csv;
-                }
-            }
-            foreach ($chunk_data as $asins) {
-                $records = PricingUs::select($headers)
-                    ->join("asin_destination_uss as destination", 'pricing_uss.asin', '=', 'destination.asin')
-                    ->join("catalognewuss as cat", 'pricing_uss.asin', '=', 'cat.asin')
-                    ->where('destination.priority', $this->priority)
-                    ->whereIn('destination.asin', $asins)
-                    ->get()->toArray();
-
-                $this->FormateDataForCsv($csv_header, $records, $exportFilePath);
-            }
+            $this->catalogPriceUS($selected_headers, $chunk_data, $exportFilePath, $str);
         }
 
+        //Rename file from .mosh to .csv after completing process
         $path = "excel/downloads/catalog_with_price/" . $this->country_code . '/Priority' . $this->priority;
         $path = Storage::path($path);
         $files = (scandir($path));
 
-        $filesArray = [];
         foreach ($files as $key => $file) {
             if ($key > 1) {
                 if (str_contains($file, '.mosh')) {
@@ -179,25 +118,56 @@ class ExportCatalogWithPriceViaAsin extends Command
             }
         }
 
-        $zip = new ZipArchive;
-        $path = "excel/downloads/catalog_with_price/" . $this->country_code . '/Priority' . $this->priority . '/' . "/zip/" . $this->country_code . "_CatalogPrice.zip";
-        $file_path = Storage::path($path);
-        if (!Storage::exists($path)) {
-            Storage::put($path, '');
-        }
-        if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
-            foreach ($this->totalFile as $key => $value) {
-                $path = Storage::path('excel/downloads/catalog_with_price/' . $this->country_code . '/Priority' . $this->priority . '/' . $value);
-                $relativeNameInZipFile = basename($path);
-                $zip->addFile($path, $relativeNameInZipFile);
-            }
-            $zip->close();
-        }
-        //FILE MANAGEMENT
+        $this->zipCreate();
 
+        //FILE MANAGEMENT
         $command_end_time = now();
         fileManagementUpdate($fm_id, $command_end_time);
     }
+
+    public function catalogPriceIN($selected_headers, $chunk_data, $exportFilePath, $str)
+    {
+        $header_details = $this->csvHeaderFormating($selected_headers, $str);
+        $headers = $header_details['headers'];
+        $csv_header = $header_details['csv_header'];
+
+        foreach ($chunk_data as $asins) {
+            $records = PricingIn::select($headers)
+                ->join("asin_destination_ins as destination", 'pricing_ins.asin', '=', 'destination.asin')
+                ->join("catalognewins as cat", 'pricing_ins.asin', '=', 'cat.asin')
+                ->when($this->priority, function ($q) {
+                    return $q->where('destination.priority', $this->priority);
+                })
+                ->whereIn('destination.asin', $asins)
+                ->get()->toArray();
+
+            $this->FormateDataForCsv($csv_header, $records, $exportFilePath);
+        }
+        return true;
+    }
+
+    public function catalogPriceUS($selected_headers, $chunk_data, $exportFilePath, $str)
+    {
+        $header_details = $this->csvHeaderFormating($selected_headers, $str);
+        $headers = $header_details['headers'];
+        $csv_header = $header_details['csv_header'];
+
+        foreach ($chunk_data as $asins) {
+            $records = PricingUs::select($headers)
+                ->join("asin_destination_uss as destination", 'pricing_uss.asin', '=', 'destination.asin')
+                ->join("catalognewuss as cat", 'pricing_uss.asin', '=', 'cat.asin')
+                ->when($this->priority, function ($q) {
+                    return $q->where('destination.priority', $this->priority);
+                })
+                ->whereIn('destination.asin', $asins)
+                ->get()->toArray();
+
+            $this->FormateDataForCsv($csv_header, $records, $exportFilePath);
+        }
+
+        return true;
+    }
+
     public function FormateDataForCsv($csv_header, $records, $exportFilePath)
     {
         $catalogwithprice = [];
@@ -257,5 +227,55 @@ class ExportCatalogWithPriceViaAsin extends Command
             ++$this->count;
         }
         return true;
+    }
+
+    public function csvHeaderFormating($selected_headers, $str)
+    {
+        $csv_head = [];
+        $csv_header = [];
+
+        foreach ($selected_headers as $key => $selected_header) {
+            $headers[] = "${selected_header}";
+            $csv_title = str_replace($str, '', $selected_header);
+            if ($csv_title == 'images') {
+                $csv_head[] = ['image1', 'image2'];
+            }
+            if ($csv_title == 'dimensions') {
+                $csv_head[] = ['height', 'length', 'width', 'unit'];
+            }
+            if ($selected_header != 'cat.images' && $selected_header != 'cat.dimensions') {
+                $csv_head[$key][] = str_replace('_', ' ', $csv_title);
+            }
+        }
+
+        foreach ($csv_head as $csv_heading) {
+            foreach ($csv_heading as $csv) {
+
+                $csv_header[] = $csv;
+            }
+        }
+
+        return [
+            'headers' => $headers,
+            'csv_header' => $csv_header
+        ];
+    }
+
+    public function zipCreate()
+    {
+        $zip = new ZipArchive;
+        $path = "excel/downloads/catalog_with_price/" . $this->country_code . '/Priority' . $this->priority . '/' . "/zip/" . $this->country_code . "_CatalogPrice.zip";
+        $file_path = Storage::path($path);
+        if (!Storage::exists($path)) {
+            Storage::put($path, '');
+        }
+        if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
+            foreach ($this->totalFile as $key => $value) {
+                $path = Storage::path('excel/downloads/catalog_with_price/' . $this->country_code . '/Priority' . $this->priority . '/' . $value);
+                $relativeNameInZipFile = basename($path);
+                $zip->addFile($path, $relativeNameInZipFile);
+            }
+            $zip->close();
+        }
     }
 }
