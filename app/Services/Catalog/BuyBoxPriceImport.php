@@ -66,6 +66,12 @@ class BuyBoxPriceImport
                 $unavaliable_asin = [];
 
                 $asin_array = [];
+
+                if ($priority == '3') {
+                    Log::info($cat_data);
+                    Log::debug(count($cat_data));
+                }
+
                 foreach ($cat_data as $value) {
                     $weight = '0.5';
 
@@ -102,6 +108,10 @@ class BuyBoxPriceImport
                             GROUP BY 
                                 PPO.asin
                         ");
+                    if ($priority == '3') {
+                        Log::info($asin_price);
+                        Log::debug(count($asin_price));
+                    }
 
                     foreach ($asin_price as $value) {
 

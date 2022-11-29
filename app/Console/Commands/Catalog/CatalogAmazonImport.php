@@ -138,6 +138,8 @@ class CatalogAmazonImport extends Command
 
                 $source_mode->upsert($asin_upsert_source, ['user_asin_unique'], ['status']);
             } else {
+
+
                 DB::connection('catalog')->update("UPDATE ${asin_table_name} as source
                 LEFT JOIN ${catalog_table_name} as cat
                 ON cat.asin = source.asin
