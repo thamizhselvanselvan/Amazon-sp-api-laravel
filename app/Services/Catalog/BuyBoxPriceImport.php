@@ -66,6 +66,7 @@ class BuyBoxPriceImport
                 $unavaliable_asin = [];
 
                 $asin_array = [];
+
                 foreach ($cat_data as $value) {
                     $weight = '0.5';
 
