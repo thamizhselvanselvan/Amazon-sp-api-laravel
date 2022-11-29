@@ -69,7 +69,7 @@ class BuyBoxPriceImport
 
                 if ($priority == '3') {
                     Log::info($cat_data);
-                    Log::debug(count($cat_data));
+                    Log::debug('catalog asin count-> ' . count($cat_data));
                 }
 
                 foreach ($cat_data as $value) {
@@ -110,7 +110,7 @@ class BuyBoxPriceImport
                         ");
                     if ($priority == '3') {
                         Log::info($asin_price);
-                        Log::debug(count($asin_price));
+                        Log::debug('asin Price count-> ' . count($asin_price));
                     }
 
                     foreach ($asin_price as $value) {
