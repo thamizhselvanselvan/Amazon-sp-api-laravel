@@ -240,7 +240,7 @@ class CliqnshopCatalogExport extends Command
             $result = $table_name->select($select_query)
                 ->join('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
                 ->whereRaw("catalognewuss.browse_classification regexp '$val'")
-                ->limit(1000)->get()->toArray();
+                ->limit(10000)->get()->toArray();
             // ->chunk($chunk, function ($result) use ($writer, $csv_header, $csv_number) {
 
 
