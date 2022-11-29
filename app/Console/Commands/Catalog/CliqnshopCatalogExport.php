@@ -51,7 +51,6 @@ class CliqnshopCatalogExport extends Command
         $total_csv = 10000;
         $chunk = 10000;
         $offset = 0;
-        $writer = '';
 
         $csv_number = $total_csv / $chunk;
 
@@ -232,25 +231,29 @@ class CliqnshopCatalogExport extends Command
             '2475895011'
         ];
 
+        $csv_values = [];
+        $catalog_csv_writer = '';
 
         foreach ($code as $val) {
             $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
 
-            $result =   $table_name->select($select_query)
+            $result = $table_name->select($select_query)
                 ->join('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
                 ->whereRaw("catalognewuss.browse_classification regexp '$val'")
-                ->limit(1000)->get();
+                ->limit(1000)->get()->toArray();
             // ->chunk($chunk, function ($result) use ($writer, $csv_header, $csv_number) {
-            $csv_values = [];
+
 
             if ($this->count == 1) {
+
                 $this->file_path = "Cliqnshop/" . "CatalogCliqnshop" . $this->offset . ".csv";
                 if (!Storage::exists($this->file_path)) {
                     Storage::put($this->file_path, '');
                 }
-                $writer = Writer::createFromPath(Storage::path($this->file_path, 'w'));
-                $writer->insertOne($csv_header);
+                $catalog_csv_writer = Writer::createFromPath(Storage::path($this->file_path, 'w'));
+                $catalog_csv_writer->insertOne($csv_header);
             }
+
             foreach ($result as $data) {
 
                 $img1 = [
@@ -401,6 +404,7 @@ class CliqnshopCatalogExport extends Command
                         $short_desc1 = null;
                     }
                 }
+
                 if (isset($data['color'])) {
                     $color_code = str_replace(' ', '', $data['color']);
                     $color_type = 'color';
@@ -415,8 +419,9 @@ class CliqnshopCatalogExport extends Command
                     $color_list_type = null;
                 }
 
-                $brand_place = str_replace(' ', '', $data['brand']);
 
+
+                $brand_place = str_replace(' ', '', $data['brand']);
 
                 $csv_values[] = [
                     'item code' => $data['asin'],
@@ -534,6 +539,7 @@ class CliqnshopCatalogExport extends Command
                     'stock level' => '500',
                     'stock type' => 'default',
                     'stock dateback' => null,
+
                 ];
 
                 $brand_place_second = str_replace(' ', '', $data['brand']);
@@ -571,22 +577,21 @@ class CliqnshopCatalogExport extends Command
                     'City' => null,
                 ];
 
-                $writer->insertAll($csv_values);
-
-
                 $exportFilePath = "Cliqnshop/" . "brandCliqnshop" . $this->offset . ".csv";
                 if (!Storage::exists($exportFilePath)) {
                     Storage::put($exportFilePath, '');
                 }
-                $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
-                $writer->insertOne($second_csv_headers);
-
-                $writer->insertAll($second_csv_values);
-            }
-        }
+                $brand_csv_writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
+                $brand_csv_writer->insertOne($second_csv_headers);
 
 
+                $brand_csv_writer->insertAll($second_csv_values);
+            } // end of result loop  
 
+
+        } //  end of test loop
+
+        $catalog_csv_writer->insertAll($csv_values);
         exit;
         if ($csv_number == $this->count) {
             ++$this->offset;
