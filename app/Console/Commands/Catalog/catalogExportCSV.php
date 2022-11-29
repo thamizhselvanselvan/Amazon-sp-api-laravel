@@ -63,6 +63,10 @@ class catalogExportCSV extends Command
         $this->country_code = $final_data['destination'];
         $this->priority = $final_data['priority'];
 
+        if ($this->priority == 'All') {
+            $this->priority = NULL;
+        }
+
         $total_csv = 1000000;
         $chunk = 20000;
         $this->remender = $total_csv / $chunk;
@@ -91,7 +95,9 @@ class catalogExportCSV extends Command
         $table_name = table_model_create(country_code: $this->country_code, model: 'Asin_destination', table_name: 'asin_destination_');
 
         $table_name->select($header)
-            ->where("priority", $this->priority)
+            ->when($this->priority, function ($q) {
+                return $q->where("priority", $this->priority);
+            })
             ->join($asin_cat, $asin_desti . '.asin', '=', $asin_cat . '.asin')
             ->chunk($chunk, function ($result) use ($header) {
 

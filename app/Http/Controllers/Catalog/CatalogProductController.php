@@ -45,9 +45,10 @@ class CatalogProductController extends Controller
     public function ExportCatalog(Request $request)
     {
         $request->validate([
-            'priority' => 'required|in:1,2,3',
+            'priority' => 'required|in:1,2,3,All',
             'source' => 'required|in:IN,US',
         ]);
+
         $user_id = Auth::user()->id;
         $priority = $request->priority;
         $country_code = $request->source;

@@ -75,6 +75,10 @@
                             <h5>Select Priority</h5>
                             <div class="row border">
                                 <div class="col-2">
+                                    <label for="P1">All</label>
+                                    <input type="radio" class="destination-priority" name="priority" value="All">
+                                </div>
+                                <div class="col-2">
                                     <label for="P1">P1</label>
                                     <input type="radio" class="destination-priority" name="priority" value="1">
                                 </div>
