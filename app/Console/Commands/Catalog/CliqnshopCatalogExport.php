@@ -242,7 +242,7 @@ class CliqnshopCatalogExport extends Command
                 ->limit(1000)->get();
             // ->chunk($chunk, function ($result) use ($writer, $csv_header, $csv_number) {
             $csv_values = [];
-          
+
             if ($this->count == 1) {
                 $this->file_path = "Cliqnshop/" . "CatalogCliqnshop" . $this->offset . ".csv";
                 if (!Storage::exists($this->file_path)) {
@@ -252,7 +252,7 @@ class CliqnshopCatalogExport extends Command
                 $writer->insertOne($csv_header);
             }
             foreach ($result as $data) {
-            
+
                 $img1 = [
                     "Images1" => '',
                     "preview1" => '',
@@ -287,7 +287,6 @@ class CliqnshopCatalogExport extends Command
 
                                 $img1["Images${counter}"] = '';
                                 $img1["preview${counter}"] = '';
-
                             } else {
                                 $img1["Images${counter}"] = $image_data_new['link'];
                                 $img1["preview${counter}"] = $image_data_new['link'];
@@ -571,19 +570,23 @@ class CliqnshopCatalogExport extends Command
                     'Country Code' => null,
                     'City' => null,
                 ];
+
+                $writer->insertAll($csv_values);
+
+
+                $exportFilePath = "Cliqnshop/" . "brandCliqnshop" . $this->offset . ".csv";
+                if (!Storage::exists($exportFilePath)) {
+                    Storage::put($exportFilePath, '');
+                }
+                $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
+                $writer->insertOne($second_csv_headers);
+
+                $writer->insertAll($second_csv_values);
             }
-            $writer->insertAll($csv_values);
-
-
-            $exportFilePath = "Cliqnshop/" . "brandCliqnshop" . $this->offset . ".csv";
-            if (!Storage::exists($exportFilePath)) {
-                Storage::put($exportFilePath, '');
-            }
-            $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
-            $writer->insertOne($second_csv_headers);
-
-            $writer->insertAll($second_csv_values);
         }
+
+
+
         exit;
         if ($csv_number == $this->count) {
             ++$this->offset;
