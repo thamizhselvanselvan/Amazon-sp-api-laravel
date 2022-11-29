@@ -87,14 +87,14 @@
                             <label for="US">US</label>
                             <input type="checkbox" class="destination-priority" name="destination[]" value="US">
                         </div>
-                        <!-- <div class="col-2">
+                        <div class="col-2">
                             <label for="AE">AE</label>
                             <input type="checkbox" class="destination-priority" name="destination[]" value="AE">
-                        </div> -->
-                        <!-- <div class="col-2">
+                        </div>
+                        <div class="col-2">
                             <label for="AE">KSA</label>
                             <input type="checkbox" class="destination-priority" name="destination[]" value="SA">
-                        </div> -->
+                        </div>
                     </div>
 
                     <label for="Select Priority" class="mt-2">Select Priority</label><br>
@@ -141,14 +141,14 @@
                             <label for="US">US</label>
                             <input type="checkbox" class="destinationCheck" name="destination[]" value="US">
                         </div>
-                        <!-- <div class="col-2 ">
+                        <div class="col-2 ">
                             <label for="AE">AE</label>
                             <input type="checkbox" class="destinationCheck" name="destination[]" value="AE">
                         </div>
                         <div class="col-2 ">
                             <label for="AE">KSA</label>
                             <input type="checkbox" class="destinationCheck" name="destination[]" value="SA">
-                        </div> -->
+                        </div>
                     </div>
                     <label for="Select Priority" class="mt-2">Select Priority</label><br>
                     <div class="row ">

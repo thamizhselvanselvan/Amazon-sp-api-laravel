@@ -73,14 +73,14 @@
                             <label for="US">US</label>
                             <input type="checkbox" name="source[]" value="US">
                         </div>
-                        <!-- <div class="col-2">
+                        <div class="col-2">
                             <label for="AE">AE</label>
                             <input type="checkbox" name="source[]" value="AE">
                         </div>
                         <div class="col-2">
                             <label for="AE">KSA</label>
                             <input type="checkbox" name="source[]" value="SA">
-                        </div> -->
+                        </div>
                     </div>
                     <x-adminlte-textarea label="ASIN by text-area" name="text_area" id="asin" type="text" rows="6" placeholder="Enter ASIN" />
                     <input type="hidden" name="form_type" value="text_area" />
@@ -113,14 +113,14 @@
                             <label for="US">US</label>
                             <input type="checkbox" name="source[]" value="US">
                         </div>
-                        <!-- <div class="col-2">
+                        <div class="col-2">
                             <label for="AE">AE</label>
                             <input type="checkbox" name="source[]" value="AE">
                         </div>
                         <div class="col-2">
                             <label for="AE">KSA</label>
                             <input type="checkbox" name="source[]" value="SA">
-                        </div> -->
+                        </div>
                     </div>
                     <x-adminlte-input label="Upload ASIN File" name="asin" id="asin" type="file" />
                     <input type="hidden" name="form_type" value="file_upload" />

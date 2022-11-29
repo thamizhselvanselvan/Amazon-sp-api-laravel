@@ -70,6 +70,14 @@
                                     <label for="US">US</label>
                                     <input type="radio" name="source" value="US">
                                 </div>
+                                <div class="col-2">
+                                    <label for="US">AE</label>
+                                    <input type="radio" name="source" value="AE">
+                                </div>
+                                <div class="col-2">
+                                    <label for="US">KSA</label>
+                                    <input type="radio" name="source" value="US">
+                                </div>
                             </div><br>
 
                             <h5>Select Priority</h5>
@@ -143,6 +151,14 @@
                                             <label for="US">US</label>
                                             <input type="radio" name="source" value="US" id="US">
                                         </div>
+                                        <div class="col-2">
+                                            <label for="US">AE</label>
+                                            <input type="radio" name="source" value="AE" id="US">
+                                        </div>
+                                        <div class="col-2">
+                                            <label for="US">KSA</label>
+                                            <input type="radio" name="source" value="SA" id="US">
+                                        </div>
                                     </div><br>
 
                                     <h5><b>Select Priority</b></h5>
@@ -198,6 +214,14 @@
                                         <div class="col-2">
                                             <label for="US">US</label>
                                             <input type="radio" name="source" class='Asin-source' value="US" id="US">
+                                        </div>
+                                        <div class="col-2">
+                                            <label for="US">AE</label>
+                                            <input type="radio" name="source" class='Asin-source' value="AE" id="AE">
+                                        </div>
+                                        <div class="col-2">
+                                            <label for="US">KSA</label>
+                                            <input type="radio" name="source" class='Asin-source' value="KSA" id="SA">
                                         </div>
                                     </div><br>
                                     <div class="col text-right">
@@ -295,6 +319,14 @@
                         <input type="radio" class="Asin-source" name="source" value="US" />
                         <label for="US">US</label>
                     </div>
+                    <div class="col-1">
+                        <input type="radio" class="Asin-source" name="source" value="AE" />
+                        <label for="US">AE</label>
+                    </div>
+                    <div class="col-1">
+                        <input type="radio" class="Asin-source" name="source" value="KSA" />
+                        <label for="US">KSA</label>
+                    </div>
 
                 </div>
                 <x-adminlte-textarea label="Enter ASIN" type="text-area" class="Asins" name="catalog_asins" placeholder="Enter Asin" rows="4" />
@@ -312,7 +344,6 @@
     <table class="table table-bordered table-striped text-center table-sm ">
         <thead class="">
             <tr class="bg-info thead"></tr>
-
         </thead>
         <tbody class="search-data">
         </tbody>
