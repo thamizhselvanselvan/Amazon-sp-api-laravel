@@ -41,10 +41,10 @@ class CatalogAmazonImport extends Command
      */
     public function handle()
     {
-        // $sources = ['ae'];
+        // $sources = ['ae', 'sa'];
         // $limit_array = ['sa' => 200, 'ae' => 200];
         $sources = ['in', 'us'];
-        $limit_array = ['in' => 2500, 'us' => 2500];
+        $limit_array = ['in' => 1000, 'us' => 1000];
 
         foreach ($sources as $source) {
             $limit = $limit_array[$source];
@@ -107,7 +107,7 @@ class CatalogAmazonImport extends Command
                     ];
 
                     $aws_id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
-                    if ($count == 20) {
+                    if ($count == 10) {
                         //log::alert($asin_source);
                         // jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
                         $catalog_class->Catalog($asin_source);

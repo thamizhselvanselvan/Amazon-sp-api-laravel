@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Admin\ErrorReporting;
 use App\Models\Catalog\Catalog_ae;
 use App\Models\Catalog\Catalog_in;
+use App\Models\Catalog\Catalog_sa;
 use App\Models\Catalog\Catalog_us;
 use App\Models\Catalog\CatalogMissingAsin;
 use App\Services\SP_API\Config\ConfigTrait;
@@ -114,6 +115,8 @@ class NewCatalog
                     Catalog_in::insert($NewCatalog);
                 } else  if (strtolower($country_code1) == "ae") {
                     Catalog_ae::insert($NewCatalog);
+                } else  if (strtolower($country_code1) == "sa") {
+                    Catalog_sa::insert($NewCatalog);
                 }
             }
         }
