@@ -562,19 +562,19 @@ return [
                     'submenu' => [
                         [
                             'text' => 'Daily',
-                            'url'  => 'reports/daily',
+                            'url'  => 'inventory/reports/daily',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory']
                         ],
                         [
                             'text' => 'Weekly',
-                            'url'  => 'reports/weekly',
+                            'url'  => 'inventory/reports/weekly',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory']
                         ],
                         [
                             'text' => 'Monthly',
-                            'url'  => 'reports/monthly',
+                            'url'  => 'inventory/reports/monthly',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory']
                         ],

@@ -21,7 +21,9 @@ return view('Cliqnshop.catalog');
 
         commandExecFunc("Mosh:cliqnshop_catalog_export");
         
-        return redirect('/catalog/product')->with("success", "Cliqnshop Catalog Price is Exporting please Wait for Few Minuts.");
+
+        return redirect('/catalog/index')->with("success", "Cliqnshop Catalog Price is Exporting please Wait for Few Minuts.");
+
     }
 
     public function exportdownload(Request $request)
