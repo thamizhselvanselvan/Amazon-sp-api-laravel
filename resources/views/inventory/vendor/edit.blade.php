@@ -212,7 +212,7 @@
 
                 $.ajax({
                     method:'POST',
-                    url:'/vendorstate/'+id,
+                    url:'/inventory/vendorstate/'+id,
                     data:{
                         'id':id,
                         "_token": "{{ csrf_token() }}",
