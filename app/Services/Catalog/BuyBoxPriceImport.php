@@ -2,7 +2,9 @@
 
 namespace App\Services\Catalog;
 
+use App\Models\Catalog\PricingAe;
 use App\Models\Catalog\PricingIn;
+use App\Models\Catalog\PricingSa;
 use App\Models\Catalog\PricingUs;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -61,6 +63,7 @@ class BuyBoxPriceImport
 
                 $pricing = [];
                 $pricing_in = [];
+                $pricing_ae_sa = [];
                 $asin_details = [];
                 $listing_price_amount = '';
                 $unavaliable_asin = [];
@@ -152,8 +155,7 @@ class BuyBoxPriceImport
                                     ];
                             }
                         }
-                        // Log::info("Updating price_${country_code_lr} Table");
-                        // Log::info($asin_details);
+
                         if ($country_code_lr == 'us') {
 
                             $price_in_b2c = $price_convert->USAToINDB2C($packet_weight, $listing_price_amount);
@@ -188,6 +190,10 @@ class BuyBoxPriceImport
                                 'weight' => $packet_weight_kg
                             ];
                             $pricing_in[] = [...$asin_details, ...$destination_price];
+                        } elseif ($country_code_lr == 'ae' || $country_code_lr == 'sa') {
+
+                            $destination_price = ['weight' => $packet_weight];
+                            $pricing_ae_sa[] = [...$asin_details, ...$destination_price];
                         }
                     }
 
@@ -201,6 +207,14 @@ class BuyBoxPriceImport
 
                         PricingIn::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
                         PricingIn::upsert($pricing_in, 'asin_unique', ['asin', 'available', 'in_price', 'weight', 'ind_to_uae', 'ind_to_sg', 'ind_to_sa', 'price_updated_at']);
+                    } elseif ($country_code_lr == 'ae') {
+
+                        PricingAe::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
+                        PricingAe::upsert($pricing_ae_sa, 'unique_asin', ['asin', 'available', 'weight', 'ae_price', 'price_updated_at']);
+                        //
+                    } elseif ($country_code_lr == 'sa') {
+                        PricingSa::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
+                        PricingSa::upsert($pricing_ae_sa, 'unique_asin', ['asin', 'available', 'weight', 'sa_price', 'price_updated_at']);
                     }
                 }
             } else {

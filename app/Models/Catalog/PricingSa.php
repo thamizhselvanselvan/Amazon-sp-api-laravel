@@ -5,18 +5,15 @@ namespace App\Models\Catalog;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PricingIn extends Model
+class PricingSa extends Model
 {
     use HasFactory;
     protected $connection = 'catalog';
     protected $fillable = [
         'asin',
-        'available',
-        'in_price',
         'weight',
-        'ind_to_uae',
-        'ind_to_sg',
-        'ind_to_sa',
+        'available',
+        'sa_price',
         'price_updated_at'
     ];
 }
