@@ -27,17 +27,17 @@ class CatalogExchangeManagementController extends Controller
             'duty_rate' =>  'required',
             'amazon_commission' =>  'required',
         ]);
-        
+
         ExchangeRate::upsert($exchange_rate, ['source_destination'], [
             'source_destination',
-             'base_weight',
-             'base_shipping_charge',
-             'packaging',
-             'seller_commission',
-             'duty_rate',
-             'sp_commission',
-             'excerise_rate',
-             'amazon_commission',
+            'base_weight',
+            'base_shipping_charge',
+            'packaging',
+            'seller_commission',
+            'duty_rate',
+            'sp_commission',
+            'excerise_rate',
+            'amazon_commission',
         ]);
         return redirect('/catalog/exchange-rate')->with("success", "Records has been updated successfully !");
     }
@@ -49,5 +49,4 @@ class CatalogExchangeManagementController extends Controller
 
         return response()->json($records);
     }
-    
 }

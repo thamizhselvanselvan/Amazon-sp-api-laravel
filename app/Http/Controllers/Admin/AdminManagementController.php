@@ -335,7 +335,7 @@ class AdminManagementController extends Controller
                     $action = '';
                     $action .= '<div class="pl-2">
                                     <select name="source[]" class="source">
-                                        <option value="NULL">Select Destination</option>';
+                                        <option value="NULL">Select Source</option>';
                     foreach ($source_destination as $key => $value) {
                         if (array_key_exists($id['seller_id'], $source_check) && $source_check[$id['seller_id']] == $key) {
                             $action .= '<option value="' . $key . ':' . $id['id'] . ' "selected>' . $value . '</option>';
