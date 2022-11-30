@@ -604,7 +604,7 @@ if (!function_exists('buyboxCountrycode')) {
             'AE' => 38,
             'IN' => 39,
             'US' => 40,
-            'SA' => 50
+            'SA' => 45
         ];
 
         return $source;
