@@ -107,7 +107,7 @@ class CatalogAmazonImport extends Command
                     ];
 
                     $aws_id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
-                    if ($count == 20) {
+                    if ($count == 10) {
                         //log::alert($asin_source);
                         // jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
                         $catalog_class->Catalog($asin_source);
