@@ -50,8 +50,7 @@ class OrderItemDetailsImport extends Command
             $seller_id = $value->seller_id;
             $zoho = $value->zoho;
             $courier_partner = $value->courier_partner;
-
-            // if ($seller_id != 44) {
+            $source = $value->source;
 
             $missing_order_id = DB::connection('order')
                 ->select("SELECT ord.amazon_order_identifier, ord.our_seller_identifier, ord.country
@@ -73,7 +72,7 @@ class OrderItemDetailsImport extends Command
                 $order_id = $details->amazon_order_identifier;
                 $aws_id = $details->our_seller_identifier;
 
-                $order_item->OrderItemDetails($order_id, $aws_id, $country, $zoho, $courier_partner);
+                $order_item->OrderItemDetails($order_id, $aws_id, $country, $source, $zoho, $courier_partner);
             }
         }
     }

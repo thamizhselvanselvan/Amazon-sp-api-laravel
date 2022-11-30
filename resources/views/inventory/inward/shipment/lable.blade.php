@@ -165,7 +165,7 @@
                         $('#Export_to_pdf').attr("disabled", false);
                         $('#Export_to_pdf').html("<i class='fas fa-download'></i> DownloadPDF");
 
-                        window.location.href = '/Shipment/download/' + ship_id;
+                        window.location.href = '/inventory/Shipment/download/' + ship_id;
                         alert(' pdf Downloaded  successfully');
                     }
                 });

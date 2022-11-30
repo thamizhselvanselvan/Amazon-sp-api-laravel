@@ -51,7 +51,7 @@
         <label for="ware"> Tag Wise Report</label>
     </div>
     <div class="col-1 justify-content-right">
-        <form class="row" action="/export/daily">
+        <form class="row" action="/inventory/export/daily">
             <h2>
                 <div style="margin-top: -1rem;">
                     <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export " id="export" />
@@ -200,7 +200,7 @@
         var id = $('.demo').val();
 
         $.ajax({
-            url: '/inventory/warewise',
+            url: "{{route('inventory.warewise.export')}}",
             method: 'GET',
             data: {
                 'id': id,
@@ -234,7 +234,7 @@
         var val = $('.tag').val();
 
         $.ajax({
-            url: '/inventory/tagwise',
+            url: "{{route('inventory.tagwise.new')}}",
             method: 'GET',
             data: {
                 'id': val,
