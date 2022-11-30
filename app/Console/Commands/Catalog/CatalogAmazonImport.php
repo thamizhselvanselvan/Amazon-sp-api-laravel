@@ -44,7 +44,7 @@ class CatalogAmazonImport extends Command
         // $sources = ['ae'];
         // $limit_array = ['sa' => 200, 'ae' => 200];
         $sources = ['in', 'us'];
-        $limit_array = ['in' => 2500, 'us' => 2500];
+        $limit_array = ['in' => 1000, 'us' => 1000];
 
         foreach ($sources as $source) {
             $limit = $limit_array[$source];
