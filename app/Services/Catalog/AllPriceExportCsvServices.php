@@ -143,17 +143,17 @@ class AllPriceExportCsvServices
                         ->get($us_select);
 
                     $this->priceDataFormating($pricing_details, $asin_priority, $us_csv_header);
-                } else if ($this->country_code = 'IN') {
+                } else if ($this->country_code == 'IN') {
 
                     $pricing_details = PricingIn::whereIn('asin', $where_asin)
                         ->get($in_select);
                     $this->priceDataFormating($pricing_details, $asin_priority, $in_csv_header);
-                } else if ($this->country_code = 'SA') {
+                } else if ($this->country_code == 'SA') {
 
                     $pricing_details = PricingSa::whereIn('asin', $where_asin)
                         ->get($sa_select);
                     $this->priceDataFormating($pricing_details, $asin_priority, $sa_csv_header);
-                } else if ($this->country_code = 'AE') {
+                } else if ($this->country_code == 'AE') {
 
                     $pricing_details = PricingAe::whereIn('asin', $where_asin)
                         ->get($ae_select);
