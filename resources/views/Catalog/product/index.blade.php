@@ -71,12 +71,12 @@
                                     <input type="radio" name="source" value="US">
                                 </div>
                                 <div class="col-2">
-                                    <label for="US">AE</label>
+                                    <label for="AE">AE</label>
                                     <input type="radio" name="source" value="AE">
                                 </div>
                                 <div class="col-2">
-                                    <label for="US">KSA</label>
-                                    <input type="radio" name="source" value="US">
+                                    <label for="SA">KSA</label>
+                                    <input type="radio" name="source" value="SA">
                                 </div>
                             </div><br>
 
