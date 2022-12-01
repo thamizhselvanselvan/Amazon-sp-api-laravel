@@ -2,9 +2,11 @@
 
 namespace App\Services\Catalog;
 
+use App\Models\Catalog\PricingAe;
 use ZipArchive;
 use League\Csv\Writer;
 use App\Models\Catalog\PricingIn;
+use App\Models\Catalog\PricingSa;
 use App\Models\Catalog\PricingUs;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -39,18 +41,6 @@ class AllPriceExportCsvServices
             'Price Updated At'
         ];
 
-        $in_csv_header = [
-            'Priority',
-            'Asin',
-            'Available',
-            'Weight',
-            'IN Price',
-            'IND To UAE',
-            'IND To SG',
-            'IND To SA',
-            'Price Updated At'
-        ];
-
         $us_select = [
             'asin',
             'available',
@@ -63,6 +53,18 @@ class AllPriceExportCsvServices
             'price_updated_at'
         ];
 
+        $in_csv_header = [
+            'Priority',
+            'Asin',
+            'Available',
+            'Weight',
+            'IN Price',
+            'IND To UAE',
+            'IND To SG',
+            'IND To SA',
+            'Price Updated At'
+        ];
+
         $in_select = [
             'asin',
             'available',
@@ -73,6 +75,41 @@ class AllPriceExportCsvServices
             'ind_to_sa',
             'price_updated_at',
         ];
+
+        $ae_csv_header = [
+            'Priority',
+            'Asin',
+            'Available',
+            'Weight',
+            'AE Price',
+            'Price Updated At'
+        ];
+
+        $ae_select = [
+            'asin',
+            'available',
+            'weight',
+            'ae_price',
+            'price_updated_at',
+        ];
+
+        $sa_csv_header = [
+            'Priority',
+            'Asin',
+            'Available',
+            'Weight',
+            'KSA Price',
+            'Price Updated At'
+        ];
+
+        $sa_select = [
+            'asin',
+            'available',
+            'weight',
+            'sa_price',
+            'price_updated_at',
+        ];
+
 
         $this->export_file_path = "excel/downloads/catalog_price/$this->country_code/All/CatalogPrice";
 
@@ -111,6 +148,16 @@ class AllPriceExportCsvServices
                     $pricing_details = PricingIn::whereIn('asin', $where_asin)
                         ->get($in_select);
                     $this->priceDataFormating($pricing_details, $asin_priority, $in_csv_header);
+                } else if ($this->country_code = 'SA') {
+
+                    $pricing_details = PricingSa::whereIn('asin', $where_asin)
+                        ->get($sa_select);
+                    $this->priceDataFormating($pricing_details, $asin_priority, $sa_csv_header);
+                } else if ($this->country_code = 'AE') {
+
+                    $pricing_details = PricingAe::whereIn('asin', $where_asin)
+                        ->get($ae_select);
+                    $this->priceDataFormating($pricing_details, $asin_priority, $ae_csv_header);
                 }
             }
         }
