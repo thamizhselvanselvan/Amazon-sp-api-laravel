@@ -214,6 +214,8 @@ class B2cshipBookingServices
     public function requestxml($consignee_values)
     {
         $user_id = '';
+        $password = '';
+        $client = '';
         $consignor_xml = '';
         if (App::environment() == 'production') {
             if ($this->store_id == 6) {

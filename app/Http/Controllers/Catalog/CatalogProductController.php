@@ -46,7 +46,7 @@ class CatalogProductController extends Controller
     {
         $request->validate([
             'priority' => 'required|in:1,2,3,All',
-            'source' => 'required|in:IN,US',
+            'source' => 'required|in:IN,US,AE,SA',
         ]);
 
         $user_id = Auth::user()->id;
@@ -119,7 +119,7 @@ class CatalogProductController extends Controller
     {
         $request->validate([
             'priority' => 'required|in:1,2,3',
-            'source' => 'required|in:IN,US',
+            'source' => 'required|in:IN,US,AE,SA',
 
         ]);
         $date = '';
@@ -162,7 +162,7 @@ class CatalogProductController extends Controller
     public function CatalogSearch(Request $request)
     {
         $request->validate([
-            'source' => 'required|in:IN,US',
+            'source' => 'required|in:IN,US,AE,SA',
             'catalog_asins' => 'required',
         ]);
         $asin_array = [];
@@ -216,7 +216,7 @@ class CatalogProductController extends Controller
     {
         if ($request->form_type == 'text-area') {
             $request->validate([
-                'source'            => 'required|in:IN,US',
+                'source'            => 'required|in:IN,US,AE,SA',
                 'priority'          => 'required|in:1,2,3,All',
                 'text_area_asins'   =>  'required',
                 'header'            =>  'required',

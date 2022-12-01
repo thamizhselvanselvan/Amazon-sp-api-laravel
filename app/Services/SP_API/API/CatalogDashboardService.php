@@ -15,7 +15,7 @@ class CatalogDashboardService
 
     public function catalogDashboard()
     {
-        $sources = ['IN', 'US', 'AE', 'SA'];
+        $sources = ['IN', 'US'];
         $record_arrays = [];
         $dbname = config('database.connections.catalog.database');
         foreach ($sources as $source) {

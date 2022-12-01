@@ -389,11 +389,21 @@ class InvoiceManagementController extends Controller
         $invoice_details = [];
         $grand_total = 0;
         $invoice_no = $id;
+        $ignore = [
+            'gun',
+            'lighter',
+            'gold',
+            'spark',
+            'fuel',
+            'heat',
+            'oxygen',
+            'alcohols',
+            'famable',
+        ];
 
-        $web = config('database.connections.web.database');
         $prefix = config('database.connections.web.prefix');
         if ($type == 'bulk') {
-            // $data = DB::connection('web')->select("SELECT invoice_no from invoices where id IN ($id) ");
+
             $data = Invoice::select('invoice_no')->whereIn('id', $id)->get();
             $invoice_no = [];
             foreach ($data as $key => $value) {
@@ -437,8 +447,6 @@ class InvoiceManagementController extends Controller
              group by invoice_no"
             );
 
-        // dd($invoice_data_array);
-
         $item_details = [
             'item_description' => NULL,
             'hsn_code' => NULL,
@@ -470,6 +478,12 @@ class InvoiceManagementController extends Controller
 
                         foreach ($product_array as $key2 => $val) {
                             $grand_total += (int) $val;
+                        }
+                    } elseif ($key1 == 'item_description') {
+                        foreach ($product_array as $key2 => $val) {
+
+                            $ignore_title = str_ireplace($ignore, '', $val);
+                            $item_details_tem[$key2][$key1] = $ignore_title;
                         }
                     } else {
                         foreach ($product_array as $key2 => $val) {
