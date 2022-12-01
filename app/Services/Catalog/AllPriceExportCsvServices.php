@@ -120,6 +120,9 @@ class AllPriceExportCsvServices
 
         for ($start = 0; $start <= $total_chunk; $start++) {
 
+            $where_asin = [];
+            $asin_priority = [];
+
             $asin = $us_destination->select('id', 'asin', 'priority')
                 ->where('id', '>=', ($chunk * $start))
                 ->limit($chunk)
