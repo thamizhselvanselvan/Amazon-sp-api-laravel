@@ -230,7 +230,7 @@ class OrderItem
                     $country_code_up = strtoupper($source);
                     $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code_up)->get()->toArray();
 
-                    $aws_id = $mws_regions[0]['aws_verified'][0]['id'];
+                    $aws_id_asin = $mws_regions[0]['aws_verified'][0]['id'];
 
                     if (count($asins) <= 0) {
 
@@ -238,7 +238,7 @@ class OrderItem
                             'asin' => $asin,
                             'seller_id' => $aws_id,
                             'source' => $source,
-                            'id'    =>  $aws_id,
+                            'id'    =>  $aws_id_asin,
                         ];
 
                         (new NewCatalog())->Catalog($asin_source);
