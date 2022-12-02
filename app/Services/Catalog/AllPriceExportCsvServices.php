@@ -2,9 +2,9 @@
 
 namespace App\Services\Catalog;
 
-use App\Models\Catalog\PricingAe;
 use ZipArchive;
 use League\Csv\Writer;
+use App\Models\Catalog\PricingAe;
 use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingSa;
 use App\Models\Catalog\PricingUs;
@@ -114,7 +114,8 @@ class AllPriceExportCsvServices
         $this->export_file_path = "excel/downloads/catalog_price/$this->country_code/All/CatalogPrice";
 
         $us_destination  = table_model_create(country_code: $this->country_code, model: 'Asin_destination', table_name: 'asin_destination_');
-        $count = $us_destination->count();
+        $count = $us_destination->count('asin');
+        $min_id = $us_destination->min('id');
 
         Log::alert('Total Count: ' . $count);
 
@@ -122,7 +123,7 @@ class AllPriceExportCsvServices
 
         Log::alert('Total Chunk: ' . $total_chunk);
 
-        for ($start = 0; $start <= $total_chunk; $start++) {
+        for ($start = $min_id; $start <= $total_chunk; $start++) {
 
             $where_asin = [];
             $asin_priority = [];
@@ -132,7 +133,7 @@ class AllPriceExportCsvServices
                 ->where('id', '<=', ($chunk * ($start + 1)))
                 ->get();
 
-            Log::alert('For loop: ' . $start . 'count: ' . count($asin));
+            Log::debug('For loop: ' . $start . 'count: ' . count($asin));
 
             if (count($asin) > 0) {
 
