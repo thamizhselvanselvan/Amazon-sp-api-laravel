@@ -116,18 +116,25 @@ class AllPriceExportCsvServices
         $us_destination  = table_model_create(country_code: $this->country_code, model: 'Asin_destination', table_name: 'asin_destination_');
         $count = $us_destination->count();
 
+        Log::alert('Total Count: ' . $count);
+
         $total_chunk = ($count / $chunk);
+
+        Log::alert('Total Chunk: ' . $total_chunk);
 
         for ($start = 0; $start <= $total_chunk; $start++) {
 
+            $where_asin = [];
+            $asin_priority = [];
+
             $asin = $us_destination->select('id', 'asin', 'priority')
                 ->where('id', '>=', ($chunk * $start))
-                ->limit($chunk)
+                ->where('id', '<=', ($chunk * ($start + 1)))
                 ->get();
 
-            if ($asin) {
-                $where_asin = [];
-                $asin_priority = [];
+            Log::alert('For loop: ' . $start . 'count: ' . count($asin));
+
+            if (count($asin) > 0) {
 
                 foreach ($asin as  $value) {
 
