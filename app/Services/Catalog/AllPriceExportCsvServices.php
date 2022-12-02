@@ -123,14 +123,14 @@ class AllPriceExportCsvServices
 
         Log::alert('Total Chunk: ' . $total_chunk);
 
-        for ($start = $min_id; $start <= $total_chunk; $start++) {
+        for ($start = 0; $start <= $total_chunk; $start++) {
 
             $where_asin = [];
             $asin_priority = [];
 
             $asin = $us_destination->select('id', 'asin', 'priority')
-                ->where('id', '>=', ($chunk * $start))
-                ->where('id', '<=', ($chunk * ($start + 1)))
+                ->where('id', '>=', (($chunk * $start) + $min_id))
+                ->where('id', '<=', (($chunk * ($start + 1))) + $min_id)
                 ->get();
 
             Log::debug('For loop: ' . $start . 'count: ' . count($asin));
