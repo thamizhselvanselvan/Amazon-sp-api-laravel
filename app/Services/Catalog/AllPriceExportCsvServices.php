@@ -8,10 +8,7 @@ use App\Models\Catalog\PricingAe;
 use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingSa;
 use App\Models\Catalog\PricingUs;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-
-use function PHPUnit\Framework\isNull;
 
 class AllPriceExportCsvServices
 {
@@ -117,11 +114,7 @@ class AllPriceExportCsvServices
         $count = $us_destination->max('id');
         $min_id = $us_destination->min('id');
 
-        Log::alert('Total Count: ' . $count);
-
         $total_chunk = ($count / $chunk);
-
-        Log::alert('Total Chunk: ' . $total_chunk);
 
         for ($start = 0; $start <= $total_chunk; $start++) {
 
@@ -131,8 +124,6 @@ class AllPriceExportCsvServices
 
             $start_id = ($chunk * $start) + $min_id;
             $end_id = (($chunk * ($start + 1))) + $min_id;
-
-            Log::critical('startId: ' . $start_id . 'End Id: ' . $end_id);
 
             $asin = $us_destination->select('id', 'asin', 'priority')
                 ->where('id', '>=', $start_id)
@@ -178,8 +169,6 @@ class AllPriceExportCsvServices
 
     public function priceDataFormating($pricing_details, $asin_priority, $csv_header)
     {
-        Log::emergency('Pice Details count in csv ->' . count($pricing_details));
-
         $records = [];
         foreach ($pricing_details as $value) {
             $value = $value->toArray();
