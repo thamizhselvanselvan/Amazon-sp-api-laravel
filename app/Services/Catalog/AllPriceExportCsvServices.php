@@ -114,7 +114,7 @@ class AllPriceExportCsvServices
         $this->export_file_path = "excel/downloads/catalog_price/$this->country_code/All/CatalogPrice";
 
         $us_destination  = table_model_create(country_code: $this->country_code, model: 'Asin_destination', table_name: 'asin_destination_');
-        $count = $us_destination->count('asin');
+        $count = $us_destination->max('id');
         $min_id = $us_destination->min('id');
 
         Log::alert('Total Count: ' . $count);
