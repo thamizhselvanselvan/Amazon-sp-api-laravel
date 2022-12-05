@@ -190,11 +190,12 @@ class BuyBoxPriceImport
                                 'weight' => $packet_weight_kg
                             ];
                             $pricing_in[] = [...$asin_details, ...$destination_price];
-                        } elseif ($country_code_lr == 'ae' || $country_code_lr == 'sa') {
-
-                            $destination_price = ['weight' => $packet_weight];
-                            $pricing_ae_sa[] = [...$asin_details, ...$destination_price];
                         }
+                        // elseif ($country_code_lr == 'ae' || $country_code_lr == 'sa') {
+
+                        //     $destination_price = ['weight' => $packet_weight];
+                        //     $pricing_ae_sa[] = [...$asin_details, ...$destination_price];
+                        // }
                     }
 
                     // $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
