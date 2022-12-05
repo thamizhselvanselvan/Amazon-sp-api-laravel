@@ -129,22 +129,23 @@ class AllPriceExportCsvServices
             $asin_priority = [];
             $asin = [];
 
+            $start_id = ($chunk * $start) + $min_id;
+            $end_id = (($chunk * ($start + 1))) + $min_id;
+
+            Log::critical('startId: ' . $start_id . 'End Id: ' . $end_id);
+
             $asin = $us_destination->select('id', 'asin', 'priority')
-                ->where('id', '>=', (($chunk * $start) + $min_id))
-                ->where('id', '<', (($chunk * ($start + 1))) + $min_id)
+                ->where('id', '>=', $start_id)
+                ->where('id', '<', $end_id)
                 ->get();
 
-
-            Log::debug('For loop: ' . $start . 'count: ' . count($asin));
-
-            if (!isNull($asin)) {
+            if (count($asin) > 0) {
 
                 foreach ($asin as  $value) {
                     $where_asin[$value['id']] = $value['asin'];
                     $asin_priority[$value['asin']] = $value['priority'];
                 }
 
-                Log::info('Where Asin ->' . count($where_asin) . 'Count Asin  ->' . count($asin));
                 if ($this->country_code == 'US') {
 
                     $pricing_details = PricingUs::whereIn('asin', $where_asin)
@@ -179,10 +180,6 @@ class AllPriceExportCsvServices
     {
         Log::emergency('Pice Details count in csv ->' . count($pricing_details));
 
-        if (isnull($pricing_details)) {
-            return true;
-        }
-
         $records = [];
         foreach ($pricing_details as $value) {
             $value = $value->toArray();
@@ -195,6 +192,7 @@ class AllPriceExportCsvServices
                     $records[$key] = $data;
                 }
             }
+
             $this->createCsv($csv_header, $records);
         }
     }
