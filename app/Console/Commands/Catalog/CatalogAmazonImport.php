@@ -92,6 +92,7 @@ class CatalogAmazonImport extends Command
                     ON cat.asin = source.asin
                     WHERE cat.asin IS NULL
                     And source.priority = '3'
+                    And source.status = '0'
                     LIMIT $limit
                     ");
             }
@@ -148,6 +149,11 @@ class CatalogAmazonImport extends Command
 
                 $model = 'Asin_source';
                 $table_name = "asin_source_";
+                $source_mode = table_model_create($source, $model, $table_name);
+                $source_mode->upsert($asin_upsert_source, ['user_asin_unique'], ['status']);
+
+                $model = 'Asin_destination';
+                $table_name = "asin_destination_";
                 $source_mode = table_model_create($source, $model, $table_name);
 
                 $source_mode->upsert($asin_upsert_source, ['user_asin_unique'], ['status']);
