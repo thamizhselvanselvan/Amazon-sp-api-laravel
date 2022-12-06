@@ -26,7 +26,6 @@ class NewCatalog
 
     public function Catalog($records, $seller_id = NULL)
     {
-        Log::info('catalog import working');
         $queue_data = [];
         $upsert_asin = [];
         $country_code1 = '';
