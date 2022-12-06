@@ -62,7 +62,7 @@ class CatalogAmazonImport extends Command
             $catalog_table_name = 'catalognew' . $source . 's';
             $current_data = date('H:i:s');
 
-            $catalog_class = new NewCatalog();
+            // $catalog_class = new NewCatalog();
             $asins = [];
 
             if ($current_data >= '01:00:00' && $current_data <= '01:05:00') {
@@ -110,8 +110,8 @@ class CatalogAmazonImport extends Command
                     $aws_id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
                     if ($count == 10) {
                         //log::alert($asin_source);
-                        // jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
-                        $catalog_class->Catalog($asin_source);
+                        jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
+                        // $catalog_class->Catalog($asin_source);
                         $auth_count++;
                         $asin_source = [];
                         $count = 0;
@@ -132,8 +132,8 @@ class CatalogAmazonImport extends Command
                     }
                 }
 
-                $catalog_class->Catalog($asin_source);
-                // jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
+                // $catalog_class->Catalog($asin_source);
+                jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
 
                 $model = 'Asin_source';
                 $table_name = "asin_source_";
