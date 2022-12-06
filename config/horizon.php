@@ -177,7 +177,7 @@ return [
 
     'environments' => [
         'production' => [
-            'ca-supervisor-1' => ['connection' => 'redis', 'queue' => ['catalog'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 6, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
+            'ca-supervisor-1' => ['connection' => 'redis', 'queue' => ['catalog'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 4, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
             'ca-supervisor-2' => ['connection' => 'redis', 'queue' => ['catalog_IN'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 3, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
             'ca-supervisor-3' => ['connection' => 'redis', 'queue' => ['order'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
             'ca-supervisor-7' => ['connection' => 'redis', 'queue' => ['tracking'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
