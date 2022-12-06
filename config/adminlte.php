@@ -920,6 +920,12 @@ return [
                     'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fa fa-file',
                 ],
+                [
+                    'text' => 'Contact List',
+                    'url' => 'cliqnshop/contact',
+                    'can' => ['Admin', 'Cliqnshop'],
+                    'icon' => 'fa fa-link',
+                ],
             ],
         ],
 
