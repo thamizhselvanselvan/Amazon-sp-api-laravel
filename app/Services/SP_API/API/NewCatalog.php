@@ -26,7 +26,7 @@ class NewCatalog
 
     public function Catalog($records, $seller_id = NULL)
     {
-
+        Log::info('catalog import working');
         $queue_data = [];
         $upsert_asin = [];
         $country_code1 = '';
@@ -212,7 +212,16 @@ class NewCatalog
 
             return $queue_data;
         } catch (Exception $e) {
-            Log::alert($e);
+
+            $getMessage = $e->getMessage();
+            $getCode = $e->getCode();
+            $getFile = $e->getFile();
+
+            $slackMessage = "Message: $getMessage
+            Code: $getCode
+            File: $getFile";
+
+            slack_notification('app360', 'Amazon Catalog Import', $slackMessage);
         }
     }
 
