@@ -43,12 +43,15 @@ class CatalogAmazonImport extends Command
     {
         // $sources = ['ae', 'sa'];
         // $limit_array = ['sa' => 200, 'ae' => 200];
-        $sources = ['us'];
         // $sources = ['in', 'us'];
-        $limit_array = ['in' => 1000, 'us' => 1200];
+        // $limit_array = ['in' => 1000, 'us' => 1200];
+
+        $sources = ['us'];
 
         foreach ($sources as $source) {
-            $limit = $limit_array[$source];
+
+            $limit = getSystemSettingsValue(strtolower($source) . '_catalog_limit', 1000);
+            // $limit = $limit_array[$source];
 
             $auth_count = 0;
             $asin_upsert_source = [];
