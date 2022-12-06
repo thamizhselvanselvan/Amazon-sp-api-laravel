@@ -303,10 +303,10 @@ class B2cshipBookingServices
                     <ConsigneeAddressLine2>' . (!empty($data['consignee_AddressLine2']) ? $this->cleanSpecialCharacters($data['consignee_AddressLine2']) : ',') . '</ConsigneeAddressLine2>
                     <ConsigneeAddressLine3></ConsigneeAddressLine3>
                     <ConsigneeCountry>IN</ConsigneeCountry>
-                    <ConsigneeState>karnataka</ConsigneeState>
+                    <ConsigneeState>' . (!empty($data['consignee_state']) ? $this->cleanSpecialCharacters($data['consignee_state']) : '') . '</ConsigneeState>
                     <ConsigneeCity> ' . strtolower($data['consignee_city']) . ' </ConsigneeCity>
                     <ConsigneePinCode> ' . $data['consignee_pincode'] . '</ConsigneePinCode>
-                    <ConsigneeMobile>' . (($data['consignee_Phone'] == "") ? '9897654565' : $this->mobileNumberCleanUp($data['consignee_Phone'])) . ' </ConsigneeMobile>
+                    <ConsigneeMobile>' . (($data['consignee_Phone'] == "") ? '' : $this->mobileNumberCleanUp($data['consignee_Phone'])) . ' </ConsigneeMobile>
                     <ConsigneeEmailID> ' . $data['email'] . ' </ConsigneeEmailID>
                     <ConsigneeTaxID></ConsigneeTaxID>
                     <PacketType>SPX</PacketType>
