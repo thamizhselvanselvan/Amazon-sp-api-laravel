@@ -101,21 +101,24 @@ class CatalogAmazonImport extends Command
             }
 
             $country_code_up = strtoupper($source);
-            $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code_up)->get()->toArray();
+            $where_condition = [];
 
-            // Log::info("${country_code_up} -> total asin for catalog " . count($asins));
+            $where_condition = [$country_code_up];
+            if ($country_code_up == 'US') {
+                $where_condition = ['US', 'MX'];
+            }
+
+            $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $where_condition)->get()->toArray();
 
             if ($country_code_up == 'IN') {
                 $queue_name = 'catalog_IN';
             }
+
             if (count($asins) > 0) {
 
                 foreach ($asins as $details) {
-
                     $seller_id  =  $details->user_id;
-
                     $asin = $details->asin;
-
                     $asin_upsert_source[] = [
                         'asin' => $asin,
                         'user_id' => $seller_id,
@@ -123,6 +126,8 @@ class CatalogAmazonImport extends Command
                     ];
 
                     $aws_id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
+
+                    Log::debug($aws_id);
                     if ($count == 10) {
                         //log::alert($asin_source);
                         jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
@@ -142,7 +147,7 @@ class CatalogAmazonImport extends Command
                         $count++;
                     }
 
-                    if ($auth_count == 2) {
+                    if ($auth_count == 3) {
                         $auth_count = 0;
                     }
                 }
