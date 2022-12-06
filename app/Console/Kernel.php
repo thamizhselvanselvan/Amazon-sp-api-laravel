@@ -42,7 +42,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('mosh:catalog-amazon-import')->everyTwoMinutes(); //PM
             $schedule->command('mosh:Catalog-price-import-bb-in')->everyMinute(); //PM
             $schedule->command('mosh:Catalog-price-import-bb-us')->everyMinute(); //PM
-            $schedule->command('mosh:catalog-dashboard-file')->hourly(); //PM
+            $schedule->command('mosh:catalog-dashboard-file')->everyThirtyMinutes(); //PM
 
             /*Orders*/
             $schedule->command('pms:sellers-orders-import')->everyTenMinutes(); //PM
