@@ -6,14 +6,15 @@
 
     <link rel="stylesheet" href="/css/styles.css">
     <style>
-.table td {
-        padding: 0;
-        padding-left: 6px;
-    }
-    .table th {
-        padding: 2;
-        padding-left: 5px;
-    }
+        .table td {
+            padding: 0;
+            padding-left: 6px;
+        }
+
+        .table th {
+            padding: 2;
+            padding-left: 5px;
+        }
     </style>
 @stop
 
@@ -23,23 +24,23 @@
 @stop
 
 @section('content')
-@if(session()->has('message'))
-<div class="alert alert-success alert-block">
-    <button type="button" class="close" data-dismiss="alert">×</button>
-        {{ session()->get('message') }}
-    </div>
-    @elseif(session()->has('danger'))
-    <div class="alert alert-danger alert-block">
-        <button type="button" class="close" data-dismiss="alert">×</button>
-        {{ session()->get('danger') }}
-    </div>
-            @endif
+    @if (session()->has('message'))
+        <div class="alert alert-success alert-block">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            {{ session()->get('message') }}
         </div>
+    @elseif(session()->has('danger'))
+        <div class="alert alert-danger alert-block">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            {{ session()->get('danger') }}
+        </div>
+    @endif
+    </div>
     </div>
     <div class="row">
-        <div class="col">        
+        <div class="col">
             <h2 class="mb-4">
-                <a href="/admin/geo/city/add">
+                <a href="{{ route('geo.city.add') }}">
                     <x-adminlte-button class="ml-2" label="Add City" theme="primary" icon="fas fa-plus" />
                 </a>
             </h2>
@@ -61,71 +62,69 @@
 @stop
 @section('js')
 
-<script type="text/javascript">
-
-    let yajra_table = $('.yajra-datatable').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: "{{route('city.get') }}",
-        columns: [
-            {
-                data: 'id',
-                name: 'id',
-                // orderable: false,
-                // searchable: false
-            },
-            {
-                data: 'states.name',
-                name: 'states.name',
-                // orderable: false,
-                // searchable: false,
-            },
-            {
-                data: 'name',
-                name: 'name',
-            },
-            {
-                data: 'action',
-                name: 'action',
-                orderable: false,
-                searchable: false
+    <script type="text/javascript">
+        let yajra_table = $('.yajra-datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('city.get') }}",
+            columns: [{
+                    data: 'id',
+                    name: 'id',
+                    // orderable: false,
+                    // searchable: false
+                },
+                {
+                    data: 'states.name',
+                    name: 'states.name',
+                    // orderable: false,
+                    // searchable: false,
+                },
+                {
+                    data: 'name',
+                    name: 'name',
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
+                }
+            ],
+        });
+        $(document).on('click', '.delete', function() {
+            let bool = confirm('Are you sure you want to delete this ?');
+            if (!bool) {
+                return false;
             }
-        ],
-    });
-    $(document).on('click', '.delete', function(){
-        let bool = confirm('Are you sure you want to delete this ?');
-        if (!bool) {
-            return false;
-        }
-    });
-    // $(document).on('click', ".delete", function(e) {
-    //     e.preventDefault();
-    //     let bool = confirm('Are you sure you want to push this asin to Bin?');
+        });
+        // $(document).on('click', ".delete", function(e) {
+        //     e.preventDefault();
+        //     let bool = confirm('Are you sure you want to push this asin to Bin?');
 
-    //     if (!bool) {
-    //         return false;
-    //     }
-    //     let self = $(this);
-    //     let id = self.attr('data-id');
+        //     if (!bool) {
+        //         return false;
+        //     }
+        //     let self = $(this);
+        //     let id = self.attr('data-id');
 
-    //     self.prop('disable', true);
-    //     $.ajax({
-    //         method: 'post',
-    //         url: '/admin.geoManagement.State/trash/' + id,
-    //         data: {
-    //             "_token": "{{ csrf_token() }}",
-    //             "_method": 'POST'
-    //         },
-    //         response: 'json',
-    //         success: function(response) {
-    //             $('.yajra-datatable').DataTable().ajax.reload();
-    //             alert('Delete success');
-    //         },
-    //         error: function(response) {
+        //     self.prop('disable', true);
+        //     $.ajax({
+        //         method: 'post',
+        //         url: '/admin.geoManagement.State/trash/' + id,
+        //         data: {
+        //             "_token": "{{ csrf_token() }}",
+        //             "_method": 'POST'
+        //         },
+        //         response: 'json',
+        //         success: function(response) {
+        //             $('.yajra-datatable').DataTable().ajax.reload();
+        //             alert('Delete success');
+        //         },
+        //         error: function(response) {
 
-    //         }
-    //     });
+        //         }
+        //     });
 
-    // });
-</script>
+        // });
+    </script>
 @stop
