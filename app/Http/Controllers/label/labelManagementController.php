@@ -853,9 +853,9 @@ class labelManagementController extends Controller
     {
         $awb_no = array_unique(preg_split('/[\r\n| |:|,|.]/', $request->awb_no, -1, PREG_SPLIT_NO_EMPTY));
         $awb_tracking_no = "'" . implode("','", $awb_no) . "'";
-        $label_detials = $this->labelListing($awb_tracking_no, 'awb_tracking_id');
+        $label_details = $this->labelListing($awb_tracking_no, 'awb_tracking_id');
 
-        return response()->json($label_detials);
+        return response()->json($label_details);
     }
 
     public function editordersearchbyid($order_item_identifier)

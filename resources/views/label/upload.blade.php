@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'PDF Master')
+@section('title', 'Upload Excel')
 
 @section('content_header')
 
