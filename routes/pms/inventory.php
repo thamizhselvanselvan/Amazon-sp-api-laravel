@@ -40,6 +40,10 @@ Route::resource('inventory/tags', 'Inventory\Master\TagController');
 Route::get('inventory/stocks', 'Inventory\StockController@dashboard')->name('inventory.stocks');
 Route::get('inventory/list', 'Inventory\StockController@getlist');
 Route::get('inventory/expo', 'Inventory\StockController@eportinv');
+
+
+Route::get('inventory/stocks/list', 'Inventory\StockController@dashboard')->name('inventory.stocks.listing');
+Route::get('inventory/stocks/list/{ware_id}', 'Inventory\StockController@dashboard')->name('inventory.stocks.ware_id');
 // Route::get('inventory/export', 'Inventory\StockController@eportinv')->name('inventory.export');
 Route::get('inventory/exp/{id}', 'Inventory\StockController@downexp');
 
