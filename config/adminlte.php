@@ -289,8 +289,8 @@ return [
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin'],
                         ],
+                    ],
                 ],
-            ],
                 [
                     'text' => 'Company Master',
                     'url' => 'company',
@@ -340,6 +340,19 @@ return [
                     'can' => ['Admin', 'Account'],
                     'icon' => 'far fa fa-cog',
                 ],
+
+                [
+                    'text' => 'File Management',
+                    'url' => 'admin/file-management',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Jobs Management',
+                    'url' => 'admin/job-management',
+                    'can' => ['Admin'],
+                    'icon' => 'fa fa-tasks',
+                ],
             ],
         ],
 
@@ -375,19 +388,38 @@ return [
                     ],
                 ],
 
+                /*
                 [
                     'text' => 'Universal Textiles',
                     'url'  => 'textiles',
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin']
                 ],
+                */
+
                 [
 
                     'text' => 'Mosh Amazon Catalog',
-                    'url'  => 'catalog/product',
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin', 'Catalog'],
+                    'submenu' => [
+                        [
+                            'text'  => 'Catalog & Price Export',
+                            'url'  => 'catalog/product',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin', 'Catalog']
+                        ],
+
+                        [
+                            'text'  => 'Catalog With Price Export',
+                            'url'  => 'catalog/export-with-price',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin', 'Catalog']
+                        ],
+                    ],
                 ],
+
+                /*
                 [
 
                     'text' => 'Other Amazon.com',
@@ -402,6 +434,9 @@ return [
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin', 'Catalog'],
                 ],
+                */
+
+                /*
                 [
 
                     'text' => 'fragrancenet.com',
@@ -409,6 +444,8 @@ return [
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin']
                 ],
+                */
+
                 [
 
                     'text' => 'Catalog Exchange Rate',
@@ -438,7 +475,7 @@ return [
                         ],
                         [
 
-                            'text' => 'Rack Master',
+                            'text' => 'Rack',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory'],
                             'submenu' => [
@@ -473,7 +510,7 @@ return [
 
                         ],
                         [
-                            'text' => 'Dispose Reason',
+                            'text' => 'Dispose',
                             'icon' => 'far fa-fw fa-file',
                             'url'  => 'inventory/features',
                             'can' =>  ['Admin', 'Inventory']
@@ -525,19 +562,19 @@ return [
                     'submenu' => [
                         [
                             'text' => 'Daily',
-                            'url'  => 'reports/daily',
+                            'url'  => 'inventory/reports/daily',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory']
                         ],
                         [
                             'text' => 'Weekly',
-                            'url'  => 'reports/weekly',
+                            'url'  => 'inventory/reports/weekly',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory']
                         ],
                         [
                             'text' => 'Monthly',
-                            'url'  => 'reports/monthly',
+                            'url'  => 'inventory/reports/monthly',
                             'icon' => 'far fa-fw fa-file',
                             'can' =>  ['Admin', 'Inventory']
                         ],
@@ -609,6 +646,13 @@ return [
                     'url' => "orders/aws/dashboard",
 
                 ],
+                [
+                    'text' => 'Order Statistics',
+                    'can' => ['Admin'],
+                    'icon' => ' fa fa-check-circle-o',
+                    'url' => "orders/statistics",
+
+                ],
             ],
         ],
 
@@ -646,22 +690,33 @@ return [
             ]
         ],
 
-
-
         [
             'text'  => 'Ship & Track',
             'can' => ['Admin'],
             'submenu' => [
                 [
-                    'text'  =>  'SMSA Tracking',
-                    'url'   =>  'shipntrack/smsa',
-                    'can'   =>  ['Admin'],
+                    'text' => 'Courier Partner',
+                    'url' => 'shipntrack/courier',
+                    'can' => ['Admin']
                 ],
                 [
-                    'text'  =>  'Bombino Tracking',
-                    'url'   =>  'shipntrack/bombino',
-                    'can'   =>  ['Admin'],
+                    'text' => 'Tracking',
+                    'can' => ['Admin'],
+                    'submenu' =>
+                    [
+                        [
+                            'text'  =>  'SMSA Tracking',
+                            'url'   =>  'shipntrack/smsa',
+                            'can'   =>  ['Admin'],
+                        ],
+                        [
+                            'text'  =>  'Bombino Tracking',
+                            'url'   =>  'shipntrack/bombino',
+                            'can'   =>  ['Admin'],
+                        ],
+                    ],
                 ],
+
                 [
                     'text'  =>  'Forwarder Mapping',
                     'url'   =>  'shipntrack/forwarder',
@@ -669,7 +724,7 @@ return [
                 ],
 
                 [
-                    'text' => 'Tracking',
+                    'text' => 'Tracking Event',
                     'can' => ['Admin'],
                     'submenu' =>
                     [
@@ -695,8 +750,6 @@ return [
                         ],
                     ],
                 ],
-
-
             ]
         ],
 
@@ -818,6 +871,64 @@ return [
 
             ],
         ],
+
+        [
+            'text' => 'Cliqnshop',
+            'can' => ['Admin', 'Cliqnshop'],
+            'submenu' => [
+                [
+                    'text' => 'Catalog',
+                    'url' => 'catalog/index',
+                    'can' => ['Admin', 'Cliqnshop'],
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Orders Details',
+                    'can' => ['Admin', 'Cliqnshop'],
+                    'icon' => 'fa fa-shopping-cart',
+                    'submenu' => [
+                        [
+                            'text' => 'Orders Booked',
+                            'url' => 'business/booked/details',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-check',
+                        ],
+                        [
+                            'text' => 'Orders Pending',
+                            'url' => 'business/orders/details',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-clock-o',
+                        ],
+                    ],
+
+                ],
+                [
+                    'text' => 'Orders Confirmation',
+                    'url' => 'business/orders/confirm',
+                    'can' => ['Admin', 'Cliqnshop'],
+                    'icon' => 'fa fa-check-circle-o',
+                ],
+                [
+                    'text' => 'Shipment Notification',
+                    'url' => 'business/ship/confirmation',
+                    'can' => ['Admin', 'Cliqnshop'],
+                    'icon' => 'fa fa-bell',
+                ],
+                [
+                    'text' => 'KYC Details',
+                    'url' => 'cliqnshop/kyc',
+                    'can' => ['Admin', 'Cliqnshop'],
+                    'icon' => 'fa fa-file',
+                ],
+                [
+                    'text' => 'Contact List',
+                    'url' => 'cliqnshop/contact',
+                    'can' => ['Admin', 'Cliqnshop'],
+                    'icon' => 'fa fa-link',
+                ],
+            ],
+        ],
+
         [
             'text' => 'AWS-POC',
             'can' => ['Admin', 'POC'],
@@ -870,18 +981,18 @@ return [
                             'icon' => 'far fa-fw fa-file',
 
                         ],
-                        [
-                            'text' => 'Order Details',
-                            'url' => 'business/orders/details',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa-fw fa-file',
+                        // [
+                        //     'text' => 'Order Details',
+                        //     'url' => 'business/orders/details',
+                        //     'can' => ['Admin'],
+                        //     'icon' => 'far fa-fw fa-file',
 
-                        ]
+                        // ]
                     ]
 
                 ],
                 [
-                    'text' => 'View Details',
+                    'text' => 'B-API Catalog Details',
                     'url' => 'business/details',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',

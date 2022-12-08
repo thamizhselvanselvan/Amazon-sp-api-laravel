@@ -3,6 +3,7 @@
 namespace App\Services\AWS_Business_API\AWS_POC;
 
 use Illuminate\Support\Facades\Storage;
+use App\Services\AWS_Business_API\ApiCall\ApiCall;
 
 
 class Search_Product_Request
@@ -10,14 +11,27 @@ class Search_Product_Request
 
     public function getASIN($data)
     {
-        $type ='';
+        $type = '';
         $key_value = '';
-       foreach($data as $key => $value)
-       {
-        $type =$key;
-        $key_value = $value;
-       }
+        foreach ($data as $key => $value) {
+            $type = $key;
+            $key_value = $value;
+        }
         date_default_timezone_set('Asia/Jakarta');
+
+        $accessToken = file_get_contents(Storage::path('Business/token.txt'));
+        $queryString = '';
+        $requestUrl = "https://na.business-api.amazon.com/products/2020-08-26/products/B07HSV8DTD";
+        $uri = "/products/2020-08-26/products/B07HSV8DTD";
+
+        // $new = new ApiCall();
+
+        // $test = $new->getRequest($accessToken, $queryString, $requestUrl, $uri);
+
+        // dd($test);
+
+        // exit;
+
 
         // require_once('refrashToken.php');
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
@@ -190,14 +204,13 @@ class Search_Product_Request
 
         $server_APIoutput = curl_exec($curl);
         $JsonResponse = json_decode($server_APIoutput);
-        
+
         return $JsonResponse;
-        
+
         if (curl_errno($curl)) {
             echo 'Error:' . curl_error($curl);
         }
-        
-        curl_close($curl);
 
+        curl_close($curl);
     }
 }

@@ -23,19 +23,9 @@ class Order
     use ConfigTrait;
     private  $delay = 0;
     private $order_queue_name = '';
-    public function SelectedSellerOrder($awsId, $awsCountryCode, $awsAuth_code, $amazon_order_id)
+    public function SelectedSellerOrder($awsId, $awsCountryCode, $source, $awsAuth_code, $amazon_order_id)
     {
         $seller_id = $awsId;
-
-        $order_queue_array = [
-            6 => 'order_Nitrous',
-            29 => 'order_MBM',
-            35 => 'order_Mahzuz'
-        ];
-        $this->order_queue_name = 'order';
-        if (array_key_exists($awsId, $order_queue_array)) {
-            $this->order_queue_name = $order_queue_array[$awsId];
-        }
 
         $host = config('database.connections.order.host');
         $dbname = config('database.connections.order.database');
@@ -54,8 +44,7 @@ class Order
         $marketplace_ids = [$marketplace_ids];
 
         $apiInstance = new OrdersV0Api($config);
-        // $startTime = Carbon::now()->subHours(9)->toISOString();
-        // $startTime = Carbon::now()->subDays(5)->toISOString();
+
         $subDays = getSystemSettingsValue('subDays', 5);
         $startTime = Carbon::now()->subDays($subDays)->toISOString();
 
@@ -97,7 +86,7 @@ class Order
                 $data_elements = null
             )->getPayload();
             $next_token = $results['next_token'];
-            $this->OrderDataFormating($results, $awsCountryCode, $awsId);
+            $this->OrderDataFormating($results, $awsCountryCode, $awsId, $source);
 
             if (isset($next_token)) {
                 goto next_token_exist;
@@ -106,10 +95,10 @@ class Order
             $amazon_order_id = '';
         } catch (Exception $e) {
 
-            // Log::warning('Exception when calling OrdersApi->getOrders: ' . $e->getMessage());
             $code =  $e->getCode();
             $msg = $e->getMessage();
-            $error_reportings = ErrorReporting::create([
+
+            ErrorReporting::create([
                 'queue_type' => "order",
                 'identifier' => $seller_id,
                 'identifier_type' => "seller_id",
@@ -122,13 +111,11 @@ class Order
     }
 
 
-    public function OrderDataFormating($results, $awsCountryCode, $awsId)
+    public function OrderDataFormating($results, $awsCountryCode, $awsId, $source)
     {
         $result_data = $results->getOrders();
         $result_data = json_decode(json_encode($result_data));
         $count = 0;
-
-        $delay_count = 55;
 
         foreach ($result_data as $resultkey => $result) {
 
@@ -136,6 +123,7 @@ class Order
             $amazon_order_details = [];
             $orders->our_seller_identifier = $awsId;
             $orders->country = $awsCountryCode;
+            $orders->source = $source;
             $amazon_order_id = '';
             foreach ((array)$result as $detailsKey => $details) {
 
@@ -167,13 +155,10 @@ class Order
                 }
             }
 
-            //$amazon_order_id = '407-0297568-739477566';.01
-
             $data = DB::connection('order')
                 ->select("SELECT id, amazon_order_identifier FROM orders 
             WHERE amazon_order_identifier = '$amazon_order_id'");
-            // sleep(2);
-            //   $data = [];
+
             if (array_key_exists(0, $data)) {
 
                 $count++;
@@ -187,51 +172,14 @@ class Order
                 $update_orders->updated_at = now();
 
                 R::store($update_orders);
-                // sleep(2);
-                // $order_item_details = DB::connection('order')
-                //     ->select("SELECT id FROM orders 
-                // WHERE amazon_order_identifier = '$amazon_order_id' AND order_item = '0' ");
-
-                // if (count($order_item_details) > 0) {
-
-                //     $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
-                //     $this->delay += $delay_count;
-                // }
             } else {
 
-                //call orderitem details jobs
                 $orders->order_item = '0';
                 $orders->updated_at = now();
                 $orders->created_at = now();
-                // dd($orders);
+
                 R::store($orders);
-
-                // $this->getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode);
-                $this->delay += $delay_count;
             }
-        }
-    }
-
-    public function getOrderItemQueue($amazon_order_id, $awsId, $awsCountryCode)
-    {
-
-        if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-            GetOrderItem::dispatch(
-                [
-                    'order_id' => $amazon_order_id,
-                    'aws_id' => $awsId,
-                    'country_code' => $awsCountryCode,
-                ]
-            )->onConnection('redis')->onQueue('order')->delay($this->delay);
-        } else {
-
-            GetOrderItem::dispatch(
-                [
-                    'order_id' => $amazon_order_id,
-                    'aws_id' => $awsId,
-                    'country_code' => $awsCountryCode,
-                ]
-            );
         }
     }
 }

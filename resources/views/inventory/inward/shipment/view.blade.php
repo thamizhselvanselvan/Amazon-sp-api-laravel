@@ -86,11 +86,16 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($view as $val) 
+            @foreach($view as $val)
             <tr>
                 <td>{{$val['asin']}}</td>
                 <td>{{$val['item_name']}}</td>
-                <td>{{$val['tag']}}</td>
+                @if(isset($val->tags))
+                <td>{{$val->tags->name}}</td>
+                @else
+                <td>Not Selected</td>
+                @endif
+
                 <td>{{$val['quantity']}}</td>
                 <td>{{$val['price']}}</td>
             </tr>

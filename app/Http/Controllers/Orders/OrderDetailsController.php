@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers\Orders;
 
+use App\Models\order\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\order\OrderUpdateDetail;
+use Yajra\DataTables\Facades\DataTables;
+use App\Models\order\OrderSellerCredentials;
 
 class OrderDetailsController extends Controller
 {
@@ -13,6 +18,7 @@ class OrderDetailsController extends Controller
     {
         return view('orders.orderdetails_list.index');
     }
+
     public function update(Request $request)
     {
         $details = [
@@ -83,6 +89,7 @@ class OrderDetailsController extends Controller
 
         return redirect()->intended('/orders/details/list')->with('success', 'Order  has  updated successfully');
     }
+
     public function bulksearch(Request $request)
     {
         if ($request->ajax()) {
@@ -124,11 +131,11 @@ class OrderDetailsController extends Controller
                             JOIN ${order}.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
 
                             WHERE ord.amazon_order_identifier = '$order_data'");
-                      
             }
             return response()->json(['success' => 'Searched Sucessfully', 'data' => $order_details]);
         }
     }
+
     public function bulkedit(Request $request)
     {
         $order_id  = $request->id;
@@ -176,5 +183,171 @@ class OrderDetailsController extends Controller
             $email_used = json_decode($data[0]->email);
         }
         return view('orders.orderdetails_list.view', compact('details', 'email_used', 'data', 'price_data', 'item_tax'));
+    }
+
+    public function orderStatistics(Request $request)
+    {
+        $stores = OrderSellerCredentials::select('store_name', 'store.store_id')
+            ->join("order_update_details as store", 'order_seller_credentials.seller_id', '=', 'store.store_id')
+            ->distinct()
+            ->get();
+
+        $request_store_id = $request->store_id;
+        $url = "/orders/statistics";
+
+        if (isset($request_store_id)) {
+            $url = "/orders/statistics/" . $request_store_id;
+        }
+
+
+        if ($request->ajax()) {
+
+            $data = OrderUpdateDetail::query()
+                ->with(['order_seller_cred' => function ($query) {
+                    $query->select("id", "store_name", 'seller_id');
+                }])
+                ->when($request->store_id, function ($query, $role) use ($request) {
+                    return $query->where('store_id', $role);
+                })
+                ->orderBy('created_at', 'DESC')
+                ->limit(100);
+            return DataTables::of($data)
+                ->addColumn('store_name', function ($aws_credentials) {
+
+                    if ($aws_credentials->order_seller_cred) {
+                        return $aws_credentials->order_seller_cred->store_name;
+                    }
+                    return 'NA';
+                })
+                ->editColumn('updated_at', function ($row) {
+
+                    return $row->updated_at->toDateTimeString();
+                })
+                ->editColumn('booking_status', function ($row) {
+                    if ($row['booking_status'] == '0') {
+                        // return 'Not processed';
+                        return '<i class="fa fa-minus "  aria-hidden="true"></i>';
+                    } else if ($row['booking_status'] == '1') {
+                        // return 'Booked';
+                        return '<i class="fa fa-check click" color-"blue" aria-hidden="true"></i>';
+                    } else if ($row['booking_status'] == '5') {
+                        // return 'Under processing';
+                        return  '<i class="fa fa-spinner under" aria-hidden="true"></i>';
+                    } else {
+                        return $row['booking_status'];
+                    }
+                })
+                ->editColumn('zoho_status', function ($row) {
+                    $zoho_id = $row['zoho_id'];
+                    if ($row['zoho_status'] == '0') {
+                        return "<a href='#' data-toggle='tooltip' title='Not Processed'><i class='fa fa-minus not '  aria-hidden='true'></i> </a>";
+                    } else if ($row['zoho_status'] == '1') {
+                        return "<a href='#' data-toggle='tooltip' title='$zoho_id'><i class='fa fa-check click'  aria-hidden='true' ></i> </a>".
+                         '  '. "<a href='javascript:void(0)' value ='$zoho_id'   class='badge badge-success' id='zoho_clipboard'><i class='fa fa-copy'></i></a>";
+                    } else if ($row['zoho_status'] == '5') {
+                        return "<a href='#' data-toggle='tooltip' title='Under Processing'><i class='fa fa-spinner under' aria-hidden='true'></i> </a>";
+                    } else {
+                        return $row['zoho_status'];
+                    }
+                })
+                ->editColumn('order_feed_status', function ($row) {
+                    $message = $row['order_feed_status'];
+                    if ($row['order_feed_status'] == 'success') {
+                        return  '<a href="#" data-toggle="tooltip" title="AWB successfully updated to Amazon"><i class="fa fa-check click" color-"blue" aria-hidden="true" ></i> </a>';
+                    } else  if ($row['order_feed_status'] == '') {
+
+                        return '<a href="#" data-toggle="tooltip" title="Not Processed"><i class="fa fa-minus not" aria-hidden="true"></i> </a>';
+                    } else {
+                        return "<a href='#' data-toggle='tooltip' title='$message'><i class='fa fa-times wrong' color-'blue' aria-hidden='true' ></i> </a>";
+                    }
+                })
+                ->editColumn('courier_awb', function ($row) {
+                    $awb =  $row['courier_awb'];
+                    if ($awb == '') {
+                        return '';
+                    } else {
+                        return "<a href='https://b2cship.us/tracking/?$awb' target='_blank'>$awb</a>";
+                    }
+                })
+                ->addColumn('order_date', function ($row) {
+                    $now = Carbon::now();
+                    $yest = Carbon::now()->subdays(1);
+                    $purchase_date = Order::where('amazon_order_identifier', $row->amazon_order_id)
+                        ->get('purchase_date')
+                        ->first();
+                    if (isset($purchase_date->purchase_date)) {
+                        $date =  date('Y-m-d H:i:s', strtotime($purchase_date->purchase_date));
+                        if ($date > $yest && $date < $now) {
+                            return $this->CarbonGetDateDiff($date . '.000');
+                        } else {
+                            // return ($date) . ' ' . 'IST';
+                            return $this->daysdiffrence($date . '.000');
+                        }
+                    } else {
+                        return 'NA';
+                    }
+                })
+                ->editColumn('amazon_order_id', function ($row) {
+                    $order_id = $row['amazon_order_id'];
+                    if ($order_id == '') {
+                        return '';
+                    }
+                    return $order_id. ' '. "<a href='javascript:void(0)' value ='$order_id'   class='badge badge-success' id='clipboard'><i class='fa fa-copy'></i></a>";
+                })
+
+                ->rawColumns(['store_name', 'order_status', 'order_date'])
+                ->escapeColumns([])
+                ->make(true);
+        }
+        return view('orders.statistics', compact('stores', 'request_store_id', 'url'));
+    }
+
+
+    public function CarbonGetDateDiff($date)
+    {
+        $date_details_array = ['Year', 'Month', 'Day', 'Hour', 'Minute'];
+        $date = substr($date, 0, strpos($date, "."));
+        $created = new Carbon($date);
+        $now = Carbon::now();
+        $differnce = $created->diff($now);
+
+        $final_date = '';
+        $count = 0;
+        foreach ((array)$differnce as $key => $value) {
+            if ($value != 0 && $count < 5 && $count > 2) {
+                $final_date .= $value > 1 ? $value . ' ' . $date_details_array[$count] . 's, ' : $value . ' ' . $date_details_array[$count] . ',  ';
+            }
+            $count++;
+        }
+        $time = rtrim($final_date, ' ,') . ' Before';
+        $date =  $differnce->days > 0 ? $differnce->days . ' Days' : '';
+
+        return $date . ' ' . $time;
+    }
+    public function daysdiffrence($date)
+    {
+        $date_details_array = ['Year', 'Month', 'Day',];
+        $date = substr($date, 0, strpos($date, "."));
+        $created = new Carbon($date);
+        $now = Carbon::now();
+        $differnce = $created->diff($now);
+
+        $final_date = '';
+        $count = 0;
+        foreach ((array)$differnce as $key => $value) {
+            if ($value != 0 && $count < 3 && $count > 2) {
+                $final_date .= $value > 1 ? $value . ' ' . $date_details_array[$count] . 's, ' : $value . ' ' . $date_details_array[$count] . ', ';
+            }
+            $count++;
+        }
+        $time = rtrim($final_date, ' ,') . ' Before';
+        // $date =  $differnce->days > 0 ? $differnce->days . ' Days' : '';
+        if ($differnce->days > 0 && $differnce->days  < 2) {
+            $date =   $differnce->days . ' Day' . '';
+        } else {
+            $date =   $differnce->days . ' Days' . '';
+        }
+
+        return $date . ' ' . $time;
     }
 }

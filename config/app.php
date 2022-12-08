@@ -66,9 +66,9 @@ return [
     'aws_sp_api_access_secret_id' => env('AWS_SP_API_ACCESS_SECRET_KEY'),
     'aws_sp_api_role_arn' => env('AWS_SP_API_ROLE_ARN'),
 
-    'zoho_client_id'  => env('ZOHO_CLIENT_ID'),
-    'zoho_secret'  => env('ZOHO_SECRET'),
-    'zoho_refresh_token'  => env('ZOHO_REFRESH_TOKEN'),
+    'zoho_client_id' => env('ZOHO_CLIENT_ID'),
+    'zoho_secret' => env('ZOHO_SECRET'),
+    'zoho_refresh_token' => env('ZOHO_REFRESH_TOKEN'),
 
     /*
     |--------------------------------------------------------------------------
@@ -137,7 +137,11 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'zoho_client_id' => env('ZOHO_CLIENT_ID'),
 
+    'zoho_secret' => env('ZOHO_SECRET'),
+
+    'zoho_refresh_token' => env('ZOHO_REFRESH_TOKEN'),
 
     /*
     |--------------------------------------------------------------------------
@@ -181,10 +185,6 @@ return [
         /*
         * Package Service Providers...
         */
-        Yajra\DataTables\DataTablesServiceProvider::class,
-        Maatwebsite\Excel\ExcelServiceProvider::class,
-        App\Providers\DropboxServiceProvider::class,
-        Arcanedev\LogViewer\LogViewerServiceProvider::class,
 
         /*
         * Application Service Providers...
@@ -203,7 +203,7 @@ return [
         Arcanedev\LogViewer\LogViewerServiceProvider::class,
 
 
-
+        Jenssegers\Mongodb\MongodbServiceProvider::class,
 
     ],
 

@@ -18,7 +18,8 @@ class asinBulkImport extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:asin-import {user_id} {--source=} ';
+    // protected $signature = 'pms:asin-import {user_id} {--country_code=} {path} {fm_id}';
+    protected $signature = 'pms:asin-import {--columns=} ';
 
     /**
      * The console command description.
@@ -44,68 +45,79 @@ class asinBulkImport extends Command
      */
     public function handle()
     {
-        //source and seller id
-        // $push_to_bb = new PushAsin();
+        $column_data = $this->option('columns');
+        $final_data = [];
+        $destination = '';
+        $explode_array = explode(',', $column_data);
 
-        $user_id = $this->argument('user_id');
-        $sources = explode(',', $this->option('source'));
+        foreach ($explode_array as $key => $value) {
+            list($key, $value) = explode('=', $value);
+            $final_data[$key] = $value;
+            if ($key == 'destination') {
+                $des = $value;
+                $destination = str_replace('_', ',', $des);
+            }
+        }
 
-        $path = 'AsinMaster/asin.csv';
+        $file_management_id = $final_data['fm_id'];
+        $user_id = $final_data['user_id'];
+        $path = $final_data['path'];
+
+        // $user_id = $this->argument('user_id');
+        // $path = $this->argument('path');
+        // $file_management_id = $this->argument('fm_id');
+        // exit;
+        $sources = explode(',', $destination);
+
         $csv = Reader::createFromPath(Storage::path($path), 'r');
         $csv->setDelimiter(",");
         $csv->setHeaderOffset(0);
 
-        $source = buyboxCountrycode();
-        $asin = [];
-        $count = 0;
+        $csv_data = [];
+        foreach ($sources as $source) {
 
-        foreach ($sources as $key1 => $this->country) {
+            foreach ($csv as $data) {
+                $csv_data[] = $data['ASIN'];
+            }
 
-            foreach ($csv as $key => $record) {
-                $country_code = strtoupper($this->country);
-                $seller_id = $source[$country_code];
-                $asin = $record['ASIN'];
+            $chunk_data = [];
+            $chunk = array_chunk($csv_data, 5000);
+            $class = "catalog\ImportAsinSourceDestinationCsvFile";
+            $queue_name = "csv_import";
+            $delay = 0;
+            $count = 0;
 
-                $asin_details[] = [
-                    'asin' => $asin,
-                    'user_id' => $user_id,
+            $asin_chunk_count = count($chunk) - 1;
+
+            foreach ($chunk as $value) {
+
+                $chunk_data  = [
+
+                    'ASIN'      =>  $value,
+                    'user_id'   =>  $user_id,
+                    'source'    =>  $source,
+                    'module'    =>  'source',
+                    'fm_id'     =>  $file_management_id
                 ];
 
-                if ($count == 999) {
+                if ($count == $asin_chunk_count) {
+                    //LAST CHUNK
 
-                    $model_name = table_model_create(country_code: $this->country, model: 'Asin_source', table_name: 'asin_source_');
-                    $model_name->upsert($asin_details, ['user_asin_unique'], ['asin']);
-                    $count = 0;
-                    $asin_details = [];
+                    $chunk_data  = [
+                        'ASIN'      =>  $value,
+                        'user_id'   =>  $user_id,
+                        'source'    =>  $source,
+                        'module'    =>   'source',
+                        'fm_id'     =>  $file_management_id,
+                        'Last_queue' =>  now(),
+                    ];
+                    jobDispatchFunc($class, $chunk_data, $queue_name, $delay);
                 }
+
+                jobDispatchFunc($class, $chunk_data, $queue_name, $delay);
                 $count++;
             }
-            $table_name = table_model_create(country_code: $this->country, model: 'Asin_source', table_name: 'asin_source_');
-            $table_name->upsert($asin_details, ['user_asin_unique'], ['asin']);
-
-
-            $country_code_up = strtoupper($this->country);
-            $queue = 'catalog';
-
-            if ($country_code_up == 'IN') {
-
-                $queue = 'catalog_IN';
-            }
-            $class = 'catalog\AmazonCatalogImport';
-
-            // $table_name->where('status', 0)->chunk(10, function ($asins) use ($class,  $queue) {
-
-            //     $asin_source = [];
-            //     foreach ($asins as $asin) {
-
-            //         $asin_source[] = [
-            //             'asin' => $asin->asin,
-            //             'source' => $this->country,
-            //             'seller_id' => $asin->user_id
-            //         ];
-            //     }
-            //     jobDispatchFunc($class, $asin_source, $queue);
-            // });
+            $csv_data = [];
         }
     }
 }

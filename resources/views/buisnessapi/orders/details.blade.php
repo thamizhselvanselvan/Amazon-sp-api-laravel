@@ -1,13 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Cliqnshop Orders')
+@section('title', 'Pending Orders')
 
 @section('content_header')
 
-<div class="row">
-    <h3>Cliqnshop Order Details</h3>
-
-</div>
 @stop
 
 
@@ -36,22 +32,28 @@
     </div>
 </div>
 <div class="row">
-    <h2 class="ml-2">
+    <div class="col">
+        <div style="margin-top: 1.0rem;">
+            <h3>Pending Order Details</h3>
+        </div>
+    </div>
+    <!-- <h2 class="ml-2">
         <x-adminlte-button label="View Orders Placed" theme="primary" class="btn-sm" icon="fas fa-eye" id="vieworders" />
-    </h2>
+    </h2> -->
     <h2 class="ml-2">
         <x-adminlte-button label="View Orders Pending" theme="primary" class="btn-sm" icon="fas fa-eye" id="pendingorders" />
     </h2>
     <h5 class="mb-4 text-right col">
-        <div class="search">
-            <label>
-                Search:
-                <input type="text" id="myInput" class="d-inline-block" placeholder="search asin" autocomplete="off" />
-            </label>
+        <div style="margin-top: 1.5rem;">
+            <div class="search">
+                <label>
+                    Search:
+                    <input type="text" id="myInput" class="d-inline-block" placeholder="search asin" autocomplete="off" />
+                </label>
+            </div>
         </div>
     </h5>
 </div>
-
 <div class="modal " id="selectoffer">
     <div class="modal-dialog modal-lg">
         <div class="modal-content modal-lg">
@@ -74,10 +76,10 @@
     </div>
 </div>
 
-<table class="table table-bordered yajra-datatable table-striped" id='orderstable'>
+<!-- <table class="table table-bordered yajra-datatable table-striped" id='orderstable'>
     <thead>
         <tr class='text-bold bg-info'>
-            <!-- <th>ID</th> -->
+            <th>ID</th>
             <th>ASIN</th>
             <th>Item Name</th>
             <th>Price</th>
@@ -88,7 +90,7 @@
     <tbody id="data_display">
 
     </tbody>
-</table>
+</table> -->
 <table class="table table-bordered yajra-datatable table-striped" id='orderspending'>
     <thead>
         <tr class='text-bold bg-info'>
@@ -106,52 +108,61 @@
 @stop
 @section('js')
 <script type="text/javascript">
+    $("#pendingorders").hide();
+
+    window.onload = function() {
+        $("#pendingorders").click();
+    };
+
+
     $("#orderstable").hide();
     $(".search").hide();
     $("#orderspending").hide();
     $(document).ready(function() {
         $("#myInput").on("keyup", function() {
             var value = $(this).val().toLowerCase();
-            $("#data_display tr").filter(function() {
+            $("#data_display_pending tr").filter(function() {
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
     });
-    $('#vieworders').on('click', function() {
 
-        $("#orderstable").show();
-        $("#orderspending").hide();
-        $(".search").show();
-        $.ajax({
-            method: 'GET',
-            url: '/business/orders/view/',
-            data: {
-                'cliq': 'cliq',
-                "_token": "{{ csrf_token() }}",
-            },
-            'dataType': 'json',
-            success: function(response) {
-                let html = '';
-                $status = '';
-                $.each(response.data, function(index, value) {
-                    html += "<tr>";
-                    html += "<tr class='table_row'>";
-                    html += "<td name='asin[]'>" + value.prodcode + "</td>";
-                    html += "<td name='name[]'>" + value.name + "</td>";
-                    html += "<td name='name[]'>" + value.price + "</td>";
-                    html += "<td name='name[]'>" + value.quantity + "</td>";
-                    html += "<td name='name[]'>" + 'Booked' + "</td>";
-                    html += "</tr>";
 
-                });
-                $("#orderstable").append(html);
-            },
-            error: function(response) {
-                console.log(responce)
-            }
-        });
+    // $('#vieworders').on('click', function() {
+    //     $('#data_display').empty();
+    //     $("#orderstable").show();
+    //     $("#orderspending").hide();
+    //     $(".search").show();
+    //     $.ajax({
+    //         method: 'GET',
+    //         url: '/business/orders/view/',
+    //         data: {
+    //             'cliq': 'cliq',
+    //             "_token": "{{ csrf_token() }}",
+    //         },
+    //         'dataType': 'json',
+    //         success: function(response) {
+    //             let html = '';
+    //             $status = '';
+    //             $.each(response.data, function(index, value) {
+    //                 html += "<tr>";
+    //                 html += "<tr class='table_row'>";
+    //                 html += "<td name='asin[]'>" + value.prodcode + "</td>";
+    //                 html += "<td name='name[]'>" + value.name + "</td>";
+    //                 html += "<td name='name[]'>" + value.price + "</td>";
+    //                 html += "<td name='name[]'>" + value.quantity + "</td>";
+    //                 html += "<td name='name[]'>" + 'Waiting For confirmation' + "</td>";
+    //                 html += "</tr>";
 
-    });
+    //             });
+    //             $("#orderstable").append(html);
+    //         },
+    //         error: function(response) {
+    //             console.log(responce)
+    //         }
+    //     });
+
+    // });
 
     $('#close').click(function() {
         $('#selectoffer').modal('hide');
@@ -159,6 +170,7 @@
 
     $('#pendingorders').on('click', function() {
 
+        $("#data_display_pending").empty();
         $("#orderspending").show();
         $("#orderstable").hide();
         $(".search").show();
@@ -211,11 +223,14 @@
             },
             // 'dataType': 'json',
             success: function(response) {
-
+                if (response == '') {
+                    response = 'item Might Currently unavailable. please try After some time';
+                }
                 $('#selectoffer').modal('show');
                 $('.offerselect').html(response);
             },
             error: function(response) {
+                console.log(response);
                 alert('Something Went Wrong.. or No offer found')
             }
         });
@@ -237,7 +252,7 @@
             let name = $("input[name='item_name']").val();
 
             $.ajax({
-                method: 'post',
+                method: 'get',
                 url: "/business/order/book/",
                 data: {
                     "offerid": offerid,
@@ -247,11 +262,12 @@
                 },
                 success: function(response) {
                     console.log(response);
-                    alert('Booked Successfully')
+                    alert('Request sent Successfully')
+                    location.reload();
                 },
                 error: function(response) {
                     console.log(response);
-                    alert('not Booked')
+                    alert('Something went Wrong. Order not Booked')
                 }
             });
 

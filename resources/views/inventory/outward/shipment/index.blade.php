@@ -36,7 +36,14 @@
             </div>
             @endif
         </div>
-
+        <div class="alert_display">
+            @if (request('success'))
+            <div class="alert alert-success alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>{{request('success')}}</strong>
+            </div>
+            @endif
+        </div>
         <h2 class="mb-4">
             <a href="{{ route('outwardings.create') }}">
                 <x-adminlte-button label="Create Shipment" theme="primary" icon="fas fa-plus" />
@@ -72,8 +79,8 @@
     $(function() {
 
         $.extend($.fn.dataTable.defaults, {
-                pageLength: 50,
-            });
+            pageLength: 50,
+        });
 
         let yajra_table = $('.yajra-datatable').DataTable({
             processing: true,

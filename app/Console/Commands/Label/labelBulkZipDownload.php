@@ -17,7 +17,8 @@ class labelBulkZipDownload extends Command
      *
      * @var string
      */
-    protected $signature = 'pms:label-bulk-zip-download {passid} {currenturl}';
+    // protected $signature = 'pms:label-bulk-zip-download {passid} {currenturl} {bag_no} {current_page_number}';
+    protected $signature = 'pms:label-bulk-zip-download {--columns=} ';
 
     /**
      * The console command description.
@@ -43,25 +44,45 @@ class labelBulkZipDownload extends Command
      */
     public function handle()
     {
-        $passid = $this->argument('passid');
-        $currenturl = $this->argument('currenturl');
-        
-        $path = 'label/zip/' . 'label.zip';
-        Storage::delete($path);
-        
-        $excelid = explode('-', $passid);
-        foreach ($excelid as $getId) {
-        
-            $id = Label::where('id', $getId)->get();
-            // $id = DB::connection('web')->select("select * from labels where id = '$getId' ");
-            foreach ($id as $key => $value) {
-                $awb_no = $value->awb_no;
-                $url = str_replace('select-download', 'pdf-template', $currenturl . '/' . $getId);
+        $column_data = $this->option('columns');
+        $final_data = [];
+        $explode_array = explode(',', $column_data);
 
-                $path = 'label/label' . $awb_no . '.pdf';
+        foreach ($explode_array as $key => $value) {
+            list($key, $value) = explode('=', $value);
+            $final_data[$key] = $value;
+        }
+
+        $file_management_id = $final_data['fm_id'];
+        $headers = $final_data['header'];
+        $headers_data = explode('_', $headers);
+        $passid =  $headers_data[0];
+        $currenturl =  $headers_data[1];
+        $bag_no =  $headers_data[2];
+        $current_page_number =  $headers_data[3];
+
+        log::alert($currenturl);
+        // $passid = $this->argument('passid');
+        // $bag_no = $this->argument('bag_no');
+        // $current_page_number = $this->argument('current_page_number');
+        // $currenturl = $this->argument('currenturl');
+
+        $excelid = explode('-', $passid);
+
+        foreach ($excelid as $getId) {
+
+            $id = Label::where('id', $getId)->get();
+            foreach ($id as $key => $value) {
+
+                $awb_no = $value->awb_no;
+                $url = str_replace('select-download', 'pdf-template', $currenturl . '/' . $bag_no . '-' . $getId);
+                log::alert($url);
+                $path = 'label/' . $bag_no . '/label' . $awb_no . '.pdf';
+
                 if (!Storage::exists($path)) {
                     Storage::put($path, '');
                 }
+
                 $exportToPdf = storage::path($path);
                 Browsershot::url($url)
                     // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
@@ -76,18 +97,30 @@ class labelBulkZipDownload extends Command
         }
 
         $zip = new ZipArchive;
-        $zip_path = 'label/zip/' . 'label.zip';
-        $fileName = Storage::path('label/zip/' . 'label.zip');
+        // $data_time = now()->format('Y-m-d-H-i-s');
+        $zip_path = 'label/' . $bag_no . '/' . 'zip/' . 'label' . $current_page_number . '.zip';
+
+        $fileName = Storage::path($zip_path);
+
         if (!Storage::exists($zip_path)) {
             Storage::put($zip_path, '');
+        } else {
+            unlink(Storage::path($zip_path));
         }
+
         if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
+
             foreach ($saveAsPdf as $key => $value) {
-                $path = Storage::path('label/' . $value);
+
+                $path = Storage::path("label/$bag_no/$value");
                 $relativeNameInZipFile = basename($path);
                 $zip->addFile($path, $relativeNameInZipFile);
             }
+
             $zip->close();
         }
+
+        $command_end_time = now();
+        fileManagementUpdate($file_management_id, $command_end_time);
     }
 }

@@ -101,7 +101,7 @@ class exportOtherAmazonInProduct extends Command
                 }, $records);
 
                 foreach ($records as $key => $data) {
-                    Log::alert(json_encode($data));
+                    //Log::alert(json_encode($data));
                 }
                 $this->writer->insertall($records);
 

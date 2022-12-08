@@ -40,8 +40,30 @@ class Handler extends ExceptionHandler
 
             if (App::environment(['Production', 'production', 'Staging', 'staging'])) {
 
-                Log::channel('slack')->error($e);
+                $getMessage = $e->getMessage();
+                $getCode = $e->getCode();
+                $getFile = $e->getFile();
+                $getLine = $e->getLine();
+
+                $slackMessage = "Message: $getMessage
+                Code: $getCode
+                File: $getFile
+                Line: $getLine";
+                Log::channel('slack_360')->error($slackMessage);
             }
         });
+    }
+
+
+    /**
+     * Render an exception into an HTTP response.
+     * 
+     * @param \Illumninate\Http\Request $request
+     * @param \Throwable $throwable
+     * @return \Illuminate\Http\Response
+     */
+    public function render($request, Throwable $throwable)
+    {
+        return parent::render($request, $throwable);
     }
 }

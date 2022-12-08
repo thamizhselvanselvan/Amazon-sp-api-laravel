@@ -11,7 +11,6 @@ class Order extends Model
     protected $connection = 'order';
     protected $table = 'orders';
     protected $fillable = [
-        
         'our_seller_identifier',
         'country',
         'amazon_order_identifier',
@@ -52,5 +51,10 @@ class Order extends Model
     {
         parent::__construct($attributes);
         $this->getConnection()->setTablePrefix('');
+    }
+
+    public function getBuyerInfoAttribute($value)
+    {
+        return json_decode($this->attributes['buyer_info'], true);
     }
 }

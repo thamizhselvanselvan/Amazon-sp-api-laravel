@@ -15,3 +15,7 @@ yarn-error.log
 /.vscode
 .env.local.example
 .env.live.example
+.env.prod.example
+/bash/push2production.sh
+
+

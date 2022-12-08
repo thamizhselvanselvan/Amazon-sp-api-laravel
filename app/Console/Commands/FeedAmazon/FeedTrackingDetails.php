@@ -37,9 +37,9 @@ class FeedTrackingDetails extends Command
      *
      * @return int
      */
+
     public function handle()
     {
-        // Log::alert("Feed Command running");
         (new FeedOrderDetails())->FeedOrderTrackingNo();
     }
 }

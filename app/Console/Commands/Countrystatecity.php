@@ -43,14 +43,13 @@ class Countrystatecity extends Command
     public function handle()
     {
         $path =  public_path('country.json');
-        $jsonfile = json_decode(file_get_contents($path),true);
+        $jsonfile = json_decode(file_get_contents($path), true);
         $countries_list = [];
 
-        foreach($jsonfile as $jsondata)
-        {
-            $countries_list [] = [
+        foreach ($jsonfile as $jsondata) {
+            $countries_list[] = [
 
-                 "name" => $jsondata['name'],
+                "name" => $jsondata['name'],
                 "country_code" => $jsondata['iso3'],
                 "code" => $jsondata['iso2'],
                 "numeric_code" => $jsondata['numeric_code'],
@@ -63,56 +62,50 @@ class Countrystatecity extends Command
                 "updated_at" => now(),
             ];
         }
-       
+
         $country_count = Country::count();
 
-        if($country_count <= 0 )
-        {
+        if ($country_count <= 0) {
             Country::insert($countries_list);
         }
 
         $countries = Country::get();
         $states_lists = [];
 
-        foreach($countries as $country)
-        {
-            $key = array_search($country->name, array_column($jsonfile,'name'));
+        foreach ($countries as $country) {
+            $key = array_search($country->name, array_column($jsonfile, 'name'));
             $states = isset($jsonfile[$key]['states']) ? $jsonfile[$key]['states'] : [];
 
-            foreach($states as $state)
-            {
-                $states_lists [] = [
+            foreach ($states as $state) {
+                $states_lists[] = [
 
                     "country_id" => $country->id,
-                    "name" =>$state['name'],
+                    "name" => $state['name'],
                     "created_at" => now(),
                     "updated_at" => now(),
                 ];
             }
         }
-        $states_count =State::count();
-        if($states_count <= 0 )
-        {
+        $states_count = State::count();
+        if ($states_count <= 0) {
             State::insert($states_lists);
         }
 
         $states_name = State::get();
-        
 
-        foreach($states_name as $state)
-        {
-            $countries_get = Country::where('id',$state->country_id)->first();
 
-            $country_key = array_search($countries_get->name, array_column($jsonfile,'name'));
+        foreach ($states_name as $state) {
+            $countries_get = Country::where('id', $state->country_id)->first();
+
+            $country_key = array_search($countries_get->name, array_column($jsonfile, 'name'));
             $total_states = isset($jsonfile[$country_key]['states']) ? $jsonfile[$country_key]['states'] : [];
 
-            $state_key = array_search($state->name, array_column($total_states,'name'));
+            $state_key = array_search($state->name, array_column($total_states, 'name'));
             $cities = isset($jsonfile[$country_key]['states'][$state_key]['cities']) ? $jsonfile[$country_key]['states'][$state_key]['cities'] : [];
 
-            $total_cities =[];
-            foreach($cities as $city)
-            {
-                $total_cities [] = [
+            $total_cities = [];
+            foreach ($cities as $city) {
+                $total_cities[] = [
                     "state_id" => $state->id,
                     "name" => $city['name'],
                     "created_at" => now(),

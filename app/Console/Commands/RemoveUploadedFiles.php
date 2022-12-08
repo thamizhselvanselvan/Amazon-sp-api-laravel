@@ -2,10 +2,12 @@
 
 namespace App\Console\Commands;
 
+use Carbon\Carbon;
 use App\Models\BOE;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\BOE\RemoveUploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class RemoveUploadedFiles extends Command
 {
@@ -63,6 +65,23 @@ class RemoveUploadedFiles extends Command
                 }
             });
         }
-        // RemoveUploadedFile::dispatch();
+        // Remove all 2 days ago file form Asin destination folder start.
+        $back_file_date = Carbon::now()->subDays(2)->toDateString();
+        $Asin_source_destination_files = ['AsinDestination', 'AsinSource'];
+        foreach ($Asin_source_destination_files as $Asin_source_destination_file) {
+
+            $files = Storage::allFiles("${Asin_source_destination_file}");
+            foreach ($files as $file_name) {
+
+                $FileTime = date("F d Y H:i:s.", filemtime(Storage::path("${file_name}")));
+                $current_file_date = Carbon::parse($FileTime)->toDateString();
+
+                if ($back_file_date == $current_file_date) {
+                    unlink(Storage::path($file_name));
+                    log::alert('All file delete successfully from AsinDestination Folder');
+                }
+            }
+        }
+        // Remove all 2 days ago file form Asin destination folder end.
     }
 }

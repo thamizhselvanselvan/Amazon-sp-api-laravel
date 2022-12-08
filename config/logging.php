@@ -69,7 +69,39 @@ return [
 
         'slack' => [
             'driver' => 'slack',
-            'url' => env('SLACK_NOTIFICATION_360_WEBHOOK'),
+            'url' => env('SLACK_NOTIFICATION_WEBHOOK'),
+            'username' => 'Laravel Log',
+            'emoji' => ':boom:',
+            'level' => env('LOG_LEVEL', 'critical'),
+        ],
+
+        'slack_bb' => [
+            'driver' => 'slack',
+            'url' => env('SLACK_NOTIFICATION_WEBHOOK_BUYBOX'),
+            'username' => 'Laravel Log',
+            'emoji' => ':boom:',
+            'level' => env('LOG_LEVEL', 'critical'),
+        ],
+
+        'slack_360' => [
+            'driver' => 'slack',
+            'url' => env('SLACK_NOTIFICATION_WEBHOOK_APP360'),
+            'username' => 'Laravel Log',
+            'emoji' => ':boom:',
+            'level' => env('LOG_LEVEL', 'critical'),
+        ],
+
+        'slack_aimeos' => [
+            'driver' => 'slack',
+            'url' => env('SLACK_NOTIFICATION_WEBHOOK_AIMEOS'),
+            'username' => 'Laravel Log',
+            'emoji' => ':boom:',
+            'level' => env('LOG_LEVEL', 'critical'),
+        ],
+
+        'slack_monitor' => [
+            'driver' => 'slack',
+            'url' => env('SLACK_NOTIFICATION_WEBHOOK_MONITOR'),
             'username' => 'Laravel Log',
             'emoji' => ':boom:',
             'level' => env('LOG_LEVEL', 'critical'),

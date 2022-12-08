@@ -11,25 +11,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Catalog\Asin_destination;
+use App\Models\FileManagement;
 use Yajra\DataTables\Facades\DataTables;
 
 class AsinDestinationController extends Controller
 {
     public function index(Request $request)
     {
-        // if ($request->ajax()) {
-
-        //     $data = AsinDestination::orderBy('id', 'DESC')->get();
-        //     return DataTables::of($data)
-        //         ->addIndexColumn()
-        //         ->addColumn('action', function ($row) {
-        //             $actionBtn = '<div class="d-flex"><a href="edit-asin-destination/' . $row->id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
-        //             $actionBtn .= '<div class="d-flex pl-2 trash"><a href="trash-asin-destination/' . $row->id . ' " class=" btn btn-sm btn-danger "><i class="fa fa-trash"></i> Remove</a>';
-
-        //             return $actionBtn;
-        //         })
-        //         ->make(true);
-        // }
         return view('Catalog.AsinDestination.index');
     }
 
@@ -54,9 +42,7 @@ class AsinDestinationController extends Controller
             foreach ($destinations as $destination) {
                 $asins = preg_split('/[\r\n| |:|,]/', $value, -1, PREG_SPLIT_NO_EMPTY);
                 $country_code = buyboxCountrycode();
-                // if ($destination == 'UK') {
-                //     return redirect('catalog/import-asin-destination')->with('error', 'Seller not available!');
-                // }
+
                 foreach ($asins as $asin) {
                     $records[] = [
                         'asin'  => $asin,
@@ -88,6 +74,12 @@ class AsinDestinationController extends Controller
             }
         } elseif ($request->form_type == 'file_upload') {
 
+            $request->validate([
+                'asin' => 'required',
+                'destination'    => 'required',
+                'priority'  => 'required',
+            ]);
+
             $user_id = Auth::user()->id;
             $priority = $request->priority;
             $destination = implode(',', $request->destination);
@@ -101,11 +93,26 @@ class AsinDestinationController extends Controller
                 return back()->with('error', "Please upload file to import it to the database");
             }
 
+            $import_file_time = date('Y-m-d-H-i-s');
             $file = file_get_contents($request->asin);
-            $path = 'AsinDestination/asin.csv';
+            $path = "AsinDestination/asin${import_file_time}.csv";
             Storage::put($path, $file);
 
-            commandExecFunc("mosh:Asin-destination-upload ${user_id} ${priority} --destination=${destination} ");
+            $file = $request->asin;
+            $file_name = $file->getClientOriginalName();
+
+            $file_info = [
+                'user_id' => $user_id,
+                'type' => 'IMPORT_ASIN_DESTINATION',
+                'module' => "ASIN_DESTINATION_${destination}_${priority}",
+                'file_name' => $file_name,
+                'file_path' => $path,
+                'command_name' => 'mosh:Asin-destination-upload',
+
+            ];
+
+            FileManagement::create($file_info);
+            fileManagement();
         }
         return redirect('catalog/import-asin-destination')->with('success', 'File has been uploaded successfully');
     }
@@ -204,7 +211,7 @@ class AsinDestinationController extends Controller
         $request->validate([
             'source'    =>  'required|in:IN,US',
             'priority'  =>  'required|in:1,2,3',
-            'Asins'     =>  'required',
+            'Asins'     =>  'required|string|min:10|max:120000',
         ]);
 
         $source = strtolower($request->source);
@@ -214,5 +221,13 @@ class AsinDestinationController extends Controller
 
         commandExecFunc("mosh:search-asin-delete-bb-destination ${priority} ${source} ${asins}");
         return redirect('/catalog/asin-destination')->with('success', 'ASINS has been deleted successfully!');
+    }
+
+    public function DestinationFileManagementMonitor(Request $request)
+    {
+        $type = $request->module_type;
+        $file_check = fileManagementMonitoringNew($type);
+        // po($file_check);
+        return response()->json($file_check);
     }
 }

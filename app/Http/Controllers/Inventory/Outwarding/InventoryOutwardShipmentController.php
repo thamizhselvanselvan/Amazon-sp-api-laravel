@@ -12,6 +12,7 @@ use App\Models\Inventory\Vendor;
 use App\Models\Inventory\Inventory;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory\Outshipment;
+use App\Models\Inventory\Shelve;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Inventory\Shipment_Outward;
@@ -38,7 +39,7 @@ class InventoryOutwardShipmentController extends Controller
                 ->addColumn('destination_name', function ($data) {
                     return ($data->vendors) ? $data->vendors->name : " NA";
                 })
-                ->editColumn('date', function ($row) {
+                ->addColumn('date', function ($row) {
                     return Carbon::parse($row['created_at'])->format('M d Y');
                 })
                 ->addColumn('action', function ($row) {
@@ -70,8 +71,7 @@ class InventoryOutwardShipmentController extends Controller
 
     public function show(Request $reques, $id)
     {
-        $outview = Shipment_Outward_Details::where('ship_id', $id)->with(['warehouses', 'vendors'])->get();
-
+        $outview = Shipment_Outward_Details::where('ship_id', $id)->with(['warehouses', 'vendors','tags'])->get();
         foreach ($outview as $key => $val) {
             $items[] =   $val['asin'];
         }
@@ -90,7 +90,7 @@ class InventoryOutwardShipmentController extends Controller
         $loc = [];
         foreach ($place as $plc) {
 
-            $loc[] = Bin::where('bin_id', $plc['bin'])->first();
+            $loc[] = Shelve::where('shelve_id', $plc['bin'])->first();
         }
 
         return view('inventory.outward.shipment.view', compact('outview', 'id', 'currency', 'bar_code', 'bar', 'loc'));
@@ -120,7 +120,6 @@ class InventoryOutwardShipmentController extends Controller
         }
     }
 
-
     public function selectview(Request $request)
     {
 
@@ -132,11 +131,12 @@ class InventoryOutwardShipmentController extends Controller
             ->first();
         }
     }
+
     public function storeoutshipment(Request $request)
     {
 
-        $shipment_id = random_int(1000, 9999);
-
+        $val = random_int(1000, 99999);
+        $shipment_id = 'OUT'.$val;
         foreach ($request->asin as $key => $asin) {
 
             $items[] = [
@@ -190,6 +190,7 @@ class InventoryOutwardShipmentController extends Controller
 
         return response()->json(['success' => 'Shipment has Created successfully']);
     }
+    
     public function outwardingview(Request $request)
     {
 

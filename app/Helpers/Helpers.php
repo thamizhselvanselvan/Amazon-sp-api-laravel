@@ -1,8 +1,11 @@
 <?php
 
 use Carbon\Carbon;
+use App\Models\User;
+use League\Csv\Reader;
 use Carbon\CarbonInterval;
 use App\Models\Aws_credential;
+use App\Models\FileManagement;
 use PhpParser\Node\Expr\Eval_;
 use App\Models\Catalog\Catalog;
 use App\Models\Admin\Ratemaster;
@@ -13,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
 use App\Models\SystemSetting\SystemSetting;
 use App\Models\ShipNTrack\SMSA\SmsaTrackings;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
@@ -123,15 +127,35 @@ if (!function_exists('aws_credentials')) {
 }
 
 if (!function_exists('slack_notification')) {
-    function slack_notification($title, $message)
+    function slack_notification($channel, $title, $message)
     {
-        $webhook = config('pms.PMS_SLACK_NOTIFICATION_WEBHOOK');
+        switch ($channel) {
+            case 'monitor':
+                $webhook = 'slack_monitor';
+                break;
 
-        if (empty($webhook)) {
-            throw new Exception("Please update your ENV with PMS_SLACK slack webhook url", 1);
-        } else {
-            //Notification::route('slack', $webhook)->notify(new SlackMessages($title, $message));
+            case 'buybox':
+                $webhook = 'slack_bb';
+                break;
+
+            case 'app360':
+                $webhook = 'slack_360';
+                break;
+
+            case 'aimeos':
+                $webhook = 'slack_aimeos';
+                break;
+
+            default:
+                $webhook = 'slack';
+                break;
         }
+
+        $slackMessage = $title;
+        $slackMessage .= PHP_EOL;
+        $slackMessage .= $message;
+
+        Log::channel($webhook)->error($slackMessage);
     }
 }
 
@@ -148,7 +172,7 @@ if (!function_exists('healthCheck')) {
                 }
             }
             if (!empty($msg)) {
-                slack_notification("Health Check", $msg);
+                slack_notification("", "Health Check", $msg);
             }
         }
     }
@@ -579,7 +603,8 @@ if (!function_exists('buyboxCountrycode')) {
         $source = [
             'AE' => 38,
             'IN' => 39,
-            'US' => 40
+            'US' => 40,
+            'SA' => 45
         ];
 
         return $source;
@@ -710,25 +735,25 @@ if (!function_exists('mungXML')) {
             $rgx
                 = '#' // REGEX DELIMITER
                 . '(' // GROUP PATTERN 1
-                . '\<' // LOCATE A LEFT WICKET 
-                . '/?' // MAYBE FOLLOWED BY A SLASH 
-                . preg_quote($key) // THE NAMESPACE 
-                . ')' // END GROUP PATTERN 
-                . '(' // GROUP PATTERN 2 
-                . ':{1}' // A COLON (EXACTLY ONE) 
-                . ')' // END GROUP PATTERN 
-                . '#' //REGEXDELIMITER 
+                . '\<' // LOCATE A LEFT WICKET
+                . '/?' // MAYBE FOLLOWED BY A SLASH
+                . preg_quote($key) // THE NAMESPACE
+                . ')' // END GROUP PATTERN
+                . '(' // GROUP PATTERN 2
+                . ':{1}' // A COLON (EXACTLY ONE)
+                . ')' // END GROUP PATTERN
+                . '#' //REGEXDELIMITER
             ;
-            // INSERT THE UNDERSCORE INTO THE TAG NAME 
+            // INSERT THE UNDERSCORE INTO THE TAG NAME
             $rep
-                = '$1' // BACKREFERENCE TO GROUP 1 
-                . '_' // LITERAL UNDERSCORE IN PLACE OF GROUP 2 
+                = '$1' // BACKREFERENCE TO GROUP 1
+                . '_' // LITERAL UNDERSCORE IN PLACE OF GROUP 2
             ;
-            // PERFORM THE REPLACEMENT 
+            // PERFORM THE REPLACEMENT
             $xml = preg_replace($rgx, $rep, $xml);
         }
         return $xml;
-    } //End :: mungXML() 
+    } //End :: mungXML()
 }
 
 if (!function_exists('BombinoTrackingResponse')) {
@@ -813,6 +838,12 @@ if (!function_exists('forwarderTrackingEvent')) {
                 'Table_column' => 'activity',
                 'Model_path' => 'SMSA\\'
             ],
+            [],
+            [
+                'Table_name' => 'AramexTracking',
+                'Table_column' => 'update_description',
+                'Model_path' => 'Aramex\\'
+            ],
         ];
 
         $table_name = $array_tables[$key]['Table_name'];
@@ -896,5 +927,221 @@ if (!function_exists('getSystemSettingsValue')) {
         $value = isset($records->value) ? $records->value : $default;
 
         return $value;
+    }
+}
+
+if (!function_exists('formatInIndianStyle')) {
+    function formatInIndianStyle($num)
+    {
+        // This is my function
+        $pos = strpos((string) $num, ".");
+        if ($pos === false) {
+            $decimalpart = "00";
+        } else {
+            $decimalpart = substr($num, $pos + 1, 2);
+            $num = substr($num, 0, $pos);
+        }
+
+        if (strlen($num) > 3 & strlen($num) <= 12) {
+            $last3digits = substr($num, -3);
+            $numexceptlastdigits = substr($num, 0, -3);
+            $formatted = makecomma($numexceptlastdigits);
+            $stringtoreturn = $formatted . "," . $last3digits . "." . $decimalpart;
+        } elseif (strlen($num) <= 3) {
+            $stringtoreturn = $num . "." . $decimalpart;
+            $stringtoreturn = $num;
+        } elseif (strlen($num) > 12) {
+            $stringtoreturn = number_format($num, 0);
+        }
+
+        if (substr($stringtoreturn, 0, 2) == "-,") {
+            $stringtoreturn = "-" . substr($stringtoreturn, 2);
+        }
+
+        return $stringtoreturn;
+    }
+}
+
+if (!function_exists('trimTrailingZeroes')) {
+    function trimTrailingZeroes($nbr)
+    {
+        return strpos($nbr, '.') !== false ? rtrim(rtrim($nbr, '0'), '.') : $nbr;
+    }
+}
+
+if (!function_exists('makecomma')) {
+    function makecomma($input)
+    {
+        // This function is written by some anonymous person - I got it from Google
+        if (strlen($input) <= 2) {
+            return $input;
+        }
+        $length = substr($input, 0, strlen($input) - 2);
+        $formatted_input = makecomma($length) . "," . substr($input, -2);
+        return $formatted_input;
+    }
+}
+
+if (!function_exists('fileManagement')) {
+    function fileManagement()
+    {
+        $file_info = FileManagement::select('id', 'user_id', 'type', 'module', 'file_path', 'command_name', 'header')
+            ->where('status', '0')
+            ->get()
+            ->toArray();
+
+        $ignore = [
+            'ASIN_DESTINATION_',
+            'ASIN_SOURCE_',
+            'CATALOG_PRICE_EXPORT_',
+            'CATALOG_EXPORT_',
+            'ORDER_',
+            'CATALOG_PRICE_EXPORT_ALL_'
+        ];
+
+        $file_management_update = '';
+        foreach ($file_info as $file_data) {
+
+            $fm_id = $file_data['id'];
+            $user_id = $file_data['user_id'];
+            $type = $file_data['type'];
+            $module = explode('_', str_replace($ignore, '', $file_data['module']));
+            $path = $file_data['file_path'];
+            $command_name = $file_data['command_name'];
+            $header = isset($file_data['header']) ? json_decode($file_data['header'])->data : '';
+            $destination = isset($module[0]) ? $module[0] : '';
+            $priority = isset($module[1]) ? $module[1] : '';
+
+            $file_management_update = FileManagement::find($fm_id);
+            $file_management_update->command_start_time = now();
+            $file_management_update->status = '1';
+            $store_id = $type == 'IMPORT_ORDER' ?  $destination : '';
+
+            $destination = str_replace(',', '_', $destination);
+
+            commandExecFunc("${command_name} --columns=fm_id=${fm_id},store_id=${store_id},user_id=${user_id},destination=${destination},priority=${priority},path=${path},header=${header}");
+
+            $file_management_update->update();
+        }
+    }
+}
+
+if (!function_exists('fileManagementUpdate')) {
+
+    function fileManagementUpdate($id, $command_end_time = NULL, $status = NULL, $msg = NULL)
+    {
+        if ($status == NULL) {
+            $status = '1';
+        }
+
+        $file_management_update_sep = FileManagement::find($id);
+        $file_management_update_sep->status = $status;
+        $file_management_update_sep->info = $msg;
+        $file_management_update_sep->command_end_time = $command_end_time;
+        $file_management_update_sep->update();
+    }
+}
+
+if (!function_exists('fileManagementMonitoring')) {
+    function fileManagementMonitoring(String $module_type)
+    {
+        $file_data = '';
+        $type = $module_type;
+        $file_management_info =
+            FileManagement::select('command_end_time')
+            ->where('type', $type)
+            ->where('command_end_time', '0000-00-00 00:00:00')
+            ->get()
+            ->toArray();
+
+        if (count($file_management_info) > 0) {
+            $file_data = $file_management_info[0]['command_end_time'];
+        }
+        return $file_data;
+    }
+}
+
+if (!function_exists('fileManagementMonitoringNew')) {
+    function fileManagementMonitoringNew(String $module_type)
+    {
+        $file_check =   FileManagement::select('user_id', 'created_at', 'command_end_time', 'info')
+            ->where('type', $module_type)
+            ->orderBy('id', 'desc')
+            ->first();
+        if ($file_check) {
+
+            $file_check = $file_check->toArray();
+
+            $user_name = User::where('id', $file_check['user_id'])->get('name')->toArray();
+
+            $user_name = $user_name[0]['name'];
+            $created_at = date('d-m-Y h:i:s', strtotime($file_check['created_at']));
+            $info = $file_check['info'];
+
+            $html_txt = '';
+            $status = '';
+
+            if ($file_check['command_end_time'] == '0000-00-00 00:00:00') {
+                $status = 'Processing';
+                if (str_contains($module_type, 'EXPORT')) {
+
+                    $html_txt = "Previous file export is still processing 
+                    <br>
+                        Exported By: $user_name
+                    <br>
+                        Export Time: $created_at 
+                    <br>
+                        Status: Processing 
+                    <br>";
+                } elseif (str_contains($module_type, 'IMPORT')) {
+
+                    $html_txt = "Previous Uploaded file is still processing 
+                    <br>
+                        Uploaded By: $user_name
+                    <br>
+                         Uploaded Time: $created_at 
+                    <br>
+                        Status: Processing 
+                    <br>";
+                }
+            } else if ($info != '') {
+
+                $html_txt = "Previous uploaded file has error 
+            <br>
+                Uploaded By: $user_name
+            <br>
+              Uploaded Time: $created_at<br>
+             <br>
+                Status: Failed 
+            <br>
+                 Remark: $info";
+            }
+
+            return [
+                'status' => $status,
+                'description' => $html_txt
+            ];
+        } else {
+
+            return [
+                'status' => '',
+                'description' => ''
+            ];
+        }
+    }
+}
+
+if (!function_exists('CSV_Reader')) {
+    function CSV_Reader(string $file_path, string $delimiter = ','): object
+    {
+        if (!Storage::exists($file_path)) {
+            return false;
+        }
+
+        $reader = Reader::createFromPath(Storage::path($file_path), 'r');
+        $reader->setDelimiter($delimiter);
+        $reader->setHeaderOffset(0);
+
+        return $reader->getRecords();
     }
 }

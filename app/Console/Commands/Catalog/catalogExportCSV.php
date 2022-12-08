@@ -24,7 +24,8 @@ class catalogExportCSV extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:catalog-export-csv {priority} {country_code}';
+    // protected $signature = 'mosh:catalog-export-csv {priority} {destination} {fm_id}';
+    protected $signature = 'mosh:catalog-export-csv {--columns=}';
 
     /**
      * The console command description.
@@ -50,13 +51,28 @@ class catalogExportCSV extends Command
      */
     public function handle()
     {
+        $column_data = $this->option('columns');
+        $final_data = [];
+        $explode_array = explode(',', $column_data);
+        foreach ($explode_array as $value) {
+            list($key, $value) = explode('=', $value);
+            $final_data[$key] = $value;
+        }
+
+        $fm_id = $final_data['fm_id'];
+        $this->country_code = $final_data['destination'];
+        $this->priority = $final_data['priority'];
+
+        if ($this->priority == 'All') {
+            $this->priority = NULL;
+        }
+
         $total_csv = 1000000;
         $chunk = 20000;
         $this->remender = $total_csv / $chunk;
-        $this->country_code = $this->argument('country_code');
-
-        $this->priority = $this->argument('priority');
-
+        // $this->country_code = $this->argument('destination');
+        // $this->priority = $this->argument('priority');
+        // $fm_id = $this->argument('fm_id');
         $asin_cat = 'catalognew' . strtolower($this->country_code) . 's';
 
         $header = [
@@ -79,7 +95,9 @@ class catalogExportCSV extends Command
         $table_name = table_model_create(country_code: $this->country_code, model: 'Asin_destination', table_name: 'asin_destination_');
 
         $table_name->select($header)
-            ->where("priority", $this->priority)
+            ->when($this->priority, function ($q) {
+                return $q->where("priority", $this->priority);
+            })
             ->join($asin_cat, $asin_desti . '.asin', '=', $asin_cat . '.asin')
             ->chunk($chunk, function ($result) use ($header) {
 
@@ -174,5 +192,8 @@ class catalogExportCSV extends Command
             }
             $zip->close();
         }
+        // FILE MANAGEMENT UPDATE
+        $command_end_time = now();
+        fileManagementUpdate($fm_id, $command_end_time);
     }
 }

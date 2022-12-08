@@ -15,7 +15,7 @@ class TrackingEventMappingController extends Controller
 {
     public function array()
     {
-        return $array = ['0' => 'Bombino', '1' => 'SAMSA', '2' => 'Emirate'];
+        return $array = ['0' => 'Bombino', '1' => 'SAMSA', '2' => 'Emirate', '3' => 'Aramex'];
     }
 
     public function index(Request $request)
@@ -92,7 +92,7 @@ class TrackingEventMappingController extends Controller
             'active' => $event_check,
         ];
 
-        TrackingEventMapping::upsert($value,'event_code_source_unique');
+        TrackingEventMapping::upsert($value, 'event_code_source_unique');
 
         return redirect()->intended('/shipntrack/event-mapping')->with('success', 'Record insert successfully!');
     }

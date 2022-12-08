@@ -1,10 +1,10 @@
 @extends('adminlte::page')
 
-@section('title', 'Stop Tracking')
+@section('title', 'Stop & Ignore Tracking')
 
 @section('content_header')
-<div class="container">
-    <h1 class="m-0 text-dark col">Stop Packet Tracking</h1>
+<div class="container-fluid">
+    <h1 class="m-0 text-dark col">Stop And Ignore Tracking</h1>
 </div>
 @stop
 
@@ -33,32 +33,37 @@
             </div>
         </div>
     </div>
-    <div class="container">
-        <div class="pl-2 row ">
-            <div class="col">
+    <div class="container-fluid">
+        <div class="row ">
+            <div class="col-2">
                 <x-adminlte-select name="forwarder" id='forwarder' label="Select Courier Partner">
-
                     <option value="select">--Select--</option>
                     @foreach ($courier_partner as $name )
-                    <option value="{{$name}}">{{$name}}</option>
+                    <option value="{{$name->courier_code}}">{{$name->name}}</option>
                     @endforeach
                 </x-adminlte-select>
             </div>
-
             <div class="col">
-
-                <x-adminlte-select name='tracking_status' id='tracking_status' label='Tracking Status'>
-                </x-adminlte-select>
+                <div class="text-right m-3 ">
+                    <x-adminlte-button label='Save' class="btn-sm" theme="primary" icon="fas fa-file-upload" id='update' />
+                </div>
 
             </div>
         </div>
-        <div class="row">
-            <div class="text-right m-3 ">
-                <x-adminlte-button label='Submit' class="btn-sm" theme="primary" icon="fas fa-file-upload" type="submit" />
-            </div>
+        <div id="showTable" class="d-none">
+            <table class='table table-bordered table-striped text-center'>
+                <thead>
+                    <tr class='text-bold bg-info'>
+                        <th>Event</th>
+                        <th>Show In Tracking Page</th>
+                        <th>Stop Tracking</th>
+                    </tr>
+                </thead>
+                <tbody id='checkTable'>
+                </tbody>
+            </table>
         </div>
     </div>
-
 </form>
 @stop
 
@@ -72,7 +77,7 @@
             $('#tracking_status').empty();
             return false;
         }
-        // alert(forwarder);
+
         $.ajax({
             url: "{{route('shipntrack.stop')}}",
             method: "POST",
@@ -80,25 +85,65 @@
                 "source": forwarder,
                 "_token": "{{ csrf_token() }}",
             },
-            success: function(result) {
-                $('#tracking_status').empty();
-                let records = '';
+            success: function(response) {
+                $('#showTable').removeClass('d-none');
+                $('#checkTable').html(response.success);
 
-                records += "<option value=''>-- Select Event Description --</option>";
-                $('#tracking_status').empty();
-                $.each(result, function(index, result) {
-                    records += "<option value='" + result + "'>" + result +
-                        "</option>"
-                });
-                // $('#tracking_status').attr('multiple', 'multiple');
-                $('#tracking_status').append(records);
             },
             error: function(result) {
-                $('#tracking_status').empty();
-                let records = "<option value=''>Select Event Description</option>";
-                $('#tracking_status').append(records);
+
             }
         });
+    });
+
+    $('#update').on('click', function() {
+
+        let count = 0;
+        let count_stop = 0;
+        let show = '';
+        let stop = '';
+        let forwarder = $('#forwarder').val();
+        if (forwarder != 'select') {
+
+            $("input[name='show[]']:checked").each(function() {
+                if (count == 0) {
+                    show += $(this).val();
+                } else {
+                    show += '-_~_-' + $(this).val();
+                }
+                count++;
+            });
+
+
+            $("input[name='stop[]']:checked").each(function() {
+                if (count == 0) {
+                    stop += $(this).val();
+                } else {
+                    stop += '-_~_-' + $(this).val();
+                }
+                count_stop++;
+            });
+            alert(show);
+            alert(stop);
+
+
+            $.ajax({
+                url: "{{route('shipntrack.stop.update')}}",
+                method: "POST",
+                data: {
+                    "show": show,
+                    "stop": stop,
+                    "forwarder": forwarder,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
+
+                }
+            });
+        } else {
+            alert('Please Select courier Forwarder');
+
+        }
     });
 </script>
 @stop

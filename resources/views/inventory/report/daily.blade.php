@@ -51,7 +51,7 @@
         <label for="ware"> Tag Wise Report</label>
     </div>
     <div class="col-1 justify-content-right">
-        <form class="row" action="/export/daily">
+        <form class="row" action="/inventory/export/daily">
             <h2>
                 <div style="margin-top: -1rem;">
                     <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export " id="export" />
@@ -70,6 +70,13 @@
         </x-adminlte-select>
 
     </div>
+    <!-- <div class="col-1 justify-content-right">
+        <h2>
+            <div style="margin-top: 1.8rem;">
+                <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export " id="export_ware" />
+            </div>
+        </h2>
+    </div> -->
 </div>
 <div class="row" id="tagrep">
     <div class="col-2">
@@ -79,8 +86,14 @@
             <option value="{{ $tags->id }}">{{ $tags->name }}</option>
             @endforeach
         </x-adminlte-select>
-
     </div>
+    <!-- <div class="col-1 justify-content-right">
+        <h2>
+            <div style="margin-top: 1.8rem;">
+                <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export " id="export_tag" />
+            </div>
+        </h2>
+    </div> -->
 </div>
 <table class="table table-bordered yajra-datatable table-striped " id="table">
     <thead>
@@ -133,6 +146,7 @@
         });
         $("#tag ").on('click', function(e) {
             $("#tagrep").show();
+            $("#eport").hide();
         });
         $("#tag ").on('click', function(e) {
             $("#warehouse").hide();
@@ -169,13 +183,13 @@
             $("#table").show();
         });
         $("#ware ").on('click', function(e) {
-            $("#report_table").hide();
+            $("#report_table,#export").hide();
         });
         $("#entire ").on('click', function(e) {
             $("#report_table").show();
         });
-        $("#entire,#warehouse ").on('change', function(e) {
-            $("#export").show();
+        $("#entire ").on('change', function(e) {
+            // $("#export").show();
         });
 
     });
@@ -186,7 +200,7 @@
         var id = $('.demo').val();
 
         $.ajax({
-            url: '/inventory/warewise',
+            url: "{{route('inventory.warewise.export')}}",
             method: 'GET',
             data: {
                 'id': id,
@@ -220,7 +234,7 @@
         var val = $('.tag').val();
 
         $.ajax({
-            url: '/inventory/tagwise',
+            url: "{{route('inventory.tagwise.new')}}",
             method: 'GET',
             data: {
                 'id': val,

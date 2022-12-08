@@ -47,16 +47,24 @@ class SellerOrdersImport extends Command
      */
     public function handle()
     {
+
+        $startTime = startTime();
+
         $aws_data = OrderSellerCredentials::where('dump_order', 1)->get();
 
         foreach ($aws_data as $aws_value) {
 
-            $awsCountryCode = $aws_value['country_code'];
+            $awsCountryCode = $aws_value['country_code']; //Destination
+            $source = $aws_value['source'];
             $seller_id = $aws_value['seller_id'];
             $auth_code = NULL;
             $amazon_order_id = NULL;
             $order = new Order();
-            $order->SelectedSellerOrder($seller_id, $awsCountryCode, $auth_code, $amazon_order_id);
+            $order->SelectedSellerOrder($seller_id, $awsCountryCode, $source, $auth_code, $amazon_order_id);
         }
+
+        $stats = endTime($startTime);
+
+        Log::info("pms:sellers-orders-import took $stats seconds");
     }
 }

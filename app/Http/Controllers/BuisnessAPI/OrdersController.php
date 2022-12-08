@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\BuisnessAPI;
 
+use Carbon\Carbon;
 use Nette\Utils\Json;
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -123,27 +125,26 @@ class OrdersController extends Controller
     }
     public function test()
     {
-        // $asin = 'B09M2VXMQV';
-        // $asin = 'B00746NVOU';
-        $data[] = DB::connection('cliqnshop')->table('order')
 
-            ->join('order_base_product as oid', function ($query) {
-                $query->on('oid.baseid', '=', 'order.baseid')
+        $data[] = DB::connection('cliqnshop')->table('mshop_order')
+
+            ->join('mshop_order_base_product as oid', function ($query) {
+                $query->on('oid.baseid', '=', 'mshop_order.baseid')
                     ->where('status', '1');
             })
-            ->join('product as pid', function ($query) {
+            ->join('mshop_product as pid', function ($query) {
                 $query->on('pid.id', '=', 'oid.prodid');
             })
             ->get();
 
 
-        $data_pending = DB::connection('cliqnshop')->table('order_base_product')
+        $data_pending = DB::connection('cliqnshop')->table('mshop_order_base_product')
             ->select('prodcode')
             ->where('status', '0')
             ->get();
         $order_unplaced = count($data_pending);
 
-        $data_orders = DB::connection('cliqnshop')->table('order_base_product')
+        $data_orders = DB::connection('cliqnshop')->table('mshop_order_base_product')
             ->select('prodcode', 'name', 'quantity', 'price', 'status')
             ->get();
 
@@ -155,7 +156,7 @@ class OrdersController extends Controller
     {
 
         if ($request->ajax()) {
-            $data_placed = DB::connection('cliqnshop')->table('order_base_product')
+            $data_placed = DB::connection('cliqnshop')->table('mshop_order_base_product')
                 ->select('prodcode', 'name', 'quantity', 'price', 'status')
                 ->where('status', '1')
                 ->get();
@@ -164,12 +165,14 @@ class OrdersController extends Controller
             return response()->json(['success' => ' successfull', 'data' => $data_placed]);
         }
     }
+
     public function orderspending(Request $request)
     {
         if ($request->ajax()) {
-            $data_pending = DB::connection('cliqnshop')->table('order_base_product')
+            $data_pending = DB::connection('cliqnshop')->table('mshop_order_base_product')
                 ->select('prodcode', 'name', 'quantity', 'price', 'status')
                 ->where('status', '0')
+                ->orderBy('id', 'DESC')
                 ->get();
             return response()->json(['success' => ' successfull', 'data' => $data_pending]);
         }
@@ -181,9 +184,9 @@ class OrdersController extends Controller
         $data = $ApiCall->getASINpr($asin);
         $offers_data = $data->includedDataTypes->OFFERS;
         $rasin = $data->asin;
-        $ritem_name=$data->title;
+        $ritem_name = $data->title;
         $responce_html = '';
-        
+
         foreach ($offers_data as $data) {
             $price_amount = $data->price->value->amount;
             $responce_html .=
@@ -203,19 +206,206 @@ class OrdersController extends Controller
 
         return $responce_html;
     }
+
     public function orderbooking(Request $request)
     {
         if ($request->ajax()) {
-            
+
             $asin = $request->asin;
             $name = $request->item_name;
             $OfferID = $request->offerid;
 
             $ApiCall = new Orders();
             $data = $ApiCall->getOrders($asin, $name, $OfferID);
-            po($data);
-            return $data;
 
+            $responce = ($data[0]);
+
+            $parse = simplexml_load_string($responce);
+            $xmlr =  json_decode(json_encode($parse), true);
+
+            $details = ($data[1]);
+            $responce_code = ($xmlr["Response"]["Status"]["@attributes"]["code"]);
+            $responce_text = ($xmlr["Response"]["Status"]["@attributes"]["text"]);
+            $receved_payload = ($xmlr["@attributes"]["payloadID"]);
+
+            $xml = ($data[2]);
+
+            $order_details_array = ($data[1]);
+            $order_details = ($order_details_array[0]);
+            $sent_payload = ($order_details["payload"]);
+            $order_date = ($order_details["order_date"]);
+            $org_name =  ($order_details["organization_name"]);
+            $name =  ($order_details["name"]);
+            $email = ($order_details["e_mail"]);
+            $countrycode = ($order_details["country_code"]);
+            $country_name = ($order_details["country_name"]);
+            $order_id = ($order_details["order_id"]);
+
+            $deliver1 =   ($order_details["delivery_1"]);
+            $deliver2 =   ($order_details["delivery_2"]);
+            $deliver3 =   ($order_details["delivery_3"]);
+            $street = ($order_details["street"]);
+            $city = ($order_details["city"]);
+            $state = ($order_details["state"]);
+            $post_code = ($order_details["post_code"]);
+            $area_code = ($order_details["area_code"]);
+            $phone_no  = ($order_details["phone_no"]);
+            $fax_name  = ($order_details["fax_name"]);
+
+            $asin = ($order_details["asin"]);
+            $item_description = ($order_details["item_description"]);
+            $unit = ($order_details["unit"]);
+            $class = ($order_details["class"]);
+            $quantity = ($order_details["quantity"]);
+            $ManufacturerName = ($order_details["ManufacturerName"]);
+            $line = ($order_details["line"]);
+            $ManufacturerPartID = ($order_details["ManufacturerPartID"]);
+            $category = ($order_details["category"]);
+            $sub_category = ($order_details["sub_category"]);
+            $xmlasin = $asin;
+
+            $item_details = [
+                'asin' => $asin,
+                'item_name'  =>  $item_description,
+                'unit' => $unit,
+                'class' => $class,
+                'quantity' => $quantity,
+                'Manufacturer' => $ManufacturerName,
+                'line' => $line,
+                'ManufID' =>    $ManufacturerPartID,
+                'category' =>    $category,
+                'sub_category' =>   $sub_category,
+
+            ];
+           
+            $ship_address_array = [
+                $deliver1,
+                $deliver2,
+                $deliver3,
+                $street,
+                $city,
+                $state,
+                $post_code,
+                $area_code,
+                $phone_no,
+                $fax_name,
+            ];
+
+            $insert = [
+                'xml_sent' => $xml,
+                'sent_payload' => $sent_payload,
+                'organization_name' => $org_name,
+                'order_date' => $order_date,
+                'name' => $name,
+                'e-mail' => $email,
+                'country_name' => $country_name,
+                'country_code' => $countrycode,
+                'order_id' => $order_id,
+                'item_details' => json_encode($item_details),
+                'ship_address' => json_encode($ship_address_array),
+                'bill_address' => json_encode($ship_address_array),
+                'responce_payload' => $receved_payload,
+                'responce_text' =>  $responce_text,
+                'responce_code' => $responce_code,
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
+
+            DB::connection('business')->table('orders')->upsert($insert, ['order_id'], [
+                'xml_sent',
+                'sent_payload',
+                'organization_name',
+                'order_date',
+                'name',
+                'e-mail',
+                'country_name',
+                'country_code',
+                'item_details',
+                'ship_address',
+                'bill_address',
+                'responce_payload',
+                'responce_text',
+                'responce_code'
+            ]);
+
+            $data = DB::connection('cliqnshop')->table('mshop_order_base_product')->where('prodcode', $asin)->update([
+                'sent_xml' => $xml,
+                'status' => '1',
+            ]);
+            return $data;
         }
+    }
+
+    public function confirmation(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $data = DB::connection('cliqnshop')->table('mshop_order_confirmation')->get();
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->editColumn('notice_date', function ($data) {
+                    return Carbon::parse($data->notice_date)->format('M d Y');
+                })
+                ->editColumn('order_date', function ($data) {
+                    return Carbon::parse($data->order_date)->format('M d Y');
+                })
+                ->rawColumns(['notice_date', 'order_date'])
+                ->make(true);
+        }
+        return view('Cliqnshop.confirm');
+    }
+    public function notification(Request $request)
+    {
+        if ($request->ajax()) {
+            $ship = DB::connection('cliqnshop')->table('mshop_ship_notification')->get();
+            return DataTables::of($ship)
+                ->addIndexColumn()
+                ->editColumn('notice_date', function ($data) {
+                    return Carbon::parse($data->notice_date)->format('d M Y');
+                })
+                ->editColumn('shipment_date', function ($data) {
+                    return Carbon::parse($data->shipment_date)->format('d M Y');
+                })
+                ->editColumn('delivery_date', function ($data) {
+                    return Carbon::parse($data->delivery_date)->format('d M Y');
+                })
+                ->rawColumns(['notice_date', 'shipment_date', 'delivery_date'])
+                ->make(true);
+        }
+        return view('Cliqnshop.notification');
+    }
+
+    public function booked(Request $request)
+    {
+        if ($request->ajax()) {
+            $data =
+                DB::connection('business')->table('orders')->select('sent_payload', 'order_date', 'order_id', 'item_details', 'responce_payload', 'responce_code', 'created_at')
+                ->orderby('created_at', 'DESC')
+                ->get();
+            // $data_placed = DB::connection('cliqnshop')->table('order_base_product')
+            //     ->select('prodcode', 'name', 'quantity', 'price', 'status')
+            //     ->where('status', '1')
+            //     ->orderby('baseid', 'desc')
+            //     ->get();
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('asin', function ($data) {
+                    return (json_decode($data->item_details)->asin);
+                })
+                ->addColumn('item_name', function ($data) {
+                    return (json_decode($data->item_details)->item_name);
+                })
+                ->addColumn('quantity', function ($data) {
+                    return (json_decode($data->item_details)->quantity);
+                })
+                ->editColumn('status', function ($data) {
+                    return ($data->responce_code == '200') ? 'Order Request Sent' : 'Something Went Wrong Contact Admin';
+                })
+
+                ->rawColumns(['asin', 'item_name', 'quantity', 'status'])
+                ->make(true);
+        }
+        return view('Cliqnshop.booked');
     }
 }

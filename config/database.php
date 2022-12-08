@@ -85,7 +85,7 @@ return [
             'unix_socket' => env('INVENTORY_DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => env('INVENTORY_DB_PREFIX') . '_',
+            'prefix' => env('INVENTORY_DB_PREFIX'),
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
@@ -144,6 +144,26 @@ return [
             ]) : [],
         ],
 
+        'order_no_prefix' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('ORDER_DB_NO_PREFIX_HOST', '127.0.0.1'),
+            'port' => env('ORDER_DB_NO_PREFIX_PORT', '3306'),
+            'database' => env('ORDER_DB_NO_PREFIX_DATABASE', 'forge'),
+            'username' => env('ORDER_DB_NO_PREFIX_USERNAME', 'forge'),
+            'password' => env('ORDER_DB_NO_PREFIX_PASSWORD', ''),
+            'unix_socket' => env('ORDER_DB_NO_PREFIX_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => env('ORDER_DB_NO_PREFIX_PREFIX') . '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
         'seller' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
@@ -155,7 +175,7 @@ return [
             'unix_socket' => env('SELLER_DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => env('SELLER_DB_PREFIX') . '_',
+            'prefix' => env('SELLER_DB_PREFIX'),
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
@@ -257,7 +277,7 @@ return [
             'unix_socket' => env('BUSINESS_DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => env('BUSINESS_ORDER_DB_PREFIX') . '_',
+            'prefix' => env('BUSINESS_ORDER_DB_PREFIX'),
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
@@ -265,6 +285,7 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
+
         'mongodb' => [
             'driver' => 'mongodb',
             'host' => env('MONGO_DB_HOST', 'localhost'),
@@ -279,6 +300,7 @@ return [
                 // 'database' => env('DB_AUTHENTICATION_DATABASE', 'admin'), // required with Mongo 3+
             ],
         ],
+
         'cliqnshop' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
@@ -290,7 +312,7 @@ return [
             'unix_socket' => env('CLIQNSHOP_DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => env('CLIQNSHOP_DB_PREFIX') . '_',
+            'prefix' => env('CLIQNSHOP_DB_PREFIX'),
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
