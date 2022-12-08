@@ -18,6 +18,7 @@ class CourierBookingJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private $payload;
+    private $tries = 0;
     /**
      * Create a new job instance.
      *

@@ -1800,3 +1800,8 @@ Route::get('test/order-address', function () {
 
     return Storage::download($path);
 });
+
+Route::get('test/zoho/webhook', function () {
+
+    return 'Response from Zoho Webhook';
+});
