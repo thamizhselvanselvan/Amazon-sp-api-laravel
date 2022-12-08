@@ -265,6 +265,7 @@ class ZohoOrder
 
             $zoho_response = ($zoho_api_save) ? $zoho_api_save : null;
 
+
             if (isset($zoho_response) && array_key_exists('data', $zoho_response) && array_key_exists(0, $zoho_response['data']) && array_key_exists('code', $zoho_response['data'][0])) {
 
                 $zoho_save_id = $zoho_response['data'][0]['details']['id'];
@@ -433,9 +434,9 @@ class ZohoOrder
 
         $catalog_details = $this->get_catalog($value->asin, $country_code, $store_name);
 
-        $prod_array["Designation"]              = preg_replace("/[^a-zA-Z0-9_ -\/]+/", "", substr($value->title, 0, 100));
+        $prod_array["Designation"]        = preg_replace("/[^a-zA-Z0-9_ -\/]+/", "", substr($value->title, 0, 100));
         $prod_array["Product_Code"]       = $value->seller_sku;
-        $prod_array["Product_Cost"]       = $item_price->Amount;
+        $prod_array["Product_Cost"]       = isset($item_price->Amount) ? $item_price->Amount : 0;
         $prod_array["Procurement_URL"]    = $this->get_procurement_link($country_code, $value->asin);
         $prod_array["Nature"]             = "Import";
         $prod_array["Product_Category"]   = $catalog_details['category']; //$value->product_category;
@@ -451,10 +452,10 @@ class ZohoOrder
         $prod_array["ASIN"]                      = $value->asin;
         $prod_array["SKU"]                       = $value->seller_sku;
         $prod_array["Product_Cost"]              = $catalog_details['price'];
-        $prod_array["Amount_Paid_by_Customer"]   = (int)$item_price->Amount;
+        $prod_array["Amount_Paid_by_Customer"]   = isset($item_price->Amount) ? (int)$item_price->Amount : 0;
 
         $prod_array["Weight_in_LBS"]             = (string)$catalog_details['weight'];
-        $prod_array["Payment_Reference_Number1"]  = $value->order_item_identifier;
+        $prod_array["Payment_Reference_Number1"] = $value->order_item_identifier;
         $prod_array["Exchange"]                  = $DOLLAR_EXCHANGE_RATE;
 
         return $prod_array;
