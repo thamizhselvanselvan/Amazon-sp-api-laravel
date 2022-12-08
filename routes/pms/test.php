@@ -1802,8 +1802,4 @@ Route::get('test/order-address', function () {
     return Storage::download($path);
 });
 
-Route::match(['get', 'post'], 'test/zoho/webhook', function ($body) {
-
-    Log::info($body);
-    return 'Response from Zoho Webhook';
-});
+Route::match(['get', 'post'], 'test/zoho/webhook', 'TestController@zohoWebhookResponse');

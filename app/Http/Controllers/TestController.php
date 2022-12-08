@@ -764,4 +764,9 @@ class TestController extends Controller
 
 
   }
+
+  public function zohoWebhookResponse(Request $request)
+  {
+    Log::info($request->all());
+  }
 }
