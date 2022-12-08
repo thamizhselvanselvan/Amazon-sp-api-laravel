@@ -367,7 +367,7 @@ class labelManagementController extends Controller
                         'seller_id' => $seller_id,
                         'amazon_order_id' => $amazon_order_id
                     ]
-                )->onConnection('redis')->onQueue('order');
+                )->onConnection('redis')->onQueue('default');
             } else {
                 GetOrder::dispatch(
                     [
