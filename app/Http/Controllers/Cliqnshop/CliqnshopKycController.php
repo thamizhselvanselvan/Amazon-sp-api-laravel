@@ -42,8 +42,10 @@ class CliqnshopKycController extends Controller
 
                 ->addColumn('action', function ($data) {
                     $id = $data->customer_id;
-                    return "<a href='javascript:void(0)' id='kyc_aprove' value ='$id' 'class='btn btn-success btn-sm'><i class='fa fa-check' aria-hidden='true'></i> view Approve</a>";
-                })
+                // return "<a href='javascript:void(0)' id='kyc_aprove' value ='$id' 'class='btn btn-success btn-sm'><i class='fa fa-check' aria-hidden='true'></i> view Approve</a>";
+                return       "<div class='d-flex'><a href='javascript:void(0)' id='kyc_aprove' value ='$id' class='edit btn btn-success btn-sm'><i class='fas fa-check'></i> view Approve</a>";
+                }) 
+                   
                 ->rawColumns(['action'])
                 ->make(true);
         }

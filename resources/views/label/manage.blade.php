@@ -38,28 +38,28 @@
                 </div>
             </div>
             <!-- <div class="d-inline-block">
-                                                <a href="search-label">
-                                                    <x-adminlte-button label="Search Label" theme="primary" icon="fas fa-search" class="btn-sm" />
-                                                </a>
-                                            </div> -->
+                                                                                                        <a href="search-label">
+                                                                                                            <x-adminlte-button label="Search Label" theme="primary" icon="fas fa-search" class="btn-sm" />
+                                                                                                        </a>
+                                                                                                    </div> -->
             <div class="d-inline-block">
-                <a href="upload">
+                <a href="{{ route('upload.label.page') }}">
                     <x-adminlte-button label="Add New Records" theme="primary" icon="fas fa-file-upload" class="btn-sm" />
                 </a>
             </div>
             <div class="d-inline-block">
-                <a href="missing">
+                <a href="{{ route('label.missing.order') }}">
                     <x-adminlte-button label="Fetch Missing Orders" theme="primary" icon="fas fa-sync" class="btn-sm" />
                 </a>
             </div>
             <div class="d-inline-block">
-                <a href="missing/address">
+                <a href="{{ route('label.missing.address') }}">
                     <x-adminlte-button label="Upload Missing Address" theme="primary" icon="fas fa-file-upload"
                         class="btn-sm" />
                 </a>
             </div>
             <div class="d-inline-block">
-                <a href="/orders/csv/import">
+                <a href="{{ route('orders.csv.import') }}">
                     <x-adminlte-button label="Order Import" theme="primary" icon="fas fa-file-upload" type="button"
                         class="btn-sm" />
                 </a>
@@ -126,7 +126,8 @@
                 });
                 $.ajax({
                     method: 'POST',
-                    url: "{{ url('/label/select-download') }}",
+                    // url: "{{ url('/label/select-download') }}",
+                    url: "{{ route('label.download.selected') }}",
                     data: {
                         'id': id,
                         "_token": "{{ csrf_token() }}",

@@ -54,7 +54,7 @@ Route::get('catalog/product', 'Catalog\CatalogProductController@Index');
 Route::get('catalog/product/fetch-from-amazon', 'Catalog\CatalogProductController@Amazon')->name('catalog.amazon.product');
 Route::get('catalog/price/export', 'Catalog\CatalogProductController@PriceExport')->name('catalog.price.export');
 Route::get('catalog/export', 'Catalog\CatalogProductController@ExportCatalog')->name('catalog.export');
-Route::get('catalog/get-file', 'Catalog\CatalogProductController@GetCatalogFile');
+Route::get('catalog/get-file', 'Catalog\CatalogProductController@GetCatalogFile')->name('catalog.get.download.file');
 Route::get('catalog/download/csv-file/{country_code}/{priority}', 'Catalog\CatalogProductController@DownloadCatalogIntocsv');
 Route::get('catalog/download/price/{country_code}/{priority}', 'Catalog\CatalogProductController@DownloadCatalogPrice');
 Route::POST('catalog/asin/search', 'Catalog\CatalogProductController@CatalogSearch')->name('catalog.asin.search');
@@ -63,7 +63,7 @@ Route::get('catalog/export-with-price', 'Catalog\CatalogProductController@Catalo
 Route::POST('catalog/catalog-with-price', 'Catalog\CatalogProductController@CatalogWithPriceExport')->name('catalog.with.price.export');
 Route::POST('catalog/asin/upload', 'Catalog\CatalogProductController@CatalogWithPriceAsinUpload')->name('catalog.with.price.asin.upload');
 Route::get('catalog/with-price', 'Catalog\CatalogProductController@CatalogWithPriceFileShow')->name('catalog.with.price.file.show');
-Route::get('catalog/with-price/download/template', 'Catalog\CatalogProductController@CatalogWithPriceDownloadTemplate')->name('catalo.with.price.download.template');
+Route::get('catalog/with-price/download/template', 'Catalog\CatalogProductController@CatalogWithPriceDownloadTemplate')->name('catalog.with.price.download.template');
 Route::get('catalog/with-price/download/csv/{country_code}/{priority}', 'Catalog\CatalogProductController@CatalogWithPriceDownload')->name('catalog.with.price.download');
 
 Route::get('catalog/asin-destination', 'Catalog\AsinDestinationController@index')->name('Asin.destination.index');
@@ -82,14 +82,14 @@ Route::post('catalog/asin-destination/search-delete', 'Catalog\AsinDestinationCo
 
 Route::get('catalog/exchange-rate', 'Catalog\CatalogExchangeManagementController@index');
 Route::post('catalog/update/exchange-rate', 'Catalog\CatalogExchangeManagementController@CatalogUpdate')->name('catalog.update.exchange.rate');
-Route::get('catalog/record/auto-load', 'Catalog\CatalogExchangeManagementController@CatalogRecordAutoload');
+Route::get('catalog/record/auto-load', 'Catalog\CatalogExchangeManagementController@CatalogRecordAutoload')->name('catalog.record.auto.load');
 
 Route::get('catalog/index', 'Catalog\CliqnshopCatalogController@index')->name('cliqnshop.catalog.index');
 Route::get('catalog/cliqnshop/export', 'Catalog\CliqnshopCatalogController@catalogexport')->name('catalog.export.cliqnshop');
 Route::get('catalog/cliqnshop/get-file', 'Catalog\CliqnshopCatalogController@exportdownload')->name('catalog.export.download.cliqnshop');
 Route::get('catalog/cliqnshop/download/{index}', 'Catalog\CliqnshopCatalogController@DownloadCatalogcloqnshop')->name('catalog.export.cliqnshop.download');
 
-Route::get('catalog/file/monitor', 'Catalog\AsinDestinationController@DestinationFileManagementMonitor')->name('file.management.monitor');
+Route::get('catalog/destination/file/monitor', 'Catalog\AsinDestinationController@DestinationFileManagementMonitor')->name('destination.file.management.monitor');
 Route::get('catalog/source/file/monitor', 'Catalog\AsinSourceController@SourceFileManagementMonitor')->name('source.file.management.monitor');
 Route::get('catalog/price/file/monitor', 'Catalog\CatalogProductController@FileManagementMonitor')->name('catalog.export.file.management.monitor');
 

@@ -357,9 +357,9 @@ class InvoiceManagementController extends Controller
         return response()->json(["success" => "Export to PDF Successfully"]);
     }
 
-    public function DownloadPdf($invoice_no, $mode)
+    public function DownloadPdf($invoice_no)
     {
-        return Storage::download("invoice/$mode/invoice" . $invoice_no . '.pdf');
+        return Storage::download("invoice/invoice" . $invoice_no . '.pdf');
     }
 
     public function DownloadAll()

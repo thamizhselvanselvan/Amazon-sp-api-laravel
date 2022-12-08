@@ -48,7 +48,7 @@ class Import_inventory_catalog extends Command
 
                 InventoryCatalogImportJob::dispatch([
                     'data' => $records,
-                ])->onConnection('redis')->onQueue('inventory');;
+                ])->onConnection('redis')->onQueue('catalog_US');;
             } else {
 
                 InventoryCatalogImportJob::dispatch(

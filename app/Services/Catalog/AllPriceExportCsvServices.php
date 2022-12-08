@@ -2,15 +2,14 @@
 
 namespace App\Services\Catalog;
 
-use App\Models\Catalog\PricingAe;
 use ZipArchive;
 use League\Csv\Writer;
+use App\Models\Catalog\PricingAe;
 use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingSa;
 use App\Models\Catalog\PricingUs;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-
 
 class AllPriceExportCsvServices
 {
@@ -110,11 +109,16 @@ class AllPriceExportCsvServices
             'price_updated_at',
         ];
 
+        $total_count = 0;
 
         $this->export_file_path = "excel/downloads/catalog_price/$this->country_code/All/CatalogPrice";
-
         $us_destination  = table_model_create(country_code: $this->country_code, model: 'Asin_destination', table_name: 'asin_destination_');
-        $count = $us_destination->count();
+        $all_id = $us_destination->select('id')
+            ->orderBy('id', 'asc')
+            ->get()
+            ->toArray();
+
+        $count = count($all_id);
 
         $total_chunk = ($count / $chunk);
 
@@ -122,48 +126,59 @@ class AllPriceExportCsvServices
 
             $where_asin = [];
             $asin_priority = [];
+            $asin = [];
 
-            $asin = $us_destination->select('id', 'asin', 'priority')
-                ->where('id', '>=', ($chunk * $start))
-                ->limit($chunk)
-                ->get();
+            $start_array = $start * $chunk;
+            $end_array  = ($start + 1) * $chunk;
 
-            if ($asin) {
-                $where_asin = [];
-                $asin_priority = [];
+            if (isset($all_id[$start_array]['id'])) {
 
-                foreach ($asin as  $value) {
+                $start_id = $all_id[$start_array]['id'];
 
-                    $where_asin[$value['id']] = $value['asin'];
-                    $asin_priority[$value['asin']] = $value['priority'];
-                }
+                $end_id = isset($all_id[$end_array]['id']) ? $all_id[$end_array]['id'] : $all_id[$count - 1];
 
-                $pricing_details = [];
+                $asin = $us_destination->select('id', 'asin', 'priority')
+                    ->where('id', '>=', $start_id)
+                    ->where('id', '<', $end_id)
+                    ->get();
 
-                if ($this->country_code == 'US') {
+                $total_count += count($asin);
 
-                    $pricing_details = PricingUs::whereIn('asin', $where_asin)
-                        ->get($us_select);
+                if (count($asin) > 0) {
 
-                    $this->priceDataFormating($pricing_details, $asin_priority, $us_csv_header);
-                } else if ($this->country_code == 'IN') {
+                    foreach ($asin as  $value) {
+                        $where_asin[$value['id']] = $value['asin'];
+                        $asin_priority[$value['asin']] = $value['priority'];
+                    }
 
-                    $pricing_details = PricingIn::whereIn('asin', $where_asin)
-                        ->get($in_select);
-                    $this->priceDataFormating($pricing_details, $asin_priority, $in_csv_header);
-                } else if ($this->country_code == 'SA') {
+                    if ($this->country_code == 'US') {
 
-                    $pricing_details = PricingSa::whereIn('asin', $where_asin)
-                        ->get($sa_select);
-                    $this->priceDataFormating($pricing_details, $asin_priority, $sa_csv_header);
-                } else if ($this->country_code == 'AE') {
+                        $pricing_details = PricingUs::whereIn('asin', $where_asin)
+                            ->get($us_select);
 
-                    $pricing_details = PricingAe::whereIn('asin', $where_asin)
-                        ->get($ae_select);
-                    $this->priceDataFormating($pricing_details, $asin_priority, $ae_csv_header);
+                        $this->priceDataFormating($pricing_details, $asin_priority, $us_csv_header);
+                    } else if ($this->country_code == 'IN') {
+
+                        $pricing_details = PricingIn::whereIn('asin', $where_asin)
+                            ->get($in_select);
+                        $this->priceDataFormating($pricing_details, $asin_priority, $in_csv_header);
+                    } else if ($this->country_code == 'SA') {
+
+                        $pricing_details = PricingSa::whereIn('asin', $where_asin)
+                            ->get($sa_select);
+                        $this->priceDataFormating($pricing_details, $asin_priority, $sa_csv_header);
+                    } else if ($this->country_code == 'AE') {
+
+                        $pricing_details = PricingAe::whereIn('asin', $where_asin)
+                            ->get($ae_select);
+                        $this->priceDataFormating($pricing_details, $asin_priority, $ae_csv_header);
+                    }
                 }
             }
         }
+
+        Log::debug('total price Count -> ' . $total_count);
+
         $this->createZip();
         $command_end_time = now();
         fileManagementUpdate($fm_id, $command_end_time);
@@ -171,21 +186,20 @@ class AllPriceExportCsvServices
 
     public function priceDataFormating($pricing_details, $asin_priority, $csv_header)
     {
-        if ($pricing_details) {
-            $records = [];
-            foreach ($pricing_details as $value) {
-                $value = $value->toArray();
+        $records = [];
+        foreach ($pricing_details as $value) {
+            $value = $value->toArray();
 
-                foreach ($value as $key => $data) {
-                    if ($key == 'asin' && array_key_exists($data, $asin_priority)) {
-                        $records['priority'] = $asin_priority[$data];
-                        $records['asin'] = $data;
-                    } else {
-                        $records[$key] = $data;
-                    }
+            foreach ($value as $key => $data) {
+                if ($key == 'asin' && array_key_exists($data, $asin_priority)) {
+                    $records['priority'] = $asin_priority[$data];
+                    $records['asin'] = $data;
+                } else {
+                    $records[$key] = $data;
                 }
-                $this->createCsv($csv_header, $records);
             }
+
+            $this->createCsv($csv_header, $records);
         }
     }
 

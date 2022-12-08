@@ -159,6 +159,7 @@ class InvoiceCsvImport extends Command
         slack_notification('app360', 'Invoic Import', $slackMessage);
         $command_end_time = now();
         $status = '3'; //Failed
-        fileManagementUpdate($file_management_id, $command_end_time, $status, $getMessage);
+
+        fileManagementUpdate($file_management_id, $command_end_time, $status, substr_replace($getMessage, '', 100));
     }
 }

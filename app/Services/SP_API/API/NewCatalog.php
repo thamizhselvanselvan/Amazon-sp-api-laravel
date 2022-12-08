@@ -26,7 +26,6 @@ class NewCatalog
 
     public function Catalog($records, $seller_id = NULL)
     {
-
         $queue_data = [];
         $upsert_asin = [];
         $country_code1 = '';
@@ -208,11 +207,20 @@ class NewCatalog
                     'source' => $country_code,
                 ];
             }
-            CatalogMissingAsin::upsert($miss_asin, ['asin'], ['asin', 'source']);
+            CatalogMissingAsin::upsert($miss_asin, ['asin_unique'], ['asin', 'source']);
 
             return $queue_data;
         } catch (Exception $e) {
-            Log::alert($e);
+
+            $getMessage = $e->getMessage();
+            $getCode = $e->getCode();
+            $getFile = $e->getFile();
+
+            $slackMessage = "Message: $getMessage
+            Code: $getCode
+            File: $getFile";
+
+            slack_notification('app360', 'Amazon Catalog Import', $slackMessage);
         }
     }
 

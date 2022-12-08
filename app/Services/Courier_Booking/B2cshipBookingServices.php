@@ -7,6 +7,7 @@ use App\Jobs\B2C\B2CBooking;
 use App\Models\Catalog\PricingUs;
 use App\Models\order\OrderUpdateDetail;
 use App\Services\BB\PushAsin;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -149,7 +150,6 @@ class B2cshipBookingServices
                     $height = 4;
 
                     $unit = 'inches';
-
                     $weight = 1;
                 }
 
@@ -258,7 +258,7 @@ class B2cshipBookingServices
                 <ConsignorTaxID></ConsignorTaxID>';
             } else {
 
-                slack_notification('slack_360', 'B2cship Booking', 'Api Creds Issue');
+                slack_notification('app360', 'B2cship Booking', 'Api Creds Issue');
                 // Log::channel('slack')->error("B2C API Creds Issue");
             }
         } else {
@@ -303,10 +303,10 @@ class B2cshipBookingServices
                     <ConsigneeAddressLine2>' . (!empty($data['consignee_AddressLine2']) ? $this->cleanSpecialCharacters($data['consignee_AddressLine2']) : ',') . '</ConsigneeAddressLine2>
                     <ConsigneeAddressLine3></ConsigneeAddressLine3>
                     <ConsigneeCountry>IN</ConsigneeCountry>
-                    <ConsigneeState>karnataka</ConsigneeState>
+                    <ConsigneeState>' . (!empty($data['consignee_state']) ? $this->cleanSpecialCharacters($data['consignee_state']) : '') . '</ConsigneeState>
                     <ConsigneeCity> ' . strtolower($data['consignee_city']) . ' </ConsigneeCity>
                     <ConsigneePinCode> ' . $data['consignee_pincode'] . '</ConsigneePinCode>
-                    <ConsigneeMobile>' . (($data['consignee_Phone'] == "") ? '9897654565' : $this->mobileNumberCleanUp($data['consignee_Phone'])) . ' </ConsigneeMobile>
+                    <ConsigneeMobile>' . (($data['consignee_Phone'] == "") ? '' : $this->mobileNumberCleanUp($data['consignee_Phone'])) . ' </ConsigneeMobile>
                     <ConsigneeEmailID> ' . $data['email'] . ' </ConsigneeEmailID>
                     <ConsigneeTaxID></ConsigneeTaxID>
                     <PacketType>SPX</PacketType>
@@ -345,26 +345,39 @@ class B2cshipBookingServices
 
     public function getawb($xmldata)
     {
-        $url = "https://api.b2cship.us/B2CShipAPI.svc/ShipmentBooking";
-        $headers = array(
-            "Content-type: text/xml",
-            "Content-length: " . strlen($xmldata),
-            "Connection: close",
-        );
+        try {
+            $url = "https://api.b2cship.us/B2CShipAPI.svc/ShipmentBooking";
+            $headers = array(
+                "Content-type: text/xml",
+                "Content-length: " . strlen($xmldata),
+                "Connection: close",
+            );
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 500);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $xmldata);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 500);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $xmldata);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-        $data = curl_exec($ch);
+            $data = curl_exec($ch);
 
-        return $data;
+            return $data;
+        } catch (Exception $e) {
+
+            $getMessage = $e->getMessage();
+            $getCode = $e->getCode();
+            $getFile = $e->getFile();
+
+            $slackMessage = "Message: $getMessage
+            Code: $getCode
+            File: $getFile";
+
+            slack_notification('app360', 'B2cship Booking', $slackMessage);
+        }
     }
 
     public function calculateCustomValue($invoice_amount)
@@ -400,7 +413,7 @@ class B2cshipBookingServices
             Type: $error,
             Order_id: $order_id,
             Operation: 'B2Cship Booking Response'";
-            slack_notification('slack_360', 'B2cship Booking', $slackMessage);
+            slack_notification('app360', 'B2cship Booking', $slackMessage);
         } else {
 
             $awb_no = $data['AWBNo'];

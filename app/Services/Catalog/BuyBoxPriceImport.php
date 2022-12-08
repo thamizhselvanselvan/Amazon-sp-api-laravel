@@ -190,32 +190,34 @@ class BuyBoxPriceImport
                                 'weight' => $packet_weight_kg
                             ];
                             $pricing_in[] = [...$asin_details, ...$destination_price];
-                        } elseif ($country_code_lr == 'ae' || $country_code_lr == 'sa') {
-
-                            $destination_price = ['weight' => $packet_weight];
-                            $pricing_ae_sa[] = [...$asin_details, ...$destination_price];
                         }
+                        // elseif ($country_code_lr == 'ae' || $country_code_lr == 'sa') {
+
+                        //     $destination_price = ['weight' => $packet_weight];
+                        //     $pricing_ae_sa[] = [...$asin_details, ...$destination_price];
+                        // }
                     }
 
                     // $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
 
                     if ($country_code_lr == 'us') {
 
-                        PricingUs::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
+                        // PricingUs::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
                         PricingUs::upsert($pricing, 'unique_asin',  ['asin', 'available', 'weight', 'us_price', 'usa_to_in_b2b', 'usa_to_in_b2c', 'usa_to_uae', 'usa_to_sg', 'price_updated_at']);
                     } elseif ($country_code_lr == 'in') {
 
-                        PricingIn::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
+                        // PricingIn::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
                         PricingIn::upsert($pricing_in, 'asin_unique', ['asin', 'available', 'in_price', 'weight', 'ind_to_uae', 'ind_to_sg', 'ind_to_sa', 'price_updated_at']);
-                    } elseif ($country_code_lr == 'ae') {
-
-                        PricingAe::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
-                        PricingAe::upsert($pricing_ae_sa, 'unique_asin', ['asin', 'available', 'weight', 'ae_price', 'price_updated_at']);
-                        //
-                    } elseif ($country_code_lr == 'sa') {
-                        PricingSa::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
-                        PricingSa::upsert($pricing_ae_sa, 'unique_asin', ['asin', 'available', 'weight', 'sa_price', 'price_updated_at']);
                     }
+                    // elseif ($country_code_lr == 'ae') {
+
+                    //     PricingAe::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
+                    //     PricingAe::upsert($pricing_ae_sa, 'unique_asin', ['asin', 'available', 'weight', 'ae_price', 'price_updated_at']);
+                    //     //
+                    // } elseif ($country_code_lr == 'sa') {
+                    //     PricingSa::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
+                    //     PricingSa::upsert($pricing_ae_sa, 'unique_asin', ['asin', 'available', 'weight', 'sa_price', 'price_updated_at']);
+                    // }
                 }
             } else {
                 //if all price are fetched fro selected priority then update status
