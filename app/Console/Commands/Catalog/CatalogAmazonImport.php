@@ -43,12 +43,15 @@ class CatalogAmazonImport extends Command
     {
         // $sources = ['ae', 'sa'];
         // $limit_array = ['sa' => 200, 'ae' => 200];
-        $sources = ['us'];
         // $sources = ['in', 'us'];
-        $limit_array = ['in' => 1000, 'us' => 1200];
+        // $limit_array = ['in' => 1000, 'us' => 1200];
+
+        $sources = ['us'];
 
         foreach ($sources as $source) {
-            $limit = $limit_array[$source];
+
+            $limit = getSystemSettingsValue(strtolower($source) . '_catalog_limit', 1000);
+            // $limit = $limit_array[$source];
 
             $auth_count = 0;
             $asin_upsert_source = [];
@@ -98,21 +101,18 @@ class CatalogAmazonImport extends Command
             }
 
             $country_code_up = strtoupper($source);
-            $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code_up)->get()->toArray();
 
-            // Log::info("${country_code_up} -> total asin for catalog " . count($asins));
+            $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code_up)->get()->toArray();
 
             if ($country_code_up == 'IN') {
                 $queue_name = 'catalog_IN';
             }
+
             if (count($asins) > 0) {
 
                 foreach ($asins as $details) {
-
                     $seller_id  =  $details->user_id;
-
                     $asin = $details->asin;
-
                     $asin_upsert_source[] = [
                         'asin' => $asin,
                         'user_id' => $seller_id,
@@ -120,6 +120,7 @@ class CatalogAmazonImport extends Command
                     ];
 
                     $aws_id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
+
                     if ($count == 10) {
                         //log::alert($asin_source);
                         jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);

@@ -26,7 +26,6 @@ class NewCatalog
 
     public function Catalog($records, $seller_id = NULL)
     {
-        Log::info('catalog import working');
         $queue_data = [];
         $upsert_asin = [];
         $country_code1 = '';
@@ -208,7 +207,7 @@ class NewCatalog
                     'source' => $country_code,
                 ];
             }
-            CatalogMissingAsin::upsert($miss_asin, ['asin'], ['asin', 'source']);
+            CatalogMissingAsin::upsert($miss_asin, ['asin_unique'], ['asin', 'source']);
 
             return $queue_data;
         } catch (Exception $e) {
