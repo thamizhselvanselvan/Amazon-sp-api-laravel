@@ -899,21 +899,22 @@ return [
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-clock-o',
                         ],
+                        [
+                            'text' => 'Orders Confirmation',
+                            'url' => 'business/orders/confirm',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-check-circle-o',
+                        ],
+                        [
+                            'text' => 'Shipment Notification',
+                            'url' => 'business/ship/confirmation',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-bell',
+                        ],
                     ],
 
                 ],
-                [
-                    'text' => 'Orders Confirmation',
-                    'url' => 'business/orders/confirm',
-                    'can' => ['Admin', 'Cliqnshop'],
-                    'icon' => 'fa fa-check-circle-o',
-                ],
-                [
-                    'text' => 'Shipment Notification',
-                    'url' => 'business/ship/confirmation',
-                    'can' => ['Admin', 'Cliqnshop'],
-                    'icon' => 'fa fa-bell',
-                ],
+               
                 [
                     'text' => 'KYC Details',
                     'url' => 'cliqnshop/kyc',
@@ -925,6 +926,25 @@ return [
                     'url' => 'cliqnshop/contact',
                     'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fa fa-link',
+                ],
+                [
+                    'text' => 'Home Section',
+                    'can' => ['Admin', 'Cliqnshop'],
+                    'icon' => 'fa fa-home',
+                    'submenu' => [
+                        [
+                            'text' => '3 Banner Section',
+                            'url' => 'cliqnshop/banner',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-image',
+                        ],
+                        [
+                            'text' => 'Top Selling Section',
+                            'url' => '#',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-arrow-up',
+                        ],
+                    ],
                 ],
             ],
         ],
