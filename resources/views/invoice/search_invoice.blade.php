@@ -40,7 +40,7 @@
                         <x-adminlte-button label="Add Records" theme="primary" icon="fas fa-file-upload"
                             class="btn-md ml-2 " />
                     </a>
-                    <a href="template/download">
+                    <a href="{{ route('invoice.download.template') }}">
                         <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-download"
                             class="btn-md ml-1 " />
                     </a>
@@ -139,7 +139,8 @@
 
             $.ajax({
                 method: 'get',
-                url: "/invoice/file/management/monitor/",
+                // url: "/invoice/file/management/monitor/",
+                url: "{{ route('invoice.file.management') }}",
                 data: {
                     "module_type": "EXPORT_INVOICE",
                     "_token": "{{ csrf_token() }}",
@@ -147,7 +148,7 @@
                 response: 'json',
                 success: function(response) {
                     // console.log(response);
-                    if (response == '0000-00-00 00:00:00') {
+                    if (response.status == 'Processing') {
 
                         $('#selected-download').prop('disabled', true);
                         $('#selected-download').attr("title", "File is downloading...");
@@ -314,7 +315,8 @@
                 });
                 $.ajax({
                     method: 'POST',
-                    url: "{{ url('/invoice/select-download') }}",
+                    // url: "{{ url('/invoice/select-download') }}",
+                    url: "{{ route('invoice.download.selected') }}",
                     data: {
                         'id': id,
                         "invoice_date": invoice_date,

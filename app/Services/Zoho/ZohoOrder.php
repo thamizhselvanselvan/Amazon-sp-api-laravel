@@ -194,7 +194,6 @@ class ZohoOrder
         $order_items = $this->get_orders_with_amazon_order_id($amazon_order_id);
 
         if (!$order_items) {
-            Log::info($order_items);
             $notes['notes'][] = "No data found to update Zoho in the database for this Amazon Order ID: $amazon_order_id";
             return $notes;
         }

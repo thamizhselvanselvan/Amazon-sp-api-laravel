@@ -207,7 +207,7 @@ class NewCatalog
                     'source' => $country_code,
                 ];
             }
-            CatalogMissingAsin::upsert($miss_asin, ['asin'], ['asin', 'source']);
+            CatalogMissingAsin::upsert($miss_asin, ['asin_unique'], ['asin', 'source']);
 
             return $queue_data;
         } catch (Exception $e) {

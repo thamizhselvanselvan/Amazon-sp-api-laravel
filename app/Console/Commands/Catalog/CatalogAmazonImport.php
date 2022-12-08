@@ -43,19 +43,18 @@ class CatalogAmazonImport extends Command
     {
         // $sources = ['ae', 'sa'];
         // $limit_array = ['sa' => 200, 'ae' => 200];
-        $sources = ['us'];
-        // $sources = ['in', 'us'];
-        $limit_array = ['in' => 1000, 'us' => 1500];
+        $sources = ['in', 'us'];
 
         foreach ($sources as $source) {
-            $limit = $limit_array[$source];
+
+            $limit = getSystemSettingsValue(strtolower($source) . '_catalog_limit', 1000);
 
             $auth_count = 0;
             $asin_upsert_source = [];
             $seller_id = '';
             $asin_source = [];
             $count = 0;
-            $queue_name = 'catalog';
+            $queue_name = 'catalog_US';
             $queue_delay = 0;
             $class =  'catalog\AmazonCatalogImport';
             $asin_table_name = 'asin_source_' . $source . 's';
@@ -75,44 +74,41 @@ class CatalogAmazonImport extends Command
                 //     WHERE cat.seller_id IS NULL ");
             } else {
 
-                // $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id
-                //     FROM $asin_table_name as source
-                //     LEFT JOIN $catalog_table_name as cat
-                //     ON cat.asin = source.asin
-                //     WHERE cat.asin IS NULL
-                //     AND source.status = '0'
-                //     LIMIT $limit
-                //     ");
-
-                // asin_destination_uss
-                $asin_table_name = 'asin_destination_uss';
                 $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id
                     FROM $asin_table_name as source
                     LEFT JOIN $catalog_table_name as cat
                     ON cat.asin = source.asin
                     WHERE cat.asin IS NULL
-                    And source.priority = '3'
-                    And source.status = '0'
+                    AND source.status = '0'
                     LIMIT $limit
                     ");
+
+                // asin_destination_uss
+                // $asin_table_name = 'asin_destination_uss';
+                // $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id
+                //     FROM $asin_table_name as source
+                //     LEFT JOIN $catalog_table_name as cat
+                //     ON cat.asin = source.asin
+                //     WHERE cat.asin IS NULL
+                //     And source.priority = '3'
+                //     And source.status = '0'
+                //     LIMIT $limit
+                //     ");
             }
 
             $country_code_up = strtoupper($source);
-            $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code_up)->get()->toArray();
 
-            // Log::info("${country_code_up} -> total asin for catalog " . count($asins));
+            $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code_up)->get()->toArray();
 
             if ($country_code_up == 'IN') {
                 $queue_name = 'catalog_IN';
             }
+
             if (count($asins) > 0) {
 
                 foreach ($asins as $details) {
-
                     $seller_id  =  $details->user_id;
-
                     $asin = $details->asin;
-
                     $asin_upsert_source[] = [
                         'asin' => $asin,
                         'user_id' => $seller_id,
@@ -120,7 +116,7 @@ class CatalogAmazonImport extends Command
                     ];
 
                     $aws_id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
-                    Log::debug($aws_id);
+
                     if ($count == 10) {
                         //log::alert($asin_source);
                         jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
@@ -140,7 +136,7 @@ class CatalogAmazonImport extends Command
                         $count++;
                     }
 
-                    if ($auth_count == 3) {
+                    if ($auth_count == 2) {
                         $auth_count = 0;
                     }
                 }
@@ -151,12 +147,6 @@ class CatalogAmazonImport extends Command
                 $model = 'Asin_source';
                 $table_name = "asin_source_";
                 $source_mode = table_model_create($source, $model, $table_name);
-                $source_mode->upsert($asin_upsert_source, ['user_asin_unique'], ['status']);
-
-                $model = 'Asin_destination';
-                $table_name = "asin_destination_";
-                $source_mode = table_model_create($source, $model, $table_name);
-
                 $source_mode->upsert($asin_upsert_source, ['user_asin_unique'], ['status']);
             } else {
 

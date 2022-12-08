@@ -148,7 +148,7 @@ class labelManagementController extends Controller
         }
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
@@ -175,7 +175,7 @@ class labelManagementController extends Controller
         $awb_no = $result[0]->awb_no;
 
         $file_path = "label/$bag_no/label$awb_no.pdf";
-
+        // log::alert($file_path);
         if (!Storage::exists($file_path)) {
             Storage::put($file_path, '');
         }
@@ -184,7 +184,7 @@ class labelManagementController extends Controller
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
 
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
@@ -367,7 +367,7 @@ class labelManagementController extends Controller
                         'seller_id' => $seller_id,
                         'amazon_order_id' => $amazon_order_id
                     ]
-                )->onConnection('redis')->onQueue('order');
+                )->onConnection('redis')->onQueue('default');
             } else {
                 GetOrder::dispatch(
                     [
@@ -853,9 +853,9 @@ class labelManagementController extends Controller
     {
         $awb_no = array_unique(preg_split('/[\r\n| |:|,|.]/', $request->awb_no, -1, PREG_SPLIT_NO_EMPTY));
         $awb_tracking_no = "'" . implode("','", $awb_no) . "'";
-        $label_detials = $this->labelListing($awb_tracking_no, 'awb_tracking_id');
+        $label_details = $this->labelListing($awb_tracking_no, 'awb_tracking_id');
 
-        return response()->json($label_detials);
+        return response()->json($label_details);
     }
 
     public function editordersearchbyid($order_item_identifier)
