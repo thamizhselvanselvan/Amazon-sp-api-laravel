@@ -181,60 +181,56 @@ class TestController extends Controller
     $order_statuses = null;
     $next_token = NULL;
     $amazon_order_ids = [$order_id];
-    // try {
+    try {
 
-    //   echo '<hr>';
-    //   echo 'Order Details';
-    //   echo '<br>';
-    //   $order = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, null, $next_token, $amazon_order_ids, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null);
-    //   $request_id = $order['headers']['x-amzn-RequestId'];
-    //   echo "Request Id: " . $request_id[0];
-    //   po($order->getPayload());
-    // } catch (Exception $e) {
-    //   po($e);
-    // }
+      echo '<hr>';
+      echo 'Order Details';
+      echo '<br>';
+      $order = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, null, $next_token, $amazon_order_ids, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null);
+      $request_id = $order['headers']['x-amzn-RequestId'];
+      echo "Request Id: " . $request_id[0];
+      po($order->getPayload());
+    } catch (Exception $e) {
+      po($e);
+    }
 
-    // echo '<hr>';
-    // echo 'Order item details';
-    // echo "<br>";
-    // try {
+    echo '<hr>';
+    echo 'Order item details';
+    echo "<br>";
+    try {
 
-    //   $data_element = array('buyerInfo');
-    //   $next_token = NULL;
-    //   $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
-    //   $request_id = $result_orderItems['headers']['x-amzn-RequestId'];
-    //   echo "Request Id: " . $request_id[0];
-    //   po($result_orderItems->getPayload());
-    // } catch (Exception $e) {
+      $data_element = array('buyerInfo');
+      $next_token = NULL;
+      $result_orderItems = $apiInstance->getOrderItems($order_id, $next_token, $data_element);
+      $request_id = $result_orderItems['headers']['x-amzn-RequestId'];
+      echo "Request Id: " . $request_id[0];
+      po($result_orderItems->getPayload());
+    } catch (Exception $e) {
 
-    //   echo "<br>";
-    //   echo 'Request Id: ' . (($e->getResponseHeaders())['x-amzn-RequestId'][0]);
-    //   echo "<br>";
+      echo "<br>";
+      echo 'Request Id: ' . (($e->getResponseHeaders())['x-amzn-RequestId'][0]);
+      echo "<br>";
 
-    //   po($e);
-    // }
+      po($e);
+    }
     // exit;
     echo '<hr>';
     echo 'Order Address';
-    // try {
+    try {
 
-    //   $result_order_address = $apiInstance->getOrderAddress($order_id);
-    //   $request_id = $result_order_address['headers']['x-amzn-RequestId'];
+      $result_order_address = $apiInstance->getOrderAddress($order_id);
+      $request_id = $result_order_address['headers']['x-amzn-RequestId'];
 
-    //   echo "Request Id: " . $request_id[0];
+      echo "Request Id: " . $request_id[0];
 
-    //   po($result_order_address->getPayload());
-    // } catch (Exception $e) {
-    //   echo "<br>";
-    //   echo 'Request Id: ' . (($e->getResponseHeaders())['x-amzn-RequestId'][0]);
-    //   echo "<br>";
+      po($result_order_address->getPayload());
+    } catch (Exception $e) {
+      echo "<br>";
+      echo 'Request Id: ' . (($e->getResponseHeaders())['x-amzn-RequestId'][0]);
+      echo "<br>";
 
-    //   po($e);
-    // }
-
-    $result_order_address = $apiInstance->getOrderRegulatedInfo($order_id);
-    po($result_order_address);
-    exit;
+      po($e);
+    }
   }
 
   public function SmsaTracking($awb_no)
