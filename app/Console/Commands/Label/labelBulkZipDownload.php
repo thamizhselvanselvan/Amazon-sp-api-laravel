@@ -55,13 +55,13 @@ class labelBulkZipDownload extends Command
 
         $file_management_id = $final_data['fm_id'];
         $headers = $final_data['header'];
+        log::notice($headers);
         $headers_data = explode('_', $headers);
         $passid =  $headers_data[0];
         $currenturl =  $headers_data[1];
         $bag_no =  $headers_data[2];
-        $current_page_number =  $headers_data[3];
-        log::notice($headers);
         Log::notice($bag_no);
+        $current_page_number =  $headers_data[3];
         Log::notice($current_page_number);
         // $passid = $this->argument('passid');
         // $bag_no = $this->argument('bag_no');
