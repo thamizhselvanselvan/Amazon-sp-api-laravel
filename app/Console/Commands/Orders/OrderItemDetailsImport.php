@@ -54,8 +54,8 @@ class OrderItemDetailsImport extends Command
             $source = $value->source;
             $missing_order_id = NULL;
 
-            $whereIn = [
-                '407-5076377-6146731',
+            $whereIn =
+                "'407-5076377-6146731',
                 '406-7446071-4894728',
                 '402-4739822-5011528',
                 '171-5651929-9073141',
@@ -851,8 +851,8 @@ class OrderItemDetailsImport extends Command
                 '407-2038251-5633134',
                 '408-0114750-7655579',
                 '407-6424649-1911524',
-                '406-8760389-0184365'
-            ];
+                '406-8760389-0184365'";
+
 
             if ($seller_id == '35') {
 
@@ -886,7 +886,7 @@ class OrderItemDetailsImport extends Command
                     limit 1
                 ");
             }
-            Log::debug($missing_order_id);
+
             foreach ($missing_order_id as $details) {
 
                 $country = $details->country;
