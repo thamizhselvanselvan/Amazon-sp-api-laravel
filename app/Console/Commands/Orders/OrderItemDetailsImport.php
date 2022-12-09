@@ -64,7 +64,7 @@ class OrderItemDetailsImport extends Command
                             AND ord.our_seller_identifier = '$seller_id' 
                             AND ord.order_status != 'Pending' 
                             AND ord.order_status != 'Canceled' 
-                    order by ord.id desc
+                    order by ord.id asc
                     limit 1
                 ");
 
