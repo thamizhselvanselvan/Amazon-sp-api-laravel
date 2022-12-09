@@ -229,7 +229,7 @@ class labelManagementController extends Controller
         $bagNo_date = $bag_no == '' ? $date : $bag_no;
 
         $currenturl =  URL::current();
-        Log::alert($current_page_number);
+        // Log::alert($current_page_number);
         // if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
         //     $base_path = base_path();
         //     $command = "cd $base_path && php artisan pms:label-bulk-zip-download $passid $currenturl $bag_no $current_page_number > /dev/null &";

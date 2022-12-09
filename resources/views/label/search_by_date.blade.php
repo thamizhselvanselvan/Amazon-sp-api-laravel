@@ -258,7 +258,7 @@
                 alert('Please Select Label Details to Download');
                 return false;
             }
-            alert(id);
+
             alert('Label is downloading please wait.');
             $('#download_selected').attr('disabled', true);
             $('#download_selected').attr("title", "File is downloading...");
@@ -486,22 +486,7 @@
                         },
                     ],
                 });
-                // $.ajax({
-                //     method: 'POST',
-                //     url: "{{ route('lable.search.date') }}",
-                //     data: {
-                //         'date': selected_date,
-                //         "_token": "{{ csrf_token() }}",
-                //     },
-                //     success: function(response) {
 
-                //         $('#showTable').removeClass('d-none');
-                //         $('#label_table').html(response.success);
-                //     },
-                //     error: function(response) {
-                //         alert('something went wrong');
-                //     }
-                // });
             }
 
         });
