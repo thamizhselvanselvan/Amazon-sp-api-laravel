@@ -253,20 +253,18 @@ class ZohoOrder
 
             $prod_array = $this->zohoOrderFormating($order_item_details, $store_name, $country_code, $order_items);
 
-
             if ($zoho_search_order_exists && $force_update) {
 
                 return $this->zoho_update($zohoApi, $zoho_search_order_exists, $prod_array);
             } else if ($zoho_search_order_exists && !$force_update) {
-                $notes['notes'][] = "With this Amazon Order ID: $amazon_order_id & Order Item ID: $order_item_id already Zoho Lead exists";
-                print ("") . PHP_EOL;
-                print ($zoho_search_order_exists['data'][0]['id']) . PHP_EOL;
+                $zoho_lead_id = $zoho_search_order_exists['data'][0]['id'];
+                $notes['notes'][] = "With this Amazon Order ID: $amazon_order_id & Order Item ID: $order_item_id already Zoho Lead exists. Lead ID: " . $zoho_lead_id;
 
                 $order_zoho = [
                     "store_id" => $order_item_details->seller_identifier,
                     "amazon_order_id" => $amazon_order_id,
                     "order_item_id" => $prod_array['Payment_Reference_Number1'],
-                    "zoho_id" => $zoho_search_order_exists['data'][0]['id'],
+                    "zoho_id" => $zoho_lead_id,
                     "zoho_status" => 1
                 ];
 
@@ -289,8 +287,6 @@ class ZohoOrder
             $zoho_api_save = $zohoApi->storeLead($prod_array);
 
             $zoho_response = ($zoho_api_save) ? $zoho_api_save : null;
-
-            Log::warning($zoho_response);
 
             if (isset($zoho_response) && array_key_exists('data', $zoho_response) && array_key_exists(0, $zoho_response['data']) && array_key_exists('code', $zoho_response['data'][0])) {
 
@@ -448,12 +444,7 @@ class ZohoOrder
         // $address = str_replace("&", " and ", $address);
         //
 
-
-        $prod_array["Mobile"]      = isset($buyerDtls->Phone) ? substr((int) filter_var($buyerDtls->Phone, FILTER_SANITIZE_NUMBER_INT), -10) : 1234567890;
-
-        echo "\n";
-        echo $prod_array['Mobile'] . "\n";
-        echo "WORKS";
+        $prod_array["Mobile"]      = isset($buyerDtls->Phone) ? substr((int) filter_var($buyerDtls->Phone, FILTER_SANITIZE_NUMBER_INT), -10) : '1234567890';
 
         $prod_array["Address"]     = $this->get_address($value->shipping_address, $country_code);
         $prod_array["City"]        = $buyerDtls->City;
