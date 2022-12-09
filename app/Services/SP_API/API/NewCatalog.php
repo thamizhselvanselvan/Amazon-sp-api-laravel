@@ -197,17 +197,19 @@ class NewCatalog
                     }
                 }
             }
-            $miss_asin_array = [];
-            $miss_asin = [];
-            $diffs = array_diff($asins, $check_asin);
-            foreach ($diffs as $diff) {
-                $miss_asin[] = [
-                    'asin' => $diff,
-                    'user_id' => $seller_id,
-                    'source' => $country_code,
-                ];
-            }
-            CatalogMissingAsin::upsert($miss_asin, ['asin_unique'], ['asin', 'source']);
+
+            // $miss_asin_array = [];
+
+            // $miss_asin = [];
+            // $diffs = array_diff($asins, $check_asin);
+            // foreach ($diffs as $diff) {
+            //     $miss_asin[] = [
+            //         'asin' => $diff,
+            //         'user_id' => $seller_id,
+            //         'source' => $country_code,
+            //     ];
+            // }
+            // CatalogMissingAsin::upsert($miss_asin, ['asin_unique'], ['asin', 'source']);
 
             return $queue_data;
         } catch (Exception $e) {
