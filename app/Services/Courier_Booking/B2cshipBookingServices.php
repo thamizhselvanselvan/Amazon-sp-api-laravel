@@ -112,7 +112,7 @@ class B2cshipBookingServices
             $consignee_AddressLine1 = $this->objKeyVerify($consignee_details, 'AddressLine1');
             $consignee_AddressLine2 = $this->objKeyVerify($consignee_details, 'AddressLine2');
             $consignee_city = $this->objKeyVerify($consignee_details, 'City');
-            $consignee_state = $this->objKeyVerify($consignee_details, 'StateOrRegion');
+            $consignee_state = $this->renameState($this->objKeyVerify($consignee_details, 'StateOrRegion'));
             $consignee_CountryCode = $this->objKeyVerify($consignee_details, 'CountryCode');
             $consignee_pincode = $this->objKeyVerify($consignee_details, 'PostalCode');
             $consignee_Phone = $this->objKeyVerify($consignee_details, 'Phone');
@@ -477,5 +477,13 @@ class B2cshipBookingServices
         ];
 
         (new PushAsin())->PushAsinToBBTable($product, $product_lowest_price, 'us', '1');
+    }
+
+    public function renameState($state_name)
+    {
+        if (strtoupper($state_name) == 'JAMMU & KASHMIR') {
+            return 'JK';
+        }
+        return $state_name;
     }
 }

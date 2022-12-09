@@ -231,8 +231,6 @@ class TestController extends Controller
 
       po($e);
     }
-
-    exit;
   }
 
   public function SmsaTracking($awb_no)
