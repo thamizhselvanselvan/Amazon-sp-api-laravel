@@ -223,7 +223,7 @@ class labelManagementController extends Controller
         $replace = [' - ', '-'];
         $passid = $request->id;
         $bag_no = $request->bag_no;
-        $date = 'dayByday' . str_replace($replace, '&', $request->date);
+        $date = 'dayByday' . str_replace($replace, '-', $request->date);
         $current_page_number = $request->current_page_number;
         $bagNo_date = $bag_no == '' ? $date : $bag_no;
 
