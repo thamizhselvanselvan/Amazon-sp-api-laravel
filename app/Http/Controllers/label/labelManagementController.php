@@ -981,6 +981,7 @@ class labelManagementController extends Controller
                     return $order_date;
                 })
                 ->addColumn('customer_name', function ($label_detail) {
+                    $customer_name = [];
                     $customer = json_decode($label_detail->shipping_address, true);
                     if (isset($customer['Name'])) {
 
