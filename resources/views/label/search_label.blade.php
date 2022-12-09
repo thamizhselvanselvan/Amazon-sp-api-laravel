@@ -192,7 +192,8 @@
 
             $.ajax({
                 method: 'get',
-                url: "/label/file/management/monitor/",
+                // url: "/label/file/management/monitor/",
+                url: "{{ route('label.file.management.monitor') }}",
                 data: {
                     "module_type": "EXPORT_LABEL",
                     "_token": "{{ csrf_token() }}",

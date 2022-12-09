@@ -66,7 +66,7 @@
         <div class="col-5">
             <div class="form-group">
                 <label for="text">Redirection URL</label>
-                <input class="form-control " type="text" placeholder="Enter Redirect URL For Image" name="url" id="url">
+                <x-adminlte-input class="form-control " type="text" placeholder="Enter Redirect URL For Image" name="url" id="url"/>
             </div>
         </div>
     </div>

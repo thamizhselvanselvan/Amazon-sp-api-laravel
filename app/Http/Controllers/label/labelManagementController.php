@@ -220,13 +220,16 @@ class labelManagementController extends Controller
 
     public function DownloadSelected(Request $request)
     {
+        $replace = [' - ', '-'];
         $passid = $request->id;
         $bag_no = $request->bag_no;
+        $date = 'dayByday' . str_replace($replace, '+', $request->date);
+        // $date = 'dayByday' .  $request->date;
         $current_page_number = $request->current_page_number;
+        $bagNo_date = $bag_no == '' ? $date : $bag_no;
 
-        // Log::alert($current_page_number);
         $currenturl =  URL::current();
-
+        // Log::alert($current_page_number);
         // if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
         //     $base_path = base_path();
         //     $command = "cd $base_path && php artisan pms:label-bulk-zip-download $passid $currenturl $bag_no $current_page_number > /dev/null &";
@@ -236,7 +239,7 @@ class labelManagementController extends Controller
         // }
 
         $user_id = Auth::user()->id;
-        $header = ["data" => "${passid}_${currenturl}_${bag_no}_${current_page_number}"];
+        $header = ["data" => "${passid}_${currenturl}_${bagNo_date}_${current_page_number}"];
         $file_info = [
             "user_id"       => $user_id,
             "type"          => "EXPORT_LABEL",
@@ -259,24 +262,27 @@ class labelManagementController extends Controller
         $path = (Storage::path("label"));
         $files = scandir($path);
         foreach ($files as $key => $file) {
-            if ($key > 1) {
-                $file_path = Storage::path('label' . '/' . $file);
-                if (is_dir($file_path)) {
-                    $file_paths = scandir($file_path);
-                    foreach ($file_paths as $zip_path) {
-                        if ($zip_path == 'zip') {
-                            $zip_path_array = scandir($file_path . '/' . $zip_path);
-                            $count = 0;
-                            foreach ($zip_path_array as $zip_key => $zip_file) {
-                                if ($zip_key > 1) {
-                                    $count++;
-                                    if ($count == 1) {
-                                        $html .= "<div>Bag No: $file";
+            if (!str_contains($file, 'dayByday')) {
+
+                if ($key > 1) {
+                    $file_path = Storage::path('label' . '/' . $file);
+                    if (is_dir($file_path)) {
+                        $file_paths = scandir($file_path);
+                        foreach ($file_paths as $zip_path) {
+                            if ($zip_path == 'zip') {
+                                $zip_path_array = scandir($file_path . '/' . $zip_path);
+                                $count = 0;
+                                foreach ($zip_path_array as $zip_key => $zip_file) {
+                                    if ($zip_key > 1) {
+                                        $count++;
+                                        if ($count == 1) {
+                                            $html .= "<div>Bag No: $file";
+                                        }
+                                        $html .=
+                                            "<a href='/label/zip/download/$file/zip/$zip_file'>
+                                                 <li class='ml-4'>Label Part " . $zip_key - 1 . ' ' . date("M-d-Y H:i:s.", filemtime("$file_path/$zip_path/$zip_file")) . "</li>
+                                            </a>";
                                     }
-                                    $html .=
-                                        "<a href='/label/zip/download/$file/zip/$zip_file'>
-                                             <li class='ml-4'>Label Part " . $zip_key - 1 . ' ' . date("M-d-Y H:i:s.", filemtime("$file_path/$zip_path/$zip_file")) . "</li>
-                                        </a>";
                                 }
                             }
                         }
@@ -934,8 +940,9 @@ class labelManagementController extends Controller
     public function  labelSearchByDate(Request $request)
     {
         if ($request->ajax()) {
-            $date = $request->date;
+            $date = $request->selected_date;
             $data = explode(' - ', $date);
+
             if (count($data) >= 2) {
                 $split = [
                     'start'    => trim($data[0]),
@@ -946,85 +953,192 @@ class labelManagementController extends Controller
             }
             $id = json_encode($split);
 
-            $label_detials = $this->labelListing($id, 'search_date');
+            $label_details = $this->labelListing($id, 'search_date');
+            $currentPageNumber = $request->start / $request->length + 1;
+            // po($currentPageNumber);
+            // exit;
+            return DataTables::of($label_details)
+                ->addColumn('check_box', function ($label_detail) use ($currentPageNumber) {
+                    return "<input class='check_options' type='checkbox' data-current-page='$currentPageNumber' value='$label_detail->id' name='options[]' id='checkid$label_detail->id'>";
+                })
+                ->addColumn('store_name', function ($label_detail) {
+                    $store_name = $label_detail->store_name;
+                    return $store_name;
+                })
+                ->addColumn('order_no', function ($label_detail) {
+                    $order_no = $label_detail->order_no;
+                    return $order_no;
+                })
+                ->addColumn('awb_no', function ($label_detail) {
+                    $awb_no = $label_detail->awb_no;
+                    return $awb_no;
+                })
+                ->addColumn('courier_name', function ($label_detail) {
+                    $courier_name = $label_detail->forwarder;
+                    return $courier_name;
+                })
+                ->addColumn('order_date', function ($label_detail) {
+                    $order_date = Carbon::parse($label_detail->purchase_date)->format('Y-m-d');
+                    return $order_date;
+                })
+                ->addColumn('customer_name', function ($label_detail) {
+                    $customer_name = [];
+                    $customer = json_decode($label_detail->shipping_address, true);
+                    if (isset($customer['Name'])) {
 
-            if (count($label_detials) > 0) {
-                $html = '';
-                $name = '';
-                $found_order_id = [];
-
-                foreach ($label_detials as $label_det) {
-
-                    $order_date = Carbon::parse($label_det->purchase_date)->format('Y-m-d');
-                    $id = $label_det->id;
-                    $address = $label_det->shipping_address;
-                    $courier_name = $label_det->forwarder;
-                    $awb_no = $label_det->awb_no;
-                    $order_id = $label_det->order_no;
-                    $address_array = json_decode(($address), true);
-                    if (isset($address_array['Name'])) {
-                        $name = $address_array['Name'];
+                        $customer_name = $customer['Name'];
                     }
-
-                    $found_order_id[] = $order_id;
-
-                    $html .= "<tr>
-                                <td> $label_det->store_name </td> 
-                                <td> $label_det->order_no </td>";
-
-                    if ($awb_no && $courier_name) {
-
-                        $html .=      "<td> $awb_no </td> 
-                                  <td> $courier_name </td> ";
-                    } else {
-                        $awb_exist = $awb_no ? $awb_no : '';
-                        $courier_name_exist = $courier_name ? $courier_name : '';
-                        // $html .= "<td><input type ='text' placeholder='$awb_no' id ='tracking$order_id' value='$awb_exist'></td>
-                        //     <td><input type ='text' placeholder ='$courier_name' id='courier$order_id' value ='$courier_name_exist'></td>";
-
-                        $html .= "<td> </td>
-                                   <td> </td>";
-                    }
-
-                    $html .= "<td> $order_date </td> 
-                                <td> $name</td>";
-                    if ($name && $courier_name && $awb_no) {
-                        $html .= "<td>
+                    return $customer_name;
+                })
+                ->addColumn('action', function ($label_detail) {
+                    $action = "<td>
                                     <div class='d-flex'>
-                                        <a href='/label/pdf-template/orderid-$id' class='edit btn btn-success btn-sm view'  target='_blank'>
+                                        <a href='/label/pdf-template/orderid-$label_detail->id' class='edit btn btn-success btn-sm view'  target='_blank'>
                                             <i class='fas fa-eye'></i> View 
                                         </a>
 
                                         <div class='d-flex pl-2'>
-                                            <a href='/label/download-direct/orderid-$id' class='edit btn btn-info btn-sm'>
+                                            <a href='/label/download-direct/orderid-$label_detail->id' class='edit btn btn-info btn-sm'>
                                                 <i class='fas fa-download'></i> Download 
                                             </a>
                                         </div>
                                         <div class='d-flex pl-2'>
 
-                                         <a id='edit-address' data-toggle='modal' data-id='$label_det->order_item_identifier' data-amazon_order_identifier='$order_id ' href='javascript:void(0)'  class='edit btn btn-primary btn-sm'>
+                                         <a id='edit-address' data-toggle='modal' data-id='$label_detail->order_item_identifier' data-amazon_order_identifier='$label_detail->order_no ' href='javascript:void(0)'  class='edit btn btn-primary btn-sm'>
                                             <i class='fas fa-address-card'></i> Edit Address</a>
 
                                         </div>
                                     </div>
                                     </td>
                                 </tr>";
-                    } else {
-                        $html .= "<td>
-                                    <div class='d-flex'>
-                                       <h5>Update Details</h5>
-                                    </div>
-                                    </td>
-                                </tr>";
-                    }
-                }
-                return [
-                    'success' => $html,
+                    return $action;
+                })
 
-                ];
-            }
+                ->rawColumns(['check_box', 'store_name', 'order_no', 'awb_no', 'courier_name', 'order_date', 'customer_name', 'action'])
+                ->make(true);
+            // exit;
+            // if (count($label_details) > 0) {
+            //     $html = '';
+            //     $name = '';
+            //     $found_order_id = [];
+
+            //     foreach ($label_details as $label_det) {
+
+            //         $order_date = Carbon::parse($label_det->purchase_date)->format('Y-m-d');
+            //         $id = $label_det->id;
+            //         $address = $label_det->shipping_address;
+            //         $courier_name = $label_det->forwarder;
+            //         $awb_no = $label_det->awb_no;
+            //         $order_id = $label_det->order_no;
+            //         $address_array = json_decode(($address), true);
+            //         if (isset($address_array['Name'])) {
+            //             $name = $address_array['Name'];
+            //         }
+
+            //         $found_order_id[] = $order_id;
+
+            //         $html .= "<tr>
+            //                     <td> $label_det->store_name </td> 
+            //                     <td> $label_det->order_no </td>";
+
+            //         if ($awb_no && $courier_name) {
+
+            //             $html .=      "<td> $awb_no </td> 
+            //                       <td> $courier_name </td> ";
+            //         } else {
+            //             $awb_exist = $awb_no ? $awb_no : '';
+            //             $courier_name_exist = $courier_name ? $courier_name : '';
+            //             // $html .= "<td><input type ='text' placeholder='$awb_no' id ='tracking$order_id' value='$awb_exist'></td>
+            //             //     <td><input type ='text' placeholder ='$courier_name' id='courier$order_id' value ='$courier_name_exist'></td>";
+
+            //             $html .= "<td> </td>
+            //                        <td> </td>";
+            //         }
+
+            //         $html .= "<td> $order_date </td> 
+            //                     <td> $name</td>";
+            //         if ($name && $courier_name && $awb_no) {
+            //             $html .= "<td>
+            //                         <div class='d-flex'>
+            //                             <a href='/label/pdf-template/orderid-$id' class='edit btn btn-success btn-sm view'  target='_blank'>
+            //                                 <i class='fas fa-eye'></i> View 
+            //                             </a>
+
+            //                             <div class='d-flex pl-2'>
+            //                                 <a href='/label/download-direct/orderid-$id' class='edit btn btn-info btn-sm'>
+            //                                     <i class='fas fa-download'></i> Download 
+            //                                 </a>
+            //                             </div>
+            //                             <div class='d-flex pl-2'>
+
+            //                              <a id='edit-address' data-toggle='modal' data-id='$label_det->order_item_identifier' data-amazon_order_identifier='$order_id ' href='javascript:void(0)'  class='edit btn btn-primary btn-sm'>
+            //                                 <i class='fas fa-address-card'></i> Edit Address</a>
+
+            //                             </div>
+            //                         </div>
+            //                         </td>
+            //                     </tr>";
+            //         } else {
+            //             $html .= "<td>
+            //                         <div class='d-flex'>
+            //                            <h5>Update Details</h5>
+            //                         </div>
+            //                         </td>
+            //                     </tr>";
+            //         }
+            //     }
+            //     return [
+            //         'success' => $html,
+
+            //     ];
+            // }
         }
 
         return view('label.search_by_date');
+    }
+    public function dayBydayZipDownload()
+    {
+        $html = '';
+        $html_final = '';
+        $count = 0;
+        $path = (Storage::path("label"));
+        $files = scandir($path);
+        foreach ($files as $key => $file) {
+            if (str_contains($file, 'dayByday')) {
+                // $file = str_replace('&', '-', $file);
+
+                if ($key > 1) {
+                    $file_path = Storage::path('label' . '/' . $file);
+                    if (is_dir($file_path)) {
+                        $file_paths = scandir($file_path);
+                        foreach ($file_paths as $zip_path) {
+                            if ($zip_path == 'zip') {
+                                $zip_path_array = scandir($file_path . '/' . $zip_path);
+                                $count = 0;
+                                foreach ($zip_path_array as $zip_key => $zip_file) {
+                                    if ($zip_key > 1) {
+                                        $count++;
+                                        if ($count == 1) {
+                                            $html .= "<div>Date: " . str_replace('dayByday', '', str_replace('+', '-', $file));
+                                        }
+                                        $html .=
+                                            "<a href='/label/zip/download/$file/zip/$zip_file'>
+                                                 <li class='ml-4'>Label Part " . $zip_key - 1 . ' ' . date("M-d-Y H:i:s.", filemtime("$file_path/$zip_path/$zip_file")) . "</li>
+                                            </a>";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        if ($html == '') {
+            return '<div> File Is Downloading....</div>';
+        }
+        $html .= '</div>';
+        return $html;
     }
 }

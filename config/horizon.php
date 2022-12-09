@@ -177,8 +177,8 @@ return [
 
     'environments' => [
         'production' => [
-            'ca-supervisor-1' => ['connection' => 'redis', 'queue' => ['catalog_US'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 3, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
-            'ca-supervisor-2' => ['connection' => 'redis', 'queue' => ['catalog_IN'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 3, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
+            'ca-supervisor-1' => ['connection' => 'redis', 'queue' => ['catalog_US'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 2, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
+            'ca-supervisor-2' => ['connection' => 'redis', 'queue' => ['catalog_IN'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 2, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
             'ca-supervisor-3' => ['connection' => 'redis', 'queue' => ['tracking'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
             'ca-supervisor-4' => ['connection' => 'redis', 'queue' => ['csv_import'], 'balance' => 'auto', 'minProcesses' => 1, 'maxProcesses' => 1, 'tries' => 3, 'balanceMaxShift' => 5, 'balanceCooldown' => 1],
         ],

@@ -888,16 +888,16 @@ return [
                     'icon' => 'fa fa-shopping-cart',
                     'submenu' => [
                         [
-                            'text' => 'Orders Booked',
-                            'url' => 'business/booked/details',
-                            'can' => ['Admin', 'Cliqnshop'],
-                            'icon' => 'fa fa-check',
-                        ],
-                        [
                             'text' => 'Orders Pending',
                             'url' => 'business/orders/details',
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-clock-o',
+                        ],
+                        [
+                            'text' => 'Orders Booked',
+                            'url' => 'business/booked/details',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-check',
                         ],
                         [
                             'text' => 'Orders Confirmation',
