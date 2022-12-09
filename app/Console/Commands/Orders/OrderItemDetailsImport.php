@@ -45,6 +45,7 @@ class OrderItemDetailsImport extends Command
         $order_item = new OrderItem();
 
         $seller_id_array = OrderSellerCredentials::where('dump_order', 1)->get();
+        $missing_order_id = [];
 
         foreach ($seller_id_array as $value) {
 
@@ -52,7 +53,6 @@ class OrderItemDetailsImport extends Command
             $zoho = $value->zoho;
             $courier_partner = $value->courier_partner;
             $source = $value->source;
-            $missing_order_id = NULL;
 
             $missing_order_id = DB::connection('order')
                 ->select("SELECT ord.amazon_order_identifier, ord.our_seller_identifier, ord.country
@@ -67,15 +67,16 @@ class OrderItemDetailsImport extends Command
                     order by ord.id desc
                     limit 1
                 ");
-        }
 
-        foreach ($missing_order_id as $details) {
 
-            $country = $details->country;
-            $order_id = $details->amazon_order_identifier;
-            $aws_id = $details->our_seller_identifier;
+            foreach ($missing_order_id as $details) {
 
-            $order_item->OrderItemDetails($order_id, $aws_id, $country, $source, $zoho, $courier_partner);
+                $country = $details->country;
+                $order_id = $details->amazon_order_identifier;
+                $aws_id = $details->our_seller_identifier;
+
+                $order_item->OrderItemDetails($order_id, $aws_id, $country, $source, $zoho, $courier_partner);
+            }
         }
     }
 }
