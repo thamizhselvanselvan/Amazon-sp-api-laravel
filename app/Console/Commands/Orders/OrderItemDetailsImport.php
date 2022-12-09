@@ -47,13 +47,33 @@ class OrderItemDetailsImport extends Command
         $seller_id_array = OrderSellerCredentials::where('dump_order', 1)->get();
 
         foreach ($seller_id_array as $value) {
+
             $seller_id = $value->seller_id;
             $zoho = $value->zoho;
             $courier_partner = $value->courier_partner;
             $source = $value->source;
+            $missing_order_id = NULL;
 
-            $missing_order_id = DB::connection('order')
-                ->select("SELECT ord.amazon_order_identifier, ord.our_seller_identifier, ord.country
+            if ($seller_id == '35') {
+
+                $missing_order_id = DB::connection('order')
+                    ->select("SELECT ord.amazon_order_identifier, ord.our_seller_identifier, ord.country
+                from orders as ord
+                        left join 
+                    orderitemdetails as oids on ord.amazon_order_identifier = oids.amazon_order_identifier 
+                where
+                    oids.amazon_order_identifier IS NULL 
+                        AND ord.our_seller_identifier = '$seller_id' 
+                        AND ord.order_status != 'Pending' 
+                        AND ord.order_status != 'Canceled' 
+                        AND ord.created_at BETWEEN '2022-12-07 00:00:01' AND '2022-12-08 23:59:59'
+                order by ord.id desc
+                limit 1
+
+            ");
+            } else {
+                $missing_order_id = DB::connection('order')
+                    ->select("SELECT ord.amazon_order_identifier, ord.our_seller_identifier, ord.country
                     from orders as ord
                             left join 
                         orderitemdetails as oids on ord.amazon_order_identifier = oids.amazon_order_identifier 
@@ -62,9 +82,10 @@ class OrderItemDetailsImport extends Command
                             AND ord.our_seller_identifier = '$seller_id' 
                             AND ord.order_status != 'Pending' 
                             AND ord.order_status != 'Canceled' 
-                    order by ord.id asc
+                    order by ord.id desc
                     limit 1
                 ");
+            }
 
             foreach ($missing_order_id as $details) {
 
