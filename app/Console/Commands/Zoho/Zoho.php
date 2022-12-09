@@ -40,6 +40,8 @@ class Zoho extends Command
     public function handle()
     {
 
+        // for ($i = 0; $i < 400; $i++) {
+
         $amazon_order_id = $this->option('amazon_order_id');
         $force_update = $this->option('force');
 
@@ -48,6 +50,10 @@ class Zoho extends Command
 
         po($data);
         Log::debug($data);
+
+        # code...
+        //}
+
         return true;
     }
 }
