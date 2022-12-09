@@ -84,7 +84,8 @@
         $(document).ready(function() {
             $.ajax({
                 method: 'get',
-                url: "/invoice/file/management/monitor/",
+                // url: "/invoice/file/management/monitor/",
+                url: "{{ route('invoice.file.management') }}",
                 data: {
                     "module_type": "IMPORT_INVOICE",
                     "_token": "{{ csrf_token() }}",

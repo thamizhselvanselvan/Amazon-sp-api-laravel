@@ -49,7 +49,7 @@
     </div>
 
     <div class="col-1 justify-content-right">
-        <form class="row" action="/export/monthly">
+        <form class="row" action="/inventory/export/monthly">
             <h2>
                 <div style="margin-top: -1rem;">
                     <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export " id="export" />
@@ -293,7 +293,7 @@
             },
             'dataType': 'json',
             success: function(response) {
-                window.location.href = '/export/monthly/weekwareexpo/local/' + ware_id;
+                window.location.href = '/inventory/export/monthly/weekwareexpo/local/' + ware_id;
 
             },
             error: function(response) {
@@ -373,7 +373,7 @@
             },
             'dataType': 'json',
             success: function(response) {
-                window.location.href = '/tag/monthly/download/' + tag_id;
+                window.location.href = '/inventory/tag/monthly/download/' + tag_id;
 
             },
             error: function(response) {

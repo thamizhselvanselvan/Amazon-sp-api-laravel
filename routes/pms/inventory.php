@@ -40,6 +40,10 @@ Route::resource('inventory/tags', 'Inventory\Master\TagController');
 Route::get('inventory/stocks', 'Inventory\StockController@dashboard')->name('inventory.stocks');
 Route::get('inventory/list', 'Inventory\StockController@getlist');
 Route::get('inventory/expo', 'Inventory\StockController@eportinv');
+
+
+Route::get('inventory/stocks/list', 'Inventory\StockController@dashboard')->name('inventory.stocks.listing');
+Route::get('inventory/stocks/list/{ware_id}', 'Inventory\StockController@dashboard')->name('inventory.stocks.ware_id');
 // Route::get('inventory/export', 'Inventory\StockController@eportinv')->name('inventory.export');
 Route::get('inventory/exp/{id}', 'Inventory\StockController@downexp');
 
@@ -50,7 +54,7 @@ Route::resource('inventory/inwardings', 'Inventory\Stock\InventoryInwardingContr
 
 /* Vendor  */
 Route::post('vendor/{id}', 'Inventory\InventoryVendorController@getState');
-Route::post('vendorstate/{id}', 'Inventory\InventoryVendorController@getCity');
+Route::post('inventory/vendorstate/{id}', 'Inventory\InventoryVendorController@getCity');
 Route::resource('inventory/vendors', 'Inventory\InventoryVendorController');
 
 /* Inward Shiment  */
@@ -65,7 +69,7 @@ Route::get('inventory/shipments/{source}/{id}/place', 'Inventory\inwarding\Inven
 Route::post('shipment/place', 'Inventory\inwarding\InventoryShipmentController@placeship');
 Route::get('inventory/shipments/{source}/{id}/lable', 'Inventory\inwarding\InventoryShipmentController@printlable');
 Route::post('shipment/lable/export-pdf', 'Inventory\inwarding\InventoryShipmentController@Exportlable');
-Route::get('Shipment/download/{ship_id}', 'Inventory\inwarding\InventoryShipmentController@DownloadPdf');
+Route::get('inventory/Shipment/download/{ship_id}', 'Inventory\inwarding\InventoryShipmentController@DownloadPdf');
 Route::post('racks/{id}', 'Inventory\inwarding\InventoryShipmentController@getRack');
 Route::post('Shelves/{id}', 'Inventory\inwarding\InventoryShipmentController@getShelve');
 Route::post('Bins/{id}', 'Inventory\inwarding\InventoryShipmentController@getbin');
@@ -74,35 +78,35 @@ Route::resource('inventory/shipments', 'Inventory\inwarding\InventoryShipmentCon
 
 
 /* Outward Shiment  */
-Route::post('shipment/warehouseg/{id}', 'Inventory\Outwarding\InventoryOutwardShipmentController@autofinish');
-Route::get('shipment/autofinish', 'Inventory\Outwarding\InventoryOutwardShipmentController@autofinish');
-Route::post('shipment/storeoutshipment', 'Inventory\Outwarding\InventoryOutwardShipmentController@storeoutshipment');
-Route::get('shipment/select/View', 'Inventory\Outwarding\InventoryOutwardShipmentController@selectview');
-Route::get('shipment/outwarding/view', 'Inventory\Outwarding\InventoryOutwardShipmentController@outwardingview')->name('outwarding.view');
-Route::get('inventory/outwardings/{id}/outship', 'Inventory\Outwarding\InventoryOutwardShipmentController@outstore');
+Route::post('inventory/shipment/warehouseg/{id}', 'Inventory\Outwarding\InventoryOutwardShipmentController@autofinish');
+Route::get('inventory/shipment/autofinish', 'Inventory\Outwarding\InventoryOutwardShipmentController@autofinish');
+Route::post('inventory/shipment/storeoutshipment', 'Inventory\Outwarding\InventoryOutwardShipmentController@storeoutshipment')->name('inventory.out.save');
+Route::get('inventory/shipment/select/View', 'Inventory\Outwarding\InventoryOutwardShipmentController@selectview')->name('inventory.shipment.select.View');
+Route::get('inventory/shipment/outwarding/view', 'Inventory\Outwarding\InventoryOutwardShipmentController@outwardingview')->name('outwarding.view');
+Route::get('inventory/outwardings/{id}/outship', 'Inventory\Outwarding\InventoryOutwardShipmentController@outstore')->name('inv.new.out');
 Route::resource('inventory/outwardings', 'Inventory\Outwarding\InventoryOutwardShipmentController');
 
 /* Report  */
-Route::get('reports/daily', 'Inventory\ReportController@daily');
-Route::get('reports/weekly', 'Inventory\ReportController@index');
-Route::get('export/weekly', 'Inventory\ReportController@exportinvweekly');
-Route::get('export/weekly/display', 'Inventory\ReportController@diaplayinvweekly');
-Route::get('export/weekly/warehousewise', 'Inventory\ReportController@expinvweeklywarewise');
-Route::get('export/weekly/weekwareexpo/{id}', 'Inventory\ReportController@downexpwarewise');
-Route::get('tag/weekly/display', 'Inventory\ReportController@tagdisplay');
-Route::get('export/weekly/tagwise', 'Inventory\ReportController@tagexprt')->name('inventory.tagswise.weekly.export');
-Route::get('export/weekly/tags/{id}', 'Inventory\ReportController@downexptagwise')->name('inventory.weekly.tagrepo.downloag');
-Route::get('export/daily', 'Inventory\ReportController@eportdaily');
-Route::get('reports/monthly', 'Inventory\ReportController@monthlyview')->name('monthly.view');
-Route::get('export/monthly', 'Inventory\ReportController@eportinvmonthly');
-Route::get('inventory/warewise', 'Inventory\ReportController@warerepo');
-Route::get('inventory/tagwise', 'Inventory\ReportController@tagwise');
-Route::get('export/monthly/display','Inventory\ReportController@monthlywaredisp')->name('inventory.monthly.ware.display');
-Route::get('export/monthly/warehousewise','Inventory\ReportController@monthlywareexpo')->name('inventory.monthly.ware.export');
-Route::get('export/monthly/weekwareexpo/local/{id}','Inventory\ReportController@monthlywareexplocal')->name('inventory.monthly.ware.export.download');
-Route::get('tag/monthly/display','Inventory\ReportController@monthtagrepdisp')->name('inventory.monthly.tag.report.display');
-Route::get('tag/monthly/export','Inventory\ReportController@monthtagrepexport')->name('inventory.monthly.tag.report.export');
-Route::get('tag/monthly/download/{id}', 'Inventory\ReportController@monthlytagexplocal')->name('inventory.monthly.tag.report.download');
+Route::get('inventory/reports/daily', 'Inventory\ReportController@daily')->name('inventory.report.daily');
+Route::get('inventory/reports/weekly', 'Inventory\ReportController@index')->name('inentory.report.weekly');
+Route::get('inventory/export/weekly', 'Inventory\ReportController@exportinvweekly')->name('inventory.export.weekly');
+Route::get('inventory/export/weekly/display', 'Inventory\ReportController@diaplayinvweekly')->name('inventory.export.weekly.display');
+Route::get('inventory/export/weekly/warehousewise', 'Inventory\ReportController@expinvweeklywarewise')->name('inventory.export.weekly.warehouse');
+Route::get('inventory/export/weekly/weekwareexpo/{id}', 'Inventory\ReportController@downexpwarewise')->name('export.weekly.weekwareexpo');
+Route::get('inventory/tag/weekly/display', 'Inventory\ReportController@tagdisplay')->name('inventory.tag.weekly.display');
+Route::get('inventory/export/weekly/tagwise', 'Inventory\ReportController@tagexprt')->name('inventory.tagswise.weekly.export');
+Route::get('inventory/export/weekly/tags/{id}', 'Inventory\ReportController@downexptagwise')->name('inventory.weekly.tagrepo.download');
+Route::get('inventory/export/daily', 'Inventory\ReportController@eportdaily')->name('inventory.export.daily');
+Route::get('inventory/reports/monthly', 'Inventory\ReportController@monthlyview')->name('monthly.view');
+Route::get('inventory/export/monthly', 'Inventory\ReportController@eportinvmonthly')->name('inventory.export.monthly');
+Route::get('inventory/warewise', 'Inventory\ReportController@warerepo')->name('inventory.warewise.export');
+Route::get('inventory/tagwise', 'Inventory\ReportController@tagwise')->name('inventory.tagwise.new');
+Route::get('inventory/export/monthly/display','Inventory\ReportController@monthlywaredisp')->name('inventory.monthly.ware.display');
+Route::get('inventory/export/monthly/warehousewise','Inventory\ReportController@monthlywareexpo')->name('inventory.monthly.ware.export');
+Route::get('inventory/export/monthly/weekwareexpo/local/{id}','Inventory\ReportController@monthlywareexplocal')->name('inventory.monthly.ware.export.download');
+Route::get('inventory/tag/monthly/display','Inventory\ReportController@monthtagrepdisp')->name('inventory.monthly.tag.report.display');
+Route::get('inventory/tag/monthly/export','Inventory\ReportController@monthtagrepexport')->name('inventory.monthly.tag.report.export');
+Route::get('inventory/tag/monthly/download/{id}', 'Inventory\ReportController@monthlytagexplocal')->name('inventory.monthly.tag.report.download');
 Route::resource('inventory/reports', 'Inventory\ReportController');
 
 //auth Test For AWS creds

@@ -7,23 +7,23 @@ use App\Models\Inventory\Country;
 
 
 
-Route::get('admin/geo/country','Admin\Geo\GeoManagementController@index_country');
+Route::get('admin/geo/country', 'Admin\Geo\GeoManagementController@index_country')->name('geo.country');
 
-Route::get('admin/geo/country/add','Admin\Geo\GeoManagementController@add_country');
+Route::get('admin/geo/country/add', 'Admin\Geo\GeoManagementController@add_country')->name('geo.country.add');
 
-Route::get('admin/geo/state/add','Admin\Geo\GeoManagementController@add_state');
+Route::get('admin/geo/state/add', 'Admin\Geo\GeoManagementController@add_state')->name('geo.state.add');
 
-Route::get('admin/geo/city/add','Admin\Geo\GeoManagementController@add_city');
+Route::get('admin/geo/city/add', 'Admin\Geo\GeoManagementController@add_city')->name('geo.city.add');
 
-Route::get('admin/geo/state','Admin\Geo\GeoManagementController@index_state');
+Route::get('admin/geo/state', 'Admin\Geo\GeoManagementController@index_state')->name('geo.state.index');
 
-Route::get('admin/geo/city','Admin\Geo\GeoManagementController@index_city');
+Route::get('admin/geo/city', 'Admin\Geo\GeoManagementController@index_city')->name('geo.city.index');
 
-Route::post('store_country', 'Admin\Geo\GeoManagementController@store_country');
+Route::post('store_country', 'Admin\Geo\GeoManagementController@store_country')->name('geo.store.country');
 
-Route::post('store_state', 'Admin\Geo\GeoManagementController@store_state');
+Route::post('store_state', 'Admin\Geo\GeoManagementController@store_state')->name('geo.store.state');
 
-Route::post('store_city', 'Admin\Geo\GeoManagementController@store_city');
+Route::post('store_city', 'Admin\Geo\GeoManagementController@store_city')->name('geo.store.city');
 
 Route::get('show_country', 'Admin\Geo\GeoManagementController@show_country');
 

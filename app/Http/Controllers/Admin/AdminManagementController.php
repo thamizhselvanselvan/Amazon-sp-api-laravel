@@ -335,7 +335,7 @@ class AdminManagementController extends Controller
                     $action = '';
                     $action .= '<div class="pl-2">
                                     <select name="source[]" class="source">
-                                        <option value="NULL">Select Destination</option>';
+                                        <option value="NULL">Select Source</option>';
                     foreach ($source_destination as $key => $value) {
                         if (array_key_exists($id['seller_id'], $source_check) && $source_check[$id['seller_id']] == $key) {
                             $action .= '<option value="' . $key . ':' . $id['id'] . ' "selected>' . $value . '</option>';
@@ -367,8 +367,6 @@ class AdminManagementController extends Controller
 
     public function updateStore(Request $request)
     {
-        // return $request->all();
-
         $order_items = explode('-', $request->order_item);
         $selected_store = explode('-', $request->selected_store);
         $shipntrack = explode('-', $request->shipntrack);
@@ -399,18 +397,18 @@ class AdminManagementController extends Controller
 
             foreach ($courier_partners as $courier_partner) {
                 $courier_partner_tem = explode(':', $courier_partner);
-                $courier_partner_arr[$courier_partner_tem[1]] = $courier_partner_tem[0];
+                $courier_partner_arr[trim($courier_partner_tem[1])] = trim($courier_partner_tem[0]);
             }
         }
 
         if ($request->source && $request->destination) {
             foreach ($source as $src) {
                 $src_tem = explode(':', $src);
-                $source_arr[$src_tem[1]] = $src_tem[0];
+                $source_arr[trim($src_tem[1])] = trim($src_tem[0]);
             }
             foreach ($destination as $des) {
                 $des_tem = explode(':', $des);
-                $des_arr[$des_tem[1]] = $des_tem[0];
+                $des_arr[trim($des_tem[1])] = trim($des_tem[0]);
             }
         }
 
@@ -419,12 +417,12 @@ class AdminManagementController extends Controller
             'get_order_item' => 0,
             'enable_shipntrack' => 0,
             'zoho' => 0,
-            // 'courier_partner' => NULL,
-            // 'source' => NULL,
-            // 'destination' => NULL,
+            'courier_partner' => NULL,
+            'source' => NULL,
+            'destination' => NULL,
         ]);
 
-        foreach ($selected_store as $key => $id) {
+        foreach ($selected_store as $id) {
 
             $aws_cred = Aws_credential::with(['mws_region'])->where('id', $id)->get();
             $aws_cred_array = [
@@ -446,18 +444,18 @@ class AdminManagementController extends Controller
                 $aws_cred_array['zoho'] = 1;
             }
 
-            // if (array_key_exists($id, $courier_partner_arr)) {
+            if (array_key_exists($id, $courier_partner_arr)) {
 
-            //     $aws_cred_array['courier_partner'] = $courier_partner_arr[$id];
-            // }
+                $aws_cred_array['courier_partner'] = $courier_partner_arr[$id];
+            }
 
-            // if (array_key_exists($id, $source_arr)) {
+            if (array_key_exists($id, $source_arr)) {
 
-            //     $aws_cred_array['source'] = $source_arr[$id];
-            // }
-            // if (array_key_exists($id, $des_arr)) {
-            //     $aws_cred_array['destination'] =  $des_arr[$id];
-            // }
+                $aws_cred_array['source'] = $source_arr[$id];
+            }
+            if (array_key_exists($id, $des_arr)) {
+                $aws_cred_array['destination'] =  $des_arr[$id];
+            }
 
             OrderSellerCredentials::upsert([$aws_cred_array], ['seller_id'], [
                 'seller_id',
@@ -466,7 +464,10 @@ class AdminManagementController extends Controller
                 'dump_order',
                 'get_order_item',
                 'enable_shipntrack',
+                'courier_partner',
                 'zoho',
+                'source',
+                'destination'
             ]);
         }
         return response()->json(['success' => 'Store Selected']);

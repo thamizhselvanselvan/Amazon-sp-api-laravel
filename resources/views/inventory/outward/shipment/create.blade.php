@@ -201,7 +201,7 @@
             if (validation) {
                 $.ajax({
                     method: 'POST',
-                    url: '/shipment/storeoutshipment',
+                    url: "{{route('inventory.out.save')}}",
                     data: data,
                     processData: false,
                     contentType: false,
@@ -276,7 +276,7 @@
 
             $.ajax({
                 method: 'POST',
-                url: '/shipment/warehouseg/' + warehouse_id,
+                url: '/inventory/shipment/warehouseg/' + warehouse_id,
                 data: {
                     'asin': val,
                     "_token": "{{ csrf_token() }}",
@@ -382,7 +382,7 @@
         let warehouse_id = $("#warehouse").val();
         $.ajax({
             method: 'GET',
-            url: '/shipment/select/View/',
+            url: "{{route('inventory.shipment.select.View')}}",
             data: {
                 'asin': asin,
                 warehouse_id,

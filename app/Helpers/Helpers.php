@@ -603,7 +603,8 @@ if (!function_exists('buyboxCountrycode')) {
         $source = [
             'AE' => 38,
             'IN' => 39,
-            'US' => 40
+            'US' => 40,
+            'SA' => 45
         ];
 
         return $source;

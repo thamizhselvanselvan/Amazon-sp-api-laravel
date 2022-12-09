@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Admin\ErrorReporting;
 use App\Models\Catalog\Catalog_ae;
 use App\Models\Catalog\Catalog_in;
+use App\Models\Catalog\Catalog_sa;
 use App\Models\Catalog\Catalog_us;
 use App\Models\Catalog\CatalogMissingAsin;
 use App\Services\SP_API\Config\ConfigTrait;
@@ -25,7 +26,6 @@ class NewCatalog
 
     public function Catalog($records, $seller_id = NULL)
     {
-
         $queue_data = [];
         $upsert_asin = [];
         $country_code1 = '';
@@ -52,12 +52,13 @@ class NewCatalog
 
             $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
             $token = $aws_token[0];
+
             $country_code = strtolower($country_code);
             $catalog_table = 'catalognew' . $country_code . 's';
 
             $aws_id = NULL;
 
-            if ($count == 19) {
+            if ($count == 9) {
 
                 $queue_data[] = $this->FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id);
                 $count = 0;
@@ -113,6 +114,8 @@ class NewCatalog
                     Catalog_in::insert($NewCatalog);
                 } else  if (strtolower($country_code1) == "ae") {
                     Catalog_ae::insert($NewCatalog);
+                } else  if (strtolower($country_code1) == "sa") {
+                    Catalog_sa::insert($NewCatalog);
                 }
             }
         }
@@ -120,7 +123,6 @@ class NewCatalog
 
     public function FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id)
     {
-
         $country_code = strtoupper($country_code);
         $config =   $this->config($aws_id, $country_code, $token);
         $apiInstance = new CatalogItemsV20220401Api($config);
@@ -128,7 +130,7 @@ class NewCatalog
         $marketplace_id = [$marketplace_id];
 
         $identifiers_type = 'ASIN';
-        $page_size = 20;
+        $page_size = 10;
         $locale = null;
         $seller_id_temp = null;
         $keywords = null;
@@ -205,11 +207,20 @@ class NewCatalog
                     'source' => $country_code,
                 ];
             }
-            CatalogMissingAsin::upsert($miss_asin, ['asin'], ['asin', 'source']);
+            CatalogMissingAsin::upsert($miss_asin, ['asin_unique'], ['asin', 'source']);
 
             return $queue_data;
         } catch (Exception $e) {
-            Log::alert($e);
+
+            $getMessage = $e->getMessage();
+            $getCode = $e->getCode();
+            $getFile = $e->getFile();
+
+            $slackMessage = "Message: $getMessage
+            Code: $getCode
+            File: $getFile";
+
+            slack_notification('app360', 'Amazon Catalog Import', $slackMessage);
         }
     }
 

@@ -11,7 +11,7 @@
     <div class="row">
         <h1 class="m-0 text-dark">Catalog With Price</h1>
         <div class="col text-right">
-            <a href="{{ route('catalo.with.price.download.template') }}">
+            <a href="{{ route('catalog.with.price.download.template') }}">
                 <x-adminlte-button label="Download Template" theme="primary" class="btn-sm" icon="fas fa-download" />
             </a>
 
@@ -93,6 +93,10 @@
 
                             <label for="Select Source" class="mt-1">Select Prioriy</label>
                             <div class="row ">
+                                <div class="col-1">
+                                    <input type="radio" class="catalog-with-price" name="priority" value="All">
+                                    <label for="All">All</label>
+                                </div>
                                 <div class="col-1">
                                     <input type="radio" class="catalog-with-price" name="priority" value="1">
                                     <label for="P1">P1</label>
@@ -298,6 +302,10 @@
 
                             <label for="Select Source" class="mt-1">Select Prioriy</label>
                             <div class="row ">
+                                <div class="col-1">
+                                    <input type="radio" class="catalog-with-price" name="priority" value="All">
+                                    <label for="All">All</label>
+                                </div>
                                 <div class="col-1">
                                     <input type="radio" class="catalog-with-price" name="priority" value="1">
                                     <label for="P1">P1</label>
@@ -591,7 +599,8 @@
         $('#catalogdownload').click(function() {
 
             $.ajax({
-                url: "/catalog/with-price",
+                // url: "/catalog/with-price",
+                url: "{{ route('catalog.with.price.file.show') }}",
                 method: "GET",
                 data: {
                     "catalog_with_price": "catalog_with_price",
