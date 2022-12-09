@@ -21,9 +21,9 @@ class ImageBrandController extends Controller
 
         $request->validate([
             
-            'url' => 'required|min:1',
             'country' => 'required|in:IN,UAE',
-            'image' =>'required|in:Image-1,Image-3,Image-3',
+            'image' =>'required|in:Image-1,Image-2,Image-3',
+            'url' => 'required',
             'img' => 'required|mimes:jpeg,png,jpg',
 
         ]);
