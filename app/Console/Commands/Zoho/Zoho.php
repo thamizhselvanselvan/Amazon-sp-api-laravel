@@ -4,6 +4,7 @@ namespace App\Console\Commands\Zoho;
 
 use Illuminate\Console\Command;
 use App\Services\Zoho\ZohoOrder;
+use Illuminate\Support\Facades\Log;
 
 class Zoho extends Command
 {
@@ -46,7 +47,7 @@ class Zoho extends Command
         $data = $zoho_order->index($amazon_order_id, $force_update);
 
         po($data);
-
+        Log::debug($data);
         return true;
     }
 }
