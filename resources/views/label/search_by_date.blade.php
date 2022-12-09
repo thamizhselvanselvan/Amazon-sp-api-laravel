@@ -241,7 +241,7 @@
             let select_date = $('#search_date').val();
             let current_page_number = $(".check_options:first").data('current-page');
 
-
+            alert(current_page_number);
             if (select_date == '') {
                 alert('Please Select Date Range.');
                 return false;
