@@ -61,7 +61,7 @@ class labelBulkZipDownload extends Command
         $bag_no =  $headers_data[2];
         $current_page_number =  $headers_data[3];
 
-        log::alert($currenturl);
+        // Log::notice($bag_no);
         // $passid = $this->argument('passid');
         // $bag_no = $this->argument('bag_no');
         // $current_page_number = $this->argument('current_page_number');
