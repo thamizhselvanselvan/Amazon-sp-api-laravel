@@ -2,9 +2,10 @@
 
 namespace App\Console\Commands\Zoho;
 
-use Illuminate\Console\Command;
 use App\Services\Zoho\ZohoApi;
+use Illuminate\Console\Command;
 use App\Services\Zoho\ZohoOrder;
+use App\Models\order\OrderItemDetails;
 use App\Models\order\OrderUpdateDetail;
 
 class ZohoCustomUpdate extends Command
@@ -39,7 +40,7 @@ class ZohoCustomUpdate extends Command
      * @return int
      */
     public function handle()
-    {   
+    {
         print "Remove Exit & Change the command & run the command";
         exit;
 
