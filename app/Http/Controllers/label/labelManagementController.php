@@ -223,7 +223,8 @@ class labelManagementController extends Controller
         $replace = [' - ', '-'];
         $passid = $request->id;
         $bag_no = $request->bag_no;
-        $date = 'dayByday' . str_replace($replace, '-', $request->date);
+        $date = 'dayByday' . str_replace($replace, '+', $request->date);
+        // $date = 'dayByday' .  $request->date;
         $current_page_number = $request->current_page_number;
         $bagNo_date = $bag_no == '' ? $date : $bag_no;
 
@@ -1118,7 +1119,7 @@ class labelManagementController extends Controller
                                     if ($zip_key > 1) {
                                         $count++;
                                         if ($count == 1) {
-                                            $html .= "<div>Date: " . str_replace('dayByday', '', str_replace('&', '-', $file));
+                                            $html .= "<div>Date: " . str_replace('dayByday', '', str_replace('+', '-', $file));
                                         }
                                         $html .=
                                             "<a href='/label/zip/download/$file/zip/$zip_file'>
