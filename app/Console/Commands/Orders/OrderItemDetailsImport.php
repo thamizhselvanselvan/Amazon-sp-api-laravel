@@ -886,8 +886,7 @@ class OrderItemDetailsImport extends Command
                     limit 1
                 ");
             }
-            po($missing_order_id);
-            exit;
+            Log::debug($missing_order_id);
             foreach ($missing_order_id as $details) {
 
                 $country = $details->country;
