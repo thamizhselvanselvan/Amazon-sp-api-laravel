@@ -5,15 +5,18 @@ namespace App\Http\Controllers;
 use Exception;
 use RedBeanPHP\R;
 use App\Models\BOE;
+use GuzzleHttp\Client;
 use League\Csv\Writer;
 use App\Models\Mws_region;
 use AWS\CRT\HTTP\Response;
-use Illuminate\Http\Request;
+use GuzzleHttp\Psr7\Request;
+use Hamcrest\Arrays\IsArray;
 use Smalot\PdfParser\Parser;
 use App\Models\Aws_credential;
 use Illuminate\Support\Carbon;
 use SellingPartnerApi\Endpoint;
 use App\Models\Admin\Ratemaster;
+use App\Services\Zoho\ZohoOrder;
 use App\Models\Catalog\pricingIn;
 use App\Models\Catalog\PricingUs;
 use App\Models\Catalog\AsinSource;
@@ -30,16 +33,14 @@ use Illuminate\Cache\RateLimiting\Limit;
 use App\Services\Catalog\PriceConversion;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
-use App\Services\ShipNTrack\Tracking\AramexTracking;
-use App\Services\ShipNTrack\Tracking\AramexTrackingServices;
-use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetails;
-use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
-use SellingPartnerApi\Api\FeedsV20210630Api as FeedsApi;
-use App\Services\Zoho\ZohoOrder;
-use Hamcrest\Arrays\IsArray;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use SellingPartnerApi\Api\ProductPricingApi;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
+use App\Services\ShipNTrack\Tracking\AramexTracking;
+use SellingPartnerApi\Api\FeedsV20210630Api as FeedsApi;
+use App\Services\ShipNTrack\Tracking\AramexTrackingServices;
+use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetails;
+use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 
 class TestController extends Controller
 {
@@ -496,31 +497,6 @@ class TestController extends Controller
     return (new PriceConversion())->INDToSA($weight, $bb_price);
   }
 
-  public function testOrderAPI()
-  {
-    $seller_id = 35;
-    $country_code = 'AE';
-    $order_id = '404-2296365-0046701';
-    // 406-8657142-1805957
-    $token = NULL;
-    $config = $this->config($seller_id, $country_code, $token);
-    $marketplace_ids = $this->marketplace_id($country_code);
-    $marketplace_ids = [$marketplace_ids];
-
-
-    $apiInstance = new OrdersV0Api($config);
-    $startTime = Carbon::now()->subDays(30)->toISOString();
-    $createdAfter = $startTime;
-    $max_results_per_page = 100;
-
-    $next_token = NULL;
-    $amazon_order_ids = [$order_id];
-    echo '<hr>';
-    echo 'Order Details';
-    $order = $apiInstance->getOrderItems($order_id)->getPayload();
-    po($order);
-  }
-
   public function emiratePostTracking($tracking_id)
   {
     $account_no = 'C175120';
@@ -726,16 +702,6 @@ class TestController extends Controller
     //
   }
 
-  public function TestZoho()
-  {
-    (new ZohoOrder())->getOrderDetails();
-  }
-  public function TestGetZoho($lead)
-  {
-
-    (new ZohoOrder())->zohoOrderDetails($lead);
-  }
-
   public function TestAmazonFeed($feed_id, $seller_id)
   {
     $url  = (new FeedOrderDetailsApp360())->getFeedStatus($feed_id, $seller_id);
@@ -746,8 +712,6 @@ class TestController extends Controller
 
   public function AramexTracking($tracking_id)
   {
-
-
     // "34141705065",
     // "34141703875",
     // "35072819832",
@@ -762,6 +726,256 @@ class TestController extends Controller
 
 
   }
+
+  public function AramexBooking()
+  {
+
+    $client = new Client();
+    $headers = [
+      'Content-Type' => 'application/json'
+    ];
+
+    $test = '';
+    $body = '{
+      "ClientInfo": {
+      "UserName": "test.api@aramex.com",
+      "Password": "Aramex@12345",
+      "Version": "v1.0",
+      "AccountNumber": "60531487",
+      "AccountPin": "654654",
+      "AccountEntity": "BOM",
+      "AccountCountryCode": "IN",
+      "Source": 24
+    },
+
+  "LabelInfo": {
+    "ReportID": 9729,
+    "ReportType": "URL"
+  },
+
+  "Shipments": [
+    {
+      "Reference1": "",
+      "Reference2": "",
+      "Reference3": "",
+      "Shipper": {
+        "Reference1": "",
+        "Reference2": "",
+        "AccountNumber": "60531487",
+        "PartyAddress": {
+          "Line1": "dwayne streey 123, jhsg",
+          "Line2": "",
+          "Line3": "",
+          "City": "Mumbai",
+          "StateOrProvinceCode": "",
+          "PostCode": "400093",
+          "CountryCode": "IN",
+          "Longitude": 0,
+          "Latitude": 0,
+          "BuildingNumber": null,
+          "BuildingName": null,
+          "Floor": null,
+          "Apartment": null,
+          "POBox": null,
+          "Description": null
+        },
+        "Contact": {
+          "Department": "",
+          "PersonName": "Dosan",
+          "Title": "",
+          "CompanyName": "jha pvt",
+          "PhoneNumber1": "25655666",
+          "PhoneNumber1Ext": "",
+          "PhoneNumber2": "",
+          "PhoneNumber2Ext": "",
+          "FaxNumber": "",
+          "CellPhone": "25655666",
+          "EmailAddress": "dosan@gmail.com",
+          "Type": ""
+        }
+      },
+      "Consignee": {
+        "Reference1": "",
+        "Reference2": "",
+        "AccountNumber": "",
+        "PartyAddress": {
+          "Line1": "1, bhat ji ki badi",
+          "Line2": "",
+          "Line3": "",
+          "City": "Dubai",
+          "StateOrProvinceCode": "",
+          "PostCode": "",
+          "CountryCode": "AE",
+          "Longitude": 0,
+          "Latitude": 0,
+          "BuildingNumber": "",
+          "BuildingName": "",
+          "Floor": "",
+          "Apartment": "",
+          "POBox": null,
+          "Description": ""
+        },
+        "Contact": {
+          "Department": "",
+          "PersonName": "Viki",
+          "Title": "",
+          "CompanyName": "hgh pvt ltd",
+          "PhoneNumber1": "8454097313",
+          "PhoneNumber1Ext": "",
+          "PhoneNumber2": "",
+          "PhoneNumber2Ext": "",
+          "FaxNumber": "",
+          "CellPhone": "8454097313",
+          "EmailAddress": "vi@gmail.com",
+          "Type": ""
+        }
+      },
+      "ThirdParty": {
+        "Reference1": "",
+        "Reference2": "",
+        "AccountNumber": "",
+        "PartyAddress": {
+          "Line1": "",
+          "Line2": "",
+          "Line3": "",
+          "City": "",
+          "StateOrProvinceCode": "",
+          "PostCode": "",
+          "CountryCode": "",
+          "Longitude": 0,
+          "Latitude": 0,
+          "BuildingNumber": null,
+          "BuildingName": null,
+          "Floor": null,
+          "Apartment": null,
+          "POBox": null,
+          "Description": null
+        },
+        "Contact": {
+          "Department": "",
+          "PersonName": "",
+          "Title": "",
+          "CompanyName": "",
+          "PhoneNumber1": "",
+          "PhoneNumber1Ext": "",
+          "PhoneNumber2": "",
+          "PhoneNumber2Ext": "",
+          "FaxNumber": "",
+          "CellPhone": "",
+          "EmailAddress": "",
+          "Type": ""
+        }
+      },
+      "ShippingDateTime": "12\/09\/2022",
+      "DueDate": "12\/19\/2022",
+      "Comments": "",
+      "PickupLocation": "",
+      "OperationsInstructions": "",
+      "AccountingInstrcutions": "",
+      "Details": {
+        "Dimensions": null,
+        "ActualWeight": {
+          "Unit": "KG",
+          "Value": 2
+        },
+        "ChargeableWeight": null,
+        "DescriptionOfGoods": "Books",
+        "GoodsOriginCountry": "IN",
+        "NumberOfPieces": 1,
+        "ProductGroup": "EXP",
+        "ProductType": "PPX",
+        "PaymentType": "P",
+        "PaymentOptions": "",
+        "CustomsValueAmount": {
+          "CurrencyCode": "USD",
+          "Value": 200
+        },
+        "CashOnDeliveryAmount": null,
+        "InsuranceAmount": null,
+        "CashAdditionalAmount": null,
+        "CashAdditionalAmountDescription": "",
+        "CollectAmount": null,
+        "Services": "",
+        "Items": [
+          {
+            "PackageType": "Box",
+            "Quantity": "1",
+            "Weight": null,
+            "CustomsValue": {
+              "CurrencyCode": "USD",
+              "Value": 10
+            },
+            "Comments": "Ravishing Gold Facial Kit Long Lasting Shining Appearance For All Skin Type 125g",
+            "GoodsDescription": "new Gold Facial Kit Long  Shining Appearance",
+            "Reference": "",
+            "CommodityCode": "98765432"
+          }
+        ],
+        "AdditionalProperties": [
+          {
+            "CategoryName": "CustomsClearance",
+            "Name": "ShipperTaxIdVATEINNumber",
+            "Value": "123456789101"
+          },
+          {
+            "CategoryName": "CustomsClearance",
+            "Name": "ConsigneeTaxIdVATEINNumber",
+            "Value": "987654321012"
+          },
+          {
+            "CategoryName": "CustomsClearance",
+            "Name": "TaxPaid",
+            "Value": "1"
+          },
+          {
+            "CategoryName": "CustomsClearance",
+            "Name": "InvoiceDate",
+            "Value": "12/09/2022"
+          },
+          {
+            "CategoryName": "CustomsClearance",
+            "Name": "InvoiceNumber",
+            "Value": "Inv123456"
+          },
+          {
+            "CategoryName": "CustomsClearance",
+            "Name": "TaxAmount",
+            "Value": "120.52"
+          },
+          {
+            "CategoryName": "CustomsClearance",
+            "Name": "IOSS",
+            "Value": "1098494352"
+          },
+          {
+            "CategoryName": "CustomsClearance",
+            "Name": "ExporterType",
+            "Value": "UT"
+          }
+        ]
+      },
+      "Attachments": [],
+      "ForeignHAWB": "",
+      "TransportType ": 0,
+      "PickupGUID": "",
+      "Number": null,
+      "ScheduledDelivery": null
+    }
+  ],
+  "Transaction": {
+    "Reference1": "",
+    "Reference2": "",
+    "Reference3": "",
+    "Reference4": "",
+    "Reference5": ""
+  }
+}';
+
+    $request = new Request('POST', 'https://ws.aramex.net/ShippingAPI.V2/Shipping/Service_1_0.svc/json/CreateShipments', $headers, $body);
+    $res = $client->sendAsync($request)->wait();
+    echo $res->getBody();
+  }
+
 
   public function zohoWebhookResponse(Request $request)
   {
