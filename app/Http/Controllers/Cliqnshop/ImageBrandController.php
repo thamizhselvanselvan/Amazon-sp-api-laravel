@@ -102,7 +102,7 @@ class ImageBrandController extends Controller
                 // Storage::put($file_path_img1, $img1);
                 // $img1_url = 'Banner/_image1.jpg';
                 Storage::disk('cliqnshop')->put($file_path_img1, $img1);
-                $img1_url = Storage::disk('cliqnshop')->path('local/Banner/_image3.jpg');
+                $img1_url = Storage::disk('cliqnshop')->path('local/3Banner_section/_image1.jpg');
 
             } else if ($request->image == 'Image-2') {
 
@@ -111,18 +111,16 @@ class ImageBrandController extends Controller
                 // $img2_url = 'Banner/_image2.jpg';
                 // Storage::put($file_path_img2, $img2);
                 Storage::disk('cliqnshop')->put($file_path_img2, $img2);
-                $img2_url = Storage::disk('cliqnshop')->path('local/Banner/_image2.jpg');
+                $img2_url = Storage::disk('cliqnshop')->path('local/3Banner_section/_image2.jpg');
 
             } else if ($request->image == 'Image-3') {
 
                 $img3 = file_get_contents($request->img);
-                Log::alert($img3);
-                Log::alert($file_path_img3);
                 $urli3 = $request->url;
                 // Storage::put($file_path_img3, $img3);
                 // $img3_url = 'Banner/_image3.jpg';
                 Storage::disk('cliqnshop')->put($file_path_img3, $img3);
-                $img3_url = Storage::disk('cliqnshop')->path('local/Banner/_image3.jpg');
+                $img3_url = Storage::disk('cliqnshop')->path('local/3Banner_section/_image3.jpg');
 
             }
 
