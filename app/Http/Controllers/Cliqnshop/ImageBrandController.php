@@ -27,6 +27,7 @@ class ImageBrandController extends Controller
             'img' => 'required|mimes:jpeg,png,jpg',
 
         ]);
+        $now =  carbon::now();
 
         if (app()->environment() === 'local') {
             $file_path_img1 = "Banner/_image1.jpg";
@@ -141,13 +142,11 @@ class ImageBrandController extends Controller
             if ($request->country == 'IN') {
                 DB::connection('cliqnshop')->table('home_page_contents')
                     ->where("section", '=',  '3_banner_section_in')
-                    ->where("country", '=', '1.')
-                    ->update(['content' => $data]);
+                    ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
             } else {
                 DB::connection('cliqnshop')->table('home_page_contents')
                     ->where("section", '=',  '3_banner_section_ae')
-                    ->where("country", '=',  '2.')
-                    ->update(['content' => $data]);
+                    ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
             }
 
             return redirect()->route('cliqnshop.banner')->with('success', 'Image has Updated successfully');
@@ -265,13 +264,11 @@ class ImageBrandController extends Controller
             if ($request->country == 'IN') {
                 DB::connection('cliqnshop')->table('home_page_contents')
                     ->where("section", '=',  '3_banner_section_in')
-                    ->where("country", '=', '1.')
-                    ->update(['content' => $data]);
+                    ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
             } else {
                 DB::connection('cliqnshop')->table('home_page_contents')
                     ->where("section", '=',  '3_banner_section_ae')
-                    ->where("country", '=',  '2.')
-                    ->update(['content' => $data]);
+                    ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
             }
             return redirect()->route('cliqnshop.banner')->with('success', 'Image has Updated successfully');
         }
@@ -378,13 +375,11 @@ class ImageBrandController extends Controller
             if ($request->country == 'IN') {
                 DB::connection('cliqnshop')->table('home_page_contents')
                     ->where("section", '=',  '3_banner_section_in')
-                    ->where("country", '=', '1.')
-                    ->update(['content' => $data]);
+                    ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
             } else {
                 DB::connection('cliqnshop')->table('home_page_contents')
                     ->where("section", '=',  '3_banner_section_ae')
-                    ->where("country", '=',  '2.')
-                    ->update(['content' => $data]);
+                    ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
             }
             return redirect()->route('cliqnshop.banner')->with('success', 'Image has Updated successfully');
         }
@@ -410,15 +405,15 @@ class ImageBrandController extends Controller
 
         $data = (json_encode($asins));
         $country = $request->country;
-      
+        $now =  carbon::now();
         if ($country == 'IN') {
             DB::connection('cliqnshop')->table('home_page_contents')
-            ->where("section", '=',  'top_selling_products_section_in')
-            ->update(['content' => $data, 'country' => '1.']);
+                ->where("section", '=',  'top_selling_products_section_in')
+                ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
         } else {
             DB::connection('cliqnshop')->table('home_page_contents')
-            ->where("section", '=',  'top_selling_products_section_ae')
-            ->update(['content' => $data, 'country' => '2.']);
+                ->where("section", '=',  'top_selling_products_section_ae')
+                ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
         }
 
         return redirect()->route('cliqnshop.brand')->with('success', ' ASIN Inserted Successfuly');
