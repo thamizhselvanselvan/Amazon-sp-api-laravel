@@ -30,9 +30,9 @@ class ImageBrandController extends Controller
         $now =  carbon::now();
 
         if (app()->environment() === 'local') {
-            $file_path_img1 = "Banner/_image1.jpg";
-            $file_path_img2 = "Banner/_image2.jpg";
-            $file_path_img3 = "staging/Banner/_image3.jpg";
+            $file_path_img1 = "3Banner_section/_image1.jpg";
+            $file_path_img2 = "3Banner_section/_image2.jpg";
+            $file_path_img3 = "3Banner_section/_image3.jpg";
 
 
             if (($request->image == 'Select Image No.')) {
@@ -99,12 +99,12 @@ class ImageBrandController extends Controller
                 $img1 = file_get_contents($request->img);
                 $urli1 = $request->url;
                 Storage::put($file_path_img1, $img1);
-                $img1_url = Storage::path('Banner/_image1.jpg');
+                $img1_url = 'Banner/_image1.jpg';
             } else if ($request->image == 'Image-2') {
 
                 $img2 = file_get_contents($request->img);
                 $urli2 = $request->url;
-                $img2_url = Storage::path('Banner/_image2.jpg');
+                $img2_url ='Banner/_image2.jpg';
                 Storage::put($file_path_img2, $img2);
             } else if ($request->image == 'Image-3') {
 
@@ -113,7 +113,7 @@ class ImageBrandController extends Controller
                 Log::alert($file_path_img3);
                 $urli3 = $request->url;
                 Storage::put($file_path_img3, $img3);
-                $img3_url = Storage::path('Banner/_image3.jpg');
+                $img3_url ='Banner/_image3.jpg';
             }
 
             $three_banners = [
