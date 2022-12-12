@@ -84,9 +84,7 @@ Route::get('smsatracking/{awb}', function ($awb_no) {
 
 Route::get('test/api', function () {
 
-
     $curl = curl_init();
-
     curl_setopt_array($curl, array(
         CURLOPT_URL => 'https://uat-api.b2cship.us/PacificAmazonAPI.svc/TrackingAmazon',
         CURLOPT_RETURNTRANSFER => true,
@@ -123,6 +121,7 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
     curl_close($curl);
     echo $response;
 });
+
 Route::get('test/order', 'TestController@testOrderAPI');
 Route::get('search_catalog/{country_code}', 'TestController@searchCatalog');
 
@@ -138,6 +137,7 @@ Route::get('test/amazon-feed/{lead_id}/{seller_id}', 'TestController@TestAmazonF
 Route::get('test/emirate/tracking/{tracking_id}', 'TestController@emiratePostTracking');
 Route::get('test/emirate/booking', 'TestController@emiratePostBooking');
 
+Route::get('test/aramex/booking', 'TestController@AramexBooking');
 Route::get('test/aramex/tracking/{tracking_id}', 'TestController@AramexTracking');
 
 Route::get('test/download-file/{path}', function ($path) {
