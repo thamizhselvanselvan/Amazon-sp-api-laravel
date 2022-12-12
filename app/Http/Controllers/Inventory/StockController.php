@@ -39,6 +39,7 @@ class StockController extends Controller
                     return $query->where('warehouse_id', $request->ware_id);
                 })
                 ->orderBy('created_at', 'DESC')
+                ->where('balance_quantity', '>', '0')
                 ->get();
 
 

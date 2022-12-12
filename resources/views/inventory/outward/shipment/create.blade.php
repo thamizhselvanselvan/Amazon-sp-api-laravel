@@ -145,15 +145,18 @@
     });
 
     $(".create_outshipmtn_btn").on("click", function() {
+        $(this).prop('disabled', true);
 
         let ware_valid = $('#warehouse').val();
         let currency_valid = $('#currency_output').val();
         let validation = true;
         if (ware_valid == 0) {
             alert('warehouse field is required');
+            $('.create_outshipmtn_btn').prop('disabled', false);
             validation = false;
             return false;
         } else if (currency_valid == 0) {
+            $('.create_outshipmtn_btn').prop('disabled', false);
             alert('currency field is required');
             validation = false;
             return false;
@@ -172,11 +175,10 @@
                 let tag = $(td[6]).find('select').val();
                 if (tag == 0) {
                     alert('please select the Tag for all ASIN');
+                    $('.create_outshipmtn_btn').prop('disabled', false);
                     validation = false;
                     return false;
                 }
-
-
 
                 data.append('id[]', $(td[0]).attr("data-id"));
                 data.append('asin[]', td[0].innerText);
