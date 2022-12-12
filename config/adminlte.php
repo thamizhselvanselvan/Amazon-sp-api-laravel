@@ -940,7 +940,7 @@ return [
                         ],
                         [
                             'text' => 'Top Selling Section',
-                            'url' => '#',
+                            'url' => 'cliqnshop/brand',
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-arrow-up',
                         ],

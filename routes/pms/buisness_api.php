@@ -49,4 +49,5 @@ Route::get('cliqnshop/contact/list', 'Cliqnshop\ContactListController@contactlis
 Route::get('cliqnshop/banner', 'Cliqnshop\ImageBrandController@index')->name('cliqnshop.banner');
 Route::post('cliqnshop/banner/image', 'Cliqnshop\ImageBrandController@storeimage')->name('cliqnshop.image.store');
 
-
+Route::get('cliqnshop/brand', 'Cliqnshop\ImageBrandController@topselling')->name('cliqnshop.brand');
+Route::post('cliqnshop/brand/store', 'Cliqnshop\ImageBrandController@storeasin')->name('cliqnshop.brand.store');
