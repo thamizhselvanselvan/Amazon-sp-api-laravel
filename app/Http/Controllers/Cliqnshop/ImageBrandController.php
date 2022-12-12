@@ -27,11 +27,12 @@ class ImageBrandController extends Controller
             'img' => 'required|mimes:jpeg,png,jpg',
 
         ]);
+        $now =  carbon::now();
 
         if (app()->environment() === 'local') {
-            $file_path_img1 = "Banner/_image1.jpg";
-            $file_path_img2 = "Banner/_image2.jpg";
-            $file_path_img3 = "staging/Banner/_image3.jpg";
+            $file_path_img1 = "3Banner_section/_image1.jpg";
+            $file_path_img2 = "3Banner_section/_image2.jpg";
+            $file_path_img3 = "3Banner_section/_image3.jpg";
 
 
             if (($request->image == 'Select Image No.')) {
@@ -98,12 +99,12 @@ class ImageBrandController extends Controller
                 $img1 = file_get_contents($request->img);
                 $urli1 = $request->url;
                 Storage::put($file_path_img1, $img1);
-                $img1_url = Storage::path('Banner/_image1.jpg');
+                $img1_url = 'Banner/_image1.jpg';
             } else if ($request->image == 'Image-2') {
 
                 $img2 = file_get_contents($request->img);
                 $urli2 = $request->url;
-                $img2_url = Storage::path('Banner/_image2.jpg');
+                $img2_url ='Banner/_image2.jpg';
                 Storage::put($file_path_img2, $img2);
             } else if ($request->image == 'Image-3') {
 
@@ -112,7 +113,7 @@ class ImageBrandController extends Controller
                 Log::alert($file_path_img3);
                 $urli3 = $request->url;
                 Storage::put($file_path_img3, $img3);
-                $img3_url = Storage::path('Banner/_image3.jpg');
+                $img3_url ='Banner/_image3.jpg';
             }
 
             $three_banners = [
@@ -141,13 +142,11 @@ class ImageBrandController extends Controller
             if ($request->country == 'IN') {
                 DB::connection('cliqnshop')->table('home_page_contents')
                     ->where("section", '=',  '3_banner_section_in')
-                    ->where("country", '=', '1.')
-                    ->update(['content' => $data]);
+                    ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
             } else {
                 DB::connection('cliqnshop')->table('home_page_contents')
                     ->where("section", '=',  '3_banner_section_ae')
-                    ->where("country", '=',  '2.')
-                    ->update(['content' => $data]);
+                    ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
             }
 
             return redirect()->route('cliqnshop.banner')->with('success', 'Image has Updated successfully');
@@ -265,13 +264,11 @@ class ImageBrandController extends Controller
             if ($request->country == 'IN') {
                 DB::connection('cliqnshop')->table('home_page_contents')
                     ->where("section", '=',  '3_banner_section_in')
-                    ->where("country", '=', '1.')
-                    ->update(['content' => $data]);
+                    ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
             } else {
                 DB::connection('cliqnshop')->table('home_page_contents')
                     ->where("section", '=',  '3_banner_section_ae')
-                    ->where("country", '=',  '2.')
-                    ->update(['content' => $data]);
+                    ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
             }
             return redirect()->route('cliqnshop.banner')->with('success', 'Image has Updated successfully');
         }
@@ -378,13 +375,11 @@ class ImageBrandController extends Controller
             if ($request->country == 'IN') {
                 DB::connection('cliqnshop')->table('home_page_contents')
                     ->where("section", '=',  '3_banner_section_in')
-                    ->where("country", '=', '1.')
-                    ->update(['content' => $data]);
+                    ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
             } else {
                 DB::connection('cliqnshop')->table('home_page_contents')
                     ->where("section", '=',  '3_banner_section_ae')
-                    ->where("country", '=',  '2.')
-                    ->update(['content' => $data]);
+                    ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
             }
             return redirect()->route('cliqnshop.banner')->with('success', 'Image has Updated successfully');
         }
@@ -410,15 +405,15 @@ class ImageBrandController extends Controller
 
         $data = (json_encode($asins));
         $country = $request->country;
-      
+        $now =  carbon::now();
         if ($country == 'IN') {
             DB::connection('cliqnshop')->table('home_page_contents')
-            ->where("section", '=',  'top_selling_products_section_in')
-            ->update(['content' => $data, 'country' => '1.']);
+                ->where("section", '=',  'top_selling_products_section_in')
+                ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
         } else {
             DB::connection('cliqnshop')->table('home_page_contents')
-            ->where("section", '=',  'top_selling_products_section_ae')
-            ->update(['content' => $data, 'country' => '2.']);
+                ->where("section", '=',  'top_selling_products_section_ae')
+                ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
         }
 
         return redirect()->route('cliqnshop.brand')->with('success', ' ASIN Inserted Successfuly');
