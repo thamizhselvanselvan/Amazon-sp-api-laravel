@@ -119,7 +119,6 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-
     /*Hide Fields Untill Selection Is Made:*/
     $("#report_table").hide();
     $("#create").hide();
@@ -267,6 +266,7 @@
 
     //create Shipment//
     $(".create_shipmtn_btn").on("click", function() {
+        $(this).prop('disabled', true);
         let ware_valid = $('#warehouse').val();
         let currency_valid = $('#currency_input').val();
         let validation = true;
@@ -274,8 +274,10 @@
         if (ware_valid == 0) {
             alert('warehouse field is required');
             validation = false;
+            $('.create_shipmtn_btn').prop('disabled', false);
             return false;
         } else if (currency_valid == 0) {
+            $('.create_shipmtn_btn').prop('disabled', false);
             alert('currency field is required');
             validation = false;
             return false;
@@ -291,6 +293,7 @@
 
                 let tag = $(td[3]).find('select').val();
                 if (tag == 0) {
+                    $('.create_shipmtn_btn').prop('disabled', false);
                     alert('please select the Tag for all ASIN');
                     validation = false;
                     return false;
@@ -323,7 +326,7 @@
                     contentType: false,
                     response: 'json',
                     success: function(response) {
-                        console.log(response);
+                        // $('.create_shipmtn_btn').prop('disabled', false);
                         if (response.success) {
                             getBack();
                         }
