@@ -40,19 +40,19 @@ class Zoho extends Command
     public function handle()
     {
 
-        //for ($i = 0; $i < 400; $i++) {
+        for ($i = 0; $i < 400; $i++) {
 
-        $amazon_order_id = $this->option('amazon_order_id');
-        $force_update = $this->option('force');
+            $amazon_order_id = $this->option('amazon_order_id');
+            $force_update = $this->option('force');
 
-        $zoho_order = new ZohoOrder;
-        $data = $zoho_order->index($amazon_order_id, $force_update);
+            $zoho_order = new ZohoOrder;
+            $data = $zoho_order->index($amazon_order_id, $force_update);
 
-        po($data);
-        Log::debug($data);
+            po($data);
+            Log::debug($data);
 
-        # code...
-        //}
+            # code...
+        }
 
         return true;
     }
