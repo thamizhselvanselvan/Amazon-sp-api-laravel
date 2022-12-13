@@ -23,7 +23,7 @@ class OrdersDashboardController extends Controller
                  order_status, our_seller_identifier,COUNT(order_status) as count, os.store_name, os.country_code 
             from orders 
                 join 
-            ord_order_seller_credentials as os 
+            order_seller_credentials as os 
             where
                 os.seller_id = orders.our_seller_identifier 
             AND 
@@ -39,7 +39,7 @@ class OrdersDashboardController extends Controller
             FROM
                  orders as ord
                   JOIN
-                ord_order_seller_credentials as os 
+                order_seller_credentials as os 
             WHERE 
                 os.seller_id = ord.our_seller_identifier 
             GROUP BY 
@@ -102,7 +102,7 @@ class OrdersDashboardController extends Controller
 
         $latest = DB::connection('order')->select("SELECT seller_identifier, max(od.updated_at) as latest, orsc.store_name, orsc.country_code 
         FROM orderitemdetails as od
-        JOIN ord_order_seller_credentials as orsc
+        JOIN order_seller_credentials as orsc
         where od.seller_identifier = orsc.seller_id
         GROUP BY seller_identifier
         ");
