@@ -71,6 +71,12 @@ use Illuminate\Validation\Rules\Exists;
 */
 // use ConfigTrait;
 
+Route::get('slack', function () {
+    $slackMessage = "testing of slack";
+    Log::info($slackMessage);
+});
+
+
 Route::get('t', function () {
     eexit;
     

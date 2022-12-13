@@ -48,3 +48,5 @@ Route::get('admin/file-management', 'FileManagement\FileManagementController@ind
 
 Route::get('admin/job-management', 'Admin\JobsManagementController@index')->name('jobs.management.index');
 Route::get('admin/job-management/exception', 'Admin\JobsManagementController@exceptiondetails')->name('jobs.management.exception');
+
+Route::get('admin/process-management', 'Admin\ProcessManagementController@index')->name('process.management.index');
