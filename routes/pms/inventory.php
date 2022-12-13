@@ -65,9 +65,9 @@ Route::post('shipment/upload/refresh', 'Inventory\inwarding\InventoryShipmentCon
 Route::post('shipment/storeshipment', 'Inventory\inwarding\InventoryShipmentController@storeshipment');
 Route::get('shipment/select/region', 'Inventory\inwarding\InventoryShipmentController@selectregion');
 Route::get('shipment/single/view', 'Inventory\inwarding\InventoryShipmentController@singleview')->name('shipments.single_view');
-Route::get('inventory/shipments/{source}/{id}/place', 'Inventory\inwarding\InventoryShipmentController@store');
+Route::get('inventory/shipments/{id}/place', 'Inventory\inwarding\InventoryShipmentController@store');
 Route::post('shipment/place', 'Inventory\inwarding\InventoryShipmentController@placeship');
-Route::get('inventory/shipments/{source}/{id}/lable', 'Inventory\inwarding\InventoryShipmentController@printlable');
+Route::get('inventory/shipments/{id}/lable', 'Inventory\inwarding\InventoryShipmentController@printlable');
 Route::post('shipment/lable/export-pdf', 'Inventory\inwarding\InventoryShipmentController@Exportlable');
 Route::get('inventory/Shipment/download/{ship_id}', 'Inventory\inwarding\InventoryShipmentController@DownloadPdf');
 Route::post('racks/{id}', 'Inventory\inwarding\InventoryShipmentController@getRack');

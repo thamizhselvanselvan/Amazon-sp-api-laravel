@@ -72,15 +72,14 @@
 
 
         <h4 style="font-family:Times New Roman;"> Warehouse : {{ $warehouse_name }} </h4>
-        <h4 style="font-family:Times New Roman;"> Source : {{ $vendor_name }} </h4>
+        <h4 style="font-family:Times New Roman;"> Source : {{implode('|',$vendor_name); }} </h4>
         <h4 style="font-family:Times New Roman ;">Currency : {{ $currency_array[$currency_id]}} </h4>
         <h6></h6>
     </div>
 
     <table class="table table-bordered yajra-datatable table-striped">
         <thead>
-            <tr>
-
+            <tr class="table-info">
                 <th>ASIN</th>
                 <th>Item Name</th>
                 <th>Tag</th>
