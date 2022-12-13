@@ -585,13 +585,14 @@ class InvoiceManagementController extends Controller
             'invoice_csv' => 'required|mimes:txt,csv'
         ]);
 
+        $import_file_time = date('Y-m-d-H-i-s');
         $file = $request->invoice_csv;
-        $path = 'invoiceCSV/invoice.csv';
+        $file_name = $file->getClientOriginalName();
+        $path = "invoiceCSV/invoice${import_file_time}.csv";
         $file_data = file_get_contents($request->invoice_csv);
         Storage::put($path, $file_data);
 
         $user_id = Auth::user()->id;
-        $file_name = $file->getClientOriginalName();
 
         $file_info = [
             'user_id' => $user_id,
