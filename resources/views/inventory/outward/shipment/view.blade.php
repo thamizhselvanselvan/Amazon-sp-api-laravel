@@ -15,6 +15,10 @@
         padding: 2;
         padding-left: 5px;
     }
+
+    footer {
+        display: none;
+    }
 </style>
 @stop
 

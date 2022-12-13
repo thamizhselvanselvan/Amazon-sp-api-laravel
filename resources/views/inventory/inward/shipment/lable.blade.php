@@ -20,8 +20,13 @@
 
     }
 
+    footer {
+        display: none;
+    }
+
     .bar_inv {
         height: 30px;
+        width: 300px;
     }
 
     .print-label {
@@ -65,7 +70,7 @@
         border: 1px solid lightgrey;
         margin: 2px;
         padding: 0 10px;
-        width: 274px;
+        width: 327px;
 
     }
 </style>
@@ -95,7 +100,7 @@
 
 
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-4">
         @php
         $column = 1;
         $counter = 1;
@@ -104,7 +109,7 @@
         @for ($i = 1; $i <= $quant[$key]; $i++) <div class="item pt-2">
             <span>{{ $val['asin'] }} </span>
             <span><img class="bar_inv" src="data:image/png;base64,{!! $bar_code[$key] !!}" /></span>
-            <span style="font-size: 13px;">{{substr_replace($val['item_name'],'',40)}}</span>
+            <span style="font-size: 13px;">{{substr_replace($val['item_name'],'',45)}}</span>
 
     </div>
 
@@ -113,10 +118,10 @@
     $column = 0;
     @endphp
 </div>
-<div class="col-md-3">
+<div class="col-md-4">
     @endif
 
-    @if ($counter == 64)
+    @if ($counter == 48)
     @php
     $column = 0;
     @endphp
@@ -124,7 +129,7 @@
 </div>
 <div class="print-page-breaker" style="clear: both;"> </div>
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-4">
 
         @php $counter = 0; @endphp
         @endif
@@ -137,9 +142,9 @@
     </div>
 </div>
 
-
-
 @stop
+
+
 
 @section('js')
 <script>
