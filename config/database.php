@@ -135,7 +135,7 @@ return [
             'unix_socket' => env('ORDER_DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => env('ORDER_DB_PREFIX') . '_',
+            'prefix' => env('ORDER_DB_PREFIX'),
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,

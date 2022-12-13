@@ -516,7 +516,7 @@ class labelManagementController extends Controller
             from ${web}.${prefix}labels as web
             JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
             JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
-            JOIN ${order}.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+            JOIN ${order}.order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
 
             -- JOIN ord ON ord.our_seller_identifier = $order.ord_order_seller_credentials.seller_id as
         ");
@@ -566,7 +566,7 @@ class labelManagementController extends Controller
                 FROM 
                     orderitemdetails oids
                         JOIN
-                    ord_order_seller_credentials osc ON osc.seller_id = oids.seller_identifier
+                    order_seller_credentials osc ON osc.seller_id = oids.seller_identifier
                         JOIN
                     orders ord oN ord.amazon_order_identifier = oids.amazon_order_identifier
                 WHERE
@@ -647,7 +647,7 @@ class labelManagementController extends Controller
             from ${web}.${prefix}labels as web
             JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
             JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
-            JOIN ${order}.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+            JOIN ${order}.order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
             WHERE $where_condition
         ");
         return $data;

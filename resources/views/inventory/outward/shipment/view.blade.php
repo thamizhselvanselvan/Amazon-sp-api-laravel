@@ -70,7 +70,7 @@
 
 <table class="table table-bordered yajra-datatable table-striped">
     <thead>
-        <tr>
+        <tr class="table-info">
             <th>ASIN</th>
             <th>Item Name</th>
             <th>Tag</th>

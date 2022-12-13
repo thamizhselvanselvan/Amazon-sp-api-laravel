@@ -118,7 +118,7 @@
 <br>
 <table class="table table-bordered yajra-datatable table-striped" id="outward_table">
     <thead>
-        <tr>
+        <tr class="table-info">
             <th>asin</th>
             <th>Item Name</th>
             <th>Inwarding Price</th>
