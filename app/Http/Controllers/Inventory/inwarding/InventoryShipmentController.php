@@ -325,6 +325,7 @@ class InventoryShipmentController extends Controller
     public function printlable(Request $request,$source, $id)
     {
         $lable = Shipment_Inward_Details::where('ship_id', $id)->where('source_id', $source)->with(['warehouses', 'vendors'])->get();
+        
         $quant = [];
         $total = 0;
         foreach ($lable as $key => $val) {
@@ -338,8 +339,6 @@ class InventoryShipmentController extends Controller
         foreach ($lable as $viewlable) {
             $data = $viewlable;
 
-            //$generator = new BarcodeGeneratorHTML();
-            //$bar_code[]  = $generator->getBarcode($data['asin'], $generator::TYPE_CODE_93);
             $generator = new BarcodeGeneratorPNG();
             $bar_code[]  = base64_encode($generator->getBarcode($data['asin'], $generator::TYPE_CODE_93));
         }
