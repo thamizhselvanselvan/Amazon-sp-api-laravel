@@ -17,7 +17,7 @@
 </style> -->
 
 @stop
- 
+
 @section('content_header')
 <div class="row">
     <div class="col-3">
@@ -59,7 +59,7 @@
             <div style="margin-top:1.3rem;">
                 <table class="table table-bordered yajra-datatable table-striped" id="reduce_table">
                     <thead>
-                        <tr>
+                        <tr class="table-info">
                             <th> Shipment ID</th>
                             <th> ASIN</th>
                             <th>Item Name</th>
@@ -96,13 +96,13 @@
                             </td>
                             <td>
                                 <x-adminlte-select name="shelve_id" id='shelve_id'>
-                                    <option value=""></option> 
+                                    <option value=""></option>
 
                                 </x-adminlte-select>
                             </td>
                             <td>
-                                <x-adminlte-select  input type="text"  name="bin[]" id='bin_id' class="form-control">
-                                    <option value="">  </option>
+                                <x-adminlte-select input type="text" name="bin[]" id='bin_id' class="form-control">
+                                    <option value=""> </option>
 
                                 </x-adminlte-select>
                             </td>
@@ -120,7 +120,7 @@
 @stop
 
 
- @section('js')
+@section('js')
 <script type="text/javascript">
     $.ajaxSetup({
         headers: {
@@ -130,64 +130,60 @@
 
 
     $('#rack_id').change(function() {
-            var id = $(this).val();
+        var id = $(this).val();
 
-            $.ajax({
-                url: '/Shelves/' + id,
-                method: 'POST',
-                data: {
-                    'id': id,
-                    "_token": "{{ csrf_token() }}",
-                },
-                success: function(result) {
-                   
-                    $('#shelve_id').empty();
-                    let shelve_data = '<option>Select Shelve </option>';
-                    $.each(result, function(i, result) {
-                        shelve_data += "<option value='" + result.shelve_id + "'>" + result.shelve_id + "/" + result.name + "</option>";
-                    });
-                    //  alert(shelve_data);
-                    $('#shelve_id').append(shelve_data);
-                },
-                error: function() {
-                    alert('ERROR');
-                }
-            });
+        $.ajax({
+            url: '/Shelves/' + id,
+            method: 'POST',
+            data: {
+                'id': id,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(result) {
+
+                $('#shelve_id').empty();
+                let shelve_data = '<option>Select Shelve </option>';
+                $.each(result, function(i, result) {
+                    shelve_data += "<option value='" + result.shelve_id + "'>" + result.shelve_id + "/" + result.name + "</option>";
+                });
+                //  alert(shelve_data);
+                $('#shelve_id').append(shelve_data);
+            },
+            error: function() {
+                alert('ERROR');
+            }
         });
+    });
 
-        $('#shelve_id').change(function() {
-            var id = $(this).val();
-            // alert(id);
-            $.ajax({
-                url: '/Bins/' + id,
-                method: 'POST',
-                data: {
-                    'id': id,
-                    "_token": "{{ csrf_token() }}",
-                },
-                success: function(result) {
-            
+    $('#shelve_id').change(function() {
+        var id = $(this).val();
+        // alert(id);
+        $.ajax({
+            url: '/Bins/' + id,
+            method: 'POST',
+            data: {
+                'id': id,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(result) {
 
-                    $('#bin_id').empty();
-                    let bin_data = '<option>Select Bin</option>';
-                    $.each(result, function(i, result) {
-                        bin_data += "<option value='" + result.bin_id + "'>" + result.bin_id + "/" + result.name + "</option>";
-                    });
+
+                $('#bin_id').empty();
+                let bin_data = '<option>Select Bin</option>';
+                $.each(result, function(i, result) {
+                    bin_data += "<option value='" + result.bin_id + "'>" + result.bin_id + "/" + result.name + "</option>";
+                });
                 //    alert(bin_data);
-                    $('#bin_id').append(bin_data);
-                },
-                error: function() {
-                    alert('ERROR');
-                }
-            });
+                $('#bin_id').append(bin_data);
+            },
+            error: function() {
+                alert('ERROR');
+            }
         });
-        
-    function pullback() {
-            window.location.href = '/inventory/shipments'
-        }
+    });
 
-    
-   
-   
+    function pullback() {
+        window.location.href = '/inventory/shipments'
+    }
 </script>
-@stop 
+@stop
