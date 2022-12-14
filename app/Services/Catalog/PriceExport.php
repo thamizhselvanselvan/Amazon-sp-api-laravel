@@ -188,7 +188,7 @@ class PriceExport
             $zip->close();
 
             foreach ($this->totalFile as $file_path_value) {
-                unlink($file_path_value);
+                unlink($this->export_file_path . "/" . $file_path_value);
             }
         }
 
