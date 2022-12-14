@@ -15,6 +15,10 @@
         padding: 2;
         padding-left: 5px;
     }
+
+    footer {
+        display: none;
+    }
 </style>
 @stop
 
@@ -66,7 +70,7 @@
 
 <table class="table table-bordered yajra-datatable table-striped">
     <thead>
-        <tr>
+        <tr class="table-info">
             <th>ASIN</th>
             <th>Item Name</th>
             <th>Tag</th>

@@ -37,7 +37,7 @@
     <div class="col-2">
         <div class="form-group">
             <x-adminlte-select name="source" label="Select Source:" id="source1">
-                <option value=" ">Select source</option>
+                <option value="0">Select source</option>
                 @foreach ($source_lists as $source_list)
                 <option value="{{ $source_list->id }}">{{$source_list->name }}</option>
                 @endforeach
@@ -96,7 +96,7 @@
 <br>
 <table class="table table-bordered yajra-datatable table-striped" id="report_table">
     <thead>
-        <tr>
+        <tr class="table-info">
             <th>ASIN</th>
             <th>Item Name</th>
             <th>Source</th>
@@ -268,6 +268,7 @@
     $(".create_shipmtn_btn").on("click", function() {
         $(this).prop('disabled', true);
         let ware_valid = $('#warehouse').val();
+        let source = $('#source1').val();
         let currency_valid = $('#currency_input').val();
         let validation = true;
         // let tag_valid = $('.tags').val();
@@ -279,6 +280,11 @@
         } else if (currency_valid == 0) {
             $('.create_shipmtn_btn').prop('disabled', false);
             alert('currency field is required');
+            validation = false;
+            return false;
+        } else if (source == '0') {
+            $('.create_shipmtn_btn').prop('disabled', false);
+            alert('Source field is required');
             validation = false;
             return false;
         } else {

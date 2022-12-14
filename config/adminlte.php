@@ -340,12 +340,17 @@ return [
                     'can' => ['Admin', 'Account'],
                     'icon' => 'far fa fa-cog',
                 ],
-
                 [
                     'text' => 'File Management',
                     'url' => 'admin/file-management',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Process Management',
+                    'url' => 'admin/process-management',
+                    'can' => ['Admin'],
+                    'icon' => 'fa fa-spinner',
                 ],
                 [
                     'text' => 'Jobs Management',
@@ -914,7 +919,7 @@ return [
                     ],
 
                 ],
-               
+
                 [
                     'text' => 'KYC Details',
                     'url' => 'cliqnshop/kyc',
@@ -933,17 +938,24 @@ return [
                     'icon' => 'fa fa-home',
                     'submenu' => [
                         [
-                            'text' => '3 Banner Section',
-                            'url' => 'cliqnshop/banner',
-                            'can' => ['Admin', 'Cliqnshop'],
-                            'icon' => 'fa fa-image',
-                        ],
-                        [
                             'text' => 'Top Selling Section',
                             'url' => 'cliqnshop/brand',
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-arrow-up',
                         ],
+                        [
+                            'text' => '2 Banner Section',
+                            'url' => 'cliqnshop/two_banners',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-image',
+                        ],
+                        [
+                            'text' => '3 Banner Section',
+                            'url' => 'cliqnshop/banner',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-image',
+                        ],
+                        
                     ],
                 ],
             ],
