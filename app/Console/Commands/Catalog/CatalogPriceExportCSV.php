@@ -12,6 +12,7 @@ use App\Models\Catalog\PricingUs;
 use Illuminate\Support\Facades\Log;
 use App\Services\Catalog\PriceExport;
 use Illuminate\Support\Facades\Storage;
+use App\Services\Catalog\AllPriceExportCsvServices;
 
 class CatalogPriceExportCSV extends Command
 {
@@ -119,8 +120,9 @@ class CatalogPriceExportCSV extends Command
         $this->country_code = strtolower($final_data['destination']);
         $this->priority = $final_data['priority'];
 
-        (new PriceExport())->index($this->country_code, $fm_id, $this->priority);
+        // (new PriceExport())->index($this->country_code, $fm_id, $this->priority);
 
+        (new AllPriceExportCsvServices())->index($this->country_code, $fm_id, $this->priority);
         return true;
     }
 }

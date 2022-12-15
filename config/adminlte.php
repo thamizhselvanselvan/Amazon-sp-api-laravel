@@ -944,6 +944,12 @@ return [
                             'icon' => 'fa fa-arrow-up',
                         ],
                         [
+                            'text' => '1 Banner Section',
+                            'url' => 'cliqnshop/one_banners',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-image',
+                        ],
+                        [
                             'text' => '2 Banner Section',
                             'url' => 'cliqnshop/two_banners',
                             'can' => ['Admin', 'Cliqnshop'],
