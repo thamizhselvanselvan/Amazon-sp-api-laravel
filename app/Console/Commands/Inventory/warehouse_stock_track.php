@@ -4,6 +4,7 @@ namespace App\Console\Commands\Inventory;
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
@@ -45,6 +46,18 @@ class warehouse_stock_track extends Command
      */
     public function handle()
     {
+        //Process Management start
+        $process_manage = [
+            'module'             => 'Inventory',
+            'description'        => 'Keeps track of warehouse report',
+            'command_name'       => 'mosh:warehouse-track',
+            'command_start_time' => now(),
+        ];
+
+        ProcessManagement::create($process_manage);
+        $pm_id = ProcessManagementCreate($process_manage['command_name']);
+        //Process Management end
+
         $ware = Warehouse::get();
         foreach ($ware as $war) {
 
@@ -208,7 +221,11 @@ class warehouse_stock_track extends Command
                 'updated_at' => now()
 
             ]);
-            
         }
+
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
+        Log::notice($pm_id . '=> mosh:warehouse-track');
     }
 }

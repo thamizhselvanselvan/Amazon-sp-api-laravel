@@ -10,6 +10,7 @@ use App\Models\FileManagement;
 use PhpParser\Node\Expr\Eval_;
 use App\Models\Catalog\Catalog;
 use App\Models\Admin\Ratemaster;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -1187,5 +1188,29 @@ if (!function_exists('CSV_w')) {
             $writer = Writer::createFromPath(Storage::path($file_name), "a");
             $writer->insertaLL($record);
         }
+    }
+}
+
+if (!function_exists('ProcessManagementCreate')) {
+    function ProcessManagementCreate(String $command_name)
+    {
+        $pm_record = ProcessManagement::where('command_name', $command_name)
+            ->where('status', '0')
+            ->get('id')
+            ->first()
+            ->toArray();
+
+        $pm_id = $pm_record['id'];
+        return $pm_id;
+    }
+}
+
+if (!function_exists('ProcessManagementUpdate')) {
+    function ProcessManagementUpdate($pm_id, $command_end_time)
+    {
+        $process_management_update = ProcessManagement::find($pm_id);
+        $process_management_update->status = '1';
+        $process_management_update->command_end_time = $command_end_time;
+        $process_management_update->update();
     }
 }
