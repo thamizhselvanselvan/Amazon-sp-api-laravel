@@ -2,11 +2,12 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use Carbon\Carbon;
 use League\Csv\Reader;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class B2cship_kyc_status extends Command
@@ -23,7 +24,7 @@ class B2cship_kyc_status extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'B2cship kyc status';
 
     /**
      * Create a new command instance.
@@ -42,6 +43,18 @@ class B2cship_kyc_status extends Command
      */
     public function handle()
     {
+        //Process Management start
+        $process_manage = [
+            'module'             => 'B2CShip',
+            'description'        => 'B2cship kyc status Dashboard',
+            'command_name'       => 'pms:b2cship-kyc-status',
+            'command_start_time' => now(),
+        ];
+
+        ProcessManagement::create($process_manage);
+        $pm_id = ProcessManagementCreate($process_manage['command_name']);
+        //Process Management end
+
         // Log::alert("b2cship kyc status command executed at ".now());
         $startTime = Carbon::today();
         $endTime = Carbon::now();
@@ -58,11 +71,16 @@ class B2cship_kyc_status extends Command
         $Last30DaysTotalBooking =  $this->kycDetails($startTime, $endTime);
 
         // PUT DATA IN JSON FILE
-        
-        $arr=array($yesterdayTotalBooking, $Last7DaysTotalBooking, $Last30DaysTotalBooking);
-        $result['b2cship_kyc']=json_encode($arr);
+
+        $arr = array($yesterdayTotalBooking, $Last7DaysTotalBooking, $Last30DaysTotalBooking);
+        $result['b2cship_kyc'] = json_encode($arr);
 
         Storage::disk('local')->put('B2cship_kyc/B2cship_kyc.json', $result);
+
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
+        Log::notice($pm_id . '=> pms:b2cship-kyc-status');
     }
 
 
@@ -85,9 +103,9 @@ class B2cship_kyc_status extends Command
             }
             $awb = implode(',', $totalBookingArray);
             $awb = ltrim($awb);
-          
+
             $kycStatus = DB::connection('b2cship')->select("SELECT DISTINCT AwbNo, IsRejected FROM KYCStatus WHERE AwbNo IN ($awb) AND ModifiedDate BETWEEN '$start' AND '$end' ");
-            
+
             $kycApproved = [];
             $kycApprovedOffset = 0;
             $kycRejected = [];
@@ -103,7 +121,7 @@ class B2cship_kyc_status extends Command
                     $kycRejectedOffset++;
                 }
             }
-           
+
             $totalBookingCount = count($totalBookingArray);
             $totalkycApprovedCount = count($kycApproved);
             $totalkycRejectedCount = count($kycRejected);
@@ -125,7 +143,5 @@ class B2cship_kyc_status extends Command
 
             return ($finalArray);
         }
-
-        
     }
 }

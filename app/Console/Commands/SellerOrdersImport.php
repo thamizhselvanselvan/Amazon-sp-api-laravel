@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 use App\Jobs\Orders\GetOrder;
 use App\Models\Aws_credential;
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Services\SP_API\API\Order\Order;
@@ -47,6 +48,17 @@ class SellerOrdersImport extends Command
      */
     public function handle()
     {
+        //Process Management start
+        $process_manage = [
+            'module'             => 'seller_order_import',
+            'description'        => 'Get seller orders from Amazon of selected seller',
+            'command_name'       => 'pms:sellers-orders-import',
+            'command_start_time' => now(),
+        ];
+
+        ProcessManagement::create($process_manage);
+        $pm_id = ProcessManagementCreate($process_manage['command_name']);
+        //Process Management end
 
         $startTime = startTime();
 
@@ -66,5 +78,9 @@ class SellerOrdersImport extends Command
         $stats = endTime($startTime);
 
         Log::info("pms:sellers-orders-import took $stats seconds");
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
+        Log::notice($pm_id . '=> pms:sellers-orders-import');
     }
 }
