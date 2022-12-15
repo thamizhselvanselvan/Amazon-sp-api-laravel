@@ -48,11 +48,11 @@ class Zoho extends Command
         $zoho_order = new ZohoOrder;
         $data = $zoho_order->index($amazon_order_id, $force_update);
 
-        po($data);
+        // po($data);
         Log::debug($data);
 
         # code...
-        //}
+        // }
 
         return true;
     }

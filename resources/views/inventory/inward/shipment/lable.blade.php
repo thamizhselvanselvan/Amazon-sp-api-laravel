@@ -25,7 +25,7 @@
     }
 
     .bar_inv {
-        height: 30px;
+        height: 55px;
         width: 300px;
     }
 
@@ -67,11 +67,12 @@
     }
 
     .item {
+
         border: 1px solid lightgrey;
         margin: 2px;
-        padding: 0 10px;
+        padding: 10PX 10px;
         width: 327px;
-
+        margin-bottom: 70px
     }
 </style>
 
@@ -109,11 +110,11 @@
         @for ($i = 1; $i <= $quant[$key]; $i++) <div class="item pt-2">
             <span>{{ $val['asin'] }} </span>
             <span><img class="bar_inv" src="data:image/png;base64,{!! $bar_code[$key] !!}" /></span>
-            <span style="font-size: 13px;">{{substr_replace($val['item_name'],'',45)}}</span>
+            <span style="font-size: 14px;">{{substr_replace($val['item_name'],'',45)}}</span>
 
     </div>
 
-    @if ($column == 16 && $counter != 64)
+    @if ($column == 8 && $counter != 24)
     @php
     $column = 0;
     @endphp
@@ -121,7 +122,7 @@
 <div class="col-md-4">
     @endif
 
-    @if ($counter == 48)
+    @if ($counter == 24)
     @php
     $column = 0;
     @endphp
