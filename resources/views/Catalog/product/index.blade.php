@@ -13,8 +13,8 @@
         <div class="col d-flex justify-content-end">
             <h2 class=" ml-2">
                 <a href="{{ route('catalog.amazon.product') }}">
-                    <!-- <x-adminlte-button label="Fetch Catalog From Amazon" class="btn-sm" theme="primary"
-                                                icon="fas fa-file-export" id="exportUniversalTextiles" /> -->
+                    <x-adminlte-button label="Fetch Catalog From Amazon" class="btn-sm" theme="primary"
+                        icon="fas fa-file-export" id="exportUniversalTextiles" />
                 </a>
             </h2>
 
@@ -37,21 +37,21 @@
             </h2>
 
             <!-- <div class="modal" id="downloacliqdModal">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h4 class="modal-title">Download Cliqnshop Catalog </h4>
-                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                            </div>
-                                            <div class="modal-body catalogcliqnshop">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title">Download Cliqnshop Catalog </h4>
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                </div>
+                                                <div class="modal-body catalogcliqnshop">
 
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div> -->
+                                    </div> -->
 
             <div class="modal fade" id="catalogExport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">

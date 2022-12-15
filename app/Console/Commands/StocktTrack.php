@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Carbon\Carbon;
 use AWS\CRT\HTTP\Request;
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
 use Illuminate\Support\Facades\Log;
@@ -25,7 +26,7 @@ class StocktTrack extends Command
      *
      * @var string
      */
-    protected $description = 'Keeps Track Of Iventory closing Stocks ';
+    protected $description = 'Keeps Track Of Inventory closing Stocks ';
 
     /**
      * Create a new command instance.
@@ -44,6 +45,17 @@ class StocktTrack extends Command
      */
     public function handle()
     {
+        //Process Management start
+        $process_manage = [
+            'module'             => 'Inventory',
+            'description'        => 'Keeps track of inventory closing stocks',
+            'command_name'       => 'pms:inventory-stock-tracking',
+            'command_start_time' => now(),
+        ];
+
+        ProcessManagement::create($process_manage);
+        $pm_id = ProcessManagementCreate($process_manage['command_name']);
+        //Process Management end
 
         /* Date */
         $date = Carbon::now()->format('d M Y');
@@ -183,5 +195,10 @@ class StocktTrack extends Command
             'created_at' => now(),
             'updated_at' => now()
         ]);
+
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
+        Log::notice($pm_id . '=> pms:inventory-stock-tracking');
     }
 }

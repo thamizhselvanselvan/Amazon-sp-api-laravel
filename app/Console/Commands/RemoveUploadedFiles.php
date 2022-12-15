@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Carbon\Carbon;
 use App\Models\BOE;
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\BOE\RemoveUploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -42,6 +43,19 @@ class RemoveUploadedFiles extends Command
      */
     public function handle()
     {
+        //Process Management start
+        $process_manage = [
+            'module'             => 'Remove_File',
+            'description'        => 'Remove uploaded file from server storage',
+            'command_name'       => 'pms:remove-uploaded-boe',
+            'command_start_time' => now(),
+        ];
+
+        ProcessManagement::create($process_manage);
+        $pm_id = ProcessManagementCreate($process_manage['command_name']);
+        Log::alert($pm_id);
+        //Process Management end
+
         // Log::alert("remove uploaded file from server command executed at ".now());
         $count = BOE::where('do', 0)->count();
         $chunk = 10;
@@ -83,5 +97,9 @@ class RemoveUploadedFiles extends Command
             }
         }
         // Remove all 2 days ago file form Asin destination, Asin source and invoiceCSV folder end.
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
+        Log::notice($pm_id . '=> pms:remove-uploaded-boe');
     }
 }

@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\BOE;
 use App\Jobs\BOE\UploadBoeToDO;
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Contracts\Cache\Store;
@@ -42,33 +43,45 @@ class BoeUploadServerToDo extends Command
      * @return int
      */
     public function handle()
-    {   
-        $path ='';
+    {
+        //Process Management start
+        $process_manage = [
+            'module'             => 'BOE',
+            'description'        => 'Upload BOE file from server to Do',
+            'command_name'       => 'pms:boe-upload-Do',
+            'command_start_time' => now(),
+        ];
+
+        ProcessManagement::create($process_manage);
+        $pm_id = ProcessManagementCreate($process_manage['command_name']);
+        //Process Management end
+
+        $path = '';
         if (App::environment(['Production', 'production'])) {
 
             $path = 'prod/';
-        }
-        elseif(App::environment(['Staging', 'staging']))
-        {
-            $path ='staging/';
-        }
-        else{
+        } elseif (App::environment(['Staging', 'staging'])) {
+            $path = 'staging/';
+        } else {
 
-            $path ='local/';
+            $path = 'local/';
         }
 
         $chunk = 100;
-        BOE::where('do', 0)->chunk($chunk, function ($files_path) use($path) {
+        BOE::where('do', 0)->chunk($chunk, function ($files_path) use ($path) {
 
             foreach ($files_path as $fp) {
                 $file = storage_path('app/' . $fp->download_file_path);
-                Storage::disk('do')->put($path.$fp->download_file_path, file_get_contents($file));
+                Storage::disk('do')->put($path . $fp->download_file_path, file_get_contents($file));
                 BOE::where('id', $fp->id)->update(['do' => 1]);
             }
         });
 
         // Log::alert('Boe Uploaded to Do');
-    //    UploadBoeToDO::dispatch();
+        //    UploadBoeToDO::dispatch();
 
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
+        Log::notice($pm_id . '=> pms:boe-upload-Do');
     }
 }

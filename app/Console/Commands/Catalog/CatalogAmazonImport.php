@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Catalog;
 
 use App\Models\Mws_region;
+use App\Models\ProcessManagement;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -41,6 +42,18 @@ class CatalogAmazonImport extends Command
      */
     public function handle()
     {
+        //Process Management start
+        $process_manage = [
+            'module'             => 'Catalog',
+            'description'        => 'Amazon catalog import via queue',
+            'command_name'       => 'mosh:catalog-amazon-import',
+            'command_start_time' => now(),
+        ];
+
+        ProcessManagement::create($process_manage);
+        $pm_id = ProcessManagementCreate($process_manage['command_name']);
+        //Process Management end
+
         // $sources = ['ae', 'sa'];
         // $limit_array = ['sa' => 200, 'ae' => 200];
         $sources = ['in', 'us'];
@@ -159,5 +172,9 @@ class CatalogAmazonImport extends Command
                 // ");
             }
         }
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
+        Log::notice($pm_id . '=> mosh:catalog-amazon-import');
     }
 }

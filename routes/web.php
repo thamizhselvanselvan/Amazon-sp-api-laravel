@@ -47,6 +47,7 @@ use Spatie\Permission\Models\Permission;
 use phpDocumentor\Reflection\Types\Null_;
 use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
+use App\Models\ProcessManagement;
 use Symfony\Component\Validator\Constraints\File;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
 use App\Services\AWS_Business_API\Auth\AWS_Business;
@@ -72,14 +73,17 @@ use Illuminate\Validation\Rules\Exists;
 // use ConfigTrait;
 
 Route::get('slack', function () {
+    $checking = ProcessManagement::get();
+    po($checking);
+    exit;
     $slackMessage = "testing of slack";
     Log::info($slackMessage);
 });
 
 
 Route::get('t', function () {
-    eexit;
-    
+    exit;
+
 
 
 
