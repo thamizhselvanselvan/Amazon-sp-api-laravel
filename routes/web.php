@@ -83,7 +83,6 @@ Route::get('slack', function () {
 
 Route::get('t', function () {
 
-    exit;
 
     exit;
     $test = [
@@ -286,17 +285,121 @@ Route::get('rename', function () {
     return $currenturl;
 });
 
+Route::get('test-queue-redis', function () {
+
+    $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails
+where status = 0 ");
+    $count = 0;
+    $batch = 0;
+    $asinList = [];
+    foreach ($order_item_details as $key => $value) {
+        $asin = $value->asin;
+        // $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
+        // $check = [];
+        // if (!array_key_exists('0', $check)) {
+        $count++;
+        // $batch++;
+        $data[] = $value;
+        // }
+        //$type = 1 for seller, 2 for Order, 3 for inventory
+        if ($count == 10) {
+
+            if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+                Seller_catalog_import_job::dispatch(
+                    [
+                        'seller_id' => NULL,
+                        'datas' => $data,
+                        'type' => 1
+                    ]
+                )->onConnection('redis')->onQueue('default');
+            } else {
+
+                Seller_catalog_import_job::dispatch(
+                    [
+                        'seller_id' => NULL,
+                        'datas' => $data,
+                        'type' => 1
+
+
+                    ]
+                );
+            }
+            // $count = 0;
+            // $type = 2;
+            // $catalog = new Catalog();
+            // $catalog->index($data, NULL, $type, $batch);
+            // Log::alert('10 asin imported');
+            // $data = [];
+        }
+    }
+
+    if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+    } else {
+    }
+});
+
+Route::get('order/item', function () {
+
+    $order_id = '403-6898279-3539565';
+});
+
+Route::get('order/catalog', function () {
+
+    $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails
+where status = 0 ");
+    $count = 0;
+    $batch = 0;
+    $asinList = [];
+    foreach ($order_item_details as $key => $value) {
+        $asin = $value->asin;
+        $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
+        // $check = [];
+        if (!array_key_exists('0', $check)) {
+            // $asinList[$count]->asin = $asin;
+            $count++;
+            $batch++;
+            $data[] = $value;
+        }
+
+        //$type = 1 for seller, 2 for Order, 3 for inventory
+        if ($count == 10) {
+            $count = 0;
+            $type = 2;
+            $catalog = new Catalog();
+            $catalog->index($data, NULL, $type, $batch);
+            Log::alert('10 asin imported');
+            $data = [];
+            // exit;
+        }
+    }
+});
+
+// use ConfigTrait;
+
+Route::get('test/url', function () {
+
+    $feed_id = '129877019312';
+    $seller_id = '6';
+
+    $url  = (new FeedOrderDetailsApp360())->getFeedStatus($feed_id, $seller_id);
+    $data = file_get_contents($url);
+
+    $data_json = json_decode(json_encode(simplexml_load_string($data)), true);
+
+    $report = $data_json['Message']['ProcessingReport'];
+    $success_message = $report['ProcessingSummary']['MessagesSuccessful'];
+
+    if ($success_message == 1) {
+
+        echo $success_message;
+    } else {
+        po($report['Result']['ResultDescription']);
+    }
+});
+
 Route::get('/', 'Auth\LoginController@showLoginForm')->name('/');
 Auth::routes();
-
-Route::match(['get'], 'login', 'Admin\HomeController@dashboard')->name('login');
-
-Route::match(['get', 'post'], '/logout', function () {
-
-    Auth::logout();
-    return redirect('/login');
-})->name('logout');
-
+Route::get('login', 'Admin\HomeController@dashboard')->name('login');
 Route::get('home', 'Admin\HomeController@dashboard')->name('home');
 Route::resource('/tests', 'TestController');
 Route::get('test/seller', 'TestController@SellerTest');
