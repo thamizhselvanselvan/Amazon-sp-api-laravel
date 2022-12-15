@@ -73,8 +73,15 @@ use Illuminate\Validation\Rules\Exists;
 // use ConfigTrait;
 
 Route::get('slack', function () {
-    $checking = ProcessManagement::get();
-    po($checking);
+    $process_manage = [
+        'module'             => 'Catalog',
+        'description'        => 'Amazon catalog import via queue',
+        'command_name'       => 'mosh:catalog-amazon-import',
+        'command_start_time' => now(),
+    ];
+    $id = ProcessManagement::create($process_manage)->toArray();
+    po($id);
+
     exit;
     $slackMessage = "testing of slack";
     Log::info($slackMessage);
