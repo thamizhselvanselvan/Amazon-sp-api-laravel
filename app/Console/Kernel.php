@@ -106,10 +106,10 @@ class Kernel extends ConsoleKernel
             // $schedule->command('aws:nitshop:order_details')->hourly(); //PM
 
             /*Order CI CD*/
-            $schedule->command('aws:courier-booking')->everyMinute();
-            $schedule->command('mosh:feed-app360-tracking-details')->everyMinute();
-            $schedule->command('mosh:feed-status')->everyTwoMinutes();
-            $schedule->command('mosh:zoho:save')->everyMinute();
+            // $schedule->command('aws:courier-booking')->everyMinute();
+            // $schedule->command('mosh:feed-app360-tracking-details')->everyMinute();
+            // $schedule->command('mosh:feed-status')->everyTwoMinutes();
+            // $schedule->command('mosh:zoho:save')->everyMinute();
         }
 
         if (app()->environment() === 'local') {
