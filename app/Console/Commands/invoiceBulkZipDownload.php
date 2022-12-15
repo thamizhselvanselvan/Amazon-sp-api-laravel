@@ -45,7 +45,6 @@ class invoiceBulkZipDownload extends Command
      */
     public function handle()
     {
-
         $column_data = $this->option('columns');
         $final_data = [];
         $explode_array = explode(',', $column_data);
@@ -66,21 +65,11 @@ class invoiceBulkZipDownload extends Command
 
         $saveAsPdf = [];
         log::alert($currenturl);
-        // $passid = $this->argument('passid');
-        // $currenturl = $this->argument('currenturl');
-        // $mode = $this->argument('mode');
-        // $invoice_date = $this->argument('invoice_date');
-        // $current_page_no = $this->argument('current_page_no');
 
-        // $path = 'invoice/zip/' . 'invoice.zip';
-        // Storage::delete($path);
-        // Log::warning("Invoice zip download excuted handle!");
 
         $excelid = explode('-', $passid);
 
         foreach ($excelid as $getId) {
-
-            // $id = DB::connection('web')->select("SELECT * from invoices where id ='$getId' ");
             $id = Invoice::where("id", "${getId}")->get();
 
             foreach ($id as $key => $value) {
@@ -95,7 +84,7 @@ class invoiceBulkZipDownload extends Command
 
                 $exportToPdf = storage::path($path);
                 Browsershot::url($url)
-                    // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+                    // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
                     ->showBackground()
                     ->savePdf($exportToPdf);
 
