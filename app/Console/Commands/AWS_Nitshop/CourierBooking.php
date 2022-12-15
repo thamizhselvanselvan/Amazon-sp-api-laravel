@@ -43,7 +43,7 @@ class CourierBooking extends Command
     {
         //Process Management start
         $process_manage = [
-            'module'             => 'AWS',
+            'module'             => 'Courier Booking',
             'description'        => 'Courier Booking',
             'command_name'       => 'aws:courier-booking',
             'command_start_time' => now(),
