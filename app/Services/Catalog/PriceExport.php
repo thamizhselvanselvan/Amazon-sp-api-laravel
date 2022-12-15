@@ -89,7 +89,6 @@ class PriceExport
 
             $asin_destination_lists = $destination_model->select('id', 'asin', 'priority')
                 ->where('priority', $priority)
-                ->where('id', '>=', $start_id)
                 ->limit($this->chunk_limit)
                 ->get();
 

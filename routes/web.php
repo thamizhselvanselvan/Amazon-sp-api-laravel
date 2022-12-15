@@ -78,8 +78,16 @@ Route::get('slack', function () {
 
 
 Route::get('t', function () {
-    eexit;
-    
+
+
+    $destination_model  = table_model_create(country_code: 'us', model: 'Asin_destination', table_name: 'asin_destination_');
+    $destination_ids = $destination_model->select('id', 'asin')->where('priority', 2)->orderBy('id', 'asc')->limit(4000)->get()->toArray();
+
+    echo "<pre>";
+    print_r($destination_ids);
+
+    exit;
+
 
 
 
