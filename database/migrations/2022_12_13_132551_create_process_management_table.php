@@ -17,7 +17,6 @@ class CreateProcessManagementTable extends Migration
             $table->id();
             $table->string('module', 255)->nullable();
             $table->string('command_name', 500)->nullable();
-            $table->string('description', 1000)->nullable();
             $table->string('command_start_time', 255)->nullable()->default('0000-00-00 00:00:00');
             $table->string('command_end_time', 255)->nullable()->default('0000-00-00 00:00:00');
             $table->string('status', 10)->nullable()->default('0');
