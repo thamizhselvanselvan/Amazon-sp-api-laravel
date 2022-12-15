@@ -866,8 +866,8 @@ class TestController extends Controller
           "Type": ""
         }
       },
-      "ShippingDateTime": "12\/09\/2022",
-      "DueDate": "12\/19\/2022",
+      "ShippingDateTime": "1671021297590.0",
+      "DueDate": "1671021297590.0",
       "Comments": "",
       "PickupLocation": "",
       "OperationsInstructions": "",

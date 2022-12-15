@@ -14,7 +14,6 @@ use App\Models\Mws_region;
 use Illuminate\Http\Request;
 use App\Jobs\Orders\GetOrder;
 use App\Models\FileManagement;
-use GuzzleHttp\Promise\Create;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
@@ -29,19 +28,21 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
-use Picqer\Barcode\BarcodeGeneratorHTML;
 use Illuminate\Support\Facades\Validator;
 use App\Models\order\OrderSellerCredentials;
-use App\Services\SP_API\API\Order\missingOrder;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
 
 class labelManagementController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->except('showTemplate');
+    }
+
     private $order_details;
     public function SearchLabel(Request $request)
     {
         $data = $this->labelListing(2);
-        // dd($data);
+
         if ($request->ajax()) {
             $currentPageNumber = $request->start / $request->length + 1;
 
@@ -133,6 +134,7 @@ class labelManagementController extends Controller
             return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder', 'bag_no'));
         }
     }
+
     public function ExportLabel(Request $request)
     {
         //Single Download
@@ -148,7 +150,7 @@ class labelManagementController extends Controller
         }
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
@@ -175,7 +177,7 @@ class labelManagementController extends Controller
         $awb_no = $result[0]->awb_no;
 
         $file_path = "label/$bag_no/label$awb_no.pdf";
-        // log::alert($file_path);
+
         if (!Storage::exists($file_path)) {
             Storage::put($file_path, '');
         }
@@ -184,7 +186,7 @@ class labelManagementController extends Controller
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
 
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
@@ -224,21 +226,17 @@ class labelManagementController extends Controller
         $passid = $request->id;
         $bag_no = $request->bag_no;
         $date = 'dayByday' . str_replace($replace, '+', $request->date);
-        // $date = 'dayByday' .  $request->date;
+
         $current_page_number = $request->current_page_number;
         $bagNo_date = $bag_no == '' ? $date : $bag_no;
 
         $currenturl =  URL::current();
-        // Log::alert($current_page_number);
-        // if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-        //     $base_path = base_path();
-        //     $command = "cd $base_path && php artisan pms:label-bulk-zip-download $passid $currenturl $bag_no $current_page_number > /dev/null &";
-        //     exec($command);
-        // } else {
-        //     Artisan::call('pms:label-bulk-zip-download' . ' ' . $passid . ' ' . $currenturl . ' ' . $bag_no . ' ' . $current_page_number);
-        // }
+        $user_id = '';
 
-        $user_id = Auth::user()->id;
+        if (Auth::user()) {
+            $user_id = Auth::user()->id;
+        }
+
         $header = ["data" => "${passid}_${currenturl}_${bagNo_date}_${current_page_number}"];
         $file_info = [
             "user_id"       => $user_id,
