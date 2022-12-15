@@ -50,8 +50,9 @@ class CatalogAmazonImport extends Command
             'command_start_time' => now(),
         ];
 
-        ProcessManagement::create($process_manage);
-        $pm_id = ProcessManagementCreate($process_manage['command_name']);
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+
         //Process Management end
 
         // $sources = ['ae', 'sa'];
@@ -131,7 +132,7 @@ class CatalogAmazonImport extends Command
                     $aws_id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
 
                     if ($count == 10) {
-                        //log::alert($asin_source);
+
                         jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
                         // $catalog_class->Catalog($asin_source);
                         $auth_count++;
