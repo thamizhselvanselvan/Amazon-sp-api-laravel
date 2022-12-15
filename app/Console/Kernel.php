@@ -94,8 +94,8 @@ class Kernel extends ConsoleKernel
             $schedule->command('mosh:catalog-dashboard-file')->everyThirtyMinutes(); //PM
 
             /*Orders*/
-            $schedule->command('pms:sellers-orders-import')->everyTenMinutes(); //PM
-            $schedule->command('mosh:order-item-details-import')->everyMinute(); //PM
+            // $schedule->command('pms:sellers-orders-import')->everyTenMinutes(); //PM
+            // $schedule->command('mosh:order-item-details-import')->everyMinute(); //PM
 
             /*Misc*/
             $schedule->command('backup:run')->twiceDaily();
