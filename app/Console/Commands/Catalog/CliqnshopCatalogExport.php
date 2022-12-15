@@ -48,8 +48,8 @@ class CliqnshopCatalogExport extends Command
     {
 
 
-        $total_csv = 100;
-        $chunk = 100;
+        $total_csv = 10000;
+        $chunk = 10000;
         $offset = 0;
 
         $csv_number = $total_csv / $chunk;

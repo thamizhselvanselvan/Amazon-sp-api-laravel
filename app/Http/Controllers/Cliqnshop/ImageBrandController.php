@@ -439,7 +439,7 @@ class ImageBrandController extends Controller
         if (app()->environment() === 'local') {
             $file_path_img1 =  "local/banner/2banner/_image1.jpg";;
             $file_path_img2 =  "local/banner/2banner/_image2.jpg";;
-          
+
 
 
 
@@ -615,7 +615,7 @@ class ImageBrandController extends Controller
             }
             return redirect()->route('cliqnshop.banner')->with('success', 'Image has Updated successfully');
         }
-        
+
         if (app()->environment() === 'production') {
 
             $file_path_img1 =  "production/banner/2banner/_image1.jpg";
@@ -701,6 +701,214 @@ class ImageBrandController extends Controller
                     ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
             }
             return redirect()->route('cliqnshop.banner')->with('success', 'Image has Updated successfully');
+        }
+    }
+
+    public function onebanner()
+    {
+        return view('Cliqnshop.imagebrand.onebanner');
+    }
+    public function one_bannerstore(Request $request)
+    {
+        $now = Carbon::now();
+        $request->validate([
+
+            'country' => 'required|in:IN,UAE',
+            'primary_text' => 'required',
+            'secondary_text' => 'required',
+            'url' => 'required',
+            'selected_image' => 'required|mimes:jpeg,png,jpg',
+
+        ]);
+        if (app()->environment() === 'local') {
+            $file_path_img1 =  "local/banner/1banner_image1.jpg";
+
+            $old_data = '';
+            if ($request->country == 'IN') {
+                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
+                    ->select('content')
+                    ->where("section", '=',  '1_banner_section_in')
+                    ->get();
+            } else {
+                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
+                    ->select('content')
+                    ->where("section", '=',  '1_banner_section_ae')
+                    ->get();
+            }
+
+            $val1 = (json_decode($old_data));
+            $val2 = (json_decode($val1['0']->content));
+
+            $imageurl = '';
+            $image = '';
+            $primary_text = '';
+            $secondary_text = '';
+            if (isset($val2->banner1)) {
+
+
+                $imageurl = $val2->banner1->url;
+                $image = $val2->banner1->image;
+                $primary_text = $val2->banner1->primary_text;
+                $secondary_text = $val2->banner1->secondary_text;
+            }
+            if ($request->selected_image) {
+
+                $image = file_get_contents($request->selected_image);
+                $imageurl = $request->url;
+                $primary_text = $request->primary_text;
+                $secondary_text = $request->secondary_text;
+                Storage::disk('cliqnshop')->put($file_path_img1, $image);
+                $url_do = Storage::disk('cliqnshop')->path('local/banner/1banner_image1.jpg');
+            }
+
+            $one_banners = [
+                'banner1' =>
+                [
+                    'url' => $imageurl,
+                    'image' =>   $url_do,
+                    'primary_text' => $primary_text,
+                    'secondary_text' => $secondary_text,
+                ],
+            ];
+            $data =   ((json_encode($one_banners)));
+
+            if ($request->country == 'IN') {
+                DB::connection('cliqnshop')->table('home_page_contents')
+                    ->where("section", '=',  '1_banner_section_in')
+                    ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
+            } else {
+                DB::connection('cliqnshop')->table('home_page_contents')
+                    ->where("section", '=',  '1_banner_section_ae')
+                    ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
+            }
+            return redirect()->route('cliqnshop.onebanner')->with('success', 'Image has Updated successfully');
+        }
+
+        if (app()->environment() === 'staging') {
+            $file_path_img1 =  "staging/banner/1banner_image1.jpg";
+
+            $old_data = '';
+            if ($request->country == 'IN') {
+                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
+                    ->select('content')
+                    ->where("section", '=',  '1_banner_section_in')
+                    ->get();
+            } else {
+                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
+                    ->select('content')
+                    ->where("section", '=',  '1_banner_section_ae')
+                    ->get();
+            }
+
+            $val1 = (json_decode($old_data));
+            $val2 = (json_decode($val1['0']->content));
+
+            $imageurl = '';
+            $image = '';
+            $primary_text = '';
+            $secondary_text = '';
+            if (isset($val2->banner1)) {
+
+
+                $imageurl = $val2->banner1->url;
+                $image = $val2->banner1->image;
+                $primary_text = $val2->banner1->primary_text;
+                $secondary_text = $val2->banner1->secondary_text;
+            }
+            if ($request->selected_image) {
+
+                $image = file_get_contents($request->selected_image);
+                $imageurl = $request->url;
+                $primary_text = $request->primary_text;
+                $secondary_text = $request->secondary_text;
+                Storage::disk('cliqnshop')->put($file_path_img1, $image);
+                $url_do = Storage::disk('cliqnshop')->path('staging/banner/1banner_image1.jpg');
+            }
+
+            $one_banners = [
+                'banner1' =>
+                [
+                    'url' => $imageurl,
+                    'image' =>   $url_do,
+                    'primary_text' => $primary_text,
+                    'secondary_text' => $secondary_text,
+                ],
+            ];
+            $data =   ((json_encode($one_banners)));
+
+            if ($request->country == 'IN') {
+                DB::connection('cliqnshop')->table('home_page_contents')
+                    ->where("section", '=',  '1_banner_section_in')
+                    ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
+            } else {
+                DB::connection('cliqnshop')->table('home_page_contents')
+                    ->where("section", '=',  '1_banner_section_ae')
+                    ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
+            }
+            return redirect()->route('cliqnshop.onebanner')->with('success', 'Image has Updated successfully');
+        }
+        if (app()->environment() === 'production') {
+            $file_path_img1 =  "production/banner/1banner_image1.jpg";
+
+            $old_data = '';
+            if ($request->country == 'IN') {
+                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
+                    ->select('content')
+                    ->where("section", '=',  '1_banner_section_in')
+                    ->get();
+            } else {
+                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
+                    ->select('content')
+                    ->where("section", '=',  '1_banner_section_ae')
+                    ->get();
+            }
+
+            $val1 = (json_decode($old_data));
+            $val2 = (json_decode($val1['0']->content));
+
+            $imageurl = '';
+            $image = '';
+            $primary_text = '';
+            $secondary_text = '';
+            if (isset($val2->banner1)) {
+
+
+                $imageurl = $val2->banner1->url;
+                $image = $val2->banner1->image;
+                $primary_text = $val2->banner1->primary_text;
+                $secondary_text = $val2->banner1->secondary_text;
+            }
+            if ($request->selected_image) {
+
+                $image = file_get_contents($request->selected_image);
+                $imageurl = $request->url;
+                $primary_text = $request->primary_text;
+                $secondary_text = $request->secondary_text;
+                Storage::disk('cliqnshop')->put($file_path_img1, $image);
+                $url_do = Storage::disk('cliqnshop')->path('production/banner/1banner_image1.jpg');
+            }
+
+            $one_banners = [
+                'banner1' =>
+                [
+                    'url' => $imageurl,
+                    'image' =>   $url_do,
+                    'primary_text' => $primary_text,
+                    'secondary_text' => $secondary_text,
+                ],
+            ];
+            $data =   ((json_encode($one_banners)));
+
+            if ($request->country == 'IN') {
+                DB::connection('cliqnshop')->table('home_page_contents')
+                    ->where("section", '=',  '1_banner_section_in')
+                    ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
+            } else {
+                DB::connection('cliqnshop')->table('home_page_contents')
+                    ->where("section", '=',  '1_banner_section_ae')
+                    ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
+            }
+            return redirect()->route('cliqnshop.onebanner')->with('success', 'Image has Updated successfully');
         }
     }
 }
