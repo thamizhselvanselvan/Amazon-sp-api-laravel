@@ -87,9 +87,12 @@ class PushAsin
             $asins = DB::connection('catalog')->select("SELECT asin FROM $catalog_table_name where asin = '$asin' ");
             $country_code_up = strtoupper($country_code);
 
+            Log::warning($asin);
+
             if (count($asins) <= 0) {
                 $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code_up)->get()->toArray();
                 $aws_id_asin = $mws_regions[0]['aws_verified'][0]['id'];
+                Log::notice($aws_id_asin);
                 $asin_source[] = [
                     'asin' => $asin,
                     'seller_id' => $aws_id,
@@ -97,6 +100,7 @@ class PushAsin
                     'id'    =>  $aws_id_asin,
                 ];
 
+                Log::info($asin_source);
                 $this->updateAsinSourceDestination($asin, $country_code);
                 $this->updateAsinInBB($asin, $country_code);
                 (new NewCatalog())->Catalog($asin_source);
