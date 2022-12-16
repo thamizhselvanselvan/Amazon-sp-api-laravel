@@ -43,14 +43,15 @@ class CourierBooking extends Command
     {
         //Process Management start
         $process_manage = [
-            'module'             => 'AWS',
+            'module'             => 'Courier Booking',
             'description'        => 'Courier Booking',
             'command_name'       => 'aws:courier-booking',
             'command_start_time' => now(),
         ];
 
-        ProcessManagement::create($process_manage);
-        $pm_id = ProcessManagementCreate($process_manage['command_name']);
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+
         //Process Management end
 
         $order_details = OrderUpdateDetail::where([['courier_awb', NULL], ['courier_name', '!=', NULL], ['booking_status', '0']])

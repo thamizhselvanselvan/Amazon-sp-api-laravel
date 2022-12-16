@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Models\ProcessManagement;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
 class ProcessManagementController extends Controller
@@ -47,13 +48,14 @@ class ProcessManagementController extends Controller
                     $command_start_time = Carbon::parse($process_management['command_start_time']);
                     $command_end_time = $process_management['command_end_time'] == '0000-00-00 00:00:00' ? now() : Carbon::parse($process_management['command_end_time']);
                     $get_date_difference = $command_start_time->diff($command_end_time);
-                    $hours = $get_date_difference->h . ' hours';
+                    // $hours = $get_date_difference->h . ' hours';
                     $minutes = $get_date_difference->i . ' minutes';
-                    $processed_time = $hours . ' ' . $minutes;
+                    $seconds = $get_date_difference->s . ' seconds';
+                    $processed_time = $minutes . ' ' . $seconds;
                     return $processed_time;
                 })
                 ->addColumn('status', function ($process_management) {
-                    $status = $process_management['command_end_time'] == '0000-00-00 00:00:00' ? 'Running...' : 'Completed';
+                    $status = $process_management['command_end_time'] == '0000-00-00 00:00:00' ? 'Running...' : 'Completed.';
                     return $status;
                 })
                 ->rawColumns(['id', 'module', 'description', 'command_name', 'command_start_time', 'command_end_time', 'processed_time', 'status'])

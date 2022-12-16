@@ -1191,19 +1191,19 @@ if (!function_exists('CSV_w')) {
     }
 }
 
-if (!function_exists('ProcessManagementCreate')) {
-    function ProcessManagementCreate(String $command_name)
-    {
-        $pm_record = ProcessManagement::where('command_name', $command_name)
-            ->where('status', '0')
-            ->get('id')
-            ->first()
-            ->toArray();
+// if (!function_exists('ProcessManagementCreate')) {
+//     function ProcessManagementCreate(String $command_name)
+//     {
+//         $pm_record = ProcessManagement::where('command_name', $command_name)
+//             ->where('status', '0')
+//             ->get('id')
+//             ->first()
+//             ->toArray();
 
-        $pm_id = $pm_record['id'];
-        return $pm_id;
-    }
-}
+//         $pm_id = $pm_record['id'];
+//         return $pm_id;
+//     }
+// }
 
 if (!function_exists('ProcessManagementUpdate')) {
     function ProcessManagementUpdate($pm_id, $command_end_time)
