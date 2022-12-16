@@ -406,6 +406,7 @@ class ZohoOrder
         $buyerEmail = json_decode($value->buyer_info);
         $order_total = json_decode($value->order_total);
         $item_price = json_decode($value->item_price);
+        $item_tax = isset($value->item_tax) && !empty($value->item_tax) ? json_decode($value->item_tax) : 0;
 
         print($value->amazon_order_identifier . " " . $value->order_item_identifier);
 
@@ -479,7 +480,8 @@ class ZohoOrder
         $prod_array["ASIN"]                      = $value->asin;
         $prod_array["SKU"]                       = $value->seller_sku;
         $prod_array["Product_Cost"]              = $catalog_details['price'];
-        $prod_array["Amount_Paid_by_Customer"]   = isset($item_price->Amount) ? (int)$item_price->Amount : 0;
+        $item_tax  = isset($item_tax->Amount) ? (int)$item_price->Amount  : 0;
+        $prod_array["Amount_Paid_by_Customer"]   = isset($item_price->Amount) ? (int)$item_price->Amount + (int)$item_tax : 0;
 
         $prod_array["Weight_in_LBS"]             = (string)$catalog_details['weight'];
         $prod_array["Payment_Reference_Number1"] = $value->order_item_identifier;
