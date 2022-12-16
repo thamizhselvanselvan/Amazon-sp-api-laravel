@@ -961,6 +961,12 @@ return [
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-image',
                         ],
+                        [
+                            'text' => 'trending brands section ',
+                            'url' => 'cliqnshop/trending',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' =>'fa fa-th',
+                        ],
                         
                     ],
                 ],

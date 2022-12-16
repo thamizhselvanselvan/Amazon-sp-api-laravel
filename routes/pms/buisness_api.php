@@ -57,3 +57,6 @@ Route::post('cliqnshop/2banners/store', 'Cliqnshop\ImageBrandController@two_bann
 
 Route::get('cliqnshop/one_banners', 'Cliqnshop\ImageBrandController@onebanner')->name('cliqnshop.onebanner');
 Route::post('cliqnshop/1banners/store', 'Cliqnshop\ImageBrandController@one_bannerstore')->name('cliqnshop.one.banner.store');
+
+Route::get('cliqnshop/trending', 'Cliqnshop\ImageBrandController@trendingbrandssection')->name('cliqnshop.trending');
+Route::post('cliqnshop/trending/store', 'Cliqnshop\ImageBrandController@trendingbrands')->name('cliqnshop.trending.store');
