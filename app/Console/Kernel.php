@@ -69,14 +69,6 @@ class Kernel extends ConsoleKernel
             /*
                 Zoho - only one record at a time for staging
             */
-            $schedule->command('pms:remove-uploaded-boe')->dailyAt('01:00'); //PM
-
-            /*Catalog*/
-            $schedule->command('mosh:catalog-amazon-import')->everyTwoMinutes(); //PM
-            $schedule->command('mosh:Catalog-price-import-bb-in')->everyMinute(); //PM
-            $schedule->command('mosh:Catalog-price-import-bb-us')->everyMinute(); //PM
-            $schedule->command('mosh:catalog-dashboard-file')->everyThirtyMinutes(); //PM
-
         }
 
         if (app()->environment() === 'local') {

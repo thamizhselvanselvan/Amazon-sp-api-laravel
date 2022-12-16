@@ -5,22 +5,25 @@ namespace App\Services\SP_API\API\Order;
 use Exception;
 use RedBeanPHP\R;
 use Carbon\Carbon;
+use App\Models\Invoice;
+
+use App\Services\BB\PushAsin;
 use App\Models\Aws_credential;
 use SellingPartnerApi\Endpoint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use App\Models\Admin\ErrorReporting;
 use SellingPartnerApi\Api\OrdersApi;
 use SellingPartnerApi\Configuration;
 use SellingPartnerApi\Api\OrdersV0Api;
+use App\Models\order\OrderUpdateDetail;
 use App\Services\SP_API\API\NewCatalog;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
 use App\Jobs\Seller\Seller_catalog_import_job;
-use App\Models\Admin\ErrorReporting;
-use App\Models\Invoice;
-use App\Models\Mws_region;
-use App\Models\order\OrderUpdateDetail;
+use App\Services\Courier_Booking\B2cshipBookingServices;
+
 
 class OrderItem
 {
@@ -113,13 +116,6 @@ class OrderItem
             }
         }
 
-        $data = [];
-
-        $class =  'catalog\AmazonCatalogImport';
-        $queue_name = 'inventory';
-        $queue_delay = 0;
-        $asins = [];
-        $asin_source = [];
         $invoice_data = [];
         $inv_adrs_arr = [
             'AddressLine1' => NULL,
@@ -137,7 +133,6 @@ class OrderItem
         ];
 
         $tem_price = 0;
-        $catalog_table_name = 'catalognew' . strtolower($source) . 's';
 
         foreach ($result_orderItems['payload']['order_items'] as $result_order) {
             foreach ((array)$result_order as $result) {
@@ -222,41 +217,8 @@ class OrderItem
                 $qty = $invoice_data['qty'] > 0 ? $invoice_data['qty'] : 1;
                 $invoice_data['product_price'] = (float)($tem_price / $qty);
 
-                // /Check if ASIN is in source catalog table. if not then auto add and make product sp api request
-
-                try {
-                    $asins = DB::connection('catalog')->select("SELECT asin FROM $catalog_table_name where asin = '$asin' ");
-
-                    $country_code_up = strtoupper($source);
-                    $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code_up)->get()->toArray();
-
-                    $aws_id_asin = $mws_regions[0]['aws_verified'][0]['id'];
-
-                    if (count($asins) <= 0) {
-
-                        $asin_source[] = [
-                            'asin' => $asin,
-                            'seller_id' => $aws_id,
-                            'source' => $source,
-                            'id'    =>  $aws_id_asin,
-                        ];
-
-                        (new NewCatalog())->Catalog($asin_source);
-                    }
-                } catch (Exception $e) {
-
-                    $getMessage = $e->getMessage();
-                    $getCode = $e->getCode();
-                    $getFile = $e->getFile();
-                    $getLine = $e->getLine();
-
-                    $slackMessage = "Message: $getMessage 
-                    Code: $getCode,
-                    File: $getFile,
-                    Line: $getLine";
-                    // Log::debug($slackMessage);
-                    slack_notification('app360', 'Order Item Details', $slackMessage);
-                }
+                // /Check if ASIN is in source's catalog table. if not then auto add and make sp api request
+                (new PushAsin())->checkAsinAvailability($asin, $source, $aws_id, 'Order Item Missing Asin Catalog Import');
             }
         }
 
