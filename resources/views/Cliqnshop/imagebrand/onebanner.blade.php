@@ -40,7 +40,7 @@
 <form method="post" action="{{route('cliqnshop.one.banner.store')}}" enctype="multipart/form-data">
     @csrf
     <div class="row justify-content-center">
-      <div class="col-3">
+        <div class="col-3">
             <div class="form-group">
                 <label for="text">Redirection URL</label>
                 <x-adminlte-input class="form-control " type="text" placeholder="Enter Redirect URL For Image" name="url" id="url" />
@@ -50,23 +50,24 @@
         <div class="col-3">
             <div class="form-group">
                 <x-adminlte-select name="country" label="Select Country" name="country">
-                    <option>Select Country</option>
-                    <option>IN</option>
-                    <option>UAE</option>
+                    <option value="0">Select Country</option>
+                    @foreach ($countrys as $country)
+                    <option value="{{ $country->siteid }}">{{$country->code }}</option>
+                    @endforeach
                 </x-adminlte-select>
             </div>
 
         </div>
     </div>
     <div class="row justify-content-center">
-        
-         <div class="col-3">
+
+        <div class="col-3">
             <div class="form-group">
                 <label for="text">Primary Text</label>
                 <x-adminlte-input class="form-control " type="text" placeholder="Enter primary Text" name="primary_text" id="" />
             </div>
         </div>
-         <div class="col-3">
+        <div class="col-3">
             <div class="form-group">
                 <label for="text">secondary Text</label>
                 <x-adminlte-input class="form-control " type="text" placeholder="Enter secondary Text" name="secondary_text" id="" />
