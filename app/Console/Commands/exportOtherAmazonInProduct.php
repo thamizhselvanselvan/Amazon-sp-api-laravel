@@ -101,7 +101,6 @@ class exportOtherAmazonInProduct extends Command
                 }, $records);
 
                 foreach ($records as $key => $data) {
-                    //Log::alert(json_encode($data));
                 }
                 $this->writer->insertall($records);
 
@@ -140,11 +139,10 @@ class exportOtherAmazonInProduct extends Command
 
     public function catalogExportByAsin($id, $user, $headers)
     {
-        foreach($headers as $header_value)
-        {
-            $this->headers_default[$header_value] = 'N/A' ;
+        foreach ($headers as $header_value) {
+            $this->headers_default[$header_value] = 'N/A';
         }
-        // Log::notice($this->headers_default);
+
         $exportFilePath = "excel/downloads/otheramazonIN/" . $user . "/otherProductDetails";
         $deleteFilePath = "app/excel/downloads/otheramazonIN/" . $user;
 
@@ -197,16 +195,15 @@ class exportOtherAmazonInProduct extends Command
 
             $records = $records->toArray();
             $records = array_map(function ($datas) {
-                    return (array) $datas;
+                return (array) $datas;
             }, $records);
-            // Log::info($records);
-            $all_asins = [];
-            foreach($selected_asin as $asin) {
 
-                if($val = array_search(trim($asin), array_column($records, 'asin'))) {
+            $all_asins = [];
+            foreach ($selected_asin as $asin) {
+
+                if ($val = array_search(trim($asin), array_column($records, 'asin'))) {
 
                     $all_asins[] = $records[$val];
-
                 } else {
 
                     $this->headers_default['asin'] = $asin;

@@ -126,7 +126,14 @@ class FeedOrderDetails
             return $result;
         } catch (Exception $e) {
 
-            Log::warning('Exception when calling FeedAPI->createFeed: ' . $e->getMessage());
+            $getMessage = $e->getMessage();
+            $getCode = $e->getCode();
+            $getFile = $e->getFile();
+
+            $slackMessage = "Message: $getMessage
+            Code: $getCode
+            File: $getFile";
+            slack_notification('app360', 'Exception when calling FeedAPI->createFeed', $slackMessage);
         }
     }
 

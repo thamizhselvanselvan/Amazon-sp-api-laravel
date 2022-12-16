@@ -176,9 +176,7 @@ class AsinDestinationController extends Controller
             $base_path = base_path();
             $command = "cd $base_path && php artisan mosh:asin-destination-csv-export > /dev/null &";
             exec($command);
-            Log::warning("Export asin command executed production  !!!");
         } else {
-            Log::warning("Export asin command executed local !");
             Artisan::call('mosh:asin-destination-csv-export');
         }
         return redirect()->intended('/catalog/asin-destination');

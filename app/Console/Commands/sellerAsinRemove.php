@@ -97,6 +97,5 @@ class sellerAsinRemove extends Command
                 $bb_product->whereIn('asin1', $asins)->where('seller_id', $seller_id)->delete();
             }
         }
-        Log::warning("asin delete successfully");
     }
 }

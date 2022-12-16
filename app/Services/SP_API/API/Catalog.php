@@ -40,7 +40,6 @@ class Catalog
         }
 
         if ($type == 1 || $type == 4) {
-            // Log::notice($type);
             foreach ($datas as $value) {
                 $asin = NULL;
                 $value = (object)$value;

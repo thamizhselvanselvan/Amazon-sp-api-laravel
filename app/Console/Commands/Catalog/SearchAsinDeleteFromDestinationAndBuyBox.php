@@ -41,7 +41,6 @@ class SearchAsinDeleteFromDestinationAndBuyBox extends Command
         $priority = $this->argument('priority');
         $source = $this->argument('source');
         $asin = explode(',', $this->argument('asins'));
-        log::alert($asin);
 
         $buybox_offer_table = "product_aa_custom_p${priority}_${source}_offer";
         $bb_product_table = "product_aa_custom_p${priority}_${source}";

@@ -95,6 +95,5 @@ class OrderItemDetailsImport extends Command
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> mosh:order-item-details-import');
     }
 }

@@ -147,8 +147,6 @@ class AllPriceExportCsvServices
             $start_id = ($chunk * $start) + $min_id;
             $end_id = (($chunk * ($start + 1))) + $min_id;
 
-            // Log::alert('start id' . $start_id);
-
             // $end_id = isset($all_id[$end_array]['id']) ? $all_id[$end_array]['id'] : $all_id[$count - 1];
 
             $asin = $us_destination->select('id', 'asin', 'priority')
@@ -168,7 +166,6 @@ class AllPriceExportCsvServices
                     $where_asin[$value['id']] = $value['asin'];
                     $asin_priority[$value['asin']] = $value['priority'];
                 }
-                // Log::notice($where_asin);
                 if ($this->country_code == 'US') {
 
                     $pricing_details = PricingUs::whereIn('asin', $where_asin)

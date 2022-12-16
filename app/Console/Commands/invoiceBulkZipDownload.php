@@ -7,7 +7,6 @@ use League\Csv\Reader;
 use App\Models\Invoice;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\Storage;
 
@@ -64,8 +63,6 @@ class invoiceBulkZipDownload extends Command
         $current_page_no =  $headers_data[4];
 
         $saveAsPdf = [];
-        log::alert($currenturl);
-
 
         $excelid = explode('-', $passid);
 
@@ -77,7 +74,7 @@ class invoiceBulkZipDownload extends Command
                 $invoice_no = $value->invoice_no;
                 $url = $currenturl . '/invoice/convert-pdf/' . $invoice_no;
                 $path = "invoice/$mode/$invoice_date/invoice$invoice_no.pdf";
-                log::alert($url);
+
                 if (!Storage::exists($path)) {
                     Storage::put($path, '');
                 }

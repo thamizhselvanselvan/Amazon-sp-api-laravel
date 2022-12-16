@@ -56,7 +56,6 @@ class MicroStatusReport extends Command
         // $pm_id = ProcessManagementCreate($process_manage['command_name']);
         //Process Management end
 
-        // Log::alert("microstatus report command executed at ".now());
         $today_sd = Carbon::today();
         $today_ed = Carbon::now();
 
@@ -108,7 +107,6 @@ class MicroStatusReport extends Command
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> pms:b2cship-microstatus-report');
     }
 
     public function packet_status($packet_status_details, $start_date, $end_date)

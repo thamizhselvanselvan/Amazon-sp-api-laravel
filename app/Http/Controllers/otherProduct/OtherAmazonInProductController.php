@@ -73,11 +73,7 @@ class OtherAmazonInProductController extends Controller
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:export-other-amazon-in $selected_header $email $id $type> /dev/null &";
             exec($command);
-
-            // Log::warning("Export asin command executed production  !!!");
         } else {
-
-            // Log::warning("Export asin command executed local !");
             Artisan::call('pms:export-other-amazon-in ' . $selected_header . ' ' . $email . ' ' . $id . ' ' . $type);
         }
     }

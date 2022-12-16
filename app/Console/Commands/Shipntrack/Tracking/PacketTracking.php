@@ -43,10 +43,5 @@ class PacketTracking extends Command
             ->orWhere('status', '')
             ->orWhere('status', '0')
             ->get();
-
-        Log::alert(count($PacketForwarder));
-
-
-        //
     }
 }

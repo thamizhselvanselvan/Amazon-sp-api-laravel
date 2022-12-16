@@ -81,7 +81,6 @@ class OrdersListController extends Controller
 
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
 
-            Log::warning("Export asin command executed local !");
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:sellers-orders-import > /dev/null &";
             exec($command);
@@ -175,8 +174,6 @@ class OrdersListController extends Controller
     public function GetOrderitems()
     {
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-
-            Log::warning("Export asin command executed local !");
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:seller-order-item-import > /dev/null &";
             exec($command);

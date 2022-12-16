@@ -56,7 +56,6 @@ class B2cship_kyc_status extends Command
         // $pm_id = ProcessManagementCreate($process_manage['command_name']);
         //Process Management end
 
-        // Log::alert("b2cship kyc status command executed at ".now());
         $startTime = Carbon::today();
         $endTime = Carbon::now();
 
@@ -81,7 +80,6 @@ class B2cship_kyc_status extends Command
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> pms:b2cship-kyc-status');
     }
 
 

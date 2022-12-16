@@ -174,6 +174,5 @@ class CatalogDashboardService
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> mosh:catalog-dashboard-file');
     }
 }

@@ -53,10 +53,7 @@ class RemoveUploadedFiles extends Command
 
         $process_management_id = ProcessManagement::create($process_manage)->toArray();
         $pm_id = $process_management_id['id'];
-        // $pm_id = ProcessManagementCreate($process_manage['command_name']);
-        //Process Management end
 
-        // Log::alert("remove uploaded file from server command executed at ".now());
         $count = BOE::where('do', 0)->count();
         $chunk = 10;
         if ($count == 0) {
@@ -92,7 +89,6 @@ class RemoveUploadedFiles extends Command
 
                 if ($back_file_date == $current_file_date) {
                     unlink(Storage::path($file_name));
-                    log::alert('All file delete successfully from AsinDestination Folder');
                 }
             }
         }
@@ -100,6 +96,5 @@ class RemoveUploadedFiles extends Command
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> pms:remove-uploaded-boe');
     }
 }

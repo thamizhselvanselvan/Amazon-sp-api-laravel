@@ -78,13 +78,10 @@ class CourierBooking extends Command
                 ],
             )->update(['booking_status' => '5']);
 
-
             jobDispatchFunc('Courier_Booking\CourierBookingJob', $job_parameters);
         }
 
-
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> aws:courier-booking');
     }
 }

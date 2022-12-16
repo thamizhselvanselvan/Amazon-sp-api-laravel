@@ -227,6 +227,5 @@ class warehouse_stock_track extends Command
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> mosh:warehouse-track');
     }
 }
