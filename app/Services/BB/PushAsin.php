@@ -12,6 +12,8 @@ class PushAsin
 {
     public function PushAsinToBBTable($product, $product_lowest_price, $country_code, $priority)
     {
+        Log::alert('update into bb');
+
         $country_code = strtolower($country_code);
         $product_table = "product_aa_custom_p${priority}_${country_code}";
         $bb_product = table_model_set(country_code: $country_code, model: 'bb_product_aa_custom', table_name: $product_table);
@@ -20,10 +22,13 @@ class PushAsin
         $lp_table = "product_aa_custom_p${priority}_${country_code}_offer";
         $bb_product_lowest_price = table_model_set(country_code: $country_code, model: 'bb_product_aa_custom_offer', table_name: $lp_table);
         $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin', 'cyclic', 'delist', 'available', 'priority', 'import_type']);
+
+        Log::alert("updated into buybox");
     }
 
     public function updateAsinInBB($asin, $country_code)
     {
+        Log::alert("$asin updated into bb");
         $product[] = [
             'seller_id' => '40',
             'active' => 1,
@@ -46,6 +51,7 @@ class PushAsin
 
     public function updateAsinSourceDestination($asin, $country_code)
     {
+        Log::alert("$asin updated into soruce des");
         $model_name = table_model_create(country_code: $country_code, model: "Asin_source", table_name: "asin_source_");
         $model_name->upsert(
             [
@@ -68,10 +74,14 @@ class PushAsin
             ['user_asin_unique'],
             ['asin', 'user_id', 'status', 'priority']
         );
+        Log::alert("$asin success into soruce des");
     }
 
     public function checkAsinAvailability($asin, $country_code, $aws_id, $error_title)
     {
+        Log::info($asin);
+        Log::alert($country_code);
+        Log::critical($aws_id);
         try {
             $catalog_table_name = 'catalognew' . strtolower($country_code) . 's';
             $asins = DB::connection('catalog')->select("SELECT asin FROM $catalog_table_name where asin = '$asin' ");
@@ -87,8 +97,8 @@ class PushAsin
                     'id'    =>  $aws_id_asin,
                 ];
 
-                $this->updateAsinInBB($asin, $country_code);
                 $this->updateAsinSourceDestination($asin, $country_code);
+                $this->updateAsinInBB($asin, $country_code);
                 (new NewCatalog())->Catalog($asin_source);
             }
         } catch (Exception $e) {
@@ -101,6 +111,7 @@ class PushAsin
             Code: $getCode,
             File: $getFile,
             Line: $getLine";
+            Log::error($slackMessage);
             slack_notification('app360', $error_title, $slackMessage);
         }
         return true;
