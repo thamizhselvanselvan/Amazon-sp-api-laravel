@@ -206,7 +206,6 @@ class OrdersCsvImport extends Command
                 'buyer_info',
             ]
         );
-        log::alert($file_management_id);
 
         $command_end_time = now();
         fileManagementUpdate($file_management_id, $command_end_time);

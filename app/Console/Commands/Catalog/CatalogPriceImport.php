@@ -77,6 +77,5 @@ class CatalogPriceImport extends Command
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> mosh:Catalog-price-import-bb-us');
     }
 }

@@ -70,12 +70,12 @@ class GetOrderDetails implements ShouldQueue
 
         $this->getOrderapi($config, $order_id, $seller_id);
 
-        $this->getOrderItemsApi($config, $order_id, $seller_id); 
+        $this->getOrderItemsApi($config, $order_id, $seller_id);
     }
 
     public function getOrderapi($config, $order_id, $seller_id)
     {
-        
+
 
         $apiInstance = new OrdersApi($config);
         $data_elements = ['buyerInfo', 'shippingAddress']; // string[] | An array of restricted order data elements to retrieve (valid array elements are \"buyerInfo\" and \"shippingAddress\")
@@ -106,7 +106,7 @@ class GetOrderDetails implements ShouldQueue
             }
             R::store($order_details);
         } catch (Exception $e) {
-           // log::alert($e->getMessage());
+
             $code =  $e->getCode();
             $msg = $e->getMessage();
             $error_reportings = ErrorReporting::create([
@@ -140,7 +140,7 @@ class GetOrderDetails implements ShouldQueue
                             foreach ((array)$data_details as $item_key => $item_details) {
                                 $search = 'Id';
                                 $replaceVal = 'Identifier';
-                                if($item_key == "ASIN"){
+                                if ($item_key == "ASIN") {
                                     $item_key = 'asin';
                                 }
                                 $item_key = lcfirst($item_key);
@@ -149,11 +149,10 @@ class GetOrderDetails implements ShouldQueue
 
                                     $item_key = str_replace($search, $replaceVal, $item_key);
                                 }
-                                
+
                                 if (is_array($item_details) || is_object($item_details)) {
 
                                     $order_items->$item_key = json_encode($item_details);
-                                  
                                 } else {
 
                                     $order_items->$item_key = $item_details;
@@ -165,8 +164,7 @@ class GetOrderDetails implements ShouldQueue
                 }
             }
         } catch (Exception $e) {
-            
-            // log::alert($e->getMessage());
+
             $code =  $e->getCode();
             $msg = $e->getMessage();
             $error_reportings = ErrorReporting::create([

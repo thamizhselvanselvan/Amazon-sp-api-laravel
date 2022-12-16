@@ -200,6 +200,5 @@ class StocktTrack extends Command
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> pms:inventory-stock-tracking');
     }
 }

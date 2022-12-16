@@ -78,10 +78,7 @@ class SellerOrdersImport extends Command
 
         $stats = endTime($startTime);
 
-        Log::info("pms:sellers-orders-import took $stats seconds");
-
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> pms:sellers-orders-import');
     }
 }

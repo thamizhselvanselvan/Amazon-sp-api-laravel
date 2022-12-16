@@ -57,7 +57,5 @@ class Order extends Command
         $order->order();
 
         $command_end_time = now();
-        ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> aws:nitshop:order');
     }
 }

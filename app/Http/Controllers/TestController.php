@@ -328,13 +328,6 @@ class TestController extends Controller
     //
   }
 
-  public function RenameAmazonInvoice()
-  {
-
-    commandExecFunc("mosh:rename-amazon-invoice");
-    // dd($data);
-    //
-  }
 
   public function GetPricing()
   {

@@ -42,20 +42,18 @@ class UploadTrackingEventMasterCSV extends Command
      */
     public function handle()
     {
-       
+
         $courier_partner = $this->argument('courier_partner');
-        Log::notice($courier_partner);
         $file_path = "CSV/import/trackingEventMaster.csv";
 
         $reader = Reader::createFromPath(Storage::path(($file_path), 'r'));
         $reader->setHeaderOffset(0);
         $records = $reader->getRecords();
         $eventmaster_data = [];
-        
-        foreach($records as $record)
-        {   
-            
-            $eventmaster_data [] = [
+
+        foreach ($records as $record) {
+
+            $eventmaster_data[] = [
                 "event_code" => $record['TrackingEventCode'],
                 "description" => htmlspecialchars($record['EventCodeDescription']),
                 "active" => $record['IsActive'],
@@ -63,9 +61,8 @@ class UploadTrackingEventMasterCSV extends Command
                 'updated_at' => now()
             ];
         }
-        
-        $model_set = table_model_change(event_partner:$courier_partner, model:'TrackingEvent', table_name:'tracking_event_');
+
+        $model_set = table_model_change(event_partner: $courier_partner, model: 'TrackingEvent', table_name: 'tracking_event_');
         $model_set->upsert($eventmaster_data, ['event_code']);
-        
     }
 }

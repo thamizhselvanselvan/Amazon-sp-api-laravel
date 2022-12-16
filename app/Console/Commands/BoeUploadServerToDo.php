@@ -78,11 +78,7 @@ class BoeUploadServerToDo extends Command
             }
         });
 
-        // Log::alert('Boe Uploaded to Do');
-        //    UploadBoeToDO::dispatch();
-
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> pms:boe-upload-Do');
     }
 }

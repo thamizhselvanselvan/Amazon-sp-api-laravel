@@ -160,7 +160,6 @@ class BOEController extends Controller
         //     'files' => 'required',
         //     'files.*' => 'mimes:pdf'
         // ]);
-        // Log::alert("message");
         $host = config('database.connections.web.host');
         $dbname = config('database.connections.web.database');
         $port = config('database.connections.web.port');
@@ -455,31 +454,26 @@ class BOEController extends Controller
                         $datas['cesscvd_perc'] = '';
 
                         foreach ($duty_details as $duty_price) {
-                          
+
                             if ($duty_price->DutyHead == 'BCD') {
                                 $datas['Duty'] = $duty_price->DutyAmount;
                                 $datas['Duty Forgon'] = $duty_price->DutyAmount;
                                 $datas['Duty_Per'] = $duty_price->AdValorem;
-                               
                             } elseif ($duty_price->DutyHead == 'SW Srchrg') {
-                               
+
                                 $datas['SWsrchrg'] = $duty_price->DutyAmount;
                                 $datas['sw_perc'] = $duty_price->AdValorem;
-                               
                             } elseif ($duty_price->DutyHead == 'IGST') {
                                 $datas['IGST'] = $duty_price->DutyAmount;
                                 $datas['igst_perc'] = $duty_price->AdValorem;
-                               
                             } elseif ($duty_price->DutyHead == 'HLTH') {
-                               
+
                                 $datas['HLTH'] = $duty_price->DutyAmount;
                                 $datas['hlth_perc'] = $duty_price->AdValorem;
-                               
                             } elseif ($duty_price->DutyHead == 'CESSCVD') {
-                               
+
                                 $datas['CESSCVD'] = $duty_price->DutyAmount;
                                 $datas['cesscvd_perc'] = $duty_price->AdValorem;
-                               
                             }
                         }
                     } else {
@@ -506,7 +500,6 @@ class BOEController extends Controller
         $file_path = "excel/downloads/BOE/$company_id/BOE_Details.csv";
 
         if (Storage::exists($file_path)) {
-            Log::alert("FILE EXISTS");
             return response()->download(Storage::path($file_path));
             // return Storage::download($exportFilePath);
         }
@@ -520,11 +513,7 @@ class BOEController extends Controller
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:boe-upload-Do > /dev/null &";
             exec($command);
-
-            Log::warning("Export asin command executed production  !!!");
         } else {
-
-            // Log::warning("Export asin command executed local !");
             Artisan::call('pms:boe-upload-Do');
         }
         echo 'success';
@@ -538,11 +527,7 @@ class BOEController extends Controller
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:remove-uploaded-boe > /dev/null &";
             exec($command);
-
-            Log::warning("Export asin command executed production  !!!");
         } else {
-
-            // Log::warning("Export asin command executed local !");
             Artisan::call('pms:remove-uploaded-boe');
         }
     }

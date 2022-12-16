@@ -255,11 +255,11 @@ class Orders
 
         $data = curl_exec($ch);
         $send = [$data, $base, $xml];
-       
+
         return $send;
         if (curl_errno($ch)) {
-            print curl_error($ch);
-            Log::warning("Something Went Wrong In B-OrderAPI");
+
+            slack_notification('app360', 'Amazon Business Order API', curl_error($ch));
         } else {
 
             curl_close($ch);

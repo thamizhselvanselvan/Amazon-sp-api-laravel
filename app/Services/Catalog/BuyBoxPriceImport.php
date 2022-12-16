@@ -40,7 +40,7 @@ class BuyBoxPriceImport
 
             if (count($data) > 0) {
 
-                // Log::notice(count($data) . ' ->' . $priority . $country_code_lr . ' Price importing from BB');
+
                 foreach ($data as $value) {
 
                     $asin = $value->asin;

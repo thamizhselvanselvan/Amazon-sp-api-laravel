@@ -24,19 +24,19 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 
 class textilesController extends Controller
-{   
-    
-    public function index(Request $request)
-    {  
-        
-        if($request->ajax()){
+{
 
-             // $getData = ['id','textile', 'ean', 'brand','title','size','color','transfer_price','shipping_weight','product_type','quantity'];
+    public function index(Request $request)
+    {
+
+        if ($request->ajax()) {
+
+            // $getData = ['id','textile', 'ean', 'brand','title','size','color','transfer_price','shipping_weight','product_type','quantity'];
             $data = Universal_textile::query();
-            
+
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('textiles_id', function($row){
+                ->addColumn('textiles_id', function ($row) {
                     return ($row->textile);
                 })
                 ->rawColumns(['textiles_id'])
@@ -49,16 +49,12 @@ class textilesController extends Controller
     {
 
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-            
+
             // exec('nohup php artisan pms:textiles-import  > /dev/null &');
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:textiles-import > /dev/null &";
             exec($command);
-            
-            Log::warning("Script executed production  !!!");
         } else {
-
-            Log::warning("Script executed local !");
             Artisan::call('pms:textiles-import');
         }
 
@@ -67,25 +63,20 @@ class textilesController extends Controller
 
     public function exportTextilesToCSV()
     {
-      
+
         if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-            
+
             // exec('nohup php artisan pms:textiles-import  > /dev/null &');
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:textiles-export > /dev/null &";
             exec($command);
-            
-            Log::warning("Export command executed production  !!!");
         } else {
-
-            Log::warning("Export coma executed local !");
             Artisan::call('pms:textiles-export');
         }
 
         return redirect()->intended('/textiles');
-
     }
-    
+
     public function download_universalTextiles()
     {
 
@@ -96,5 +87,4 @@ class textilesController extends Controller
         }
         return 'file not exist';
     }
-
 }

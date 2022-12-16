@@ -25,8 +25,6 @@ class CatalogImport
     {
         $startTime = startTime();
 
-        Log::warning("warning from handle function");
-
         $host = config('database.connections.web.host');
         $dbname = config('database.connections.web.database');
         $port = config('database.connections.web.port');
@@ -37,13 +35,9 @@ class CatalogImport
         // exit;
         $datas = AsinSource::limit(100)->offset(1400)->get();
 
-        // dd($datas);
-
-        Log::warning("success");
-
         foreach ($datas as $data) {
             // Log::info('AWS Auth Code - '. $data['aws']['auth_code']);
-// dd($data->asin);
+            // dd($data->asin);
             $asin = $data->asin;
             // dd($data);
             // $asin = 'B000R1RKVY';
@@ -99,12 +93,9 @@ class CatalogImport
                         if (is_object($data)) {
 
                             $productcatalogs->{$key} = json_encode($data);
-                        } 
-                        elseif(is_string($data)) 
-                        {
+                        } elseif (is_string($data)) {
                             $productcatalogs->{$key} = ($data);
-                        }
-                        else{
+                        } else {
                             $productcatalogs->{$key} = json_encode($data);
                             // $value [][$key] = ($data);
                         }
@@ -121,16 +112,16 @@ class CatalogImport
                 // echo $e . '<hr>';
                 // Log::alert($e);
                 $code =  $e->getCode();
-            $msg = $e->getMessage();
-            $error_reportings = ErrorReporting::create([
-                'queue_type' => "CatalogImport",
-                'identifier' => $asin,
-                'identifier_type' => "ASIN",
-                'source' => $country_code,
-                'aws_key' => $aws_key,
-                'error_code' => $code,
-                'message' => $msg,
-            ]);
+                $msg = $e->getMessage();
+                $error_reportings = ErrorReporting::create([
+                    'queue_type' => "CatalogImport",
+                    'identifier' => $asin,
+                    'identifier_type' => "ASIN",
+                    'source' => $country_code,
+                    'aws_key' => $aws_key,
+                    'error_code' => $code,
+                    'message' => $msg,
+                ]);
             }
         }
 

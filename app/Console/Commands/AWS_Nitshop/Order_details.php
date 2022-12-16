@@ -58,6 +58,5 @@ class Order_details extends Command
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> aws:nitshop:order_details');
     }
 }

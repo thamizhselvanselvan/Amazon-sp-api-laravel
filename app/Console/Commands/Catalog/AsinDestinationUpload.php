@@ -92,7 +92,6 @@ class AsinDestinationUpload extends Command
             $count = 0;
             $asin_chunk_count = count($asin_chunk) - 1;
 
-            log::warning($asin_chunk_count);
             foreach ($asin_chunk as $value) {
 
                 $chunk_data = [
@@ -106,7 +105,6 @@ class AsinDestinationUpload extends Command
 
                 if ($count == $asin_chunk_count) {
                     // LAST CHUNK
-                    log::warning($count);
                     $chunk_data = [
                         'ASIN'      => $value,
                         'user_id'   => $user_id,
@@ -117,13 +115,11 @@ class AsinDestinationUpload extends Command
                         'Last_queue' => now(),
                     ];
                     jobDispatchFunc($class, $chunk_data, $queue_name, $delay);
-                    log::info($chunk_data);
                 }
 
                 jobDispatchFunc($class, $chunk_data, $queue_name, $delay);
                 $count++;
             }
-            // log::alert($chunk_data);
             $asin = [];
         }
 

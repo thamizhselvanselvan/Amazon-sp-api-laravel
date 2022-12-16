@@ -49,7 +49,6 @@ class sellerAsinPriceExport extends Command
     public function handle()
     {
         $seller_id = $this->option('seller_id');
-        Log::alert($seller_id);
 
         $exportFilePath = "excel/downloads/seller/" . $seller_id . "/AmazonASINPricing";
         $deleteFilePath = "app/excel/downloads/seller/" . $seller_id;

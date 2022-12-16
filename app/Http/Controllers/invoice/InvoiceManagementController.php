@@ -131,7 +131,6 @@ class InvoiceManagementController extends Controller
         //         ->rawColumns(['select_all', 'action'])
         //         ->make(true);;
         // }
-        // Log::alert(json_encode($results));
         // return response()->json($results);
     }
 
@@ -364,8 +363,6 @@ class InvoiceManagementController extends Controller
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:excel-bulkpdf-download > /dev/null &";
             exec($command);
-
-            Log::warning("Zip Download command executed production  !!!");
         } else {
             Artisan::call('pms:excel-bulkpdf-download');
         }

@@ -50,7 +50,7 @@ class BOEmaster
                 }
             }
         } else {
-            Log::notice('Invalid BOE');
+            slack_notification('app360', 'Invalid BOE', 'Invalid Boe');
             return false;
         }
     }
