@@ -91,9 +91,9 @@ class BuyBoxPriceImport
 
                     $asin = implode(',', $asin_array);
                     $asin_price = DB::connection('buybox')
-                        ->select("SELECT PPO.asin, LP.available, LP.updated_at as updated_at
+                        ->select("SELECT PPO.asin, LP.available, LP.updated_at as updated_at,
                             GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
-                            group_concat(PPO.listingprice_amount) as listingprice_amount,
+                            group_concat(PPO.listingprice_amount) as listingprice_amount
                             FROM 
                                 $product_seller_details as PPO
                                     JOIN
