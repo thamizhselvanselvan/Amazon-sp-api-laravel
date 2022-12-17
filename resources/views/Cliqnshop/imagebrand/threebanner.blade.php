@@ -55,8 +55,9 @@
             <div class="form-group">
                 <x-adminlte-select name="image" label="Select Country" name="country">
                     <option>Select Country</option>
-                    <option>IN</option>
-                    <option>UAE</option>
+                      @foreach ($countrys as $country)
+                     <option value="{{ $country->siteid }}">{{$country->code }}</option>
+                      @endforeach
                 </x-adminlte-select>
             </div>
 

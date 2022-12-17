@@ -5,53 +5,35 @@ namespace App\Http\Controllers\Cliqnshop;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 
 class ImageBrandController extends Controller
 {
-    public function index(Request $request)
+    public function threebanner(Request $request)
     {
-
-        return view('Cliqnshop.imagebrand.index');
+        $countrys = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
+        return view('Cliqnshop.imagebrand.threebanner', compact('countrys'));
     }
+    
     public function storeimage(Request $request)
     {
-
         $request->validate([
 
-            'country' => 'required|in:IN,UAE',
+            'country' => 'required',
             'image' => 'required|in:Image-1,Image-2,Image-3',
             'url' => 'required',
             'img' => 'required|mimes:jpeg,png,jpg',
 
         ]);
         $now =  carbon::now();
-
         if (app()->environment() === 'local') {
-
-            $file_path_img1 = "local/banner/3banner/_image1.jpg";
-            $file_path_img2 = "local/banner/3banner/_image2.jpg";
-            $file_path_img3 = "local/banner/3banner/_image3.jpg";
-
             $old_data = '';
-            if ($request->country == 'IN') {
-
-                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
-                    ->select('content')
-                    ->where("section", '=',  '3_banner_section_in')
-                    ->get();
-            } else {
-
-                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
-                    ->select('content')
-                    ->where("section", '=',  '3_banner_section_ae')
-                    ->get();
-            }
+            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
+                ->where("section", '3_banner_section')
+                ->where("country", $request->country)
+                ->get();
             $val1 = (json_decode($old_data));
-            $val2 = (json_decode($val1['0']->content));
-
             $img1 = '';
             $urli1 = '';
             $img1_url = '';
@@ -63,43 +45,42 @@ class ImageBrandController extends Controller
             $img3 = '';
             $urli3 = '';
             $img3_url = '';
-            if (isset($val2->banner1)) {
-
-
-                $img1 = '';
-                $urli1 = $val2->banner1->url;
-                $img1_url = $val2->banner1->image;
+            if (isset($val1['0']->content)) {
+                $val2 = (json_decode($val1['0']->content));
+                if (isset($val2->banner1)) {
+                    $img1 = '';
+                    $urli1 = $val2->banner1->url;
+                    $img1_url = $val2->banner1->image;
+                }
+                if (isset($val2->banner2)) {
+                    $img2 = '';
+                    $urli2 = $val2->banner2->url;
+                    $img2_url = $val2->banner2->image;
+                }
+                if (isset($val2->banner3)) {
+                    $img3 = '';
+                    $urli3 = $val2->banner3->url;
+                    $img3_url = $val2->banner3->image;
+                }
             }
-            if (isset($val2->banner2)) {
-
-                $img2 = '';
-                $urli2 = $val2->banner2->url;
-                $img2_url = $val2->banner2->image;
-            }
-            if (isset($val2->banner3)) {
-
-                $img3 = '';
-                $urli3 = $val2->banner3->url;
-                $img3_url = $val2->banner3->image;
-            }
-
             if ($request->image == 'Image-1') {
                 $img1 = file_get_contents($request->img);
                 $urli1 = $request->url;
-                Storage::disk('cliqnshop')->put($file_path_img1, $img1);
-                $img1_url = Storage::disk('cliqnshop')->path('local/banner/3banner/_image1.jpg');
+                // Storage::put('local/banner/3banner/' . substr($request->country, 0, -1) . '/image1.jpg', $img1);
+                Storage::disk('cliqnshop')->put('local/banner/3banner/' . substr($request->country, 0, -1) . '/image1.jpg', $img1);
+                $img1_url = Storage::disk('cliqnshop')->path('local/banner/3banner/' . substr($request->country, 0, -1) . '/image1.jpg');
             } else if ($request->image == 'Image-2') {
 
                 $img2 = file_get_contents($request->img);
                 $urli2 = $request->url;
-                Storage::disk('cliqnshop')->put($file_path_img2, $img2);
-                $img2_url = Storage::disk('cliqnshop')->path('local/banner/3banner/_image2.jpg');
+                Storage::disk('cliqnshop')->put('local/banner/3banner/' . substr($request->country, 0, -1) . '/image2.jpg', $img2);
+                $img2_url = Storage::disk('cliqnshop')->path('local/banner/3banner/' . substr($request->country, 0, -1) . '/image2.jpg');
             } else if ($request->image == 'Image-3') {
 
                 $img3 = file_get_contents($request->img);
                 $urli3 = $request->url;
-                Storage::disk('cliqnshop')->put($file_path_img3, $img3);
-                $img3_url = Storage::disk('cliqnshop')->path('local/banner/3banner/_image3.jpg');
+                Storage::disk('cliqnshop')->put('local/banner/3banner/' . substr($request->country, 0, -1) . '/image3.jpg', $img3);
+                $img3_url = Storage::disk('cliqnshop')->path('local/banner/3banner/' . substr($request->country, 0, -1) . '/image3.jpg');
             }
 
             $three_banners = [
@@ -120,44 +101,21 @@ class ImageBrandController extends Controller
                 ],
             ];
             $data =   ((json_encode($three_banners)));
-
-            if ($request->country == 'IN') {
-                DB::connection('cliqnshop')->table('home_page_contents')
-                    ->where("section", '=',  '3_banner_section_in')
-                    ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
-            } else {
-                DB::connection('cliqnshop')->table('home_page_contents')
-                    ->where("section", '=',  '3_banner_section_ae')
-                    ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
-            }
+            $condition = strval($request->country);
+            DB::connection('cliqnshop')->table('home_page_contents')
+                ->where('section', '3_banner_section')
+                ->where('country', $condition)
+                ->update(['content' => $data,  'updated_at' => $now]);
             return redirect()->route('cliqnshop.banner')->with('success', 'Image has Updated successfully');
         }
-
 
         if (app()->environment() === 'staging') {
-
-            $file_path_img1 =  "staging/banner/3banner/_image1.jpg";
-            $file_path_img2 =  "staging/banner/3banner/_image2.jpg";
-            $file_path_img3 =  "staging/banner/3banner/_image3.jpg";
-
             $old_data = '';
-            if ($request->country == 'IN') {
-
-                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
-                    ->select('content')
-                    ->where("section", '=',  '3_banner_section_in')
-                    ->get();
-            } else {
-
-                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
-                    ->select('content')
-                    ->where("section", '=',  '3_banner_section_ae')
-                    ->get();
-            }
-
+            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
+                ->where("section", '3_banner_section')
+                ->where("country", $request->country)
+                ->get();
             $val1 = (json_decode($old_data));
-            $val2 = (json_decode($val1['0']->content));
-
             $img1 = '';
             $urli1 = '';
             $img1_url = '';
@@ -169,43 +127,44 @@ class ImageBrandController extends Controller
             $img3 = '';
             $urli3 = '';
             $img3_url = '';
-            if (isset($val2->banner1)) {
-
-
-                $img1 = '';
-                $urli1 = $val2->banner1->url;
-                $img1_url = $val2->banner1->image;
+            if (isset($val1['0']->content)) {
+                $val2 = (json_decode($val1['0']->content));
+                if (isset($val2->banner1)) {
+                    $img1 = '';
+                    $urli1 = $val2->banner1->url;
+                    $img1_url = $val2->banner1->image;
+                }
+                if (isset($val2->banner2)) {
+                    $img2 = '';
+                    $urli2 = $val2->banner2->url;
+                    $img2_url = $val2->banner2->image;
+                }
+                if (isset($val2->banner3)) {
+                    $img3 = '';
+                    $urli3 = $val2->banner3->url;
+                    $img3_url = $val2->banner3->image;
+                }
             }
-            if (isset($val2->banner2)) {
-
-                $img2 = '';
-                $urli2 = $val2->banner2->url;
-                $img2_url = $val2->banner2->image;
-            }
-            if (isset($val2->banner3)) {
-
-                $img3 = '';
-                $urli3 = $val2->banner3->url;
-                $img3_url = $val2->banner3->image;
-            }
-
             if ($request->image == 'Image-1') {
-
                 $img1 = file_get_contents($request->img);
                 $urli1 = $request->url;
-                Storage::disk('cliqnshop')->put($file_path_img1, $img1);
-                $img1_url = Storage::disk('cliqnshop')->path('staging/banner/3banner/_image1.jpg');
+                // Storage::put('staging/banner/3banner/' . substr($request->country, 0, -1) . '/image1.jpg', $img1);
+                Storage::disk('cliqnshop')->put('staging/banner/3banner/' . substr($request->country, 0, -1) . '/image1.jpg', $img1);
+                $img1_url = Storage::disk('cliqnshop')->path('staging/banner/3banner/' . substr($request->country, 0, -1) . '/image1.jpg');
             } else if ($request->image == 'Image-2') {
+
                 $img2 = file_get_contents($request->img);
                 $urli2 = $request->url;
-                Storage::disk('cliqnshop')->put($file_path_img2, $img2);
-                $img2_url = Storage::disk('cliqnshop')->path('staging/banner/3banner/_image2.jpg');
+                Storage::disk('cliqnshop')->put('staging/banner/3banner/' . substr($request->country, 0, -1) . '/image2.jpg', $img2);
+                $img2_url = Storage::disk('cliqnshop')->path('staging/banner/3banner/' . substr($request->country, 0, -1) . '/image2.jpg');
             } else if ($request->image == 'Image-3') {
+
                 $img3 = file_get_contents($request->img);
                 $urli3 = $request->url;
-                Storage::disk('cliqnshop')->put($file_path_img3, $img3);
-                $img3_url = Storage::disk('cliqnshop')->path('staging/banner/3banner/_image3.jpg');
+                Storage::disk('cliqnshop')->put('staging/banner/3banner/' . substr($request->country, 0, -1) . '/image3.jpg', $img3);
+                $img3_url = Storage::disk('cliqnshop')->path('staging/banner/3banner/' . substr($request->country, 0, -1) . '/image3.jpg');
             }
+
             $three_banners = [
                 'banner1' =>
                 [
@@ -224,43 +183,21 @@ class ImageBrandController extends Controller
                 ],
             ];
             $data =   ((json_encode($three_banners)));
-
-            if ($request->country == 'IN') {
-                DB::connection('cliqnshop')->table('home_page_contents')
-                    ->where("section", '=',  '3_banner_section_in')
-                    ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
-            } else {
-                DB::connection('cliqnshop')->table('home_page_contents')
-                    ->where("section", '=',  '3_banner_section_ae')
-                    ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
-            }
+            $condition = strval($request->country);
+            DB::connection('cliqnshop')->table('home_page_contents')
+                ->where('section', '3_banner_section')
+                ->where('country', $condition)
+                ->update(['content' => $data,  'updated_at' => $now]);
             return redirect()->route('cliqnshop.banner')->with('success', 'Image has Updated successfully');
         }
 
-
         if (app()->environment() === 'production') {
-
-            $file_path_img1 =  "production/banner/3banner/_image1.jpg";
-            $file_path_img2 =  "production/banner/3banner/_image2.jpg";
-            $file_path_img3 =  "production/banner/3banner/_image3.jpg";
             $old_data = '';
-            if ($request->country == 'IN') {
-
-                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
-                    ->select('content')
-                    ->where("section", '=',  '3_banner_section_in')
-                    ->get();
-            } else {
-
-                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
-                    ->select('content')
-                    ->where("section", '=',  '3_banner_section_ae')
-                    ->get();
-            }
-
+            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
+                ->where("section", '3_banner_section')
+                ->where("country", $request->country)
+                ->get();
             $val1 = (json_decode($old_data));
-            $val2 = (json_decode($val1['0']->content));
-
             $img1 = '';
             $urli1 = '';
             $img1_url = '';
@@ -272,40 +209,42 @@ class ImageBrandController extends Controller
             $img3 = '';
             $urli3 = '';
             $img3_url = '';
-            if (isset($val2->banner1)) {
-                $img1 = '';
-                $urli1 = $val2->banner1->url;
-                $img1_url = $val2->banner1->image;
+            if (isset($val1['0']->content)) {
+                $val2 = (json_decode($val1['0']->content));
+                if (isset($val2->banner1)) {
+                    $img1 = '';
+                    $urli1 = $val2->banner1->url;
+                    $img1_url = $val2->banner1->image;
+                }
+                if (isset($val2->banner2)) {
+                    $img2 = '';
+                    $urli2 = $val2->banner2->url;
+                    $img2_url = $val2->banner2->image;
+                }
+                if (isset($val2->banner3)) {
+                    $img3 = '';
+                    $urli3 = $val2->banner3->url;
+                    $img3_url = $val2->banner3->image;
+                }
             }
-            if (isset($val2->banner2)) {
-
-                $img2 = '';
-                $urli2 = $val2->banner2->url;
-                $img2_url = $val2->banner2->image;
-            }
-            if (isset($val2->banner3)) {
-
-                $img3 = '';
-                $urli3 = $val2->banner3->url;
-                $img3_url = $val2->banner3->image;
-            }
-
             if ($request->image == 'Image-1') {
-
                 $img1 = file_get_contents($request->img);
                 $urli1 = $request->url;
-                Storage::disk('cliqnshop')->put($file_path_img1, $img1);
-                $img1_url = Storage::disk('cliqnshop')->path('production/banner/3banner/_image1.jpg');
+                // Storage::put('production/banner/3banner/' . substr($request->country, 0, -1) . '/image1.jpg', $img1);
+                Storage::disk('cliqnshop')->put('production/banner/3banner/' . substr($request->country, 0, -1) . '/image1.jpg', $img1);
+                $img1_url = Storage::disk('cliqnshop')->path('production/banner/3banner/' . substr($request->country, 0, -1) . '/image1.jpg');
             } else if ($request->image == 'Image-2') {
+
                 $img2 = file_get_contents($request->img);
                 $urli2 = $request->url;
-                Storage::disk('cliqnshop')->put($file_path_img2, $img2);
-                $img2_url = Storage::disk('cliqnshop')->path('production/banner/3banner/_image2.jpg');
+                Storage::disk('cliqnshop')->put('production/banner/3banner/' . substr($request->country, 0, -1) . '/image2.jpg', $img2);
+                $img2_url = Storage::disk('cliqnshop')->path('production/banner/3banner/' . substr($request->country, 0, -1) . '/image2.jpg');
             } else if ($request->image == 'Image-3') {
+
                 $img3 = file_get_contents($request->img);
                 $urli3 = $request->url;
-                Storage::disk('cliqnshop')->put($file_path_img3, $img3);
-                $img3_url = Storage::disk('cliqnshop')->path('production/banner/3banner/_image3.jpg');
+                Storage::disk('cliqnshop')->put('production/banner/3banner/' . substr($request->country, 0, -1) . '/image3.jpg', $img3);
+                $img3_url = Storage::disk('cliqnshop')->path('production/banner/3banner/' . substr($request->country, 0, -1) . '/image3.jpg');
             }
 
             $three_banners = [
@@ -326,17 +265,11 @@ class ImageBrandController extends Controller
                 ],
             ];
             $data =   ((json_encode($three_banners)));
-
-
-            if ($request->country == 'IN') {
-                DB::connection('cliqnshop')->table('home_page_contents')
-                    ->where("section", '=',  '3_banner_section_in')
-                    ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
-            } else {
-                DB::connection('cliqnshop')->table('home_page_contents')
-                    ->where("section", '=',  '3_banner_section_ae')
-                    ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
-            }
+            $condition = strval($request->country);
+            DB::connection('cliqnshop')->table('home_page_contents')
+                ->where('section', '3_banner_section')
+                ->where('country', $condition)
+                ->update(['content' => $data,  'updated_at' => $now]);
             return redirect()->route('cliqnshop.banner')->with('success', 'Image has Updated successfully');
         }
     }
@@ -377,46 +310,28 @@ class ImageBrandController extends Controller
 
     public function twobannersection()
     {
-        return view('Cliqnshop.imagebrand.twobanners');
+        $countrys = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
+        return view('Cliqnshop.imagebrand.twobanners', compact('countrys'));
     }
 
     public function two_bannerstore(Request $request)
     {
         $request->validate([
 
-            'country' => 'required|in:IN,UAE',
+            'country' => 'required',
             'image_number' => 'required|in:Image-1,Image-2',
             'url' => 'required',
             'selected_image' => 'required|mimes:jpeg,png,jpg',
         ]);
         $now = Carbon::now();
         if (app()->environment() === 'local') {
-            $file_path_img1 =  "local/banner/2banner/_image1.jpg";;
-            $file_path_img2 =  "local/banner/2banner/_image2.jpg";;
-
-
-
-
             $old_data = '';
-            if ($request->country == 'IN') {
-
-                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
-                    ->select('content')
-                    ->where("section", '=',  '2_banner_section_in')
-                    ->get();
-            } else {
-
-                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
-                    ->select('content')
-                    ->where("section", '=',  '2_banner_section_ae')
-                    ->get();
-            }
-
-
+            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
+                ->where("section", '2_banner_section')
+                ->where("country", $request->country)
+                ->get();
 
             $val1 = (json_decode($old_data));
-            $val2 = (json_decode($val1['0']->content));
-
             $img1 = '';
             $urli1 = '';
             $img1_url = '';
@@ -424,35 +339,33 @@ class ImageBrandController extends Controller
             $img2 = '';
             $urli2 = '';
             $img2_url = '';
+            if (isset($val1['0']->content)) {
+                $val2 = (json_decode($val1['0']->content));
+                if (isset($val2->banner1)) {
+                    $img1 = '';
+                    $urli1 = $val2->banner1->url;
+                    $img1_url = $val2->banner1->image;
+                }
+                if (isset($val2->banner2)) {
 
-
-            if (isset($val2->banner1)) {
-                $img1 = '';
-                $urli1 = $val2->banner1->url;
-                $img1_url = $val2->banner1->image;
+                    $img2 = '';
+                    $urli2 = $val2->banner2->url;
+                    $img2_url = $val2->banner2->image;
+                }
             }
-            if (isset($val2->banner2)) {
-
-                $img2 = '';
-                $urli2 = $val2->banner2->url;
-                $img2_url = $val2->banner2->image;
-            }
-
             if ($request->image_number == 'Image-1') {
                 $img1 = file_get_contents($request->selected_image);
                 $urli1 = $request->url;
-                // Storage::put($file_path_img1, $img1);
-                // $img1_url = 'local/banner/2banner_section/_image1.jpg';
-                Storage::disk('cliqnshop')->put($file_path_img1, $img1);
-                $img1_url = Storage::disk('cliqnshop')->path('local/banner/2banner/_image1.jpg');
+                // Storage::put('local/banner/2banner/' . substr($request->country, 0, -1) . '/image1.jpg', $img1);
+                // $img1_url = 'local/banner/2banner/' . substr($request->country, 0, -1) . '/image1.jpg';
+                Storage::disk('cliqnshop')->put('local/banner/2banner/' . substr($request->country, 0, -1) . '/image1.jpg', $img1);
+                $img1_url = Storage::disk('cliqnshop')->path('local/banner/2banner/' . substr($request->country, 0, -1) . '/image1.jpg');
             } else if ($request->image_number == 'Image-2') {
 
                 $img2 = file_get_contents($request->selected_image);
                 $urli2 = $request->url;
-                // $img2_url = 'local/2banner_section/_image2.jpg"';
-                // Storage::put($file_path_img2, $img2);
-                Storage::disk('cliqnshop')->put($file_path_img2, $img2);
-                $img2_url = Storage::disk('cliqnshop')->path('local/banner/2banner/_image2.jpg');
+                Storage::disk('cliqnshop')->put('local/banner/2banner/' . substr($request->country, 0, -1) . '/image2.jpg', $img2);
+                $img2_url = Storage::disk('cliqnshop')->path('local/banner/2banner/' . substr($request->country, 0, -1) . '/image2.jpg');
             }
 
             $two_banners = [
@@ -468,46 +381,26 @@ class ImageBrandController extends Controller
                 ],
             ];
             $data =   ((json_encode($two_banners)));
+            $condition = strval($request->country);
 
-
-            if ($request->country == 'IN') {
-                DB::connection('cliqnshop')->table('home_page_contents')
-                    ->where("section", '=',  '2_banner_section_in')
-                    ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
-            } else {
-                DB::connection('cliqnshop')->table('home_page_contents')
-                    ->where("section", '=',  '2_banner_section_ae')
-                    ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
-            }
+            DB::connection('cliqnshop')->table('home_page_contents')
+                ->where('section', '2_banner_section')
+                ->where('country', $condition)
+                ->update(['content' => $data,  'updated_at' => $now]);
 
             return redirect()->route('cliqnshop.twobanners')->with('success', 'Image has Updated successfully');
         }
 
         if (app()->environment() === 'staging') {
 
-            $file_path_img1 =  "staging/banner/2banner/_image1.jpg";
-            $file_path_img2 =  "staging/banner/2banner/_image2.jpg";
 
             $old_data = '';
-            if ($request->country == 'IN') {
-
-                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
-                    ->select('content')
-                    ->where("section", '=',  '2_banner_section_in')
-                    ->get();
-            } else {
-
-                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
-                    ->select('content')
-                    ->where("section", '=',  '2_banner_section_ae')
-                    ->get();
-            }
-
-
+            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
+                ->where("section", '2_banner_section')
+                ->where("country", $request->country)
+                ->get();
 
             $val1 = (json_decode($old_data));
-            $val2 = (json_decode($val1['0']->content));
-
             $img1 = '';
             $urli1 = '';
             $img1_url = '';
@@ -515,32 +408,33 @@ class ImageBrandController extends Controller
             $img2 = '';
             $urli2 = '';
             $img2_url = '';
+            if (isset($val1['0']->content)) {
+                $val2 = (json_decode($val1['0']->content));
+                if (isset($val2->banner1)) {
+                    $img1 = '';
+                    $urli1 = $val2->banner1->url;
+                    $img1_url = $val2->banner1->image;
+                }
+                if (isset($val2->banner2)) {
 
-            if (isset($val2->banner1)) {
-
-                $img1 = '';
-                $urli1 = $val2->banner1->url;
-                $img1_url = $val2->banner1->image;
+                    $img2 = '';
+                    $urli2 = $val2->banner2->url;
+                    $img2_url = $val2->banner2->image;
+                }
             }
-            if (isset($val2->banner2)) {
-
-                $img2 = '';
-                $urli2 = $val2->banner2->url;
-                $img2_url = $val2->banner2->image;
-            }
-
-
             if ($request->image_number == 'Image-1') {
-
                 $img1 = file_get_contents($request->selected_image);
                 $urli1 = $request->url;
-                Storage::disk('cliqnshop')->put($file_path_img1, $img1);
-                $img1_url = Storage::disk('cliqnshop')->path('staging/banner/2banner/_image1.jpg');
+                // Storage::put($file_path_img1, $img1);
+                // $img1_url = 'staging/banner/2banner_section/_image1.jpg';
+                Storage::disk('cliqnshop')->put('staging/banner/2banner/' . substr($request->country, 0, -1) . '/image1.jpg', $img1);
+                $img1_url = Storage::disk('cliqnshop')->path('staging/banner/2banner/' . substr($request->country, 0, -1) . '/image1.jpg');
             } else if ($request->image_number == 'Image-2') {
+
                 $img2 = file_get_contents($request->selected_image);
                 $urli2 = $request->url;
-                Storage::disk('cliqnshop')->put($file_path_img2, $img2);
-                $img2_url = Storage::disk('cliqnshop')->path('staging/banner/2banner/_image2.jpg');
+                Storage::disk('cliqnshop')->put('staging/banner/2banner/' . substr($request->country, 0, -1) . '/image2.jpg', $img2);
+                $img2_url = Storage::disk('cliqnshop')->path('staging/banner/2banner/' . substr($request->country, 0, -1) . '/image2.jpg');
             }
 
             $two_banners = [
@@ -556,45 +450,24 @@ class ImageBrandController extends Controller
                 ],
             ];
             $data =   ((json_encode($two_banners)));
+            $condition = strval($request->country);
 
+            DB::connection('cliqnshop')->table('home_page_contents')
+                ->where('section', '2_banner_section')
+                ->where('country', $condition)
+                ->update(['content' => $data,  'updated_at' => $now]);
 
-            if ($request->country == 'IN') {
-                DB::connection('cliqnshop')->table('home_page_contents')
-                    ->where("section", '=',  '2_banner_section_in')
-                    ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
-            } else {
-                DB::connection('cliqnshop')->table('home_page_contents')
-                    ->where("section", '=',  '2_banner_section_ae')
-                    ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
-            }
-            return redirect()->route('cliqnshop.banner')->with('success', 'Image has Updated successfully');
+            return redirect()->route('cliqnshop.twobanners')->with('success', 'Image has Updated successfully');
         }
 
         if (app()->environment() === 'production') {
-
-            $file_path_img1 =  "production/banner/2banner/_image1.jpg";
-            $file_path_img2 =  "production/banner/2banner/_image2.jpg";
-
             $old_data = '';
-            if ($request->country == 'IN') {
-
-                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
-                    ->select('content')
-                    ->where("section", '=',  '2_banner_section_in')
-                    ->get();
-            } else {
-
-                $old_data =   DB::connection('cliqnshop')->table('home_page_contents')
-                    ->select('content')
-                    ->where("section", '=',  '2_banner_section_ae')
-                    ->get();
-            }
-
-
+            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
+                ->where("section", '2_banner_section')
+                ->where("country", $request->country)
+                ->get();
 
             $val1 = (json_decode($old_data));
-            $val2 = (json_decode($val1['0']->content));
-
             $img1 = '';
             $urli1 = '';
             $img1_url = '';
@@ -602,32 +475,33 @@ class ImageBrandController extends Controller
             $img2 = '';
             $urli2 = '';
             $img2_url = '';
+            if (isset($val1['0']->content)) {
+                $val2 = (json_decode($val1['0']->content));
+                if (isset($val2->banner1)) {
+                    $img1 = '';
+                    $urli1 = $val2->banner1->url;
+                    $img1_url = $val2->banner1->image;
+                }
+                if (isset($val2->banner2)) {
 
-            if (isset($val2->banner1)) {
-
-                $img1 = '';
-                $urli1 = $val2->banner1->url;
-                $img1_url = $val2->banner1->image;
+                    $img2 = '';
+                    $urli2 = $val2->banner2->url;
+                    $img2_url = $val2->banner2->image;
+                }
             }
-            if (isset($val2->banner2)) {
-
-                $img2 = '';
-                $urli2 = $val2->banner2->url;
-                $img2_url = $val2->banner2->image;
-            }
-
-
             if ($request->image_number == 'Image-1') {
-
                 $img1 = file_get_contents($request->selected_image);
                 $urli1 = $request->url;
-                Storage::disk('cliqnshop')->put($file_path_img1, $img1);
-                $img1_url = Storage::disk('cliqnshop')->path('production/banner/2banner/_image1.jpg');
+                // Storage::put($file_path_img1, $img1);
+                // $img1_url = 'production/banner/2banner_section/_image1.jpg';
+                Storage::disk('cliqnshop')->put('production/banner/2banner/' . substr($request->country, 0, -1) . '/image1.jpg', $img1);
+                $img1_url = Storage::disk('cliqnshop')->path('production/banner/2banner/' . substr($request->country, 0, -1) . '/image1.jpg');
             } else if ($request->image_number == 'Image-2') {
+
                 $img2 = file_get_contents($request->selected_image);
                 $urli2 = $request->url;
-                Storage::disk('cliqnshop')->put($file_path_img2, $img2);
-                $img2_url = Storage::disk('cliqnshop')->path('production/banner/2banner/_image2.jpg');
+                Storage::disk('cliqnshop')->put('production/banner/2banner/' . substr($request->country, 0, -1) . '/image2.jpg', $img2);
+                $img2_url = Storage::disk('cliqnshop')->path('production/banner/2banner/' . substr($request->country, 0, -1) . '/image2.jpg');
             }
 
             $two_banners = [
@@ -643,18 +517,14 @@ class ImageBrandController extends Controller
                 ],
             ];
             $data =   ((json_encode($two_banners)));
+            $condition = strval($request->country);
 
+            DB::connection('cliqnshop')->table('home_page_contents')
+                ->where('section', '2_banner_section')
+                ->where('country', $condition)
+                ->update(['content' => $data,  'updated_at' => $now]);
 
-            if ($request->country == 'IN') {
-                DB::connection('cliqnshop')->table('home_page_contents')
-                    ->where("section", '=',  '2_banner_section_in')
-                    ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
-            } else {
-                DB::connection('cliqnshop')->table('home_page_contents')
-                    ->where("section", '=',  '2_banner_section_ae')
-                    ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
-            }
-            return redirect()->route('cliqnshop.banner')->with('success', 'Image has Updated successfully');
+            return redirect()->route('cliqnshop.twobanners')->with('success', 'Image has Updated successfully');
         }
     }
 
@@ -690,11 +560,7 @@ class ImageBrandController extends Controller
             if (isset($val1['0']->content)) {
                 $val2 = (json_decode($val1['0']->content));
 
-
-
                 if (isset($val2->banner1)) {
-
-
                     $imageurl = $val2->banner1->url;
                     $image = $val2->banner1->image;
                     $primary_text = $val2->banner1->primary_text;
@@ -708,8 +574,10 @@ class ImageBrandController extends Controller
                 $imageurl = $request->url;
                 $primary_text = $request->primary_text;
                 $secondary_text = $request->secondary_text;
-                Storage::disk('cliqnshop')->put('local/banner/1banner/' . substr($request->country, 0, -1) . '_image1.jpg', $image);
-                $url_do = Storage::disk('cliqnshop')->path('local/banner/1banner/' . substr($request->country, 0, -1) . '_image1.jpg');
+                // Storage::put('local/banner/1banner/' . substr($request->country, 0, -1) . '/_image1.jpg', $image);
+                // $url_do = 'local/banner/1banner/' . substr($request->country, 0, -1) . '/_image1.jpg';
+                Storage::disk('cliqnshop')->put('local/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg', $image);
+                $url_do = Storage::disk('cliqnshop')->path('local/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg');
             }
 
             $one_banners = [
@@ -759,8 +627,8 @@ class ImageBrandController extends Controller
                 $imageurl = $request->url;
                 $primary_text = $request->primary_text;
                 $secondary_text = $request->secondary_text;
-                Storage::disk('cliqnshop')->put('staging/banner/1banner/' . substr($request->country, 0, -1) . '_image1.jpg', $image);
-                $url_do = Storage::disk('cliqnshop')->path('staging/banner/1banner/' . substr($request->country, 0, -1) . '_image1.jpg');
+                Storage::disk('cliqnshop')->put('staging/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg', $image);
+                $url_do = Storage::disk('cliqnshop')->path('staging/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg');
             }
 
             $one_banners = [
@@ -810,8 +678,8 @@ class ImageBrandController extends Controller
                 $imageurl = $request->url;
                 $primary_text = $request->primary_text;
                 $secondary_text = $request->secondary_text;
-                Storage::disk('cliqnshop')->put('production/banner/1banner/' . substr($request->country, 0, -1) . '_image1.jpg', $image);
-                $url_do = Storage::disk('cliqnshop')->path('production/banner/1banner/' . substr($request->country, 0, -1) . '_image1.jpg');
+                Storage::disk('cliqnshop')->put('production/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg', $image);
+                $url_do = Storage::disk('cliqnshop')->path('production/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg');
             }
 
             $one_banners = [
@@ -921,38 +789,38 @@ class ImageBrandController extends Controller
                 $urli1 = $request->url;
                 // Storage::put('local/banner/trending/'.substr($request->country, 0, -1).'/_image1.jpg', $img1);
                 // $img1_url = 'local/banner/trending/'.substr($request->country, 0, -1).'/_image1.jpg';
-                Storage::disk('cliqnshop')->put('local/banner/trending/' . substr($request->country, 0, -1) . '/_image1.jpg', $img1);
-                $img1_url = Storage::disk('cliqnshop')->path('local/banner/trending/' . substr($request->country, 0, -1) . '/_image1.jpg');
+                Storage::disk('cliqnshop')->put('local/banner/trending/' . substr($request->country, 0, -1) . '/image1.jpg', $img1);
+                $img1_url = Storage::disk('cliqnshop')->path('local/banner/trending/' . substr($request->country, 0, -1) . '/image1.jpg');
             } else 
             if ($request->image_number == 'Image-2') {
                 $img2 = file_get_contents($request->selected_image);
                 $urli2 = $request->url;
                 Storage::disk('cliqnshop')->put('local/banner/trending/' . substr($request->country, 0, -1) . '/_image2.jpg', $img2);
-                $img2_url = Storage::disk('cliqnshop')->path('local/banner/trending/' . substr($request->country, 0, -1) . '/_image2.jpg');
+                $img2_url = Storage::disk('cliqnshop')->path('local/banner/trending/' . substr($request->country, 0, -1) . '/image2.jpg');
             }
             if ($request->image_number == 'Image-3') {
                 $img3 = file_get_contents($request->selected_image);
                 $urli3 = $request->url;
                 Storage::disk('cliqnshop')->put('local/banner/trending/' . substr($request->country, 0, -1) . '/_image3.jpg', $img3);
-                $img3_url = Storage::disk('cliqnshop')->path('local/banner/trending/' . substr($request->country, 0, -1) . '/_image3.jpg');
+                $img3_url = Storage::disk('cliqnshop')->path('local/banner/trending/' . substr($request->country, 0, -1) . '/image3.jpg');
             }
             if ($request->image_number == 'Image-4') {
                 $img4 = file_get_contents($request->selected_image);
                 $urli4 = $request->url;
                 Storage::disk('cliqnshop')->put('local/banner/trending/' . substr($request->country, 0, -1) . '/_image4.jpg', $img4);
-                $img4_url = Storage::disk('cliqnshop')->path('local/banner/trending/' . substr($request->country, 0, -1) . '/_image4.jpg');
+                $img4_url = Storage::disk('cliqnshop')->path('local/banner/trending/' . substr($request->country, 0, -1) . '/image4.jpg');
             }
             if ($request->image_number == 'Image-5') {
                 $img5 = file_get_contents($request->selected_image);
                 $urli5 = $request->url;
                 Storage::disk('cliqnshop')->put('local/banner/trending/' . substr($request->country, 0, -1) . '/_image5.jpg', $img5);
-                $img5_url = Storage::disk('cliqnshop')->path('local/banner/trending/' . substr($request->country, 0, -1) . '/_image5.jpg');
+                $img5_url = Storage::disk('cliqnshop')->path('local/banner/trending/' . substr($request->country, 0, -1) . '/image5.jpg');
             }
             if ($request->image_number == 'Image-6') {
                 $img6 = file_get_contents($request->selected_image);
                 $urli6 = $request->url;
                 Storage::disk('cliqnshop')->put('local/banner/trending/' . substr($request->country, 0, -1) . '/_image6.jpg', $img6);
-                $img6_url = Storage::disk('cliqnshop')->path('local/banner/trending/' . substr($request->country, 0, -1) . '/_image6.jpg');
+                $img6_url = Storage::disk('cliqnshop')->path('local/banner/trending/' . substr($request->country, 0, -1) . '/image6.jpg');
             }
 
             $trending_brands = [
