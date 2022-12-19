@@ -444,6 +444,8 @@ class B2cshipBookingServices
     {
         if (strtoupper($state_name) == 'JAMMU & KASHMIR') {
             return 'JK';
+        } else if (strtoupper($state_name) == 'WEST BANGAL') {
+            return 'West Bengal';
         }
         return $state_name;
     }
