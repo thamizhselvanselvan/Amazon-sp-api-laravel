@@ -56,6 +56,8 @@ class FeedTrackingDetailsApp360 extends Command
         $groups = $data->groupBy('store_id');
 
         if ($data->isEmpty()) {
+            $command_end_time = now();
+            ProcessManagementUpdate($pm_id, $command_end_time);
             return false;
         }
 
@@ -77,12 +79,9 @@ class FeedTrackingDetailsApp360 extends Command
         $class = 'Amazon_Feed\UpdateAWBToAmazon';
 
         $command_end_time = now();
-        Log::notice('Before Dispatch time -> ' . $command_end_time);
 
         jobDispatchFunc($class, $store_details);
 
         ProcessManagementUpdate($pm_id, $command_end_time);
-
-        Log::notice('Command End time -> ' . $command_end_time);
     }
 }
