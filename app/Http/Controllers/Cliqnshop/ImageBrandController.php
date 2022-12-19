@@ -276,13 +276,14 @@ class ImageBrandController extends Controller
 
     public function topselling(Request $request)
     {
-        return view('Cliqnshop.imagebrand.asins');
+        $countrys = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
+        return view('Cliqnshop.imagebrand.asins', compact('countrys'));
     }
 
     public function storeasin(Request $request)
     {
         $request->validate([
-            'country' => 'required|in:IN,UAE',
+            'country' => 'required',
             'top_asin' => 'required',
         ]);
 
@@ -295,15 +296,11 @@ class ImageBrandController extends Controller
         $data = (json_encode($asins));
         $country = $request->country;
         $now =  carbon::now();
-        if ($country == 'IN') {
-            DB::connection('cliqnshop')->table('home_page_contents')
-                ->where("section", '=',  'top_selling_products_section_in')
-                ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
-        } else {
-            DB::connection('cliqnshop')->table('home_page_contents')
-                ->where("section", '=',  'top_selling_products_section_ae')
-                ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
-        }
+        $condition = strval($request->country);
+        DB::connection('cliqnshop')->table('home_page_contents')
+        ->where('section', 'top_selling_products_section')
+        ->where('country', $condition)
+        ->update(['content' => $data,  'updated_at' => $now]);
 
         return redirect()->route('cliqnshop.brand')->with('success', ' ASIN Inserted Successfuly');
     }
