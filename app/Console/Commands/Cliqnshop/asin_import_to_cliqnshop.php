@@ -46,9 +46,9 @@ class asin_import_to_cliqnshop extends Command
     public function handle()
     {
 
-        $filename = storage_path('app\Cliqnshop\asin_import\cliqnshop_asin.csv');
-        $file = fopen($filename, "r");
-        $all_data = array();
+        // $filename = storage_path('Cliqnshop\asin_import\cliqnshop_asin.csv');
+        // $file = fopen($filename, "r");
+        // $all_data = array();
         $csv_data =  CSV_Reader('Cliqnshop\asin_import\cliqnshop_asin.csv');
 
         foreach ($csv_data as $data) {
@@ -224,7 +224,12 @@ class asin_import_to_cliqnshop extends Command
         $total_csv = 100000;
         $chunk = 10000;
         $csv_number = $total_csv / $chunk;
+
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
+
+        $csv_values = [];
+        $catalog_csv_writer = '';
+
 
         $result = $table_name->select($headers)
             ->join('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
@@ -551,7 +556,7 @@ class asin_import_to_cliqnshop extends Command
                 'Country Code' => null,
                 'City' => null,
             ];
-           
+
             $exportFilePath = "Cliqnshop/imported_cat/" . "uploaded_asin_brandCliqnshop" . $this->offset . ".csv";
             if (!Storage::exists($exportFilePath)) {
                 Storage::put($exportFilePath, '');
