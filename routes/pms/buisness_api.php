@@ -46,7 +46,7 @@ Route::get('cliqnshop/kyc/update', 'Cliqnshop\CliqnshopKycController@kyc_status'
 Route::get('cliqnshop/contact', 'Cliqnshop\ContactListController@contactlist')->name('cliqnshop.contacted');
 Route::get('cliqnshop/contact/list', 'Cliqnshop\ContactListController@contactlist')->name('cliqnshop.contacted.list');
 
-Route::get('cliqnshop/banner', 'Cliqnshop\ImageBrandController@index')->name('cliqnshop.banner');
+Route::get('cliqnshop/banner', 'Cliqnshop\ImageBrandController@threebanner')->name('cliqnshop.banner');
 Route::post('cliqnshop/banner/image', 'Cliqnshop\ImageBrandController@storeimage')->name('cliqnshop.image.store');
 
 Route::get('cliqnshop/brand', 'Cliqnshop\ImageBrandController@topselling')->name('cliqnshop.brand');
