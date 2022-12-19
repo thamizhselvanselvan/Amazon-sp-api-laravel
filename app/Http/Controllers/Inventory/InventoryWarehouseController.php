@@ -97,17 +97,14 @@ class InventoryWarehouseController extends Controller
     {
         $country =Country::select('id','name')->get();
         $name = Warehouse::where('id', $id)->first();
-
         $country = Country::get();
-        $state = State::get();
-        $city = City::get();
        
         $selected_country = $name->country;
         $selected_state = $name->state;
         $selected_city = $name->city;
        
         
-        return view('inventory.warehouse.edit', compact('name','country','state','city','selected_country','selected_state','selected_city'));
+        return view('inventory.warehouse.edit', compact('name','country','selected_country','selected_state','selected_city'));
     }
 
     public function update(Request $request, $id)
@@ -154,7 +151,7 @@ class InventoryWarehouseController extends Controller
         {
             $city=City::where('state_id',$id)->get();
         }
-        return response()->json( $city);
+        return response()->json($city);
         
     }
 }
