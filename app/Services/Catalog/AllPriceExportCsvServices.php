@@ -22,9 +22,10 @@ class AllPriceExportCsvServices
     private $export_file_path;
     private $fileNameOffset = 0;
 
-    public function index($country_code, $fm_id)
+    public function index($country_code, $fm_id, $priority = 'All')
     {
         $this->country_code = strtoupper($country_code);
+        $this->priority = $priority;
 
         // Log::info('working');
         $chunk = 4000;
@@ -113,7 +114,7 @@ class AllPriceExportCsvServices
 
         $total_count = 0;
 
-        $this->export_file_path = "excel/downloads/catalog_price/$this->country_code/All/CatalogPrice";
+        $this->export_file_path = "excel/downloads/catalog_price/$this->country_code/$this->priority/CatalogPrice";
         $us_destination  = table_model_create(country_code: $this->country_code, model: 'Asin_destination', table_name: 'asin_destination_');
 
         $count = $us_destination->max('id');
@@ -146,11 +147,12 @@ class AllPriceExportCsvServices
             $start_id = ($chunk * $start) + $min_id;
             $end_id = (($chunk * ($start + 1))) + $min_id;
 
-            // Log::alert('start id' . $start_id);
-
             // $end_id = isset($all_id[$end_array]['id']) ? $all_id[$end_array]['id'] : $all_id[$count - 1];
 
             $asin = $us_destination->select('id', 'asin', 'priority')
+                ->when($this->priority != 'All', function ($query) {
+                    return $query->where('priority', $this->priority);
+                })
                 ->where('id', '>=', $start_id)
                 ->where('id', '<', $end_id)
                 ->get();
@@ -164,7 +166,6 @@ class AllPriceExportCsvServices
                     $where_asin[$value['id']] = $value['asin'];
                     $asin_priority[$value['asin']] = $value['priority'];
                 }
-                // Log::notice($where_asin);
                 if ($this->country_code == 'US') {
 
                     $pricing_details = PricingUs::whereIn('asin', $where_asin)
@@ -244,7 +245,7 @@ class AllPriceExportCsvServices
     public function createZip()
     {
         $zip = new ZipArchive;
-        $path = "excel/downloads/catalog_price/" . $this->country_code . '/All/zip/' . $this->country_code . "_CatalogPrice.zip";
+        $path = "excel/downloads/catalog_price/" . $this->country_code . '/' . $this->priority . '/zip/' . $this->country_code . "_CatalogPrice.zip";
         $file_path = Storage::path($path);
         if (!Storage::exists($path)) {
             Storage::put($path, '');
@@ -252,7 +253,7 @@ class AllPriceExportCsvServices
         if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
             foreach ($this->totalFile as $key => $value) {
 
-                $path = Storage::path('excel/downloads/catalog_price/' . $this->country_code . "/All/" . $value);
+                $path = Storage::path('excel/downloads/catalog_price/' . $this->country_code . "/$this->priority/" . $value);
                 $relativeNameInZipFile = basename($path);
                 $zip->addFile($path, $relativeNameInZipFile);
             }

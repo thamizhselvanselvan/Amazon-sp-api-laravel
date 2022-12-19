@@ -11,7 +11,7 @@
     <div class="col=1"></div>
 </div>
 <div class="row justify-content-center">
-    <h3>Cliqnshop 2 Banner Section </h3>
+    <h3>Cliqnshop 1 Banner Section </h3>
 </div>
 
 @stop
@@ -37,43 +37,46 @@
         </div>
     </div>
 </div>
-<form method="post" action="{{route('cliqnshop.two.banner.store')}}" enctype="multipart/form-data">
+<form method="post" action="{{route('cliqnshop.one.banner.store')}}" enctype="multipart/form-data">
     @csrf
     <div class="row justify-content-center">
         <div class="col-3">
-            <div class="form-group">
-                <x-adminlte-select name="image_number" label="Select Image">
-                    <option>Select Image No.</option>
-                    <option>Image-1</option>
-                    <option>Image-2</option>
-
-                </x-adminlte-select>
-            </div>
-        </div>
-
-        <div class="col-2">
-            <div class="form-group">
-                <x-adminlte-select name="country" label="Select Country" name="country">
-                     <option>Select Country</option>
-                      @foreach ($countrys as $country)
-                     <option value="{{ $country->siteid }}">{{$country->code }}</option>
-                      @endforeach
-                </x-adminlte-select>
-            </div>
-
-        </div>
-    </div>
-    <div class="row justify-content-center">
-        <div class="col-5">
             <div class="form-group">
                 <label for="text">Redirection URL</label>
                 <x-adminlte-input class="form-control " type="text" placeholder="Enter Redirect URL For Image" name="url" id="url" />
             </div>
         </div>
+
+        <div class="col-3">
+            <div class="form-group">
+                <x-adminlte-select name="country" label="Select Country" name="country">
+                    <option value="0">Select Country</option>
+                    @foreach ($countrys as $country)
+                    <option value="{{ $country->siteid }}">{{$country->code }}</option>
+                    @endforeach
+                </x-adminlte-select>
+            </div>
+
+        </div>
     </div>
     <div class="row justify-content-center">
 
-        <div class="col-5">
+        <div class="col-3">
+            <div class="form-group">
+                <label for="text">Primary Text</label>
+                <x-adminlte-input class="form-control " type="text" placeholder="Enter primary Text" name="primary_text" id="" />
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="form-group">
+                <label for="text">secondary Text</label>
+                <x-adminlte-input class="form-control " type="text" placeholder="Enter secondary Text" name="secondary_text" id="" />
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+
+        <div class="col-6">
             <div class="form-group">
                 <x-adminlte-input type="file" name="selected_image" label="Select Image"></x-adminlte-input>
             </div>

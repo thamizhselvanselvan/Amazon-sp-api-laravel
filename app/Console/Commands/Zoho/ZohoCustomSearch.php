@@ -50,8 +50,8 @@ class ZohoCustomSearch extends Command
         foreach ($records as $record) {
 
             $date = $record['Date'];
-            $amazon_order_id = $record['order-id'];
-            $order_item_id = $record['order-item-id'];
+            $amazon_order_id = trim($record['order-id']);
+            $order_item_id = trim($record['order-item-id']);
             $store = $record['Store'];
 
             $exists = $zoho->search($amazon_order_id, $order_item_id);

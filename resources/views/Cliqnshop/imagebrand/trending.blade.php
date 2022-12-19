@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Banner Section')
+@section('title', 'Trending Brand Section')
 
 @section('css')
 <link rel="stylesheet" href="/css/styles.css">
@@ -11,7 +11,7 @@
     <div class="col=1"></div>
 </div>
 <div class="row justify-content-center">
-    <h3>Cliqnshop 2 Banner Section </h3>
+    <h3>Cliqnshop Trending Brand Section </h3>
 </div>
 
 @stop
@@ -37,7 +37,7 @@
         </div>
     </div>
 </div>
-<form method="post" action="{{route('cliqnshop.two.banner.store')}}" enctype="multipart/form-data">
+<form method="post" action="{{route('cliqnshop.trending.store')}}" enctype="multipart/form-data">
     @csrf
     <div class="row justify-content-center">
         <div class="col-3">
@@ -46,6 +46,10 @@
                     <option>Select Image No.</option>
                     <option>Image-1</option>
                     <option>Image-2</option>
+                    <option>Image-3</option>
+                    <option>Image-4</option>
+                    <option>Image-5</option>
+                    <option>Image-6</option>
 
                 </x-adminlte-select>
             </div>
@@ -54,10 +58,10 @@
         <div class="col-2">
             <div class="form-group">
                 <x-adminlte-select name="country" label="Select Country" name="country">
-                     <option>Select Country</option>
-                      @foreach ($countrys as $country)
-                     <option value="{{ $country->siteid }}">{{$country->code }}</option>
-                      @endforeach
+                     <option value="0">Select Country</option>
+                @foreach ($countrys as $country)
+                <option value="{{ $country->siteid }}">{{$country->code }}</option>
+                @endforeach
                 </x-adminlte-select>
             </div>
 

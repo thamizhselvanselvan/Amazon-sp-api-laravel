@@ -41,7 +41,6 @@ class LabelMissingAddressUpload extends Command
      */
     public function handle()
     {
-        Log::alert('command working');
         $path = 'label/missing_address.csv';
         $file = Storage::path($path);
 

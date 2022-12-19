@@ -31,6 +31,11 @@ use Yajra\DataTables\Facades\DataTables;
 
 class InvoiceManagementController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->except('showTemplate');
+    }
+
     public function Index(request $request)
     {
         // $mode = DB::connection('web')->select("SELECT mode from invoices group by mode");
@@ -126,7 +131,6 @@ class InvoiceManagementController extends Controller
         //         ->rawColumns(['select_all', 'action'])
         //         ->make(true);;
         // }
-        // Log::alert(json_encode($results));
         // return response()->json($results);
     }
 
@@ -238,13 +242,6 @@ class InvoiceManagementController extends Controller
         $invoice_date = str_replace(' ', '', $invoice_date);
         $currenturl = request()->getSchemeAndHttpHost();
 
-        // if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
-        //     $base_path = base_path();
-        //     $command = "cd $base_path && php artisan pms:invoice-bulk-zip-download $passid $currenturl $mode $invoice_date $current_page_no > /dev/null &";
-        //     exec($command);
-        // } else {
-        //     Artisan::call('pms:invoice-bulk-zip-download' . ' ' . $passid . ' ' . $currenturl . ' ' . $mode . ' ' . $invoice_date . ' ' . $current_page_no);
-        // }
         $user_id = Auth::user()->id;
         $header = ["data" => "${passid}_${currenturl}_${mode}_${invoice_date}_${current_page_no}"];
         $file_info = [
@@ -317,9 +314,6 @@ class InvoiceManagementController extends Controller
 
     public function DirectDownloadPdf(Request $request, $id)
     {
-        // $this->deleteAllPdf();
-        // $data = Invoice::where('id', $id)->get();
-        // $data = DB::connection('web')->select("SELECT * from invoices where invoice_no = '$id' ");
         $data = Invoice::where("invoice_no", "${id}")->get();
         $invoice_no = $data[0]->invoice_no;
         $mode = $data[0]->mode;
@@ -329,7 +323,7 @@ class InvoiceManagementController extends Controller
         $path = storage::path("invoice/$mode/invoice" . $invoice_no);
         $exportToPdf = $path . '.pdf';
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf);
 
@@ -350,16 +344,16 @@ class InvoiceManagementController extends Controller
         // $path = storage::path('invoice/invoice'.$id);
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf);
 
         return response()->json(["success" => "Export to PDF Successfully"]);
     }
 
-    public function DownloadPdf($invoice_no)
+    public function DownloadPdf($invoice_no, $mode)
     {
-        return Storage::download("invoice/invoice" . $invoice_no . '.pdf');
+        return Storage::download("invoice/$mode/invoice" . $invoice_no . '.pdf');
     }
 
     public function DownloadAll()
@@ -369,8 +363,6 @@ class InvoiceManagementController extends Controller
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:excel-bulkpdf-download > /dev/null &";
             exec($command);
-
-            Log::warning("Zip Download command executed production  !!!");
         } else {
             Artisan::call('pms:excel-bulkpdf-download');
         }

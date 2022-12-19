@@ -2,11 +2,12 @@
 
 namespace App\Console\Commands\Orders;
 
-use App\Models\order\OrderSellerCredentials;
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\SP_API\API\Order\Order;
+use App\Models\order\OrderSellerCredentials;
 use App\Services\SP_API\API\Order\OrderItem;
 
 class OrderItemDetailsImport extends Command
@@ -42,6 +43,19 @@ class OrderItemDetailsImport extends Command
      */
     public function handle()
     {
+        //Process Management start
+        $process_manage = [
+            'module'             => 'Order_item_details',
+            'description'        => 'Import order item details for each order',
+            'command_name'       => 'mosh:order-item-details-import',
+            'command_start_time' => now(),
+        ];
+
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+        // $pm_id = ProcessManagementCreate($process_manage['command_name']);
+        //Process Management end
+
         $order_item = new OrderItem();
 
         $seller_id_array = OrderSellerCredentials::where('dump_order', 1)->get();
@@ -78,5 +92,8 @@ class OrderItemDetailsImport extends Command
                 $order_item->OrderItemDetails($order_id, $aws_id, $country, $source, $zoho, $courier_partner);
             }
         }
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
     }
 }

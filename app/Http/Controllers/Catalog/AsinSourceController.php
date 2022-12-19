@@ -172,11 +172,7 @@ class AsinSourceController extends Controller
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:asin-export > /dev/null &";
             exec($command);
-
-            Log::warning("Export asin command executed production  !!!");
         } else {
-
-            Log::warning("Export asin command executed local !");
             Artisan::call('pms:asin-export');
         }
         return redirect()->intended('/catalog/asin-source');

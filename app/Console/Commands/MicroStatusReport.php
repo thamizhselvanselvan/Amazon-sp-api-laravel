@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
@@ -42,7 +43,19 @@ class MicroStatusReport extends Command
      */
     public function handle()
     {
-        // Log::alert("microstatus report command executed at ".now());
+        //Process Management start
+        $process_manage = [
+            'module'             => 'B2CShip',
+            'description'        => 'Create json file to store last 30 days micro status data',
+            'command_name'       => 'pms:b2cship-microstatus-report',
+            'command_start_time' => now(),
+        ];
+
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+        // $pm_id = ProcessManagementCreate($process_manage['command_name']);
+        //Process Management end
+
         $today_sd = Carbon::today();
         $today_ed = Carbon::now();
 
@@ -90,6 +103,10 @@ class MicroStatusReport extends Command
             Storage::put($file_path, '');
         }
         File::put(Storage::path($file_path), json_encode($micros_status_data));
+
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
     }
 
     public function packet_status($packet_status_details, $start_date, $end_date)

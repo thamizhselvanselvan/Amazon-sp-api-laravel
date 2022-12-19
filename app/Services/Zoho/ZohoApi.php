@@ -91,7 +91,7 @@ class ZohoApi
             return $response->json();
         }
 
-        Log::warning($response->body());
+        // Log::warning($response->body());
         //Log::channel('slack')->info($response->body());
         return false;
     }
