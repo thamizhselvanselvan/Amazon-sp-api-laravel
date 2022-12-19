@@ -49,7 +49,7 @@ class asin_import_to_cliqnshop extends Command
         // $filename = storage_path('Cliqnshop\asin_import\cliqnshop_asin.csv');
         // $file = fopen($filename, "r");
         // $all_data = array();
-        $csv_data =  CSV_Reader('Cliqnshop\asin_import\cliqnshop_asin.csv');
+        $csv_data =  CSV_Reader('Cliqnshop/asin_import/cliqnshop_asin.csv');
 
         foreach ($csv_data as $data) {
             $asin[] = ($data['ASIN']);
