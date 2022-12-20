@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Brand Section')
+@section('title', 'Top Selling Section')
 
 @section('css')
 <link rel="stylesheet" href="/css/styles.css">
@@ -11,7 +11,7 @@
     <div class="col=1"></div>
 </div>
 <div class="row ">
-    <h3>Cliqnshop Brand Section </h3>
+    <h3>Top Selling Section</h3>
 </div>
 
 @stop
@@ -44,9 +44,10 @@
         <div class="col-3">
             <div class="form-group">
                 <x-adminlte-select name="image" label="Select Country" name="country">
-                    <option>Select Country</option>
-                    <option>IN</option>
-                    <option>UAE</option>
+                    <option value=''>Select Country</option>
+                    @foreach ($countrys as $country)
+                    <option value="{{ $country->siteid }}">{{$country->code }}</option>
+                    @endforeach
                 </x-adminlte-select>
             </div>
 

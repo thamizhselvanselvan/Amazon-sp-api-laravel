@@ -276,13 +276,14 @@ class ImageBrandController extends Controller
 
     public function topselling(Request $request)
     {
-        return view('Cliqnshop.imagebrand.asins');
+        $countrys = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
+        return view('Cliqnshop.imagebrand.asins', compact('countrys'));
     }
 
     public function storeasin(Request $request)
     {
         $request->validate([
-            'country' => 'required|in:IN,UAE',
+            'country' => 'required',
             'top_asin' => 'required',
         ]);
 
@@ -295,15 +296,11 @@ class ImageBrandController extends Controller
         $data = (json_encode($asins));
         $country = $request->country;
         $now =  carbon::now();
-        if ($country == 'IN') {
-            DB::connection('cliqnshop')->table('home_page_contents')
-                ->where("section", '=',  'top_selling_products_section_in')
-                ->update(['content' => $data, 'country' => '1.', 'updated_at' => $now]);
-        } else {
-            DB::connection('cliqnshop')->table('home_page_contents')
-                ->where("section", '=',  'top_selling_products_section_ae')
-                ->update(['content' => $data, 'country' => '2.', 'updated_at' => $now]);
-        }
+        $condition = strval($request->country);
+        DB::connection('cliqnshop')->table('home_page_contents')
+        ->where('section', 'top_selling_products_section')
+        ->where('country', $condition)
+        ->update(['content' => $data,  'updated_at' => $now]);
 
         return redirect()->route('cliqnshop.brand')->with('success', ' ASIN Inserted Successfuly');
     }
@@ -795,31 +792,31 @@ class ImageBrandController extends Controller
             if ($request->image_number == 'Image-2') {
                 $img2 = file_get_contents($request->selected_image);
                 $urli2 = $request->url;
-                Storage::disk('cliqnshop')->put('local/banner/trending/' . substr($request->country, 0, -1) . '/_image2.jpg', $img2);
+                Storage::disk('cliqnshop')->put('local/banner/trending/' . substr($request->country, 0, -1) . '/image2.jpg', $img2);
                 $img2_url = Storage::disk('cliqnshop')->path('local/banner/trending/' . substr($request->country, 0, -1) . '/image2.jpg');
             }
             if ($request->image_number == 'Image-3') {
                 $img3 = file_get_contents($request->selected_image);
                 $urli3 = $request->url;
-                Storage::disk('cliqnshop')->put('local/banner/trending/' . substr($request->country, 0, -1) . '/_image3.jpg', $img3);
+                Storage::disk('cliqnshop')->put('local/banner/trending/' . substr($request->country, 0, -1) . '/image3.jpg', $img3);
                 $img3_url = Storage::disk('cliqnshop')->path('local/banner/trending/' . substr($request->country, 0, -1) . '/image3.jpg');
             }
             if ($request->image_number == 'Image-4') {
                 $img4 = file_get_contents($request->selected_image);
                 $urli4 = $request->url;
-                Storage::disk('cliqnshop')->put('local/banner/trending/' . substr($request->country, 0, -1) . '/_image4.jpg', $img4);
+                Storage::disk('cliqnshop')->put('local/banner/trending/' . substr($request->country, 0, -1) . '/image4.jpg', $img4);
                 $img4_url = Storage::disk('cliqnshop')->path('local/banner/trending/' . substr($request->country, 0, -1) . '/image4.jpg');
             }
             if ($request->image_number == 'Image-5') {
                 $img5 = file_get_contents($request->selected_image);
                 $urli5 = $request->url;
-                Storage::disk('cliqnshop')->put('local/banner/trending/' . substr($request->country, 0, -1) . '/_image5.jpg', $img5);
+                Storage::disk('cliqnshop')->put('local/banner/trending/' . substr($request->country, 0, -1) . '/image5.jpg', $img5);
                 $img5_url = Storage::disk('cliqnshop')->path('local/banner/trending/' . substr($request->country, 0, -1) . '/image5.jpg');
             }
             if ($request->image_number == 'Image-6') {
                 $img6 = file_get_contents($request->selected_image);
                 $urli6 = $request->url;
-                Storage::disk('cliqnshop')->put('local/banner/trending/' . substr($request->country, 0, -1) . '/_image6.jpg', $img6);
+                Storage::disk('cliqnshop')->put('local/banner/trending/' . substr($request->country, 0, -1) . '/image6.jpg', $img6);
                 $img6_url = Storage::disk('cliqnshop')->path('local/banner/trending/' . substr($request->country, 0, -1) . '/image6.jpg');
             }
 
