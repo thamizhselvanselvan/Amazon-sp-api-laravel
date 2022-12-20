@@ -54,10 +54,10 @@
         <div class="col-2">
             <div class="form-group">
                 <x-adminlte-select name="country" label="Select Country" name="country">
-                     <option>Select Country</option>
-                      @foreach ($countrys as $country)
-                     <option value="{{ $country->siteid }}">{{$country->code }}</option>
-                      @endforeach
+                    <option value=''>Select Country</option>
+                    @foreach ($countrys as $country)
+                    <option value="{{ $country->siteid }}">{{$country->code }}</option>
+                    @endforeach
                 </x-adminlte-select>
             </div>
 
