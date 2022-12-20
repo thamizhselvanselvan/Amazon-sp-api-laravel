@@ -37,22 +37,6 @@
             <h3>Pending Order Details</h3>
         </div>
     </div>
-    <!-- <h2 class="ml-2">
-        <x-adminlte-button label="View Orders Placed" theme="primary" class="btn-sm" icon="fas fa-eye" id="vieworders" />
-    </h2> -->
-    <h2 class="ml-2">
-        <x-adminlte-button label="View Orders Pending" theme="primary" class="btn-sm" icon="fas fa-eye" id="pendingorders" />
-    </h2>
-    <h5 class="mb-4 text-right col">
-        <div style="margin-top: 1.5rem;">
-            <div class="search">
-                <label>
-                    Search:
-                    <input type="text" id="myInput" class="d-inline-block" placeholder="search asin" autocomplete="off" />
-                </label>
-            </div>
-        </div>
-    </h5>
 </div>
 <div class="modal " id="selectoffer">
     <div class="modal-dialog modal-lg">
@@ -65,7 +49,7 @@
 
             </div>
             <div class="modal-footer">
-                <div class="col-2 float-righr mt-2">
+                <div class="col-2.5 float-righr mt-2">
                     <x-adminlte-button label="Place Order" theme="success" class="btn btn-sm " id="place_order" icon="fas fa-file-export " />
                 </div>
                 <div class="col-1 float-right mt-2">
@@ -75,29 +59,14 @@
         </div>
     </div>
 </div>
-
-<!-- <table class="table table-bordered yajra-datatable table-striped" id='orderstable'>
-    <thead>
-        <tr class='text-bold bg-info'>
-            <th>ID</th>
-            <th>ASIN</th>
-            <th>Item Name</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th> Status</th>
-        </tr>
-    </thead>
-    <tbody id="data_display">
-
-    </tbody>
-</table> -->
 <table class="table table-bordered yajra-datatable table-striped" id='orderspending'>
     <thead>
         <tr class='text-bold bg-info'>
+            <th> ID </th>
             <th>ASIN</th>
             <th>Item Name</th>
-            <th>Price</th>
             <th>Quantity</th>
+            <th>price</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -108,120 +77,66 @@
 @stop
 @section('js')
 <script type="text/javascript">
-    $("#pendingorders").hide();
+    $(function() {
 
-    window.onload = function() {
-        $("#pendingorders").click();
-    };
+        $.extend($.fn.dataTable.defaults, {
+            pageLength: 50,
 
-
-    $("#orderstable").hide();
-    $(".search").hide();
-    $("#orderspending").hide();
-    $(document).ready(function() {
-        $("#myInput").on("keyup", function() {
-            var value = $(this).val().toLowerCase();
-            $("#data_display_pending tr").filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-            });
         });
-    });
+
+        let yajra_table = $('.yajra-datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('business.orders.pending.list') }}",
+            columns: [{
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'prodcode',
+                    name: 'prodcode'
+                },
+                {
+                    data: 'name',
+                    name: 'name'
+                },
+                {
+                    data: 'quantity',
+                    name: 'quantity'
+                },
+                {
+                    data: 'price',
+                    name: 'price'
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
+                },
 
 
-    // $('#vieworders').on('click', function() {
-    //     $('#data_display').empty();
-    //     $("#orderstable").show();
-    //     $("#orderspending").hide();
-    //     $(".search").show();
-    //     $.ajax({
-    //         method: 'GET',
-    //         url: '/business/orders/view/',
-    //         data: {
-    //             'cliq': 'cliq',
-    //             "_token": "{{ csrf_token() }}",
-    //         },
-    //         'dataType': 'json',
-    //         success: function(response) {
-    //             let html = '';
-    //             $status = '';
-    //             $.each(response.data, function(index, value) {
-    //                 html += "<tr>";
-    //                 html += "<tr class='table_row'>";
-    //                 html += "<td name='asin[]'>" + value.prodcode + "</td>";
-    //                 html += "<td name='name[]'>" + value.name + "</td>";
-    //                 html += "<td name='name[]'>" + value.price + "</td>";
-    //                 html += "<td name='name[]'>" + value.quantity + "</td>";
-    //                 html += "<td name='name[]'>" + 'Waiting For confirmation' + "</td>";
-    //                 html += "</tr>";
 
-    //             });
-    //             $("#orderstable").append(html);
-    //         },
-    //         error: function(response) {
-    //             console.log(responce)
-    //         }
-    //     });
-
-    // });
-
-    $('#close').click(function() {
-        $('#selectoffer').modal('hide');
-    });
-
-    $('#pendingorders').on('click', function() {
-
-        $("#data_display_pending").empty();
-        $("#orderspending").show();
-        $("#orderstable").hide();
-        $(".search").show();
-        $.ajax({
-            method: 'GET',
-            url: '/business/orders/pending/',
-            data: {
-                'cliq': 'cliq',
-                "_token": "{{ csrf_token() }}",
-            },
-            'dataType': 'json',
-            success: function(response) {
-                if (response.data == '') {
-                    alert("No Pending Orders...")
-                }
-                let html = '';
-                $status = '';
-                $.each(response.data, function(index, value) {
-
-                    html += "<tr>";
-                    html += "<tr class='table_row'>";
-                    html += "<td name='asin'>" + value.prodcode + "</td>";
-                    html += "<td name='name'>" + value.name + "</td>";
-                    html += "<td name='price'>" + value.price + "</td>";
-                    html += "<td name='q'>" + value.quantity + "</td>";
-                    html += '<td> <button type="button" id="offers" class="btn btn-info offers1">Select Offers And Place Order</button></td>'
-                    html += "</tr>";
-
-                });
-                $("#data_display_pending").append(html);
-
-            },
-            error: function(response) {
-                alert('Something Went Wrong..')
-            }
-
+            ]
         });
 
     });
 
     $(document).on("click", ".offers1", function() {
         let self = $(this);
-        let asin = self.parent().prev().prev().prev().prev().text();
+        let asin = $(this).attr('value');
+        let qty = self.parent().parent().prev().text();
+
         $.ajax({
             method: 'GET',
             url: '/business/offers_view/',
             data: {
                 'asin': asin,
+                'quantity': qty,
                 "_token": "{{ csrf_token() }}",
             },
-            // 'dataType': 'json',
             success: function(response) {
                 if (response == '') {
                     response = 'item Might Currently unavailable. please try After some time';
@@ -250,6 +165,7 @@
             let offerid = $("input[name='oid']").val();
             let asin = $("input[name='asin']").val();
             let name = $("input[name='item_name']").val();
+            let quantity = $("input[name='quantity']").val();
 
             $.ajax({
                 method: 'get',
@@ -258,11 +174,12 @@
                     "offerid": offerid,
                     "asin": asin,
                     "item_name": name,
+                    "quantity": quantity,
                     "_token": "{{ csrf_token() }}",
                 },
                 success: function(response) {
                     console.log(response);
-                    alert('Request sent Successfully')
+                    alert('Request sent Successfully Check Order Conformation For More Details')
                     location.reload();
                 },
                 error: function(response) {
@@ -272,8 +189,10 @@
             });
 
         }
+    });
 
-
+    $('#close').click(function() {
+        $('#selectoffer').modal('hide');
     });
 </script>
 @stop
