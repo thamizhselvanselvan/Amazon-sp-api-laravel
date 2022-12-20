@@ -45,14 +45,15 @@ class OrderItemDetailsImport extends Command
     {
         //Process Management start
         $process_manage = [
-            'module'             => 'Order_item_details',
+            'module'             => 'Order',
             'description'        => 'Import order item details for each order',
             'command_name'       => 'mosh:order-item-details-import',
             'command_start_time' => now(),
         ];
 
-        ProcessManagement::create($process_manage);
-        $pm_id = ProcessManagementCreate($process_manage['command_name']);
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+        // $pm_id = ProcessManagementCreate($process_manage['command_name']);
         //Process Management end
 
         $order_item = new OrderItem();
@@ -94,6 +95,5 @@ class OrderItemDetailsImport extends Command
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> mosh:order-item-details-import');
     }
 }

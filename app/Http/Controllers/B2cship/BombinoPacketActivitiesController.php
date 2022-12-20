@@ -169,7 +169,6 @@ class BombinoPacketActivitiesController extends Controller
             }
         }
 
-        Log::alert(json_encode($new_files_list));
         arsort($new_files_list);
         foreach ($new_files_list as $key => $files) {
             $content = Storage::get($file_path . '/' . $key);

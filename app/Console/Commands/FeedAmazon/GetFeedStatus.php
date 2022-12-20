@@ -47,14 +47,15 @@ class GetFeedStatus extends Command
     {
         //Process Management start
         $process_manage = [
-            'module'             => 'AWB_feed',
-            'description'        => 'AWB feed status',
+            'module'             => 'Amazon Feed',
+            'description'        => 'Get AWB feed status',
             'command_name'       => 'mosh:feed-status',
             'command_start_time' => now(),
         ];
 
-        ProcessManagement::create($process_manage);
-        $pm_id = ProcessManagementCreate($process_manage['command_name']);
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+
         //Process Management end
 
         $result = OrderUpdateDetail::where([
@@ -100,6 +101,5 @@ class GetFeedStatus extends Command
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> mosh:feed-status');
     }
 }

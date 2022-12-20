@@ -52,20 +52,14 @@ class CatalogPriceImport extends Command
     {
         //Process Management start
         $process_manage = [
-            'module'             => 'Catalog_price_bb_us',
-            'description'        => 'Import catalog US price from bb table',
+            'module'             => 'Catalog Price Import',
+            'description'        => "Fetch US Catalog price from BuyBox",
             'command_name'       => 'mosh:Catalog-price-import-bb-us',
             'command_start_time' => now(),
         ];
 
-        ProcessManagement::create($process_manage);
-        $pm_id = ProcessManagementCreate($process_manage['command_name']);
-        //Process Management end
-
-        // $source = [
-        //     'US' => 40,
-        //     'IN' => 39
-        // ];
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
 
         $country_code = 'US';
         $seller_id = '40';
@@ -76,6 +70,5 @@ class CatalogPriceImport extends Command
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> mosh:Catalog-price-import-bb-us');
     }
 }

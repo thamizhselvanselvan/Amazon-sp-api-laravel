@@ -175,7 +175,6 @@ class B2cshipBookingServices
 
                 $this->missingASINDetails($asin);
                 slack_notification('app360', 'B2cship Booking', $slackMessage);
-                // Log::channel('slack')->error($slackMessage);
                 return false;
             }
 
@@ -434,55 +433,19 @@ class B2cshipBookingServices
         return substr(str_replace(' ', '', $mobile_number), -10);
     }
 
-    public function missingASINDetails($asin)
+    public function missingASINDetails($asin, $country_code = 'us')
     {
-        $model_name = table_model_create(country_code: 'us', model: "Asin_source", table_name: "asin_source_");
-        $model_name->upsert(
-            [
-                'asin' => $asin,
-                'user_id' => '1',
-                'status' => '0'
-            ],
-            ['user_asin_unique'],
-            ['asin', 'user_id', 'status']
-        );
-
-        $model_name_des = table_model_create(country_code: 'us', model: "Asin_destination", table_name: "asin_destination_");
-        $model_name_des->upsert(
-            [
-                'asin' => $asin,
-                'user_id' => '1',
-                'status' => '0',
-                'priority' => '1'
-            ],
-            ['user_asin_unique'],
-            ['asin', 'user_id', 'status', 'priority']
-        );
-
-        $product[] = [
-            'seller_id' => '40',
-            'active' => 1,
-            'asin1' => $asin,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ];
-
-        $product_lowest_price[] = [
-            'asin' => $asin,
-            'cyclic' => 0,
-            'delist' => 0,
-            'available' => 0,
-            'priority'  => '1',
-            'import_type' => 'Seller'
-        ];
-
-        (new PushAsin())->PushAsinToBBTable($product, $product_lowest_price, 'us', '1');
+        $pushAsin = new PushAsin();
+        $pushAsin->updateAsinInBB($asin, $country_code);
+        $pushAsin->updateAsinSourceDestination($asin, $country_code);
     }
 
     public function renameState($state_name)
     {
         if (strtoupper($state_name) == 'JAMMU & KASHMIR') {
             return 'JK';
+        } else if (strtoupper($state_name) == 'WEST BANGAL') {
+            return 'West Bengal';
         }
         return $state_name;
     }

@@ -7,7 +7,6 @@ use League\Csv\Reader;
 use App\Models\Invoice;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\Storage;
 
@@ -45,7 +44,6 @@ class invoiceBulkZipDownload extends Command
      */
     public function handle()
     {
-
         $column_data = $this->option('columns');
         $final_data = [];
         $explode_array = explode(',', $column_data);
@@ -65,22 +63,10 @@ class invoiceBulkZipDownload extends Command
         $current_page_no =  $headers_data[4];
 
         $saveAsPdf = [];
-        log::alert($currenturl);
-        // $passid = $this->argument('passid');
-        // $currenturl = $this->argument('currenturl');
-        // $mode = $this->argument('mode');
-        // $invoice_date = $this->argument('invoice_date');
-        // $current_page_no = $this->argument('current_page_no');
-
-        // $path = 'invoice/zip/' . 'invoice.zip';
-        // Storage::delete($path);
-        // Log::warning("Invoice zip download excuted handle!");
 
         $excelid = explode('-', $passid);
 
         foreach ($excelid as $getId) {
-
-            // $id = DB::connection('web')->select("SELECT * from invoices where id ='$getId' ");
             $id = Invoice::where("id", "${getId}")->get();
 
             foreach ($id as $key => $value) {
@@ -88,14 +74,14 @@ class invoiceBulkZipDownload extends Command
                 $invoice_no = $value->invoice_no;
                 $url = $currenturl . '/invoice/convert-pdf/' . $invoice_no;
                 $path = "invoice/$mode/$invoice_date/invoice$invoice_no.pdf";
-                log::alert($url);
+
                 if (!Storage::exists($path)) {
                     Storage::put($path, '');
                 }
 
                 $exportToPdf = storage::path($path);
                 Browsershot::url($url)
-                    // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+                    // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
                     ->showBackground()
                     ->savePdf($exportToPdf);
 

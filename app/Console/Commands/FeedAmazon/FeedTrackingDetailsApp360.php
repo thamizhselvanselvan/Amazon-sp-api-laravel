@@ -40,17 +40,14 @@ class FeedTrackingDetailsApp360 extends Command
      */
     public function handle()
     {
-        //Process Management start
         $process_manage = [
-            'module'             => 'Feed_tracking',
+            'module'             => 'Amazon Feed',
             'description'        => 'Feed tracking details to Amazon from app360',
             'command_name'       => 'mosh:feed-app360-tracking-details',
             'command_start_time' => now(),
         ];
-
-        ProcessManagement::create($process_manage);
-        $pm_id = ProcessManagementCreate($process_manage['command_name']);
-        //Process Management end
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
 
         $data = OrderUpdateDetail::whereNotNUll('courier_awb')
             ->whereNotNull('courier_name')
@@ -59,6 +56,8 @@ class FeedTrackingDetailsApp360 extends Command
         $groups = $data->groupBy('store_id');
 
         if ($data->isEmpty()) {
+            $command_end_time = now();
+            ProcessManagementUpdate($pm_id, $command_end_time);
             return false;
         }
 
@@ -78,11 +77,11 @@ class FeedTrackingDetailsApp360 extends Command
         }
 
         $class = 'Amazon_Feed\UpdateAWBToAmazon';
-        //Log::debug($store_details);
-        jobDispatchFunc($class, $store_details);
 
         $command_end_time = now();
+
+        jobDispatchFunc($class, $store_details);
+
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> mosh:feed-app360-tracking-details');
     }
 }

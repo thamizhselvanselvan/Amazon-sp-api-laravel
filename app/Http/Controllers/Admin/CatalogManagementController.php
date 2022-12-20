@@ -100,7 +100,6 @@ class CatalogManagementController extends Controller
 
     public function trash($id)
     {
-        Log::alert($id);
         User::where('id', $id)->delete();
         return response()->json(['success' => 'User has been Deleted successfully']);
     }

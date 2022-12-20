@@ -54,8 +54,9 @@ class warehouse_stock_track extends Command
             'command_start_time' => now(),
         ];
 
-        ProcessManagement::create($process_manage);
-        $pm_id = ProcessManagementCreate($process_manage['command_name']);
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+        // $pm_id = ProcessManagementCreate($process_manage['command_name']);
         //Process Management end
 
         $ware = Warehouse::get();
@@ -203,9 +204,6 @@ class warehouse_stock_track extends Command
             }
             $dayclosingamt =  array_sum($dayclosing);
 
-
-
-
             DB::connection('inventory')->table('warehouse_stocks')->insert([
                 'date' =>   $date,
                 'Warehouse' => $val,
@@ -223,9 +221,7 @@ class warehouse_stock_track extends Command
             ]);
         }
 
-
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> mosh:warehouse-track');
     }
 }

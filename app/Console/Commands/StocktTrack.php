@@ -53,8 +53,9 @@ class StocktTrack extends Command
             'command_start_time' => now(),
         ];
 
-        ProcessManagement::create($process_manage);
-        $pm_id = ProcessManagementCreate($process_manage['command_name']);
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+
         //Process Management end
 
         /* Date */
@@ -179,9 +180,6 @@ class StocktTrack extends Command
         }
         $dayclosingamt =  array_sum($dayclosing);
 
-
-
-
         DB::connection('inventory')->table('stocks')->insert([
             'date' => $date,
             'opeaning_stock' => $todayopeningstock,
@@ -199,6 +197,5 @@ class StocktTrack extends Command
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> pms:inventory-stock-tracking');
     }
 }

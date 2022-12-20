@@ -100,39 +100,13 @@
                     </x-adminlte-select>
                 </div>
                 <div class="col-6">
-                    <x-adminlte-select label="State" name="state" id="state" type="text" placeholder="" value="{{ old('ID') }}">
-                        <option value="">Select Country</option>
-                        @foreach ($state as $states)
-
-                        @if ($states->country_id == $selected_country)
-
-                        @if (($states->id == $selected_state))
-                        <option value="{{$states->id}}" selected>{{$states->name}}</option>
-                        @else
-                        <option value="{{$states->id}}">{{$states->name}}</option>
-                        @endif
-
-                        @endif
-
-                        @endforeach
+                    <x-adminlte-select label="State" name="state" id="state" type="text" placeholder="" value="{{ $name->state }}">
+                        <!-- <option value="{{ $name->state }}"></option> -->
                     </x-adminlte-select>
                 </div>
                 <div class="col-6">
-                    <x-adminlte-select label="City" name="city" id="city" type="text" placeholder="" value="{{ old('ID') }}">
-                        <option value="">Select Country</option>
-                        @foreach ($city as $cities)
-
-                        @if ($cities->state_id == $selected_state)
-
-                        @if (($cities->id == $selected_city))
-                        <option value="{{$cities->id}}" selected>{{$cities->name}}</option>
-                        @else
-                        <option value="{{$cities->id}}">{{$cities->name}}</option>
-                        @endif
-
-                        @endif
-
-                        @endforeach
+                    <x-adminlte-select label="City" name="city" id="city" type="text" placeholder="" value="{{  $name->state }}">
+                        <!-- <option value="{{ $name->city }}"></option> -->
                     </x-adminlte-select>
                 </div>
                 <div class="col-6">
@@ -152,7 +126,7 @@
             </div>
             <div class="col-3"></div>
             <div class="col-12 text-center">
-                <x-adminlte-button label="Submit" theme="primary" class="rack.update" icon="fas fa-save" type="submit" />
+                <x-adminlte-button label="Submit" theme="primary" class="vendor.update" icon="fas fa-save" type="submit" />
             </div>
         </form>
     </div>
@@ -160,77 +134,92 @@
 </div>
 
 @stop
+@section('js')
+<script>
+    $(document).ready(function(e) {
+        var country_id = $('#country').val();
+        statechange(country_id);
+    });
 
-<!-- @section('js')
-    <script>
-        
-        $(document).ready(function(){
+    setTimeout(function() {
+        var state_id = $('#state').val();
+        if (state_id != null) {
+            citychange(state_id);
+        }
+    }, 2000);
 
-            $('#country').on('change',function(e){
-                e.preventDefault();
-                var id=$(this).val();
-                // alert(id);
-                    // $('#state').val(id);
 
-                $.ajax({
-                    method:'POST',
-                    url:'/vendor/'+id,
-                    data:{ 
-                        'id':id,
-                        "_token": "{{ csrf_token() }}",
-                    },
-                
-                    response:'json',
-                    success:function(response){
-                    
-                    $('#state').empty();
-                        let state_data ='<option >Select State</option>';
-                    $.each(response ,function(i,response){
-                        
-                        state_data+= "<option value='"+response.id+"'selected>"+response.name+"</option>";
-                        
-                    });
-                    $('#state').append(state_data);
-                    
-                    },
-                    failure:function(response){
-                        console.log(response);
-                    },
-                    error:function(response){
-                        console.log(response);
-                    }
-                    
+
+    $('#country').on('change', function(e) {
+        e.preventDefault();
+        var id = $(this).val();
+        statechange(id);
+
+    });
+    $('#state').on('change', function(e) {
+        e.preventDefault();
+        var id = $(this).val();
+        citychange(id);
+
+    });
+
+    function statechange(id) {
+
+        $.ajax({
+            method: 'POST',
+            url: '/vendor/' + id,
+            data: {
+                'id': id,
+                "_token": "{{ csrf_token() }}",
+            },
+
+            response: 'json',
+            success: function(response) {
+
+                $('#state').empty();
+                let state_data = '<option >Select State</option>';
+                $.each(response, function(i, response) {
+                    let selected_state = "{{ isset($selected_state) ? $selected_state : null }}";
+                    let selected = (selected_state == response.id) ? 'selected' : '';
+                    state_data += "<option value='" + response.id + "'  " + selected + ">" + response.name + "</option>";
                 });
-            });
+                $('#state').append(state_data);
+            },
 
-            $('#state').change(function(e){
-                e.preventDefault();
-                var id =$(this).val();
-                // var countryid=$('#country').val();
-                // alert(countryid);
-                // alert(sname);
-
-                $.ajax({
-                    method:'POST',
-                    url:'/inventory/vendorstate/'+id,
-                    data:{
-                        'id':id,
-                        "_token": "{{ csrf_token() }}",
-                    },
-                    success:function(result){
-                        
-                    $('#city').empty();
-                        let city_data ='<option >Select City</option>';
-                    $.each(result ,function(i,result){
-                        city_data+= "<option value='"+result.id+"'>"+result.name+"</option>";
-                    });
-                    $('#city').append(city_data);
-                    
-                    },
-                });
-            });
+            error: function(response) {
+                alert('Something went wrong..');
+            }
 
         });
+    }
 
-    </script>
-@stop -->
+    function citychange(id) {
+
+        $.ajax({
+            method: 'POST',
+            url: '/inventory/vendorstate/' + id,
+            data: {
+                'id': id,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(result) {
+                
+                $('#city').empty();
+                let city_data = '<option >Select City</option>';
+                $.each(result, function(i, result) {
+                    let selected_city = "{{ isset($selected_city) ? $selected_city : null}}";
+                    let selected = (selected_city == result.id) ? 'selected' : '';
+                    city_data += "<option value='" + result.id + "' " + selected + ">" + result.name + "</option>";
+                });
+                $('#city').append(city_data);
+          
+            },
+
+            error: function(result) {
+                alert('Something went wrong..');
+            }
+
+        });
+    }
+</script>
+@stop

@@ -42,14 +42,15 @@ class Order_details extends Command
     {
         //Process Management start
         $process_manage = [
-            'module'             => 'AWS_nitshop_order_details',
-            'description'        => 'AWS nitshop order item details',
+            'module'             => 'Order',
+            'description'        => 'Update order details in nitshopp from app360',
             'command_name'       => 'aws:nitshop:order_details',
             'command_start_time' => now(),
         ];
 
-        ProcessManagement::create($process_manage);
-        $pm_id = ProcessManagementCreate($process_manage['command_name']);
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+        // $pm_id = ProcessManagementCreate($process_manage['command_name']);
         //Process Management end
 
         $order = new Index;
@@ -57,6 +58,5 @@ class Order_details extends Command
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> aws:nitshop:order_details');
     }
 }

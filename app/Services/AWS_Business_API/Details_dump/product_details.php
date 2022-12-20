@@ -48,7 +48,7 @@ class product_details
                 $productOverview = 'Not Found';
                 $productVariations = 'Not Found';
             } else if (property_exists($data, "errors") && $data->errors[0]->message == "You exceeded your quota for the requested resource.") {
-                Log::warning('429');
+                // Log::warning('429');
                 sleep(10);
                 break;
             } else {
@@ -124,7 +124,7 @@ class product_details
                 ["upsert" => true]
             );
             $end_time = endTime($start_time);
-            Log::alert("After Update Query - $end_time");
+
             $counter++;
         }
         $finished_loop = endTime($start_time);

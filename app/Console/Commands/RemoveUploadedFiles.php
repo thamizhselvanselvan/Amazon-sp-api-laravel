@@ -45,18 +45,15 @@ class RemoveUploadedFiles extends Command
     {
         //Process Management start
         $process_manage = [
-            'module'             => 'Remove_File',
-            'description'        => 'Remove uploaded file from server storage',
+            'module'             => 'Delete File',
+            'description'        => 'Delete uploaded file from server storage',
             'command_name'       => 'pms:remove-uploaded-boe',
             'command_start_time' => now(),
         ];
 
-        ProcessManagement::create($process_manage);
-        $pm_id = ProcessManagementCreate($process_manage['command_name']);
-        Log::alert($pm_id);
-        //Process Management end
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
 
-        // Log::alert("remove uploaded file from server command executed at ".now());
         $count = BOE::where('do', 0)->count();
         $chunk = 10;
         if ($count == 0) {
@@ -81,7 +78,7 @@ class RemoveUploadedFiles extends Command
         }
         // Remove all 2 days ago file form Asin destination, Asin source and invoiceCSV folder start.
         $back_file_date = Carbon::now()->subDays(2)->toDateString();
-        $Asin_source_destination_files = ['AsinDestination', 'AsinSource', 'invoiceCSV'];
+        $Asin_source_destination_files = ['AsinDestination', 'AsinSource'];
         foreach ($Asin_source_destination_files as $Asin_source_destination_file) {
 
             $files = Storage::allFiles("${Asin_source_destination_file}");
@@ -92,7 +89,6 @@ class RemoveUploadedFiles extends Command
 
                 if ($back_file_date == $current_file_date) {
                     unlink(Storage::path($file_name));
-                    log::alert('All file delete successfully from AsinDestination Folder');
                 }
             }
         }
@@ -100,6 +96,5 @@ class RemoveUploadedFiles extends Command
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-        Log::notice($pm_id . '=> pms:remove-uploaded-boe');
     }
 }
