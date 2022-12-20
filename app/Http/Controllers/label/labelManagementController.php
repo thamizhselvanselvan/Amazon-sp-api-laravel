@@ -411,7 +411,7 @@ class labelManagementController extends Controller
         GROUP BY ordetail.amazon_order_identifier
         ");
 
-        // po($label);
+        // po(count($label));
         // exit;
 
         $label_data = [];
@@ -473,11 +473,16 @@ class labelManagementController extends Controller
                     $title_array = explode('-label-title-', $label_details);
                     $title_array = array_unique($title_array);
 
+                    $max_text = 100;
+                    if (count($title_array) > 6) {
+                        $max_text = 35;
+                    } elseif (count($title_array) > 4) {
+                        $max_text = 50;
+                    }
 
                     foreach ($title_array as $key2 => $title) {
-
                         $ignore_title = str_ireplace($ignore, '', $title);
-                        $product[$key2][$key1] = substr_replace($ignore_title, '....', 100);
+                        $product[$key2][$key1] = substr_replace($ignore_title, '..', $max_text);
 
                         $sku_array = explode('-label-sku-', $label_value->sku);
                         $sku_array = array_unique($sku_array);
