@@ -50,8 +50,8 @@ class SellerOrdersImport extends Command
     {
         //Process Management start
         $process_manage = [
-            'module'             => 'seller_order_import',
-            'description'        => 'Get seller orders from Amazon of selected seller',
+            'module'             => 'Order',
+            'description'        => 'Get orders from Amazon for selected seller',
             'command_name'       => 'pms:sellers-orders-import',
             'command_start_time' => now(),
         ];

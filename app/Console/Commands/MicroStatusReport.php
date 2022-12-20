@@ -53,8 +53,6 @@ class MicroStatusReport extends Command
 
         $process_management_id = ProcessManagement::create($process_manage)->toArray();
         $pm_id = $process_management_id['id'];
-        // $pm_id = ProcessManagementCreate($process_manage['command_name']);
-        //Process Management end
 
         $today_sd = Carbon::today();
         $today_ed = Carbon::now();

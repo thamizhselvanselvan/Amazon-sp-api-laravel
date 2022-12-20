@@ -204,9 +204,6 @@ class warehouse_stock_track extends Command
             }
             $dayclosingamt =  array_sum($dayclosing);
 
-
-
-
             DB::connection('inventory')->table('warehouse_stocks')->insert([
                 'date' =>   $date,
                 'Warehouse' => $val,
@@ -223,7 +220,6 @@ class warehouse_stock_track extends Command
 
             ]);
         }
-
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);

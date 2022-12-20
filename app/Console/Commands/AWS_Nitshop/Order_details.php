@@ -42,8 +42,8 @@ class Order_details extends Command
     {
         //Process Management start
         $process_manage = [
-            'module'             => 'AWS_nitshop_order_details',
-            'description'        => 'AWS nitshop order item details',
+            'module'             => 'Order',
+            'description'        => 'Update order details in nitshopp from app360',
             'command_name'       => 'aws:nitshop:order_details',
             'command_start_time' => now(),
         ];
