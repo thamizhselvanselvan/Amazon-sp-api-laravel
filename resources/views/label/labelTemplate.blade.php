@@ -109,7 +109,9 @@
                     <tr>
                         <td class="pt-0 pb-0">
                             <div class="row">
-                                <div class="col p-0"></div>
+                                <div class="col p-0">
+
+                                </div>
                                 <div class="col p-0">
                                     <div class="text-center">
                                         @if ($forwarder == '' || $forwarder == null)
@@ -117,9 +119,9 @@
                                         @else
                                         {{ $forwarder }}
                                         @endif
+
                                     </div>
                                     <img class="label-barcode-img" src='data:image/png;base64,{!! $bar_code !!}'>
-                                    <!-- {!! $bar_code !!} -->
                                     <b>
                                         <div class="text-center">
                                             @if ($result->awb_no == '' || $result->awb_no == null)
@@ -130,7 +132,11 @@
                                         </div>
                                     </b>
                                 </div>
-                                <div class="col p-0"></div>
+                                <div class="col p-0">
+                                    @if(strtoupper($result->source) == 'US')
+                                    INTL
+                                    @endif
+                                </div>
                             </div>
                         </td>
                     </tr>
