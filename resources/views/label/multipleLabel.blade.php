@@ -143,8 +143,8 @@
                                         </b>
                                     </div>
                                     <div class="col">
-                                        @if(strtoupper($value->source) == 'US')
-                                        INTL
+                                        @if (isset($value->shipping_address['CountryCode']) && $value->shipping_address['CountryCode'] != 'AE')
+                                        <span>INTL</span>
                                         @endif
                                     </div>
                                 </div>
