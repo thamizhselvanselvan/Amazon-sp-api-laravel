@@ -50,12 +50,11 @@ class Order extends Command
 
         $process_management_id = ProcessManagement::create($process_manage)->toArray();
         $pm_id = $process_management_id['id'];
-        // $pm_id = ProcessManagementCreate($process_manage['command_name']);
-        //Process Management end
 
         $order = new Index;
         $order->order();
 
         $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
     }
 }
