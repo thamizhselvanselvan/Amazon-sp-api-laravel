@@ -22,7 +22,7 @@ class access_token_generate extends Command
      *
      * @var string
      */
-    protected $description = 'Generates the access code using Referesh Token';
+    protected $description = 'Generates the access code using Referesh Token for Amazon Business API';
 
     /**
      * Create a new command instance.

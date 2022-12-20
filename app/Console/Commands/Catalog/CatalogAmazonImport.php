@@ -44,8 +44,8 @@ class CatalogAmazonImport extends Command
     {
         //Process Management start
         $process_manage = [
-            'module'             => 'Catalog',
-            'description'        => 'Amazon catalog import via queue',
+            'module'             => 'Catalog Import',
+            'description'        => 'Import Catalog from Amazon',
             'command_name'       => 'mosh:catalog-amazon-import',
             'command_start_time' => now(),
         ];

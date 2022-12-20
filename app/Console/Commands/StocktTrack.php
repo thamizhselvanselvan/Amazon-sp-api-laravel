@@ -55,7 +55,7 @@ class StocktTrack extends Command
 
         $process_management_id = ProcessManagement::create($process_manage)->toArray();
         $pm_id = $process_management_id['id'];
-        // $pm_id = ProcessManagementCreate($process_manage['command_name']);
+
         //Process Management end
 
         /* Date */
@@ -179,9 +179,6 @@ class StocktTrack extends Command
             $dayclosing[] = $dayclose['total'];
         }
         $dayclosingamt =  array_sum($dayclosing);
-
-
-
 
         DB::connection('inventory')->table('stocks')->insert([
             'date' => $date,

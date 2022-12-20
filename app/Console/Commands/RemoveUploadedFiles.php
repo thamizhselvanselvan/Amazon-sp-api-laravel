@@ -45,8 +45,8 @@ class RemoveUploadedFiles extends Command
     {
         //Process Management start
         $process_manage = [
-            'module'             => 'Remove_File',
-            'description'        => 'Remove uploaded file from server storage',
+            'module'             => 'Delete File',
+            'description'        => 'Delete uploaded file from server storage',
             'command_name'       => 'pms:remove-uploaded-boe',
             'command_start_time' => now(),
         ];
