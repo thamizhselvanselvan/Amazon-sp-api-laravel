@@ -401,6 +401,7 @@ class labelManagementController extends Controller
         GROUP_CONCAT(DISTINCT web.forwarder) as forwarder,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
         GROUP_CONCAT(DISTINCT ordetail.shipping_address, '-address-separator-') as shipping_address,
+        GROUP_CONCAT(DISTINCT ordetail.source) as source,
         GROUP_CONCAT(ordetail.title SEPARATOR '-label-title-') as title,
         GROUP_CONCAT(ordetail.seller_sku SEPARATOR '-label-sku-') as sku,
         GROUP_CONCAT(ordetail.quantity_ordered SEPARATOR '-label-qty-') as qty
@@ -410,9 +411,6 @@ class labelManagementController extends Controller
         WHERE $where_condition
         GROUP BY ordetail.amazon_order_identifier
         ");
-
-        // po(count($label));
-        // exit;
 
         $label_data = [];
         $order_no = '';
