@@ -266,6 +266,7 @@ class InventoryShipmentController extends Controller
                 "created_at" => now(),
                 "updated_at" => now()
             ]);
+            break;
         }
 
         foreach ($request->asin as $key1 => $asin1) {
