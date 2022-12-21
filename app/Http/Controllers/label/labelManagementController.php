@@ -55,7 +55,7 @@ class labelManagementController extends Controller
                     }
                 })
                 ->addColumn('name', function ($data) {
-                    $name = json_decode($data->shipping_address);
+                    $name = json_decode($this->labelAddressCleanup($data->shipping_address));
                     if (isset($name->Name)) {
                         return $name->Name;
                     }
@@ -63,7 +63,7 @@ class labelManagementController extends Controller
                 })
                 ->addColumn('action', function ($data) use ($bag_no) {
                     $table = '';
-                    $name = json_decode($data->shipping_address);
+                    $name = json_decode($this->labelAddressCleanup($data->shipping_address));
                     if (isset($name->Name)) {
                         $table .=
                             "<div class='d-flex'>
@@ -444,7 +444,7 @@ class labelManagementController extends Controller
 
                     $new_label_add = preg_split('/-address-separator-,?/', $label_details);
                     $new_add = count($new_label_add) > 2 ? $new_label_add[1] : $new_label_add[0];
-                    $shipping_address = json_decode($new_add);
+                    $shipping_address = json_decode($this->labelAddressCleanup($new_add));
 
                     foreach ((array)$shipping_address as $add_key => $add_details) {
 
@@ -656,108 +656,6 @@ class labelManagementController extends Controller
         return $data;
     }
 
-    public function labelSearchByOrderId(Request $request)
-    {
-        if ($request->ajax()) {
-
-            $amazon_order_id = $request->order_id;
-            $amazon_order_id_array = preg_split('/[\r\n| |:|,]/', $amazon_order_id, -1, PREG_SPLIT_NO_EMPTY);
-
-            $amazon_order_id_array = array_unique($amazon_order_id_array);
-            $amazon_order_id_string = "'" . implode("', '", $amazon_order_id_array) . "'";
-
-            $label_detials = $this->labelListing($amazon_order_id_string, 'order_id');
-
-            $temp_label = array_unique(array_column($label_detials, 'order_no'));
-            $temp_label = array_intersect_key($label_detials, $temp_label);
-
-            $label_detials = $temp_label;
-            $html = '';
-            $name = '';
-            $missing_html = '';
-            $found_order_id = [];
-
-            if (count($label_detials) > 0) {
-
-                foreach ($label_detials as $label_det) {
-
-                    $order_date = Carbon::parse($label_det->purchase_date)->format('Y-m-d');
-                    $id = $label_det->id;
-                    $address = $label_det->shipping_address;
-                    $courier_name = $label_det->forwarder;
-                    $awb_no = $label_det->awb_no;
-                    $order_id = $label_det->order_no;
-                    $address_array = json_decode(($address), true);
-                    if (isset($address_array['Name'])) {
-                        $name = $address_array['Name'];
-                    }
-
-                    $found_order_id[] = $order_id;
-
-                    $html .= "<tr>
-                                <td> $label_det->store_name </td> 
-                                <td> $label_det->order_no </td>";
-
-                    if ($awb_no && $courier_name) {
-
-                        $html .=      "<td> $awb_no </td> 
-                                  <td> $courier_name </td> ";
-                    } else {
-                        $awb_exist = $awb_no ? $awb_no : '';
-                        $courier_name_exist = $courier_name ? $courier_name : '';
-                        $html .= "<td><input type ='text' placeholder='$awb_no' id ='tracking$order_id' value='$awb_exist'></td>
-                            <td><input type ='text' placeholder ='$courier_name' id='courier$order_id' value ='$courier_name_exist'></td>";
-                    }
-
-                    $html .= "<td> $order_date </td> 
-                                
-                                <td> $name</td>";
-                    if ($name && $courier_name && $awb_no) {
-                        $html .= "<td>
-                                    <div class='d-flex'>
-                                        <a href='/label/pdf-template/orderid-$id' class='edit btn btn-success btn-sm view'  target='_blank'>
-                                            <i class='fas fa-eye'></i> View 
-                                        </a>
-                                    
-                                        <div class='d-flex pl-2'>
-                                            <a href='/label/download-direct/orderid-$id' class='edit btn btn-info btn-sm'>
-                                                <i class='fas fa-download'></i> Download 
-                                            </a>
-                                        </div>
-                                        <div class='d-flex pl-2'>
-                                            
-                                         <a id='edit-address' data-toggle='modal' data-id='$label_det->order_item_identifier' data-amazon_order_identifier='$order_id ' href='javascript:void(0)'  class='edit btn btn-primary btn-sm'>
-                                            <i class='fas fa-address-card'></i> Edit Address</a>
-                                            
-                                        </div>
-                                    </div>
-                                    </td>
-                                </tr>";
-                    }
-                    if (!$courier_name || !$awb_no) {
-
-                        $html .= "<td>
-                                    <div class='d-flex'>
-                                        <a id='$order_id' class='update btn btn-success btn-sm'>
-                                            <i class='fas fa-upload'></i> Update
-                                        </a>
-                                    </div>
-                                <td>";
-                    }
-                }
-            }
-
-            $missing_order = array_diff($amazon_order_id_array, $found_order_id);
-
-            $missing_html .= $this->trackingDetailsMissing($missing_order);
-            return [
-                'success' => $html,
-                'missing' => $missing_html,
-            ];
-        }
-        return view('label.search_by_amazon_order_id');
-    }
-
     public function trackingDetailsMissing($amazon_order_id)
     {
         $missing_html = '';
@@ -803,7 +701,7 @@ class labelManagementController extends Controller
         from ${order}.orderitemdetails 
         WHERE order_item_identifier = '$order_item_identifier'");
 
-        $shipping_address = $order_details[0]->shipping_address;
+        $shipping_address = $this->labelAddressCleanup($order_details[0]->shipping_address);
         $manage = json_decode($shipping_address, true);
 
         return Response($manage);
@@ -858,13 +756,117 @@ class labelManagementController extends Controller
         }
     }
 
+    public function labelSearchByOrderId(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $amazon_order_id = $request->order_id;
+            $amazon_order_id_array = preg_split('/[\r\n| |:|,]/', $amazon_order_id, -1, PREG_SPLIT_NO_EMPTY);
+
+            $amazon_order_id_array = array_unique($amazon_order_id_array);
+            $amazon_order_id_string = "'" . implode("', '", $amazon_order_id_array) . "'";
+
+            $label_detials = $this->labelListing($amazon_order_id_string, 'order_id');
+
+            $temp_label = array_unique(array_column($label_detials, 'order_no'));
+            $temp_label = array_intersect_key($label_detials, $temp_label);
+
+            return $this->labelSearchDataFormating($temp_label, $amazon_order_id_array);
+        }
+        return view('label.search_by_amazon_order_id');
+    }
+
     public function labelSearchByAwnNo(Request $request)
     {
         $awb_no = array_unique(preg_split('/[\r\n| |:|,|.]/', $request->awb_no, -1, PREG_SPLIT_NO_EMPTY));
         $awb_tracking_no = "'" . implode("','", $awb_no) . "'";
         $label_details = $this->labelListing($awb_tracking_no, 'awb_tracking_id');
 
-        return response()->json($label_details);
+        return $this->labelSearchDataFormating($label_details, []);
+    }
+
+    public function  labelSearchByDate(Request $request)
+    {
+        if ($request->ajax()) {
+            $date = $request->selected_date;
+            $data = explode(' - ', $date);
+
+            if (count($data) >= 2) {
+                $split = [
+                    'start'    => trim($data[0]),
+                    'end'   =>     trim($data[1])
+                ];
+            } else {
+                return 'Date Selection Went Wrong';
+            }
+            $id = json_encode($split);
+
+            $label_details = $this->labelListing($id, 'search_date');
+            $currentPageNumber = $request->start / $request->length + 1;
+            // po($currentPageNumber);
+            // exit;
+            return DataTables::of($label_details)
+                ->addColumn('check_box', function ($label_detail) use ($currentPageNumber) {
+                    return "<input class='check_options' type='checkbox' data-current-page='$currentPageNumber' value='$label_detail->id' name='options[]' id='checkid$label_detail->id'>";
+                })
+                ->addColumn('store_name', function ($label_detail) {
+                    $store_name = $label_detail->store_name;
+                    return $store_name;
+                })
+                ->addColumn('order_no', function ($label_detail) {
+                    $order_no = $label_detail->order_no;
+                    return $order_no;
+                })
+                ->addColumn('awb_no', function ($label_detail) {
+                    $awb_no = $label_detail->awb_no;
+                    return $awb_no;
+                })
+                ->addColumn('courier_name', function ($label_detail) {
+                    $courier_name = $label_detail->forwarder;
+                    return $courier_name;
+                })
+                ->addColumn('order_date', function ($label_detail) {
+                    $order_date = Carbon::parse($label_detail->purchase_date)->format('Y-m-d');
+                    return $order_date;
+                })
+                ->addColumn('customer_name', function ($label_detail) {
+                    $customer_name = [];
+                    $customer = json_decode($this->labelAddressCleanup($label_detail->shipping_address), true);
+                    if (isset($customer['Name'])) {
+
+                        $customer_name = $customer['Name'];
+                    }
+                    return $customer_name;
+                })
+                ->addColumn('action', function ($label_detail) {
+                    $action = "<td>
+                                    <div class='d-flex'>
+                                        <a href='/label/pdf-template/orderid-$label_detail->id' class='edit btn btn-success btn-sm view'  target='_blank'>
+                                            <i class='fas fa-eye'></i> View 
+                                        </a>
+
+                                        <div class='d-flex pl-2'>
+                                            <a href='/label/download-direct/orderid-$label_detail->id' class='edit btn btn-info btn-sm'>
+                                                <i class='fas fa-download'></i> Download 
+                                            </a>
+                                        </div>
+                                        <div class='d-flex pl-2'>
+
+                                         <a id='edit-address' data-toggle='modal' data-id='$label_detail->order_item_identifier' data-amazon_order_identifier='$label_detail->order_no ' href='javascript:void(0)'  class='edit btn btn-primary btn-sm'>
+                                            <i class='fas fa-address-card'></i> Edit Address</a>
+
+                                        </div>
+                                    </div>
+                                    </td>
+                                </tr>";
+                    return $action;
+                })
+
+                ->rawColumns(['check_box', 'store_name', 'order_no', 'awb_no', 'courier_name', 'order_date', 'customer_name', 'action'])
+                ->make(true);
+        }
+
+        return view('label.search_by_date');
     }
 
     public function editordersearchbyid($order_item_identifier)
@@ -940,165 +942,6 @@ class labelManagementController extends Controller
         return response()->json($file_check);
     }
 
-    public function  labelSearchByDate(Request $request)
-    {
-        if ($request->ajax()) {
-            $date = $request->selected_date;
-            $data = explode(' - ', $date);
-
-            if (count($data) >= 2) {
-                $split = [
-                    'start'    => trim($data[0]),
-                    'end'   =>     trim($data[1])
-                ];
-            } else {
-                return 'Date Selection Went Wrong';
-            }
-            $id = json_encode($split);
-
-            $label_details = $this->labelListing($id, 'search_date');
-            $currentPageNumber = $request->start / $request->length + 1;
-            // po($currentPageNumber);
-            // exit;
-            return DataTables::of($label_details)
-                ->addColumn('check_box', function ($label_detail) use ($currentPageNumber) {
-                    return "<input class='check_options' type='checkbox' data-current-page='$currentPageNumber' value='$label_detail->id' name='options[]' id='checkid$label_detail->id'>";
-                })
-                ->addColumn('store_name', function ($label_detail) {
-                    $store_name = $label_detail->store_name;
-                    return $store_name;
-                })
-                ->addColumn('order_no', function ($label_detail) {
-                    $order_no = $label_detail->order_no;
-                    return $order_no;
-                })
-                ->addColumn('awb_no', function ($label_detail) {
-                    $awb_no = $label_detail->awb_no;
-                    return $awb_no;
-                })
-                ->addColumn('courier_name', function ($label_detail) {
-                    $courier_name = $label_detail->forwarder;
-                    return $courier_name;
-                })
-                ->addColumn('order_date', function ($label_detail) {
-                    $order_date = Carbon::parse($label_detail->purchase_date)->format('Y-m-d');
-                    return $order_date;
-                })
-                ->addColumn('customer_name', function ($label_detail) {
-                    $customer_name = [];
-                    $customer = json_decode($label_detail->shipping_address, true);
-                    if (isset($customer['Name'])) {
-
-                        $customer_name = $customer['Name'];
-                    }
-                    return $customer_name;
-                })
-                ->addColumn('action', function ($label_detail) {
-                    $action = "<td>
-                                    <div class='d-flex'>
-                                        <a href='/label/pdf-template/orderid-$label_detail->id' class='edit btn btn-success btn-sm view'  target='_blank'>
-                                            <i class='fas fa-eye'></i> View 
-                                        </a>
-
-                                        <div class='d-flex pl-2'>
-                                            <a href='/label/download-direct/orderid-$label_detail->id' class='edit btn btn-info btn-sm'>
-                                                <i class='fas fa-download'></i> Download 
-                                            </a>
-                                        </div>
-                                        <div class='d-flex pl-2'>
-
-                                         <a id='edit-address' data-toggle='modal' data-id='$label_detail->order_item_identifier' data-amazon_order_identifier='$label_detail->order_no ' href='javascript:void(0)'  class='edit btn btn-primary btn-sm'>
-                                            <i class='fas fa-address-card'></i> Edit Address</a>
-
-                                        </div>
-                                    </div>
-                                    </td>
-                                </tr>";
-                    return $action;
-                })
-
-                ->rawColumns(['check_box', 'store_name', 'order_no', 'awb_no', 'courier_name', 'order_date', 'customer_name', 'action'])
-                ->make(true);
-            // exit;
-            // if (count($label_details) > 0) {
-            //     $html = '';
-            //     $name = '';
-            //     $found_order_id = [];
-
-            //     foreach ($label_details as $label_det) {
-
-            //         $order_date = Carbon::parse($label_det->purchase_date)->format('Y-m-d');
-            //         $id = $label_det->id;
-            //         $address = $label_det->shipping_address;
-            //         $courier_name = $label_det->forwarder;
-            //         $awb_no = $label_det->awb_no;
-            //         $order_id = $label_det->order_no;
-            //         $address_array = json_decode(($address), true);
-            //         if (isset($address_array['Name'])) {
-            //             $name = $address_array['Name'];
-            //         }
-
-            //         $found_order_id[] = $order_id;
-
-            //         $html .= "<tr>
-            //                     <td> $label_det->store_name </td> 
-            //                     <td> $label_det->order_no </td>";
-
-            //         if ($awb_no && $courier_name) {
-
-            //             $html .=      "<td> $awb_no </td> 
-            //                       <td> $courier_name </td> ";
-            //         } else {
-            //             $awb_exist = $awb_no ? $awb_no : '';
-            //             $courier_name_exist = $courier_name ? $courier_name : '';
-            //             // $html .= "<td><input type ='text' placeholder='$awb_no' id ='tracking$order_id' value='$awb_exist'></td>
-            //             //     <td><input type ='text' placeholder ='$courier_name' id='courier$order_id' value ='$courier_name_exist'></td>";
-
-            //             $html .= "<td> </td>
-            //                        <td> </td>";
-            //         }
-
-            //         $html .= "<td> $order_date </td> 
-            //                     <td> $name</td>";
-            //         if ($name && $courier_name && $awb_no) {
-            //             $html .= "<td>
-            //                         <div class='d-flex'>
-            //                             <a href='/label/pdf-template/orderid-$id' class='edit btn btn-success btn-sm view'  target='_blank'>
-            //                                 <i class='fas fa-eye'></i> View 
-            //                             </a>
-
-            //                             <div class='d-flex pl-2'>
-            //                                 <a href='/label/download-direct/orderid-$id' class='edit btn btn-info btn-sm'>
-            //                                     <i class='fas fa-download'></i> Download 
-            //                                 </a>
-            //                             </div>
-            //                             <div class='d-flex pl-2'>
-
-            //                              <a id='edit-address' data-toggle='modal' data-id='$label_det->order_item_identifier' data-amazon_order_identifier='$order_id ' href='javascript:void(0)'  class='edit btn btn-primary btn-sm'>
-            //                                 <i class='fas fa-address-card'></i> Edit Address</a>
-
-            //                             </div>
-            //                         </div>
-            //                         </td>
-            //                     </tr>";
-            //         } else {
-            //             $html .= "<td>
-            //                         <div class='d-flex'>
-            //                            <h5>Update Details</h5>
-            //                         </div>
-            //                         </td>
-            //                     </tr>";
-            //         }
-            //     }
-            //     return [
-            //         'success' => $html,
-
-            //     ];
-            // }
-        }
-
-        return view('label.search_by_date');
-    }
     public function dayBydayZipDownload()
     {
         $html = '';
@@ -1143,5 +986,97 @@ class labelManagementController extends Controller
         }
         $html .= '</div>';
         return $html;
+    }
+
+    public function labelAddressCleanup($address)
+    {
+        return  str_replace(array("\n", "\r"), ' ', $address);;
+    }
+
+    public function labelSearchDataFormating($label_detials, $amazon_order_id_array)
+    {
+        $html = '';
+        $name = '';
+        $missing_html = '';
+        $found_order_id = [];
+
+        if (count($label_detials) > 0) {
+
+            foreach ($label_detials as $label_det) {
+
+                $order_date = Carbon::parse($label_det->purchase_date)->format('Y-m-d');
+                $id = $label_det->id;
+                $address = $label_det->shipping_address;
+                $courier_name = $label_det->forwarder;
+                $awb_no = $label_det->awb_no;
+                $order_id = $label_det->order_no;
+                $address_array = json_decode($this->labelAddressCleanup($address), true);
+                if (isset($address_array['Name'])) {
+                    $name = $address_array['Name'];
+                }
+
+                $found_order_id[] = $order_id;
+
+                $html .= "<tr>
+                            <td> $label_det->store_name </td> 
+                            <td> $label_det->order_no </td>";
+
+                if ($awb_no && $courier_name) {
+
+                    $html .=      "<td> $awb_no </td> 
+                              <td> $courier_name </td> ";
+                } else {
+                    $awb_exist = $awb_no ? $awb_no : '';
+                    $courier_name_exist = $courier_name ? $courier_name : '';
+                    $html .= "<td><input type ='text' placeholder='$awb_no' id ='tracking$order_id' value='$awb_exist'></td>
+                        <td><input type ='text' placeholder ='$courier_name' id='courier$order_id' value ='$courier_name_exist'></td>";
+                }
+
+                $html .= "<td> $order_date </td> 
+                            
+                            <td> $name</td>";
+                if ($name && $courier_name && $awb_no) {
+                    $html .= "<td>
+                                <div class='d-flex'>
+                                    <a href='/label/pdf-template/orderid-$id' class='edit btn btn-success btn-sm view'  target='_blank'>
+                                        <i class='fas fa-eye'></i> View 
+                                    </a>
+                                
+                                    <div class='d-flex pl-2'>
+                                        <a href='/label/download-direct/orderid-$id' class='edit btn btn-info btn-sm'>
+                                            <i class='fas fa-download'></i> Download 
+                                        </a>
+                                    </div>
+                                    <div class='d-flex pl-2'>
+                                        
+                                     <a id='edit-address' data-toggle='modal' data-id='$label_det->order_item_identifier' data-amazon_order_identifier='$order_id ' href='javascript:void(0)'  class='edit btn btn-primary btn-sm'>
+                                        <i class='fas fa-address-card'></i> Edit Address</a>
+                                        
+                                    </div>
+                                </div>
+                                </td>
+                            </tr>";
+                }
+                if (!$courier_name || !$awb_no) {
+
+                    $html .= "<td>
+                                <div class='d-flex'>
+                                    <a id='$order_id' class='update btn btn-success btn-sm'>
+                                        <i class='fas fa-upload'></i> Update
+                                    </a>
+                                </div>
+                            <td>";
+                }
+            }
+        }
+
+        $missing_order = array_diff($amazon_order_id_array, $found_order_id);
+
+        $missing_html .= $this->trackingDetailsMissing($missing_order);
+        return [
+            'success' => $html,
+            'missing' => $missing_html,
+        ];
+        //
     }
 }
