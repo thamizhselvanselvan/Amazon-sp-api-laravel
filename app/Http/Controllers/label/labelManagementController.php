@@ -199,12 +199,6 @@ class labelManagementController extends Controller
         $all_id_string = "'" . implode("','", explode('-', $id)) . "'";
         $results = $this->labelDataFormating($all_id_string);
 
-        /*
-        Sort srray by name
-        */
-        $keys = array_column(array_column($results, 'shipping_address'), 'Name');
-        array_multisort($keys, SORT_ASC, $results);
-
         $generator = new BarcodeGeneratorPNG();
 
         $result = [];
@@ -414,6 +408,7 @@ class labelManagementController extends Controller
         JOIN ${order}.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
         WHERE $where_condition
         GROUP BY ordetail.amazon_order_identifier
+        ORDER BY shipping_address
         ");
 
         $label_data = [];
