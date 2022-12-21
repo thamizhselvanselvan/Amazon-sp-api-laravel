@@ -122,7 +122,7 @@ class InventoryShipmentController extends Controller
         foreach ($currency as $key => $cur) {
             $currency_array[$cur->id] = $cur->name;
         }
-        // dd($vendor_name);
+       
         return view('inventory.inward.shipment.view', compact('view', 'currency_array', 'bar_code', 'id', 'warehouse_name', 'vendor_name', 'currency_id'));
     }
     public function createView(Request $request)
@@ -265,21 +265,20 @@ class InventoryShipmentController extends Controller
                 "price" => $request->price[$key],
             ];
         }
-
-        foreach ($request->asin as $key1 => $asin1) {
-
+        $source = $request->source;
+        $new = [...array_unique($source)];
+        $data = json_encode($new);
+        
             Shipment_Inward::insert([
                 "warehouse_id" => $request->warehouse,
-                "source_id" =>  $request->source[$key1],
+                "source_id" =>$data,
                 "ship_id" => $ship_id,
                 "currency" => $request->currency,
                 "shipment_count" => count($items),
                 "created_at" => now(),
                 "updated_at" => now()
             ]);
-            break;
-        }
-
+ 
         foreach ($request->asin as $key1 => $asin1) {
 
             Shipment_Inward_Details::create([

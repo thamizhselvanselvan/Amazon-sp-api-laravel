@@ -339,7 +339,8 @@
                     },
                     error: function(response) {
                         // console.log(response);
-                        alert('error');
+                        alert('Something Went Wrong.. Try creating shipment Again');
+                        $('.create_shipmtn_btn').prop('disabled', false);
                     }
                 });
             }
