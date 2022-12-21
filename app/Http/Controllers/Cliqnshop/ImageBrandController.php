@@ -385,8 +385,8 @@ class ImageBrandController extends Controller
             // Storage::put($path1, $img1);
             // $img1_url = $path1;
             Storage::disk('cliqnshop')->put($path1, $img1);
-            $img1_url =$path2;
-            
+            $img1_url =$path1;
+
         } else if ($Imgno == 'Image-2') {
             $img2 = file_get_contents($imgselected);
             $urli2 =  $image_url;
