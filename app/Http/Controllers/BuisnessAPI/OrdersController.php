@@ -123,33 +123,35 @@ class OrdersController extends Controller
 
         // return view('buisnessapi.orders.index', compact('data'));
     }
-    public function test()
+    public function orderpending(Request $request)
     {
-
-        $data[] = DB::connection('cliqnshop')->table('mshop_order')
+        $data = DB::connection('cliqnshop')->table('mshop_order')
+            ->where('mshop_order.statuspayment', '5,6')
 
             ->join('mshop_order_base_product as oid', function ($query) {
                 $query->on('oid.baseid', '=', 'mshop_order.baseid')
-                    ->where('status', '1');
+                    ->where('oid.status', '0');
             })
             ->join('mshop_product as pid', function ($query) {
                 $query->on('pid.id', '=', 'oid.prodid');
             })
+            ->select('oid.prodcode', 'oid.name', 'oid.quantity','oid.price')
+            // ->orderBy('oid.mtime','desc')
             ->get();
 
+        if ($request->ajax()) {
+            return DataTables::of($data)
+                ->addIndexColumn()
 
-        $data_pending = DB::connection('cliqnshop')->table('mshop_order_base_product')
-            ->select('prodcode')
-            ->where('status', '0')
-            ->get();
-        $order_unplaced = count($data_pending);
-
-        $data_orders = DB::connection('cliqnshop')->table('mshop_order_base_product')
-            ->select('prodcode', 'name', 'quantity', 'price', 'status')
-            ->get();
-
-
-        return view('buisnessapi.orders.details', compact('data',  'order_unplaced'));
+                ->addColumn('action', function ($data) {
+                    $id = $data->prodcode;
+                    return  "<div class='d-flex'><a href='javascript:void(0)' id='offers1' value ='$id' class='edit btn btn-success btn-sm offers1'><i class='fas fa-check'></i> Book</a>";
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+     
+        return view('buisnessapi.orders.details');
     }
 
     public function getorders(Request $request)
@@ -180,6 +182,8 @@ class OrdersController extends Controller
     public function prodoffers(Request $request)
     {
         $asin = $request->asin;
+        $quantity = $request->quantity;
+
         $ApiCall = new ProductsRequest();
         $data = $ApiCall->getASINpr($asin);
         $offers_data = $data->includedDataTypes->OFFERS;
@@ -196,6 +200,7 @@ class OrdersController extends Controller
                              <input type='radio' class='offer-id' name='oid' value='$data->offerId'/>
                              <input type='hidden' class='asin' name='asin' value='$rasin'/>
                              <input type='hidden' class='item_name' name='item_name' value='$ritem_name'/>
+                             <input type='hidden' class='quantity' name='quantity' value='$quantity'/>
                               Price: $price_amount<br>
                               Availability: $data->availability<br>
                               Info: $data->deliveryInformation.<br>
@@ -214,9 +219,10 @@ class OrdersController extends Controller
             $asin = $request->asin;
             $name = $request->item_name;
             $OfferID = $request->offerid;
+            $quantity = $request->quantity;
 
             $ApiCall = new Orders();
-            $data = $ApiCall->getOrders($asin, $name, $OfferID);
+            $data = $ApiCall->getOrders($asin, $name, $OfferID, $quantity);
 
             $responce = ($data[0]);
 
@@ -277,7 +283,7 @@ class OrdersController extends Controller
                 'sub_category' =>   $sub_category,
 
             ];
-           
+
             $ship_address_array = [
                 $deliver1,
                 $deliver2,
@@ -354,6 +360,7 @@ class OrdersController extends Controller
         }
         return view('Cliqnshop.confirm');
     }
+
     public function notification(Request $request)
     {
         if ($request->ajax()) {
@@ -382,12 +389,6 @@ class OrdersController extends Controller
                 DB::connection('business')->table('orders')->select('sent_payload', 'order_date', 'order_id', 'item_details', 'responce_payload', 'responce_code', 'created_at')
                 ->orderby('created_at', 'DESC')
                 ->get();
-            // $data_placed = DB::connection('cliqnshop')->table('order_base_product')
-            //     ->select('prodcode', 'name', 'quantity', 'price', 'status')
-            //     ->where('status', '1')
-            //     ->orderby('baseid', 'desc')
-            //     ->get();
-
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('asin', function ($data) {
