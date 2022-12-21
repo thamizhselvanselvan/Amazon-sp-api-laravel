@@ -100,9 +100,9 @@ class InventoryShipmentController extends Controller
 
     public function show($id)
     {
-        
+
         $view = Shipment_Inward_Details::where('ship_id', $id)->with(['warehouses', 'vendors', 'tags'])->get();
-        
+
         $warehouse_name = '';
         $vendor_name = [];
         $currency_id = '';
@@ -115,9 +115,8 @@ class InventoryShipmentController extends Controller
             $warehouse_name = $bar->warehouses->name;
             $vendor_name[] = $bar->vendors->name;
             $currency_id = $bar->currency;
-         
         }
-       
+
         $currency = Currency::get();
         $currency_array = [];
         foreach ($currency as $key => $cur) {
@@ -235,10 +234,22 @@ class InventoryShipmentController extends Controller
 
     public function storeshipment(Request $request)
     {
+        start:
         $uniq = random_int(1000, 99999);
         $ship_id = 'INW' . $uniq;
-        $items = [];
 
+
+        $items = [];
+        $val = Shipment_Inward::query()
+            ->select(('ship_id'))
+            ->where('ship_id', $ship_id)
+            ->first();
+
+        if ($val) {
+            goto start;
+        }
+
+       
         $request->validate([
             'warehouse' => 'required',
             'currency' => 'required',
