@@ -55,7 +55,7 @@ class labelManagementController extends Controller
                     }
                 })
                 ->addColumn('name', function ($data) {
-                    $name = json_decode($data->shipping_address);
+                    $name = json_decode($this->labelAddressCleanup($data->shipping_address));
                     if (isset($name->Name)) {
                         return $name->Name;
                     }
@@ -63,7 +63,7 @@ class labelManagementController extends Controller
                 })
                 ->addColumn('action', function ($data) use ($bag_no) {
                     $table = '';
-                    $name = json_decode($data->shipping_address);
+                    $name = json_decode($this->labelAddressCleanup($data->shipping_address));
                     if (isset($name->Name)) {
                         $table .=
                             "<div class='d-flex'>
@@ -444,7 +444,7 @@ class labelManagementController extends Controller
 
                     $new_label_add = preg_split('/-address-separator-,?/', $label_details);
                     $new_add = count($new_label_add) > 2 ? $new_label_add[1] : $new_label_add[0];
-                    $shipping_address = json_decode($new_add);
+                    $shipping_address = json_decode($this->labelAddressCleanup($new_add));
 
                     foreach ((array)$shipping_address as $add_key => $add_details) {
 
@@ -687,7 +687,7 @@ class labelManagementController extends Controller
                     $courier_name = $label_det->forwarder;
                     $awb_no = $label_det->awb_no;
                     $order_id = $label_det->order_no;
-                    $address_array = json_decode(($address), true);
+                    $address_array = json_decode($this->labelAddressCleanup($address), true);
                     if (isset($address_array['Name'])) {
                         $name = $address_array['Name'];
                     }
@@ -803,7 +803,7 @@ class labelManagementController extends Controller
         from ${order}.orderitemdetails 
         WHERE order_item_identifier = '$order_item_identifier'");
 
-        $shipping_address = $order_details[0]->shipping_address;
+        $shipping_address = $this->labelAddressCleanup($order_details[0]->shipping_address);
         $manage = json_decode($shipping_address, true);
 
         return Response($manage);
@@ -986,7 +986,7 @@ class labelManagementController extends Controller
                 })
                 ->addColumn('customer_name', function ($label_detail) {
                     $customer_name = [];
-                    $customer = json_decode($label_detail->shipping_address, true);
+                    $customer = json_decode($this->labelAddressCleanup($label_detail->shipping_address), true);
                     if (isset($customer['Name'])) {
 
                         $customer_name = $customer['Name'];
@@ -1099,6 +1099,7 @@ class labelManagementController extends Controller
 
         return view('label.search_by_date');
     }
+
     public function dayBydayZipDownload()
     {
         $html = '';
@@ -1143,5 +1144,10 @@ class labelManagementController extends Controller
         }
         $html .= '</div>';
         return $html;
+    }
+
+    public function labelAddressCleanup($address)
+    {
+        return  str_replace(array("\n", "\r"), ' ', $address);;
     }
 }
