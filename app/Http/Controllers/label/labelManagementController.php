@@ -41,8 +41,6 @@ class labelManagementController extends Controller
     private $order_details;
     public function SearchLabel(Request $request)
     {
-        $data = $this->labelListing(2);
-
         if ($request->ajax()) {
             $currentPageNumber = $request->start / $request->length + 1;
 
@@ -200,6 +198,13 @@ class labelManagementController extends Controller
     {
         $all_id_string = "'" . implode("','", explode('-', $id)) . "'";
         $results = $this->labelDataFormating($all_id_string);
+
+        /*
+        Sort srray by name
+        */
+        $keys = array_column(array_column($results, 'shipping_address'), 'Name');
+        array_multisort($keys, SORT_ASC, $results);
+
         $generator = new BarcodeGeneratorPNG();
 
         $result = [];
@@ -401,7 +406,6 @@ class labelManagementController extends Controller
         GROUP_CONCAT(DISTINCT web.forwarder) as forwarder,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
         GROUP_CONCAT(DISTINCT ordetail.shipping_address, '-address-separator-') as shipping_address,
-        GROUP_CONCAT(DISTINCT ordetail.source) as source,
         GROUP_CONCAT(ordetail.title SEPARATOR '-label-title-') as title,
         GROUP_CONCAT(ordetail.seller_sku SEPARATOR '-label-sku-') as sku,
         GROUP_CONCAT(ordetail.quantity_ordered SEPARATOR '-label-qty-') as qty
@@ -500,6 +504,8 @@ class labelManagementController extends Controller
             $label_data = [];
         }
 
+        // po($label_details_array);
+        // exit;
         return $label_details_array;
     }
 
@@ -650,6 +656,7 @@ class labelManagementController extends Controller
             JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
             JOIN ${order}.order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
             WHERE $where_condition
+            order by orderDetails.shipping_address
         ");
         return $data;
     }

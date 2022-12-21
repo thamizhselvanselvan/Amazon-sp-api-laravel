@@ -133,7 +133,7 @@
                                     </b>
                                 </div>
                                 <div class="col p-0">
-                                    @if(strtoupper($result->source) == 'US')
+                                    @if (isset($result->shipping_address['CountryCode']) && $result->shipping_address['CountryCode'] != 'AE')
                                     INTL
                                     @endif
                                 </div>
