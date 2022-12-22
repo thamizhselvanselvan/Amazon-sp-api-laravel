@@ -30,6 +30,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 
 use Illuminate\Support\Facades\Validator;
 use App\Models\order\OrderSellerCredentials;
+use Exception;
 
 class labelManagementController extends Controller
 {
@@ -207,13 +208,27 @@ class labelManagementController extends Controller
         foreach ($results as $value) {
 
             $barcode_awb = 'AWB-MISSING';
+            try {
 
-            $result[] = (object)$value;
-            if (($value['awb_no'])) {
-                $barcode_awb = $value['awb_no'];
+                $result[] = (object)$value;
+                if (($value['awb_no'])) {
+                    $barcode_awb = $value['awb_no'];
+                }
+
+                $bar_code[] = base64_encode($generator->getBarcode($barcode_awb, $generator::TYPE_CODE_39));
+            } catch (Exception $e) {
+
+                $getMessage = $e->getMessage();
+                $getCode = $e->getCode();
+                $getFile = $e->getFile();
+
+                $slackMessage = "Message: $getMessage
+                Code: $getCode
+                File: $getFile
+                Awb_No: $barcode_awb";
+
+                slack_notification('app360', 'Label Bar Code Error', $slackMessage);
             }
-
-            $bar_code[] = base64_encode($generator->getBarcode($barcode_awb, $generator::TYPE_CODE_39));
         }
 
         return view('label.multipleLabel', compact('result', 'bar_code'));
