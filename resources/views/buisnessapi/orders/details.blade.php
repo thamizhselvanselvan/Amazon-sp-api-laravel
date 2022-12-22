@@ -127,8 +127,7 @@
     $(document).on("click", ".offers1", function() {
         let self = $(this);
         let asin = $(this).attr('value');
-        let qty = self.parent().parent().prev().text();
-
+        let qty = self.parent().parent().prev().prev().text();
         $.ajax({
             method: 'GET',
             url: '/business/offers_view/',
