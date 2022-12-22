@@ -33,6 +33,7 @@ class Kernel extends ConsoleKernel
             /*B2CShip*/
             $schedule->command('pms:b2cship-microstatus-report')->daily(); //PM
             $schedule->command('pms:b2cship-kyc-status')->daily(); //PM
+            $schedule->command('mosh:kyc-received-monitor')->hourly();
 
             /*BEO*/
             $schedule->command('pms:boe-upload-Do')->everyFourHours(); //PM

@@ -146,23 +146,20 @@
                 </div>
             </div>
         </div>
-        <div class="col float-right ">
-            <div class="row ">
-                <div class="col-6"></div>
-                <div class="col">
-                    <div style="margin-top: 2.4rem;">
-                        <x-adminlte-button label="Create Selected Zip" id="download_selected" theme="primary"
-                            icon="fas fa-download" class="btn-sm" />
-                    </div>
 
-                </div>
-                <div class="col">
-                    <div style="margin-top: 2.4rem;">
-                        <x-adminlte-button label="Download Label Zip" theme="primary" icon="fas fa-download"
-                            class="btn-sm" id='zip-download' data-toggle="modal" data-target='#label_download_zip' />
-                    </div>
+        <div class="col"></div>
 
-                </div>
+        <div class="col " style="margin-top: 2.4rem;">
+            <div class="row float-right">
+                <x-adminlte-button label="Print Selected" id="print_selected" theme="primary" icon="fas fa-print"
+                    class="btn-sm ml-1" />
+
+                <x-adminlte-button label="Create Selected Zip" id="download_selected" theme="primary"
+                    icon="fas fa-download" class="btn-sm ml-1 " />
+
+                <x-adminlte-button label="Download Label Zip" theme="primary" icon="fas fa-download" class="btn-sm ml-1"
+                    id='zip-download' data-toggle="modal" data-target='#label_download_zip' />
+
             </div>
         </div>
 
@@ -275,6 +272,23 @@
 
                 }
             });
+        });
+
+        $('#print_selected').click(function() {
+
+            let id = '';
+            let count = '';
+            $("input[name='options[]']:checked").each(function() {
+                if (count == 0) {
+                    id += $(this).val();
+                } else {
+                    id += '-' + $(this).val();
+                }
+                count++;
+
+            });
+
+            window.open("/label/print-selected/" + id, "_blank");
         });
 
         $(document).on('click', '#edit-address', function() {
