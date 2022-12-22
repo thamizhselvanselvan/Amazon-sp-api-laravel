@@ -358,6 +358,12 @@ return [
                     'can' => ['Admin'],
                     'icon' => 'fa fa-tasks',
                 ],
+                // [
+                //     'text' => 'Maintenance Mode',
+                //     'url' => 'maintenence/maintenence-mode',
+                //     'can' => ['Admin'],
+                //     'icon' => 'fas fa-wrench',
+                // ],
             ],
         ],
 
@@ -965,9 +971,9 @@ return [
                             'text' => 'trending brands section ',
                             'url' => 'cliqnshop/trending',
                             'can' => ['Admin', 'Cliqnshop'],
-                            'icon' =>'fa fa-th',
+                            'icon' => 'fa fa-th',
                         ],
-                        
+
                     ],
                 ],
             ],
