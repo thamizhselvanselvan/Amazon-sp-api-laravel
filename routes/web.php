@@ -76,10 +76,22 @@ use function Clue\StreamFilter\fun;
 */
 // use ConfigTrait;
 
-Route::get('test', function () {
-    $sub = -10;
-    $check = ($sub < 0) ? 0 : $sub;
-    po($check);
+Route::get('kyc', function () {
+    $kyc_received = DB::connection('b2cship')->select("SELECT TOP 1 AWBNO, CreatedDate
+    FROM Packet WHERE IsKYC ='true' ORDER BY CreatedDate DESC");
+
+    $kyc_received_date = Carbon::parse($kyc_received[0]->CreatedDate);
+    $dayName = $kyc_received_date->dayName;
+
+    $getTime = Carbon::parse($kyc_received[0]->CreatedDate);
+    $now = Carbon::now();
+    $timeDiff = $getTime->diff($now);
+    po($timeDiff);
+
+    if ($dayName != 'Sunday' && $timeDiff->h >= 3) {
+        echo 'kyc not received ';
+        slack_notification('monitor', 'KYC Received', 'KYC received exceeds 11 hours');
+    }
 });
 
 Route::get('t', function () {
