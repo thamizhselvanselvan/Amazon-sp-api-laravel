@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Models\otherCatalog\OtherCatalogAsin;
 
@@ -43,14 +42,11 @@ class OtherCatalogAsinImport extends Command
         $user = $this->argument('user');
         $type = $this->argument('type');
 
-        Log::alert("working");
-
         OtherCatalogAsin::where('user_id', $user)->where('source', $type)->delete();
 
         if ($type == 'com') {
             $path = 'OtherAmazon/amazomdotcom/Asin.txt';
-        }
-        else{
+        } else {
             $path = 'OtherAmazon/amazomdotin/Asin.txt';
         }
 

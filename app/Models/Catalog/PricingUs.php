@@ -12,11 +12,13 @@ class PricingUs extends Model
     protected $table = 'pricing_uss';
     protected $fillable = [
         'asin',
+        'available',
         'weight',
         'us_price',
-        'ind_sp',
-        'uae_sp',
-        'sg_sp',
+        'usa_to_in_b2b',
+        'usa_to_in_b2c',
+        'usa_to_uae',
+        'usa_to_sg',
         'price_updated_at'
     ];
 }

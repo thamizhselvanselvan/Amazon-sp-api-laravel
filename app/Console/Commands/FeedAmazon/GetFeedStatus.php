@@ -2,8 +2,10 @@
 
 namespace App\Console\Commands\FeedAmazon;
 
-use App\Models\order\OrderUpdateDetail;
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
+use Illuminate\Support\Facades\Log;
+use App\Models\order\OrderUpdateDetail;
 use App\Services\SP_API\Config\ConfigTrait;
 use SellingPartnerApi\Api\FeedsV20210630Api as FeedsApi;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
@@ -43,6 +45,19 @@ class GetFeedStatus extends Command
     use ConfigTrait;
     public function handle()
     {
+        //Process Management start
+        $process_manage = [
+            'module'             => 'AWB_feed',
+            'description'        => 'AWB feed status',
+            'command_name'       => 'mosh:feed-status',
+            'command_start_time' => now(),
+        ];
+
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+
+        //Process Management end
+
         $result = OrderUpdateDetail::where([
             ['order_status', '!=', 'unshipped'],
             ['order_feed_status', NULL]
@@ -83,5 +98,8 @@ class GetFeedStatus extends Command
                 ])->update(['order_feed_status' => $msg]);
             }
         }
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
     }
 }

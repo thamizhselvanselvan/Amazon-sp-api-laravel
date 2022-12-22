@@ -94,7 +94,6 @@ class InvoiceCsvImport extends Command
             $records = Reader::createFromPath(Storage::path($file_path), 'r');
             $records->setHeaderOffset(0);
             foreach ($records as $record) {
-
                 $invoice_data[] = [
                     'amazon_order_id'         => htmlspecialchars(trim($record['Amazon_order_id'])),
                     'invoice_no'              => htmlspecialchars(trim($record['Invoice_no'])),
@@ -159,6 +158,7 @@ class InvoiceCsvImport extends Command
         slack_notification('app360', 'Invoic Import', $slackMessage);
         $command_end_time = now();
         $status = '3'; //Failed
-        fileManagementUpdate($file_management_id, $command_end_time, $status, $getMessage);
+
+        fileManagementUpdate($file_management_id, $command_end_time, $status, substr_replace($getMessage, '', 100));
     }
 }

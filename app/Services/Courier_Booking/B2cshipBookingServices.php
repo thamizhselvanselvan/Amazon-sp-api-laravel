@@ -7,6 +7,7 @@ use App\Jobs\B2C\B2CBooking;
 use App\Models\Catalog\PricingUs;
 use App\Models\order\OrderUpdateDetail;
 use App\Services\BB\PushAsin;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -111,7 +112,7 @@ class B2cshipBookingServices
             $consignee_AddressLine1 = $this->objKeyVerify($consignee_details, 'AddressLine1');
             $consignee_AddressLine2 = $this->objKeyVerify($consignee_details, 'AddressLine2');
             $consignee_city = $this->objKeyVerify($consignee_details, 'City');
-            $consignee_state = $this->objKeyVerify($consignee_details, 'StateOrRegion');
+            $consignee_state = $this->renameState($this->objKeyVerify($consignee_details, 'StateOrRegion'));
             $consignee_CountryCode = $this->objKeyVerify($consignee_details, 'CountryCode');
             $consignee_pincode = $this->objKeyVerify($consignee_details, 'PostalCode');
             $consignee_Phone = $this->objKeyVerify($consignee_details, 'Phone');
@@ -149,7 +150,6 @@ class B2cshipBookingServices
                     $height = 4;
 
                     $unit = 'inches';
-
                     $weight = 1;
                 }
 
@@ -175,7 +175,6 @@ class B2cshipBookingServices
 
                 $this->missingASINDetails($asin);
                 slack_notification('app360', 'B2cship Booking', $slackMessage);
-                // Log::channel('slack')->error($slackMessage);
                 return false;
             }
 
@@ -213,7 +212,9 @@ class B2cshipBookingServices
 
     public function requestxml($consignee_values)
     {
-
+        $user_id = '';
+        $password = '';
+        $client = '';
         $consignor_xml = '';
         if (App::environment() == 'production') {
             if ($this->store_id == 6) {
@@ -256,7 +257,7 @@ class B2cshipBookingServices
                 <ConsignorTaxID></ConsignorTaxID>';
             } else {
 
-                slack_notification('slack_360', 'B2cship Booking', 'Api Creds Issue');
+                slack_notification('app360', 'B2cship Booking', 'Api Creds Issue');
                 // Log::channel('slack')->error("B2C API Creds Issue");
             }
         } else {
@@ -301,10 +302,10 @@ class B2cshipBookingServices
                     <ConsigneeAddressLine2>' . (!empty($data['consignee_AddressLine2']) ? $this->cleanSpecialCharacters($data['consignee_AddressLine2']) : ',') . '</ConsigneeAddressLine2>
                     <ConsigneeAddressLine3></ConsigneeAddressLine3>
                     <ConsigneeCountry>IN</ConsigneeCountry>
-                    <ConsigneeState>karnataka</ConsigneeState>
+                    <ConsigneeState>' . (!empty($data['consignee_state']) ? $this->cleanSpecialCharacters($data['consignee_state']) : '') . '</ConsigneeState>
                     <ConsigneeCity> ' . strtolower($data['consignee_city']) . ' </ConsigneeCity>
                     <ConsigneePinCode> ' . $data['consignee_pincode'] . '</ConsigneePinCode>
-                    <ConsigneeMobile>' . (($data['consignee_Phone'] == "") ? '9897654565' : $this->mobileNumberCleanUp($data['consignee_Phone'])) . ' </ConsigneeMobile>
+                    <ConsigneeMobile>' . (($data['consignee_Phone'] == "") ? '' : $this->mobileNumberCleanUp($data['consignee_Phone'])) . ' </ConsigneeMobile>
                     <ConsigneeEmailID> ' . $data['email'] . ' </ConsigneeEmailID>
                     <ConsigneeTaxID></ConsigneeTaxID>
                     <PacketType>SPX</PacketType>
@@ -343,26 +344,39 @@ class B2cshipBookingServices
 
     public function getawb($xmldata)
     {
-        $url = "https://api.b2cship.us/B2CShipAPI.svc/ShipmentBooking";
-        $headers = array(
-            "Content-type: text/xml",
-            "Content-length: " . strlen($xmldata),
-            "Connection: close",
-        );
+        try {
+            $url = "https://api.b2cship.us/B2CShipAPI.svc/ShipmentBooking";
+            $headers = array(
+                "Content-type: text/xml",
+                "Content-length: " . strlen($xmldata),
+                "Connection: close",
+            );
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 500);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $xmldata);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 500);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $xmldata);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-        $data = curl_exec($ch);
+            $data = curl_exec($ch);
 
-        return $data;
+            return $data;
+        } catch (Exception $e) {
+
+            $getMessage = $e->getMessage();
+            $getCode = $e->getCode();
+            $getFile = $e->getFile();
+
+            $slackMessage = "Message: $getMessage
+            Code: $getCode
+            File: $getFile";
+
+            slack_notification('app360', 'B2cship Booking', $slackMessage);
+        }
     }
 
     public function calculateCustomValue($invoice_amount)
@@ -398,7 +412,7 @@ class B2cshipBookingServices
             Type: $error,
             Order_id: $order_id,
             Operation: 'B2Cship Booking Response'";
-            slack_notification('slack_360', 'B2cship Booking', $slackMessage);
+            slack_notification('app360', 'B2cship Booking', $slackMessage);
         } else {
 
             $awb_no = $data['AWBNo'];
@@ -419,48 +433,20 @@ class B2cshipBookingServices
         return substr(str_replace(' ', '', $mobile_number), -10);
     }
 
-    public function missingASINDetails($asin)
+    public function missingASINDetails($asin, $country_code = 'us')
     {
-        $model_name = table_model_create(country_code: 'us', model: "Asin_source", table_name: "asin_source_");
-        $model_name->upsert(
-            [
-                'asin' => $asin,
-                'user_id' => '1',
-                'status' => '0'
-            ],
-            ['user_asin_unique'],
-            ['asin', 'user_id', 'status']
-        );
+        $pushAsin = new PushAsin();
+        $pushAsin->updateAsinInBB($asin, $country_code);
+        $pushAsin->updateAsinSourceDestination($asin, $country_code);
+    }
 
-        $model_name_des = table_model_create(country_code: 'us', model: "Asin_destination", table_name: "asin_destination_");
-        $model_name_des->upsert(
-            [
-                'asin' => $asin,
-                'user_id' => '1',
-                'status' => '0',
-                'priority' => '1'
-            ],
-            ['user_asin_unique'],
-            ['asin', 'user_id', 'status', 'priority']
-        );
-
-        $product[] = [
-            'seller_id' => '40',
-            'active' => 1,
-            'asin1' => $asin,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ];
-
-        $product_lowest_price[] = [
-            'asin' => $asin,
-            'cyclic' => 0,
-            'delist' => 0,
-            'available' => 0,
-            'priority'  => '1',
-            'import_type' => 'Seller'
-        ];
-
-        (new PushAsin())->PushAsinToBBTable($product, $product_lowest_price, 'us', '1');
+    public function renameState($state_name)
+    {
+        if (strtoupper($state_name) == 'JAMMU & KASHMIR') {
+            return 'JK';
+        } else if (strtoupper($state_name) == 'WEST BANGAL') {
+            return 'West Bengal';
+        }
+        return $state_name;
     }
 }

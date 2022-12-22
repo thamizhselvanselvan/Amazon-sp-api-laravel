@@ -24,8 +24,7 @@
                 <x-adminlte-button label="Download Template" theme="primary" icon="fas fa-file-download" id="exportUniversalTextiles" class="btn-sm" />
             </a>
 
-            <!-- <x-adminlte-button label="Asin Truncate" theme="primary" icon="fas fa-trash text-danger" class="btn-sm"
-                    data-toggle="modal" data-target="#destinationTruncate"></x-adminlte-button> -->
+            <!-- <x-adminlte-button label="Asin Truncate" theme="primary" icon="fas fa-trash text-danger" class="btn-sm" data-toggle="modal" data-target="#destinationTruncate"></x-adminlte-button> -->
 
             <div class="modal fade" id="destinationTruncate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -40,10 +39,10 @@
                             <form action="{{ route('catalog.asin.destination.truncate') }}">
                                 <h5>Select Destination</h5>
                                 <div class="row ">
-                                    {{-- <div class="col-2">
-                                            <label for="AE">AE</label>
-                                            <input type="checkbox" name="destination[]" value="AE">
-                                        </div> --}}
+                                    <!-- <div class="col-2">
+                                        <label for="AE">AE</label>
+                                        <input type="checkbox" name="destination[]" value="AE">
+                                    </div> -->
                                     <div class="col-2">
                                         <label for="IN">IN</label>
                                         <input type="checkbox" name="destination[]" value="IN">
@@ -121,6 +120,14 @@
                         <div class="col-1">
                             <input type="radio" class="Asin-source" name="source" value="US" />
                             <label for="US">US</label>
+                        </div>
+                        <div class="col-1">
+                            <input type="radio" class="Asin-source" name="source" value="AE" />
+                            <label for="US">AE</label>
+                        </div>
+                        <div class="col-1">
+                            <input type="radio" class="Asin-source" name="source" value="SA" />
+                            <label for="US">KSA</label>
                         </div>
 
                     </div>

@@ -40,7 +40,7 @@ class DeleteAsinDestinationPriorityWise extends Command
     {
         $priority = $this->argument('priority');
         $destinations = explode(',', $this->option('destinations'));
-        // log::alert($destinations);
+
         $dbname = config('database.connections.buybox.database');
         foreach ($destinations as $destination) {
             $seller_destination = buyboxCountrycode();

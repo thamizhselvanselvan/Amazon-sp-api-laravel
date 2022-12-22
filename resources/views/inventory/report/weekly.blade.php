@@ -49,7 +49,7 @@
 
 
     <div class="col-1 justify-content-right">
-        <form class="row" action="/export/weekly">
+        <form class="row" action="/inventory/export/weekly">
             <h2>
                 <div style="margin-top: -1rem;">
                     <x-adminlte-button type="submit" label="Export" theme="primary" icon="fas fa-file-export " id="export" />
@@ -232,7 +232,7 @@
         $("#week_table").show();
         $.ajax({
             method: 'GET',
-            url: '/export/weekly/display',
+            url: "{{route( 'inventory.export.weekly.display' )}}",
             data: {
                 'ware_id': ware_id,
                 "_token": "{{ csrf_token() }}",
@@ -288,14 +288,14 @@
         }
         $.ajax({
             method: 'GET',
-            url: '/export/weekly/warehousewise/',
+            url: "{{route('inventory.export.weekly.warehouse')}}",
             data: {
                 'ware_id': ware_id,
                 "_token": "{{ csrf_token() }}",
             },
             'dataType': 'json',
             success: function(response) {
-                window.location.href = '/export/weekly/weekwareexpo/' + ware_id;
+                window.location.href = '/inventory/export/weekly/weekwareexpo/' + ware_id;
 
             },
             error: function(response) {
@@ -317,7 +317,7 @@
         $("#week_table").show();
         $.ajax({
             method: 'GET',
-            url: '/tag/weekly/display',
+            url: "{{route('inventory.tag.weekly.display')}}",
             data: {
                 'tag_id': tag_id,
                 "_token": "{{ csrf_token() }}",
@@ -374,12 +374,12 @@
             },
             'dataType': 'json',
             success: function(response) {
-             window.location.href = '/export/weekly/tags/' + tag_id;
+                window.location.href = '/inventory/export/weekly/tags/' + tag_id;
 
             },
             error: function(response) {
                 alert('error');
-               
+
             }
         });
     });

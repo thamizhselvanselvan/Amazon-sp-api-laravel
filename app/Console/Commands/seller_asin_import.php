@@ -52,7 +52,6 @@ class seller_asin_import extends Command
         $csv->setDelimiter(",");
         $csv->setHeaderOffset(0);
 
-        Log::warning(" csv file importing");
         $stmt = (new Statement())
             ->where(function (array $record) {
                 return $record;
@@ -115,7 +114,5 @@ class seller_asin_import extends Command
 
         $bb_product_lowest_price = table_model_set(country_code: $country_code, model: 'BB_Product_lowest_price_offer', table_name: 'product_lp_offer');
         $bb_product_lowest_price->upsert($product_lowest_price, ['asin'], ['asin']);
-
-        Log::warning(" asin import successfully");
     }
 }

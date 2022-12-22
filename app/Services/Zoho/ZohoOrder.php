@@ -194,8 +194,8 @@ class ZohoOrder
         $order_items = $this->get_orders_with_amazon_order_id($amazon_order_id);
 
         if (!$order_items) {
-            Log::info($order_items);
             $notes['notes'][] = "No data found to update Zoho in the database for this Amazon Order ID: $amazon_order_id";
+
             return $notes;
         }
 
@@ -253,12 +253,34 @@ class ZohoOrder
 
             $prod_array = $this->zohoOrderFormating($order_item_details, $store_name, $country_code, $order_items);
 
-
             if ($zoho_search_order_exists && $force_update) {
 
                 return $this->zoho_update($zohoApi, $zoho_search_order_exists, $prod_array);
             } else if ($zoho_search_order_exists && !$force_update) {
-                $notes['notes'][] = "With this Amazon Order ID: $amazon_order_id & Order Item ID: $order_item_id already Zoho Lead exists";
+                $zoho_lead_id = $zoho_search_order_exists['data'][0]['id'];
+                $notes['notes'][] = "With this Amazon Order ID: $amazon_order_id & Order Item ID: $order_item_id already Zoho Lead exists. Lead ID: " . $zoho_lead_id;
+
+                $order_zoho = [
+                    "store_id" => $order_item_details->seller_identifier,
+                    "amazon_order_id" => $amazon_order_id,
+                    "order_item_id" => $prod_array['Payment_Reference_Number1'],
+                    "zoho_id" => $zoho_lead_id,
+                    "zoho_status" => 1
+                ];
+
+                $order_response = OrderUpdateDetail::upsert(
+                    $order_zoho,
+                    [
+                        "amazon_order_id",
+                        "order_item_id"
+                    ],
+                    [
+                        "zoho_id",
+                        "store_id",
+                        "zoho_status"
+                    ]
+                );
+
                 return $notes;
             }
 
@@ -295,6 +317,7 @@ class ZohoOrder
                     $notes['success'] = "Success!";
                     $notes['amazon_order_id'] = $amazon_order_id;
                     $notes['order_item_id'] = $prod_array['Payment_Reference_Number1'];
+                    $notes['lead_id'] = $zoho_save_id;
                     return $notes;
                 } else {
                     Log::error(json_encode($zoho_response));
@@ -383,6 +406,9 @@ class ZohoOrder
         $buyerEmail = json_decode($value->buyer_info);
         $order_total = json_decode($value->order_total);
         $item_price = json_decode($value->item_price);
+        $item_tax = isset($value->item_tax) && !empty($value->item_tax) ? json_decode($value->item_tax) : 0;
+
+        print($value->amazon_order_identifier . " " . $value->order_item_identifier);
 
         $prod_array = [];
 
@@ -417,8 +443,10 @@ class ZohoOrder
         // }
 
         // $address = str_replace("&", " and ", $address);
+        //
 
-        $prod_array["Mobile"]      = substr((int) filter_var($buyerDtls->Phone, FILTER_SANITIZE_NUMBER_INT), -10);
+        $prod_array["Mobile"]      = isset($buyerDtls->Phone) ? substr((int) filter_var($buyerDtls->Phone, FILTER_SANITIZE_NUMBER_INT), -10) : '1234567890';
+
         $prod_array["Address"]     = $this->get_address($value->shipping_address, $country_code);
         $prod_array["City"]        = $buyerDtls->City;
         $prod_array['State']       = $this->get_state_pincode($country_code, $buyerDtls);
@@ -434,9 +462,9 @@ class ZohoOrder
 
         $catalog_details = $this->get_catalog($value->asin, $country_code, $store_name);
 
-        $prod_array["Designation"]              = preg_replace("/[^a-zA-Z0-9_ -\/]+/", "", substr($value->title, 0, 100));
+        $prod_array["Designation"]        = preg_replace("/[^a-zA-Z0-9_ -\/]+/", "", substr($value->title, 0, 100));
         $prod_array["Product_Code"]       = $value->seller_sku;
-        $prod_array["Product_Cost"]       = $item_price->Amount;
+        $prod_array["Product_Cost"]       = isset($item_price->Amount) ? $item_price->Amount : 0;
         $prod_array["Procurement_URL"]    = $this->get_procurement_link($country_code, $value->asin);
         $prod_array["Nature"]             = "Import";
         $prod_array["Product_Category"]   = $catalog_details['category']; //$value->product_category;
@@ -452,10 +480,11 @@ class ZohoOrder
         $prod_array["ASIN"]                      = $value->asin;
         $prod_array["SKU"]                       = $value->seller_sku;
         $prod_array["Product_Cost"]              = $catalog_details['price'];
-        $prod_array["Amount_Paid_by_Customer"]   = (int)$item_price->Amount;
+        $item_tax  = isset($item_tax->Amount) ? (int)$item_price->Amount  : 0;
+        $prod_array["Amount_Paid_by_Customer"]   = isset($item_price->Amount) ? (int)$item_price->Amount + (int)$item_tax : 0;
 
         $prod_array["Weight_in_LBS"]             = (string)$catalog_details['weight'];
-        $prod_array["Payment_Reference_Number1"]  = $value->order_item_identifier;
+        $prod_array["Payment_Reference_Number1"] = $value->order_item_identifier;
         $prod_array["Exchange"]                  = $DOLLAR_EXCHANGE_RATE;
 
         return $prod_array;

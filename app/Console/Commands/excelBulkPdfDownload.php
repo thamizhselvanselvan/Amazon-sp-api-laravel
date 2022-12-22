@@ -44,40 +44,34 @@ class excelBulkPdfDownload extends Command
      */
     public function handle()
     {
-        Log::warning("Export zip command executed handle !");
         $totalid = Invoice::get();
-        
-        foreach($totalid as $total)
-        {
+
+        foreach ($totalid as $total) {
             $id = $total->id;
             $invoice_no = $total->invoice_no;
             $currenturl =  URL::current();
-            $url = str_replace('download-all', 'convert-pdf', $currenturl. '/'.$id);
-            $path = storage::path('invoice/invoice'.$invoice_no);
-            $exportToPdf = $path. '.pdf';
+            $url = str_replace('download-all', 'convert-pdf', $currenturl . '/' . $id);
+            $path = storage::path('invoice/invoice' . $invoice_no);
+            $exportToPdf = $path . '.pdf';
             Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
-            // ->showBackground()
-            ->savePdf($exportToPdf); 
+                // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+                // ->showBackground()
+                ->savePdf($exportToPdf);
 
-            $totalSavePdf []= 'invoice'.$invoice_no.'.pdf';
+            $totalSavePdf[] = 'invoice' . $invoice_no . '.pdf';
         }
-       
+
         $zip_path = 'invoice/';
         $zip = new ZipArchive;
-        $fileName = Storage::path('zip/'.'invoice.zip');
+        $fileName = Storage::path('zip/' . 'invoice.zip');
 
-        if($zip->open($fileName, ZipArchive::CREATE) === TRUE)
-        {
-            foreach($totalSavePdf as $key => $value)
-            {
-                $path = Storage::path('invoice/'.$value);
+        if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
+            foreach ($totalSavePdf as $key => $value) {
+                $path = Storage::path('invoice/' . $value);
                 $relativeNameInZipFile = basename($path);
                 $zip->addFile($path, $relativeNameInZipFile);
             }
             $zip->close();
         }
-        Log::warning(" Pdf Download Successfully ");
-
     }
 }

@@ -55,17 +55,13 @@ class labelBulkZipDownload extends Command
 
         $file_management_id = $final_data['fm_id'];
         $headers = $final_data['header'];
+
         $headers_data = explode('_', $headers);
         $passid =  $headers_data[0];
         $currenturl =  $headers_data[1];
         $bag_no =  $headers_data[2];
-        $current_page_number =  $headers_data[3];
 
-        log::alert($currenturl);
-        // $passid = $this->argument('passid');
-        // $bag_no = $this->argument('bag_no');
-        // $current_page_number = $this->argument('current_page_number');
-        // $currenturl = $this->argument('currenturl');
+        $current_page_number =  $headers_data[3];
 
         $excelid = explode('-', $passid);
 
@@ -76,7 +72,7 @@ class labelBulkZipDownload extends Command
 
                 $awb_no = $value->awb_no;
                 $url = str_replace('select-download', 'pdf-template', $currenturl . '/' . $bag_no . '-' . $getId);
-                log::alert($url);
+
                 $path = 'label/' . $bag_no . '/label' . $awb_no . '.pdf';
 
                 if (!Storage::exists($path)) {
@@ -85,7 +81,7 @@ class labelBulkZipDownload extends Command
 
                 $exportToPdf = storage::path($path);
                 Browsershot::url($url)
-                    // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+                    // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
                     ->paperSize(576, 384, 'px')
                     ->pages('1')
                     ->scale(1)
@@ -97,7 +93,7 @@ class labelBulkZipDownload extends Command
         }
 
         $zip = new ZipArchive;
-        // $data_time = now()->format('Y-m-d-H-i-s');
+
         $zip_path = 'label/' . $bag_no . '/' . 'zip/' . 'label' . $current_page_number . '.zip';
 
         $fileName = Storage::path($zip_path);

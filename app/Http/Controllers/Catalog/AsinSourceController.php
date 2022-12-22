@@ -25,18 +25,6 @@ class AsinSourceController extends Controller
 {
     public function index(Request $request)
     {
-        // if ($request->ajax()) {
-        //     $data = AsinSource::query();
-        //     return DataTables::of($data)
-        //         ->addIndexColumn()
-        //         ->addColumn('action', function ($row) {
-        //             $actionBtn = '<div class="d-flex"><a href="edit-asin/' . $row->id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
-        //             $actionBtn .= '<button data-id="' . $row->id . '" class="delete btn btn-danger btn-sm ml-2"><i class="far fa-trash-alt"></i> Remove</button></div>';
-
-        //             return $actionBtn;
-        //         })
-        //         ->make(true);
-        // }
         return view('Catalog.AsinSource.index');
     }
 
@@ -184,11 +172,7 @@ class AsinSourceController extends Controller
             $base_path = base_path();
             $command = "cd $base_path && php artisan pms:asin-export > /dev/null &";
             exec($command);
-
-            Log::warning("Export asin command executed production  !!!");
         } else {
-
-            Log::warning("Export asin command executed local !");
             Artisan::call('pms:asin-export');
         }
         return redirect()->intended('/catalog/asin-source');

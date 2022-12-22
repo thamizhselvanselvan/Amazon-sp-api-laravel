@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Carbon\Carbon;
 use App\Models\BOE;
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\BOE\RemoveUploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -42,7 +43,17 @@ class RemoveUploadedFiles extends Command
      */
     public function handle()
     {
-        // Log::alert("remove uploaded file from server command executed at ".now());
+        //Process Management start
+        $process_manage = [
+            'module'             => 'Remove_File',
+            'description'        => 'Remove uploaded file from server storage',
+            'command_name'       => 'pms:remove-uploaded-boe',
+            'command_start_time' => now(),
+        ];
+
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+
         $count = BOE::where('do', 0)->count();
         $chunk = 10;
         if ($count == 0) {
@@ -65,7 +76,7 @@ class RemoveUploadedFiles extends Command
                 }
             });
         }
-        // Remove all 2 days ago file form Asin destination folder start.
+        // Remove all 2 days ago file form Asin destination, Asin source and invoiceCSV folder start.
         $back_file_date = Carbon::now()->subDays(2)->toDateString();
         $Asin_source_destination_files = ['AsinDestination', 'AsinSource'];
         foreach ($Asin_source_destination_files as $Asin_source_destination_file) {
@@ -78,10 +89,12 @@ class RemoveUploadedFiles extends Command
 
                 if ($back_file_date == $current_file_date) {
                     unlink(Storage::path($file_name));
-                    log::alert('All file delete successfully from AsinDestination Folder');
                 }
             }
         }
-        // Remove all 2 days ago file form Asin destination folder end.
+        // Remove all 2 days ago file form Asin destination, Asin source and invoiceCSV folder end.
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
     }
 }

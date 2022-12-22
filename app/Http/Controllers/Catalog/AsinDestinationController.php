@@ -18,19 +18,6 @@ class AsinDestinationController extends Controller
 {
     public function index(Request $request)
     {
-        // if ($request->ajax()) {
-
-        //     $data = AsinDestination::orderBy('id', 'DESC')->get();
-        //     return DataTables::of($data)
-        //         ->addIndexColumn()
-        //         ->addColumn('action', function ($row) {
-        //             $actionBtn = '<div class="d-flex"><a href="edit-asin-destination/' . $row->id . '" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
-        //             $actionBtn .= '<div class="d-flex pl-2 trash"><a href="trash-asin-destination/' . $row->id . ' " class=" btn btn-sm btn-danger "><i class="fa fa-trash"></i> Remove</a>';
-
-        //             return $actionBtn;
-        //         })
-        //         ->make(true);
-        // }
         return view('Catalog.AsinDestination.index');
     }
 
@@ -105,6 +92,7 @@ class AsinDestinationController extends Controller
             if (!$validation) {
                 return back()->with('error', "Please upload file to import it to the database");
             }
+
             $import_file_time = date('Y-m-d-H-i-s');
             $file = file_get_contents($request->asin);
             $path = "AsinDestination/asin${import_file_time}.csv";
@@ -122,9 +110,9 @@ class AsinDestinationController extends Controller
                 'command_name' => 'mosh:Asin-destination-upload',
 
             ];
+
             FileManagement::create($file_info);
             fileManagement();
-            // commandExecFunc("mosh:Asin-destination-upload ${user_id} ${priority} --destination=${destination} ${path}");
         }
         return redirect('catalog/import-asin-destination')->with('success', 'File has been uploaded successfully');
     }
@@ -188,9 +176,7 @@ class AsinDestinationController extends Controller
             $base_path = base_path();
             $command = "cd $base_path && php artisan mosh:asin-destination-csv-export > /dev/null &";
             exec($command);
-            Log::warning("Export asin command executed production  !!!");
         } else {
-            Log::warning("Export asin command executed local !");
             Artisan::call('mosh:asin-destination-csv-export');
         }
         return redirect()->intended('/catalog/asin-destination');

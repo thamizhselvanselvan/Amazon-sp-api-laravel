@@ -334,7 +334,8 @@
 
                 $.ajax({
                     method: 'POST',
-                    url: "{{ url('/invoice/export-pdf') }}",
+                    // url: "{{ url('/invoice/export-pdf') }}",
+                    url: "{{ route('export.invoice.pdf') }}",
                     data: {
                         'url': url,
                         'invoice_no': invoice_no,

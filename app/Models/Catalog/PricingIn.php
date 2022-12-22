@@ -11,10 +11,12 @@ class PricingIn extends Model
     protected $connection = 'catalog';
     protected $fillable = [
         'asin',
+        'available',
+        'in_price',
         'weight',
-        'uae_price',
-        'sg_sp',
-        'sa_sp',
+        'ind_to_uae',
+        'ind_to_sg',
+        'ind_to_sa',
         'price_updated_at'
     ];
 }

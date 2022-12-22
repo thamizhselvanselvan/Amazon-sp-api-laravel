@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Admin\ErrorReporting;
 use App\Models\Catalog\Catalog_ae;
 use App\Models\Catalog\Catalog_in;
+use App\Models\Catalog\Catalog_sa;
 use App\Models\Catalog\Catalog_us;
 use App\Models\Catalog\CatalogMissingAsin;
 use App\Services\SP_API\Config\ConfigTrait;
@@ -25,7 +26,6 @@ class NewCatalog
 
     public function Catalog($records, $seller_id = NULL)
     {
-
         $queue_data = [];
         $upsert_asin = [];
         $country_code1 = '';
@@ -114,6 +114,8 @@ class NewCatalog
                     Catalog_in::insert($NewCatalog);
                 } else  if (strtolower($country_code1) == "ae") {
                     Catalog_ae::insert($NewCatalog);
+                } else  if (strtolower($country_code1) == "sa") {
+                    Catalog_sa::insert($NewCatalog);
                 }
             }
         }
@@ -195,21 +197,32 @@ class NewCatalog
                     }
                 }
             }
-            $miss_asin_array = [];
-            $miss_asin = [];
-            $diffs = array_diff($asins, $check_asin);
-            foreach ($diffs as $diff) {
-                $miss_asin[] = [
-                    'asin' => $diff,
-                    'user_id' => $seller_id,
-                    'source' => $country_code,
-                ];
-            }
-            CatalogMissingAsin::upsert($miss_asin, ['asin'], ['asin', 'source']);
+
+            // $miss_asin_array = [];
+
+            // $miss_asin = [];
+            // $diffs = array_diff($asins, $check_asin);
+            // foreach ($diffs as $diff) {
+            //     $miss_asin[] = [
+            //         'asin' => $diff,
+            //         'user_id' => $seller_id,
+            //         'source' => $country_code,
+            //     ];
+            // }
+            // CatalogMissingAsin::upsert($miss_asin, ['asin_unique'], ['asin', 'source']);
 
             return $queue_data;
         } catch (Exception $e) {
-            Log::alert($e);
+
+            $getMessage = $e->getMessage();
+            $getCode = $e->getCode();
+            $getFile = $e->getFile();
+
+            $slackMessage = "Message: $getMessage
+            Code: $getCode
+            File: $getFile";
+
+            slack_notification('app360', 'Amazon Catalog Import', $slackMessage);
         }
     }
 

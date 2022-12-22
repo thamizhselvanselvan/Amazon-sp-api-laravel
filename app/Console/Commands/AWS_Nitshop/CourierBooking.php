@@ -3,6 +3,7 @@
 namespace App\Console\Commands\AWS_Nitshop;
 
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
 use App\Models\order\OrderUpdateDetail;
 use App\Services\B2CShip\B2cshipBooking;
@@ -40,6 +41,19 @@ class CourierBooking extends Command
      */
     public function handle()
     {
+        //Process Management start
+        $process_manage = [
+            'module'             => 'Courier Booking',
+            'description'        => 'Courier Booking',
+            'command_name'       => 'aws:courier-booking',
+            'command_start_time' => now(),
+        ];
+
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+
+        //Process Management end
+
         $order_details = OrderUpdateDetail::where([['courier_awb', NULL], ['courier_name', '!=', NULL], ['booking_status', '0']])
             ->limit(1)
             ->get(['amazon_order_id', 'order_item_id', 'courier_name', 'courier_awb', 'store_id']);
@@ -64,8 +78,10 @@ class CourierBooking extends Command
                 ],
             )->update(['booking_status' => '5']);
 
-
             jobDispatchFunc('Courier_Booking\CourierBookingJob', $job_parameters);
         }
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
     }
 }

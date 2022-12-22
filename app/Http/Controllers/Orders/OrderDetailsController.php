@@ -128,7 +128,7 @@ class OrderDetailsController extends Controller
                             store.seller_id
                             from ${order}.orders as ord
                             JOIN ${order}.orderitemdetails as orderdetails ON ord.amazon_order_identifier = orderdetails.amazon_order_identifier
-                            JOIN ${order}.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+                            JOIN ${order}.order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
 
                             WHERE ord.amazon_order_identifier = '$order_data'");
             }
@@ -165,7 +165,7 @@ class OrderDetailsController extends Controller
        store.seller_id
         from ${order}.orders as ord
         JOIN ${order}.orderitemdetails as orderdetails ON ord.amazon_order_identifier = orderdetails.amazon_order_identifier
-         JOIN ${order}.ord_order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+         JOIN ${order}.order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
 
         WHERE orderdetails.order_item_identifier = '$order_id'");
 
@@ -242,8 +242,8 @@ class OrderDetailsController extends Controller
                     if ($row['zoho_status'] == '0') {
                         return "<a href='#' data-toggle='tooltip' title='Not Processed'><i class='fa fa-minus not '  aria-hidden='true'></i> </a>";
                     } else if ($row['zoho_status'] == '1') {
-                        return "<a href='#' data-toggle='tooltip' title='$zoho_id'><i class='fa fa-check click'  aria-hidden='true' ></i> </a>".
-                         '  '. "<a href='javascript:void(0)' value ='$zoho_id'   class='badge badge-success' id='zoho_clipboard'><i class='fa fa-copy'></i></a>";
+                        return "<a href='#' data-toggle='tooltip' title='$zoho_id'><i class='fa fa-check click'  aria-hidden='true' ></i> </a>" .
+                            '  ' . "<a href='javascript:void(0)' value ='$zoho_id'   class='badge badge-success' id='zoho_clipboard'><i class='fa fa-copy'></i></a>";
                     } else if ($row['zoho_status'] == '5') {
                         return "<a href='#' data-toggle='tooltip' title='Under Processing'><i class='fa fa-spinner under' aria-hidden='true'></i> </a>";
                     } else {
@@ -292,7 +292,7 @@ class OrderDetailsController extends Controller
                     if ($order_id == '') {
                         return '';
                     }
-                    return $order_id. ' '. "<a href='javascript:void(0)' value ='$order_id'   class='badge badge-success' id='clipboard'><i class='fa fa-copy'></i></a>";
+                    return $order_id . ' ' . "<a href='javascript:void(0)' value ='$order_id'   class='badge badge-success' id='clipboard'><i class='fa fa-copy'></i></a>";
                 })
 
                 ->rawColumns(['store_name', 'order_status', 'order_date'])

@@ -1,12 +1,21 @@
 <?php
 
+use Carbon\Carbon;
 use App\Models\User;
+use League\Csv\Writer;
+use App\Models\Mws_region;
 use Smalot\PdfParser\Parser;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use App\Models\Catalog\Asin_master;
+use function Clue\StreamFilter\fun;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use App\Models\order\OrderItemDetails;
+use App\Models\order\OrderUpdateDetail;
 use App\Models\seller\AsinMasterSeller;
 use Illuminate\Support\Facades\Storage;
+
 use App\Models\seller\SellerAsinDetails;
 use Illuminate\Support\Facades\Response;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
@@ -77,9 +86,7 @@ Route::get('smsatracking/{awb}', function ($awb_no) {
 
 Route::get('test/api', function () {
 
-
     $curl = curl_init();
-
     curl_setopt_array($curl, array(
         CURLOPT_URL => 'https://uat-api.b2cship.us/PacificAmazonAPI.svc/TrackingAmazon',
         CURLOPT_RETURNTRANSFER => true,
@@ -116,6 +123,7 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
     curl_close($curl);
     echo $response;
 });
+
 Route::get('test/order', 'TestController@testOrderAPI');
 Route::get('search_catalog/{country_code}', 'TestController@searchCatalog');
 
@@ -131,17 +139,35 @@ Route::get('test/amazon-feed/{lead_id}/{seller_id}', 'TestController@TestAmazonF
 Route::get('test/emirate/tracking/{tracking_id}', 'TestController@emiratePostTracking');
 Route::get('test/emirate/booking', 'TestController@emiratePostBooking');
 
+Route::get('test/aramex/booking', 'TestController@AramexBooking');
 Route::get('test/aramex/tracking/{tracking_id}', 'TestController@AramexTracking');
 
-Route::get('test/removenewline', function () {
+Route::get('test/download-file/{path}', function ($path) {
+
+    $path_array = explode("'", $path);
+
+    $file_path = '';
+    foreach ($path_array as $name) {
+        $file_path .= $name . '/';
+    }
+
+    $file_path = rtrim($file_path, "/");
+
+    return Storage::download($file_path);
+});
+
+Route::match(['get', 'post'], 'test/zoho/webhook', 'TestController@zohoWebhookResponse');
 
 
-    $string = '{"Name":"Dhouha 
-        Amara Test1","AddressLine1":"Sheikh 
-        Mohammed Bin Zayed Rd - Nadd Al Hamar - Dubai","AddressLine2":"Hassani 20 building , apt 819","City":"Dubai","County":"Nadd Al Hamar","CountryCode":"AE","Phone":"+971586044042","AddressType":"Residential"}';
 
-    $new_string = json_decode(preg_replace('/\s+/', ' ', $string));
+Route::get('test/date', function () {
 
-    po($new_string);
-    //
+    $date =  Carbon::now()->getPreciseTimestamp(3);
+    $originalDate = '1644325822000+0530';
+    echo date("Y-m-d H:i:s", strtotime($date));
+
+    exit;
+    echo (strtotime('1644325822000+0530'));
+    dd($date);
+    // /
 });
