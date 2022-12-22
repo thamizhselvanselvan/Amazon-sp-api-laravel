@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
+use App\Models\Inventory\TagStocks;
 use Illuminate\Support\Facades\Log;
 use App\Models\Inventory\Shipment_Inward_Details;
 use App\Models\Inventory\Shipment_Outward_Details;
@@ -204,7 +205,7 @@ class tagwise_stock_track extends Command
 
 
 
-            DB::connection('inventory')->table('tag_stocks')->insert([
+            TagStocks::insert([
                 'date' =>   $date,
                 'tag' => $val,
                 'opeaning_stock' =>   $todayopeningstock,

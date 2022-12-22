@@ -246,7 +246,7 @@ class CliqnshopCatalogExport extends Command
 
             if ($this->count == 1) {
 
-                $this->file_path = "Cliqnshop/" . "CatalogCliqnshop" . $this->offset . ".csv";
+                $this->file_path = "Cliqnshop/catalog/" . "CatalogCliqnshop" . $this->offset . ".csv";
                 if (!Storage::exists($this->file_path)) {
                     Storage::put($this->file_path, '');
                 }
@@ -577,7 +577,7 @@ class CliqnshopCatalogExport extends Command
                     'City' => null,
                 ];
 
-                $exportFilePath = "Cliqnshop/" . "brandCliqnshop" . $this->offset . ".csv";
+                $exportFilePath = "Cliqnshop/catalog/" . "brandCliqnshop" . $this->offset . ".csv";
                 if (!Storage::exists($exportFilePath)) {
                     Storage::put($exportFilePath, '');
                 }

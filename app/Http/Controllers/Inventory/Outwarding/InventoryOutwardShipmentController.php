@@ -51,9 +51,6 @@ class InventoryOutwardShipmentController extends Controller
                 ->make(true);
         }
 
-
-
-
         return view('inventory.outward.shipment.index');
     }
 
@@ -134,9 +131,19 @@ class InventoryOutwardShipmentController extends Controller
 
     public function storeoutshipment(Request $request)
     {
-
+        start:
         $val = random_int(1000, 99999);
         $shipment_id = 'OUT'.$val;
+
+        $val = Shipment_Outward::query()
+            ->select(('ship_id'))
+            ->where('ship_id', $shipment_id)
+            ->first();
+
+        if ($val) {
+            goto start;
+        }
+
         foreach ($request->asin as $key => $asin) {
 
             $items[] = [

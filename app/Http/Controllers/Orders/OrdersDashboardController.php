@@ -27,6 +27,8 @@ class OrdersDashboardController extends Controller
             where
                 os.seller_id = orders.our_seller_identifier 
             AND 
+                os.dump_order = '1'
+            AND 
                 orders.updated_at BETWEEN '$endTime' AND '$startTime' 
             GROUP BY
             our_seller_identifier, order_status");
@@ -42,12 +44,14 @@ class OrdersDashboardController extends Controller
                 order_seller_credentials as os 
             WHERE 
                 os.seller_id = ord.our_seller_identifier 
+            AND 
+                os.dump_order = '1'
             GROUP BY 
                 ord.updated_at, ord.our_seller_identifier 
             ORDER BY
                  ord.updated_at 
             DESC");
-        // dd($latest_update);
+
         $order_collect = collect($order_sql);
         $order_groupby = $order_collect->groupBy('store_name');
 
@@ -100,13 +104,21 @@ class OrdersDashboardController extends Controller
         $today = Carbon::now();
         $month = Carbon::now()->subMonth();
 
-        $latest = DB::connection('order')->select("SELECT seller_identifier, max(od.updated_at) as latest, orsc.store_name, orsc.country_code 
-        FROM orderitemdetails as od
-        JOIN order_seller_credentials as orsc
-        where od.seller_identifier = orsc.seller_id
-        GROUP BY seller_identifier
+        $latest = DB::connection('order')
+            ->select("SELECT seller_identifier, max(od.updated_at) as latest, orsc.store_name, orsc.country_code 
+        FROM 
+            orderitemdetails as od
+        JOIN
+             order_seller_credentials as orsc
+        where 
+            od.seller_identifier = orsc.seller_id
+        AND
+            orsc.dump_order = '1'
+        GROUP BY 
+            seller_identifier
         ");
 
+        $age = [];
         foreach ($latest as $key => $value) {
             foreach ($latest as $date) {
                 $store_name = $date->store_name;

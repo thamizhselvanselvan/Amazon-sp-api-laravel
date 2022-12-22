@@ -23,7 +23,7 @@ Route::resource('business/byasins', 'BuisnessAPI\GetProductsByAsinsController');
 Route::resource('business/details', 'BuisnessAPI\ProductDetailsController');
 Route::get('buisness/details', 'BuisnessAPI\ProductDetailsController@viewpro');
 
-Route::get('business/orders/details', 'BuisnessAPI\OrdersController@test');
+Route::get('business/orders/details', 'BuisnessAPI\OrdersController@orderpending')->name('business.orders.pending.list');
 Route::get('business/orders/view', 'BuisnessAPI\OrdersController@getorders');
 Route::get('business/orders/pending', 'BuisnessAPI\OrdersController@orderspending');
 Route::get('business/offers_view', 'BuisnessAPI\OrdersController@prodoffers');
@@ -60,3 +60,10 @@ Route::post('cliqnshop/1banners/store', 'Cliqnshop\ImageBrandController@one_bann
 
 Route::get('cliqnshop/trending', 'Cliqnshop\ImageBrandController@trendingbrandssection')->name('cliqnshop.trending');
 Route::post('cliqnshop/trending/store', 'Cliqnshop\ImageBrandController@trendingbrands')->name('cliqnshop.trending.store');
+
+
+Route::get('cliqnshop/catalog/csv', 'Catalog\CliqnshopCatalogController@asinCsvDownload')->name('cliqnshop.catalog.csv.templete');
+Route::post('cliqnshop/catalog/csv/import', 'Catalog\CliqnshopCatalogController@cliqnshopImport')->name('cliqnshop.catalog.csv.import');
+Route::get('catalog/cliqnshop/new_asin', 'Catalog\CliqnshopCatalogController@uploaded_export_download')->name('uploaded.asin.catalog.export.cliqnshop');
+
+Route::get('uploaded/catalog/cliqnshop/download/{index}', 'Catalog\CliqnshopCatalogController@Download_uploaded_asin_catalog')->name('uploaded.asin.catalog.export.cliqnshop.download');

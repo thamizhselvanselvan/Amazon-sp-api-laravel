@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Carbon\Carbon;
 use AWS\CRT\HTTP\Request;
 use Illuminate\Console\Command;
+use App\Models\Inventory\Stocks;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
@@ -180,7 +181,7 @@ class StocktTrack extends Command
         }
         $dayclosingamt =  array_sum($dayclosing);
 
-        DB::connection('inventory')->table('stocks')->insert([
+        Stocks::insert([
             'date' => $date,
             'opeaning_stock' => $todayopeningstock,
             'opeaning_amount' => $totalopenamt,
