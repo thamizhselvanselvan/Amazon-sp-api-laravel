@@ -358,12 +358,12 @@ return [
                     'can' => ['Admin'],
                     'icon' => 'fa fa-tasks',
                 ],
-                [
-                    'text' => 'Maintenance Mode',
-                    'url' => 'maintenence/maintenence-mode',
-                    'can' => ['Admin'],
-                    'icon' => 'fas fa-wrench',
-                ],
+                // [
+                //     'text' => 'Maintenance Mode',
+                //     'url' => 'maintenence/maintenence-mode',
+                //     'can' => ['Admin'],
+                //     'icon' => 'fas fa-wrench',
+                // ],
             ],
         ],
 
