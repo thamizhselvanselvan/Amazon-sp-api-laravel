@@ -129,7 +129,7 @@ class labelManagementController extends Controller
             $result = (object)$result;
 
             $generator = new BarcodeGeneratorPNG();
-            $bar_code = base64_encode($generator->getBarcode($awb_no, $generator::TYPE_CODE_39));
+            $bar_code = base64_encode($generator->getBarcode($this->awbCleanUP($awb_no), $generator::TYPE_CODE_39));
             return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder', 'bag_no'));
         }
     }
@@ -215,7 +215,7 @@ class labelManagementController extends Controller
                     $barcode_awb = $value['awb_no'];
                 }
 
-                $bar_code[] = base64_encode($generator->getBarcode($barcode_awb, $generator::TYPE_CODE_39));
+                $bar_code[] = base64_encode($generator->getBarcode($this->awbCleanUP($barcode_awb), $generator::TYPE_CODE_39));
             } catch (Exception $e) {
 
                 $getMessage = $e->getMessage();
@@ -1093,5 +1093,10 @@ class labelManagementController extends Controller
             'missing' => $missing_html,
         ];
         //
+    }
+
+    public function awbCleanUP($awb_no)
+    {
+        return preg_replace("/[^a-zA-Z0-9]/", "", strtoupper($awb_no));
     }
 }
