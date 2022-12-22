@@ -16,19 +16,6 @@ class CatalogDashboardService
 
     public function catalogDashboard()
     {
-        //Process Management start
-        $process_manage = [
-            'module'             => 'Catalog_Dashboard',
-            'description'        => 'Dashboard for catalog',
-            'command_name'       => 'mosh:catalog-dashboard-file',
-            'command_start_time' => now(),
-        ];
-
-        $process_management_id = ProcessManagement::create($process_manage)->toArray();
-        $pm_id = $process_management_id['id'];
-        // $pm_id = ProcessManagementCreate($process_manage['command_name']);
-        //Process Management end
-
         $sources = ['IN', 'US'];
         $record_arrays = [];
         $dbname = config('database.connections.catalog.database');
@@ -171,8 +158,5 @@ class CatalogDashboardService
             Storage::put($cat_dashboard_file, '');
         }
         Storage::put($cat_dashboard_file, json_encode($record_arrays));
-
-        $command_end_time = now();
-        ProcessManagementUpdate($pm_id, $command_end_time);
     }
 }

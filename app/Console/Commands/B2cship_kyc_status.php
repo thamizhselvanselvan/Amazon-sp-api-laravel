@@ -53,8 +53,6 @@ class B2cship_kyc_status extends Command
 
         $process_management_id = ProcessManagement::create($process_manage)->toArray();
         $pm_id = $process_management_id['id'];
-        // $pm_id = ProcessManagementCreate($process_manage['command_name']);
-        //Process Management end
 
         $startTime = Carbon::today();
         $endTime = Carbon::now();

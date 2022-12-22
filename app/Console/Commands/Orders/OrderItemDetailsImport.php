@@ -45,7 +45,7 @@ class OrderItemDetailsImport extends Command
     {
         //Process Management start
         $process_manage = [
-            'module'             => 'Order_item_details',
+            'module'             => 'Order',
             'description'        => 'Import order item details for each order',
             'command_name'       => 'mosh:order-item-details-import',
             'command_start_time' => now(),

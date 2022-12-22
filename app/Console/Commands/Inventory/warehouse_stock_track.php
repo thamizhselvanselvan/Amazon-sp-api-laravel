@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
 use App\Models\Inventory\Warehouse;
 use Illuminate\Support\Facades\Log;
+use App\Models\Inventory\WarehouseStocks;
 use App\Models\Inventory\Shipment_Inward_Details;
 use App\Models\Inventory\Shipment_Outward_Details;
 
@@ -204,10 +205,7 @@ class warehouse_stock_track extends Command
             }
             $dayclosingamt =  array_sum($dayclosing);
 
-
-
-
-            DB::connection('inventory')->table('warehouse_stocks')->insert([
+            WarehouseStocks::insert([
                 'date' =>   $date,
                 'Warehouse' => $val,
                 'opeaning_stock' =>   $todayopeningstock,
@@ -223,7 +221,6 @@ class warehouse_stock_track extends Command
 
             ]);
         }
-
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);

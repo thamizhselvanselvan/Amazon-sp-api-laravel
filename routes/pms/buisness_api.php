@@ -23,7 +23,7 @@ Route::resource('business/byasins', 'BuisnessAPI\GetProductsByAsinsController');
 Route::resource('business/details', 'BuisnessAPI\ProductDetailsController');
 Route::get('buisness/details', 'BuisnessAPI\ProductDetailsController@viewpro');
 
-Route::get('business/orders/details', 'BuisnessAPI\OrdersController@test');
+Route::get('business/orders/details', 'BuisnessAPI\OrdersController@orderpending')->name('business.orders.pending.list');
 Route::get('business/orders/view', 'BuisnessAPI\OrdersController@getorders');
 Route::get('business/orders/pending', 'BuisnessAPI\OrdersController@orderspending');
 Route::get('business/offers_view', 'BuisnessAPI\OrdersController@prodoffers');

@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Carbon\Carbon;
 use AWS\CRT\HTTP\Request;
 use Illuminate\Console\Command;
+use App\Models\Inventory\Stocks;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
@@ -55,7 +56,7 @@ class StocktTrack extends Command
 
         $process_management_id = ProcessManagement::create($process_manage)->toArray();
         $pm_id = $process_management_id['id'];
-        // $pm_id = ProcessManagementCreate($process_manage['command_name']);
+
         //Process Management end
 
         /* Date */
@@ -180,10 +181,7 @@ class StocktTrack extends Command
         }
         $dayclosingamt =  array_sum($dayclosing);
 
-
-
-
-        DB::connection('inventory')->table('stocks')->insert([
+        Stocks::insert([
             'date' => $date,
             'opeaning_stock' => $todayopeningstock,
             'opeaning_amount' => $totalopenamt,

@@ -41,7 +41,7 @@ class FeedTrackingDetailsApp360 extends Command
     public function handle()
     {
         $process_manage = [
-            'module'             => 'Feed_tracking',
+            'module'             => 'Amazon Feed',
             'description'        => 'Feed tracking details to Amazon from app360',
             'command_name'       => 'mosh:feed-app360-tracking-details',
             'command_start_time' => now(),
