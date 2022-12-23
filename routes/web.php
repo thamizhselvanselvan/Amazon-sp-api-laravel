@@ -90,7 +90,7 @@ Route::get('kyc', function () {
 
     if ($dayName != 'Sunday' && $timeDiff->h >= 3) {
         echo 'kyc not received ';
-        slack_notification('monitor', 'KYC Received', 'KYC received exceeds 11 hours');
+        // slack_notification('monitor', 'KYC Received', 'KYC received exceeds 11 hours');
     }
 });
 
@@ -419,4 +419,4 @@ Route::get('test/seller', 'TestController@SellerTest');
 Route::get('/asin/{asin}/{code}', 'TestController@getASIN');
 
 
-include_route_files(__DIR__ . '/pms/');
+// include_route_files(__DIR__ . '/pms/');
