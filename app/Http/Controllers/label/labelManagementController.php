@@ -56,7 +56,7 @@ class labelManagementController extends Controller
                     }
                 })
                 ->addColumn('name', function ($data) {
-                    $name = json_decode($this->labelAddressCleanup($data->shipping_address));
+                    $name = json_decode($this->lableDataCleanup($data->shipping_address, 'address'));
                     if (isset($name->Name)) {
                         return $name->Name;
                     }
@@ -64,7 +64,7 @@ class labelManagementController extends Controller
                 })
                 ->addColumn('action', function ($data) use ($bag_no) {
                     $table = '';
-                    $name = json_decode($this->labelAddressCleanup($data->shipping_address));
+                    $name = json_decode($this->lableDataCleanup($data->shipping_address, 'address'));
                     if (isset($name->Name)) {
                         $table .=
                             "<div class='d-flex'>
@@ -87,24 +87,24 @@ class labelManagementController extends Controller
         return view('label.search_label');
     }
 
-    public function GetLabel(Request $request)
-    {
-        if ($request->ajax()) {
+    // public function GetLabel(Request $request)
+    // {
+    //     if ($request->ajax()) {
 
-            $bag_no = $request->bag_no;
-            return $bag_no;
-            $data = $this->labelListing($bag_no);
-            return DataTables::of($data)
-                ->addColumn('select_all', function ($data) {
+    //         $bag_no = $request->bag_no;
+    //         return $bag_no;
+    //         $data = $this->labelListing($bag_no);
+    //         return DataTables::of($data)
+    //             ->addColumn('select_all', function ($data) {
 
-                    return "<input class='check_options' type='checkbox' value='25231' name='options[]' id='checkid25231'>";
-                })
-                ->rawColumns(['select_all'])
-                ->make(true);
+    //                 return "<input class='check_options' type='checkbox' value='25231' name='options[]' id='checkid25231'>";
+    //             })
+    //             ->rawColumns(['select_all'])
+    //             ->make(true);
 
-            return response()->json($data);
-        }
-    }
+    //         return response()->json($data);
+    //     }
+    // }
 
     public function manage(Request $request)
     {
@@ -129,7 +129,7 @@ class labelManagementController extends Controller
             $result = (object)$result;
 
             $generator = new BarcodeGeneratorPNG();
-            $bar_code = base64_encode($generator->getBarcode($this->awbCleanUP($awb_no), $generator::TYPE_CODE_39));
+            $bar_code = base64_encode($generator->getBarcode($this->lableDataCleanup($awb_no, 'awb'), $generator::TYPE_CODE_39));
             return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder', 'bag_no'));
         }
     }
@@ -215,7 +215,7 @@ class labelManagementController extends Controller
                     $barcode_awb = $value['awb_no'];
                 }
 
-                $bar_code[] = base64_encode($generator->getBarcode($this->awbCleanUP($barcode_awb), $generator::TYPE_CODE_39));
+                $bar_code[] = base64_encode($generator->getBarcode($this->lableDataCleanup($barcode_awb, 'awb'), $generator::TYPE_CODE_39));
             } catch (Exception $e) {
 
                 $getMessage = $e->getMessage();
@@ -459,7 +459,7 @@ class labelManagementController extends Controller
 
                     $new_label_add = preg_split('/-address-separator-,?/', $label_details);
                     $new_add = count($new_label_add) > 2 ? $new_label_add[1] : $new_label_add[0];
-                    $shipping_address = json_decode($this->labelAddressCleanup($new_add));
+                    $shipping_address = json_decode($this->lableDataCleanup($new_add, 'address'));
 
                     foreach ((array)$shipping_address as $add_key => $add_details) {
 
@@ -716,7 +716,7 @@ class labelManagementController extends Controller
         from ${order}.orderitemdetails 
         WHERE order_item_identifier = '$order_item_identifier'");
 
-        $shipping_address = $this->labelAddressCleanup($order_details[0]->shipping_address);
+        $shipping_address = $this->lableDataCleanup($order_details[0]->shipping_address, 'address');
         $manage = json_decode($shipping_address, true);
 
         return Response($manage);
@@ -846,7 +846,7 @@ class labelManagementController extends Controller
                 })
                 ->addColumn('customer_name', function ($label_detail) {
                     $customer_name = [];
-                    $customer = json_decode($this->labelAddressCleanup($label_detail->shipping_address), true);
+                    $customer = json_decode($this->lableDataCleanup($label_detail->shipping_address, 'address'), true);
                     if (isset($customer['Name'])) {
 
                         $customer_name = $customer['Name'];
@@ -1003,11 +1003,6 @@ class labelManagementController extends Controller
         return $html;
     }
 
-    public function labelAddressCleanup($address)
-    {
-        return  str_replace(array("\n", "\r"), ' ', $address);;
-    }
-
     public function labelSearchDataFormating($label_detials, $amazon_order_id_array)
     {
         $html = '';
@@ -1025,7 +1020,7 @@ class labelManagementController extends Controller
                 $courier_name = $label_det->forwarder;
                 $awb_no = $label_det->awb_no;
                 $order_id = $label_det->order_no;
-                $address_array = json_decode($this->labelAddressCleanup($address), true);
+                $address_array = json_decode($this->lableDataCleanup($address, 'address'), true);
                 if (isset($address_array['Name'])) {
                     $name = $address_array['Name'];
                 }
@@ -1092,11 +1087,15 @@ class labelManagementController extends Controller
             'success' => $html,
             'missing' => $missing_html,
         ];
-        //
     }
 
-    public function awbCleanUP($awb_no)
+    public function lableDataCleanup($data, $type)
     {
-        return preg_replace("/[^a-zA-Z0-9]/", "", strtoupper($awb_no));
+        if ($type == 'address') {
+            return  str_replace(array("\n", "\r"), ' ', $data);
+        } elseif ($type == 'awb') {
+            return preg_replace("/[^a-zA-Z0-9]/", "", strtoupper($data));
+        }
+        return $data;
     }
 }
