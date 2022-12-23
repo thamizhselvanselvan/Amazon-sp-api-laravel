@@ -12,16 +12,21 @@ class MaintenanceModeController extends Controller
 {
     public function index()
     {
-        return view('admin.maintenanceMode.index');
+        $mode = SystemSetting::where('key', 'maintenance_mode')->get('value')->toArray();
+        $maintenance_mode = $mode[0]['value'];
+
+        return view('admin.maintenanceMode.index', compact('maintenance_mode'));
     }
 
     public function MaintenanceModeOnOff(Request $request)
     {
+        po($request->mode);
         $mode = $request->mode == 'on' ? '1' : '0';
         $maintenance_mode = [
             'key' => 'maintenance_mode',
             'value' => $mode,
         ];
+        po($mode);
         SystemSetting::upsert($maintenance_mode, ['key_unique'], ['value']);
     }
 }

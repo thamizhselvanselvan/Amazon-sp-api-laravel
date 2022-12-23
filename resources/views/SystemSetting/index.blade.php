@@ -14,14 +14,14 @@
         <div class="custom-control custom-switch">
 
             <input type="checkbox" class="custom-control-input btn-lg" id="maintenance_mode" name="mode">
-            <label class="custom-control-label" for="maintenance_mode">Maintenance Mode On/Off</label>
+            <label class="custom-control-label" for="maintenance_mode">System Maintenance Mode On/Off</label>
 
         </div>
         <!-- <div class="col-5 text-right">
-                                                            <a href="test">
-                                                                <x-adminlte-button label="Bin" type="submit" theme="primary" icon="far fa-trash-alt text-danger" class="btn btn-sm  ml-2" />
-                                                            </a>
-                                                        </div> -->
+                <a href="test">
+                    <x-adminlte-button label="Bin" type="submit" theme="primary" icon="far fa-trash-alt text-danger" class="btn btn-sm  ml-2" />
+                </a>
+            </div> -->
     </div>
 
     <form action="{{ isset($records) ? route('update.system.setting', $records[0]->id) : route('add.system.setting') }}"
