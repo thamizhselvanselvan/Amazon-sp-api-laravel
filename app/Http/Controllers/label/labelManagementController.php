@@ -50,7 +50,7 @@ class labelManagementController extends Controller
 
             return DataTables::of($data)
                 ->addColumn('select_all', function ($data) use ($currentPageNumber) {
-                    $name = json_decode($data->shipping_address);
+                    $name = json_decode($this->lableDataCleanup($data->shipping_address, 'address'));
                     if (isset($name->Name)) {
                         return "<input class='check_options' type='checkbox' value='$data->id' data-current-page='$currentPageNumber' name='options[]' id='checkid$data->id'>";
                     }
