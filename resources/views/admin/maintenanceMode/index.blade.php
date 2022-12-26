@@ -33,15 +33,13 @@
 @section('js')
     <script text="javascript">
         $('#maintenance_mode').click(function() {
-
             mode = $(this).val();
-            // alert(mode);
             if (mode == 'on') {
                 $(this).val('off');
             } else {
                 $(this).val('on');
             }
-            // alert(mode);
+
             let bool = confirm("Are you sure you want to " + mode.toUpperCase() + " maintenance mode?");
             if (!bool) {
                 return false;

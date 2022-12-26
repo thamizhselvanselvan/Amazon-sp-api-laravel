@@ -12,9 +12,18 @@
             <h1 class="mb-1 text-dark font-weight-bold"> System Setting </h1>
         </div>
         <div class="custom-control custom-switch">
+            @if (isset($maintenance_mode))
 
-            <input type="checkbox" class="custom-control-input btn-lg" id="maintenance_mode" name="mode">
-            <label class="custom-control-label" for="maintenance_mode">System Maintenance Mode On/Off</label>
+                @if ($maintenance_mode == 1)
+                    <input type="checkbox" class="custom-control-input btn-lg" id="maintenance_mode" name="mode"
+                        value="off" checked>
+                    <label class="custom-control-label" for="maintenance_mode">System Maintenance Mode On/Off</label>
+                @else
+                    <input type="checkbox" class="custom-control-input btn-lg" id="maintenance_mode" name="mode"
+                        value="on">
+                    <label class="custom-control-label" for="maintenance_mode">System Maintenance Mode On/Off</label>
+                @endif
+            @endif
 
         </div>
         <!-- <div class="col-5 text-right">
