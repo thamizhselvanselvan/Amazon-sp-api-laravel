@@ -85,47 +85,29 @@ class AsinSourceController extends Controller
     public function addBulkAsin(Request $request)
     {
         if ($request->form_type == 'text_area') {
-            $validate = $request->validate([
+            $request->validate([
                 'text_area' => 'required',
                 'source'    =>  ['required'],
             ]);
 
-            $source_key_exists = 0;
             $user_id = Auth::user()->id;
             $record = $request->text_area;
-            $sources = $request->source;
+            $source = $request->source;
 
-            foreach ($sources as $key => $source) {
-                $asins = preg_split('/[\r\n| |:|,|.]/', $record, -1, PREG_SPLIT_NO_EMPTY);
-                $country_code = buyboxCountrycode();
-                $check_table = DB::connection('catalog')->select('SHOW TABLES');
-                foreach ($check_table as $key => $table_name) {
-                    foreach ($table_name as $name_of_table) {
-                        if ($name_of_table == 'catalognew' . strtolower($source) . 's') {
-                            $source_key_exists = 1;
-                        }
-                    }
-                }
-                if ($source_key_exists == 0) {
-                    // $redbean = new NewCatalog();
-                    // $redbean->RedBeanConnection();
-                    // $catalog_table = 'catalognew' . strtolower($source) . 's';
-                    // $NewCatalogs = R::dispense($catalog_table);
-                    // $NewCatalogs->asin = '';
-                    // R::store($NewCatalogs);
-                }
+            // foreach ($sources as $key => $source) {
+            $asins = preg_split('/[\r\n| |:|,|.]/', $record, -1, PREG_SPLIT_NO_EMPTY);
 
-                foreach ($asins as $asin_details) {
-                    $allData[] = [
-                        'asin'  =>  $asin_details,
-                        'user_id'   =>  $user_id,
-                    ];
-                }
-                $table_name = table_model_create(country_code: $source, model: 'Asin_source', table_name: 'asin_source_');
-                $table_name->upsert($allData, ['user_asin_unique'], ['asin']);
-                $allData = [];
-                commandExecFunc(" mosh:catalog-amazon-import ");
+            foreach ($asins as $asin_details) {
+                $allData[] = [
+                    'asin'  =>  $asin_details,
+                    'user_id'   =>  $user_id,
+                ];
             }
+            $table_name = table_model_create(country_code: $source, model: 'Asin_source', table_name: 'asin_source_');
+            $table_name->upsert($allData, ['user_asin_unique'], ['asin']);
+            $allData = [];
+            commandExecFunc(" mosh:catalog-amazon-import ");
+            // }
         } elseif ($request->form_type == 'file_upload') {
             $user_id = Auth::user()->id;
             $request->validate([
@@ -135,8 +117,6 @@ class AsinSourceController extends Controller
             if (!$request->hasFile('asin')) {
                 return back()->with('error', "Please upload file to import it to the database");
             }
-
-            $msg = "Asin import has been completed!";
 
             $source = $request->source;
             $source = implode(',', $source);
@@ -159,7 +139,6 @@ class AsinSourceController extends Controller
 
             FileManagement::create($file_info);
             fileManagement();
-            // commandExecFunc("pms:asin-import ${user_id} --source=${source} ${path}");
         }
         return redirect('catalog/import-bulk-asin')->with('success', 'Asins file uploaded, checking file\'s data');
     }
