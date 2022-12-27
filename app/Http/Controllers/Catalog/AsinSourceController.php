@@ -119,7 +119,7 @@ class AsinSourceController extends Controller
             }
 
             $source = $request->source;
-            $source = implode(',', $source);
+            // $source = implode(',', $source);
             $file = file_get_contents($request->asin);
             $import_file_time = date('Y-m-d-H-i-s');
             $path = "AsinSource/asin${import_file_time}.csv";
