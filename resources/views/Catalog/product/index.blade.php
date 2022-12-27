@@ -75,6 +75,10 @@
                                     <label for="P3">P3</label>
                                     <input type="radio" class="destination-priority" name="priority" value="3">
                                 </div>
+                                <div class="col-2 ">
+                                    <label for="P4">P4</label>
+                                    <input type="radio" class="destination-priority" name="priority" value="4">
+                                </div>
                             </div>
 
                             <div class="col-12 float-left mt-2">
@@ -151,6 +155,10 @@
                                         <div class="col-2 ">
                                             <label for="P3">P3</label>
                                             <input type="radio" class="destination-priority" name="priority" value="3">
+                                        </div>
+                                        <div class="col-2 ">
+                                            <label for="P4">P4</label>
+                                            <input type="radio" class="destination-priority" name="priority" value="4">
                                         </div>
                                     </div><br>
 
