@@ -9,8 +9,9 @@ use PhpOffice\PhpSpreadsheet\Calculation\TextData\Search;
 use App\Http\Controllers\BuisnessAPI\ProductsRequestController;
 use App\Services\AWS_Business_API\Details_dump\product_details;
 use App\Services\AWS_Business_API\AWS_POC\Search_Product_Request;
-use App\Services\AWS_Business_API\Search_Product_API\SearchProduct;
+
 use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
+
 
 Route::get('product/details', 'BuisnessAPI\SearchProductRequestController@searchproductRequest');
 Route::resource('business/search/products', 'BuisnessAPI\SearchProductRequestController');
@@ -72,10 +73,15 @@ Route::get('catalog/cliqnshop/new_asin', 'Catalog\CliqnshopCatalogController@upl
 
 Route::get('uploaded/catalog/cliqnshop/download/{index}', 'Catalog\CliqnshopCatalogController@Download_uploaded_asin_catalog')->name('uploaded.asin.catalog.export.cliqnshop.download');
 
-Route::get('product/test', function () {
 
-    $data[] = 'clock';
-    $ApiCall = new Search_Product();
-    $result = $ApiCall->SearchProductByKey($data);
-    po($result);
-});
+Route::get('upload/test', 'Catalog\CliqnshopCatalogController@insertCliqnshop');
+
+
+  //B-api lproduct searvh keyword or ASIN
+// Route::get('product/test', function()
+// {
+//     $data[] = 'gaming';
+//     $ApiCall = new Search_Product_Request();
+//     $result = $ApiCall->getAsin($data);
+//     po($result);
+// });
