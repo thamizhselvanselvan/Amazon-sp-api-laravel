@@ -434,17 +434,13 @@ class labelManagementController extends Controller
             'qty' => NULL
         ];
 
-        $ignore = [
-            'gun',
-            'lighter',
-            'gold',
-            'spark',
-            'fuel',
-            'heat',
-            'oxygen',
-            'alcohols',
-            'famable',
-        ];
+        $ignore = explode(
+            ',',
+            trim(getSystemSettingsValue(
+                'ignore_label_title_keys',
+                'gun, lighter, gold, spark, Fuel, Heat, Oxygen, alcohols, flamable, seed, sliver, stone, leather, jewellery, fungicide, fertilizer, Magnet'
+            ))
+        );
 
         if (!$label) {
             return NULL;

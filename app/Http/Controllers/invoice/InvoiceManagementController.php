@@ -381,17 +381,14 @@ class InvoiceManagementController extends Controller
         $invoice_details = [];
         $grand_total = 0;
         $invoice_no = $id;
-        $ignore = [
-            'gun',
-            'lighter',
-            'gold',
-            'spark',
-            'fuel',
-            'heat',
-            'oxygen',
-            'alcohols',
-            'famable',
-        ];
+
+        $ignore = explode(
+            ',',
+            trim(getSystemSettingsValue(
+                'ignore_invoice_title_keys',
+                'gun, lighter, gold, spark, Fuel, Heat, Oxygen, alcohols, flamable, seed, sliver, stone, leather, jewellery, fungicide, fertilizer, Magnet'
+            ))
+        );
 
         $prefix = config('database.connections.web.prefix');
         if ($type == 'bulk') {
