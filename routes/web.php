@@ -90,7 +90,7 @@ Route::get('kyc', function () {
 
     if ($dayName != 'Sunday' && $timeDiff->h >= 3) {
         echo 'kyc not received ';
-        slack_notification('monitor', 'KYC Received', 'KYC received exceeds 11 hours');
+        // slack_notification('monitor', 'KYC Received', 'KYC received exceeds 11 hours');
     }
 });
 
@@ -273,7 +273,7 @@ Route::get('zoho_update', function () {
     // $robin->assignRole('Cliqnshop');
 
 
-    // exit;
+    // exit; 
 
     $ZohoOrder = new ZohoOrder;
 
@@ -351,65 +351,6 @@ where status = 0 ");
     }
 });
 
-Route::get('order/item', function () {
-
-    $order_id = '403-6898279-3539565';
-});
-
-Route::get('order/catalog', function () {
-
-    $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails
-where status = 0 ");
-    $count = 0;
-    $batch = 0;
-    $asinList = [];
-    foreach ($order_item_details as $key => $value) {
-        $asin = $value->asin;
-        $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
-        // $check = [];
-        if (!array_key_exists('0', $check)) {
-            // $asinList[$count]->asin = $asin;
-            $count++;
-            $batch++;
-            $data[] = $value;
-        }
-
-        //$type = 1 for seller, 2 for Order, 3 for inventory
-        if ($count == 10) {
-            $count = 0;
-            $type = 2;
-            $catalog = new Catalog();
-            $catalog->index($data, NULL, $type, $batch);
-            Log::alert('10 asin imported');
-            $data = [];
-            // exit;
-        }
-    }
-});
-
-// use ConfigTrait;
-
-Route::get('test/url', function () {
-
-    $feed_id = '129877019312';
-    $seller_id = '6';
-
-    $url  = (new FeedOrderDetailsApp360())->getFeedStatus($feed_id, $seller_id);
-    $data = file_get_contents($url);
-
-    $data_json = json_decode(json_encode(simplexml_load_string($data)), true);
-
-    $report = $data_json['Message']['ProcessingReport'];
-    $success_message = $report['ProcessingSummary']['MessagesSuccessful'];
-
-    if ($success_message == 1) {
-
-        echo $success_message;
-    } else {
-        po($report['Result']['ResultDescription']);
-    }
-});
-
 Route::get('/', 'Auth\LoginController@showLoginForm')->name('/');
 Auth::routes();
 Route::get('login', 'Admin\HomeController@dashboard')->name('login');
@@ -419,4 +360,4 @@ Route::get('test/seller', 'TestController@SellerTest');
 Route::get('/asin/{asin}/{code}', 'TestController@getASIN');
 
 
-include_route_files(__DIR__ . '/pms/');
+// include_route_files(__DIR__ . '/pms/');
