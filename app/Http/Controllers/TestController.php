@@ -9,8 +9,8 @@ use GuzzleHttp\Client;
 use League\Csv\Writer;
 use App\Models\Mws_region;
 use AWS\CRT\HTTP\Response;
-use GuzzleHttp\Psr7\Request;
 use Hamcrest\Arrays\IsArray;
+use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
 use App\Models\Aws_credential;
 use Illuminate\Support\Carbon;
@@ -33,6 +33,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use App\Services\Catalog\PriceConversion;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
+use GuzzleHttp\Psr7\Request as Http_request;
 use SellingPartnerApi\Api\CatalogItemsV0Api;
 use SellingPartnerApi\Api\ProductPricingApi;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
@@ -857,7 +858,7 @@ class TestController extends Controller
   }
 }';
 
-    $request = new Request('POST', 'https://ws.aramex.net/ShippingAPI.V2/Shipping/Service_1_0.svc/json/CreateShipments', $headers, $body);
+    $request = new Http_request('POST', 'https://ws.aramex.net/ShippingAPI.V2/Shipping/Service_1_0.svc/json/CreateShipments', $headers, $body);
     $res = $client->sendAsync($request)->wait();
     echo $res->getBody();
   }

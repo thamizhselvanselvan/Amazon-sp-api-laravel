@@ -21,12 +21,12 @@ class CatalogDashboardService
         $dbname = config('database.connections.catalog.database');
         foreach ($sources as $source) {
 
-            $asin_priority = [1 => 0, 2 => 0, 3 => 0];
-            $catalog = [1 => 0, 2 => 0, 3 => 0];
-            $bb_asin_delist = [1 => 0, 2 => 0, 3 => 0];
-            $cat_price = [1 => 0, 2 => 0, 3 => 0];
-            $asin_bb_unavailable = [1 => 0, 2 => 0, 3 => 0];
-            $na_catalog = [1 => 0, 2 => 0, 3 => 0];
+            $asin_priority = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+            $catalog = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+            $bb_asin_delist = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+            $cat_price = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+            $asin_bb_unavailable = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+            $na_catalog = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
 
             $delist_asin_count = [];
             $source = strtolower($source);
@@ -62,7 +62,7 @@ class CatalogDashboardService
             $this->bb_delist_count = [];
             $this->bb_unavailable_count = [];
             $table = table_model_create(country_code: $source, model: 'Asin_destination', table_name: 'asin_destination_');
-            for ($priority = 1; $priority <= 3; $priority++) {
+            for ($priority = 1; $priority <= 4; $priority++) {
 
                 $this->gross = 0;
                 $this->unavailable = 0;
