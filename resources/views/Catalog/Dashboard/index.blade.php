@@ -33,7 +33,7 @@
 
 @php
 $country = ['India Dashboard Count', 'USA Dashboard Count', 'UAE Dashboard Count', 'KSA Dashboard Count'];
-$header = ['Sold Listing', 'Inventory Listing', 'Unlisted'];
+$header = ['Sold Listing', 'Inventory Listing', 'Unlisted', 'Priority 4'];
 
 @endphp
 <a href="{{ route('catalog.dashboard.update') }}">
