@@ -40,9 +40,9 @@ class InventoryShipmentController extends Controller
     public function index(Request $request)
     {
 
-        $data = Shipment_Inward_Details::select("ship_id", "source_id", "created_at")
+        $data = Shipment_Inward_Details::select("ship_id", "source_id", "inwarded_at")
             ->with(['vendors'])
-            ->orderby('created_at', 'DESC')
+            ->orderby('inwarded_at', 'DESC')
             ->get();
         $shipment_data = collect($data);
         $uniq_data = $shipment_data->groupBy('ship_id');
@@ -53,7 +53,7 @@ class InventoryShipmentController extends Controller
             $data_array = [];
             $vendor_name  = '';
             foreach ($val as $key1 => $filterd_data) {
-                $data_array['date'] = $filterd_data['created_at'];
+                $data_array['date'] = $filterd_data['inwarded_at'];
                 $vendor_name .= $filterd_data->vendors['name'] . ',';
             }
             $data_array['ship_id'] = $key;
@@ -122,7 +122,7 @@ class InventoryShipmentController extends Controller
         foreach ($currency as $key => $cur) {
             $currency_array[$cur->id] = $cur->name;
         }
-       
+
         return view('inventory.inward.shipment.view', compact('view', 'currency_array', 'bar_code', 'id', 'warehouse_name', 'vendor_name', 'currency_id'));
     }
     public function createView(Request $request)
@@ -238,7 +238,6 @@ class InventoryShipmentController extends Controller
         $uniq = random_int(1000, 99999);
         $ship_id = 'INW' . $uniq;
 
-
         $items = [];
         $val = Shipment_Inward::query()
             ->select(('ship_id'))
@@ -249,7 +248,7 @@ class InventoryShipmentController extends Controller
             goto start;
         }
 
-       
+
         $request->validate([
             'warehouse' => 'required',
             'currency' => 'required',
@@ -268,17 +267,18 @@ class InventoryShipmentController extends Controller
         $source = $request->source;
         $new = [...array_unique($source)];
         $data = json_encode($new);
-        
-            Shipment_Inward::insert([
-                "warehouse_id" => $request->warehouse,
-                "source_id" =>$data,
-                "ship_id" => $ship_id,
-                "currency" => $request->currency,
-                "shipment_count" => count($items),
-                "created_at" => now(),
-                "updated_at" => now()
-            ]);
- 
+
+        Shipment_Inward::insert([
+            "warehouse_id" => $request->warehouse,
+            "source_id" => $data,
+            "ship_id" => $ship_id,
+            "currency" => $request->currency,
+            "shipment_count" => count($items),
+            "inwarded_at" => now(),
+            "created_at" => now(),
+            "updated_at" => now(),
+        ]);
+
         foreach ($request->asin as $key1 => $asin1) {
 
             Shipment_Inward_Details::create([
@@ -290,9 +290,9 @@ class InventoryShipmentController extends Controller
                 "item_name" => $request->name[$key1],
                 "tag" => $request->tag[$key1],
                 "price" => $request->price[$key1],
+                "procurement_price" => $request->proc_price[$key1],
                 "quantity" => $request->quantity[$key1],
-                "created_at" => now(),
-                "updated_at" => now()
+                "inwarded_at" => now()
             ]);
         }
 
@@ -304,12 +304,12 @@ class InventoryShipmentController extends Controller
                 "ship_id" => $ship_id,
                 "asin" => $asin1,
                 "price" => $request->price[$key1],
+                "procurement_price" => $request->proc_price[$key1],
                 "item_name" => $request->name[$key1],
                 "tag" => $request->tag[$key1],
                 "quantity" => $request->quantity[$key1],
                 "balance_quantity" => $request->quantity[$key1],
-                "created_at" => now(),
-                "updated_at" => now()
+                "inwarded_at" => now()
             ]);
         }
 

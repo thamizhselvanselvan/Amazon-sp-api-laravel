@@ -6,6 +6,7 @@ use App\Http\Controllers\PMSPHPUnitTestController;
 
 
 /*  warehouse  */
+
 Route::post('json/{id}', 'Inventory\InventoryWarehouseController@CountryStateCity')->name('country.name');
 Route::post('stateId/{id}', 'Inventory\InventoryWarehouseController@getState');
 Route::resource('inventory/warehouses', 'Inventory\InventoryWarehouseController');
@@ -101,11 +102,11 @@ Route::get('inventory/reports/monthly', 'Inventory\ReportController@monthlyview'
 Route::get('inventory/export/monthly', 'Inventory\ReportController@eportinvmonthly')->name('inventory.export.monthly');
 Route::get('inventory/warewise', 'Inventory\ReportController@warerepo')->name('inventory.warewise.export');
 Route::get('inventory/tagwise', 'Inventory\ReportController@tagwise')->name('inventory.tagwise.new');
-Route::get('inventory/export/monthly/display','Inventory\ReportController@monthlywaredisp')->name('inventory.monthly.ware.display');
-Route::get('inventory/export/monthly/warehousewise','Inventory\ReportController@monthlywareexpo')->name('inventory.monthly.ware.export');
-Route::get('inventory/export/monthly/weekwareexpo/local/{id}','Inventory\ReportController@monthlywareexplocal')->name('inventory.monthly.ware.export.download');
-Route::get('inventory/tag/monthly/display','Inventory\ReportController@monthtagrepdisp')->name('inventory.monthly.tag.report.display');
-Route::get('inventory/tag/monthly/export','Inventory\ReportController@monthtagrepexport')->name('inventory.monthly.tag.report.export');
+Route::get('inventory/export/monthly/display', 'Inventory\ReportController@monthlywaredisp')->name('inventory.monthly.ware.display');
+Route::get('inventory/export/monthly/warehousewise', 'Inventory\ReportController@monthlywareexpo')->name('inventory.monthly.ware.export');
+Route::get('inventory/export/monthly/weekwareexpo/local/{id}', 'Inventory\ReportController@monthlywareexplocal')->name('inventory.monthly.ware.export.download');
+Route::get('inventory/tag/monthly/display', 'Inventory\ReportController@monthtagrepdisp')->name('inventory.monthly.tag.report.display');
+Route::get('inventory/tag/monthly/export', 'Inventory\ReportController@monthtagrepexport')->name('inventory.monthly.tag.report.export');
 Route::get('inventory/tag/monthly/download/{id}', 'Inventory\ReportController@monthlytagexplocal')->name('inventory.monthly.tag.report.download');
 Route::resource('inventory/reports', 'Inventory\ReportController');
 
