@@ -5,9 +5,13 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Services\AWS_Business_API\AWS_POC\Orders;
 use App\Http\Controllers\PMSPHPUnitTestController;
+use PhpOffice\PhpSpreadsheet\Calculation\TextData\Search;
 use App\Http\Controllers\BuisnessAPI\ProductsRequestController;
 use App\Services\AWS_Business_API\Details_dump\product_details;
 use App\Services\AWS_Business_API\AWS_POC\Search_Product_Request;
+
+use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
+
 
 Route::get('product/details', 'BuisnessAPI\SearchProductRequestController@searchproductRequest');
 Route::resource('business/search/products', 'BuisnessAPI\SearchProductRequestController');
