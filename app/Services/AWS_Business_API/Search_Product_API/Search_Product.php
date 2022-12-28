@@ -5,6 +5,7 @@ namespace App\Services\AWS_Business_API\Search_Product_API;
 use App\Models\Mws_region;
 use Illuminate\Support\Facades\Log;
 use App\Services\SP_API\API\NewCatalog;
+use App\Services\Cliqnshop\CliqnshopCataloginsert;
 use App\Services\AWS_Business_API\AWS_POC\ProductsRequest;
 use App\Services\AWS_Business_API\AWS_POC\Search_Product_Request;
 
@@ -70,15 +71,32 @@ class Search_Product
                 }
                 if ($key2 == 'images') {
                     $images = json_decode($cat_data);
-                    // $catalog_data[] = $images[0]->images;
                     foreach ($images[0]->images as $key4 => $image) {
-                        if ($key4 <= 10 && $image->height >= 75) {
-                            $catalog_data[$key1]['image' . $key4] = $image->link;
+                        if ($key4 <= 9 && $image->height >= 75) {
+                            $catalog_data[$key1]['image' . $key4 + 1] = $image->link;
                         }
                     }
                 }
             }
         }
-        return $catalog_data;
+        foreach ($catalog_data as $key5 => $data) {
+            $asin               = $data['asin'];
+            $item_name          = $data['itemName'];
+            $brand              = $data['brand'];
+            $brand_label        = $data['brand'];
+            $color_key          = $data['color'];
+            $label              = $data['color'];
+            $length_unit        = $data['unit'];
+            $length_value       = $data['length'];
+            $width_unit         = $data['unit'];
+            $width_value        = $data['width'];
+            $Price_US_IN        = $data['price'];
+            $image             = [];
+            $short_description  = $data['short_description'];
+            $long_description   = $data['long_description'];
+            $cliqnshop = new CliqnshopCataloginsert();
+            $cliqnshop->insertdata_cliqnshop($asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image,  $short_description,  $long_description);
+        }
+        // return $catalog_data;
     }
 }

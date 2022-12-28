@@ -77,11 +77,10 @@ Route::get('uploaded/catalog/cliqnshop/download/{index}', 'Catalog\CliqnshopCata
 Route::get('upload/test', 'Catalog\CliqnshopCatalogController@insertCliqnshop');
 
 
-  //B-api lproduct searvh keyword or ASIN
-// Route::get('product/test', function()
-// {
-//     $data[] = 'gaming';
-//     $ApiCall = new Search_Product_Request();
-//     $result = $ApiCall->getAsin($data);
-//     po($result);
-// });
+//B-api lproduct searvh keyword or ASIN
+Route::get('product/test', function () {
+  $data[] = 'iphone_12pro';
+  $ApiCall = new Search_Product();
+  $result = $ApiCall->SearchProductByKey($data);
+  po($result);
+});
