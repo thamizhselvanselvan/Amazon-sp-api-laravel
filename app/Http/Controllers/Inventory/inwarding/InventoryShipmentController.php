@@ -40,9 +40,9 @@ class InventoryShipmentController extends Controller
     public function index(Request $request)
     {
 
-        $data = Shipment_Inward_Details::select("ship_id", "source_id", "inwarded_at")
+        $data = Shipment_Inward_Details::select("ship_id", "source_id", "created_at")
             ->with(['vendors'])
-            ->orderby('inwarded_at', 'DESC')
+            ->orderby('created_at', 'DESC')
             ->get();
         $shipment_data = collect($data);
         $uniq_data = $shipment_data->groupBy('ship_id');
@@ -53,7 +53,7 @@ class InventoryShipmentController extends Controller
             $data_array = [];
             $vendor_name  = '';
             foreach ($val as $key1 => $filterd_data) {
-                $data_array['date'] = $filterd_data['inwarded_at'];
+                $data_array['date'] = $filterd_data['created_at'];
                 $vendor_name .= $filterd_data->vendors['name'] . ',';
             }
             $data_array['ship_id'] = $key;
