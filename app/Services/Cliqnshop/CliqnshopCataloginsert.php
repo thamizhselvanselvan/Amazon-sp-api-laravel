@@ -157,7 +157,7 @@ class CliqnshopCataloginsert
                     ];
 
                     DB::connection('cliqnshop')->table('mshop_media')->updateOrInsert($media);
-                    $image_get_id = DB::connection('cliqnshop')->table('mshop_media')->where('link', $media['link'])->select('id')->get();
+                    $image_get_id = DB::connection('cliqnshop')->table('mshop_media')->where('siteid',$media['siteid'])->where('link', $media['link'])->select('id')->get();
 
                     $media_product_list = [
                         'siteid' => '1.',
