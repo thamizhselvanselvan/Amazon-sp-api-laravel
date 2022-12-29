@@ -50,18 +50,14 @@ class SellerOrdersImport extends Command
     {
         //Process Management start
         $process_manage = [
-            'module'             => 'seller_order_import',
-            'description'        => 'Get seller orders from Amazon of selected seller',
+            'module'             => 'Order',
+            'description'        => 'Get orders from Amazon for selected seller',
             'command_name'       => 'pms:sellers-orders-import',
             'command_start_time' => now(),
         ];
 
         $process_management_id = ProcessManagement::create($process_manage)->toArray();
         $pm_id = $process_management_id['id'];
-        // $pm_id = ProcessManagementCreate($process_manage['command_name']);
-        //Process Management end
-
-        $startTime = startTime();
 
         $aws_data = OrderSellerCredentials::where('dump_order', 1)->get();
 
@@ -75,8 +71,6 @@ class SellerOrdersImport extends Command
             $order = new Order();
             $order->SelectedSellerOrder($seller_id, $awsCountryCode, $source, $auth_code, $amazon_order_id);
         }
-
-        $stats = endTime($startTime);
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);

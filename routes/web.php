@@ -21,6 +21,7 @@ use App\Services\Zoho\ZohoOrder;
 use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingUs;
 use App\Models\Inventory\Country;
+use App\Models\ProcessManagement;
 use App\Models\Universal_textile;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
@@ -41,13 +42,14 @@ use App\Models\order\OrderItemDetails;
 use App\Models\order\OrderUpdateDetail;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\Exists;
 use App\Http\Controllers\TestController;
 use App\Services\Inventory\ReportWeekly;
+use Illuminate\Support\Facades\Redirect;
 use Spatie\Permission\Models\Permission;
 use phpDocumentor\Reflection\Types\Null_;
 use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
-use App\Models\ProcessManagement;
 use Symfony\Component\Validator\Constraints\File;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
 use App\Services\AWS_Business_API\Auth\AWS_Business;
@@ -55,7 +57,9 @@ use SellingPartnerApi\Api\FeedsV20210630Api as FeedsApi;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
-use Illuminate\Validation\Rules\Exists;
+use ParagonIE\Sodium\Core\Curve25519\H;
+
+use function Clue\StreamFilter\fun;
 
 // use ConfigTrait;
 
@@ -71,22 +75,34 @@ use Illuminate\Validation\Rules\Exists;
 |
 */
 // use ConfigTrait;
-
-Route::get('slack', function () {
-    $process_manage = [
-        'module'             => 'Catalog',
-        'description'        => 'Amazon catalog import via queue',
-        'command_name'       => 'mosh:catalog-amazon-import',
-        'command_start_time' => now(),
-    ];
-    $id = ProcessManagement::create($process_manage)->toArray();
-    po($id);
-
-    exit;
-    $slackMessage = "testing of slack";
-    Log::info($slackMessage);
+Route::get('break', function () {
+    $test = ['Hello world welcome to bihar', 'Good morning'];
+    $check = '';
+    $data = [];
+    foreach ($test as $test1) {
+        $check .= (isset($test1) ? $test1 : '') . "<br>";
+        $data = $check;
+    }
+    po($data);
 });
 
+Route::get('kyc', function () {
+    $kyc_received = DB::connection('b2cship')->select("SELECT TOP 1 AWBNO, CreatedDate
+    FROM Packet WHERE IsKYC ='true' ORDER BY CreatedDate DESC");
+
+    $kyc_received_date = Carbon::parse($kyc_received[0]->CreatedDate);
+    $dayName = $kyc_received_date->dayName;
+
+    $getTime = Carbon::parse($kyc_received[0]->CreatedDate);
+    $now = Carbon::now();
+    $timeDiff = $getTime->diff($now);
+    po($timeDiff);
+
+    if ($dayName != 'Sunday' && $timeDiff->h >= 3) {
+        echo 'kyc not received ';
+        // slack_notification('monitor', 'KYC Received', 'KYC received exceeds 11 hours');
+    }
+});
 
 Route::get('t', function () {
 
@@ -267,7 +283,7 @@ Route::get('zoho_update', function () {
     // $robin->assignRole('Cliqnshop');
 
 
-    // exit;
+    // exit; 
 
     $ZohoOrder = new ZohoOrder;
 
@@ -345,65 +361,6 @@ where status = 0 ");
     }
 });
 
-Route::get('order/item', function () {
-
-    $order_id = '403-6898279-3539565';
-});
-
-Route::get('order/catalog', function () {
-
-    $order_item_details = DB::connection('order')->select("SELECT seller_identifier, asin, country from orderitemdetails
-where status = 0 ");
-    $count = 0;
-    $batch = 0;
-    $asinList = [];
-    foreach ($order_item_details as $key => $value) {
-        $asin = $value->asin;
-        $check = DB::connection('catalog')->select("SELECT asin from catalog where asin = '$asin'");
-        // $check = [];
-        if (!array_key_exists('0', $check)) {
-            // $asinList[$count]->asin = $asin;
-            $count++;
-            $batch++;
-            $data[] = $value;
-        }
-
-        //$type = 1 for seller, 2 for Order, 3 for inventory
-        if ($count == 10) {
-            $count = 0;
-            $type = 2;
-            $catalog = new Catalog();
-            $catalog->index($data, NULL, $type, $batch);
-            Log::alert('10 asin imported');
-            $data = [];
-            // exit;
-        }
-    }
-});
-
-// use ConfigTrait;
-
-Route::get('test/url', function () {
-
-    $feed_id = '129877019312';
-    $seller_id = '6';
-
-    $url  = (new FeedOrderDetailsApp360())->getFeedStatus($feed_id, $seller_id);
-    $data = file_get_contents($url);
-
-    $data_json = json_decode(json_encode(simplexml_load_string($data)), true);
-
-    $report = $data_json['Message']['ProcessingReport'];
-    $success_message = $report['ProcessingSummary']['MessagesSuccessful'];
-
-    if ($success_message == 1) {
-
-        echo $success_message;
-    } else {
-        po($report['Result']['ResultDescription']);
-    }
-});
-
 Route::get('/', 'Auth\LoginController@showLoginForm')->name('/');
 Auth::routes();
 Route::get('login', 'Admin\HomeController@dashboard')->name('login');
@@ -412,5 +369,14 @@ Route::resource('/tests', 'TestController');
 Route::get('test/seller', 'TestController@SellerTest');
 Route::get('/asin/{asin}/{code}', 'TestController@getASIN');
 
+Route::get('testarray', function () {
 
-include_route_files(__DIR__ . '/pms/');
+    $test = [
+        'inventory' => ['procurement_price', 'inwared_at'],
+        'shipment_inward_details' => ['procurement_price', 'inwared_at'],
+        'shipments_inward' => ['inwared_at']
+    ];
+
+    dd($test);
+});
+// include_route_files(__DIR__ . '/pms/');

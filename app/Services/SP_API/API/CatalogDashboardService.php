@@ -16,30 +16,17 @@ class CatalogDashboardService
 
     public function catalogDashboard()
     {
-        //Process Management start
-        $process_manage = [
-            'module'             => 'Catalog_Dashboard',
-            'description'        => 'Dashboard for catalog',
-            'command_name'       => 'mosh:catalog-dashboard-file',
-            'command_start_time' => now(),
-        ];
-
-        $process_management_id = ProcessManagement::create($process_manage)->toArray();
-        $pm_id = $process_management_id['id'];
-        // $pm_id = ProcessManagementCreate($process_manage['command_name']);
-        //Process Management end
-
         $sources = ['IN', 'US'];
         $record_arrays = [];
         $dbname = config('database.connections.catalog.database');
         foreach ($sources as $source) {
 
-            $asin_priority = [1 => 0, 2 => 0, 3 => 0];
-            $catalog = [1 => 0, 2 => 0, 3 => 0];
-            $bb_asin_delist = [1 => 0, 2 => 0, 3 => 0];
-            $cat_price = [1 => 0, 2 => 0, 3 => 0];
-            $asin_bb_unavailable = [1 => 0, 2 => 0, 3 => 0];
-            $na_catalog = [1 => 0, 2 => 0, 3 => 0];
+            $asin_priority = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+            $catalog = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+            $bb_asin_delist = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+            $cat_price = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+            $asin_bb_unavailable = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+            $na_catalog = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
 
             $delist_asin_count = [];
             $source = strtolower($source);
@@ -75,7 +62,7 @@ class CatalogDashboardService
             $this->bb_delist_count = [];
             $this->bb_unavailable_count = [];
             $table = table_model_create(country_code: $source, model: 'Asin_destination', table_name: 'asin_destination_');
-            for ($priority = 1; $priority <= 3; $priority++) {
+            for ($priority = 1; $priority <= 4; $priority++) {
 
                 $this->gross = 0;
                 $this->unavailable = 0;
@@ -171,8 +158,5 @@ class CatalogDashboardService
             Storage::put($cat_dashboard_file, '');
         }
         Storage::put($cat_dashboard_file, json_encode($record_arrays));
-
-        $command_end_time = now();
-        ProcessManagementUpdate($pm_id, $command_end_time);
     }
 }

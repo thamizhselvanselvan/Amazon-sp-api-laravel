@@ -47,8 +47,8 @@ class GetFeedStatus extends Command
     {
         //Process Management start
         $process_manage = [
-            'module'             => 'AWB_feed',
-            'description'        => 'AWB feed status',
+            'module'             => 'Amazon Feed',
+            'description'        => 'Get AWB feed status',
             'command_name'       => 'mosh:feed-status',
             'command_start_time' => now(),
         ];

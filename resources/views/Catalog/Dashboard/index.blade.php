@@ -32,8 +32,8 @@
 </div>
 
 @php
-$country = ['India Dashboard Count', 'USA Dashboard Count' ,'UAE Dashboard Count', 'KSA Dashboard Count'];
-$header = ['Sold Listing', 'Inventory Listing', 'Unlisted'];
+$country = ['India Dashboard Count', 'USA Dashboard Count', 'UAE Dashboard Count', 'KSA Dashboard Count'];
+$header = ['Sold Listing', 'Inventory Listing', 'Unlisted', 'Priority 4'];
 
 @endphp
 <a href="{{ route('catalog.dashboard.update') }}">
@@ -82,7 +82,7 @@ $header = ['Sold Listing', 'Inventory Listing', 'Unlisted'];
                             <h5> Catalog(N/A)</h5>
                         </div>
                         <div class="col-6 text-right">
-                            <h5> {{ isset($record_array->na_catalog->$key2) ? $record_array->na_catalog->$key2 : 0 }}
+                            <h5> {{ $record_array->na_catalog->$key2 < 0 ? 0 : $record_array->na_catalog->$key2 }}
                             </h5>
                         </div>
                         <div class="col-2"> </div>

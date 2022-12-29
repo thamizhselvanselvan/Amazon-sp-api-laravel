@@ -100,9 +100,9 @@ class InventoryShipmentController extends Controller
 
     public function show($id)
     {
-        
+
         $view = Shipment_Inward_Details::where('ship_id', $id)->with(['warehouses', 'vendors', 'tags'])->get();
-        
+
         $warehouse_name = '';
         $vendor_name = [];
         $currency_id = '';
@@ -115,15 +115,14 @@ class InventoryShipmentController extends Controller
             $warehouse_name = $bar->warehouses->name;
             $vendor_name[] = $bar->vendors->name;
             $currency_id = $bar->currency;
-         
         }
-       
+
         $currency = Currency::get();
         $currency_array = [];
         foreach ($currency as $key => $cur) {
             $currency_array[$cur->id] = $cur->name;
         }
-        // dd($vendor_name);
+
         return view('inventory.inward.shipment.view', compact('view', 'currency_array', 'bar_code', 'id', 'warehouse_name', 'vendor_name', 'currency_id'));
     }
     public function createView(Request $request)
@@ -235,9 +234,20 @@ class InventoryShipmentController extends Controller
 
     public function storeshipment(Request $request)
     {
+        start:
         $uniq = random_int(1000, 99999);
         $ship_id = 'INW' . $uniq;
+
         $items = [];
+        $val = Shipment_Inward::query()
+            ->select(('ship_id'))
+            ->where('ship_id', $ship_id)
+            ->first();
+
+        if ($val) {
+            goto start;
+        }
+
 
         $request->validate([
             'warehouse' => 'required',
@@ -254,19 +264,20 @@ class InventoryShipmentController extends Controller
                 "price" => $request->price[$key],
             ];
         }
+        $source = $request->source;
+        $new = [...array_unique($source)];
+        $data = json_encode($new);
 
-        foreach ($request->asin as $key1 => $asin1) {
-
-            Shipment_Inward::insert([
-                "warehouse_id" => $request->warehouse,
-                "source_id" =>  $request->source[$key1],
-                "ship_id" => $ship_id,
-                "currency" => $request->currency,
-                "shipment_count" => count($items),
-                "created_at" => now(),
-                "updated_at" => now()
-            ]);
-        }
+        Shipment_Inward::insert([
+            "warehouse_id" => $request->warehouse,
+            "source_id" => $data,
+            "ship_id" => $ship_id,
+            "currency" => $request->currency,
+            "shipment_count" => count($items),
+            "inwarded_at" => now(),
+            "created_at" => now(),
+            "updated_at" => now(),
+        ]);
 
         foreach ($request->asin as $key1 => $asin1) {
 
@@ -279,9 +290,9 @@ class InventoryShipmentController extends Controller
                 "item_name" => $request->name[$key1],
                 "tag" => $request->tag[$key1],
                 "price" => $request->price[$key1],
+                "procurement_price" => $request->proc_price[$key1],
                 "quantity" => $request->quantity[$key1],
-                "created_at" => now(),
-                "updated_at" => now()
+                "inwarded_at" => now()
             ]);
         }
 
@@ -293,12 +304,12 @@ class InventoryShipmentController extends Controller
                 "ship_id" => $ship_id,
                 "asin" => $asin1,
                 "price" => $request->price[$key1],
+                "procurement_price" => $request->proc_price[$key1],
                 "item_name" => $request->name[$key1],
                 "tag" => $request->tag[$key1],
                 "quantity" => $request->quantity[$key1],
                 "balance_quantity" => $request->quantity[$key1],
-                "created_at" => now(),
-                "updated_at" => now()
+                "inwarded_at" => now()
             ]);
         }
 

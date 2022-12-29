@@ -15,7 +15,7 @@ class ImageBrandController extends Controller
         $countrys = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
         return view('Cliqnshop.imagebrand.threebanner', compact('countrys'));
     }
-    
+
     public function storeimage(Request $request)
     {
         $request->validate([
@@ -298,9 +298,9 @@ class ImageBrandController extends Controller
         $now =  carbon::now();
         $condition = strval($request->country);
         DB::connection('cliqnshop')->table('home_page_contents')
-        ->where('section', 'top_selling_products_section')
-        ->where('country', $condition)
-        ->update(['content' => $data,  'updated_at' => $now]);
+            ->where('section', 'top_selling_products_section')
+            ->where('country', $condition)
+            ->update(['content' => $data,  'updated_at' => $now]);
 
         return redirect()->route('cliqnshop.brand')->with('success', ' ASIN Inserted Successfuly');
     }
@@ -314,215 +314,105 @@ class ImageBrandController extends Controller
     public function two_bannerstore(Request $request)
     {
         $request->validate([
-
             'country' => 'required',
             'image_number' => 'required|in:Image-1,Image-2',
             'url' => 'required',
             'selected_image' => 'required|mimes:jpeg,png,jpg',
         ]);
-        $now = Carbon::now();
-        if (app()->environment() === 'local') {
-            $old_data = '';
-            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
-                ->where("section", '2_banner_section')
-                ->where("country", $request->country)
-                ->get();
 
-            $val1 = (json_decode($old_data));
-            $img1 = '';
-            $urli1 = '';
-            $img1_url = '';
-
-            $img2 = '';
-            $urli2 = '';
-            $img2_url = '';
-            if (isset($val1['0']->content)) {
-                $val2 = (json_decode($val1['0']->content));
-                if (isset($val2->banner1)) {
-                    $img1 = '';
-                    $urli1 = $val2->banner1->url;
-                    $img1_url = $val2->banner1->image;
-                }
-                if (isset($val2->banner2)) {
-
-                    $img2 = '';
-                    $urli2 = $val2->banner2->url;
-                    $img2_url = $val2->banner2->image;
-                }
-            }
-            if ($request->image_number == 'Image-1') {
-                $img1 = file_get_contents($request->selected_image);
-                $urli1 = $request->url;
-                // Storage::put('local/banner/2banner/' . substr($request->country, 0, -1) . '/image1.jpg', $img1);
-                // $img1_url = 'local/banner/2banner/' . substr($request->country, 0, -1) . '/image1.jpg';
-                Storage::disk('cliqnshop')->put('local/banner/2banner/' . substr($request->country, 0, -1) . '/image1.jpg', $img1);
-                $img1_url = Storage::disk('cliqnshop')->path('local/banner/2banner/' . substr($request->country, 0, -1) . '/image1.jpg');
-            } else if ($request->image_number == 'Image-2') {
-
-                $img2 = file_get_contents($request->selected_image);
-                $urli2 = $request->url;
-                Storage::disk('cliqnshop')->put('local/banner/2banner/' . substr($request->country, 0, -1) . '/image2.jpg', $img2);
-                $img2_url = Storage::disk('cliqnshop')->path('local/banner/2banner/' . substr($request->country, 0, -1) . '/image2.jpg');
-            }
-
-            $two_banners = [
-                'banner1' =>
-                [
-                    'url' => $urli1,
-                    'image' =>   $img1_url,
-                ],
-                'banner2' =>
-                [
-                    'url' =>  $urli2,
-                    'image' =>   $img2_url,
-                ],
-            ];
-            $data =   ((json_encode($two_banners)));
-            $condition = strval($request->country);
-
-            DB::connection('cliqnshop')->table('home_page_contents')
-                ->where('section', '2_banner_section')
-                ->where('country', $condition)
-                ->update(['content' => $data,  'updated_at' => $now]);
-
-            return redirect()->route('cliqnshop.twobanners')->with('success', 'Image has Updated successfully');
-        }
+        $country = $request->country;
+        $env = '';
+        $Imgno = $request->image_number;
+        $imgselected = $request->selected_image;
+        $image_url = $request->url;
 
         if (app()->environment() === 'staging') {
-
-
-            $old_data = '';
-            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
-                ->where("section", '2_banner_section')
-                ->where("country", $request->country)
-                ->get();
-
-            $val1 = (json_decode($old_data));
-            $img1 = '';
-            $urli1 = '';
-            $img1_url = '';
-
-            $img2 = '';
-            $urli2 = '';
-            $img2_url = '';
-            if (isset($val1['0']->content)) {
-                $val2 = (json_decode($val1['0']->content));
-                if (isset($val2->banner1)) {
-                    $img1 = '';
-                    $urli1 = $val2->banner1->url;
-                    $img1_url = $val2->banner1->image;
-                }
-                if (isset($val2->banner2)) {
-
-                    $img2 = '';
-                    $urli2 = $val2->banner2->url;
-                    $img2_url = $val2->banner2->image;
-                }
-            }
-            if ($request->image_number == 'Image-1') {
-                $img1 = file_get_contents($request->selected_image);
-                $urli1 = $request->url;
-                // Storage::put($file_path_img1, $img1);
-                // $img1_url = 'staging/banner/2banner_section/_image1.jpg';
-                Storage::disk('cliqnshop')->put('staging/banner/2banner/' . substr($request->country, 0, -1) . '/image1.jpg', $img1);
-                $img1_url = Storage::disk('cliqnshop')->path('staging/banner/2banner/' . substr($request->country, 0, -1) . '/image1.jpg');
-            } else if ($request->image_number == 'Image-2') {
-
-                $img2 = file_get_contents($request->selected_image);
-                $urli2 = $request->url;
-                Storage::disk('cliqnshop')->put('staging/banner/2banner/' . substr($request->country, 0, -1) . '/image2.jpg', $img2);
-                $img2_url = Storage::disk('cliqnshop')->path('staging/banner/2banner/' . substr($request->country, 0, -1) . '/image2.jpg');
-            }
-
-            $two_banners = [
-                'banner1' =>
-                [
-                    'url' => $urli1,
-                    'image' =>   $img1_url,
-                ],
-                'banner2' =>
-                [
-                    'url' =>  $urli2,
-                    'image' =>   $img2_url,
-                ],
-            ];
-            $data =   ((json_encode($two_banners)));
-            $condition = strval($request->country);
-
-            DB::connection('cliqnshop')->table('home_page_contents')
-                ->where('section', '2_banner_section')
-                ->where('country', $condition)
-                ->update(['content' => $data,  'updated_at' => $now]);
-
-            return redirect()->route('cliqnshop.twobanners')->with('success', 'Image has Updated successfully');
+            $env = 'staging';
+        } elseif (app()->environment() === 'production') {
+            $env = 'production';
+        } else {
+            $env = 'local';
         }
 
-        if (app()->environment() === 'production') {
-            $old_data = '';
-            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
-                ->where("section", '2_banner_section')
-                ->where("country", $request->country)
-                ->get();
+        $this->Two_banner($country, $Imgno, $imgselected, $image_url, $env);
+        return redirect()->route('cliqnshop.twobanners')->with('success', 'Image has Updated successfully');
+    }
 
-            $val1 = (json_decode($old_data));
-            $img1 = '';
-            $urli1 = '';
-            $img1_url = '';
+    public function Two_banner($country, $Imgno, $imgselected, $image_url, $env)
+    {
+        $string  = substr($country, 0, -1);
 
-            $img2 = '';
-            $urli2 = '';
-            $img2_url = '';
-            if (isset($val1['0']->content)) {
-                $val2 = (json_decode($val1['0']->content));
-                if (isset($val2->banner1)) {
-                    $img1 = '';
-                    $urli1 = $val2->banner1->url;
-                    $img1_url = $val2->banner1->image;
-                }
-                if (isset($val2->banner2)) {
+        $path1 = "$env/banner/2banner/$string/image1.jpg";
+        $path2 = "$env/banner/2banner/$string/image2.jpg";
 
-                    $img2 = '';
-                    $urli2 = $val2->banner2->url;
-                    $img2_url = $val2->banner2->image;
-                }
+        $now = Carbon::now();
+        $old_data = '';
+        $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
+            ->where("section", '2_banner_section')
+            ->where("country", $country)
+            ->get();
+
+        $val1 = (json_decode($old_data));
+
+        $img1 = '';
+        $urli1 = '';
+        $img1_url = '';
+
+        $img2 = '';
+        $urli2 = '';
+        $img2_url = '';
+
+        if (isset($val1['0']->content)) {
+            $val2 = (json_decode($val1['0']->content));
+            if (isset($val2->banner1)) {
+                $img1 = '';
+                $urli1 = $val2->banner1->url;
+                $img1_url = $val2->banner1->image;
             }
-            if ($request->image_number == 'Image-1') {
-                $img1 = file_get_contents($request->selected_image);
-                $urli1 = $request->url;
-                // Storage::put($file_path_img1, $img1);
-                // $img1_url = 'production/banner/2banner_section/_image1.jpg';
-                Storage::disk('cliqnshop')->put('production/banner/2banner/' . substr($request->country, 0, -1) . '/image1.jpg', $img1);
-                $img1_url = Storage::disk('cliqnshop')->path('production/banner/2banner/' . substr($request->country, 0, -1) . '/image1.jpg');
-            } else if ($request->image_number == 'Image-2') {
+            if (isset($val2->banner2)) {
 
-                $img2 = file_get_contents($request->selected_image);
-                $urli2 = $request->url;
-                Storage::disk('cliqnshop')->put('production/banner/2banner/' . substr($request->country, 0, -1) . '/image2.jpg', $img2);
-                $img2_url = Storage::disk('cliqnshop')->path('production/banner/2banner/' . substr($request->country, 0, -1) . '/image2.jpg');
+                $img2 = '';
+                $urli2 = $val2->banner2->url;
+                $img2_url = $val2->banner2->image;
             }
-
-            $two_banners = [
-                'banner1' =>
-                [
-                    'url' => $urli1,
-                    'image' =>   $img1_url,
-                ],
-                'banner2' =>
-                [
-                    'url' =>  $urli2,
-                    'image' =>   $img2_url,
-                ],
-            ];
-            $data =   ((json_encode($two_banners)));
-            $condition = strval($request->country);
-
-            DB::connection('cliqnshop')->table('home_page_contents')
-                ->where('section', '2_banner_section')
-                ->where('country', $condition)
-                ->update(['content' => $data,  'updated_at' => $now]);
-
-            return redirect()->route('cliqnshop.twobanners')->with('success', 'Image has Updated successfully');
         }
+
+        if ($Imgno == 'Image-1') {
+            $img1 = file_get_contents($imgselected);
+            $urli1 =  $image_url;
+            // Storage::put($path1, $img1);
+            // $img1_url = $path1;
+            Storage::disk('cliqnshop')->put($path1, $img1);
+            $img1_url = $path1;
+        } else if ($Imgno == 'Image-2') {
+            $img2 = file_get_contents($imgselected);
+            $urli2 =  $image_url;
+            Storage::put($path2, $img2);
+            $img2_url = $path2;
+            Storage::disk('cliqnshop')->put($path2, $img2);
+            // $img2_url = Storage::disk('cliqnshop')->path($path2);
+            $img2_url = $path2;
+        }
+
+        $two_banners = [
+            'banner1' =>
+            [
+                'url' => $urli1,
+                'image' =>   $img1_url,
+            ],
+            'banner2' =>
+            [
+                'url' =>  $urli2,
+                'image' =>   $img2_url,
+            ],
+        ];
+        $data =   json_encode($two_banners);
+        $condition = strval($country);
+
+        DB::connection('cliqnshop')->table('home_page_contents')
+            ->where('section', '2_banner_section')
+            ->where('country', $condition)
+            ->update(['content' => $data,  'updated_at' => $now]);
     }
 
     public function onebanner()
@@ -1151,5 +1041,44 @@ class ImageBrandController extends Controller
 
             return redirect()->route('cliqnshop.trending')->with('success', 'Image has Updated successfully');
         }
+    }
+
+    public function promobanner()
+    {
+        $countrys = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
+        return view('Cliqnshop.imagebrand.promobanner', compact('countrys'));
+    }
+    public function promostore(Request $request)
+    {
+        
+        $request->validate([
+
+            'country' => 'required',
+            'offer_text' => 'required',
+            'primary_text' => 'required',
+            'secondary_text' => 'required',
+            'url' => 'required',
+
+        ]);
+
+        $country = $request->country;
+        $offer_text = $request->offer_text;
+        $primary_text = $request->primary_text;
+        $secondary_text = $request->secondary_text;
+        $url = $request->url;
+        $now =  carbon::now();
+
+        $data = [
+            'primary_text'  => $primary_text,
+            'secondary_text'  => $secondary_text,
+            'offer_text'  => $offer_text,
+            'url'  => $url,
+        ];
+        $condition = strval($request->country);
+        DB::connection('cliqnshop')->table('home_page_contents')
+            ->where('section', 'promo_banner_section')
+            ->where('country', $condition)
+            ->update(['content' => json_encode($data),  'updated_at' => $now]);
+        return redirect()->route('cliqnshop.promo.banner')->with('success', ' Data Inserted Successfuly...!');
     }
 }

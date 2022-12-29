@@ -357,7 +357,7 @@ return [
                     'url' => 'admin/job-management',
                     'can' => ['Admin'],
                     'icon' => 'fa fa-tasks',
-                ],
+                ]
             ],
         ],
 
@@ -962,12 +962,18 @@ return [
                             'icon' => 'fa fa-image',
                         ],
                         [
-                            'text' => 'trending brands section ',
+                            'text' => 'trending brands section',
                             'url' => 'cliqnshop/trending',
                             'can' => ['Admin', 'Cliqnshop'],
-                            'icon' =>'fa fa-th',
+                            'icon' => 'fa fa-th',
                         ],
-                        
+                        [
+                            'text' => 'promo Banner Section',
+                            'url' => 'cliqnshop/promo',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-arrow-up',
+                        ],
+
                     ],
                 ],
             ],
