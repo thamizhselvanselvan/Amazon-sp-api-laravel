@@ -74,14 +74,4 @@ Route::get('catalog/cliqnshop/new_asin', 'Catalog\CliqnshopCatalogController@upl
 Route::get('uploaded/catalog/cliqnshop/download/{index}', 'Catalog\CliqnshopCatalogController@Download_uploaded_asin_catalog')->name('uploaded.asin.catalog.export.cliqnshop.download');
 
 
-Route::get('upload/test', 'Catalog\CliqnshopCatalogController@insertCliqnshop');
-
-
-  //B-api lproduct searvh keyword or ASIN
-// Route::get('product/test', function()
-// {
-//     $data[] = 'gaming';
-//     $ApiCall = new Search_Product_Request();
-//     $result = $ApiCall->getAsin($data);
-//     po($result);
-// });
+Route::get('cliqnshop/db/upload', 'Catalog\CliqnshopCatalogController@insertCliqnshop')->name('cliqnshop.catalog.db.upload');

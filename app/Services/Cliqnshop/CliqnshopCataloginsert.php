@@ -74,7 +74,6 @@ class CliqnshopCataloginsert
             ->pluck('id')->ToArray();
         $get_attribute_id = $get_attribute[0];
 
-
         $length_attribute = [
             'siteid' => '1.',
             'key' => "product|length|" . $length_value,
@@ -115,8 +114,6 @@ class CliqnshopCataloginsert
         $get_attribute_id_width = $get_attribute_width[0];
 
 
-
-
         $price = [
             'siteid' => '1.',
             'type' => 'default',
@@ -136,9 +133,8 @@ class CliqnshopCataloginsert
 
         $id_price = DB::connection('cliqnshop')->table('mshop_price')->insertGetId($price);
 
-        
         if (isset($image[$asin])) {
-            
+
             $image_get_id = 0;
             foreach ($image[$asin] as $val) {
                 if ($val) {
@@ -160,7 +156,7 @@ class CliqnshopCataloginsert
                         'editor' => 'test',
                     ];
 
-                     DB::connection('cliqnshop')->table('mshop_media')->updateOrInsert($media);
+                    DB::connection('cliqnshop')->table('mshop_media')->updateOrInsert($media);
                     $image_get_id = DB::connection('cliqnshop')->table('mshop_media')->where('link', $media['link'])->select('id')->get();
 
                     $media_product_list = [
@@ -181,7 +177,6 @@ class CliqnshopCataloginsert
                     ];
 
                     DB::connection('cliqnshop')->table('mshop_product_list')->upsert($media_product_list, ['siteid', 'parentid']);
-                 
                 }
             }
         }
@@ -213,7 +208,12 @@ class CliqnshopCataloginsert
             'editor' => 'test',
         ];
 
-        $id_text_short = DB::connection('cliqnshop')->table('mshop_text')->insertGetId($text_short);
+        DB::connection('cliqnshop')->table('mshop_text')->updateOrInsert($text_short);
+
+        $id_short_text = DB::connection('cliqnshop')->table('mshop_text')->where('siteid', $text_short['siteid'])->where('content', $text_short['content'])
+            ->pluck('id')->ToArray();
+        $id_text_short  = $id_short_text[0];
+
         DB::connection('cliqnshop')->table('mshop_text')->updateOrInsert($text_long);
         $get_text_long = DB::connection('cliqnshop')->table('mshop_text')->where('siteid', $text_long['siteid'])->where('content', $text_long['content'])
             ->pluck('id')->ToArray();
@@ -327,24 +327,7 @@ class CliqnshopCataloginsert
         ];
 
         DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_price, [$domain_price['siteid'], $domain_price['parentid']]);
-        // $domain_media = [
-        //     'siteid' => '1.',
-        //     'parentid' => $get_product_id,
-        //     'key' => 'media|default|' . $$image_get_id,
-        //     'type' => 'default',
-        //     'domain' => 'media',
-        //     'refid' => $ $image_get_id,
-        //     // 'start' => NULL,
-        //     // 'end' => NULL,
-        //     'config' => '[]',
-        //     // 'pos' => 0,
-        //     // 'status' => 1,
-        //     'mtime' => $date_time,
-        //     'ctime' => $date_time,
-        //     'editor' => 'test',
-        // ];
 
-        // DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_media, [$domain_media['siteid'], $domain_media['parentid']]);
         $domain_text_short = [
             'siteid' => '1.',
             'parentid' => $get_product_id,

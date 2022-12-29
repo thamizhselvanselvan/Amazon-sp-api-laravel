@@ -32,6 +32,11 @@
             <h2 class="ml-2">
                 <x-adminlte-button label="Download Upload ASIN Catalog" theme="info" class="btn-sm" icon="fas fa-download" id="new_asin_cat" data-toggle="modal" data-target="#uploaded_asin_catalog" />
             </h2>
+            <h2 class="mb-4">
+                <a href="{{ route('cliqnshop.catalog.db.upload') }}">
+                    <x-adminlte-button class="ml-2 btn-sm" label="upload" theme="success" icon="fas fa-upload " />
+                </a>
+            </h2>
         </div>
 
 

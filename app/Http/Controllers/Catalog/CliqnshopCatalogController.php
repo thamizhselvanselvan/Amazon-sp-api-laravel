@@ -142,14 +142,11 @@ class CliqnshopCatalogController extends Controller
             'pricing_uss.usa_to_uae',
 
         ];
-
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
         $result = $table_name->select($headers)
             ->join('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
             ->whereIn('catalognewuss.asin', $asin)
             ->get()->toArray();
-
-
 
         foreach ($result as $data) {
 
@@ -199,8 +196,6 @@ class CliqnshopCatalogController extends Controller
             $short_description = [
                 $data['asin'] => []
             ];
-
-
 
             if (isset($data['attributes'])) {
 
@@ -294,5 +289,6 @@ class CliqnshopCatalogController extends Controller
                 $long_description
             );
         }
+        return back()->with('success', 'uploading please wait... !');
     }
 }
