@@ -23,7 +23,7 @@ class Inventory extends Model
         'price',
         'inwarded_at',
         'quantity',
-        'bin_id',
+        'bin',
         'procurement_price'
     ];
 
