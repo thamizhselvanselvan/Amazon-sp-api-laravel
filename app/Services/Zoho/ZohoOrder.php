@@ -53,7 +53,7 @@ class ZohoOrder
         "PRAM UAE" => [
             "AE" => "Infinitikart UAE",
             "sku" => "IFWH_",
-            "source" => "India",
+            "source" => "USA",
             "desination" => "UAE"
         ],
         "Amazon.in-MBM" => [
