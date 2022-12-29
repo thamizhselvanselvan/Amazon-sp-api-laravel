@@ -75,6 +75,16 @@ use function Clue\StreamFilter\fun;
 |
 */
 // use ConfigTrait;
+Route::get('break', function () {
+    $test = ['Hello world welcome to bihar', 'Good morning'];
+    $check = '';
+    $data = [];
+    foreach ($test as $test1) {
+        $check .= (isset($test1) ? $test1 : '') . "<br>";
+        $data = $check;
+    }
+    po($data);
+});
 
 Route::get('kyc', function () {
     $kyc_received = DB::connection('b2cship')->select("SELECT TOP 1 AWBNO, CreatedDate
