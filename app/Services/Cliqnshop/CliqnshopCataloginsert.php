@@ -4,15 +4,16 @@ namespace App\Services\Cliqnshop;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CliqnshopCataloginsert
 {
-    public function insertdata_cliqnshop($asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image,  $short_description,  $long_description)
+    public function insertdata_cliqnshop($site_id , $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image,  $short_description,  $long_description)
     {
 
         $date_time = Carbon::now();
         $product_data = [
-            'siteid' => '1.',
+            'siteid' => $site_id,
             // 'dataset' => '',
             'type' => 'default',
             'code' => $asin, //ASIN
@@ -40,7 +41,7 @@ class CliqnshopCataloginsert
         $category = [];
 
         $brand_insert = [
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'code' =>  $brand,
             'label' =>  $brand_label,
             // 'status' => 1,
@@ -56,7 +57,7 @@ class CliqnshopCataloginsert
         $get_brand_id = $get_brand[0];
 
         $attribute = [
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'key' => "product|color|" . $color_key,
             'type' => 'color',
             'domain' => 'product',
@@ -75,7 +76,7 @@ class CliqnshopCataloginsert
         $get_attribute_id = $get_attribute[0];
 
         $length_attribute = [
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'key' => "product|length|" . $length_value,
             'type' => 'length',
             'domain' => 'product',
@@ -95,7 +96,7 @@ class CliqnshopCataloginsert
         $get_attribute_id_length = $get_attribute_length[0];
 
         $width_attribute = [
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'key' => "product|width|" . $width_value,
             'type' => 'width',
             'domain' => 'product',
@@ -115,7 +116,7 @@ class CliqnshopCataloginsert
 
 
         $price = [
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'type' => 'default',
             'domain' => 'product',
             'label' => 'INR' . $Price_US_IN,
@@ -141,7 +142,7 @@ class CliqnshopCataloginsert
                     $insert = $val;
 
                     $media = [
-                        'siteid' => '1.',
+                        'siteid' => $site_id,
                         'type' => 'default',
                         'fsname' => 'product',
                         // 'langid' => NULL,
@@ -160,7 +161,7 @@ class CliqnshopCataloginsert
                     $image_get_id = DB::connection('cliqnshop')->table('mshop_media')->where('siteid',$media['siteid'])->where('link', $media['link'])->select('id')->get();
 
                     $media_product_list = [
-                        'siteid' => '1.',
+                        'siteid' => $site_id,
                         'parentid' => $get_product_id,
                         'key' => 'media|default|' . $image_get_id['0']->id,
                         'type' => 'default',
@@ -183,7 +184,7 @@ class CliqnshopCataloginsert
 
 
         $text_short = [
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'type' => 'short',
             // 'langid' => NULL,
             'domain' => 'product',
@@ -196,7 +197,7 @@ class CliqnshopCataloginsert
         ];
 
         $text_long = [
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'type' => 'long',
             // 'langid' => NULL,
             'domain' => 'product',
@@ -220,7 +221,7 @@ class CliqnshopCataloginsert
         $get_text_long_id = $get_text_long[0];
 
         $domain_catalog = [
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'parentid' => $get_product_id,
             'key' => 'catalog|default|16',  //query catalog_code with mshop_catalog anf get ID fill here(In place of 16)
             'type' => 'default',
@@ -237,7 +238,7 @@ class CliqnshopCataloginsert
         ];
         DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_catalog, [$domain_catalog['siteid'], $domain_catalog['parentid']]);
         $domain_supplier = [
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'parentid' => $get_product_id,
             'key' => 'supplier|default|' . $get_brand_id,
             'type' => 'default',
@@ -255,7 +256,7 @@ class CliqnshopCataloginsert
 
         DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_supplier, [$domain_supplier['siteid'], $domain_supplier['parentid']]);
         $domain_attribute = [
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'parentid' => $get_product_id,
             'key' => 'attribute|default|' . $get_attribute_id,
             'type' => 'default',
@@ -273,7 +274,7 @@ class CliqnshopCataloginsert
 
         DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_attribute, [$domain_attribute['siteid'], $domain_attribute['parentid']]);
         $domain_attribute_length = [
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'parentid' => $get_product_id,
             'key' => 'attribute|default|' . $get_attribute_id_length,
             'type' => 'default',
@@ -291,7 +292,7 @@ class CliqnshopCataloginsert
 
         DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_attribute_length, [$domain_attribute_length['siteid'], $domain_attribute_length['parentid']]);
         $domain_attribute_width = [
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'parentid' => $get_product_id,
             'key' => 'attribute|default|' . $get_attribute_id_width,
             'type' => 'default',
@@ -310,7 +311,7 @@ class CliqnshopCataloginsert
         DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_attribute_width, [$domain_attribute_width['siteid'], $domain_attribute_width['parentid']]);
 
         $domain_price = [
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'parentid' => $get_product_id,
             'key' => 'price|default|' . $id_price,
             'type' => 'default',
@@ -329,7 +330,7 @@ class CliqnshopCataloginsert
         DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_price, [$domain_price['siteid'], $domain_price['parentid']]);
 
         $domain_text_short = [
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'parentid' => $get_product_id,
             'key' => 'text|default|' . $id_text_short,
             'type' => 'default',
@@ -347,7 +348,7 @@ class CliqnshopCataloginsert
 
         DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_text_short, [$domain_text_short['siteid'], $domain_text_short['parentid']]);
         $domain_text_long = [
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'parentid' => $get_product_id,
             'key' => 'text|default|' . $get_text_long_id,
             'type' => 'default',
@@ -366,7 +367,7 @@ class CliqnshopCataloginsert
         DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_text_long, [$domain_text_long['siteid'], $domain_text_long['parentid']]);
 
         $stock = [
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'prodid' => $get_product_id,
             'type' => 'default',
             'stocklevel' => 500,
@@ -381,7 +382,7 @@ class CliqnshopCataloginsert
         //index tables
         $index_attribute = [
             'prodid' => $get_product_id,
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'artid' => $get_product_id,
             'attrid' => $get_attribute_id,
             'listtype' => $domain_attribute['type'], // type from mshop_product_list
@@ -394,7 +395,7 @@ class CliqnshopCataloginsert
 
         $index_attribute_length = [
             'prodid' => $get_product_id,
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'artid' => $get_product_id,
             'attrid' => $get_attribute_id,
             'listtype' => $domain_attribute_length['type'], // type from mshop_product_list
@@ -405,7 +406,7 @@ class CliqnshopCataloginsert
         DB::connection('cliqnshop')->table('mshop_index_attribute')->upsert($index_attribute_length, ['siteid', 'prodid']);
         $index_attribute_width = [
             'prodid' => $get_product_id,
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'artid' => $get_product_id,
             'attrid' => $get_attribute_id,
             'listtype' => $domain_attribute_width['type'], // type from mshop_product_list
@@ -418,7 +419,7 @@ class CliqnshopCataloginsert
 
         $index_catalog = [
             'prodid' => $get_product_id,
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'catid' => $domain_catalog['refid'],
             'listtype' => $domain_catalog['type'], // type from mshop_product_list
             'pos' => $domain_catalog['pos'], //from mshop_product_list
@@ -428,7 +429,7 @@ class CliqnshopCataloginsert
         DB::connection('cliqnshop')->table('mshop_index_catalog')->upsert($index_catalog, ['siteid', 'prodid']);
         $index_price = [
             'prodid' => $get_product_id,
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'currencyid' => $price['currencyid'],
             'value' => $price['value'],
             'mtime' => $date_time,
@@ -437,7 +438,7 @@ class CliqnshopCataloginsert
         DB::connection('cliqnshop')->table('mshop_index_price')->upsert($index_price, ['siteid', 'prodid']);
         $index_supplier = [
             'prodid' => $get_product_id,
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'supid' => $domain_supplier['refid'],
             'listtype' => $domain_supplier['type'],
             'latitude' => null,
@@ -450,7 +451,7 @@ class CliqnshopCataloginsert
 
         $index_supplier = [
             'prodid' => $get_product_id,
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'supid' => $domain_supplier['refid'],
             'listtype' => $domain_supplier['type'],
             'latitude' => null,
@@ -464,7 +465,7 @@ class CliqnshopCataloginsert
 
         $index_text = [
             'prodid' => $get_product_id,
-            'siteid' => '1.',
+            'siteid' => $site_id,
             'langid' => 'en',
             'url' => $product_data['url'],
             'name' => $product_data['label'],
@@ -476,7 +477,7 @@ class CliqnshopCataloginsert
 
         DB::connection('cliqnshop')->table('mshop_index_text')->upsert($index_text, [$index_text['siteid'], $index_text['prodid']]);
         // $product_list = [
-        //     'siteid' => '1.',
+        //     'siteid' => $site_id,
         //     'parentid' => $table_1,
         //     'key' =>
         // ]

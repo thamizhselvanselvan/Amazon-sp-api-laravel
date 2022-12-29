@@ -20,7 +20,8 @@ class CliqnshopCatalogController extends Controller
 
     public function index()
     {
-        return view('Cliqnshop.catalog');
+        $countrys = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
+        return view('Cliqnshop.catalog',compact('countrys'));
     }
     public function catalogexport()
     {
@@ -52,47 +53,37 @@ class CliqnshopCatalogController extends Controller
     }
 
     public function asinCsvDownload()
-    {
+    {   
+    
         return response()->download(public_path("template/CliqnshopCatalog.csv"));
     }
 
     public function cliqnshopImport(Request $request)
     {
-        if ($request->cliqnshop_csv == '') {
-            return back()->with('error', "Please upload file to import it to the database or no file choosen");
+        if ($request->cliqnshop_csv == '' || $request->country == '') {
+            return back()->with('error', "Please upload file to import it to the database or no Country choosen");
         }
-
-
         $request->validate([
             'cliqnshop_csv' => 'required',
+            'country'=> 'required',
         ]);
-        $user_id = Auth::user()->id;
+       $site_id = $request->country;
         $file = file_get_contents($request->cliqnshop_csv);
-        $import_file_time = date('Y-m-d-H-i-s');
         $path = "Cliqnshop/asin_import/cliqnshop_asin.csv";
+        
         Storage::put($path, $file);
 
         $file = $request->cliqnshop_csv;
-        // $file_name = $file->getClientOriginalName();
-        // $file_info = [
-        //     'user_id' => $user_id,
-        //     'type' => 'Cliqnsho catalog export',
-        //     'module' => "Cliqnshop",
-        //     'file_name' => $file_name,
-        //     'file_path' => $path,
-        //     'command_name' => 'mosh:export_catalog_imported_asin',
-        // ];
-        // FileManagement::create($file_info);
-        // fileManagement();
         if (!Storage::exists($path)) {
             return false;
         } else {
 
             commandExecFunc("mosh:export_catalog_imported_asin");
+            $this->insertCliqnshop($site_id);
+            return back()->with('success', 'Cliqnshop Catalog file has been uploaded successfully !');
         }
 
 
-        return back()->with('success', 'Cliqnshop Catalog file has been uploaded successfully !');
     }
 
     public function uploaded_export_download(Request $request)
@@ -118,7 +109,7 @@ class CliqnshopCatalogController extends Controller
         return Storage::download('Cliqnshop/imported_cat/' . $index);
     }
 
-    public function insertCliqnshop()
+    public function insertCliqnshop($site_id)
     {
 
         $csv_data =  CSV_Reader('Cliqnshop/asin_import/cliqnshop_asin.csv');
@@ -246,7 +237,7 @@ class CliqnshopCatalogController extends Controller
                 $color_code = str_replace(' ', '', $data['color']);
                 $color_label = $data['color'];
                 $label =  ucfirst($color_label);
-                $color_key = substr(strtolower($color_label),0,10);
+                $color_key = substr(strtolower($color_label), 0, 10);
             }
 
             //dimensions Fetch
@@ -273,6 +264,7 @@ class CliqnshopCatalogController extends Controller
             }
             $call = new CliqnshopCataloginsert();
             $call->insertdata_cliqnshop(
+                $site_id,
                 $asin,
                 $item_name,
                 $brand,

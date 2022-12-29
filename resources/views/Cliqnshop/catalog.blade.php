@@ -32,13 +32,7 @@
             <h2 class="ml-2">
                 <x-adminlte-button label="Download Upload ASIN Catalog" theme="info" class="btn-sm" icon="fas fa-download" id="new_asin_cat" data-toggle="modal" data-target="#uploaded_asin_catalog" />
             </h2>
-            <h2 class="mb-4">
-                <a href="{{ route('cliqnshop.catalog.db.upload') }}">
-                    <x-adminlte-button class="ml-2 btn-sm" label="upload" theme="success" icon="fas fa-upload " />
-                </a>
-            </h2>
         </div>
-
 
         <div class="modal" id="downloacliqdModal">
             <div class="modal-dialog">
@@ -78,8 +72,6 @@
 
 
 
-
-
         <div class="modal fade" id="cliqnshop_new_asin_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -97,12 +89,20 @@
                     </div>
                     <div class="modal-body">
 
-                        <a href=" {{ route('cliqnshop.catalog.csv.templete') }} ">
+                        <a href="{{ route('cliqnshop.catalog.csv.template') }}">
                             <x-adminlte-button label="Download Template" theme="info" icon="fas fa-file-download" class="btn-sm ml-2" />
                         </a>
                         <form class="row" id="multi-file-upload" method="POST" action="{{ route('cliqnshop.catalog.csv.import') }}" accept-charset="utf-8" enctype="multipart/form-data">
                             @csrf
 
+                            <div class="col-12">
+                                <x-adminlte-select name="image" label="Select Country" name="country">
+                                    <option value=''>Select Country</option>
+                                    @foreach ($countrys as $country)
+                                    <option value="{{ $country->siteid }}">{{$country->code }}</option>
+                                    @endforeach
+                                </x-adminlte-select>
+                            </div>
                             <div class="col-12">
                                 <x-adminlte-input label="Choose CSV File" name="cliqnshop_csv" id="files" type="file" />
                             </div>
@@ -123,7 +123,6 @@
 </div>
 @stop
 
-@section('content')
 @section('content')
 <div class="row">
     <div class="col">
