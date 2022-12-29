@@ -66,21 +66,13 @@ Route::post('cliqnshop/1banners/store', 'Cliqnshop\ImageBrandController@one_bann
 Route::get('cliqnshop/trending', 'Cliqnshop\ImageBrandController@trendingbrandssection')->name('cliqnshop.trending');
 Route::post('cliqnshop/trending/store', 'Cliqnshop\ImageBrandController@trendingbrands')->name('cliqnshop.trending.store');
 
+Route::get('cliqnshop/promo', 'Cliqnshop\ImageBrandController@promobanner')->name('cliqnshop.promo.banner');
+Route::post('cliqnshop/promo/store', 'Cliqnshop\ImageBrandController@promostore')->name('cliqnshop.promo.banner.store');
+
+
 
 Route::get('cliqnshop/catalog/csv', 'Catalog\CliqnshopCatalogController@asinCsvDownload')->name('cliqnshop.catalog.csv.templete');
 Route::post('cliqnshop/catalog/csv/import', 'Catalog\CliqnshopCatalogController@cliqnshopImport')->name('cliqnshop.catalog.csv.import');
 Route::get('catalog/cliqnshop/new_asin', 'Catalog\CliqnshopCatalogController@uploaded_export_download')->name('uploaded.asin.catalog.export.cliqnshop');
-
 Route::get('uploaded/catalog/cliqnshop/download/{index}', 'Catalog\CliqnshopCatalogController@Download_uploaded_asin_catalog')->name('uploaded.asin.catalog.export.cliqnshop.download');
-
-
-Route::get('upload/test', 'Catalog\CliqnshopCatalogController@insertCliqnshop');
-
-
-//B-api lproduct searvh keyword or ASIN
-Route::get('product/test', function () {
-  $data[] = 'iphone_12pro';
-  $ApiCall = new Search_Product();
-  $result = $ApiCall->SearchProductByKey($data);
-  po($result);
-});
+Route::get('cliqnshop/db/upload', 'Catalog\CliqnshopCatalogController@insertCliqnshop')->name('cliqnshop.catalog.db.upload');
