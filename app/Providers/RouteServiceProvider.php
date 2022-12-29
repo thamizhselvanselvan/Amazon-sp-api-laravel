@@ -87,15 +87,15 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/pms/geo.php'));
 
-            Route::middleware(['web', 'maintenance_mode', 'auth'])
+            Route::middleware(['web'])
                 ->namespace($this->namespace)
                 ->group(base_path('routes/pms/inventory.php'));
 
-            Route::middleware(['web', 'maintenance_mode', 'auth'])
+            Route::middleware(['web'])
                 ->namespace($this->namespace)
                 ->group(base_path('routes/pms/invoice.php'));
 
-            Route::middleware(['web', 'maintenance_mode', 'auth'])
+            Route::middleware(['web'])
                 ->namespace($this->namespace)
                 ->group(base_path('routes/pms/label.php'));
 

@@ -103,6 +103,7 @@
             <th>Tag</th>
             <th>Quantity</th>
             <th>Price/Unit</th>
+            <th>Procurement Price/Unit</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -205,6 +206,7 @@
 
             html += '<td><input type="text" value="1" name="quantity[]" id="quantity">  </td>'
             html += '<td> <input type="text" value="0" name="price[]" id="price"> </td>'
+            html += '<td> <input type="text" value="0" name="proc_price[]" id="proc_price"> </td>'
             html += '<td> <button type="button" id="remove" class="btn btn-sm btn-danger remove1">Remove</button></td>'
             html += "</tr>";
         });
@@ -311,6 +313,7 @@
                 data.append('tag[]', $(td[3]).find('select').val());
                 data.append('quantity[]', td[4].children[0].value);
                 data.append('price[]', td[5].children[0].value);
+                data.append('proc_price[]', td[6].children[0].value);
 
             });
 
