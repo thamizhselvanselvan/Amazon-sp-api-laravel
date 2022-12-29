@@ -359,5 +359,14 @@ Route::resource('/tests', 'TestController');
 Route::get('test/seller', 'TestController@SellerTest');
 Route::get('/asin/{asin}/{code}', 'TestController@getASIN');
 
+Route::get('testarray', function () {
 
+    $test = [
+        'inventory' => ['procurement_price', 'inwared_at'],
+        'shipment_inward_details' => ['procurement_price', 'inwared_at'],
+        'shipments_inward' => ['inwared_at']
+    ];
+
+    dd($test);
+});
 // include_route_files(__DIR__ . '/pms/');
