@@ -246,7 +246,7 @@ class CliqnshopCatalogController extends Controller
                 $color_code = str_replace(' ', '', $data['color']);
                 $color_label = $data['color'];
                 $label =  ucfirst($color_label);
-                $color_key = (strtolower($color_label));
+                $color_key = substr(strtolower($color_label),0,10);
             }
 
             //dimensions Fetch
