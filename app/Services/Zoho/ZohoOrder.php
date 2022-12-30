@@ -53,7 +53,7 @@ class ZohoOrder
         "PRAM UAE" => [
             "AE" => "Infinitikart UAE",
             "sku" => "IFWH_",
-            "source" => "India",
+            "source" => "USA",
             "desination" => "UAE"
         ],
         "Amazon.in-MBM" => [
@@ -218,6 +218,7 @@ class ZohoOrder
             "$order_item_table_name.order_item_identifier",
             "$order_item_table_name.quantity_ordered",
             "$order_item_table_name.item_price",
+            "$order_item_table_name.item_tax",
             "$order_item_table_name.shipping_address",
 
             "$order_table_name.fulfillment_channel",
@@ -480,8 +481,18 @@ class ZohoOrder
         $prod_array["ASIN"]                      = $value->asin;
         $prod_array["SKU"]                       = $value->seller_sku;
         $prod_array["Product_Cost"]              = $catalog_details['price'];
-        $item_tax  = isset($item_tax->Amount) ? (int)$item_price->Amount  : 0;
-        $prod_array["Amount_Paid_by_Customer"]   = isset($item_price->Amount) ? (int)$item_price->Amount + (int)$item_tax : 0;
+        $item_tax                                = isset($item_tax->Amount) ? $item_tax->Amount  : 0;
+        $amount_paid_by_customer                 = isset($item_price->Amount) ? $item_price->Amount + $item_tax : 0;
+        $prod_array["Amount_Paid_by_Customer"]   = (int)$amount_paid_by_customer;
+
+        // print("\n");
+        // print($item_tax);
+        // print("\n");
+        // print($item_price->Amount);
+        // print("\n");
+        // print($prod_array['Amount_Paid_by_Customer']);
+
+        // exit;
 
         $prod_array["Weight_in_LBS"]             = (string)$catalog_details['weight'];
         $prod_array["Payment_Reference_Number1"] = $value->order_item_identifier;
