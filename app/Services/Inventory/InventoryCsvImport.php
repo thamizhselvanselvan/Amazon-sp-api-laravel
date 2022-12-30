@@ -39,7 +39,7 @@ class InventoryCsvImport
         $this->ship_id = $this->generateShipmentId();
     }
 
-    public function index()
+    public function index($file_path)
     {
         $warehouse_array = [];
         foreach ($this->warehouse_details as $value) {
@@ -68,11 +68,12 @@ class InventoryCsvImport
             $tag_array[$value['name']] = $value['id'];
         }
 
-        // $csv_data = CSV_Reader('D:/Inventory.csv');
-        $reader = Reader::createFromPath('D:/Inventory.csv', 'r');
-        $reader->setHeaderOffset(0);
+        $records = CSV_Reader($file_path);
 
-        $records = ($reader->getRecords());
+        // $reader = Reader::createFromPath('D:/Inventory.csv', 'r');
+        // $reader->setHeaderOffset(0);
+
+        // $records = ($reader->getRecords());
 
         $total_item_count = 0;
         $source_id = [];
@@ -127,6 +128,8 @@ class InventoryCsvImport
         }
         $multi_source_id = (json_encode(array_unique($multi_source_id)));
         $this->InventroyShipmentInwardDataInsert($data, $total_item_count, $multi_source_id);
+
+        return true;
     }
 
     public function generateShipmentId()
