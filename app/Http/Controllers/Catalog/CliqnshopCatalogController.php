@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Cliqnshop\CliqnshopCataloginsert;
+use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
 
 class CliqnshopCatalogController extends Controller
 {
@@ -21,7 +22,7 @@ class CliqnshopCatalogController extends Controller
     public function index()
     {
         $countrys = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
-        return view('Cliqnshop.catalog',compact('countrys'));
+        return view('Cliqnshop.catalog', compact('countrys'));
     }
     public function catalogexport()
     {
@@ -53,8 +54,8 @@ class CliqnshopCatalogController extends Controller
     }
 
     public function asinCsvDownload()
-    {   
-    
+    {
+
         return response()->download(public_path("template/CliqnshopCatalog.csv"));
     }
 
@@ -65,12 +66,12 @@ class CliqnshopCatalogController extends Controller
         }
         $request->validate([
             'cliqnshop_csv' => 'required',
-            'country'=> 'required',
+            'country' => 'required',
         ]);
-       $site_id = $request->country;
+        $site_id = $request->country;
         $file = file_get_contents($request->cliqnshop_csv);
         $path = "Cliqnshop/asin_import/cliqnshop_asin.csv";
-        
+
         Storage::put($path, $file);
 
         $file = $request->cliqnshop_csv;
@@ -82,8 +83,6 @@ class CliqnshopCatalogController extends Controller
             $this->insertCliqnshop($site_id);
             return back()->with('success', 'Cliqnshop Catalog file has been uploaded successfully !');
         }
-
-
     }
 
     public function uploaded_export_download(Request $request)
@@ -282,5 +281,19 @@ class CliqnshopCatalogController extends Controller
             );
         }
         return back()->with('success', 'uploading please wait... !');
+    }
+
+    public function CliqnshopProductSearchRequest(Request $request)
+    {
+        $search_data = $request->all();
+        $searchKey = $search_data['search'];
+        $siteId = $search_data['siteId'];
+        $source = $search_data['source'];
+        // log::alert($searchKey);
+        // log::alert($siteId);
+        $ApiCall = new Search_Product();
+        $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
+        po($result);
+        // return $request->all();
     }
 }

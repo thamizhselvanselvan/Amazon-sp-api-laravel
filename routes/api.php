@@ -39,3 +39,5 @@ Route::match($method, 'trackingAmazon', 'shipntrack\API\AmazonTrackingAPIControl
 Route::match($method, 'trackingb2cship', 'shipntrack\API\B2CShipTrackingAPIController@B2CshipTrackingResponse');
 
 Route::match($method, 'test/zoho/webhook', 'TestController@zohoWebhookResponse');
+
+Route::match($method, 'product', 'Catalog\CliqnshopCatalogController@CliqnshopProductSearchRequest');
