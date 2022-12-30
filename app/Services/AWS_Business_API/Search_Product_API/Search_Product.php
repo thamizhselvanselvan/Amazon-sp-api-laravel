@@ -16,10 +16,10 @@ use function GuzzleHttp\Promise\exception_for;
 
 class Search_Product
 {
-    public function SearchProductByKey($key)
+    public function SearchProductByKey($searchKey, $siteId, $source)
     {
         $productSearchApi = new Search_Product_Request();
-        $getProducts = $productSearchApi->getASIN($key);
+        $getProducts = $productSearchApi->getASIN($searchKey);
         $count = 0;
         $count2 = 0;
         $catalogs = [];
@@ -29,9 +29,9 @@ class Search_Product
         $aws_id = NULL;
         $seller_id = NULL;
         $country_code = 'US';
-        if ($country_code == 'US') {
+        if ($source == 'in') {
             $price_conversion_method = 'USAToINDB2C';
-        } else {
+        } else if ($source == 'uae') {
             $price_conversion_method = 'USATOUAE';
         }
         $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->toArray();
@@ -111,7 +111,7 @@ class Search_Product
         foreach ($catalog_for_cliqnshop as $cliqnshop_catalog) {
 
             if (isset($cliqnshop_catalog['price'])) {
-                $site_id            = '1.';
+
                 $asin               = $cliqnshop_catalog['asin'];
                 $item_name          = $cliqnshop_catalog['itemName'];
                 $brand              = $cliqnshop_catalog['brand'];
@@ -127,7 +127,7 @@ class Search_Product
                 $short_description  = $cliqnshop_catalog['short_description'] ?? '';
                 $long_description   = $cliqnshop_catalog['long_description'] ?? '';
                 $cliqnshop = new CliqnshopCataloginsert();
-                $cliqnshop->insertdata_cliqnshop($site_id, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image_array,  $short_description,  $long_description);
+                $cliqnshop->insertdata_cliqnshop($siteId, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image_array,  $short_description,  $long_description);
             }
         }
     }

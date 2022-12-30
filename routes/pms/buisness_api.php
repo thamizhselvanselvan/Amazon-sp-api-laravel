@@ -80,9 +80,11 @@ Route::get('catalog/cliqnshop/new_asin', 'Catalog\CliqnshopCatalogController@upl
 Route::get('uploaded/catalog/cliqnshop/download/{index}', 'Catalog\CliqnshopCatalogController@Download_uploaded_asin_catalog')->name('uploaded.asin.catalog.export.cliqnshop.download');
 Route::get('cliqnshop/db/upload', 'Catalog\CliqnshopCatalogController@insertCliqnshop')->name('cliqnshop.catalog.db.upload');
 
-Route::get('product/test/{key}', function ($key) {
-  $data[] = $key;
-  $ApiCall = new Search_Product();
-  $result = $ApiCall->SearchProductByKey($data);
-  po($result);
-});
+
+// Route::get('product', function (Request $request) {
+//   po($key);
+//   // $data[] = $key;
+//   // $ApiCall = new Search_Product();
+//   // $result = $ApiCall->SearchProductByKey($data);
+//   // po($result);
+// });

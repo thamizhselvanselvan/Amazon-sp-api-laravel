@@ -26,6 +26,7 @@ use App\Models\Universal_textile;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Services\AWS_Nitshop\Index;
+use function Clue\StreamFilter\fun;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
@@ -35,6 +36,7 @@ use App\Models\Catalog\ExchangeRate;
 use App\Services\SP_API\API\Catalog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
 use SellingPartnerApi\Configuration;
 use Illuminate\Support\Facades\Route;
@@ -43,6 +45,7 @@ use App\Models\order\OrderUpdateDetail;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Exists;
+use ParagonIE\Sodium\Core\Curve25519\H;
 use App\Http\Controllers\TestController;
 use App\Services\Inventory\ReportWeekly;
 use Illuminate\Support\Facades\Redirect;
@@ -55,11 +58,9 @@ use SellingPartnerApi\Api\CatalogItemsV20220401Api;
 use App\Services\AWS_Business_API\Auth\AWS_Business;
 use SellingPartnerApi\Api\FeedsV20210630Api as FeedsApi;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
+
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
-use ParagonIE\Sodium\Core\Curve25519\H;
-
-use function Clue\StreamFilter\fun;
 
 // use ConfigTrait;
 
@@ -75,15 +76,13 @@ use function Clue\StreamFilter\fun;
 |
 */
 // use ConfigTrait;
-Route::get('break', function () {
-    $test = ['Hello world welcome to bihar', 'Good morning'];
-    $check = '';
-    $data = [];
-    foreach ($test as $test1) {
-        $check .= (isset($test1) ? $test1 : '') . "<br>";
-        $data = $check;
-    }
-    po($data);
+Route::get('cliqnshop', function () {
+    $response =   Http::get('http://amazon-sp-api-laravel.app/api/product', [
+        'search' => 'shower',
+        'siteId' => '1.',
+        'source' => 'uae'
+    ]);
+    // Log::alert($response);
 });
 
 Route::get('kyc', function () {
