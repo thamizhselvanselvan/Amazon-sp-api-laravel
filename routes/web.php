@@ -78,8 +78,8 @@ use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 // use ConfigTrait;
 Route::get('cliqnshop', function () {
     $response =   Http::get('http://amazon-sp-api-laravel.app/api/product', [
-        'search' => 'shower',
-        'siteId' => '1.',
+        'search' => 'iPhone',
+        'siteId' => '4.',
         'source' => 'uae'
     ]);
     // Log::alert($response);

@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Services\AWS_Business_API\AWS_POC\Orders;
@@ -9,8 +8,8 @@ use App\Http\Controllers\PMSPHPUnitTestController;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Search;
 use App\Http\Controllers\BuisnessAPI\ProductsRequestController;
 use App\Services\AWS_Business_API\Details_dump\product_details;
-
 use App\Services\AWS_Business_API\AWS_POC\Search_Product_Request;
+
 use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
 
 
@@ -72,19 +71,18 @@ Route::post('cliqnshop/promo/store', 'Cliqnshop\ImageBrandController@promostore'
 
 
 
-Route::get('cliqnshop/catalog/temp_csv', 'Catalog\CliqnshopCatalogController@asinCsvDownload')->name('cliqnshop.catalog.csv.template');
-
-
+Route::get('cliqnshop/catalog/csv', 'Catalog\CliqnshopCatalogController@asinCsvDownload')->name('cliqnshop.catalog.csv.templete');
 Route::post('cliqnshop/catalog/csv/import', 'Catalog\CliqnshopCatalogController@cliqnshopImport')->name('cliqnshop.catalog.csv.import');
 Route::get('catalog/cliqnshop/new_asin', 'Catalog\CliqnshopCatalogController@uploaded_export_download')->name('uploaded.asin.catalog.export.cliqnshop');
 Route::get('uploaded/catalog/cliqnshop/download/{index}', 'Catalog\CliqnshopCatalogController@Download_uploaded_asin_catalog')->name('uploaded.asin.catalog.export.cliqnshop.download');
 Route::get('cliqnshop/db/upload', 'Catalog\CliqnshopCatalogController@insertCliqnshop')->name('cliqnshop.catalog.db.upload');
 
-
-// Route::get('product', function (Request $request) {
-//   po($key);
+// Route::get('product/test', function () {
 //   // $data[] = $key;
-//   // $ApiCall = new Search_Product();
-//   // $result = $ApiCall->SearchProductByKey($data);
-//   // po($result);
+//   $searchKey = 'iPhone';
+//   $siteId = '4.';
+//   $source = 'uae';
+//   $ApiCall = new Search_Product();
+//   $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
+//   po($result);
 // });
