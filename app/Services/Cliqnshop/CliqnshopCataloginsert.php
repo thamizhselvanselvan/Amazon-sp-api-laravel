@@ -10,7 +10,8 @@ class CliqnshopCataloginsert
 {
     public function insertdata_cliqnshop($site_id , $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image,  $short_description,  $long_description)
     {
-
+        $currency = DB::connection('cliqnshop')->table('mshop_locale')->select('currencyid')->where('siteid', $site_id)->get();
+        $currency_code= $currency['0']->currencyid;
         $date_time = Carbon::now();
         $product_data = [
             'siteid' => $site_id,
@@ -38,7 +39,6 @@ class CliqnshopCataloginsert
             ->pluck('id')->ToArray();
         $get_product_id = $get_product[0];
 
-        $category = [];
 
         $brand_insert = [
             'siteid' => $site_id,
@@ -119,8 +119,8 @@ class CliqnshopCataloginsert
             'siteid' => $site_id,
             'type' => 'default',
             'domain' => 'product',
-            'label' => 'INR' . $Price_US_IN,
-            'currencyid' => 'INR',
+            'label' => $currency_code . $Price_US_IN,
+            'currencyid' => $currency_code,
             // 'quantity' => 1,
             'value' => $Price_US_IN,
             // 'costs' => 0.00,
