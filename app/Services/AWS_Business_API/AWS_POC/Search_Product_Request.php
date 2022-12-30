@@ -13,7 +13,7 @@ class Search_Product_Request
     {
         $type = '';
         $key_value = '';
-        $data = str_replace(' ', '_', $data);
+        $data = str_replace(' ', '%20', $data);
         foreach ($data as $key => $value) {
             $type = $key;
             $key_value = $value;
