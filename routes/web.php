@@ -162,7 +162,7 @@ Route::get('t', function () {
         CSV_w('Data/in/source_not_exists.csv', $asin_source_not_exists, ['asin']);
     }
 
-    dd($test);
+
 
     exit;
 
