@@ -76,6 +76,8 @@ Route::post('Shelves/{id}', 'Inventory\inwarding\InventoryShipmentController@get
 Route::post('Bins/{id}', 'Inventory\inwarding\InventoryShipmentController@getbin');
 Route::get('inventory/shipments/{source}/{id}', 'Inventory\inwarding\InventoryShipmentController@show');
 Route::resource('inventory/shipments', 'Inventory\inwarding\InventoryShipmentController');
+Route::get('inventory/template-download', 'Inventory\inwarding\InventoryShipmentController@InventoryTemplateDownload')->name('inventory.download.template');
+Route::post('inventory/inward/upload-csv', 'Inventory\inwarding\InventoryShipmentController@uploadCSV')->name('inventory.inward.csv');
 
 
 /* Outward Shiment  */

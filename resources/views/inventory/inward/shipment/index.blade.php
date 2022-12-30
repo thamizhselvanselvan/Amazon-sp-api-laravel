@@ -34,23 +34,71 @@
                 <strong>{{ $message }}</strong>
             </div>
             @endif
-        </div>
-        <div class="alert_display">
-            @if (request('success'))
-            <div class="alert alert-success alert-block">
+            @if($message = Session::get('error'))
+            <div class="alert alert-danger alert-block">
                 <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>{{request('success')}}</strong>
+                <strong>{{ $message }}</strong>
             </div>
             @endif
         </div>
         <h2 class="mb-4">
             <a href="{{ route('shipments.create') }}">
-                <x-adminlte-button label="Create Shipment" theme="primary" icon="fas fa-plus" />
+                <x-adminlte-button label="Create Shipment" class="btn-sm" theme="primary" icon="fas fa-plus" />
             </a>
+
+            <!-- <a href="{{ route('inventory.inward.csv') }}"> -->
+            <x-adminlte-button label="Upload CSV" theme="info" class="btn-sm" icon="fas fa-upload" id="new_asin" data-toggle="modal" data-target="#cliqnshop_new_asin_modal" />
+            <!-- </a> -->
         </h2>
 
         </h2>
+        <!-- Csv upload model -->
+        <div class="modal fade" id="cliqnshop_new_asin_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="new_asin">Upload Inventory Inward CSV</h5>
 
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="warning" class="alert alert-warning alert-dismissible fade show" role="alert">
+                        Please download <strong>CSV Templete</strong> and upload the data in csv format only.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form id="multi-file-upload" method="POST" action="{{ route('inventory.inward.csv') }}" accept-charset="utf-8" enctype="multipart/form-data">
+                            @csrf
+                            <div class="row">
+                                <div class="col">
+                                    <x-adminlte-input label="Choose CSV File" name="inventory_csv" id="files" type="file" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <a href="{{route('inventory.download.template')}}">
+                                        <x-adminlte-button label="Download Template" theme="info" icon="fas fa-file-download" class="btn-sm ml-2" />
+                                    </a>
+
+                                    <x-adminlte-button label="Submit" theme="primary" class="add_ btn-sm" icon="fas fa-upload" type="submit" id="order_upload" />
+                                </div>
+                                <div class="col text-right">
+                                    <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">
+                                        <i class="fas fa-window-close" aria-hidden="true"></i>
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end of csv upload model -->
         <table class="table table-bordered yajra-datatable table-striped">
             <thead>
                 <tr class="table-info">
