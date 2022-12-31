@@ -33,6 +33,7 @@ class Kernel extends ConsoleKernel
             /*B2CShip*/
             $schedule->command('pms:b2cship-microstatus-report')->daily(); //PM
             $schedule->command('pms:b2cship-kyc-status')->daily(); //PM
+            $schedule->command('mosh:kyc-received-monitor')->hourly();
 
             /*BEO*/
             $schedule->command('pms:boe-upload-Do')->everyFourHours(); //PM
@@ -53,8 +54,8 @@ class Kernel extends ConsoleKernel
             $schedule->command('backup:clean')->daily()->at('01:00');
 
             /*AWS Sync - Needs to be removed*/
-            $schedule->command('aws:nitshop:order')->hourly(); //PM
-            $schedule->command('aws:nitshop:order_details')->hourly(); //PM
+            // $schedule->command('aws:nitshop:order')->hourly(); //PM
+            // $schedule->command('aws:nitshop:order_details')->hourly(); //PM
 
             /*Order CI CD*/
             $schedule->command('aws:courier-booking')->everyMinute();

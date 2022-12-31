@@ -13,7 +13,7 @@ class BuyBoxPriceImport
 {
     public function fetchPriceFromBB($country_code, $seller_id, $limit)
     {
-        $priority_array = ['P1' => 1, 'P2' => 2, 'P3' => 3];
+        $priority_array = ['P1' => 1, 'P2' => 2, 'P3' => 3, 'P4' => 4];
         $price_convert = new PriceConversion();
 
         foreach ($priority_array as $priority) {

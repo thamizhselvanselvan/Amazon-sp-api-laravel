@@ -287,8 +287,12 @@
                 count++;
 
             });
+            if (count == 0) {
+                alert('Please select label details, Which you want to print.');
+            } else {
+                window.open("/label/print-selected/" + id, "_blank");
+            }
 
-            window.open("/label/print-selected/" + id, "_blank");
         });
 
         $(document).on('click', '#edit-address', function() {

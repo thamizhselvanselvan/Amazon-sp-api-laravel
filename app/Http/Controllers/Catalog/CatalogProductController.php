@@ -45,7 +45,7 @@ class CatalogProductController extends Controller
     public function ExportCatalog(Request $request)
     {
         $request->validate([
-            'priority' => 'required|in:1,2,3,All',
+            'priority' => 'required|in:1,2,3,4,All',
             'source' => 'required|in:IN,US,AE,SA',
         ]);
 
@@ -118,7 +118,7 @@ class CatalogProductController extends Controller
     public function PriceExport(Request $request)
     {
         $request->validate([
-            'priority' => 'required|in:1,2,3',
+            'priority' => 'required|in:1,2,3,4',
             'source' => 'required|in:IN,US,AE,SA',
 
         ]);
@@ -217,7 +217,7 @@ class CatalogProductController extends Controller
         if ($request->form_type == 'text-area') {
             $request->validate([
                 'source'            => 'required|in:IN,US,AE,SA',
-                'priority'          => 'required|in:1,2,3,All',
+                'priority'          => 'required|in:1,2,3,4,All',
                 'text_area_asins'   =>  'required',
                 'header'            =>  'required',
             ]);
