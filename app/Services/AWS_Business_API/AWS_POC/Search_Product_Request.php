@@ -9,10 +9,11 @@ use App\Services\AWS_Business_API\ApiCall\ApiCall;
 class Search_Product_Request
 {
 
-    public function getASIN($data)
+    public function getASIN($searchKey)
     {
         $type = '';
         $key_value = '';
+        $data[] = str_replace(' ', '%20', $searchKey);
         foreach ($data as $key => $value) {
             $type = $key;
             $key_value = $value;
