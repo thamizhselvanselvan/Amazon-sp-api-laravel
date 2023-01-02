@@ -115,7 +115,7 @@ class CliqnshopCatalogController extends Controller
 
         foreach ($csv_data as $data) {
             $asin[] = ($data['ASIN']);
-            $category[] = ($data['Category']);
+            $category[$data['ASIN']] = ($data['Category']);
         }
 
         $headers = [
@@ -132,6 +132,7 @@ class CliqnshopCatalogController extends Controller
             'pricing_uss.usa_to_uae',
 
         ];
+
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
         $result = $table_name->select($headers)
             ->join('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
@@ -139,6 +140,8 @@ class CliqnshopCatalogController extends Controller
             ->get()->toArray();
 
         foreach ($result as $data) {
+
+
 
             $img1 = [
                 "Images1" => '',
@@ -261,9 +264,18 @@ class CliqnshopCatalogController extends Controller
                     $width_value  = $dim[0]['item']['width']['value'];
                 }
             }
-            $call = new CliqnshopCataloginsert();
-            $call->insertdata_cliqnshop(
+
+            if ($category[$asin] == '') {
+                $category_code = 'demo-new';
+            } else {
+
+                $category_code = $category[$asin];
+            }
+
+            $insert_service = new CliqnshopCataloginsert();
+            $insert_service->insertdata_cliqnshop(
                 $site_id,
+                $category_code,
                 $asin,
                 $item_name,
                 $brand,
@@ -280,8 +292,10 @@ class CliqnshopCatalogController extends Controller
                 $long_description
             );
         }
+
         return back()->with('success', 'uploading please wait... !');
     }
+
 
     public function CliqnshopProductSearchRequest(Request $request)
     {

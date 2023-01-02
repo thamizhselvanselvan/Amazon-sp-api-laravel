@@ -4,14 +4,14 @@ namespace App\Services\Cliqnshop;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class CliqnshopCataloginsert
 {
-    public function insertdata_cliqnshop($site_id , $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image,  $short_description,  $long_description)
+    public function insertdata_cliqnshop($site_id, $category, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image,  $short_description,  $long_description)
     {
-        $currency = DB::connection('cliqnshop')->table('mshop_locale')->select('currencyid')->where('siteid', $site_id)->where('status','1')->get();
-        $currency_code= $currency['0']->currencyid;
+      
+        $currency = DB::connection('cliqnshop')->table('mshop_locale')->select('currencyid')->where('siteid', $site_id)->where('status', '1')->get();
+        $currency_code = $currency['0']->currencyid;
         $date_time = Carbon::now();
         $product_data = [
             'siteid' => $site_id,
@@ -158,7 +158,7 @@ class CliqnshopCataloginsert
                     ];
 
                     DB::connection('cliqnshop')->table('mshop_media')->updateOrInsert($media);
-                    $image_get_id = DB::connection('cliqnshop')->table('mshop_media')->where('siteid',$media['siteid'])->where('link', $media['link'])->select('id')->get();
+                    $image_get_id = DB::connection('cliqnshop')->table('mshop_media')->where('siteid', $media['siteid'])->where('link', $media['link'])->select('id')->get();
 
                     $media_product_list = [
                         'siteid' => $site_id,
@@ -220,13 +220,17 @@ class CliqnshopCataloginsert
             ->pluck('id')->ToArray();
         $get_text_long_id = $get_text_long[0];
 
+
+        $catogory_data = DB::connection('cliqnshop')->table('mshop_catalog')->where('code', $category)->where('siteid', $site_id)->pluck('id')->ToArray();
+        $catogory_id = $catogory_data['0'];
+       
         $domain_catalog = [
             'siteid' => $site_id,
             'parentid' => $get_product_id,
-            'key' => 'catalog|default|16',  //query catalog_code with mshop_catalog anf get ID fill here(In place of 16)
+            'key' => 'catalog|default|' . $catogory_id,  //query catalog_code with mshop_catalog anf get ID fill here(In place of 16)
             'type' => 'default',
             'domain' => 'catalog',
-            'refid' => 16,
+            'refid' =>  $catogory_id,
             // 'start' => NULL,
             // 'end' => NULL,
             'config' => '[]',
