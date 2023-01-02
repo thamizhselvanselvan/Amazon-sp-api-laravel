@@ -9,6 +9,7 @@ use App\Models\Currency;
 use Illuminate\Http\Request;
 use App\Models\Inventory\Bin;
 use App\Models\Inventory\Tag;
+use App\Models\FileManagement;
 use App\Models\Inventory\Rack;
 use App\Models\Inventory\Shelve;
 use App\Models\Inventory\Vendor;
@@ -21,6 +22,7 @@ use App\Services\SP_API\CatalogAPI;
 use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use League\Glide\Manipulators\Encode;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
@@ -29,6 +31,7 @@ use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Inventory\Shipment_Inward;
 use App\Models\Inventory\Shipment_Inward_Details;
+use App\Services\Inventory\InventoryCsvImport;
 
 class InventoryShipmentController extends Controller
 {
@@ -405,5 +408,37 @@ class InventoryShipmentController extends Controller
     public function DownloadPdf($ship_id)
     {
         return Storage::download('/product/label' . $ship_id . '.pdf');
+    }
+
+    public function InventoryTemplateDownload()
+    {
+        $filepath = public_path('template/Inventory-Template.csv');
+        return Response()->download($filepath);
+    }
+
+    public function uploadCSV(Request $request)
+    {
+        if ($request->inventory_csv == '') {
+            return redirect('inventory/shipments')->with('error', 'Please Upload CSV File');
+        }
+
+        $extension = $request->inventory_csv->extension();
+        if ($extension != 'csv') {
+            return redirect('inventory/shipments')->with('error', 'Invalid file type, file type should be CSV');
+        }
+
+        $import_file_time = date('Y-m-d-H-i-s');
+        $file = file_get_contents($request->inventory_csv);
+
+        $path = "Inventory_CSV/Inventory${import_file_time}.csv";
+        if (!Storage::exists($path)) {
+            Storage::put($path, '');
+        }
+
+        Storage::put($path, $file);
+
+        (new InventoryCsvImport())->index($path);
+
+        return redirect('inventory/shipments')->with('success', 'File has been uploaded successfully');
     }
 }

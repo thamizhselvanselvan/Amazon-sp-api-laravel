@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Console\Commands\Zoho;
+namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Services\Zoho\ZohoOrder;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
+use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
 
-class Zoho extends Command
+class CliqnshopProductSearchRequest extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'mosh:zoho:save {--amazon_order_id=} {--force}';
+    protected $signature = 'mosh:cliqnshop-product-search {searchKey} {siteId} {source}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Order details store it in Zoho CRM';
+    protected $description = 'Search product from cliqnshop';
 
     /**
      * Create a new command instance.
@@ -40,32 +40,26 @@ class Zoho extends Command
      */
     public function handle()
     {
+        //Process Management start
         $process_manage = [
-            'module'             => 'Zoho Update',
-            'description'        => 'Order details store it in Zoho CRM',
-            'command_name'       => 'mosh:zoho:save',
+            'module'             => 'Cliqnshop Product Search',
+            'description'        => 'Search product from cliqnshop',
+            'command_name'       => 'mosh:cliqnshop-product-search',
             'command_start_time' => now(),
         ];
 
         $process_management_id = ProcessManagement::create($process_manage)->toArray();
         $pm_id = $process_management_id['id'];
 
-        //  for ($i = 0; $i < 400; $i++) {
+        $searchKey = $this->argument('searchKey');
+        $siteId = $this->argument('siteId');
+        $source = $this->argument('source');
 
-        $amazon_order_id = $this->option('amazon_order_id');
-        $force_update = $this->option('force');
+        $ApiCall = new Search_Product();
+        $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
 
-        $zoho_order = new ZohoOrder;
-        $data = $zoho_order->index($amazon_order_id, $force_update);
-
-        po($data);
-
-        # code...
-        //  }
-
+        date_default_timezone_set('Asia/Kolkata');
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
-
-        return true;
     }
 }
