@@ -78,14 +78,15 @@ use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 // use ConfigTrait;
 Route::get('cliqnshop', function () {
     $response =   Http::get('http://amazon-sp-api-laravel.app/api/product', [
-        'search' => 'iPhone',
-        'siteId' => '4.',
-        'source' => 'uae'
+        'search' => 'leather ball',
+        'siteId' => '1.',
+        'source' => 'in'
     ]);
     // Log::alert($response);
 });
 
 Route::get('kyc', function () {
+
     $kyc_received = DB::connection('b2cship')->select("SELECT TOP 1 AWBNO, CreatedDate
     FROM Packet WHERE IsKYC ='true' ORDER BY CreatedDate DESC");
 
