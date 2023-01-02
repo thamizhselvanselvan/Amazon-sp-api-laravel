@@ -286,14 +286,10 @@ class CliqnshopCatalogController extends Controller
     public function CliqnshopProductSearchRequest(Request $request)
     {
         $search_data = $request->all();
+
         $searchKey = $search_data['search'];
         $siteId = $search_data['siteId'];
         $source = $search_data['source'];
-        // log::alert($searchKey);
-        // log::alert($siteId);
-        $ApiCall = new Search_Product();
-        $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
-        po($result);
-        // return $request->all();
+        commandExecFunc("mosh:cliqnshop-product-search ${searchKey} ${siteId} ${source}");
     }
 }
