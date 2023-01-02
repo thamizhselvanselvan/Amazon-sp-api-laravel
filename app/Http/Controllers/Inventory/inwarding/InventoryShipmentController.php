@@ -418,9 +418,13 @@ class InventoryShipmentController extends Controller
 
     public function uploadCSV(Request $request)
     {
+        if ($request->inventory_csv == '') {
+            return redirect('inventory/shipments')->with('error', 'Please Upload CSV File');
+        }
+
         $extension = $request->inventory_csv->extension();
         if ($extension != 'csv') {
-            return redirect('inventory/shipments')->with('error', 'Invalid file type, file type should be .csv');
+            return redirect('inventory/shipments')->with('error', 'Invalid file type, file type should be CSV');
         }
 
         $import_file_time = date('Y-m-d-H-i-s');
