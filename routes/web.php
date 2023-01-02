@@ -145,8 +145,6 @@ Route::get('t', function () {
             }
         }
 
-        $asin_source_exists = [];
-        $asin_source_not_exists = [];
 
         foreach ($csv_list as $asin) {
 
@@ -162,32 +160,6 @@ Route::get('t', function () {
         CSV_w('Data/in/source_exists.csv', $asin_source_exists, ['asin']);
         CSV_w('Data/in/source_not_exists.csv', $asin_source_not_exists, ['asin']);
     }
-
-
-
-    exit;
-
-    // $zoho = new ZohoApi;
-    // dd($zoho->getAccessToken());
-
-
-    //
-    // $robin = User::create([
-    //     'name' => 'Robin Singh',
-    //     'email' => 'cliqnshop@app360.io',
-    //     'password' => Hash::make(123456),
-    // ]);
-    // $invoice = Role::create(['name' => 'Cliqnshop']);
-    // $invoice_permission = Permission::create(['name' => 'Cliqnshop']);
-    // $invoice->givePermissionTo($invoice_permission);
-    // $robin->assignRole('Cliqnshop');
-
-
-    // exit;
-
-    $ZohoOrder = new ZohoOrder;
-
-    dd($ZohoOrder->index());
 });
 
 
