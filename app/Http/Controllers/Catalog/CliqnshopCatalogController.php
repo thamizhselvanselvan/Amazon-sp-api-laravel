@@ -269,10 +269,10 @@ class CliqnshopCatalogController extends Controller
             if ($category[$asin] == '') {
                 $category_code = 'demo-new';
             } else {
-
+ 
                 $category_code = $category[$asin];
             }
-
+            $keyword = '';
             $insert_service = new CliqnshopCataloginsert();
             $insert_service->insertdata_cliqnshop(
                 $site_id,
@@ -289,6 +289,7 @@ class CliqnshopCatalogController extends Controller
                 $width_value,
                 $Price_US_IN,
                 $image,
+                $keyword,
                 $short_description,
                 $long_description
             );
@@ -296,7 +297,6 @@ class CliqnshopCatalogController extends Controller
 
         return back()->with('success', 'uploading please wait... !');
     }
-
 
     public function CliqnshopProductSearchRequest(Request $request)
     {
