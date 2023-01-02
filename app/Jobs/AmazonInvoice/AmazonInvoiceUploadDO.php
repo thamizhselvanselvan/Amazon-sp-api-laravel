@@ -3,7 +3,6 @@
 namespace App\Jobs\AmazonInvoice;
 
 use App\Models\AmazonInvoice;
-use RedBeanPHP\R;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -65,7 +64,7 @@ class AmazonInvoiceUploadDO implements ShouldQueue
             Storage::disk('b2cship_do_space')->put($do_path, file_get_contents($file));
 
             AmazonInvoice::where('awb', $AwbNo)
-                ->updated(['status' => '1']);
+                ->update(['status' => '1']);
         }
 
         unlink($file);
