@@ -219,11 +219,16 @@ class CliqnshopCataloginsert
         $get_text_long_id = $get_text_long[0];
 
         $catogory_data = DB::connection('cliqnshop')->table('mshop_catalog')->where('code', $category)->where('siteid', $site_id)->pluck('id')->ToArray();
-        $catogory_id = $catogory_data['0'];
-
+        $catogory_id = '';
+        if (isset($catogory_data['0'])) {
+            $catogory_id = $catogory_data['0'];
+        } 
+           
         $cat_label = DB::connection('cliqnshop')->table('mshop_catalog')->where('code', $category)->where('siteid', $site_id)->pluck('label')->ToArray();
-        $catagory_label = $cat_label['0'];
-
+        $catagory_label = '';
+        if(isset($cat_label['0'])) {
+            $catagory_label = $cat_label['0'];
+        }
         $domain_catalog = [
             'siteid' => $site_id,
             'parentid' => $get_product_id,
