@@ -70,17 +70,14 @@ class InventoryCsvImport
 
         $records = CSV_Reader($file_path);
 
-        // $reader = Reader::createFromPath('D:/Inventory.csv', 'r');
-        // $reader->setHeaderOffset(0);
-
-        // $records = ($reader->getRecords());
-
         $total_item_count = 0;
         $source_id = [];
         $data = [];
         $multi_source_id = [];
-        foreach ($records as $value) {
+        $warehouse_id = '';
+        $currency_code = '';
 
+        foreach ($records as $value) {
             try {
                 $inward_date = $value['Inward Date'];
                 $asin = $value['ASIN'];
@@ -116,6 +113,8 @@ class InventoryCsvImport
 
                     $this->InventoryDataInsert($data);
                     $total_item_count++;
+                    $warehouse_id = $data['warehouse_id'];
+                    $currency_code = $currency;
                 } else {
 
                     //Send notification for invalid entries
@@ -126,8 +125,14 @@ class InventoryCsvImport
                 //throw error for exception case
             }
         }
-        $multi_source_id = (json_encode(array_unique($multi_source_id)));
-        $this->InventroyShipmentInwardDataInsert($data, $total_item_count, $multi_source_id);
+
+        try {
+
+            $multi_source_id = (json_encode(array_unique($multi_source_id)));
+            $this->InventroyShipmentInwardDataInsert($warehouse_id, $currency_code, $total_item_count, $multi_source_id);
+        } catch (Exception $e) {
+            Log::info($e);
+        }
 
         return true;
     }
@@ -182,17 +187,19 @@ class InventoryCsvImport
         ]);
     }
 
-    public function InventroyShipmentInwardDataInsert($data, $total_item_count, $multi_source_id)
+    public function InventroyShipmentInwardDataInsert($warehouse_id, $currency_code, $total_item_count, $multi_source_id)
     {
-        Shipment_Inward::insert([
-            "warehouse_id" => $data['warehouse_id'],
-            "source_id" => $multi_source_id, //source id multiple if multi source is available
-            "ship_id" =>  $this->ship_id,
-            "currency" => $data['currency'],
-            "shipment_count" => $total_item_count,
-            "inwarded_at" => now(),
-            "created_at" => now(),
-            "updated_at" => now(),
-        ]);
+        if ($warehouse_id && $currency_code) {
+            Shipment_Inward::insert([
+                "warehouse_id" => $warehouse_id,
+                "source_id" => $multi_source_id, //source id multiple if multi source is available
+                "ship_id" =>  $this->ship_id,
+                "currency" => $currency_code,
+                "shipment_count" => $total_item_count,
+                "inwarded_at" => now(),
+                "created_at" => now(),
+                "updated_at" => now(),
+            ]);
+        }
     }
 }
