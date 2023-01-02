@@ -11,15 +11,16 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
 use Yajra\DataTables\Facades\DataTables;
 use App\Jobs\AmazonInvoice\AmazonInvoiceUploadDO;
+use App\Models\AmazonInvoice;
 
 class AmazonInvoiceManagementController extends Controller
 {
 
     public function index(Request $request)
     {
-        // dd($data);
         if ($request->ajax()) {
-            $data = DB::connection('web')->select("SELECT * FROM amazoninvoice ORDER BY status ASC");
+
+            $data = AmazonInvoice::query();
             return DataTables::of($data)
                 ->editColumn('status', function ($data) {
                     if ($data->status == 0) {
@@ -75,44 +76,18 @@ class AmazonInvoiceManagementController extends Controller
             jobDispatchFunc($class, $job_data, 'default');
         }
 
-        // $whereIn = implode(',', $searchPdf);
-
-        // $awbData = DB::connection('b2cship')
-        //     ->select("SELECT AWBNo, RefNo, BookingDate FROM Packet
-        //             WHERE RefNo IN ($whereIn) 
-        //         ");
-
-        // foreach ($awbData as $key => $value) {
-
-        //     $job_data = [];
-        //     $amazon_invoice = R::dispense('amazoninvoice');
-        //     $amazon_invoice->awb = $value->AWBNo;
-        //     $amazon_invoice->amazon_order_identifier = $value->RefNo;
-        //     $amazon_invoice->booking_date = $value->BookingDate;
-        //     $amazon_invoice->status  = '0';
-        //     $amazon_invoice->created_at = now();
-        //     R::store($amazon_invoice);
-
-        //     $job_data['AwbNo'] = $value->AWBNo;
-        //     $job_data['Order_id'] = $value->RefNo;
-        //     $job_data['Date'] = $value->BookingDate;
-
-        //     $class = 'AmazonInvoice\\AmazonInvoiceUploadDO';
-
-        //     jobDispatchFunc($class, $job_data, 'default');
-        // }
         return response()->json(["message" => "All file uploaded successfully"]);
     }
 
     public function invoiceView($id)
     {
-        $data = DB::connection('web')->select("SELECT * FROM amazoninvoice WHERE id = $id");
-        $date = $data[0]->booking_date;
+        $data = AmazonInvoice::where('id', $id)->get()->toArray();
+
+        $date = $data[0]['booking_date'];
+        $awb = $data[0]['awb'];
 
         $year = date('Y', strtotime($date));
         $month = date('F', strtotime($date));
-
-        $awb = $data[0]->awb;
 
         $do_path = 'b2cship/' . $month . '_' . $year . '/' . $awb . '/' . $awb . '_Invoice.pdf';
 

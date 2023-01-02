@@ -58,6 +58,7 @@ class CliqnshopProductSearchRequest extends Command
         $ApiCall = new Search_Product();
         $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
 
+        date_default_timezone_set('Asia/Kolkata');
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
     }

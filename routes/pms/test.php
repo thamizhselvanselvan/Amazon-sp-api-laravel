@@ -176,6 +176,6 @@ Route::get('test/date', function () {
 Route::get('test/inventory', function () {
 
 
-    (new InventoryCsvImport())->index();
+    (new InventoryCsvImport())->index('');
     //
 });
