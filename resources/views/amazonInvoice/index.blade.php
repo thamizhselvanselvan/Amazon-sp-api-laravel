@@ -51,8 +51,8 @@
                 name: 'awb',
             },
             {
-                data: 'amazon_order_identifier',
-                name: 'amazon_order_identifier',
+                data: 'amazon_order_id',
+                name: 'amazon_order_id',
                 orderable: false
             },
             {
