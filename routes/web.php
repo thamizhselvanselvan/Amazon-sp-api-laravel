@@ -82,7 +82,7 @@ Route::get('cliqnshop', function () {
         'siteId' => '1.',
         'source' => 'in'
     ]);
-    // Log::alert($response);
+    Log::alert($response);
 });
 
 Route::get('kyc', function () {

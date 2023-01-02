@@ -309,6 +309,7 @@ class CliqnshopCatalogController extends Controller
         date_default_timezone_set('Asia/Kolkata');
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
+        return response()->json('successfully');
         // commandExecFunc("mosh:cliqnshop-product-search ${searchKey} ${siteId} ${source}");
     }
 }
