@@ -12,6 +12,9 @@ class SystemSettingController extends Controller
 {
     public function index(Request $request)
     {
+        $mode = SystemSetting::where('key', 'maintenance_mode')->get();
+        $maintenance_mode = isset($mode[0]['value']) ? $mode[0]['value'] : '';
+
         if ($request->ajax()) {
             $data = SystemSetting::get();
             return DataTables::of($data)
@@ -24,7 +27,7 @@ class SystemSettingController extends Controller
                 })
                 ->make(true);
         }
-        return view('SystemSetting.index');
+        return view('SystemSetting.index', compact('maintenance_mode'));
     }
 
     public function AddSystemSetting(Request $request)

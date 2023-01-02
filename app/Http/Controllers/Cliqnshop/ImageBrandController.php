@@ -328,12 +328,10 @@ class ImageBrandController extends Controller
 
         if (app()->environment() === 'staging') {
             $env = 'staging';
-        }
-        elseif (app()->environment() === 'production') {
+        } elseif (app()->environment() === 'production') {
             $env = 'production';
-        }
-        else{
-            $env ='local';
+        } else {
+            $env = 'local';
         }
 
         $this->Two_banner($country, $Imgno, $imgselected, $image_url, $env);
@@ -385,8 +383,7 @@ class ImageBrandController extends Controller
             // Storage::put($path1, $img1);
             // $img1_url = $path1;
             Storage::disk('cliqnshop')->put($path1, $img1);
-            $img1_url =$path1;
-
+            $img1_url = $path1;
         } else if ($Imgno == 'Image-2') {
             $img2 = file_get_contents($imgselected);
             $urli2 =  $image_url;
@@ -416,8 +413,6 @@ class ImageBrandController extends Controller
             ->where('section', '2_banner_section')
             ->where('country', $condition)
             ->update(['content' => $data,  'updated_at' => $now]);
-
-      
     }
 
     public function onebanner()
@@ -1046,5 +1041,44 @@ class ImageBrandController extends Controller
 
             return redirect()->route('cliqnshop.trending')->with('success', 'Image has Updated successfully');
         }
+    }
+
+    public function promobanner()
+    {
+        $countrys = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
+        return view('Cliqnshop.imagebrand.promobanner', compact('countrys'));
+    }
+    public function promostore(Request $request)
+    {
+        
+        $request->validate([
+
+            'country' => 'required',
+            'offer_text' => 'required',
+            'primary_text' => 'required',
+            'secondary_text' => 'required',
+            'url' => 'required',
+
+        ]);
+
+        $country = $request->country;
+        $offer_text = $request->offer_text;
+        $primary_text = $request->primary_text;
+        $secondary_text = $request->secondary_text;
+        $url = $request->url;
+        $now =  carbon::now();
+
+        $data = [
+            'primary_text'  => $primary_text,
+            'secondary_text'  => $secondary_text,
+            'offer_text'  => $offer_text,
+            'url'  => $url,
+        ];
+        $condition = strval($request->country);
+        DB::connection('cliqnshop')->table('home_page_contents')
+            ->where('section', 'promo_banner_section')
+            ->where('country', $condition)
+            ->update(['content' => json_encode($data),  'updated_at' => $now]);
+        return redirect()->route('cliqnshop.promo.banner')->with('success', ' Data Inserted Successfuly...!');
     }
 }

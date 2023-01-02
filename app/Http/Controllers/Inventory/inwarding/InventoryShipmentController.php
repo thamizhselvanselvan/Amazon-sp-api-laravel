@@ -9,6 +9,7 @@ use App\Models\Currency;
 use Illuminate\Http\Request;
 use App\Models\Inventory\Bin;
 use App\Models\Inventory\Tag;
+use App\Models\FileManagement;
 use App\Models\Inventory\Rack;
 use App\Models\Inventory\Shelve;
 use App\Models\Inventory\Vendor;
@@ -21,6 +22,7 @@ use App\Services\SP_API\CatalogAPI;
 use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use League\Glide\Manipulators\Encode;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
@@ -29,6 +31,7 @@ use Picqer\Barcode\BarcodeGeneratorHTML;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Inventory\Shipment_Inward;
 use App\Models\Inventory\Shipment_Inward_Details;
+use App\Services\Inventory\InventoryCsvImport;
 
 class InventoryShipmentController extends Controller
 {
@@ -122,7 +125,7 @@ class InventoryShipmentController extends Controller
         foreach ($currency as $key => $cur) {
             $currency_array[$cur->id] = $cur->name;
         }
-       
+
         return view('inventory.inward.shipment.view', compact('view', 'currency_array', 'bar_code', 'id', 'warehouse_name', 'vendor_name', 'currency_id'));
     }
     public function createView(Request $request)
@@ -238,7 +241,6 @@ class InventoryShipmentController extends Controller
         $uniq = random_int(1000, 99999);
         $ship_id = 'INW' . $uniq;
 
-
         $items = [];
         $val = Shipment_Inward::query()
             ->select(('ship_id'))
@@ -249,7 +251,7 @@ class InventoryShipmentController extends Controller
             goto start;
         }
 
-       
+
         $request->validate([
             'warehouse' => 'required',
             'currency' => 'required',
@@ -268,17 +270,18 @@ class InventoryShipmentController extends Controller
         $source = $request->source;
         $new = [...array_unique($source)];
         $data = json_encode($new);
-        
-            Shipment_Inward::insert([
-                "warehouse_id" => $request->warehouse,
-                "source_id" =>$data,
-                "ship_id" => $ship_id,
-                "currency" => $request->currency,
-                "shipment_count" => count($items),
-                "created_at" => now(),
-                "updated_at" => now()
-            ]);
- 
+
+        Shipment_Inward::insert([
+            "warehouse_id" => $request->warehouse,
+            "source_id" => $data,
+            "ship_id" => $ship_id,
+            "currency" => $request->currency,
+            "shipment_count" => count($items),
+            "inwarded_at" => now(),
+            "created_at" => now(),
+            "updated_at" => now(),
+        ]);
+
         foreach ($request->asin as $key1 => $asin1) {
 
             Shipment_Inward_Details::create([
@@ -290,9 +293,9 @@ class InventoryShipmentController extends Controller
                 "item_name" => $request->name[$key1],
                 "tag" => $request->tag[$key1],
                 "price" => $request->price[$key1],
+                "procurement_price" => $request->proc_price[$key1],
                 "quantity" => $request->quantity[$key1],
-                "created_at" => now(),
-                "updated_at" => now()
+                "inwarded_at" => now()
             ]);
         }
 
@@ -304,12 +307,12 @@ class InventoryShipmentController extends Controller
                 "ship_id" => $ship_id,
                 "asin" => $asin1,
                 "price" => $request->price[$key1],
+                "procurement_price" => $request->proc_price[$key1],
                 "item_name" => $request->name[$key1],
                 "tag" => $request->tag[$key1],
                 "quantity" => $request->quantity[$key1],
                 "balance_quantity" => $request->quantity[$key1],
-                "created_at" => now(),
-                "updated_at" => now()
+                "inwarded_at" => now()
             ]);
         }
 
@@ -405,5 +408,33 @@ class InventoryShipmentController extends Controller
     public function DownloadPdf($ship_id)
     {
         return Storage::download('/product/label' . $ship_id . '.pdf');
+    }
+
+    public function InventoryTemplateDownload()
+    {
+        $filepath = public_path('template/Inventory-Template.csv');
+        return Response()->download($filepath);
+    }
+
+    public function uploadCSV(Request $request)
+    {
+        $extension = $request->inventory_csv->extension();
+        if ($extension != 'csv') {
+            return redirect('inventory/shipments')->with('error', 'Invalid file type, file type should be .csv');
+        }
+
+        $import_file_time = date('Y-m-d-H-i-s');
+        $file = file_get_contents($request->inventory_csv);
+
+        $path = "Inventory_CSV/Inventory${import_file_time}.csv";
+        if (!Storage::exists($path)) {
+            Storage::put($path, '');
+        }
+
+        Storage::put($path, $file);
+
+        (new InventoryCsvImport())->index($path);
+
+        return redirect('inventory/shipments')->with('success', 'File has been uploaded successfully');
     }
 }

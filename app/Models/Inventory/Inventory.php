@@ -11,17 +11,33 @@ class Inventory extends Model
     protected $connection = 'inventory';
     protected $table = "inventory";
 
-    protected $fillable = ['ship_id','warehouse_id','item_name','source_id','tag', 'asin','out_quantity','balance_quantity','price','quantity','bin_id'];
+    protected $fillable = [
+        'ship_id',
+        'warehouse_id',
+        'item_name',
+        'source_id',
+        'tag',
+        'asin',
+        'out_quantity',
+        'balance_quantity',
+        'price',
+        'inwarded_at',
+        'quantity',
+        'bin',
+        'procurement_price'
+    ];
 
-    public function warehouses() {
+    public function warehouses()
+    {
         return $this->hasOne(Warehouse::class, 'id', 'warehouse_id');
     }
 
-    public function shipment() {
+    public function shipment()
+    {
         return $this->hasOne(Shipment::class, 'ship_id', 'ship_id');
-
     }
-    public function vendors() {
+    public function vendors()
+    {
         return $this->hasOne(Vendor::class, 'id', 'source_id');
     }
     public function bins()
@@ -32,5 +48,4 @@ class Inventory extends Model
     {
         return $this->hasOne(Shelve::class, 'shelve_id', 'bin');
     }
-    
 }

@@ -145,6 +145,10 @@
                             <input type="radio" class="destination-priority" name="priority" value="3">
                             <label for="P3">P3</label>
                         </div>
+                        <div class="col-1 ">
+                            <input type="radio" class="destination-priority" name="priority" value="4">
+                            <label for="P4">P4</label>
+                        </div>
                     </div>
                     <x-adminlte-textarea label="Enter ASIN (max:10000)" type="text-area" class="Asins" name="Asins" placeholder="Enter Asin" rows="6" />
                     <b>

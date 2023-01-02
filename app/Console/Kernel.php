@@ -54,8 +54,8 @@ class Kernel extends ConsoleKernel
             $schedule->command('backup:clean')->daily()->at('01:00');
 
             /*AWS Sync - Needs to be removed*/
-            $schedule->command('aws:nitshop:order')->hourly(); //PM
-            $schedule->command('aws:nitshop:order_details')->hourly(); //PM
+            // $schedule->command('aws:nitshop:order')->hourly(); //PM
+            // $schedule->command('aws:nitshop:order_details')->hourly(); //PM
 
             /*Order CI CD*/
             $schedule->command('aws:courier-booking')->everyMinute();

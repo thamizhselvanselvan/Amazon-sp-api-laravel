@@ -20,7 +20,8 @@ class cliqnshophomepageSeeder extends Seeder
             '1_banner_section',
             '2_banner_section',
             '3_banner_section',
-            'trending_brands_section'
+            'trending_brands_section',
+            'promo_banner_section'
         ];
         
         foreach ($sections as $section) {

@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\seller\SellerAsinDetails;
 use Illuminate\Support\Facades\Response;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
+use App\Services\Inventory\InventoryCsvImport;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
@@ -170,4 +171,11 @@ Route::get('test/date', function () {
     echo (strtotime('1644325822000+0530'));
     dd($date);
     // /
+});
+
+Route::get('test/inventory', function () {
+
+
+    (new InventoryCsvImport())->index();
+    //
 });
