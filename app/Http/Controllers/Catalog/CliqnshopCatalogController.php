@@ -7,6 +7,7 @@ use League\Csv\Writer;
 use Illuminate\Http\Request;
 use App\Models\FileManagement;
 use App\Models\Inventory\Dispose;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -291,6 +292,23 @@ class CliqnshopCatalogController extends Controller
         $searchKey = str_replace(' ', '_', $searchKey);
         $siteId = $search_data['siteId'];
         $source = $search_data['source'];
-        commandExecFunc("mosh:cliqnshop-product-search ${searchKey} ${siteId} ${source}");
+        //Process Management start
+        $process_manage = [
+            'module'             => 'Cliqnshop Product Search',
+            'description'        => 'Search product from cliqnshop',
+            'command_name'       => 'mosh:cliqnshop-product-search',
+            'command_start_time' => now(),
+        ];
+
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+
+        $ApiCall = new Search_Product();
+        $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
+
+        date_default_timezone_set('Asia/Kolkata');
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
+        // commandExecFunc("mosh:cliqnshop-product-search ${searchKey} ${siteId} ${source}");
     }
 }
