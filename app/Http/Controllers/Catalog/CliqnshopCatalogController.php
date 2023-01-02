@@ -142,8 +142,6 @@ class CliqnshopCatalogController extends Controller
 
         foreach ($result as $data) {
 
-
-
             $img1 = [
                 "Images1" => '',
                 "Images2" => '',
@@ -204,14 +202,23 @@ class CliqnshopCatalogController extends Controller
                     }
                 }
             }
-
+           
             $asin =  $data['asin'];
             $item_name = $data['item_name'];
             $item_url = str_replace(' ', '-', $data['item_name']);
             $url = (strtolower($item_url));
+           
+            $country = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid', $site_id)->select('code')->get();
+            
             $Price_US_IN = $data['usa_to_in_b2c'];
-            $usa_price = $data['us_price'];
-            $Price_US_UAE2 = $data['usa_to_uae'];
+            if (isset($country['0']->code)) {
+                if (($country['0']->code) == 'in') {
+                    $Price_US_IN = $data['usa_to_in_b2c'];
+                } else if ($country['0']->code == 'uae') {
+                    $Price_US_IN  = $data['usa_to_uae'];
+                }
+            }
+
 
             $catalog_code = json_decode($data['browse_classification'], true);
             $cat_code = 'new';
@@ -269,7 +276,7 @@ class CliqnshopCatalogController extends Controller
             if ($category[$asin] == '') {
                 $category_code = 'demo-new';
             } else {
- 
+
                 $category_code = $category[$asin];
             }
             $keyword = '';
