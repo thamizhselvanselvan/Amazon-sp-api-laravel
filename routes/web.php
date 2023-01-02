@@ -144,12 +144,6 @@ Route::get('t', function () {
             }
         }
 
-<<<<<<< HEAD
-        $asin_source_exists = [];
-        $asin_source_not_exists = [];
-=======
-    // exit; 
->>>>>>> c9cd7e131182ee0d3e86da8da2f04cfb5d64050b
 
         foreach ($csv_list as $asin) {
 
