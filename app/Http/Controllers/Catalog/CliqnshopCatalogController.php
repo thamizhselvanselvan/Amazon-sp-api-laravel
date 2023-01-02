@@ -288,6 +288,7 @@ class CliqnshopCatalogController extends Controller
         $search_data = $request->all();
 
         $searchKey = $search_data['search'];
+        $searchKey = str_replace(' ', '_', $searchKey);
         $siteId = $search_data['siteId'];
         $source = $search_data['source'];
         commandExecFunc("mosh:cliqnshop-product-search ${searchKey} ${siteId} ${source}");
