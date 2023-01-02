@@ -647,11 +647,14 @@ class ZohoOrder
 
                     $result = Catalog_us::where('asin', $asin)->limit(1)->first();
                     $result_price = PricingUs::where('asin', $asin)->limit(1)->first();
-                    $price = $result_price->us_price;
+                    
+                    $price = $store_name == "Infinitikart UAE" ? 0 : $result_price->us_price;
+
                 } else {
                     $result = Catalog_in::where('asin', $asin)->limit(1)->first();
                     $result_price = PricingIn::where('asin', $asin)->limit(1)->first();
-                    $price = $result_price->in_price;
+               
+                    $price = $store_name == "Infinitikart UAE" ? 0 : $result_price->in_price;
                 }
 
                 if (isset($result) && isset($result->dimensions[0]['package']['weight']) && $result->dimensions[0]['package']['weight']['unit'] == 'pounds') {
