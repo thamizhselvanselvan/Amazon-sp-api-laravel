@@ -43,7 +43,7 @@ class Search_Product
             if (preg_match("(" . $ignore_key_for_cliqnshop . ")", $getProduct->title) !== 1 && preg_match("(" . $ignore_key_for_cliqnshop . ")", $getProduct->productDescription) !== 1) {
 
                 if ($count2 <= 9) {
-                    $productTitle[] = $getProduct->title;
+                    // $productTitle[] = $getProduct->title;
                     $ProductPriceRequest = new ProductsRequest();
                     $productPrice = $ProductPriceRequest->getASINpr($getProduct->asin);
                     $prices = isset($productPrice->includedDataTypes->OFFERS) ? $productPrice->includedDataTypes->OFFERS : '';
@@ -100,9 +100,9 @@ class Search_Product
                 $catalog_for_cliqnshop[$key1]['brand']      = isset($catalog_data['brand']) ? $catalog_data['brand'] : '';
                 $catalog_for_cliqnshop[$key1]['color']      = isset($catalog_data['color']) ? $catalog_data['color'] : '';
                 $catalog_for_cliqnshop[$key1]['unit']       = isset($catalog_data['unit']) ? $catalog_data['unit'] : '';
-                $catalog_for_cliqnshop[$key1]['length']     = isset($catalog_data['length']) ? $catalog_data['length'] : '';
-                $catalog_for_cliqnshop[$key1]['width']      = isset($catalog_data['width']) ? $catalog_data['width'] : '';
-                $catalog_for_cliqnshop[$key1]['weight']     = isset($catalog_data['weight']) ? $catalog_data['weight'] : '';
+                $catalog_for_cliqnshop[$key1]['length']     = isset($catalog_data['length']) ? round($catalog_data['length'], 2) : '';
+                $catalog_for_cliqnshop[$key1]['width']      = isset($catalog_data['width']) ? round($catalog_data['width'], 2) : '';
+                // $catalog_for_cliqnshop[$key1]['weight']     = isset($catalog_data['weight']) ? $catalog_data['weight'] : '';
                 // $catalog_for_cliqnshop[$key1]['price_US']      = isset($productPrice1[$key1]) ? $productPrice1[$key1] : '';
                 if (isset($catalog_data['weight'])) {
 
