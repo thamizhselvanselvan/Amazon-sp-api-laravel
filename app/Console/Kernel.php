@@ -70,6 +70,7 @@ class Kernel extends ConsoleKernel
             /*
                 Zoho - only one record at a time for staging
             */
+            $schedule->command('mosh:access_token_generate')->cron('*/55 * * * *');
         }
 
         if (app()->environment() === 'local') {

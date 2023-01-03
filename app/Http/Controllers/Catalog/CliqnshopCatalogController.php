@@ -212,14 +212,14 @@ class CliqnshopCatalogController extends Controller
                     }
                 }
             }
-           
+
             $asin =  $data['asin'];
             $item_name = $data['item_name'];
             $item_url = str_replace(' ', '-', $data['item_name']);
             $url = (strtolower($item_url));
-           
+
             $country = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid', $site_id)->select('code')->get();
-            
+
             $Price_US_IN = $data['usa_to_in_b2c'];
             if (isset($country['0']->code)) {
                 if (($country['0']->code) == 'in') {
@@ -323,24 +323,26 @@ class CliqnshopCatalogController extends Controller
         $searchKey = str_replace(' ', '_', $searchKey);
         $siteId = $search_data['siteId'];
         $source = $search_data['source'];
+
         //Process Management start
-        $process_manage = [
-            'module'             => 'Cliqnshop Product Search',
-            'description'        => 'Search product from cliqnshop',
-            'command_name'       => 'mosh:cliqnshop-product-search',
-            'command_start_time' => now(),
-        ];
+        // $process_manage = [
+        //     'module'             => 'Cliqnshop Product Search',
+        //     'description'        => 'Search product from cliqnshop',
+        //     'command_name'       => 'mosh:cliqnshop-product-search',
+        //     'command_start_time' => now(),
+        // ];
 
-        $process_management_id = ProcessManagement::create($process_manage)->toArray();
-        $pm_id = $process_management_id['id'];
+        // $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        // $pm_id = $process_management_id['id'];
 
-        $ApiCall = new Search_Product();
-        $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
+        // $ApiCall = new Search_Product();
+        // $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
 
-        date_default_timezone_set('Asia/Kolkata');
-        $command_end_time = now();
-        ProcessManagementUpdate($pm_id, $command_end_time);
+        // date_default_timezone_set('Asia/Kolkata');
+        // $command_end_time = now();
+        // ProcessManagementUpdate($pm_id, $command_end_time);
+
+        commandExecFunc("mosh:cliqnshop-product-search ${searchKey} ${siteId} ${source}");
         return response()->json('successfully');
-        // commandExecFunc("mosh:cliqnshop-product-search ${searchKey} ${siteId} ${source}");
     }
 }

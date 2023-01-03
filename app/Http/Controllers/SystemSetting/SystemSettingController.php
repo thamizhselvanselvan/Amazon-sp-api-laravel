@@ -16,7 +16,7 @@ class SystemSettingController extends Controller
         $maintenance_mode = isset($mode[0]['value']) ? $mode[0]['value'] : '';
 
         if ($request->ajax()) {
-            $data = SystemSetting::get();
+            $data = SystemSetting::orderBy('id', 'DESC')->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
@@ -69,7 +69,7 @@ class SystemSettingController extends Controller
 
     public function RecycleSystemSetting(Request $request)
     {
-        $data = SystemSetting::onlyTrashed()->get();
+        $data = SystemSetting::onlyTrashed()->orderBy('id', 'DESC')->get();
         if ($request->ajax()) {
             return DataTables::of($data)
                 ->addIndexColumn()
