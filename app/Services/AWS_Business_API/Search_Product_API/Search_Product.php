@@ -115,7 +115,7 @@ class Search_Product
         foreach ($catalog_for_cliqnshop as $cliqnshop_catalog) {
 
             if (isset($cliqnshop_catalog['price'])) {
-
+                $category           = 'demo-new';
                 $asin               = $cliqnshop_catalog['asin'];
                 $item_name          = $cliqnshop_catalog['itemName'];
                 $brand              = $cliqnshop_catalog['brand'];
@@ -131,7 +131,7 @@ class Search_Product
                 $short_description  = $cliqnshop_catalog['short_description'] ?? '';
                 $long_description   = $cliqnshop_catalog['long_description'] ?? '';
                 $cliqnshop = new CliqnshopCataloginsert();
-                $cliqnshop->insertdata_cliqnshop($siteId, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image_array,  $short_description,  $long_description);
+                $cliqnshop->insertdata_cliqnshop($siteId, $category, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image_array, $searchKey,  $short_description,  $long_description);
             }
         }
     }
