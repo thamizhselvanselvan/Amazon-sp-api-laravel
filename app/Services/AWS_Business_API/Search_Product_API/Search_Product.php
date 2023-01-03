@@ -9,8 +9,6 @@ use App\Services\Catalog\PriceConversion;
 use App\Services\Cliqnshop\CliqnshopCataloginsert;
 use App\Services\AWS_Business_API\AWS_POC\ProductsRequest;
 use App\Services\AWS_Business_API\AWS_POC\Search_Product_Request;
-use com\zoho\crm\api\record\Products;
-use Exception;
 
 use function GuzzleHttp\Promise\exception_for;
 
@@ -20,47 +18,53 @@ class Search_Product
     {
         $productSearchApi = new Search_Product_Request();
         $getProducts = $productSearchApi->getASIN($searchKey);
+
         $count = 0;
         $count2 = 0;
         $catalogs = [];
         $product_asin = [];
         $productPrice1 = [];
+        $productTitle = [];
 
         $aws_id = NULL;
         $seller_id = NULL;
         $country_code = 'US';
         if ($source == 'in') {
             $price_conversion_method = 'USAToINDB2C';
+            $ignore_key_for_cliqnshop =  ucwords(str_replace(',', '|', getSystemSettingsValue('ignore_item_for_cliqnshop_in_india', 'Revolver,Gun,Pistol')), '|');
         } else if ($source == 'uae') {
             $price_conversion_method = 'USATOUAE';
+            $ignore_key_for_cliqnshop =  ucwords(str_replace(',', '|', getSystemSettingsValue('ignore_item_for_cliqnshop_in_uae', 'WalkieTalkies')), '|');
         }
         $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->toArray();
         $token = $mws_regions[0]['aws_verified'][0]['auth_code'];
-
+        Log::notice($ignore_key_for_cliqnshop);
         foreach ($getProducts->products as $key => $getProduct) {
+            if (preg_match("(" . $ignore_key_for_cliqnshop . ")", $getProduct->title) !== 1 && preg_match("(" . $ignore_key_for_cliqnshop . ")", $getProduct->productDescription) !== 1) {
 
-            if ($count2 <= 9) {
+                if ($count2 <= 9) {
+                    $productTitle[] = $getProduct->title;
+                    $ProductPriceRequest = new ProductsRequest();
+                    $productPrice = $ProductPriceRequest->getASINpr($getProduct->asin);
+                    $prices = isset($productPrice->includedDataTypes->OFFERS) ? $productPrice->includedDataTypes->OFFERS : '';
 
-                $ProductPriceRequest = new ProductsRequest();
-                $productPrice = $ProductPriceRequest->getASINpr($getProduct->asin);
-                $prices = isset($productPrice->includedDataTypes->OFFERS) ? $productPrice->includedDataTypes->OFFERS : '';
+                    if (isset($prices[0])) {
 
-                if (isset($prices[0])) {
-
-                    $product_asin[] = $getProduct->asin;
-                    $productPrice1[] = isset($prices[0]->listPrice->value) != '' ? $prices[0]->listPrice->value->amount : $prices[0]->price->value->amount;
+                        $product_asin[] = $getProduct->asin;
+                        $productPrice1[] = isset($prices[0]->listPrice->value) != '' ? $prices[0]->listPrice->value->amount : $prices[0]->price->value->amount;
+                    }
                 }
+
+                if ($count == 9) {
+
+                    $catalog_for_cliqnshop = new NewCatalog();
+                    $catalogs = $catalog_for_cliqnshop->FetchDataFromCatalog($product_asin, $country_code, $seller_id, $token, $aws_id);
+                    // $count = 0;
+                }
+
+                $count++;
+                $count2++;
             }
-
-            if ($count == 9) {
-
-                $catalog_for_cliqnshop = new NewCatalog();
-                $catalogs = $catalog_for_cliqnshop->FetchDataFromCatalog($product_asin, $country_code, $seller_id, $token, $aws_id);
-                // $count = 0;
-            }
-
-            $count++;
-            $count2++;
         }
 
         $catalog_for_cliqnshop = [];
