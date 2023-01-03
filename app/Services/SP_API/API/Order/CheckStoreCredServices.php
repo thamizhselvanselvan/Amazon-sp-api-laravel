@@ -42,20 +42,18 @@ class CheckStoreCredServices
                 $slackMessage = "Store Name: $store_name
                 Description: Store credential is Working";
 
-                slack_notification('monitor', 'Store Cred Check', $slackMessage);
+                slack_notification('app360', 'Store Cred Check', $slackMessage);
                 $this->updateTable('1');
             }
         } catch (Exception $e) {
 
             if ($this->cred_status == '1' && $e->getCode() == '403') {
 
-                $msg = $e->getMessage();
-
-                $slackMessage = "Message: $msg
+                $slackMessage = "Code: 403
                 Store Name: $store_name
                 Description: Store credential is not Working";
 
-                slack_notification('monitor', 'Store Cred Check', $slackMessage);
+                slack_notification('app360', 'Store Cred Check', $slackMessage);
                 $this->updateTable('0');
             }
         }
