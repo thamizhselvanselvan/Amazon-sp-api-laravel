@@ -88,6 +88,7 @@ class InventoryCsvImport
                 $currency = $currency_array[$value['Currency']];
                 $warehouse_name = trim($value['Warehouse Name']);
                 $source = trim($value['Source']);
+                $ss_id = trim($value['Source ID']);
                 $rack_id = trim($value['Rack ID']);
                 $shelves_id = trim($value['Shelve ID']);
                 $bin_id = $value['Bin ID'];
@@ -104,6 +105,7 @@ class InventoryCsvImport
                     $data['currency'] = $currency;
                     $data['warehouse_id'] = array_search($warehouse_name, $warehouse_array);
                     $data['source'] = $source_array[$source];
+                    $data['source_id'] = $ss_id;
                     $data['rack_id'] = $rack_id;
                     $data['shelves_id'] = $shelves_id;
                     $data['tag'] = $tag_array[$tag];
@@ -161,6 +163,7 @@ class InventoryCsvImport
             "warehouse_id" => $data['warehouse_id'],
             "source_id" =>  $data['source'],
             "ship_id" => $this->ship_id,
+            "ss_id" => $data['source_id'],
             "currency" => $data['currency'],
             "asin" => $data['asin'],
             "item_name" => $data['item_name'],
@@ -175,6 +178,7 @@ class InventoryCsvImport
             "warehouse_id" => $data['warehouse_id'],
             "source_id" =>  $data['source'],
             "ship_id" => $this->ship_id,
+            "ss_id" => $data['source_id'],
             "asin" =>  $data['asin'],
             "price" => $data['sales_price'],
             "procurement_price" => $data['pro_price'],

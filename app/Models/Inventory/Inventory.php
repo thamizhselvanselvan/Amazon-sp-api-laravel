@@ -16,6 +16,7 @@ class Inventory extends Model
         'warehouse_id',
         'item_name',
         'source_id',
+        'ss_id',
         'tag',
         'asin',
         'out_quantity',

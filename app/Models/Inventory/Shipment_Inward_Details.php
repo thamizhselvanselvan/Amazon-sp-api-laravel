@@ -13,6 +13,7 @@ class Shipment_Inward_Details extends Model
         'ship_id',
         'warehouse_id',
         'source_id',
+        'ss_id',
         'currency',
         'asin',
         'item_name',
