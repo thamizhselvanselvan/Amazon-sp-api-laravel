@@ -116,7 +116,7 @@ class CliqnshopCatalogController extends Controller
 
         foreach ($csv_data as $data) {
             $asin[] = ($data['ASIN']);
-            $category[] = ($data['Category']);
+            $category[$data['ASIN']] = ($data['Category']);
         }
 
         $headers = [
@@ -133,6 +133,7 @@ class CliqnshopCatalogController extends Controller
             'pricing_uss.usa_to_uae',
 
         ];
+
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
         $result = $table_name->select($headers)
             ->join('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
@@ -201,14 +202,23 @@ class CliqnshopCatalogController extends Controller
                     }
                 }
             }
-
+           
             $asin =  $data['asin'];
             $item_name = $data['item_name'];
             $item_url = str_replace(' ', '-', $data['item_name']);
             $url = (strtolower($item_url));
+           
+            $country = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid', $site_id)->select('code')->get();
+            
             $Price_US_IN = $data['usa_to_in_b2c'];
-            $usa_price = $data['us_price'];
-            $Price_US_UAE2 = $data['usa_to_uae'];
+            if (isset($country['0']->code)) {
+                if (($country['0']->code) == 'in') {
+                    $Price_US_IN = $data['usa_to_in_b2c'];
+                } else if ($country['0']->code == 'uae') {
+                    $Price_US_IN  = $data['usa_to_uae'];
+                }
+            }
+
 
             $catalog_code = json_decode($data['browse_classification'], true);
             $cat_code = 'new';
@@ -262,9 +272,18 @@ class CliqnshopCatalogController extends Controller
                     $width_value  = $dim[0]['item']['width']['value'];
                 }
             }
-            $call = new CliqnshopCataloginsert();
-            $call->insertdata_cliqnshop(
+
+            if ($category[$asin] == '') {
+                $category_code = 'demo-new';
+            } else {
+
+                $category_code = $category[$asin];
+            }
+            $keyword = '';
+            $insert_service = new CliqnshopCataloginsert();
+            $insert_service->insertdata_cliqnshop(
                 $site_id,
+                $category_code,
                 $asin,
                 $item_name,
                 $brand,
@@ -277,10 +296,12 @@ class CliqnshopCatalogController extends Controller
                 $width_value,
                 $Price_US_IN,
                 $image,
+                $keyword,
                 $short_description,
                 $long_description
             );
         }
+
         return back()->with('success', 'uploading please wait... !');
     }
 

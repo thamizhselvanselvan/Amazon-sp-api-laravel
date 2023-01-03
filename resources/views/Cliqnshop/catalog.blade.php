@@ -89,7 +89,7 @@
                     </div>
                     <div class="modal-body">
 
-                        <a href="{{ route('cliqnshop.catalog.csv.template') }}">
+                        <a href="{{ route('cliqnshop.catalog.csv.templete') }}">
                             <x-adminlte-button label="Download Template" theme="info" icon="fas fa-file-download" class="btn-sm ml-2" />
                         </a>
                         <form class="row" id="multi-file-upload" method="POST" action="{{ route('cliqnshop.catalog.csv.import') }}" accept-charset="utf-8" enctype="multipart/form-data">
