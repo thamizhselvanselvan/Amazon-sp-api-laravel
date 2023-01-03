@@ -437,15 +437,6 @@ class ZohoOrder
         $prod_array["Lead_Source"] = $this->lead_source($store_name, $country_code);
         $prod_array['Lead_Status'] = $this->lead_status($store_name, $country_code);
 
-        // if (isset($buyerDtls->AddressLine1) && isset($buyerDtls->AddressLine2)) {
-        //     $address = $buyerDtls->AddressLine1 . ' ' . $buyerDtls->AddressLine2 ?? "";
-        // } else {
-        //     $address = $buyerDtls->AddressLine1 ?? "" . ' ' . $buyerDtls->AddressLine2 ?? "";
-        // }
-
-        // $address = str_replace("&", " and ", $address);
-        //
-
         $prod_array["Mobile"]      = isset($buyerDtls->Phone) ? substr((int) filter_var($buyerDtls->Phone, FILTER_SANITIZE_NUMBER_INT), -10) : '1234567890';
 
         $prod_array["Address"]     = $this->get_address($value->shipping_address, $country_code);
@@ -461,14 +452,14 @@ class ZohoOrder
         ### Inventory Management ###
         ############################
 
-        $catalog_details = $this->get_catalog($value->asin, $country_code, $store_name);
+        $catalog_details = $this->get_catalog($value->asin, $country_code, $store_name, $value->fulfillment_channel, $this->amount_paid_by_customer($item_tax, $item_price));
 
         $prod_array["Designation"]        = preg_replace("/[^a-zA-Z0-9_ -\/]+/", "", substr($value->title, 0, 100));
         $prod_array["Product_Code"]       = $value->seller_sku;
         $prod_array["Product_Cost"]       = isset($item_price->Amount) ? $item_price->Amount : 0;
         $prod_array["Procurement_URL"]    = $this->get_procurement_link($country_code, $value->asin);
         $prod_array["Nature"]             = "Import";
-        $prod_array["Product_Category"]   = $catalog_details['category']; //$value->product_category;
+        $prod_array["Product_Category"]   = $catalog_details['category'];
         $prod_array["Quantity"]           = "$value->quantity_ordered";
 
         ###############################
@@ -481,24 +472,23 @@ class ZohoOrder
         $prod_array["ASIN"]                      = $value->asin;
         $prod_array["SKU"]                       = $value->seller_sku;
         $prod_array["Product_Cost"]              = $catalog_details['price'];
-        $item_tax                                = isset($item_tax->Amount) ? $item_tax->Amount  : 0;
-        $amount_paid_by_customer                 = isset($item_price->Amount) ? $item_price->Amount + $item_tax : 0;
-        $prod_array["Amount_Paid_by_Customer"]   = (int)$amount_paid_by_customer;
-
-        // print("\n");
-        // print($item_tax);
-        // print("\n");
-        // print($item_price->Amount);
-        // print("\n");
-        // print($prod_array['Amount_Paid_by_Customer']);
-
-        // exit;
+        // $item_tax                                = isset($item_tax->Amount) ? $item_tax->Amount  : 0;
+        // $amount_paid_by_customer                 = isset($item_price->Amount) ? $item_price->Amount + $item_tax : 0;
+        $prod_array["Amount_Paid_by_Customer"]   = $this->amount_paid_by_customer($item_tax, $item_price);
 
         $prod_array["Weight_in_LBS"]             = (string)$catalog_details['weight'];
         $prod_array["Payment_Reference_Number1"] = $value->order_item_identifier;
         $prod_array["Exchange"]                  = $DOLLAR_EXCHANGE_RATE;
 
         return $prod_array;
+    }
+
+    public function amount_paid_by_customer($item_tax, $item_price): int {
+
+        $item_tax                 = isset($item_tax->Amount) ? $item_tax->Amount  : 0;
+        $amount_paid_by_customer  = isset($item_price->Amount) ? $item_price->Amount + $item_tax : 0;
+
+        return (int)$amount_paid_by_customer;
     }
 
     public function lead_source($store_name, $country_code)
@@ -632,7 +622,7 @@ class ZohoOrder
         return $buyerDtls->PostalCode ?? '00000';
     }
 
-    public function get_catalog($asin, $country_code, $store_name)
+    public function get_catalog($asin, $country_code, $store_name, $fulfillment_channel = null, $amount_paid_by_customer = null)
     {
         $result = null;
         $price = 0;
@@ -647,8 +637,12 @@ class ZohoOrder
 
                     $result = Catalog_us::where('asin', $asin)->limit(1)->first();
                     $result_price = PricingUs::where('asin', $asin)->limit(1)->first();
-                    
-                    $price = $store_name == "Infinitikart UAE" ? 0 : $result_price->us_price;
+
+                    $price = $this->get_price_usa($result_price, $store_name, $fulfillment_channel, $amount_paid_by_customer);
+
+                    echo "\n";
+                    print($price);
+                    echo "\n";
 
                 } else {
                     $result = Catalog_in::where('asin', $asin)->limit(1)->first();
@@ -675,6 +669,22 @@ class ZohoOrder
         }
 
         return ['price' => $price, 'weight' => $weight, 'category' => $category];
+    }
+
+    public function get_price_usa($result_price, $store_name, $fulfillment_channel, $amount_paid_by_customer) {
+
+       
+        if(!isset($result_price->us_price) && $store_name == "Infinitikart India") {
+
+            return $amount_paid_by_customer * 0.012;
+        }
+        
+        if($store_name == "Infinitikart UAE") {
+            
+            return 0;
+        }
+
+        return $result_price->us_price;
     }
 
     public function get_country($country_code)
