@@ -58,7 +58,7 @@ class OrderItem
             $code =  $e->getCode();
             $msg = $e->getMessage();
             ErrorReporting::create([
-                'queue_type' => "order",
+                'queue_type' => "order Item",
                 'identifier' => $order_id,
                 'identifier_type' => "order_id",
                 'source' => $awsCountryCode,
