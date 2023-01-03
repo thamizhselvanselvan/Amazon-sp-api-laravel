@@ -70,17 +70,14 @@ class InventoryCsvImport
 
         $records = CSV_Reader($file_path);
 
-        // $reader = Reader::createFromPath('D:/Inventory.csv', 'r');
-        // $reader->setHeaderOffset(0);
-
-        // $records = ($reader->getRecords());
-
         $total_item_count = 0;
         $source_id = [];
         $data = [];
         $multi_source_id = [];
-        foreach ($records as $value) {
+        $warehouse_id = '';
+        $currency_code = '';
 
+        foreach ($records as $value) {
             try {
                 $inward_date = $value['Inward Date'];
                 $asin = $value['ASIN'];
@@ -91,6 +88,7 @@ class InventoryCsvImport
                 $currency = $currency_array[$value['Currency']];
                 $warehouse_name = trim($value['Warehouse Name']);
                 $source = trim($value['Source']);
+                $ss_id = trim($value['Source ID']);
                 $rack_id = trim($value['Rack ID']);
                 $shelves_id = trim($value['Shelve ID']);
                 $bin_id = $value['Bin ID'];
@@ -107,6 +105,7 @@ class InventoryCsvImport
                     $data['currency'] = $currency;
                     $data['warehouse_id'] = array_search($warehouse_name, $warehouse_array);
                     $data['source'] = $source_array[$source];
+                    $data['source_id'] = $ss_id;
                     $data['rack_id'] = $rack_id;
                     $data['shelves_id'] = $shelves_id;
                     $data['tag'] = $tag_array[$tag];
@@ -116,6 +115,8 @@ class InventoryCsvImport
 
                     $this->InventoryDataInsert($data);
                     $total_item_count++;
+                    $warehouse_id = $data['warehouse_id'];
+                    $currency_code = $currency;
                 } else {
 
                     //Send notification for invalid entries
@@ -126,8 +127,14 @@ class InventoryCsvImport
                 //throw error for exception case
             }
         }
-        $multi_source_id = (json_encode(array_unique($multi_source_id)));
-        $this->InventroyShipmentInwardDataInsert($data, $total_item_count, $multi_source_id);
+
+        try {
+
+            $multi_source_id = (json_encode(array_unique($multi_source_id)));
+            $this->InventroyShipmentInwardDataInsert($warehouse_id, $currency_code, $total_item_count, $multi_source_id);
+        } catch (Exception $e) {
+            Log::info($e);
+        }
 
         return true;
     }
@@ -156,6 +163,7 @@ class InventoryCsvImport
             "warehouse_id" => $data['warehouse_id'],
             "source_id" =>  $data['source'],
             "ship_id" => $this->ship_id,
+            "ss_id" => $data['source_id'],
             "currency" => $data['currency'],
             "asin" => $data['asin'],
             "item_name" => $data['item_name'],
@@ -170,6 +178,7 @@ class InventoryCsvImport
             "warehouse_id" => $data['warehouse_id'],
             "source_id" =>  $data['source'],
             "ship_id" => $this->ship_id,
+            "ss_id" => $data['source_id'],
             "asin" =>  $data['asin'],
             "price" => $data['sales_price'],
             "procurement_price" => $data['pro_price'],
@@ -182,17 +191,19 @@ class InventoryCsvImport
         ]);
     }
 
-    public function InventroyShipmentInwardDataInsert($data, $total_item_count, $multi_source_id)
+    public function InventroyShipmentInwardDataInsert($warehouse_id, $currency_code, $total_item_count, $multi_source_id)
     {
-        Shipment_Inward::insert([
-            "warehouse_id" => $data['warehouse_id'],
-            "source_id" => $multi_source_id, //source id multiple if multi source is available
-            "ship_id" =>  $this->ship_id,
-            "currency" => $data['currency'],
-            "shipment_count" => $total_item_count,
-            "inwarded_at" => now(),
-            "created_at" => now(),
-            "updated_at" => now(),
-        ]);
+        if ($warehouse_id && $currency_code) {
+            Shipment_Inward::insert([
+                "warehouse_id" => $warehouse_id,
+                "source_id" => $multi_source_id, //source id multiple if multi source is available
+                "ship_id" =>  $this->ship_id,
+                "currency" => $currency_code,
+                "shipment_count" => $total_item_count,
+                "inwarded_at" => now(),
+                "created_at" => now(),
+                "updated_at" => now(),
+            ]);
+        }
     }
 }
