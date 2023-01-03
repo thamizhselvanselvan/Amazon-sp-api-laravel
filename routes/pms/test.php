@@ -18,8 +18,10 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Models\seller\SellerAsinDetails;
 use Illuminate\Support\Facades\Response;
-use App\Models\ShipNTrack\Packet\PacketForwarder;
+use App\Models\order\OrderSellerCredentials;
 use App\Services\Inventory\InventoryCsvImport;
+use App\Models\ShipNTrack\Packet\PacketForwarder;
+use App\Services\SP_API\API\Order\CheckStoreCredServices;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
@@ -178,4 +180,16 @@ Route::get('test/inventory', function () {
 
     (new InventoryCsvImport())->index('Inventory_CSV/Inventory2023-01-03-13-46-12.csv');
     //
+});
+
+Route::get('test/store-cred', function () {
+
+    $aws_data = OrderSellerCredentials::where('dump_order', 1)
+        ->get(['id', 'seller_id', 'country_code', 'cred_status', 'store_name'])
+        ->toArray();
+
+    foreach ($aws_data as $value) {
+
+        (new CheckStoreCredServices())->index($value);
+    }
 });

@@ -59,7 +59,9 @@ class SellerOrdersImport extends Command
         $process_management_id = ProcessManagement::create($process_manage)->toArray();
         $pm_id = $process_management_id['id'];
 
-        $aws_data = OrderSellerCredentials::where('dump_order', 1)->get();
+        $aws_data = OrderSellerCredentials::where('dump_order', 1)
+            ->where('cred_status', 1)
+            ->get();
 
         foreach ($aws_data as $aws_value) {
 

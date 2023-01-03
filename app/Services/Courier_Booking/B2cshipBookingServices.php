@@ -18,6 +18,7 @@ class B2cshipBookingServices
     private $amazon_order_id;
     private $order_item_id;
     private $store_id;
+    private $custom_percentage;
 
     public function b2cdata($amazon_order_id, $order_item_id, $store_id)
     {
