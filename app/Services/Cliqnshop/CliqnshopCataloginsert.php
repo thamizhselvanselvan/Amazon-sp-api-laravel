@@ -187,7 +187,7 @@ class CliqnshopCataloginsert
             // 'langid' => NULL,
             'domain' => 'product',
             'label' => 'short description',
-            'content' => (json_encode($short_description)),
+            'content' => $short_description,
             // 'status' => 1,
             'mtime' => $date_time,
             'ctime' => $date_time,

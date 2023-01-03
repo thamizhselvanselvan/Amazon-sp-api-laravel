@@ -166,7 +166,7 @@ class CliqnshopCatalogController extends Controller
                         if ($img1["Images${counter}"] = $image_data_new['height'] == 75) {
 
                             $img1["Images${counter}"] = '';
-                        } else {
+                        } else  if ($img1["Images${counter}"] = $image_data_new['height'] == 500) {
                             $img1["Images${counter}"] = $image_data_new['link'];
                         }
                     } else {
@@ -176,6 +176,18 @@ class CliqnshopCatalogController extends Controller
                         break;
                     }
                 }
+           
+
+
+
+
+
+
+
+
+
+
+                
             } else {
                 for ($i = 1; $i <= 5; $i++) {
                     $img1["Images${i}"] = null;
@@ -185,9 +197,7 @@ class CliqnshopCatalogController extends Controller
 
             $long_description = '';
 
-            $short_description = [
-                $data['asin'] => []
-            ];
+            $short_description = '';
 
             if (isset($data['attributes'])) {
 
@@ -197,7 +207,7 @@ class CliqnshopCatalogController extends Controller
                     $bullet = $desc['bullet_point'];
                     foreach ($bullet as $key => $val) {
 
-                        $short_description[$data['asin']] = $val['value'];
+                        $short_description = $val['value'];
                         $long_description .=  '<p>' . $val['value'];
                     }
                 }
