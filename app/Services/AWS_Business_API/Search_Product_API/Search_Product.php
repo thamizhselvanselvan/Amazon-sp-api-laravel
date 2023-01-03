@@ -34,7 +34,7 @@ class Search_Product
             $ignore_key_for_cliqnshop =  ucwords(str_replace(',', '|', getSystemSettingsValue('ignore_item_for_cliqnshop_in_india', 'Revolver,Gun,Pistol')), '|');
         } else if ($source == 'uae') {
             $price_conversion_method = 'USATOUAE';
-            $ignore_key_for_cliqnshop =  ucwords(str_replace(',', '|', getSystemSettingsValue('ignore_item_for_cliqnshop_in_uae', 'WalkieTalkies')), '|');
+            $ignore_key_for_cliqnshop =  ucwords(str_replace(',', '|', getSystemSettingsValue('ignore_item_for_cliqnshop_in_uae', 'Walkie,Talkies')), '|');
         }
         $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->toArray();
         $token = $mws_regions[0]['aws_verified'][0]['auth_code'];
