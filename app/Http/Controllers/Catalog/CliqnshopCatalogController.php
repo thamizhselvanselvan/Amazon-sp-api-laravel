@@ -142,8 +142,6 @@ class CliqnshopCatalogController extends Controller
 
         foreach ($result as $data) {
 
-
-
             $img1 = [
                 "Images1" => '',
                 "Images2" => '',
@@ -168,7 +166,7 @@ class CliqnshopCatalogController extends Controller
                         if ($img1["Images${counter}"] = $image_data_new['height'] == 75) {
 
                             $img1["Images${counter}"] = '';
-                        } else {
+                        } else  if ($img1["Images${counter}"] = $image_data_new['height'] == 500) {
                             $img1["Images${counter}"] = $image_data_new['link'];
                         }
                     } else {
@@ -178,6 +176,18 @@ class CliqnshopCatalogController extends Controller
                         break;
                     }
                 }
+           
+
+
+
+
+
+
+
+
+
+
+                
             } else {
                 for ($i = 1; $i <= 5; $i++) {
                     $img1["Images${i}"] = null;
@@ -187,9 +197,7 @@ class CliqnshopCatalogController extends Controller
 
             $long_description = '';
 
-            $short_description = [
-                $data['asin'] => []
-            ];
+            $short_description = '';
 
             if (isset($data['attributes'])) {
 
@@ -199,7 +207,7 @@ class CliqnshopCatalogController extends Controller
                     $bullet = $desc['bullet_point'];
                     foreach ($bullet as $key => $val) {
 
-                        $short_description[$data['asin']] = $val['value'];
+                        $short_description = $val['value'];
                         $long_description .=  '<p>' . $val['value'];
                     }
                 }
@@ -209,9 +217,18 @@ class CliqnshopCatalogController extends Controller
             $item_name = $data['item_name'];
             $item_url = str_replace(' ', '-', $data['item_name']);
             $url = (strtolower($item_url));
+
+            $country = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid', $site_id)->select('code')->get();
+
             $Price_US_IN = $data['usa_to_in_b2c'];
-            $usa_price = $data['us_price'];
-            $Price_US_UAE2 = $data['usa_to_uae'];
+            if (isset($country['0']->code)) {
+                if (($country['0']->code) == 'in') {
+                    $Price_US_IN = $data['usa_to_in_b2c'];
+                } else if ($country['0']->code == 'uae') {
+                    $Price_US_IN  = $data['usa_to_uae'];
+                }
+            }
+
 
             $catalog_code = json_decode($data['browse_classification'], true);
             $cat_code = 'new';
@@ -269,7 +286,7 @@ class CliqnshopCatalogController extends Controller
             if ($category[$asin] == '') {
                 $category_code = 'demo-new';
             } else {
- 
+
                 $category_code = $category[$asin];
             }
             $keyword = '';
@@ -306,24 +323,26 @@ class CliqnshopCatalogController extends Controller
         $searchKey = str_replace(' ', '_', $searchKey);
         $siteId = $search_data['siteId'];
         $source = $search_data['source'];
+
         //Process Management start
-        $process_manage = [
-            'module'             => 'Cliqnshop Product Search',
-            'description'        => 'Search product from cliqnshop',
-            'command_name'       => 'mosh:cliqnshop-product-search',
-            'command_start_time' => now(),
-        ];
+        // $process_manage = [
+        //     'module'             => 'Cliqnshop Product Search',
+        //     'description'        => 'Search product from cliqnshop',
+        //     'command_name'       => 'mosh:cliqnshop-product-search',
+        //     'command_start_time' => now(),
+        // ];
 
-        $process_management_id = ProcessManagement::create($process_manage)->toArray();
-        $pm_id = $process_management_id['id'];
+        // $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        // $pm_id = $process_management_id['id'];
 
-        $ApiCall = new Search_Product();
-        $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
+        // $ApiCall = new Search_Product();
+        // $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
 
-        date_default_timezone_set('Asia/Kolkata');
-        $command_end_time = now();
-        ProcessManagementUpdate($pm_id, $command_end_time);
+        // date_default_timezone_set('Asia/Kolkata');
+        // $command_end_time = now();
+        // ProcessManagementUpdate($pm_id, $command_end_time);
+
+        commandExecFunc("mosh:cliqnshop-product-search ${searchKey} ${siteId} ${source}");
         return response()->json('successfully');
-        // commandExecFunc("mosh:cliqnshop-product-search ${searchKey} ${siteId} ${source}");
     }
 }

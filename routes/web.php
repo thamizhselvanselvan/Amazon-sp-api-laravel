@@ -61,6 +61,7 @@ use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
 
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
+use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
 
 // use ConfigTrait;
 
@@ -76,6 +77,15 @@ use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 |
 */
 // use ConfigTrait;
+Route::get('str', function () {
+    $str = 'Soft Bullet Toy Revolver, Empty Shell Ejecting, Two Types of Foam Darts 36, Education Toy Model, Realistic Toy Gifts for Holidays Birthday New Year Christmas Boys Gift Blue HitSong';
+    $ignores = ['Revolver', 'Gun', 'Pistol'];
+    // foreach ($ignores as $ignore) {
+    if (preg_match('(Revolver|Gun|Pistol)', $str) !== 1) {
+        echo $str . '<br>';
+    }
+    // }
+});
 Route::get('cliqnshop', function () {
     $response =   Http::get('http://amazon-sp-api-laravel.app/api/product', [
         'search' => 'leather ball',
@@ -84,6 +94,18 @@ Route::get('cliqnshop', function () {
     ]);
     Log::alert($response);
 });
+
+Route::get('product/{key}', function ($key) {
+    $searchKey = $key;
+    $siteId = '4.';
+    $source = 'uae';
+
+    $ApiCall = new Search_Product();
+    $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
+    po($result);
+});
+
+
 
 Route::get('kyc', function () {
 
