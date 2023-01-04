@@ -276,6 +276,21 @@ class ImageBrandController extends Controller
 
     public function topselling(Request $request)
     {
+        $country = $request->country;
+        if ($request->ajax()) {
+            $data = DB::connection('cliqnshop')->table('home_page_contents')
+                ->where('section', 'top_selling_products_section')
+                ->where('country', $country)
+                ->select('content')
+                ->get()->pluck('content');
+
+            if ($data['0'] != '') {
+                $data = implode(",", json_decode($data[0], true));
+            } else {
+                $data = "";
+            }
+            return response()->json(['success' => 'Data  successfully Fetched', 'data' => $data]);
+        }
         $countrys = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
         return view('Cliqnshop.imagebrand.asins', compact('countrys'));
     }
@@ -1050,7 +1065,7 @@ class ImageBrandController extends Controller
     }
     public function promostore(Request $request)
     {
-        
+
         $request->validate([
 
             'country' => 'required',
