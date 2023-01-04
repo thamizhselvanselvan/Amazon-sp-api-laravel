@@ -53,8 +53,6 @@ class OrderItemDetailsImport extends Command
 
         $process_management_id = ProcessManagement::create($process_manage)->toArray();
         $pm_id = $process_management_id['id'];
-        // $pm_id = ProcessManagementCreate($process_manage['command_name']);
-        //Process Management end
 
         $order_item = new OrderItem();
 
@@ -69,6 +67,7 @@ class OrderItemDetailsImport extends Command
             $zoho = $value->zoho;
             $courier_partner = $value->courier_partner;
             $source = $value->source;
+            $store_name = $value->store_name;
 
             $missing_order_id = DB::connection('order')
                 ->select("SELECT ord.amazon_order_identifier, ord.our_seller_identifier, ord.country
@@ -84,14 +83,13 @@ class OrderItemDetailsImport extends Command
                     limit 1
                 ");
 
-
             foreach ($missing_order_id as $details) {
 
                 $country = $details->country;
                 $order_id = $details->amazon_order_identifier;
                 $aws_id = $details->our_seller_identifier;
 
-                $order_item->OrderItemDetails($order_id, $aws_id, $country, $source, $zoho, $courier_partner);
+                $order_item->OrderItemDetails($order_id, $aws_id, $country, $source, $zoho, $courier_partner, $store_name);
             }
         }
 
