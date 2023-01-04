@@ -11,6 +11,11 @@ class CliqnshopCataloginsert
 {
     public function insertdata_cliqnshop($site_id, $category, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image, $keyword,  $short_description,  $long_description)
     {
+
+        Log::alert($asin);
+        Log::alert($color_key);
+        Log::alert($length_value);
+        Log::alert($width_value);
         //asin-item_name(mshop_product)
         $currency = DB::connection('cliqnshop')->table('mshop_locale')->select('currencyid')->where('siteid', $site_id)->where('status', '1')->get();
         $currency_code = $currency['0']->currencyid;
@@ -84,7 +89,7 @@ class CliqnshopCataloginsert
                 'editor' => 'test',
             ];
 
-            DB::connection('cliqnshop')->table('mshop_attribute')->upsert($attribute, ['unq_msatt_dom_type_code_sid'], ['siteid', 'key', 'domain', 'code']);
+            DB::connection('cliqnshop')->table('mshop_attribute')->upsert($attribute, ['unq_msatt_dom_type_code_sid'], ['siteid', 'key', 'domain', 'code', 'label']);
             $get_attribute = DB::connection('cliqnshop')->table('mshop_attribute')->where('siteid', $attribute['siteid'])->where('code', $attribute['code'])
                 ->pluck('id')->ToArray();
             $get_attribute_id = $get_attribute[0];
@@ -304,7 +309,7 @@ class CliqnshopCataloginsert
         }
 
         //domain_attribute(asin) insert to mshop_product_list
-        if (!empty($attribute)) {
+        if (!empty($attribute['label'])) {
             $domain_attribute = [
                 'siteid' => $site_id,
                 'parentid' => $get_product_id,
@@ -558,8 +563,7 @@ class CliqnshopCataloginsert
                 '<pre>' . $catagory_label . '<pre>' . $brand_insert['label'] . '<pre>' . $attribute['label'] . '<pre>'
                 . $text_short['content'] . '<pre>' . $text_long['content'],
             'mtime' => $date_time,
-        ]; 
+        ];
         DB::connection('cliqnshop')->table('mshop_index_text')->upsert($index_text, ['unq_msindte_pid_sid_lid_url'], ['prodid', 'siteid', 'url', 'name', 'content']);
-       
     }
 }
