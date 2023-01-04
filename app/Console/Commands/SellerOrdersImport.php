@@ -68,10 +68,12 @@ class SellerOrdersImport extends Command
             $awsCountryCode = $aws_value['country_code']; //Destination
             $source = $aws_value['source'];
             $seller_id = $aws_value['seller_id'];
+            $store_name = $aws_value['store_name'];
+
             $auth_code = NULL;
             $amazon_order_id = NULL;
             $order = new Order();
-            $order->SelectedSellerOrder($seller_id, $awsCountryCode, $source, $auth_code, $amazon_order_id);
+            $order->SelectedSellerOrder($seller_id, $awsCountryCode, $source, $auth_code, $amazon_order_id, $store_name);
         }
 
         $command_end_time = now();
