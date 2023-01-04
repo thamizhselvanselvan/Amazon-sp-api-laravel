@@ -176,18 +176,6 @@ class CliqnshopCatalogController extends Controller
                         break;
                     }
                 }
-           
-
-
-
-
-
-
-
-
-
-
-                
             } else {
                 for ($i = 1; $i <= 5; $i++) {
                     $img1["Images${i}"] = null;
@@ -240,7 +228,7 @@ class CliqnshopCatalogController extends Controller
                 $cat_code = $catalog_code['classificationId'];
                 $cat_code_type = null;
             }
-            //brand
+           
             $brand_label = ' ';
             if ($data['brand']) {
 
@@ -272,14 +260,14 @@ class CliqnshopCatalogController extends Controller
                 $dim = json_decode($data['dimensions'], true);
                 if (isset($dim[0]['item']['length'])) {
                     $length_unit  = $dim[0]['item']['length']['unit'];
-                    $length_value  = $dim[0]['item']['length']['value'];
+                    $length_value  = round($dim[0]['item']['length']['value'], 3);
                 }
 
                 $width_unit  = '';
                 $width_value = '';
                 if (isset($dim[0]['item']['width'])) {
                     $width_unit  = $dim[0]['item']['width']['unit'];
-                    $width_value  = $dim[0]['item']['width']['value'];
+                    $width_value  = round($dim[0]['item']['width']['value'], 3);
                 }
             }
 
@@ -289,6 +277,7 @@ class CliqnshopCatalogController extends Controller
 
                 $category_code = $category[$asin];
             }
+          
             $keyword = '';
             $insert_service = new CliqnshopCataloginsert();
             $insert_service->insertdata_cliqnshop(
