@@ -241,7 +241,7 @@ return [
             'text' => 'Dashboard',
             'route' => 'login',
             'title' => 'Dashboard',
-            'can' =>  ['Admin','BOE', 'Account',  'Catalog',  'Inventory',  'Seller', 'KYC', 'B2CShip', 'Cliqnshop', 'POC',]
+            'can' =>  ['Admin']
 
         ],
         [
