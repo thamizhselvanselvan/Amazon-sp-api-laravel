@@ -48,6 +48,7 @@ class Kernel extends ConsoleKernel
             /*Orders*/
             $schedule->command('pms:sellers-orders-import')->everyTenMinutes(); //PM
             $schedule->command('mosh:order-item-details-import')->everyMinute(); //PM
+            $schedule->command('mosh:check-store-creds')->everyFourHours(); //PM
 
             /*Misc*/
             $schedule->command('backup:run')->twiceDaily();
