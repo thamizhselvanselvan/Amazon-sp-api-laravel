@@ -273,11 +273,11 @@ class AdminManagementController extends Controller
                 ->editColumn('store_name', function ($id) use ($store_cred_array, $store_status_array) {
                     if (array_key_exists($id['seller_id'], $store_cred_array) && array_key_exists($id['seller_id'], $store_status_array)) {
 
-                        $action =  $id['store_name'] . ' <span style="background-color:#ff0000ba; border-radius:30px; color:white; padding:0px 5px;"> Inactive </span>';
+                        $action =  $id['store_name'] . ' <span style="font-size: 14px; background-color:#ff0000ba; border-radius:30px; color:white; padding:0px 5px;"> Inactive </span>';
                         return $action;
                     } elseif (array_key_exists($id['seller_id'], $store_status_array)) {
 
-                        $action =  $id['store_name'] . ' <span style="background-color:#41a20f; border-radius:30px; color:white; padding:0px 5px;"> Active </span>';
+                        $action =  $id['store_name'] . ' <span style="font-size: 14px; background-color: #41a20f; border-radius:30px; color:white; padding:0px 5px;"> Active </span>';
                         return $action;
                     }
                     return $id['store_name'];
