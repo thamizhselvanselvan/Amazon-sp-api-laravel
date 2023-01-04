@@ -21,6 +21,7 @@ class AllPriceExportCsvServices
     private $record_per_csv = 1000000;
     private $export_file_path;
     private $fileNameOffset = 0;
+    private $priority;
 
     public function index($country_code, $fm_id, $priority = 'All')
     {
@@ -205,7 +206,7 @@ class AllPriceExportCsvServices
         foreach ($pricing_details as $value) {
             $value = $value->toArray();
 
-            Log::notice($value['weight']);
+            // Log::notice($value['weight']);
             foreach ($value as $key => $data) {
                 if ($key == 'asin' && array_key_exists($data, $asin_priority)) {
                     $records['priority'] = $asin_priority[$data];
@@ -213,11 +214,11 @@ class AllPriceExportCsvServices
                 } else {
                     $records[$key] = $data;
                 }
-                if ($country_code == 'IN' && $key == 'weight') {
-                    $records['weight'] = ceil($data);
-                }
+                // if ($country_code == 'IN' && $key == 'weight') {
+                //     $records['weight'] = ceil($data);
+                // }
             }
-            Log::notice($records);
+            // Log::notice($records);
             $this->createCsv($csv_header, $records);
         }
     }
