@@ -3,7 +3,6 @@
 namespace App\Services\SP_API\API\Order;
 
 use Exception;
-use Composer\IO\NullIO;
 use Illuminate\Support\Carbon;
 use SellingPartnerApi\Api\OrdersV0Api;
 use App\Services\SP_API\Config\ConfigTrait;
@@ -40,10 +39,11 @@ class CheckStoreCredServices
             if ($this->cred_status == '0') {
 
                 $slackMessage = "Store Name: $store_name
+                Country: $country_code
                 Description: Store credential is Working";
 
                 slack_notification('app360', 'Store Cred Check', $slackMessage);
-                $this->updateTable('1');
+                $this->updateTable($this->seller_id, '1');
             }
         } catch (Exception $e) {
 
@@ -51,17 +51,18 @@ class CheckStoreCredServices
 
                 $slackMessage = "Code: 403
                 Store Name: $store_name
+                Country: $country_code
                 Description: Store credential is not Working";
 
                 slack_notification('app360', 'Store Cred Check', $slackMessage);
-                $this->updateTable('0');
+                $this->updateTable($this->seller_id, '0');
             }
         }
     }
 
-    public function updateTable($update_value)
+    public function updateTable($seller_id, $update_value)
     {
-        OrderSellerCredentials::where('seller_id', $this->seller_id)
+        OrderSellerCredentials::where('seller_id', $seller_id)
             ->update(['cred_status' => $update_value]);
     }
 }

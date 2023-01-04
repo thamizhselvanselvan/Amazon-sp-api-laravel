@@ -41,6 +41,7 @@ class CheckStoreCreds extends Command
     public function handle()
     {
         $aws_data = OrderSellerCredentials::where('dump_order', 1)
+            ->where('cred_status', 0)
             ->get(['id', 'seller_id', 'country_code', 'cred_status', 'store_name'])
             ->toArray();
 

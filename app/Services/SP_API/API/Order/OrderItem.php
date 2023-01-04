@@ -30,10 +30,12 @@ class OrderItem
     use ConfigTrait;
     private $zoho;
     private $courier_partner;
-    public function OrderItemDetails($order_id, $aws_id, $country_code, $source, $zoho, $courier_partner)
+    private $store_name;
+    public function OrderItemDetails($order_id, $aws_id, $country_code, $source, $zoho, $courier_partner, $store_name)
     {
         $this->zoho = $zoho;
         $this->courier_partner = $courier_partner;
+        $this->store_name = $store_name;
 
         $config = $this->config($aws_id, $country_code);
         $marketplace_ids = $this->marketplace_id($country_code);
@@ -67,7 +69,16 @@ class OrderItem
                 'message' => $msg,
             ]);
 
-            //slack msg
+            if ($code == '403') {
+                $s_name = $this->store_name;
+                (new CheckStoreCredServices())->updateTable($aws_id, '0');
+                $slackMessage = "Code: 403
+                Store Name: $s_name
+                Country: $awsCountryCode
+                Description: Store credential is not Working";
+                // Log::alert($slackMessage);
+                slack_notification('app360', 'Store Credential Check', $slackMessage);
+            }
         }
         return true;
     }
