@@ -91,7 +91,8 @@ class CliqnshopCataloginsert
 
             DB::connection('cliqnshop')->table('mshop_attribute')->upsert($attribute, ['unq_msatt_dom_type_code_sid'],
              ['siteid', 'key', 'domain', 'code', 'label','type', 'mtime', 'ctime', 'editor']);
-            $get_attribute = DB::connection('cliqnshop')->table('mshop_attribute')->where('siteid', $attribute['siteid'])->where('code', $attribute['code'])
+            $get_attribute = DB::connection('cliqnshop')->table('mshop_attribute')->where(['code'=> $attribute['code'], 'siteid'=> $attribute['siteid'],
+            'type' => $attribute['type'],'domain' => $attribute['domain']])
                 ->pluck('id')->ToArray();
             $get_attribute_id = $get_attribute[0];
         }
@@ -116,7 +117,9 @@ class CliqnshopCataloginsert
             DB::connection('cliqnshop')->table('mshop_attribute')->upsert($length_attribute, ['unq_msatt_dom_type_code_sid'],
              ['siteid', 'key', 'code', 'label','type','domain','mtime','ctime','editor']);
 
-            $get_attribute_length = DB::connection('cliqnshop')->table('mshop_attribute')->where('siteid', $length_attribute['siteid'])->where('code', $length_attribute['code'])
+            $get_attribute_length = DB::connection('cliqnshop')->table('mshop_attribute')
+            ->where(['code' => $length_attribute['code'], 'domain' => $length_attribute['domain'], 'siteid' => $length_attribute['siteid'],
+                     'type' => $length_attribute['type']])
                 ->pluck('id')->ToArray();
             $get_attribute_id_length = $get_attribute_length[0];
         }
@@ -142,7 +145,11 @@ class CliqnshopCataloginsert
 
             DB::connection('cliqnshop')->table('mshop_attribute')->upsert($width_attribute, ['unq_msatt_dom_type_code_sid'],
              ['siteid', 'key', 'code', 'type','domain','label','mtime', 'ctime','editor']);
-            $get_attribute_width = DB::connection('cliqnshop')->table('mshop_attribute')->where('siteid', $width_attribute['siteid'])->where('code', $width_attribute['code'])
+            $get_attribute_width = DB::connection('cliqnshop')->table('mshop_attribute')
+                ->where([
+                    'code' => $width_attribute['code'], 'domain' => $width_attribute['domain'], 'siteid' => $width_attribute['siteid'],
+                    'type' => $width_attribute['type']
+                ])
                 ->pluck('id')->ToArray();
             $get_attribute_id_width = $get_attribute_width[0];
         }
@@ -192,7 +199,7 @@ class CliqnshopCataloginsert
                     ];
 
                     DB::connection('cliqnshop')->table('mshop_media')->updateOrInsert($media);
-                    $image_get_id = DB::connection('cliqnshop')->table('mshop_media')->where('siteid', $media['siteid'])->where('link', $media['link'])->select('id')->get();
+                    $image_get_id = DB::connection('cliqnshop')->table('mshop_media')->where('siteid', $media['siteid'])->where('mimetype', $media['mimetype'])->where('link', $media['link'])->select('id')->get();
 
                     $media_product_list = [
                         'siteid' => $site_id,
