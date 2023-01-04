@@ -107,8 +107,12 @@ Route::get('product/{key}', function ($key) {
 
 
 
-Route::get('kyc', function () {
+Route::get('kyc/{weight}', function ($weight) {
+    $weight = ceil((float)$weight);
+    // $weight = ceil($weight);
 
+    po($weight);
+    exit;
     $kyc_received = DB::connection('b2cship')->select("SELECT TOP 1 AWBNO, CreatedDate
     FROM Packet WHERE IsKYC ='true' ORDER BY CreatedDate DESC");
 
