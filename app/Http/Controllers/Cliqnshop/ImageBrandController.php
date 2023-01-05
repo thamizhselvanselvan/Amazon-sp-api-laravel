@@ -434,27 +434,16 @@ class ImageBrandController extends Controller
     public function onebanner(Request $request)
     {
 
-        //    $test =  Storage::disk('cliqnshop')->temporaryUrl( 'local/banner/1banner/' . substr($request->country, 0, -1) . 'image1.jpg', '+2 minutes');
-        // $test = Storage::disk('cliqnshop')->temporaryUrl(
-        //     'local/banner/1banner/' . substr($request->country, 0, -1) . 'image1.jpg',
-        //     now()->addMinutes(5)
-        // );
-        // echo '<img src="'. $test .'" alt="" id="cur_image" width="400" height="300">';
-        // dd($test);
-
         if ($request->ajax()) {
             $data = '';
-            $data =  Storage::disk('cliqnshop')->temporaryUrl('staging/banner/1banner/' . substr($request->country, 0, -1) . 'image1.jpg', '+2 minutes');
-
-
-
-            // if (app()->environment() === 'staging') {
-            //     $data = Storage::disk('cliqnshop')->url('staging/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg');
-            // } else if (app()->environment() === 'production') {
-            //     $data = Storage::disk('cliqnshop')->url('production/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg');
-            // } else {
-            //     $data = Storage::disk('cliqnshop')->url('local/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg');
-            // }
+           
+            if (app()->environment() === 'staging') {
+                $data =  Storage::disk('cliqnshop')->temporaryUrl('staging/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg', '+2 minutes');
+            } else if (app()->environment() === 'production') {
+               $data =   Storage::disk('cliqnshop')->temporaryUrl('production/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg', '+2 minutes');
+            } else {
+                $data =  Storage::disk('cliqnshop')->temporaryUrl('local/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg', '+2 minutes');
+            }
             return ['success' => 'Data  successfully Fetched', 'data' => $data];
         }
         $countrys = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
