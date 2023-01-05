@@ -90,12 +90,22 @@
     </div>
 </form>
 <div class="row justify-content-center d-none" id="row">
-    <div class="col">
-        <h2>Current Image</h2>
-        
-        <img src="" alt="" id="cur_image" width="400" height="300">
+    <div class="container ">
+        <center>
+            <h5><b>current Banner</b> </h5>
+        </center>
+        <div class="row justify-content-center">
+            <div class="card">
+                <img class="card-img-bottom" src="" alt="Card image" id="cur_image" style="width:350px">
+                <div class="card-body">
+                    <h4 class="card-title">Banner Name : Banner 1 </h4><br>
+                    <!-- <h4 class="card-title">Primary Text :Primary Text Goes Here </h4><br>
+                    <h4 class="card-title">Secondary Text :secondary Text Goes Here </h4><br>
+                    <h5><span class="badge badge-pill badge-primary">Link To visit</span></h5> -->
+                </div>
+            </div>
+        </div>
 
-        <!-- <input type="image" src="" alt="" id="cur_image" width="48" height="48"> -->
     </div>
 </div>
 @stop
