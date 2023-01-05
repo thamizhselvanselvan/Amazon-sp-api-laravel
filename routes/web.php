@@ -108,10 +108,14 @@ Route::get('product/{key}', function ($key) {
 
 
 Route::get('kyc', function () {
+    $b2c_booking = DB::connection('b2cship')->select("SELECT TOP 1 AWBNO, CreatedDate
+    FROM Packet ORDER BY CreatedDate DESC");
 
+    po($b2c_booking);
     $kyc_received = DB::connection('b2cship')->select("SELECT TOP 1 AWBNO, CreatedDate
     FROM Packet WHERE IsKYC ='true' ORDER BY CreatedDate DESC");
-
+    po($kyc_received);
+    exit;
     $kyc_received_date = Carbon::parse($kyc_received[0]->CreatedDate);
     $dayName = $kyc_received_date->dayName;
 

@@ -21,6 +21,7 @@ class AllPriceExportCsvServices
     private $record_per_csv = 1000000;
     private $export_file_path;
     private $fileNameOffset = 0;
+    private $priority;
 
     public function index($country_code, $fm_id, $priority = 'All')
     {
@@ -171,22 +172,22 @@ class AllPriceExportCsvServices
                     $pricing_details = PricingUs::whereIn('asin', $where_asin)
                         ->get($us_select);
 
-                    $this->priceDataFormating($pricing_details, $asin_priority, $us_csv_header);
+                    $this->priceDataFormating($pricing_details, $asin_priority, $us_csv_header, $this->country_code);
                 } else if ($this->country_code == 'IN') {
 
                     $pricing_details = PricingIn::whereIn('asin', $where_asin)
                         ->get($in_select);
-                    $this->priceDataFormating($pricing_details, $asin_priority, $in_csv_header);
+                    $this->priceDataFormating($pricing_details, $asin_priority, $in_csv_header, $this->country_code);
                 } else if ($this->country_code == 'SA') {
 
                     $pricing_details = PricingSa::whereIn('asin', $where_asin)
                         ->get($sa_select);
-                    $this->priceDataFormating($pricing_details, $asin_priority, $sa_csv_header);
+                    $this->priceDataFormating($pricing_details, $asin_priority, $sa_csv_header, $this->country_code);
                 } else if ($this->country_code == 'AE') {
 
                     $pricing_details = PricingAe::whereIn('asin', $where_asin)
                         ->get($ae_select);
-                    $this->priceDataFormating($pricing_details, $asin_priority, $ae_csv_header);
+                    $this->priceDataFormating($pricing_details, $asin_priority, $ae_csv_header, $this->country_code);
                 }
             }
             // }
@@ -199,12 +200,13 @@ class AllPriceExportCsvServices
         fileManagementUpdate($fm_id, $command_end_time);
     }
 
-    public function priceDataFormating($pricing_details, $asin_priority, $csv_header)
+    public function priceDataFormating($pricing_details, $asin_priority, $csv_header, $country_code)
     {
         $records = [];
         foreach ($pricing_details as $value) {
             $value = $value->toArray();
 
+            // Log::notice($value['weight']);
             foreach ($value as $key => $data) {
                 if ($key == 'asin' && array_key_exists($data, $asin_priority)) {
                     $records['priority'] = $asin_priority[$data];
@@ -212,8 +214,11 @@ class AllPriceExportCsvServices
                 } else {
                     $records[$key] = $data;
                 }
+                // if ($country_code == 'IN' && $key == 'weight') {
+                //     $records['weight'] = ceil($data);
+                // }
             }
-
+            // Log::notice($records);
             $this->createCsv($csv_header, $records);
         }
     }

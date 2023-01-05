@@ -53,19 +53,27 @@ class KycReceivedMonitoringCommand extends Command
         $pm_id = $process_management_id['id'];
         //End Process Management
 
+        $b2c_booking = DB::connection('b2cship')->select("SELECT TOP 1 AWBNO, CreatedDate
+        FROM Packet ORDER BY CreatedDate DESC");
+
+        $b2c_booking_awbNo = $b2c_booking[0]->AWBNO;
+
         $kyc_received = DB::connection('b2cship')->select("SELECT TOP 1 AWBNO, CreatedDate
         FROM Packet WHERE IsKYC ='true' ORDER BY CreatedDate DESC");
 
+        $kyc_received_awbNo = $kyc_received[0]->AWBNO;
         $kyc_received_date = Carbon::parse($kyc_received[0]->CreatedDate);
         $dayName = $kyc_received_date->dayName;
 
         $getTime = Carbon::parse($kyc_received[0]->CreatedDate);
         $now = Carbon::now();
         $timeDiff = $getTime->diff($now);
+        if ($b2c_booking_awbNo != $kyc_received_awbNo) {
 
-        if ($dayName != 'Sunday' && $timeDiff->h >= 11) {
+            if ($dayName != 'Sunday' && $timeDiff->h >= 11) {
 
-            slack_notification('monitor', 'KYC Received', 'KYC received exceeds 11 hours');
+                slack_notification('monitor', 'KYC Received', 'KYC received exceeds 11 hours');
+            }
         }
 
         //Start Update Process Management
