@@ -49,7 +49,7 @@
 
         <div class="col-3">
             <div class="form-group">
-                <x-adminlte-select name="country" label="Select Country" name="country">
+                <x-adminlte-select name="country" label="Select Country" name="country" id="source">
                     <option value=''>Select Country</option>
                     @foreach ($countrys as $country)
                     <option value="{{ $country->siteid }}">{{$country->code }}</option>
@@ -89,12 +89,54 @@
         </div>
     </div>
 </form>
-@stop
+<div class="row justify-content-center d-none" id="row">
+    <div class="col">
+        <h2>Current Image</h2>
+        
+        <img src="" alt="" id="cur_image" width="400" height="300">
 
+        <!-- <input type="image" src="" alt="" id="cur_image" width="48" height="48"> -->
+    </div>
+</div>
+@stop
 
 @section('js')
 <script type="text/javascript">
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $('#source').change(function() {
 
+        let cid = $('#source').val();
+        if (cid == '') {
+            return false;
+        }
 
+        $.ajax({
+            method: 'get',
+            url: "{{route('cliqnshop.onebanner')}}",
+            data: {
+                'country': cid,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(response) {
+
+                console.log(response.data);
+                $('#row').removeClass('d-none');
+                $("#cur_image").attr("src", response.data);
+
+                // $("#image_fill").empty();
+                // let asins = (response['data']);
+
+                // $("#image_fill").append(asins);
+                // console.log(asins);
+            },
+            error: function(response) {
+                console.log(response);
+            }
+        });
+    });
 </script>
 @stop
