@@ -126,7 +126,7 @@ class OrderItem
             'buyer_info',
             'amazon_order_identifier',
             'shipping_address',
-            'buyer_requested_cancel',
+            // 'buyer_requested_cancel',
             'created_at',
             'updated_at'
         ];
@@ -238,9 +238,11 @@ class OrderItem
     {
         if ($missing_columns_txt) {
 
+            $store_name = $this->store_name;
             $column_name = substr($missing_columns_txt, 0, -2);
-            $slackMessage = "Message: New Columns Detect
+            $slackMessage = "Message: New Columns Detected
             Store Id: $store_id
+            Store Name: $store_name
             Order Id: $order_id
             New Columns: $column_name";
 
