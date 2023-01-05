@@ -126,7 +126,7 @@ class OrderItem
             'buyer_info',
             'amazon_order_identifier',
             'shipping_address',
-            // 'buyer_requested_cancel',
+            'buyer_requested_cancel',
             'created_at',
             'updated_at'
         ];
