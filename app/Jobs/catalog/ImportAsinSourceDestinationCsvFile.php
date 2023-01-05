@@ -35,6 +35,13 @@ class ImportAsinSourceDestinationCsvFile implements ShouldQueue
     {
         $chunk_data = $this->payload;
         $csv_import = new CsvAsinImport();
-        $csv_import->AsinImport($chunk_data);
+
+        if ($chunk_data['module'] == 'BuyBox') {
+
+            $csv_import->ImportAsinIntoBuyBox($chunk_data);
+        } else {
+
+            $csv_import->AsinImport($chunk_data);
+        }
     }
 }
