@@ -2,15 +2,17 @@
 
 namespace App\Console\Commands\Catalog;
 
-use App\Models\Catalog\PricingAe;
 use ZipArchive;
 use League\Csv\Writer;
 use Illuminate\Console\Command;
+use App\Models\Catalog\PricingAe;
 use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingSa;
 use App\Models\Catalog\PricingUs;
 use Illuminate\Support\Facades\Log;
+use App\Services\Catalog\PriceExport;
 use Illuminate\Support\Facades\Storage;
+use App\Services\Catalog\AllPriceExportCsvServices;
 
 class CatalogPriceExportCSV extends Command
 {
@@ -25,12 +27,59 @@ class CatalogPriceExportCSV extends Command
     private $country_code;
     private $priority;
     private $date;
+    private $headers = [
+        'in' => [
+            'destination.asin as Asin' =>  'Asin',
+            'pricing_ins.available' => 'Available',
+            'pricing_ins.weight' => 'Weight',
+            'pricing_ins.in_price' => 'IND Price',
+            'pricing_ins.ind_to_uae' => 'IND To UAE',
+            'pricing_ins.ind_to_sg' => 'IND To SG',
+            'pricing_ins.ind_to_sa' => 'IND To SA',
+            'pricing_ins.updated_at' => 'Updated At'
+        ],
+        'us' => [
+            'destination.asin as Asin' => 'Asin',
+            'pricing_uss.available' => 'Available',
+            'pricing_uss.weight' => 'Weight',
+            'pricing_uss.us_price' => 'US Price',
+            'pricing_uss.usa_to_in_b2b' => 'US to IND B2B',
+            'pricing_uss.usa_to_in_b2c' => 'US to IND B2C',
+            'pricing_uss.usa_to_uae' => 'US to UAE',
+            'pricing_uss.usa_to_sg' => 'US to SG',
+            'pricing_uss.updated_at' => 'Updated At',
+        ],
+        'ae' => [
+            'destination.asin as Asin' => 'Asin',
+            'pricing_aes.available' => 'Available',
+            'pricing_aes.weight' => 'Weight',
+            'pricing_aes.ae_price' => 'AE Price',
+            'pricing_aes.updated_at' => 'Updated At',
+        ],
+        'sa' => [
+            'destination.asin as Asin' => 'Asin',
+            'pricing_sas.available' => 'Available',
+            'pricing_sas.weight' => 'Weight',
+            'pricing_sas.sa_price' => 'SA Price',
+            'pricing_sas.updated_at' => 'Updated At',
+        ]
+    ];
+
+    private $csv_headers = [
+        'in' => [],
+        'us' => [],
+        'ae' => [],
+        'sa' => []
+    ];
+
+
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    // protected $signature = 'mosh:catalog-price-export-csv {priority} {destination} {fm_id}';
+    //protected $signature = 'mosh:catalog-price-export-csv {priority} {destination} {fm_id}';
     protected $signature = 'mosh:catalog-price-export-csv {--columns=} ';
 
     /**
@@ -38,7 +87,7 @@ class CatalogPriceExportCSV extends Command
      *
      * @var string
      */
-    protected $description = 'Export catalog Price in CSV accroding to Country code';
+    protected $description = 'Export catalog Price in CSV according to Country code';
 
     /**
      * Create a new command instance.
@@ -58,223 +107,22 @@ class CatalogPriceExportCSV extends Command
     public function handle()
     {
         $columns_data = $this->option('columns');
+
         $final_data = [];
         $explode_array = explode(',', $columns_data);
+
         foreach ($explode_array as $value) {
             list($key, $value) = explode('=', $value);
             $final_data[$key] = $value;
         }
 
         $fm_id = $final_data['fm_id'];
-        $this->country_code = $final_data['destination'];
+        $this->country_code = strtolower($final_data['destination']);
         $this->priority = $final_data['priority'];
 
-        $exportFilePath = "excel/downloads/catalog_price/$this->country_code/Priority" . $this->priority . '/' . $this->country_code . "_CatalogPrice";
+        // (new PriceExport())->index($this->country_code, $fm_id, $this->priority);
 
-        $csv_head = [];
-        $csv_header = [];
-
-        $record_per_csv = 1000000;
-        $chunk = 20000;
-        $this->check = $record_per_csv / $chunk;
-
-        if ($this->country_code == 'IN') {
-
-            $headers = [
-                'destination.asin as Asin',
-                'pricing_ins.available',
-                'pricing_ins.weight',
-                'pricing_ins.in_price',
-                'pricing_ins.ind_to_uae',
-                'pricing_ins.ind_to_sg',
-                'pricing_ins.ind_to_sa',
-                'pricing_ins.updated_at',
-            ];
-
-            $csv_header = [
-                'Asin',
-                'Available',
-                'Weight',
-                'IND Price',
-                'IND To UAE',
-                'IND To SG',
-                'IND To SA',
-                'Updated At'
-            ];
-
-            PricingIn::select($headers)
-                ->rightJoin('asin_destination_ins as destination', 'pricing_ins.asin', '=', 'destination.asin')
-                ->where('destination.priority', $this->priority)
-                ->orWhereNull('destination.asin')
-                ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
-
-                    $this->CreateCsvFile($csv_header, $records, $exportFilePath);
-                });
-        } elseif ($this->country_code == 'US') {
-
-            $headers = [
-                'destination.asin as Asin',
-                'pricing_uss.available',
-                'pricing_uss.weight',
-                'pricing_uss.us_price',
-                'pricing_uss.usa_to_in_b2b',
-                'pricing_uss.usa_to_in_b2c',
-                'pricing_uss.usa_to_uae',
-                'pricing_uss.usa_to_sg',
-                'pricing_uss.updated_at',
-            ];
-
-            $csv_header = [
-                'Asin',
-                'Available',
-                'Weight',
-                'US Price',
-                'USA To IND B2B',
-                'USA To IND B2C',
-                'USA To UAE',
-                'USA To Singapore',
-                'Updated At'
-            ];
-
-            PricingUs::select($headers)
-                ->rightJoin('asin_destination_uss as destination', 'pricing_uss.asin', '=', 'destination.asin')
-                ->where('destination.priority', $this->priority)
-                ->orWhereNull('destination.asin')
-                ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
-
-                    $this->CreateCsvFile($csv_header, $records, $exportFilePath);
-                });
-        } elseif (strtoupper($this->country_code) == 'AE') {
-
-            $headers = [
-                'destination.asin as Asin',
-                'pricing_aes.available',
-                'pricing_aes.weight',
-                'pricing_aes.ae_price',
-                'pricing_aes.updated_at',
-            ];
-
-            $csv_header = [
-                'Asin',
-                'Available',
-                'Weight',
-                'AE Price',
-                'Updated At'
-            ];
-
-            PricingAe::select($headers)
-                ->rightJoin('asin_destination_aes as destination', 'pricing_aes.asin', '=', 'destination.asin')
-                ->where('destination.priority', $this->priority)
-                ->orWhereNull('destination.asin')
-                ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
-
-                    $this->CreateCsvFile($csv_header, $records, $exportFilePath);
-                });
-        } elseif (strtoupper($this->country_code) == 'SA') {
-
-            $headers = [
-                'destination.asin as Asin',
-                'pricing_sas.available',
-                'pricing_sas.weight',
-                'pricing_sas.sa_price',
-                'pricing_sas.updated_at',
-            ];
-
-            $csv_header = [
-                'Asin',
-                'Available',
-                'Weight',
-                'KSA Price',
-                'Updated At'
-            ];
-
-            PricingSa::select($headers)
-                ->rightJoin('asin_destination_sas as destination', 'pricing_sas.asin', '=', 'destination.asin')
-                ->where('destination.priority', $this->priority)
-                ->orWhereNull('destination.asin')
-                ->chunk($chunk, function ($records) use ($exportFilePath, $csv_header, $chunk) {
-
-                    $this->CreateCsvFile($csv_header, $records, $exportFilePath);
-                });
-        }
-
-        $path = "excel/downloads/catalog_price/" . $this->country_code . '/Priority' . $this->priority;
-        $path = Storage::path($path);
-        $files = (scandir($path));
-
-        $filesArray = [];
-        foreach ($files as $key => $file) {
-            if ($key > 1) {
-                if (str_contains($file, '.mosh')) {
-                    $new_file_name = str_replace('.csv.mosh', '.csv', $file);
-                    rename($path . '/' . $file, $path . '/' . $new_file_name);
-                }
-            }
-        }
-
-        $zip = new ZipArchive;
-        $path = "excel/downloads/catalog_price/" . $this->country_code . '/Priority' . $this->priority . '/' . "/zip/" . $this->country_code . "_CatalogPrice.zip";
-        $file_path = Storage::path($path);
-        if (!Storage::exists($path)) {
-            Storage::put($path, '');
-        }
-        if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
-            foreach ($this->totalFile as $key => $value) {
-                $path = Storage::path('excel/downloads/catalog_price/' . $this->country_code . '/Priority' . $this->priority . '/' . $value);
-                $relativeNameInZipFile = basename($path);
-                $zip->addFile($path, $relativeNameInZipFile);
-            }
-            $zip->close();
-        }
-
-        // FILE MANAGEMENT UPDATE
-        $command_end_time = now();
-        fileManagementUpdate($fm_id, $command_end_time);
-    }
-
-    public function CreateCsvFile($csv_header, $records, $exportFilePath)
-    {
-
-        if ($this->count == 1) {
-            if (!Storage::exists($exportFilePath . $this->fileNameOffset . '.csv.mosh')) {
-                Storage::put($exportFilePath . $this->fileNameOffset . '.csv.mosh', '');
-            }
-            $this->totalFile[] = $this->country_code . "_CatalogPrice" . $this->fileNameOffset . '.csv';
-            $this->writer = Writer::createFromPath(Storage::path($exportFilePath . $this->fileNameOffset . '.csv.mosh'), "w");
-            $this->writer->insertOne($csv_header);
-        }
-
-        $records = $records->toArray();
-        $records = array_map(function ($datas) {
-            return (array) $datas;
-        }, $records);
-
-        $not_available = [];
-
-        foreach ($records as $key => $record) {
-
-            foreach ($record as $key2 => $value) {
-
-                if ($key2 == 'updated_at') {
-                    $not_available[$key]['updated_at'] = isset($record['updated_at']) ? date("d-m-Y h:i:s", strtotime($record['updated_at'])) : 'NA';
-                }
-
-
-                if ($key2 != 'updated_at') {
-
-                    $not_available[$key][$key2] = $value ?? 'NA';
-                }
-            }
-        }
-
-        $this->writer->insertall($not_available);
-
-        if ($this->check == $this->count) {
-            $this->fileNameOffset++;
-            $this->count = 1;
-        } else {
-            ++$this->count;
-        }
+        (new AllPriceExportCsvServices())->index($this->country_code, $fm_id, $this->priority);
         return true;
     }
 }

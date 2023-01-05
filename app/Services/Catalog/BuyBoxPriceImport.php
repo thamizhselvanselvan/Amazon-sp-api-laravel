@@ -13,7 +13,7 @@ class BuyBoxPriceImport
 {
     public function fetchPriceFromBB($country_code, $seller_id, $limit)
     {
-        $priority_array = ['P1' => 1, 'P2' => 2, 'P3' => 3];
+        $priority_array = ['P1' => 1, 'P2' => 2, 'P3' => 3, 'P4' => 4];
         $price_convert = new PriceConversion();
 
         foreach ($priority_array as $priority) {
@@ -40,7 +40,7 @@ class BuyBoxPriceImport
 
             if (count($data) > 0) {
 
-                // Log::notice(count($data) . ' ->' . $priority . $country_code_lr . ' Price importing from BB');
+
                 foreach ($data as $value) {
 
                     $asin = $value->asin;
@@ -91,10 +91,9 @@ class BuyBoxPriceImport
 
                     $asin = implode(',', $asin_array);
                     $asin_price = DB::connection('buybox')
-                        ->select("SELECT PPO.asin, LP.available,
+                        ->select("SELECT PPO.asin, LP.available, LP.updated_at as updated_at,
                             GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
-                            group_concat(PPO.listingprice_amount) as listingprice_amount,
-                            group_concat(PPO.updated_at) as updated_at
+                            group_concat(PPO.listingprice_amount) as listingprice_amount
                             FROM 
                                 $product_seller_details as PPO
                                     JOIN
@@ -111,7 +110,8 @@ class BuyBoxPriceImport
 
                         $buybox_winner = explode(',', $value->is_buybox_winner);
                         $listing_price = explode(',', $value->listingprice_amount);
-                        $updated_at = explode(',', $value->updated_at);
+                        // $updated_at = explode(',', $value->updated_at);
+                        $updated_at = $value->updated_at;
 
                         $asin_name = $value->asin;
                         if (isset($find_missing_asin[$asin_name])) {
@@ -138,8 +138,8 @@ class BuyBoxPriceImport
                                         'asin' =>  $asin_name,
                                         'available' => $available,
                                         $price => $listing_price_amount,
-                                        // 'price_updated_at' => max($updated_at),
-                                        'price_updated_at' => $updated_at[array_key_last($updated_at)],
+                                        // 'price_updated_at' => $updated_at[array_key_last($updated_at)],
+                                        'price_updated_at' => $updated_at,
                                     ];
                                 break 1;
                             } else {
@@ -151,7 +151,7 @@ class BuyBoxPriceImport
                                         'available' => $available,
                                         $price => $listing_price_amount,
                                         // 'price_updated_at' =>  max($updated_at),
-                                        'price_updated_at' => $updated_at[array_key_last($updated_at)],
+                                        'price_updated_at' => $updated_at,
                                     ];
                             }
                         }
@@ -202,13 +202,14 @@ class BuyBoxPriceImport
 
                     if ($country_code_lr == 'us') {
 
-                        // PricingUs::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
+                        PricingUs::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
                         PricingUs::upsert($pricing, 'unique_asin',  ['asin', 'available', 'weight', 'us_price', 'usa_to_in_b2b', 'usa_to_in_b2c', 'usa_to_uae', 'usa_to_sg', 'price_updated_at']);
                     } elseif ($country_code_lr == 'in') {
 
-                        // PricingIn::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
+                        PricingIn::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
                         PricingIn::upsert($pricing_in, 'asin_unique', ['asin', 'available', 'in_price', 'weight', 'ind_to_uae', 'ind_to_sg', 'ind_to_sa', 'price_updated_at']);
                     }
+
                     // elseif ($country_code_lr == 'ae') {
 
                     //     PricingAe::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);

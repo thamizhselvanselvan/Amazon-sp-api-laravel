@@ -33,6 +33,7 @@ class Kernel extends ConsoleKernel
             /*B2CShip*/
             $schedule->command('pms:b2cship-microstatus-report')->daily(); //PM
             $schedule->command('pms:b2cship-kyc-status')->daily(); //PM
+            $schedule->command('mosh:kyc-received-monitor')->hourly();
 
             /*BEO*/
             $schedule->command('pms:boe-upload-Do')->everyFourHours(); //PM
@@ -46,15 +47,16 @@ class Kernel extends ConsoleKernel
 
             /*Orders*/
             $schedule->command('pms:sellers-orders-import')->everyTenMinutes(); //PM
-            $schedule->command('mosh:order-item-details-import')->everyTwoMinutes(); //PM
+            $schedule->command('mosh:order-item-details-import')->everyMinute(); //PM
+            $schedule->command('mosh:check-store-creds')->everyFourHours(); //PM
 
             /*Misc*/
             $schedule->command('backup:run')->twiceDaily();
             $schedule->command('backup:clean')->daily()->at('01:00');
 
             /*AWS Sync - Needs to be removed*/
-            $schedule->command('aws:nitshop:order')->hourly(); //PM
-            $schedule->command('aws:nitshop:order_details')->hourly(); //PM
+            // $schedule->command('aws:nitshop:order')->hourly(); //PM
+            // $schedule->command('aws:nitshop:order_details')->hourly(); //PM
 
             /*Order CI CD*/
             $schedule->command('aws:courier-booking')->everyMinute();
@@ -69,6 +71,7 @@ class Kernel extends ConsoleKernel
             /*
                 Zoho - only one record at a time for staging
             */
+            $schedule->command('mosh:access_token_generate')->cron('*/55 * * * *');
         }
 
         if (app()->environment() === 'local') {

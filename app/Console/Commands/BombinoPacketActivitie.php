@@ -42,7 +42,6 @@ class BombinoPacketActivitie extends Command
      */
     public function handle()
     {
-        Log::info('command executed');
         $month = $this->argument('month');
         $year = $this->argument('year');
         $year_array = [
@@ -75,20 +74,15 @@ class BombinoPacketActivitie extends Command
 
             $start_date = $year . '-' . $start . ' 00:00:00';
             $end_date = $yesterday_ed;
-        }
-        elseif($month == 2)
-        {
+        } elseif ($month == 2) {
             $start_date = $year . '-' . $start . ' 00:00:00';
-            if($year/4 == 0)
-            {
+            if ($year / 4 == 0) {
                 $end_date = $year . '-02-29' . ' 23:59:59';
-            }
-            else{
+            } else {
 
                 $end_date = $year . '-02-28' . ' 23:59:59';
             }
-        }
-        else {
+        } else {
 
             $start_date = $year . '-' . $start . ' 00:00:00';
             $end_date = $year . '-' . $end . ' 23:59:59';
@@ -106,7 +100,5 @@ class BombinoPacketActivitie extends Command
             Storage::put($file_path, '');
         }
         Storage::put($file_path, json_encode($packet_detials));
-
-        //Log::alert($month . "file created");
     }
 }

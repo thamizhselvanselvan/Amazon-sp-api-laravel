@@ -38,26 +38,22 @@ class BOEPdefreader2018
 
         // echo $path;
         $content = preg_split('/[\r\n|\t|,]/', $content, -1, PREG_SPLIT_NO_EMPTY);
-        //   dd($content);
-  
 
-          // Log::alert($maxkey);
-          
         foreach ($content as $key => $data) {
             if ($data == 'Page1of2' || $data == 'Page 1 of 2') {
                 unset($content[$key]);
             } else if ($data == 'NOTIFICATION USED FOR THE ITEM') {
-                
+
                 if ($content[$key + 1] != 'Sr.No.') {
                     unset($content[$key + 1]);
                 }
             }
         }
-        
-        
+
+
         $content = array_values($content);
         $maxkey = max(array_keys($content));
-        
+
 
 
 
@@ -506,16 +502,14 @@ class BOEPdefreader2018
                 } else if ($BOEPDFData == 'Discount Amount :') {
 
                     boe_loop($key, $Boecheck, 'Currency of Discount :', $courier_basic_details, 'DiscountAmount');
-                }
-                 else if ($BOEPDFData == 'Currency of Discount :') {
+                } else if ($BOEPDFData == 'Currency of Discount :') {
 
                     boe_loop($key, $Boecheck, 'Assessable Value :', $courier_basic_details, 'CurrencyofDiscount');
-                  
-                } 
+                }
                 // else if ($BOEPDFData == 'Assessable Value :') {
                 //     boe_loop($key, $Boecheck, 'Duty(Rs.):', $courier_basic_details, 'AssessableValue');
                 // } 
-                else if ($BOEPDFData == 'NOTIFICATION USED FOR THE ITEM') {    
+                else if ($BOEPDFData == 'NOTIFICATION USED FOR THE ITEM') {
                     $val = $key + 1;
                     if (array_key_exists($val, $content)) {
 
@@ -523,21 +517,18 @@ class BOEPdefreader2018
                         $offset = 0;
                         $count = 0;
                         while ($Boecheck[$check_key] != 'CHARGES USED FOR THE ITEM') {
-                          $count++;
-                          $check_key++;
+                            $count++;
+                            $check_key++;
                         }
 
                         $check_key = $key + 4;
 
                         while ($Boecheck[$check_key] != 'CHARGES USED FOR THE ITEM') {
-                            if($count < 3)
-                            {
+                            if ($count < 3) {
                                 $notification_details[$offset]['SrNo'] = '1';
                                 $notification_details[$offset]['NotificationNumber'] = $Boecheck[$check_key++];
                                 $notification_details[$offset]['SerialNumberOfNotification'] = $Boecheck[$check_key++];
-                            }
-                            else
-                            {
+                            } else {
                                 $notification_details[$offset]['SrNo'] = $Boecheck[$check_key++];
                                 $notification_details[$offset]['NotificationNumber'] = $Boecheck[$check_key++];
                                 $notification_details[$offset]['SerialNumberOfNotification'] = $Boecheck[$check_key++];
@@ -545,11 +536,10 @@ class BOEPdefreader2018
                             $offset++;
                         }
                     }
-                   
                 } else if ($BOEPDFData == 'CHARGES USED FOR THE ITEM') {
                     $check_key = $key + 4;
                     $offset = 0;
-                    
+
                     while ($Boecheck[$check_key] != 'DUTY DETAILS') {
                         $charge_details[$offset]['SrNo'] = $Boecheck[$check_key++];
                         $charge_details[$offset]['ChargeType'] = $Boecheck[$check_key++];
@@ -569,8 +559,8 @@ class BOEPdefreader2018
                         $offset++;
                     }
                 } else if ($BOEPDFData == 'PAYMENT DETAILS') {
-                   
-                    
+
+
                     $name_details = '';
                     $check_key = $key + 5;
                     $offset = 0;
@@ -579,25 +569,22 @@ class BOEPdefreader2018
                         $payment_details[$offset]['ChallanNumber'] = $Boecheck[$check_key++];
                         $payment_details[$offset]['TotalAmount'] = $Boecheck[$check_key++];
                         $payment_details[$offset]['ChallanDate'] = $Boecheck[$check_key++];
-                        
+
                         $offset++;
                     }
-                    
-                }
-              else  if ($BOEPDFData == "DECLARATION") {
-                  
-                  $data[] = [
-                      'courier_basic_details' => $courier_basic_details,
-                      'notification_details' => $notification_details,
-                      'charge_details' => $charge_details,
-                      'duty_details' => $duty_details,
-                      'payment_details' => $payment_details,
-                      'igm_details' => $igm_details
+                } else  if ($BOEPDFData == "DECLARATION") {
+
+                    $data[] = [
+                        'courier_basic_details' => $courier_basic_details,
+                        'notification_details' => $notification_details,
+                        'charge_details' => $charge_details,
+                        'duty_details' => $duty_details,
+                        'payment_details' => $payment_details,
+                        'igm_details' => $igm_details
                     ];
                 }
-              
             }
-         
+
             foreach ($data as $boe_details) {
                 $courier_basic_details = $boe_details['courier_basic_details'];
                 $notification_details = $boe_details['notification_details'];
@@ -633,7 +620,7 @@ class BOEPdefreader2018
                     }
                 }
 
-                
+
                 if ($dataCheck != 1) {
                     //add new 
                     $boe_bean_detials = $this->createbean($boe_details, $company_id, $user_id, $courier_basic_details, $igm_details, $notification_details, $charge_details, $duty_details, $payment_details);

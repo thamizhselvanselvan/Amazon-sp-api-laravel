@@ -340,7 +340,6 @@ return [
                     'can' => ['Admin', 'Account'],
                     'icon' => 'far fa fa-cog',
                 ],
-
                 [
                     'text' => 'File Management',
                     'url' => 'admin/file-management',
@@ -348,11 +347,17 @@ return [
                     'icon' => 'far fa-fw fa-file',
                 ],
                 [
+                    'text' => 'Process Management',
+                    'url' => 'admin/process-management',
+                    'can' => ['Admin'],
+                    'icon' => 'fa fa-spinner',
+                ],
+                [
                     'text' => 'Jobs Management',
                     'url' => 'admin/job-management',
                     'can' => ['Admin'],
                     'icon' => 'fa fa-tasks',
-                ],
+                ]
             ],
         ],
 
@@ -888,32 +893,33 @@ return [
                     'icon' => 'fa fa-shopping-cart',
                     'submenu' => [
                         [
+                            'text' => 'Orders Pending',
+                            'url' => 'business/orders/details',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-clock-o',
+                        ],
+                        [
                             'text' => 'Orders Booked',
                             'url' => 'business/booked/details',
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-check',
                         ],
                         [
-                            'text' => 'Orders Pending',
-                            'url' => 'business/orders/details',
+                            'text' => 'Orders Confirmation',
+                            'url' => 'business/orders/confirm',
                             'can' => ['Admin', 'Cliqnshop'],
-                            'icon' => 'fa fa-clock-o',
+                            'icon' => 'fa fa-check-circle-o',
+                        ],
+                        [
+                            'text' => 'Shipment Notification',
+                            'url' => 'business/ship/confirmation',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-bell',
                         ],
                     ],
 
                 ],
-                [
-                    'text' => 'Orders Confirmation',
-                    'url' => 'business/orders/confirm',
-                    'can' => ['Admin', 'Cliqnshop'],
-                    'icon' => 'fa fa-check-circle-o',
-                ],
-                [
-                    'text' => 'Shipment Notification',
-                    'url' => 'business/ship/confirmation',
-                    'can' => ['Admin', 'Cliqnshop'],
-                    'icon' => 'fa fa-bell',
-                ],
+
                 [
                     'text' => 'KYC Details',
                     'url' => 'cliqnshop/kyc',
@@ -925,6 +931,50 @@ return [
                     'url' => 'cliqnshop/contact',
                     'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fa fa-link',
+                ],
+                [
+                    'text' => 'Home Section',
+                    'can' => ['Admin', 'Cliqnshop'],
+                    'icon' => 'fa fa-home',
+                    'submenu' => [
+                        [
+                            'text' => 'Top Selling Section',
+                            'url' => 'cliqnshop/brand',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-arrow-up',
+                        ],
+                        [
+                            'text' => '1 Banner Section',
+                            'url' => 'cliqnshop/one_banners',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-image',
+                        ],
+                        [
+                            'text' => '2 Banner Section',
+                            'url' => 'cliqnshop/two_banners',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-image',
+                        ],
+                        [
+                            'text' => '3 Banner Section',
+                            'url' => 'cliqnshop/banner',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-image',
+                        ],
+                        [
+                            'text' => 'trending brands section',
+                            'url' => 'cliqnshop/trending',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-th',
+                        ],
+                        [
+                            'text' => 'promo Banner Section',
+                            'url' => 'cliqnshop/promo',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-arrow-up',
+                        ],
+
+                    ],
                 ],
             ],
         ],

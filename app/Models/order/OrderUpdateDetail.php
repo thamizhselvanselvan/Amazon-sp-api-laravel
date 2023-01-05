@@ -13,12 +13,6 @@ class OrderUpdateDetail extends Model
     use HasFactory;
     protected $connection = 'order';
 
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-        $this->getConnection()->setTablePrefix('ord_');
-    }
-
     protected $fillable = [
         'store_id',
         'amazon_order_id',

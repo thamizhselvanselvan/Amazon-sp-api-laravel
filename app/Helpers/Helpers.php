@@ -3,12 +3,14 @@
 use Carbon\Carbon;
 use App\Models\User;
 use League\Csv\Reader;
+use League\Csv\Writer;
 use Carbon\CarbonInterval;
 use App\Models\Aws_credential;
 use App\Models\FileManagement;
 use PhpParser\Node\Expr\Eval_;
 use App\Models\Catalog\Catalog;
 use App\Models\Admin\Ratemaster;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -1143,5 +1145,58 @@ if (!function_exists('CSV_Reader')) {
         $reader->setHeaderOffset(0);
 
         return $reader->getRecords();
+    }
+}
+
+
+if (!function_exists('CSV_Write')) {
+    function CSV_Write($file_path, $columnsHeader, $records = null)
+    {
+
+        $CSV_Writer = null;
+
+        if (!Storage::exists($file_path)) {
+            Storage::put($file_path, '');
+        }
+
+        if (Storage::exists($file_path)) {
+
+            $CSV_Writer = Writer::createFromPath(Storage::path($file_path), "w");
+            $CSV_Writer->insertOne($columnsHeader);
+
+            if ($records) {
+                Log::emergency('Writig Here ');
+                $CSV_Writer->insertaLL($records);
+            }
+        }
+
+        return $CSV_Writer;
+    }
+}
+
+
+if (!function_exists('CSV_w')) {
+    function CSV_w($file_name, $record, $headers = []): void
+    {
+        $writer = (object)'';
+
+        if (!Storage::exists($file_name)) {
+
+            $writer = CSV_Write($file_name, $headers, $record);
+        } else {
+
+            $writer = Writer::createFromPath(Storage::path($file_name), "a");
+            $writer->insertaLL($record);
+        }
+    }
+}
+
+if (!function_exists('ProcessManagementUpdate')) {
+    function ProcessManagementUpdate($pm_id, $command_end_time)
+    {
+        $process_management_update = ProcessManagement::find($pm_id);
+        $process_management_update->status = '1';
+        $process_management_update->command_end_time = $command_end_time;
+        $process_management_update->update();
     }
 }

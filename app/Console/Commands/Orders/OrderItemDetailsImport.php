@@ -2,11 +2,12 @@
 
 namespace App\Console\Commands\Orders;
 
-use App\Models\order\OrderSellerCredentials;
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\SP_API\API\Order\Order;
+use App\Models\order\OrderSellerCredentials;
 use App\Services\SP_API\API\Order\OrderItem;
 
 class OrderItemDetailsImport extends Command
@@ -42,15 +43,31 @@ class OrderItemDetailsImport extends Command
      */
     public function handle()
     {
+        //Process Management start
+        $process_manage = [
+            'module'             => 'Order',
+            'description'        => 'Import order item details for each order',
+            'command_name'       => 'mosh:order-item-details-import',
+            'command_start_time' => now(),
+        ];
+
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+
         $order_item = new OrderItem();
 
-        $seller_id_array = OrderSellerCredentials::where('dump_order', 1)->get();
+        $seller_id_array = OrderSellerCredentials::where('dump_order', 1)
+            ->where('cred_status', 1)
+            ->get();
+        $missing_order_id = [];
 
         foreach ($seller_id_array as $value) {
+
             $seller_id = $value->seller_id;
             $zoho = $value->zoho;
             $courier_partner = $value->courier_partner;
             $source = $value->source;
+            $store_name = $value->store_name;
 
             $missing_order_id = DB::connection('order')
                 ->select("SELECT ord.amazon_order_identifier, ord.our_seller_identifier, ord.country
@@ -62,7 +79,7 @@ class OrderItemDetailsImport extends Command
                             AND ord.our_seller_identifier = '$seller_id' 
                             AND ord.order_status != 'Pending' 
                             AND ord.order_status != 'Canceled' 
-                    order by ord.id desc
+                    order by ord.id asc
                     limit 1
                 ");
 
@@ -72,8 +89,11 @@ class OrderItemDetailsImport extends Command
                 $order_id = $details->amazon_order_identifier;
                 $aws_id = $details->our_seller_identifier;
 
-                $order_item->OrderItemDetails($order_id, $aws_id, $country, $source, $zoho, $courier_partner);
+                $order_item->OrderItemDetails($order_id, $aws_id, $country, $source, $zoho, $courier_partner, $store_name);
             }
         }
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Catalog;
 
 use App\Models\Mws_region;
+use App\Models\ProcessManagement;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -41,6 +42,19 @@ class CatalogAmazonImport extends Command
      */
     public function handle()
     {
+        //Process Management start
+        $process_manage = [
+            'module'             => 'Catalog Import',
+            'description'        => 'Import Catalog from Amazon',
+            'command_name'       => 'mosh:catalog-amazon-import',
+            'command_start_time' => now(),
+        ];
+
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+
+        //Process Management end
+
         // $sources = ['ae', 'sa'];
         // $limit_array = ['sa' => 200, 'ae' => 200];
         $sources = ['in', 'us'];
@@ -118,7 +132,7 @@ class CatalogAmazonImport extends Command
                     $aws_id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
 
                     if ($count == 10) {
-                        //log::alert($asin_source);
+
                         jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
                         // $catalog_class->Catalog($asin_source);
                         $auth_count++;
@@ -150,15 +164,17 @@ class CatalogAmazonImport extends Command
                 $source_mode->upsert($asin_upsert_source, ['user_asin_unique'], ['status']);
             } else {
 
-
-                DB::connection('catalog')->update("UPDATE ${asin_table_name} as source
-                LEFT JOIN ${catalog_table_name} as cat
-                ON cat.asin = source.asin
-                SET source.status = '0'
-                WHERE cat.asin IS NULL
-                AND source.status = '1'
-                ");
+                // DB::connection('catalog')->update("UPDATE ${asin_table_name} as source
+                // LEFT JOIN ${catalog_table_name} as cat
+                // ON cat.asin = source.asin
+                // SET source.status = '0'
+                // WHERE cat.asin IS NULL
+                // AND source.status = '1'
+                // ");
             }
         }
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
     }
 }

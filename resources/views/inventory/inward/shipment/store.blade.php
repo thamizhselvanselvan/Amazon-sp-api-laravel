@@ -60,7 +60,7 @@
             <div style="margin-top:1.3rem;">
                 <table class="table table-bordered yajra-datatable table-striped" id="store_table">
                     <thead>
-                        <tr>
+                        <tr class="table-info">
                             <th>Shipment ID</th>
                             <th>ASIN</th>
                             <th>Item Name</th>

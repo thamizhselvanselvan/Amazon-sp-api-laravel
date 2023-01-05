@@ -3,6 +3,8 @@
 namespace App\Console\Commands\Catalog;
 
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
+use Illuminate\Support\Facades\Log;
 use App\Services\Catalog\BuyBoxPriceImport;
 
 class CatalogPriceImportIN extends Command
@@ -38,10 +40,16 @@ class CatalogPriceImportIN extends Command
      */
     public function handle()
     {
-        // $source = [
-        //     'US' => 40,
-        //     'IN' => 39
-        // ];
+        //Process Management start
+        $process_manage = [
+            'module'             => 'Catalog Price Import',
+            'description'        => "Fetch IN catalog price from BuyBox",
+            'command_name'       => 'mosh:Catalog-price-import-bb-in',
+            'command_start_time' => now(),
+        ];
+
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
 
         $country_code = 'IN';
         $seller_id = '39';
@@ -49,5 +57,8 @@ class CatalogPriceImportIN extends Command
 
         $buy_box_price = new BuyBoxPriceImport();
         $buy_box_price->fetchPriceFromBB($country_code, $seller_id, $limit);
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
     }
 }

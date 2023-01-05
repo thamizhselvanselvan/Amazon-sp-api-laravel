@@ -15,5 +15,6 @@ class Shipment_Inward extends Model
         'ship_id',
         'currency',
         'shipment_count',
+        'inwarded_at'
     ];
 }

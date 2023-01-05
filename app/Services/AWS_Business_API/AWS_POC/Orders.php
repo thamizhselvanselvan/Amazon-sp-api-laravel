@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Orders
 {
-    public function getOrders($asin, $item_name, $OfferID)
+    public function getOrders($asin, $item_name, $OfferID, $quantity)
     {
         $val = random_int(100, 10000);
         $random = substr(md5(mt_rand()), 0, 7);
@@ -56,7 +56,7 @@ class Orders
         $subcatagory = 'NA';
         $catagory = 'NA';
         $line = '1';
-        $qty = '1';
+        $qty = $quantity;
 
         $base[] = [
             'payload' => $uniq,
@@ -255,11 +255,11 @@ class Orders
 
         $data = curl_exec($ch);
         $send = [$data, $base, $xml];
-       
+
         return $send;
         if (curl_errno($ch)) {
-            print curl_error($ch);
-            Log::warning("Something Went Wrong In B-OrderAPI");
+
+            slack_notification('app360', 'Amazon Business Order API', curl_error($ch));
         } else {
 
             curl_close($ch);

@@ -94,7 +94,6 @@ class InvoiceCsvImport extends Command
             $records = Reader::createFromPath(Storage::path($file_path), 'r');
             $records->setHeaderOffset(0);
             foreach ($records as $record) {
-
                 $invoice_data[] = [
                     'amazon_order_id'         => htmlspecialchars(trim($record['Amazon_order_id'])),
                     'invoice_no'              => htmlspecialchars(trim($record['Invoice_no'])),

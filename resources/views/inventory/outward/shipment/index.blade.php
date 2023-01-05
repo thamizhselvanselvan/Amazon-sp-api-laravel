@@ -56,7 +56,7 @@
 
         <table class="table table-bordered yajra-datatable table-striped">
             <thead>
-                <tr>
+                <tr class="table-info">
                     <th>ID</th>
                     <th>Date</th>
                     <th>Shipment ID</th>

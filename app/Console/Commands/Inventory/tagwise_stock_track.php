@@ -5,8 +5,10 @@ namespace App\Console\Commands\Inventory;
 use App\Models\Inventory\Tag;
 use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use App\Models\Inventory\Inventory;
+use App\Models\Inventory\TagStocks;
 use Illuminate\Support\Facades\Log;
 use App\Models\Inventory\Shipment_Inward_Details;
 use App\Models\Inventory\Shipment_Outward_Details;
@@ -26,7 +28,7 @@ class tagwise_stock_track extends Command
      *
      * @var string
      */
-    protected $description = 'Keeps Track of Inventoey Stocks Tagswise ';
+    protected $description = 'Keeps Track of Inventory Stocks Tagswise ';
 
     /**
      * Create a new command instance.
@@ -45,6 +47,17 @@ class tagwise_stock_track extends Command
      */
     public function handle()
     {
+        //Process Management start
+        $process_manage = [
+            'module'             => 'Inventory',
+            'description'        => 'Keeps track of inventory stocks tag wise',
+            'command_name'       => 'mosh:tag-track',
+            'command_start_time' => now(),
+        ];
+
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+
         $tags = Tag::get();
         foreach ($tags as $tag) {
 
@@ -192,7 +205,7 @@ class tagwise_stock_track extends Command
 
 
 
-            DB::connection('inventory')->table('tag_stocks')->insert([
+            TagStocks::insert([
                 'date' =>   $date,
                 'tag' => $val,
                 'opeaning_stock' =>   $todayopeningstock,
@@ -207,8 +220,10 @@ class tagwise_stock_track extends Command
                 'updated_at' => now()
 
             ]);
-
-           
         }
+
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
     }
 }

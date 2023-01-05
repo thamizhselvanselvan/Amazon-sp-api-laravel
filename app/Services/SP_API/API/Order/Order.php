@@ -23,9 +23,12 @@ class Order
     use ConfigTrait;
     private  $delay = 0;
     private $order_queue_name = '';
-    public function SelectedSellerOrder($awsId, $awsCountryCode, $source, $awsAuth_code, $amazon_order_id)
+    private $store_name;
+
+    public function SelectedSellerOrder($awsId, $awsCountryCode, $source, $awsAuth_code, $amazon_order_id, $store_name)
     {
         $seller_id = $awsId;
+        $this->store_name = $store_name;
 
         $host = config('database.connections.order.host');
         $dbname = config('database.connections.order.database');
@@ -107,6 +110,18 @@ class Order
                 'error_code' => $code,
                 'message' => $msg,
             ]);
+
+            if ($code == '403') {
+
+                $s_name = $this->store_name;
+                (new CheckStoreCredServices())->updateTable($awsId, '0');
+                $slackMessage = "Code: 403
+                Store Name: $s_name
+                Country: $awsCountryCode
+                Description: Store credential is not Working";
+                // Log::alert($slackMessage);
+                slack_notification('app360', 'Store Credential Check', $slackMessage);
+            }
         }
     }
 

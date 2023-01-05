@@ -99,7 +99,6 @@ class ExportCatalogWithPriceViaAsin extends Command
             $this->catalogPriceIN($selected_headers, $chunk_data, $exportFilePath, $str);
         } elseif ($this->country_code == 'US') {
 
-            Log::alert($selected_headers);
             $str = ['destination.', 'cat.', 'pricing_uss.'];
             $this->catalogPriceUS($selected_headers, $chunk_data, $exportFilePath, $str);
         }

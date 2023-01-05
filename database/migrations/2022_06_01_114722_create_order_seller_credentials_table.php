@@ -19,7 +19,7 @@ class CreateOrderSellerCredentialsTable extends Migration
             $table->string('mws_region_id');
             $table->string('store_name');
             $table->string('merchant_id');
-            $table->string('auth_code',1000);
+            $table->string('auth_code', 1000);
             $table->string('dump_order')->default(0);
             $table->timestamps();
         });

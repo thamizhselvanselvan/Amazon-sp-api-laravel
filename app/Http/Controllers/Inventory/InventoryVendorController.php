@@ -81,22 +81,19 @@ class InventoryVendorController extends Controller
     
     public function edit(Request $request, $id)
     {
-
         $name = Vendor::where('id', $id)->first();
-        // $country = Country::select('id','name')->get();
         $currencies = Currency::get();
         $country = Country::get();
-        $state = State::get();
-        $city = City::get();
+        
 
         $selected_type = $name->type;
         $selected_country = $name->country;
         $selected_state = $name->state;
         $selected_city = $name->city;
         $selected_currency = $name->currency_id;
-        
 
-        return view('inventory.vendor.edit', compact('name','country','state','city','selected_country','selected_state','selected_city','selected_type','currencies','selected_currency'));
+
+        return view('inventory.vendor.edit', compact('name','country','selected_country','selected_state','selected_city','selected_type','currencies','selected_currency'));
     }
 
 

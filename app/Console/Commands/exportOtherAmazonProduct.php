@@ -52,7 +52,7 @@ class exportOtherAmazonProduct extends Command
     public function handle()
     {
         $headerSelection = '';
-        // Log::alert('working');
+
         $selected = $this->argument('selected');
         $user = $this->argument('email');
         $id = $this->argument('id');
@@ -120,28 +120,26 @@ class exportOtherAmazonProduct extends Command
             });
         }
 
-         //remame file .mosh to .csv
-         $path = "app/excel/downloads/otheramazon/" . $user;
-         $path = storage_path($path);
-         $files = (scandir($path));
- 
-         $filesArray = [];
-         foreach ($files as $key => $file) {
-             if ($key > 1) {
-                 if(str_contains($file, '.mosh'))
-                 {
-                     $new_file_name = str_replace('.csv.mosh', '.csv', $file);
-                     rename($path.'/'.$file, $path.'/'.$new_file_name);
-                 }
-             }
-         }
+        //remame file .mosh to .csv
+        $path = "app/excel/downloads/otheramazon/" . $user;
+        $path = storage_path($path);
+        $files = (scandir($path));
+
+        $filesArray = [];
+        foreach ($files as $key => $file) {
+            if ($key > 1) {
+                if (str_contains($file, '.mosh')) {
+                    $new_file_name = str_replace('.csv.mosh', '.csv', $file);
+                    rename($path . '/' . $file, $path . '/' . $new_file_name);
+                }
+            }
+        }
     }
 
     public function catalogExportByAsin($id, $user, $headers)
     {
-        foreach($headers as $header_value)
-        {
-            $this->headers_default[$header_value] = 'N/A' ;
+        foreach ($headers as $header_value) {
+            $this->headers_default[$header_value] = 'N/A';
         }
 
         $exportFilePath = "excel/downloads/otheramazon/" . $user . "/otherProductDetails";
@@ -164,8 +162,6 @@ class exportOtherAmazonProduct extends Command
         $selected_asin = OtherCatalogAsin::select('asin')->where('user_id', $id)->where('source', 'com')->get();
 
         $this->totalProductCount = count($selected_asin);
-        // $this->totalProductCount = OthercatDetails::count();
-        // Log::alert('count' . $this->totalProductCount);
 
         $selected_count = 0;
         $chunk_asin = [];
@@ -202,14 +198,11 @@ class exportOtherAmazonProduct extends Command
             }, $records);
 
             $all_asins = [];
-            foreach($selected_asin as $asin)
-            {
-                if($val = array_search($asin, array_column($records, 'asin'))){
+            foreach ($selected_asin as $asin) {
+                if ($val = array_search($asin, array_column($records, 'asin'))) {
 
                     $all_asins[] = $records[$val];
-                }
-                else
-                {
+                } else {
                     $this->headers_default['asin'] = $asin;
                     $all_asins[] = $this->headers_default;
                 }

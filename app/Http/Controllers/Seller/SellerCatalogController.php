@@ -47,7 +47,6 @@ class SellerCatalogController extends Controller
       Log::info($seller_id);
       Artisan::call('pms:seller-catalog-import ' . $seller_id);
     }
-    Log::alert("working on click");
   }
 
   public function catalogExport()

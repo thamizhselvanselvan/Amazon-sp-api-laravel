@@ -4,6 +4,7 @@ namespace App\Console\Commands\Zoho;
 
 use Illuminate\Console\Command;
 use App\Services\Zoho\ZohoOrder;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
 
 class Zoho extends Command
@@ -39,6 +40,17 @@ class Zoho extends Command
      */
     public function handle()
     {
+        $process_manage = [
+            'module'             => 'Zoho Update',
+            'description'        => 'Order details store it in Zoho CRM',
+            'command_name'       => 'mosh:zoho:save',
+            'command_start_time' => now(),
+        ];
+
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+
+        //  for ($i = 0; $i < 400; $i++) {
 
         $amazon_order_id = $this->option('amazon_order_id');
         $force_update = $this->option('force');
@@ -47,7 +59,13 @@ class Zoho extends Command
         $data = $zoho_order->index($amazon_order_id, $force_update);
 
         po($data);
-        Log::debug($data);
+
+        # code...
+        //  }
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
+
         return true;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Catalog;
 
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use App\Services\SP_API\API\CatalogDashboardService;
 
 class CatalogDashboardFileCreater extends Command
@@ -38,7 +39,20 @@ class CatalogDashboardFileCreater extends Command
      */
     public function handle()
     {
+        $process_manage = [
+            'module'             => 'Catalog Dashboard',
+            'description'        => 'Catalog Dashboard Create',
+            'command_name'       => 'mosh:catalog-dashboard-file',
+            'command_start_time' => now(),
+        ];
+
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+
         $catalogDashboard = new CatalogDashboardService();
         $catalogDashboard->catalogDashboard();
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
     }
 }

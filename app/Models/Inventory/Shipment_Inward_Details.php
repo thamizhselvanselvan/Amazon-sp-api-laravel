@@ -13,6 +13,7 @@ class Shipment_Inward_Details extends Model
         'ship_id',
         'warehouse_id',
         'source_id',
+        'ss_id',
         'currency',
         'asin',
         'item_name',
@@ -21,15 +22,20 @@ class Shipment_Inward_Details extends Model
         'quantity',
         'out_quantity',
         'balance_quantity',
-        'bin'
+        'bin',
+        'procurement_price',
+        'inwarded_at'
     ];
-    public function warehouses() {
+    public function warehouses()
+    {
         return $this->hasOne(Warehouse::class, 'id', 'warehouse_id');
     }
-    public function vendors() {
+    public function vendors()
+    {
         return $this->hasOne(Vendor::class, 'id', 'source_id');
     }
-    public function tags() {
+    public function tags()
+    {
         return $this->hasOne(Tag::class, 'id', 'tag');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Catalog;
 
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
 use App\Services\Catalog\AllPriceExportCsvServices;
 
@@ -39,6 +40,7 @@ class CatalogAllPriceExportCSV extends Command
      */
     public function handle()
     {
+
         $columns_data = $this->option('columns');
         $final_data = [];
         $explode_array = explode(',', $columns_data);
@@ -51,6 +53,19 @@ class CatalogAllPriceExportCSV extends Command
         $fm_id = $final_data['fm_id'];
         $country_code = $final_data['destination'];
 
+        $process_manage = [
+            'module'             => 'Catalog_price_bb_in',
+            'description'        => "Export $country_code Catalog's All Price",
+            'command_name'       => 'mosh:ExportAllCatalogPrice',
+            'command_start_time' => now(),
+        ];
+
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+
         (new AllPriceExportCsvServices())->index($country_code, $fm_id);
+
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
     }
 }
