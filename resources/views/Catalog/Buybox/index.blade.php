@@ -225,5 +225,34 @@
             $('.bulk-import').removeClass('d-none');
             $('.textarea-import').addClass('d-none');
         });
+        $(document).ready(function() {
+            $.ajax({
+                method: 'get',
+                url: "{{ route('buybox.file.management.monitor') }}",
+                data: {
+                    "module_type": "IMPORT_ASIN_INTO_BUYBOX",
+                    "_token": "{{ csrf_token() }}",
+                },
+                response: 'json',
+                success: function(response) {
+                    console.log(response);
+                    if (response.status == 'Processing') {
+                        $('#bulk_import_button').prop('disabled', true);
+
+                        $('.info-msg').removeClass('d-none');
+                        $('#info-value').html(response.description);
+
+                    } else if (response.description) {
+
+                        $('.info-msg').removeClass('d-none');
+                        $('#info-value').html(response.description);
+                    }
+                },
+            });
+        });
+
+        $('#bulk_import_button').click(function() {
+            $('#bulk_import_button').html('<i class="fa fa-circle-o-notch fa-spin"></i> Uploading...');
+        });
     </script>
 @stop

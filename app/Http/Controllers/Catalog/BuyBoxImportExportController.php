@@ -92,4 +92,10 @@ class BuyBoxImportExportController extends Controller
         }
         return redirect('catalog/buybox/import')->with('success', 'File has been uploaded successfully');
     }
+    public function BuyBoxFileManagementMonitor(Request $request)
+    {
+        $type = $request->module_type;
+        $file_check = fileManagementMonitoringNew($type);
+        return response()->json($file_check);
+    }
 }
