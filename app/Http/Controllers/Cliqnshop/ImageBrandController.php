@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class ImageBrandController extends Controller
@@ -304,7 +305,7 @@ class ImageBrandController extends Controller
 
         $asins = preg_split('/[\r\n| |:|,]/', $request->top_asin, -1, PREG_SPLIT_NO_EMPTY);
 
-        if (count($asins) > 20) {
+        if (count($asins) > 30) {
             return redirect()->route('cliqnshop.brand')->with('error', 'Please Enter Less Than 20 ASIN');
         }
 
@@ -430,11 +431,36 @@ class ImageBrandController extends Controller
             ->update(['content' => $data,  'updated_at' => $now]);
     }
 
-    public function onebanner()
+    public function onebanner(Request $request)
     {
+
+        //    $test =  Storage::disk('cliqnshop')->temporaryUrl( 'local/banner/1banner/' . substr($request->country, 0, -1) . 'image1.jpg', '+2 minutes');
+        // $test = Storage::disk('cliqnshop')->temporaryUrl(
+        //     'local/banner/1banner/' . substr($request->country, 0, -1) . 'image1.jpg',
+        //     now()->addMinutes(5)
+        // );
+        // echo '<img src="'. $test .'" alt="" id="cur_image" width="400" height="300">';
+        // dd($test);
+
+        if ($request->ajax()) {
+            $data = '';
+            $data =  Storage::disk('cliqnshop')->temporaryUrl('staging/banner/1banner/' . substr($request->country, 0, -1) . 'image1.jpg', '+2 minutes');
+
+
+
+            // if (app()->environment() === 'staging') {
+            //     $data = Storage::disk('cliqnshop')->url('staging/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg');
+            // } else if (app()->environment() === 'production') {
+            //     $data = Storage::disk('cliqnshop')->url('production/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg');
+            // } else {
+            //     $data = Storage::disk('cliqnshop')->url('local/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg');
+            // }
+            return ['success' => 'Data  successfully Fetched', 'data' => $data];
+        }
         $countrys = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
         return view('Cliqnshop.imagebrand.onebanner', compact('countrys'));
     }
+
     public function one_bannerstore(Request $request)
     {
         $now = Carbon::now();
