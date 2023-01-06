@@ -459,27 +459,27 @@ return [
                     'can' =>  ['Admin']
                 ],
 
-                [
+                // [
 
-                    'text' => 'Buy-Box Operation',
-                    'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin'],
-                    'submenu' => [
-                        [
-                            'text'  => 'Buy-Box Import',
-                            'url'  => 'catalog/buybox/import',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin', 'Catalog']
-                        ],
+                //     'text' => 'Buy-Box Operation',
+                //     'icon' => 'far fa-fw fa-file',
+                //     'can' =>  ['Admin'],
+                //     'submenu' => [
+                //         [
+                //             'text'  => 'Buy-Box Import',
+                //             'url'  => 'catalog/buybox/import',
+                //             'icon' => 'far fa-fw fa-file',
+                //             'can' =>  ['Admin', 'Catalog']
+                //         ],
 
-                        [
-                            'text'  => 'Buy-Box Export',
-                            'url'  => 'catalog/buybox/export',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin', 'Catalog']
-                        ],
-                    ],
-                ],
+                //         [
+                //             'text'  => 'Buy-Box Export',
+                //             'url'  => 'catalog/buybox/export',
+                //             'icon' => 'far fa-fw fa-file',
+                //             'can' =>  ['Admin', 'Catalog']
+                //         ],
+                //     ],
+                // ],
             ],
         ],
 

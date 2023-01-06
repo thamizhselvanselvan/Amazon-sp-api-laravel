@@ -98,4 +98,31 @@ class BuyBoxImportExportController extends Controller
         $file_check = fileManagementMonitoringNew($type);
         return response()->json($file_check);
     }
+
+    public function ExportIndex()
+    {
+        return view('Catalog.Buybox.exportIndex');
+    }
+
+    public function ExportBuyBox(Request $request)
+    {
+        $request->validate([
+            'priority' => 'required|in:1,2,3,4',
+            'source' => 'required|in:IN,US,AE',
+        ]);
+
+        $user_id = Auth::user()->id;
+        $priority = $request->priority;
+        $country_code = $request->source;
+
+        $file_info = [
+            "user_id" => $user_id,
+            "type" => "BUYBOX_EXPORT",
+            "module" => "BUYBOX_EXPORT_${country_code}_${priority}",
+            "command_name" => "mosh:buybox-export-asin"
+        ];
+        FileManagement::create($file_info);
+        fileManagement();
+        return redirect('catalog/buybox/export')->with("success", "BuyBox data is exporting..");
+    }
 }
