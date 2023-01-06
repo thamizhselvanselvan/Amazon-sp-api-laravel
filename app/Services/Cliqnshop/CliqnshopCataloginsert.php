@@ -11,14 +11,56 @@ class CliqnshopCataloginsert
 {
     public function insertdata_cliqnshop($site_id, $category, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image, $keyword,  $short_description,  $long_description)
     {
+        Log::alert($asin);
+        $display_code = '1';
+        if ($Price_US_IN == '0' || $Price_US_IN == '' || $image == '') {
+            $display_code = '0';
+        }
 
-        Log::info('asin'.$asin);
-        Log::alert('color'.$color_key);
-        Log::critical('length'.$length_value);
-        Log::emergency('width'.$width_value);
-        //asin-item_name(mshop_product)
+        //delete price id old
+        $product_id_asin  = '';
+        $get_product_asin = DB::connection('cliqnshop')->table('mshop_product')->where('siteid', $site_id)->where('code', $asin)
+            ->pluck('id')->ToArray();
+        if (isset($get_product_asin[0])) {
+            $product_id_asin = $get_product_asin[0];
+        }
+
+        $price_id_mpl = '';
+        $price_remove_mpl = DB::connection('cliqnshop')->table('mshop_product_list')
+            ->where(['parentid' => $product_id_asin, 'domain' => 'price', 'type' => 'default', 'siteid' => $site_id])
+            ->select('refid')->get();
+        foreach ($price_remove_mpl as $val) {
+            if (isset($price_remove_mpl[0]->refid)) {
+                $price_id_mpl = $price_remove_mpl[0]->refid;
+            }
+
+            DB::connection('cliqnshop')->table('mshop_product_list')
+                ->where(['parentid' => $product_id_asin, 'domain' => 'price', 'type' => 'default', 'siteid' => $site_id])
+                ->select('refid')->delete();
+
+            $price_currency = '';
+            $price_table = DB::connection('cliqnshop')->table('mshop_price')
+                ->where(['id' => $price_id_mpl, 'siteid' => $site_id])
+                ->select('currencyid')->get();
+            if (isset($price_table[0]->currencyid)) {
+                $price_currency = $price_table[0]->currencyid;
+            }
+            DB::connection('cliqnshop')->table('mshop_price')
+                ->where(['id' => $price_id_mpl, 'siteid' => $site_id])
+                ->select('currencyid')->delete();
+
+
+            DB::connection('cliqnshop')->table('mshop_index_price')
+                ->where(['prodid' => $product_id_asin, 'currencyid' => $price_currency, 'siteid' => $site_id])
+                ->select('currencyid')->delete();
+        }
+
+        //delete price id old end
+
+        //site_id get
         $currency = DB::connection('cliqnshop')->table('mshop_locale')->select('currencyid')->where('siteid', $site_id)->where('status', '1')->get();
         $currency_code = $currency['0']->currencyid;
+
         $date_time = Carbon::now();
         $product_data = [
             'siteid' => $site_id,
@@ -35,12 +77,16 @@ class CliqnshopCataloginsert
             // 'ratings' => 0,
             'instock' => 1,
             // 'target' => '',
-            // 'status' => 1,
+            'status' => $display_code,
             'mtime' => $date_time,
             'ctime' => $date_time,
             'editor' => 'test',
         ];
-        DB::connection('cliqnshop')->table('mshop_product')->upsert($product_data, ['unq_mspro_siteid_code_sid'], ['code', 'label', 'url']);
+        DB::connection('cliqnshop')->table('mshop_product')->upsert(
+            $product_data,
+            ['unq_mspro_siteid_code_sid'],
+            ['code', 'label', 'url', 'status', 'mtime', 'ctime', 'editor', 'siteid', 'type', 'config', 'scale']
+        );
 
         $get_product = DB::connection('cliqnshop')->table('mshop_product')->where('siteid', $product_data['siteid'])->where('code', $product_data['code'])
             ->pluck('id')->ToArray();
@@ -89,10 +135,15 @@ class CliqnshopCataloginsert
                 'editor' => 'test',
             ];
 
-            DB::connection('cliqnshop')->table('mshop_attribute')->upsert($attribute, ['unq_msatt_dom_type_code_sid'],
-             ['siteid', 'key', 'domain', 'code', 'label','type', 'mtime', 'ctime', 'editor']);
-            $get_attribute = DB::connection('cliqnshop')->table('mshop_attribute')->where(['code'=> $attribute['code'], 'siteid'=> $attribute['siteid'],
-            'type' => $attribute['type'],'domain' => $attribute['domain']])
+            DB::connection('cliqnshop')->table('mshop_attribute')->upsert(
+                $attribute,
+                ['unq_msatt_dom_type_code_sid'],
+                ['siteid', 'key', 'domain', 'code', 'label', 'type', 'mtime', 'ctime', 'editor']
+            );
+            $get_attribute = DB::connection('cliqnshop')->table('mshop_attribute')->where([
+                'code' => $attribute['code'], 'siteid' => $attribute['siteid'],
+                'type' => $attribute['type'], 'domain' => $attribute['domain']
+            ])
                 ->pluck('id')->ToArray();
             $get_attribute_id = $get_attribute[0];
         }
@@ -114,12 +165,17 @@ class CliqnshopCataloginsert
                 'editor' => 'test',
             ];
 
-            DB::connection('cliqnshop')->table('mshop_attribute')->upsert($length_attribute, ['unq_msatt_dom_type_code_sid'],
-             ['siteid', 'key', 'code', 'label','type','domain','mtime','ctime','editor']);
+            DB::connection('cliqnshop')->table('mshop_attribute')->upsert(
+                $length_attribute,
+                ['unq_msatt_dom_type_code_sid'],
+                ['siteid', 'key', 'code', 'label', 'type', 'domain', 'mtime', 'ctime', 'editor']
+            );
 
             $get_attribute_length = DB::connection('cliqnshop')->table('mshop_attribute')
-            ->where(['code' => $length_attribute['code'], 'domain' => $length_attribute['domain'], 'siteid' => $length_attribute['siteid'],
-                     'type' => $length_attribute['type']])
+                ->where([
+                    'code' => $length_attribute['code'], 'domain' => $length_attribute['domain'], 'siteid' => $length_attribute['siteid'],
+                    'type' => $length_attribute['type']
+                ])
                 ->pluck('id')->ToArray();
             $get_attribute_id_length = $get_attribute_length[0];
         }
@@ -143,8 +199,11 @@ class CliqnshopCataloginsert
                 'editor' => 'test',
             ];
 
-            DB::connection('cliqnshop')->table('mshop_attribute')->upsert($width_attribute, ['unq_msatt_dom_type_code_sid'],
-             ['siteid', 'key', 'code', 'type','domain','label','mtime', 'ctime','editor']);
+            DB::connection('cliqnshop')->table('mshop_attribute')->upsert(
+                $width_attribute,
+                ['unq_msatt_dom_type_code_sid'],
+                ['siteid', 'key', 'code', 'type', 'domain', 'label', 'mtime', 'ctime', 'editor']
+            );
             $get_attribute_width = DB::connection('cliqnshop')->table('mshop_attribute')
                 ->where([
                     'code' => $width_attribute['code'], 'domain' => $width_attribute['domain'], 'siteid' => $width_attribute['siteid'],
@@ -155,24 +214,25 @@ class CliqnshopCataloginsert
         }
 
         //price(mshop_price)
-        $price = [
-            'siteid' => $site_id,
-            'type' => 'default',
-            'domain' => 'product',
-            'label' => $currency_code . $Price_US_IN,
-            'currencyid' => $currency_code,
-            // 'quantity' => 1,
-            'value' => $Price_US_IN,
-            // 'costs' => 0.00,
-            // 'rebate' => 0.00,
-            'taxrate' => '{"tax":"19.00"}',
-            // 'status' => 1,
-            'mtime' => $date_time,
-            'ctime' => $date_time,
-            'editor' => 'test',
-        ];
-        $id_price = DB::connection('cliqnshop')->table('mshop_price')->insertGetId($price);
-
+        if ($Price_US_IN != '') {
+            $price = [
+                'siteid' => $site_id,
+                'type' => 'default',
+                'domain' => 'product',
+                'label' => $currency_code . $Price_US_IN,
+                'currencyid' => $currency_code,
+                // 'quantity' => 1,
+                'value' => $Price_US_IN,
+                // 'costs' => 0.00,
+                // 'rebate' => 0.00,
+                'taxrate' => '{"tax":"19.00"}',
+                // 'status' => 1,
+                'mtime' => $date_time,
+                'ctime' => $date_time,
+                'editor' => 'test',
+            ];
+            $id_price = DB::connection('cliqnshop')->table('mshop_price')->insertGetId($price);
+        }
 
         //images(mshop_meadia)
         if (isset($image[$asin])) {
@@ -218,8 +278,11 @@ class CliqnshopCataloginsert
                         'editor' => 'test',
                     ];
 
-                    DB::connection('cliqnshop')->table('mshop_product_list')->upsert($media_product_list, ['unq_msproli_pid_dm_ty_rid_sid'],
-                 ['siteid', 'parentid', 'key', 'type', 'domain', 'refid', 'config','mtime','ctime','editor']);
+                    DB::connection('cliqnshop')->table('mshop_product_list')->upsert(
+                        $media_product_list,
+                        ['unq_msproli_pid_dm_ty_rid_sid'],
+                        ['siteid', 'parentid', 'key', 'type', 'domain', 'refid', 'config', 'mtime', 'ctime', 'editor']
+                    );
                 }
             }
         }
@@ -294,8 +357,11 @@ class CliqnshopCataloginsert
             'editor' => 'test',
         ];
         // DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_catalog, [$domain_catalog['siteid'], $domain_catalog['parentid']]);
-        DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_catalog, ['unq_msproli_pid_dm_ty_rid_sid'], 
-        ['siteid', 'parentid', 'key', 'refid','type','domain', 'config', 'pos', 'mtime', 'ctime', 'editor']);
+        DB::connection('cliqnshop')->table('mshop_product_list')->upsert(
+            $domain_catalog,
+            ['unq_msproli_pid_dm_ty_rid_sid'],
+            ['siteid', 'parentid', 'key', 'refid', 'type', 'domain', 'config', 'pos', 'mtime', 'ctime', 'editor']
+        );
 
         //domain_supplier(brand) insert to mshop_product_list
         $domain_supplier = [];
@@ -317,8 +383,11 @@ class CliqnshopCataloginsert
                 'editor' => 'test',
             ];
             // DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_supplier, [$domain_supplier['siteid'], $domain_supplier['parentid']]);
-            DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_supplier, ['unq_msproli_pid_dm_ty_rid_sid'], 
-            ['siteid', 'parentid', 'key', 'refid', 'type', 'domain', 'config', 'pos', 'mtime', 'ctime', 'editor',]);
+            DB::connection('cliqnshop')->table('mshop_product_list')->upsert(
+                $domain_supplier,
+                ['unq_msproli_pid_dm_ty_rid_sid'],
+                ['siteid', 'parentid', 'key', 'refid', 'type', 'domain', 'config', 'pos', 'mtime', 'ctime', 'editor',]
+            );
         }
 
         //domain_attribute(asin) insert to mshop_product_list
@@ -340,8 +409,11 @@ class CliqnshopCataloginsert
                 'editor' => 'test',
             ];
             // DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_attribute, [$domain_attribute['siteid'], $domain_attribute['parentid']]);
-            DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_attribute, ['unq_msproli_pid_dm_ty_rid_sid'], 
-            ['siteid', 'parentid', 'key','refid', 'type', 'domain', 'refid', 'config', 'mtime', 'ctime', 'editor']);
+            DB::connection('cliqnshop')->table('mshop_product_list')->upsert(
+                $domain_attribute,
+                ['unq_msproli_pid_dm_ty_rid_sid'],
+                ['siteid', 'parentid', 'key', 'refid', 'type', 'domain', 'refid', 'config', 'mtime', 'ctime', 'editor']
+            );
         }
 
         //domain_attribute(length) insert to mshop_product_list
@@ -363,8 +435,11 @@ class CliqnshopCataloginsert
                 'editor' => 'test',
             ];
             // DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_attribute_length, [$domain_attribute_length['siteid'], $domain_attribute_length['parentid']]);
-            DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_attribute_length, ['unq_msproli_pid_dm_ty_rid_sid'],
-             ['siteid', 'parentid', 'key','refid', 'type', 'domain', 'config', 'mtime', 'ctime', 'editor']);
+            DB::connection('cliqnshop')->table('mshop_product_list')->upsert(
+                $domain_attribute_length,
+                ['unq_msproli_pid_dm_ty_rid_sid'],
+                ['siteid', 'parentid', 'key', 'refid', 'type', 'domain', 'config', 'mtime', 'ctime', 'editor']
+            );
         }
 
         //domain_attribute(width) insert to mshop_product_list
@@ -386,31 +461,38 @@ class CliqnshopCataloginsert
                 'editor' => 'test',
             ];
             // DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_attribute_width, [$domain_attribute_width['siteid'], $domain_attribute_width['parentid']]);
-            DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_attribute_width, ['unq_msproli_pid_dm_ty_rid_sid'],
-             ['siteid', 'parentid', 'key','refid', 'type', 'domain', 'config', 'mtime', 'ctime', 'editor']);
+            DB::connection('cliqnshop')->table('mshop_product_list')->upsert(
+                $domain_attribute_width,
+                ['unq_msproli_pid_dm_ty_rid_sid'],
+                ['siteid', 'parentid', 'key', 'refid', 'type', 'domain', 'config', 'mtime', 'ctime', 'editor']
+            );
         }
 
         //domain_attribute(price) insert to mshop_product_list
-        $domain_price = [
-            'siteid' => $site_id,
-            'parentid' => $get_product_id,
-            'key' => 'price|default|' . $id_price,
-            'type' => 'default',
-            'domain' => 'price',
-            'refid' => $id_price,
-            // 'start' => NULL,
-            // 'end' => NULL,
-            'config' => '[]',
-            // 'pos' => 0,
-            // 'status' => 1,
-            'mtime' => $date_time,
-            'ctime' => $date_time,
-            'editor' => 'test',
-        ];
-        // DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_price, [$domain_price['siteid'], $domain_price['parentid']]);
-        DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_price, ['unq_msproli_pid_dm_ty_rid_sid'],
-         ['siteid', 'parentid', 'key','refid', 'type', 'domain', 'config', 'mtime', 'ctime', 'editor']);
-
+        if (!empty($price)) {
+            $domain_price = [
+                'siteid' => $site_id,
+                'parentid' => $get_product_id,
+                'key' => 'price|default|' . $id_price,
+                'type' => 'default',
+                'domain' => 'price',
+                'refid' => $id_price,
+                // 'start' => NULL,
+                // 'end' => NULL,
+                'config' => '[]',
+                // 'pos' => 0,
+                // 'status' => 1,
+                'mtime' => $date_time,
+                'ctime' => $date_time,
+                'editor' => 'test',
+            ];
+            // DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_price, [$domain_price['siteid'], $domain_price['parentid']]);
+            DB::connection('cliqnshop')->table('mshop_product_list')->upsert(
+                $domain_price,
+                ['unq_msproli_pid_dm_ty_rid_sid'],
+                ['siteid', 'parentid', 'key', 'refid', 'type', 'domain', 'config', 'mtime', 'ctime', 'editor']
+            );
+        }
         //domain_attribute(short Description) insert to mshop_product_list
         $domain_text_short = [
             'siteid' => $site_id,
@@ -429,8 +511,11 @@ class CliqnshopCataloginsert
             'editor' => 'test',
         ];
         // DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_text_short, [$domain_text_short['siteid'], $domain_text_short['parentid']]);
-        DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_text_short, ['unq_msproli_pid_dm_ty_rid_sid'],
-         ['siteid', 'parentid', 'key', 'refid', 'type', 'domain', 'config', 'mtime', 'ctime', 'editor']);
+        DB::connection('cliqnshop')->table('mshop_product_list')->upsert(
+            $domain_text_short,
+            ['unq_msproli_pid_dm_ty_rid_sid'],
+            ['siteid', 'parentid', 'key', 'refid', 'type', 'domain', 'config', 'mtime', 'ctime', 'editor']
+        );
 
         //domain_attribute(short Description) insert to mshop_product_list
         $domain_text_long = [
@@ -451,8 +536,11 @@ class CliqnshopCataloginsert
         ];
 
         // DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_text_long, [$domain_text_long['siteid'], $domain_text_long['parentid']]);
-        DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_text_long, ['unq_msproli_pid_dm_ty_rid_sid'],
-         ['siteid', 'parentid', 'key','refid', 'type', 'domain', 'config', 'mtime', 'ctime', 'editor']);
+        DB::connection('cliqnshop')->table('mshop_product_list')->upsert(
+            $domain_text_long,
+            ['unq_msproli_pid_dm_ty_rid_sid'],
+            ['siteid', 'parentid', 'key', 'refid', 'type', 'domain', 'config', 'mtime', 'ctime', 'editor']
+        );
 
         //stock insert to(mshop_stock)
         $stock = [
@@ -466,8 +554,11 @@ class CliqnshopCataloginsert
             'ctime' => $date_time,
             'editor' => 'test',
         ];
-        DB::connection('cliqnshop')->table('mshop_stock')->upsert($stock, ['unq_mssto_pid_ty_sid'],
-         ['siteid', 'prodid','type','stocklevel','mtime','ctime','editor']);
+        DB::connection('cliqnshop')->table('mshop_stock')->upsert(
+            $stock,
+            ['unq_mssto_pid_ty_sid'],
+            ['siteid', 'prodid', 'type', 'stocklevel', 'mtime', 'ctime', 'editor']
+        );
 
         //index (asin) to mshop_index_attribute
         if (!empty($attribute['label'])) {
@@ -546,17 +637,21 @@ class CliqnshopCataloginsert
 
 
         //index_price to mshop_index_price
-        $index_price = [
-            'prodid' => $get_product_id,
-            'siteid' => $site_id,
-            'currencyid' => $price['currencyid'],
-            'value' => $price['value'],
-            'mtime' => $date_time,
-        ];
-        DB::connection('cliqnshop')->table('mshop_index_price')->upsert($index_price, ['unq_msindpr_pid_sid_cid'], 
-        ['prodid', 'siteid', 'currencyid', 'value', 'mtime']);
+        if (!empty($price)) {
 
-
+            $index_price = [
+                'prodid' => $get_product_id,
+                'siteid' => $site_id,
+                'currencyid' => $price['currencyid'],
+                'value' => $price['value'],
+                'mtime' => $date_time,
+            ];
+            DB::connection('cliqnshop')->table('mshop_index_price')->upsert(
+                $index_price,
+                ['unq_msindpr_pid_sid_cid'],
+                ['prodid', 'siteid', 'currencyid', 'value', 'mtime']
+            );
+        }
         //domain_supplier to mshop Index Suplier
         if (!empty($domain_supplier)) {
             $index_supplier = [
@@ -570,8 +665,11 @@ class CliqnshopCataloginsert
                 'mtime' => $date_time,
             ];
 
-            DB::connection('cliqnshop')->table('mshop_index_supplier')->upsert($index_supplier, ['unq_msindsu_p_s_lt_si_po_la_lo'],
-             ['prodid', 'siteid', 'supid', 'listtype', 'pos', 'mtime']);
+            DB::connection('cliqnshop')->table('mshop_index_supplier')->upsert(
+                $index_supplier,
+                ['unq_msindsu_p_s_lt_si_po_la_lo'],
+                ['prodid', 'siteid', 'supid', 'listtype', 'pos', 'mtime']
+            );
         }
 
         //product_data to mshop_index_text
@@ -586,7 +684,10 @@ class CliqnshopCataloginsert
                 . $text_short['content'] . '<pre>' . $text_long['content'],
             'mtime' => $date_time,
         ];
-        DB::connection('cliqnshop')->table('mshop_index_text')->upsert($index_text, ['unq_msindte_pid_sid_lid_url'],
-         ['prodid', 'siteid', 'url', 'name', 'content', 'mtime']);
+        DB::connection('cliqnshop')->table('mshop_index_text')->upsert(
+            $index_text,
+            ['unq_msindte_pid_sid_lid_url'],
+            ['prodid', 'siteid', 'url', 'name', 'content', 'mtime']
+        );
     }
 }

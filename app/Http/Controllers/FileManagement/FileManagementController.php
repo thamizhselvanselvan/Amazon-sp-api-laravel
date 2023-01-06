@@ -33,7 +33,7 @@ class FileManagementController extends Controller
                     return $user;
                 })
                 ->addColumn('type', function ($file_management) {
-                    $type_replace = ['_ASIN_DESTINATION', '_ASIN_SOURCE', 'CATALOG_', 'PRICE_', '_INVOICE', '_ORDER', '_LABEL'];
+                    $type_replace = ['_ASIN_INTO_BUYBOX', '_ASIN_DESTINATION', '_ASIN_SOURCE', 'CATALOG_', 'PRICE_', '_INVOICE', '_ORDER', '_LABEL'];
                     $type = str_replace($type_replace, '', $file_management['type']);
                     return $type;
                 })

@@ -993,8 +993,10 @@ if (!function_exists('fileManagement')) {
             ->toArray();
 
         $ignore = [
+            'ASIN_BUYBOX_',
             'ASIN_DESTINATION_',
             'ASIN_SOURCE_',
+            'BUYBOX_EXPORT_',
             'CATALOG_PRICE_EXPORT_',
             'CATALOG_EXPORT_',
             'ORDER_',
