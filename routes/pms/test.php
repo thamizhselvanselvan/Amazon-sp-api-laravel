@@ -23,6 +23,7 @@ use App\Services\Inventory\InventoryCsvImport;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
 use App\Services\SP_API\API\Order\CheckStoreCredServices;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
+use App\Services\SP_API\API\Order\OrderItem;
 use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
 Route::get('test/catalog/{asin}/{country}', 'TestController@getASIN');
@@ -182,14 +183,19 @@ Route::get('test/inventory', function () {
     //
 });
 
-Route::get('test/store-cred', function () {
+Route::get('test/order', function () {
 
-    $aws_data = OrderSellerCredentials::where('dump_order', 1)
-        ->get(['id', 'seller_id', 'country_code', 'cred_status', 'store_name'])
-        ->toArray();
 
-    foreach ($aws_data as $value) {
+    $orderitem = new OrderItem();
 
-        (new CheckStoreCredServices())->index($value);
-    }
+    $order_it = '404-4698574-0689143';
+    $aws_id = '20';
+    $c_code = 'SA';
+    $source = 'IN';
+    $zoho = '0';
+    $courier_partner = '';
+    $store_name = '';
+    $result = $orderitem->OrderItemDetails($order_it, $aws_id, $c_code, $source, $zoho, $courier_partner, $store_name);
+
+    po($result);
 });
