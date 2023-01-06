@@ -11,10 +11,9 @@ class CliqnshopCataloginsert
 {
     public function insertdata_cliqnshop($site_id, $category, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image, $keyword,  $short_description,  $long_description)
     {
-        Log::alert($image);
+        Log::alert($asin);
         $display_code = '1';
-        if ($Price_US_IN == '0' || $Price_US_IN == '' || $image == null) {
-
+        if ($Price_US_IN == '0' || $Price_US_IN == '' || $image == '') {
             $display_code = '0';
         }
 
@@ -30,35 +29,35 @@ class CliqnshopCataloginsert
         $price_remove_mpl = DB::connection('cliqnshop')->table('mshop_product_list')
             ->where(['parentid' => $product_id_asin, 'domain' => 'price', 'type' => 'default', 'siteid' => $site_id])
             ->select('refid')->get();
-        if (isset($price_remove_mpl[0]->refid)) {
-            $price_id_mpl = $price_remove_mpl[0]->refid;
+        foreach ($price_remove_mpl as $val) {
+            if (isset($price_remove_mpl[0]->refid)) {
+                $price_id_mpl = $price_remove_mpl[0]->refid;
+            }
+
+            DB::connection('cliqnshop')->table('mshop_product_list')
+                ->where(['parentid' => $product_id_asin, 'domain' => 'price', 'type' => 'default', 'siteid' => $site_id])
+                ->select('refid')->delete();
+
+            $price_currency = '';
+            $price_table = DB::connection('cliqnshop')->table('mshop_price')
+                ->where(['id' => $price_id_mpl, 'siteid' => $site_id])
+                ->select('currencyid')->get();
+            if (isset($price_table[0]->currencyid)) {
+                $price_currency = $price_table[0]->currencyid;
+            }
+            DB::connection('cliqnshop')->table('mshop_price')
+                ->where(['id' => $price_id_mpl, 'siteid' => $site_id])
+                ->select('currencyid')->delete();
+
+
+            DB::connection('cliqnshop')->table('mshop_index_price')
+                ->where(['prodid' => $product_id_asin, 'currencyid' => $price_currency, 'siteid' => $site_id])
+                ->select('currencyid')->delete();
         }
 
-        DB::connection('cliqnshop')->table('mshop_product_list')
-            ->where(['parentid' => $product_id_asin, 'domain' => 'price', 'type' => 'default', 'siteid' => $site_id])
-            ->select('refid')->delete();
-
-        $price_currency = '';
-        $price_table = DB::connection('cliqnshop')->table('mshop_price')
-            ->where(['id' => $price_id_mpl, 'siteid' => $site_id])
-            ->select('currencyid')->get();
-        if (isset($price_table[0]->currencyid)) {
-            $price_currency = $price_table[0]->currencyid;
-        }
-        DB::connection('cliqnshop')->table('mshop_price')
-            ->where(['id' => $price_id_mpl, 'siteid' => $site_id])
-            ->select('currencyid')->delete();
-
-
-        DB::connection('cliqnshop')->table('mshop_index_price')
-            ->where(['prodid' => $product_id_asin, 'currencyid' => $price_currency, 'siteid' => $site_id])
-            ->select('currencyid')->delete();
         //delete price id old end
 
-
-
         //site_id get
-
         $currency = DB::connection('cliqnshop')->table('mshop_locale')->select('currencyid')->where('siteid', $site_id)->where('status', '1')->get();
         $currency_code = $currency['0']->currencyid;
 
