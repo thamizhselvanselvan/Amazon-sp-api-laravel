@@ -198,6 +198,8 @@ class Order
                 $amazon_order_details,
                 ['amazon_order_identifier_UNIQUE'],
                 [
+                    'id',
+                    'buyer_info',
                     'last_update_date',
                     'order_status',
                     'number_of_items_shipped',
