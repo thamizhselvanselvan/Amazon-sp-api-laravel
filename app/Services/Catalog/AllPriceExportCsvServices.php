@@ -210,7 +210,7 @@ class AllPriceExportCsvServices
 
         $this->createZip();
         $command_end_time = now();
-        // fileManagementUpdate($fm_id, $command_end_time);
+        fileManagementUpdate($fm_id, $command_end_time);
     }
 
     public function priceDataFormating($pricing_details, $catalog_details, $asin_priority, $csv_header, $country_code)
