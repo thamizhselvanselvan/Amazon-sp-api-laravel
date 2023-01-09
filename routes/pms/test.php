@@ -23,7 +23,9 @@ use App\Services\Inventory\InventoryCsvImport;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
 use App\Services\SP_API\API\Order\CheckStoreCredServices;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
+use App\Services\SP_API\API\Order\Order;
 use App\Services\SP_API\API\Order\OrderItem;
+use App\Services\SP_API\API\Order\OrderUsingRedBean;
 use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
 Route::get('test/catalog/{asin}/{country}', 'TestController@getASIN');
@@ -186,8 +188,18 @@ Route::get('test/inventory', function () {
 Route::get('test/order', function () {
 
 
-    $orderitem = new OrderItem();
+    $aws_id = 20;
+    $Country_code = 'SA';
+    $source = 'IN';
+    $auth = '';
+    $order_id = '';
+    $store_name = 'MBM India';
 
+    $order = new OrderUsingRedBean();
+    $result = $order->SelectedSellerOrder($aws_id, $Country_code, $source, $auth, $order_id, $store_name);
+
+    exit;
+    $orderitem = new OrderItem();
     $order_it = '404-4698574-0689143';
     $aws_id = '20';
     $c_code = 'SA';
