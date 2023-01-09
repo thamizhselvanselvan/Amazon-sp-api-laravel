@@ -98,3 +98,6 @@ Route::match(['get', 'post'], 'catalog/export/all-price', 'Catalog\CatalogProduc
 Route::get('catalog/buybox/import', 'Catalog\BuyBoxImportExportController@index')->name('catalog.buybox.import.home');
 Route::match(['get', 'post'], 'catalog/buybox/upload', 'Catalog\BuyBoxImportExportController@BuyBoxUploadFile')->name('catalog.buybox.upload.file');
 Route::get('catalog/buybox/file/monitor', 'Catalog\BuyBoxImportExportController@BuyBoxFileManagementMonitor')->name('buybox.file.management.monitor');
+
+Route::get('catalog/buybox/export', 'Catalog\BuyBoxImportExportController@ExportIndex')->name('catalog.buybox.export.home');
+Route::match(['get', 'post'], 'catalog/buybox/export/csv', 'Catalog\BuyBoxImportExportController@ExportBuyBox')->name('catalog.buybox.export.csv');
