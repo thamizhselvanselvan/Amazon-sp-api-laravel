@@ -155,7 +155,6 @@ class Order
         $result_data = $results->getOrders();
         $result_data = json_decode(json_encode($result_data));
 
-        $amazon_order = [];
         foreach ($result_data as $resultkey => $result) {
 
             $amazon_order_details = [];
@@ -195,20 +194,21 @@ class Order
                 }
             }
 
-            $amazon_order[] = $amazon_order_details;
+            OrderModel::upsert(
+                $amazon_order_details,
+                ['amazon_order_identifier_UNIQUE'],
+                [
+                    'id',
+                    'buyer_info',
+                    'last_update_date',
+                    'order_status',
+                    'number_of_items_shipped',
+                    'number_of_items_unshipped',
+                ]
+            );
+
             $this->notifyMissingClmns($missing_clmn, $awsId, $amazon_order_id);
         }
-
-        OrderModel::upsert(
-            $amazon_order,
-            ['amazon_order_identifier_UNIQUE'],
-            [
-                'last_update_date',
-                'order_status',
-                'number_of_items_shipped',
-                'number_of_items_unshipped',
-            ]
-        );
     }
 
     public function notifyMissingClmns($missing_columns_txt, $store_id, $order_id)
