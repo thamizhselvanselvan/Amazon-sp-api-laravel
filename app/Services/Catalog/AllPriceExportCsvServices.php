@@ -2,6 +2,10 @@
 
 namespace App\Services\Catalog;
 
+use App\Models\Catalog\Catalog_ae;
+use App\Models\Catalog\Catalog_in;
+use App\Models\Catalog\Catalog_sa;
+use App\Models\Catalog\Catalog_us;
 use ZipArchive;
 use League\Csv\Writer;
 use App\Models\Catalog\PricingAe;
@@ -28,7 +32,6 @@ class AllPriceExportCsvServices
         $this->country_code = strtoupper($country_code);
         $this->priority = $priority;
 
-        // Log::info('working');
         $chunk = 4000;
 
         $us_csv_header = [
@@ -36,6 +39,10 @@ class AllPriceExportCsvServices
             'Asin',
             'Available',
             'Weight',
+            'Length',
+            'Width',
+            'Height',
+            'Unit',
             'US Price',
             'USA To IND B2B',
             'USA To IND B2C',
@@ -61,6 +68,10 @@ class AllPriceExportCsvServices
             'Asin',
             'Available',
             'Weight',
+            'Length',
+            'Width',
+            'Height',
+            'Unit',
             'IN Price',
             'IND To UAE',
             'IND To SG',
@@ -84,6 +95,10 @@ class AllPriceExportCsvServices
             'Asin',
             'Available',
             'Weight',
+            'Length',
+            'Width',
+            'Height',
+            'Unit',
             'AE Price',
             'Price Updated At'
         ];
@@ -101,6 +116,10 @@ class AllPriceExportCsvServices
             'Asin',
             'Available',
             'Weight',
+            'Length',
+            'Width',
+            'Height',
+            'Unit',
             'KSA Price',
             'Price Updated At'
         ];
@@ -121,34 +140,16 @@ class AllPriceExportCsvServices
         $count = $us_destination->max('id');
         $min_id = $us_destination->min('id');
 
-        // $all_id = $us_destination->select()
-        //     ->orderBy('id', 'asc')
-        //     ->limit(200000)
-        //     ->get('id')
-        //     ->toArray();
-
-        // $count = count($all_id);
-
         $total_chunk = ($count / $chunk);
 
         for ($start = 0; $start <= $total_chunk; $start++) {
-
-            // Log::emergency('For Loop' . $start);
 
             $where_asin = [];
             $asin_priority = [];
             $asin = [];
 
-            // $start_array = $start * $chunk;
-            // $end_array  = ($start + 1) * $chunk;
-
-            // if (isset($all_id[$start_array]['id'])) {
-
-            // $start_id = $all_id[$start_array]['id'];
             $start_id = ($chunk * $start) + $min_id;
             $end_id = (($chunk * ($start + 1))) + $min_id;
-
-            // $end_id = isset($all_id[$end_array]['id']) ? $all_id[$end_array]['id'] : $all_id[$count - 1];
 
             $asin = $us_destination->select('id', 'asin', 'priority')
                 ->when($this->priority != 'All', function ($query) {
@@ -159,7 +160,6 @@ class AllPriceExportCsvServices
                 ->get();
 
             $total_count += count($asin);
-            // Log::critical($total_count);
 
             if (count($asin) > 0) {
 
@@ -167,66 +167,90 @@ class AllPriceExportCsvServices
                     $where_asin[$value['id']] = $value['asin'];
                     $asin_priority[$value['asin']] = $value['priority'];
                 }
+
                 if ($this->country_code == 'US') {
 
                     $pricing_details = PricingUs::whereIn('asin', $where_asin)
                         ->get($us_select);
 
-                    $this->priceDataFormating($pricing_details, $asin_priority, $us_csv_header, $this->country_code);
+                    $catalog_details = Catalog_us::whereIn('asin', $where_asin)
+                        ->get(['asin', 'attributes']);
+
+                    $this->priceDataFormating($pricing_details, $catalog_details, $asin_priority, $us_csv_header, $this->country_code);
                 } else if ($this->country_code == 'IN') {
 
                     $pricing_details = PricingIn::whereIn('asin', $where_asin)
                         ->get($in_select);
-                    $this->priceDataFormating($pricing_details, $asin_priority, $in_csv_header, $this->country_code);
+
+                    $catalog_details = Catalog_in::whereIn('asin', $where_asin)
+                        ->get(['asin', 'attributes']);
+
+                    $this->priceDataFormating($pricing_details, $catalog_details, $asin_priority, $in_csv_header, $this->country_code);
                 } else if ($this->country_code == 'SA') {
 
                     $pricing_details = PricingSa::whereIn('asin', $where_asin)
                         ->get($sa_select);
-                    $this->priceDataFormating($pricing_details, $asin_priority, $sa_csv_header, $this->country_code);
+
+                    $catalog_details = Catalog_sa::whereIn('asin', $where_asin)
+                        ->get(['asin', 'attributes']);
+
+                    $this->priceDataFormating($pricing_details, $catalog_details, $asin_priority, $sa_csv_header, $this->country_code);
                 } else if ($this->country_code == 'AE') {
 
                     $pricing_details = PricingAe::whereIn('asin', $where_asin)
                         ->get($ae_select);
-                    $this->priceDataFormating($pricing_details, $asin_priority, $ae_csv_header, $this->country_code);
+
+                    $catalog_details = Catalog_ae::whereIn('asin', $where_asin)
+                        ->get(['asin', 'attributes']);
+
+                    $this->priceDataFormating($pricing_details, $catalog_details, $asin_priority, $ae_csv_header, $this->country_code);
                 }
             }
-            // }
         }
-
-        Log::debug('total price Count -> ' . $total_count);
 
         $this->createZip();
         $command_end_time = now();
         fileManagementUpdate($fm_id, $command_end_time);
     }
 
-    public function priceDataFormating($pricing_details, $asin_priority, $csv_header, $country_code)
+    public function priceDataFormating($pricing_details, $catalog_details, $asin_priority, $csv_header, $country_code)
     {
         $records = [];
+        $catalog_data = [];
+
+        foreach ($catalog_details as $details) {
+            $catalog_data[$details['asin']] = isset($details['attributes']['item_package_dimensions'][0])
+                ? $details['attributes']['item_package_dimensions'][0] : (isset($details['attributes']['item_dimensions'][0])
+                    ? $details['attributes']['item_dimensions'][0] : 'NA');
+        }
+
         foreach ($pricing_details as $value) {
             $value = $value->toArray();
-
-            // Log::notice($value['weight']);
+            $asin = '';
             foreach ($value as $key => $data) {
                 if ($key == 'asin' && array_key_exists($data, $asin_priority)) {
                     $records['priority'] = $asin_priority[$data];
                     $records['asin'] = $data;
+                    $asin = $data;
                 } else {
                     $records[$key] = $data;
                 }
-                // if ($country_code == 'IN' && $key == 'weight') {
-                //     $records['weight'] = ceil($data);
-                // }
+
+                if ($key == 'weight' && array_key_exists($asin, $catalog_data)) {
+                    $records['length'] = $this->KeyCheck($catalog_data[$asin], 'length', 'value');
+                    $records['width'] = $this->KeyCheck($catalog_data[$asin], 'width', 'value');
+                    $records['height'] = $this->KeyCheck($catalog_data[$asin], 'height', 'value');
+                    $records['unit'] = $this->KeyCheck($catalog_data[$asin], 'height', 'unit');
+                }
             }
-            // Log::notice($records);
             $this->createCsv($csv_header, $records);
         }
+        // po($records);
+        // exit;
     }
 
     public function createCsv($csv_header, $records)
     {
-        // Log::info('Row Count->  ' . $this->count);
-
         if ($this->count == 1) {
             if (!Storage::exists($this->export_file_path . $this->fileNameOffset . '.csv')) {
                 Storage::put($this->export_file_path . $this->fileNameOffset . '.csv', '');
@@ -264,5 +288,10 @@ class AllPriceExportCsvServices
             }
             $zip->close();
         }
+    }
+
+    public function KeyCheck($data, $key, $type)
+    {
+        return isset($data[$key][$type]) ? $data[$key][$type] : 'NA';
     }
 }
