@@ -127,61 +127,52 @@ Route::get('kyc', function () {
 });
 
 Route::get('t', function () {
+
     exit;
-    $results = CSV_Reader('INDIA ALL ASINS.csv');
 
-    $tagger = 0;
-    $csv_lists = [];
-    $limit = 15000;
-    $counter = 1;
+    $amazon_order_id = '402-2654368-9851550';
+    $order_item_identifier = '45947324279115';
 
-    foreach ($results as $result) {
+    $order_details = [
+        "orderitemdetails.seller_identifier",
+        "orderitemdetails.asin",
+        "orderitemdetails.seller_sku",
+        "orderitemdetails.title",
+        "orderitemdetails.order_item_identifier",
+        "orderitemdetails.quantity_ordered",
+        "orderitemdetails.item_price",
+        "orderitemdetails.item_tax",
+        "orderitemdetails.shipping_address",
 
-        $csv_lists[$tagger][] = $result['asin1'];
+        "orders.fulfillment_channel",
+        "orders.our_seller_identifier",
+        "orders.amazon_order_identifier",
+        "orders.purchase_date",
+        "orders.earliest_delivery_date",
+        "orders.buyer_info",
+        "orders.order_total",
+        "orders.latest_delivery_date",
+        "orders.is_business_order",
+    ];
 
-        if ($limit == $counter) {
+    $order_item_details = OrderItemDetails::select($order_details)
+        ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
+        ->where('orderitemdetails.amazon_order_identifier', $amazon_order_id)
+        ->when($order_item_identifier, function ($query, $role) {
+            return $query->where('order_item_identifier', $role);
+        })
+        ->with(['store_details.mws_region'])
+        ->limit(1)
+        ->first();
 
-            $tagger++;
+    $order = $order_item_details->latest_delivery_date;
 
-            $counter = 0;
-        }
+    $or = Carbon::parse($order)->format('Y-m-d');
 
-        $counter++;
-    }
+    dd($or);
 
-    foreach ($csv_lists as $csv_list) {
+    dd($order_item_details);
 
-        $sources = DB::connection('catalog')->table('asin_source_ins')->select('asin')->whereIn('asin', $csv_list)->get()->groupBy('asin')->toArray();
-        $destinations = DB::connection('catalog')->table('asin_destination_ins')->select('asin', 'priority')->whereIn('asin', $csv_list)->get()->groupBy('asin')->toArray();
-
-        $asin_destination_exists = [];
-        $asin_destination_not_exists = [];
-
-        foreach ($csv_list as $asin) {
-
-            if (isset($destinations[$asin])) {
-
-                $asin_destination_exists[] = ['asin' => $asin, "priority" => $destinations[$asin][0]->priority];
-            } else {
-                $asin_destination_not_exists[] = ['asin' => $asin, 'priority' => 0];
-            }
-        }
-
-
-        foreach ($csv_list as $asin) {
-
-            if (isset($sources[$asin])) {
-                $asin_source_exists[] = ['asin' => $asin];
-            } else {
-                $asin_source_not_exists[] = ['asin' => $asin];
-            }
-        }
-
-        CSV_w('Data/in/destination_exists.csv', $asin_destination_exists, ['asin', 'priority']);
-        CSV_w('Data/in/destination_not_exists.csv', $asin_destination_not_exists, ['asin', 'priority']);
-        CSV_w('Data/in/source_exists.csv', $asin_source_exists, ['asin']);
-        CSV_w('Data/in/source_not_exists.csv', $asin_source_not_exists, ['asin']);
-    }
 });
 
 
