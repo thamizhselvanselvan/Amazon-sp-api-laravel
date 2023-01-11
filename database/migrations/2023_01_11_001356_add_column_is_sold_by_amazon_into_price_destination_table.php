@@ -6,6 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 class AddColumnIsSoldByAmazonIntoPriceDestinationTable extends Migration
 {
+    public $pricing_tables = [
+        'pricing_ins',
+        'pricing_uss',
+        'pricing_aes',
+        'pricing_sas'
+    ];
     /**
      * Run the migrations.
      *
@@ -13,15 +19,13 @@ class AddColumnIsSoldByAmazonIntoPriceDestinationTable extends Migration
      */
     public function up()
     {
-        Schema::connection('catalog')->table('pricing_ins', function (Blueprint $table) {
+        foreach ($this->pricing_tables as $pricing_table) {
 
-            $table->string('is_sold_by_amazon', 10)->after('available')->default('0');
-        });
+            Schema::connection('catalog')->table($pricing_table, function (Blueprint $table) {
 
-        Schema::connection('catalog')->table('pricing_uss', function (Blueprint $table) {
-
-            $table->string('is_sold_by_amazon', 10)->after('available')->default('0');
-        });
+                $table->tinyInteger('is_sold_by_amazon')->default(0)->after('available');
+            });
+        }
     }
 
     /**
@@ -31,12 +35,11 @@ class AddColumnIsSoldByAmazonIntoPriceDestinationTable extends Migration
      */
     public function down()
     {
-        Schema::connection('catalog')->table('pricing_ins', function (Blueprint $table) {
-            $table->dropColumn('is_sold_by_amazon');
-        });
+        foreach ($this->pricing_tables as $pricing_table) {
 
-        Schema::connection('catalog')->table('pricing_uss', function (Blueprint $table) {
-            $table->dropColumn('is_sold_by_amazon');
-        });
+            Schema::connection('catalog')->table($pricing_table, function (Blueprint $table) {
+                $table->dropColumn('is_sold_by_amazon');
+            });
+        }
     }
 }
