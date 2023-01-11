@@ -38,6 +38,7 @@ class AllPriceExportCsvServices
             'Priority',
             'Asin',
             'Available',
+            'Is Sold By Amazon',
             'Weight',
             'Length',
             'Width',
@@ -54,6 +55,7 @@ class AllPriceExportCsvServices
         $us_select = [
             'asin',
             'available',
+            'is_sold_by_amazon',
             'weight',
             'us_price',
             'usa_to_in_b2b',
@@ -67,6 +69,7 @@ class AllPriceExportCsvServices
             'Priority',
             'Asin',
             'Available',
+            'Is Sold By Amazon',
             'Weight',
             'Length',
             'Width',
@@ -82,6 +85,7 @@ class AllPriceExportCsvServices
         $in_select = [
             'asin',
             'available',
+            'is_sold_by_amazon',
             'weight',
             'in_price',
             'ind_to_uae',
@@ -94,6 +98,7 @@ class AllPriceExportCsvServices
             'Priority',
             'Asin',
             'Available',
+            'Is Sold By Amazon',
             'Weight',
             'Length',
             'Width',
@@ -106,6 +111,7 @@ class AllPriceExportCsvServices
         $ae_select = [
             'asin',
             'available',
+            'is_sold_by_amazon',
             'weight',
             'ae_price',
             'price_updated_at',
@@ -115,6 +121,7 @@ class AllPriceExportCsvServices
             'Priority',
             'Asin',
             'Available',
+            'Is Sold By Amazon',
             'Weight',
             'Length',
             'Width',
@@ -127,6 +134,7 @@ class AllPriceExportCsvServices
         $sa_select = [
             'asin',
             'available',
+            'is_sold_by_amazon',
             'weight',
             'sa_price',
             'price_updated_at',
