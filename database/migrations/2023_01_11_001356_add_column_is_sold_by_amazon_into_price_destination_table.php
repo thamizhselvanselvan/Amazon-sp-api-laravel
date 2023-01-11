@@ -17,6 +17,11 @@ class AddColumnIsSoldByAmazonIntoPriceDestinationTable extends Migration
 
             $table->string('is_sold_by_amazon', 10)->after('available')->default('0');
         });
+
+        Schema::connection('catalog')->table('pricing_uss', function (Blueprint $table) {
+
+            $table->string('is_sold_by_amazon', 10)->after('available')->default('0');
+        });
     }
 
     /**
@@ -27,6 +32,10 @@ class AddColumnIsSoldByAmazonIntoPriceDestinationTable extends Migration
     public function down()
     {
         Schema::connection('catalog')->table('pricing_ins', function (Blueprint $table) {
+            $table->dropColumn('is_sold_by_amazon');
+        });
+
+        Schema::connection('catalog')->table('pricing_uss', function (Blueprint $table) {
             $table->dropColumn('is_sold_by_amazon');
         });
     }
