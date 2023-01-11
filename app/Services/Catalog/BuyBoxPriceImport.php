@@ -91,7 +91,7 @@ class BuyBoxPriceImport
 
                     $asin = implode(',', $asin_array);
                     $asin_price = DB::connection('buybox')
-                        ->select("SELECT PPO.asin, LP.available, LP.updated_at as updated_at,
+                        ->select("SELECT PPO.asin, LP.available,LP.is_sold_by_amazon, LP.updated_at as updated_at,
                             GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
                             group_concat(PPO.listingprice_amount) as listingprice_amount
                             FROM 
@@ -105,7 +105,7 @@ class BuyBoxPriceImport
                             GROUP BY 
                                 PPO.asin
                         ");
-
+                    Log::alert($asin_price);
                     foreach ($asin_price as $value) {
 
                         $buybox_winner = explode(',', $value->is_buybox_winner);
@@ -126,6 +126,8 @@ class BuyBoxPriceImport
                         $available = $value->available;
                         $packet_weight = $calculated_weight[$asin_name];
 
+                        $is_sold_by_amazon = $value->is_sold_by_amazon;
+                        Log::notice($is_sold_by_amazon);
                         foreach ($buybox_winner as $key =>  $value1) {
 
                             $price = $country_code_lr . '_price';
@@ -137,6 +139,7 @@ class BuyBoxPriceImport
                                     [
                                         'asin' =>  $asin_name,
                                         'available' => $available,
+                                        'is_sold_by_amazon' => $is_sold_by_amazon,
                                         $price => $listing_price_amount,
                                         // 'price_updated_at' => $updated_at[array_key_last($updated_at)],
                                         'price_updated_at' => $updated_at,
@@ -149,6 +152,7 @@ class BuyBoxPriceImport
                                     [
                                         'asin' =>  $asin_name,
                                         'available' => $available,
+                                        'is_sold_by_amazon' => $is_sold_by_amazon,
                                         $price => $listing_price_amount,
                                         // 'price_updated_at' =>  max($updated_at),
                                         'price_updated_at' => $updated_at,
@@ -203,11 +207,11 @@ class BuyBoxPriceImport
                     if ($country_code_lr == 'us') {
 
                         PricingUs::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
-                        PricingUs::upsert($pricing, 'unique_asin',  ['asin', 'available', 'weight', 'us_price', 'usa_to_in_b2b', 'usa_to_in_b2c', 'usa_to_uae', 'usa_to_sg', 'price_updated_at']);
+                        PricingUs::upsert($pricing, 'unique_asin',  ['asin', 'available', 'is_sold_by_amazon', 'weight', 'us_price', 'usa_to_in_b2b', 'usa_to_in_b2c', 'usa_to_uae', 'usa_to_sg', 'price_updated_at']);
                     } elseif ($country_code_lr == 'in') {
 
                         PricingIn::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
-                        PricingIn::upsert($pricing_in, 'asin_unique', ['asin', 'available', 'in_price', 'weight', 'ind_to_uae', 'ind_to_sg', 'ind_to_sa', 'price_updated_at']);
+                        PricingIn::upsert($pricing_in, 'asin_unique', ['asin', 'available', 'is_sold_by_amazon', 'in_price', 'weight', 'ind_to_uae', 'ind_to_sg', 'ind_to_sa', 'price_updated_at']);
                     }
 
                     // elseif ($country_code_lr == 'ae') {
