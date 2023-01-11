@@ -58,7 +58,9 @@ class OrderItemDetailsImport extends Command
 
         $order_item = new OrderItem();
 
-        $seller_id_array = OrderSellerCredentials::where('dump_order', 1)->get();
+        $seller_id_array = OrderSellerCredentials::where('dump_order', 1)
+            ->where('cred_status', 1)
+            ->get();
         $missing_order_id = [];
 
         foreach ($seller_id_array as $value) {

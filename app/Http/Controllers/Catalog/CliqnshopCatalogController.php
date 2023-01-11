@@ -241,7 +241,7 @@ class CliqnshopCatalogController extends Controller
                 $cat_code_type = null;
             }
             //brand
-            $brand_label = 'NA';
+            $brand_label = ' ';
             if ($data['brand']) {
 
                 $brand_label = $data['brand'];
@@ -249,15 +249,15 @@ class CliqnshopCatalogController extends Controller
             $brand_place = str_replace(' ', '', $data['brand']);
             $brand =  substr(strtolower($brand_place), 0, 10);
 
-            $color_code = 'NA';
-            $color_label = 'NA';
-            $label = 'NA';
-            $color_key = 'NA';
+            $color_code = '';
+            $color_label = '';
+            $label = '';
+            $color_key = '';
             if (isset($data['color'])) {
                 $color_code = str_replace(' ', '', $data['color']);
                 $color_label = $data['color'];
                 $label =  ucfirst($color_label);
-                $color_key = substr(strtolower($color_label), 0, 10);
+                $color_key = str_replace(' ', '', substr(strtolower($color_label), 0, 10));
             }
 
             //dimensions Fetch
