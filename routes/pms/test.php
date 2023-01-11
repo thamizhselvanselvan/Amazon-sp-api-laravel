@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use App\Models\User;
+use GuzzleHttp\Client;
 use League\Csv\Writer;
 use App\Models\Mws_region;
 use Smalot\PdfParser\Parser;
@@ -14,8 +15,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Models\order\OrderItemDetails;
-use App\Models\order\OrderUpdateDetail;
 
+use App\Models\order\OrderUpdateDetail;
 use App\Models\seller\AsinMasterSeller;
 use Illuminate\Support\Facades\Storage;
 use App\Models\seller\SellerAsinDetails;
@@ -190,9 +191,42 @@ Route::get('test/inventory', function () {
 
 Route::get('test/zoho/read', function () {
 
-    $data = (new AllPriceExportCsvServices())->index('US', 1);
+    $token = '1000.2df599745cecd34c94ba703cbe525ad2.6270c2f5ff7bb775da72344dfcce55d5';
+    $url = 'https://www.zohoapis.com/crm/bulk/v2/read';
+    $lead_url = 'https://www.zohoapis.com/crm/v2/Leads';
 
+    // $response = Http::withoutVerifying()
+    //     ->withHeaders([
+    //         'Authorization' => 'Zoho-oauthtoken ' . $token
+    //     ])->get($lead_url . '/' . '1929333000104016133');
 
+    // if ($response->ok()) {
+    //     return $response->json();
+    // }
+    // exit;
+
+    $payload = [
+        'query' => [
+            'module' => 'Leads',
+            'page' => 1,
+        ],
+    ];
+
+    // $response = Http::withoutVerifying()
+    //     ->withHeaders([
+    //         'Authorization' => 'Zoho-oauthtoken ' . $token,
+    //         'Content-Type' => 'application/json'
+    //     ])->post($url, $payload);
+
+    // dd($response->json());
+
+    $response = Http::withoutVerifying()->withHeaders([
+        'Authorization' => 'Zoho-oauthtoken ' . $token,
+    ])->get($url . '/1929333000104021178/result');
+
+    // return $response;
+    // dd($response);
+    dd($response->json());
 
     //
 });
