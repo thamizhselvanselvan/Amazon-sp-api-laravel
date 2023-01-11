@@ -13,6 +13,7 @@ class Order extends Model
     protected $fillable = [
         'our_seller_identifier',
         'country',
+        'source',
         'amazon_order_identifier',
         'purchase_date',
         'last_update_date',
@@ -44,7 +45,14 @@ class Order extends Model
         'buyer_info',
         'automated_shipping_settings',
         'order_item',
+        'updated_at',
+        'created_at',
         'seller_order_identifier',
+        'is_access_point_order',
+        'has_regulated_items',
+        'easy_ship_shipment_status',
+        'payment_execution_detail',
+        'replaced_order_identifier'
     ];
 
     public function __construct(array $attributes = [])

@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class ImageBrandController extends Controller
@@ -276,6 +277,21 @@ class ImageBrandController extends Controller
 
     public function topselling(Request $request)
     {
+        $country = $request->country;
+        if ($request->ajax()) {
+            $data = DB::connection('cliqnshop')->table('home_page_contents')
+                ->where('section', 'top_selling_products_section')
+                ->where('country', $country)
+                ->select('content')
+                ->get()->pluck('content');
+
+            if ($data['0'] != '') {
+                $data = implode(",", json_decode($data[0], true));
+            } else {
+                $data = "";
+            }
+            return response()->json(['success' => 'Data  successfully Fetched', 'data' => $data]);
+        }
         $countrys = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
         return view('Cliqnshop.imagebrand.asins', compact('countrys'));
     }
@@ -289,7 +305,7 @@ class ImageBrandController extends Controller
 
         $asins = preg_split('/[\r\n| |:|,]/', $request->top_asin, -1, PREG_SPLIT_NO_EMPTY);
 
-        if (count($asins) > 20) {
+        if (count($asins) > 30) {
             return redirect()->route('cliqnshop.brand')->with('error', 'Please Enter Less Than 20 ASIN');
         }
 
@@ -415,11 +431,25 @@ class ImageBrandController extends Controller
             ->update(['content' => $data,  'updated_at' => $now]);
     }
 
-    public function onebanner()
+    public function onebanner(Request $request)
     {
+
+        if ($request->ajax()) {
+            $data = '';
+           
+            if (app()->environment() === 'staging') {
+                $data =  Storage::disk('cliqnshop')->temporaryUrl('staging/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg', '+2 minutes');
+            } else if (app()->environment() === 'production') {
+               $data =   Storage::disk('cliqnshop')->temporaryUrl('production/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg', '+2 minutes');
+            } else {
+                $data =  Storage::disk('cliqnshop')->temporaryUrl('local/banner/1banner/' . substr($request->country, 0, -1) . '/image1.jpg', '+2 minutes');
+            }
+            return ['success' => 'Data  successfully Fetched', 'data' => $data];
+        }
         $countrys = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
         return view('Cliqnshop.imagebrand.onebanner', compact('countrys'));
     }
+
     public function one_bannerstore(Request $request)
     {
         $now = Carbon::now();
@@ -1050,7 +1080,7 @@ class ImageBrandController extends Controller
     }
     public function promostore(Request $request)
     {
-        
+
         $request->validate([
 
             'country' => 'required',

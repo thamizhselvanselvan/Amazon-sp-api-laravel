@@ -218,6 +218,7 @@ class AdminManagementController extends Controller
     {
         if ($request->ajax()) {
 
+            $store_cred_array = [];
             $store_status_array = [];
             $store_order_item = [];
             $shipntrack = [];
@@ -238,15 +239,17 @@ class AdminManagementController extends Controller
 
             $store_status = OrderSellerCredentials::where('dump_order', 1)->get();
             foreach ($store_status as $key => $value) {
+
                 $seller = $value['seller_id'];
                 $store_status_array[$seller] = 1;
 
+                if ($value['cred_status'] == 0) {
+                    $store_cred_array[$seller] = 1;
+                }
                 if ($value['get_order_item'] == 1) {
-
                     $store_order_item[$seller] = 1;
                 }
                 if ($value['enable_shipntrack']) {
-
                     $shipntrack[$seller] = 1;
                 }
                 if ($value['zoho']) {
@@ -266,8 +269,20 @@ class AdminManagementController extends Controller
             $aws_credential = Aws_Credential::with('mws_region')->where('api_type', 1)->get();
             return DataTables::of($aws_credential)
                 ->addIndexColumn()
-                ->editColumn('region', function ($mws_region) {
 
+                ->editColumn('store_name', function ($id) use ($store_cred_array, $store_status_array) {
+                    if (array_key_exists($id['seller_id'], $store_cred_array) && array_key_exists($id['seller_id'], $store_status_array)) {
+
+                        $action =  $id['store_name'] . ' <span style="font-size: 14px; background-color:#ff0000ba; border-radius:30px; color:white; padding:0px 5px;"> Inactive </span>';
+                        return $action;
+                    } elseif (array_key_exists($id['seller_id'], $store_status_array)) {
+
+                        $action =  $id['store_name'] . ' <span style="font-size: 14px; background-color: #41a20f; border-radius:30px; color:white; padding:0px 5px;"> Active </span>';
+                        return $action;
+                    }
+                    return $id['store_name'];
+                })
+                ->editColumn('region', function ($mws_region) {
                     return $mws_region['mws_region']['region'] . ' [' . $mws_region['mws_region']['region_code'] . ']';
                 })
                 ->addColumn('order', function ($id) use ($store_status_array) {
@@ -358,7 +373,7 @@ class AdminManagementController extends Controller
                     }
                     return $action .= '</select></div>';
                 })
-                ->rawColumns(['region', 'order', 'order_item', 'enable_snt', 'partner', 'zoho', 'source', 'destination'])
+                ->rawColumns(['store_name', 'region', 'order', 'order_item', 'enable_snt', 'partner', 'zoho', 'source', 'destination'])
                 ->make(true);
         }
 

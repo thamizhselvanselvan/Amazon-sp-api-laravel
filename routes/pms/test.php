@@ -2,25 +2,32 @@
 
 use Carbon\Carbon;
 use App\Models\User;
+use GuzzleHttp\Client;
 use League\Csv\Writer;
 use App\Models\Mws_region;
 use Smalot\PdfParser\Parser;
+use App\Services\Zoho\ZohoApi;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use App\Models\Catalog\Asin_master;
 use function Clue\StreamFilter\fun;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Models\order\OrderItemDetails;
+
 use App\Models\order\OrderUpdateDetail;
 use App\Models\seller\AsinMasterSeller;
 use Illuminate\Support\Facades\Storage;
-
 use App\Models\seller\SellerAsinDetails;
+use App\Services\SP_API\API\Order\Order;
 use Illuminate\Support\Facades\Response;
 use App\Models\order\OrderSellerCredentials;
+use App\Services\SP_API\API\Order\OrderItem;
 use App\Services\Inventory\InventoryCsvImport;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
+use App\Services\Catalog\AllPriceExportCsvServices;
+use App\Services\SP_API\API\Order\OrderUsingRedBean;
 use App\Services\SP_API\API\Order\CheckStoreCredServices;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
@@ -182,14 +189,44 @@ Route::get('test/inventory', function () {
     //
 });
 
-Route::get('test/store-cred', function () {
+Route::get('test/zoho/read', function () {
 
-    $aws_data = OrderSellerCredentials::where('dump_order', 1)
-        ->get(['id', 'seller_id', 'country_code', 'cred_status', 'store_name'])
-        ->toArray();
+    $token = '1000.2df599745cecd34c94ba703cbe525ad2.6270c2f5ff7bb775da72344dfcce55d5';
+    $url = 'https://www.zohoapis.com/crm/bulk/v2/read';
+    $lead_url = 'https://www.zohoapis.com/crm/v2/Leads';
 
-    foreach ($aws_data as $value) {
+    // $response = Http::withoutVerifying()
+    //     ->withHeaders([
+    //         'Authorization' => 'Zoho-oauthtoken ' . $token
+    //     ])->get($lead_url . '/' . '1929333000104016133');
 
-        (new CheckStoreCredServices())->index($value);
-    }
+    // if ($response->ok()) {
+    //     return $response->json();
+    // }
+    // exit;
+
+    $payload = [
+        'query' => [
+            'module' => 'Leads',
+            'page' => 1,
+        ],
+    ];
+
+    // $response = Http::withoutVerifying()
+    //     ->withHeaders([
+    //         'Authorization' => 'Zoho-oauthtoken ' . $token,
+    //         'Content-Type' => 'application/json'
+    //     ])->post($url, $payload);
+
+    // dd($response->json());
+
+    $response = Http::withoutVerifying()->withHeaders([
+        'Authorization' => 'Zoho-oauthtoken ' . $token,
+    ])->get($url . '/1929333000104021178/result');
+
+    // return $response;
+    // dd($response);
+    dd($response->json());
+
+    //
 });

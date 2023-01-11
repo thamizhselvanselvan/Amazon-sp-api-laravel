@@ -49,7 +49,7 @@
 
         <div class="col-3">
             <div class="form-group">
-                <x-adminlte-select name="country" label="Select Country" name="country">
+                <x-adminlte-select name="country" label="Select Country" name="country" id="source">
                     <option value=''>Select Country</option>
                     @foreach ($countrys as $country)
                     <option value="{{ $country->siteid }}">{{$country->code }}</option>
@@ -89,12 +89,64 @@
         </div>
     </div>
 </form>
-@stop
+<div class="row justify-content-center d-none" id="row">
+    <div class="container ">
+        <center>
+            <h5><b>current Banner</b> </h5>
+        </center>
+        <div class="row justify-content-center">
+            <div class="card">
+                <img class="card-img-bottom" src="" alt="Card image" id="cur_image" style="width:350px">
+                <div class="card-body">
+                    <h4 class="card-title">Banner Name : Banner 1 </h4><br>
+                    <!-- <h4 class="card-title">Primary Text :Primary Text Goes Here </h4><br>
+                    <h4 class="card-title">Secondary Text :secondary Text Goes Here </h4><br>
+                    <h5><span class="badge badge-pill badge-primary">Link To visit</span></h5> -->
+                </div>
+            </div>
+        </div>
 
+    </div>
+</div>
+@stop
 
 @section('js')
 <script type="text/javascript">
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $('#source').change(function() {
 
+        let cid = $('#source').val();
+        if (cid == '') {
+            return false;
+        }
 
+        $.ajax({
+            method: 'get',
+            url: "{{route('cliqnshop.onebanner')}}",
+            data: {
+                'country': cid,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(response) {
+
+                console.log(response.data);
+                $('#row').removeClass('d-none');
+                $("#cur_image").attr("src", response.data);
+
+                // $("#image_fill").empty();
+                // let asins = (response['data']);
+
+                // $("#image_fill").append(asins);
+                // console.log(asins);
+            },
+            error: function(response) {
+                console.log(response);
+            }
+        });
+    });
 </script>
 @stop
