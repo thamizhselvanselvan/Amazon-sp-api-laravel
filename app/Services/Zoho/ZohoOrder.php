@@ -6,22 +6,27 @@ use in;
 use Str;
 use Carbon\Carbon;
 use App\Models\order\Order;
+use App\Services\Zoho\ZohoApi;
 use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingUs;
-use App\Services\Zoho\ZohoOrderFormat;
 use App\Models\Catalog\Catalog_in;
 use App\Models\Catalog\Catalog_us;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use App\Models\order\OrderItemDetails;
+use App\Services\Zoho\ZohoOrderFormat;
 use App\Models\order\OrderUpdateDetail;
 
 class ZohoOrder
 {       
+    public $zoho_order_format;
+    public $zohoApi;
 
-    public function __construct(public ZohoOrderFormat $zoho_order_format, public ZohoApi $zohoApi)
+    public function __construct()
     {
+        $this->zoho_order_format = new ZohoOrderFormat;
+        $this->zohoApi = new ZohoApi;
     }
 
     public function index($amazon_order_id = null, $force_update = null)
