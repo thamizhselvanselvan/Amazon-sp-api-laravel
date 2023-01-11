@@ -127,7 +127,7 @@ class BuyBoxPriceImport
                         $packet_weight = $calculated_weight[$asin_name];
 
                         $is_sold_by_amazon = $value->is_sold_by_amazon;
-                        Log::notice($is_sold_by_amazon);
+                        Log::info($is_sold_by_amazon);
                         foreach ($buybox_winner as $key =>  $value1) {
 
                             $price = $country_code_lr . '_price';

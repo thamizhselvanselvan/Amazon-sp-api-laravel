@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddColumnIsSoldByAmazonIntoPriceDestinationTable extends Migration
+class AddColumnisSoldByAmazonIntoPricingUSSTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,8 @@ class AddColumnIsSoldByAmazonIntoPriceDestinationTable extends Migration
      */
     public function up()
     {
-        Schema::connection('catalog')->table('pricing_ins', function (Blueprint $table) {
+
+        Schema::connection('catalog')->table('pricing_uss', function (Blueprint $table) {
 
             $table->string('is_sold_by_amazon', 10)->after('available')->default('0');
         });
@@ -26,7 +27,8 @@ class AddColumnIsSoldByAmazonIntoPriceDestinationTable extends Migration
      */
     public function down()
     {
-        Schema::connection('catalog')->table('pricing_ins', function (Blueprint $table) {
+
+        Schema::connection('catalog')->table('pricing_uss', function (Blueprint $table) {
             $table->dropColumn('is_sold_by_amazon');
         });
     }
