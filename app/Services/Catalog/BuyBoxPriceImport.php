@@ -83,7 +83,8 @@ class BuyBoxPriceImport
 
                     $unavaliable_asin[] = [
                         'asin' => $a,
-                        'available' => 0
+                        'available' => 0,
+                        'is_sold_by_amazon' => 0
                     ];
                 }
 
@@ -105,7 +106,7 @@ class BuyBoxPriceImport
                             GROUP BY 
                                 PPO.asin
                         ");
-                    Log::alert($asin_price);
+
                     foreach ($asin_price as $value) {
 
                         $buybox_winner = explode(',', $value->is_buybox_winner);
@@ -127,7 +128,7 @@ class BuyBoxPriceImport
                         $packet_weight = $calculated_weight[$asin_name];
 
                         $is_sold_by_amazon = $value->is_sold_by_amazon;
-                        Log::info($is_sold_by_amazon);
+
                         foreach ($buybox_winner as $key =>  $value1) {
 
                             $price = $country_code_lr . '_price';
