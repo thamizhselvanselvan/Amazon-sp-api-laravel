@@ -13,6 +13,7 @@ class Label extends Model
         'status',
         'order_no',
         'awb_no',
+        'inward_awb',
         'bag_no',
         'forwarder',
     ];

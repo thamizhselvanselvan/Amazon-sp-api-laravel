@@ -84,9 +84,9 @@
                 margin: 0px;
                 padding: 0px;
                 /*
-                                                                                                    width: 384px;
-                                                                                                    height: 576px;
-                                                                                                    */
+                                                                                                            width: 384px;
+                                                                                                            height: 576px;
+                                                                                                            */
             }
         }
 
@@ -183,6 +183,7 @@
                                                             {{ $value->shipping_address['Name'] }}
                                                         @endif
                                                     </strong><br>
+                                                    <strong>Address: </strong>
                                                     @if (isset($value->shipping_address['AddressLine1']))
                                                         {{ $value->shipping_address['AddressLine1'] }},
                                                     @endif
