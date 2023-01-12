@@ -88,25 +88,6 @@ class labelManagementController extends Controller
         return view('label.search_label');
     }
 
-    // public function GetLabel(Request $request)
-    // {
-    //     if ($request->ajax()) {
-
-    //         $bag_no = $request->bag_no;
-    //         return $bag_no;
-    //         $data = $this->labelListing($bag_no);
-    //         return DataTables::of($data)
-    //             ->addColumn('select_all', function ($data) {
-
-    //                 return "<input class='check_options' type='checkbox' value='25231' name='options[]' id='checkid25231'>";
-    //             })
-    //             ->rawColumns(['select_all'])
-    //             ->make(true);
-
-    //         return response()->json($data);
-    //     }
-    // }
-
     public function manage(Request $request)
     {
         return view('label.manage');
@@ -187,7 +168,7 @@ class labelManagementController extends Controller
         $url = str_replace('download-direct', 'pdf-template', $currentUrl);
 
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
@@ -320,7 +301,7 @@ class labelManagementController extends Controller
     }
     public function downloadExcelTemplate()
     {
-        $filepath = public_path('template/Label-Template.xlsx');
+        $filepath = public_path('template/Label-Template.csv');
         return Response()->download($filepath);
     }
 
@@ -331,37 +312,37 @@ class labelManagementController extends Controller
 
     public function uploadExcel(Request $request)
     {
-        foreach ($request->files as $key => $files) {
+        $request->validate([
+            'label_csv_file' => 'required|mimes:txt,csv'
+        ]);
 
-            foreach ($files as $keys => $file) {
+        $path = "label/label.csv";
+        $file_data = file_get_contents($request->label_csv_file);
+        Storage::put($path, $file_data);
 
-                $fileName = $file->getClientOriginalName();
-                $fileName = uniqid() . ($fileName);
-            }
-        }
-        $data = Excel::toArray([], $file);
-        $Label_excel_data = [];
-        $order_id = [];
-        foreach ($data as $header) {
+        $records = Reader::createFromPath(Storage::path($path), 'r');
+        $records->setHeaderOffset(0);
 
-            foreach ($header as $key => $excel_data) {
+        $label_csv_data = [];
+        $order_ids = [];
+        foreach ($records as $value) {
 
-                if ($key != 0) {
-                    $Label_excel_data[] = [
-                        'order_no' => $excel_data[0],
-                        'awb_no'    => $excel_data[1],
-                        'bag_no'    => $excel_data[2],
-                        'forwarder' => $excel_data[3],
-                    ];
-                    $order_id[] = $excel_data[0];
-                }
-            }
+            $label_csv_data[] = [
+                "order_no" => $value['OrderNo'],
+                "awb_no" => $value['OutwardAwb'],
+                "inward_awb" => $value['InwardAwb'],
+                "bag_no" => $value['BagNo'],
+                "forwarder" => $value['Forwarder']
+            ];
+            $order_ids[] = $value['OrderNo'];
         }
 
-        $order_ids = implode('_', $order_id);
-        Label::upsert($Label_excel_data, ['order_awb_no_unique'], ['order_no', 'awb_no', 'bag_no', 'forwarder']);
+        $order_ids = implode('_', $order_ids);
+
+        Label::upsert($label_csv_data, ['order_awb_no_unique'], ['order_no', 'awb_no', 'inward_awb', 'bag_no', 'forwarder']);
         commandExecFunc("mosh:detect-arabic-language-into-label --order_id=${order_ids}");
-        return response()->json(["success" => "All file uploaded successfully"]);
+
+        return redirect('label/upload')->with('success', 'Label File has been uploaded, checking file\'s data');
     }
 
     public function missing()
@@ -631,13 +612,18 @@ class labelManagementController extends Controller
 
     public function labelListing($id, $search_type = NULL)
     {
-        $where_condition = "web.bag_no = '${id}' ";
+        if ($search_type == 'Amazon Order Id') {
 
-        if ($search_type == 'order_id') {
             $where_condition = "web.order_no IN ($id)";
-        }
-        if ($search_type == 'awb_tracking_id') {
+        } elseif ($search_type == 'Outward Awb No') {
+
             $where_condition = "web.awb_no IN ($id)";
+        } elseif ($search_type == 'Inward Awb No') {
+
+            $where_condition = "web.inward_awb IN ($id)";
+        } else {
+
+            $where_condition = "web.bag_no = '${id}' ";
         }
         if ($search_type == 'search_date') {
             $val = json_decode($id);
@@ -777,27 +763,37 @@ class labelManagementController extends Controller
     {
         if ($request->ajax()) {
 
-            $amazon_order_id = $request->order_id;
-            $amazon_order_id_array = preg_split('/[\r\n| |:|,]/', $amazon_order_id, -1, PREG_SPLIT_NO_EMPTY);
+            $data_type = $request->data_type;
 
-            $amazon_order_id_array = array_unique($amazon_order_id_array);
-            $amazon_order_id_string = "'" . implode("', '", $amazon_order_id_array) . "'";
+            $search_value = [];
+            if ($data_type == 'Outward Awb No' || $data_type == 'Inward Awb No') {
+                $search_value = $this->labelSearchByAwbNo($request->value, $data_type);
+            } else {
 
-            $label_detials = $this->labelListing($amazon_order_id_string, 'order_id');
+                $amazon_order_id = $request->value;
+                $amazon_order_id_array = preg_split('/[\r\n| |:|,]/', $amazon_order_id, -1, PREG_SPLIT_NO_EMPTY);
 
-            $temp_label = array_unique(array_column($label_detials, 'order_no'));
-            $temp_label = array_intersect_key($label_detials, $temp_label);
+                $amazon_order_id_array = array_unique($amazon_order_id_array);
+                $amazon_order_id_string = "'" . implode("', '", $amazon_order_id_array) . "'";
 
-            return $this->labelSearchDataFormating($temp_label, $amazon_order_id_array);
+                $label_detials = $this->labelListing($amazon_order_id_string, $data_type);
+
+                $temp_label = array_unique(array_column($label_detials, 'order_no'));
+                $temp_label = array_intersect_key($label_detials, $temp_label);
+                $search_value =  $this->labelSearchDataFormating($temp_label, $amazon_order_id_array);
+            }
+
+            return $search_value;
         }
         return view('label.search_by_amazon_order_id');
     }
 
-    public function labelSearchByAwnNo(Request $request)
+    public function labelSearchByAwbNo($data, $data_type)
     {
-        $awb_no = array_unique(preg_split('/[\r\n| |:|,|.]/', $request->awb_no, -1, PREG_SPLIT_NO_EMPTY));
+        $awb_no = array_unique(preg_split('/[\r\n| |:|,|.]/', $data, -1, PREG_SPLIT_NO_EMPTY));
         $awb_tracking_no = "'" . implode("','", $awb_no) . "'";
-        $label_details = $this->labelListing($awb_tracking_no, 'awb_tracking_id');
+        $label_details = $this->labelListing($awb_tracking_no, $data_type);
+        // return $label_details;
 
         return $this->labelSearchDataFormating($label_details, []);
     }
