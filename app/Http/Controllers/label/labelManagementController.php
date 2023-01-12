@@ -93,6 +93,52 @@ class labelManagementController extends Controller
         return view('label.manage');
     }
 
+    public function downloadExcelTemplate()
+    {
+        $filepath = public_path('template/Label-Template.csv');
+        return Response()->download($filepath);
+    }
+
+    public function upload()
+    {
+        return  view('label.upload');
+    }
+
+    public function uploadExcel(Request $request)
+    {
+        $request->validate([
+            'label_csv_file' => 'required|mimes:txt,csv'
+        ]);
+
+        $path = "label/label.csv";
+        $file_data = file_get_contents($request->label_csv_file);
+        Storage::put($path, $file_data);
+
+        $records = Reader::createFromPath(Storage::path($path), 'r');
+        $records->setHeaderOffset(0);
+
+        $label_csv_data = [];
+        $order_ids = [];
+        foreach ($records as $value) {
+
+            $label_csv_data[] = [
+                "order_no" => $value['OrderNo'],
+                "awb_no" => $value['OutwardAwb'],
+                "inward_awb" => $value['InwardAwb'],
+                "bag_no" => $value['BagNo'],
+                "forwarder" => $value['Forwarder']
+            ];
+            $order_ids[] = trim($value['OrderNo']);
+        }
+
+        $order_ids = "'" . implode('_', $order_ids) . "'";
+
+        Label::upsert($label_csv_data, ['order_awb_no_unique'], ['order_no', 'awb_no', 'inward_awb', 'bag_no', 'forwarder']);
+        commandExecFunc("mosh:detect-arabic-language-into-label --order_id=${order_ids}");
+
+        return redirect('label/upload')->with('success', 'Label File has been uploaded, checking file\'s data');
+    }
+
     public function showTemplate($id)
     {
         $id_array = explode('-', $id);
@@ -299,51 +345,6 @@ class labelManagementController extends Controller
         $path = "label/$bag_no/zip/$file_name";
         return Storage::download($path);
     }
-    public function downloadExcelTemplate()
-    {
-        $filepath = public_path('template/Label-Template.csv');
-        return Response()->download($filepath);
-    }
-
-    public function upload()
-    {
-        return  view('label.upload');
-    }
-
-    public function uploadExcel(Request $request)
-    {
-        $request->validate([
-            'label_csv_file' => 'required|mimes:txt,csv'
-        ]);
-
-        $path = "label/label.csv";
-        $file_data = file_get_contents($request->label_csv_file);
-        Storage::put($path, $file_data);
-
-        $records = Reader::createFromPath(Storage::path($path), 'r');
-        $records->setHeaderOffset(0);
-
-        $label_csv_data = [];
-        $order_ids = [];
-        foreach ($records as $value) {
-
-            $label_csv_data[] = [
-                "order_no" => $value['OrderNo'],
-                "awb_no" => $value['OutwardAwb'],
-                "inward_awb" => $value['InwardAwb'],
-                "bag_no" => $value['BagNo'],
-                "forwarder" => $value['Forwarder']
-            ];
-            $order_ids[] = trim($value['OrderNo']);
-        }
-
-        $order_ids = "'" . implode('_', $order_ids) . "'";
-
-        Label::upsert($label_csv_data, ['order_awb_no_unique'], ['order_no', 'awb_no', 'inward_awb', 'bag_no', 'forwarder']);
-        commandExecFunc("mosh:detect-arabic-language-into-label --order_id=${order_ids}");
-
-        return redirect('label/upload')->with('success', 'Label File has been uploaded, checking file\'s data');
-    }
 
     public function missing()
     {
@@ -384,122 +385,6 @@ class labelManagementController extends Controller
             }
         }
         return redirect('/label/manage')->with("success", "Order Details Is Updating, Please Wait.");
-    }
-
-    public function labelDataFormating($id)
-    {
-        $label = '';
-        $order = config('database.connections.order.database');
-        $catalog = config('database.connections.catalog.database');
-        $web = config('database.connections.web.database');
-        $prefix = config('database.connections.web.prefix');
-
-        $where_condition = "web.id in ($id)";
-
-        $label = DB::select("SELECT ordetail.amazon_order_identifier,
-        GROUP_CONCAT(DISTINCT web.order_no)as order_no,
-        GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
-        GROUP_CONCAT(DISTINCT web.forwarder) as forwarder,
-        GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
-        GROUP_CONCAT(DISTINCT ordetail.shipping_address, '-address-separator-') as shipping_address,
-        GROUP_CONCAT(ordetail.title SEPARATOR '-label-title-') as title,
-        GROUP_CONCAT(ordetail.seller_sku SEPARATOR '-label-sku-') as sku,
-        GROUP_CONCAT(ordetail.quantity_ordered SEPARATOR '-label-qty-') as qty
-        from ${web}.${prefix}labels as web
-        JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
-        JOIN ${order}.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
-        WHERE $where_condition
-        GROUP BY ordetail.amazon_order_identifier
-        ORDER BY shipping_address
-        ");
-
-        $label_data = [];
-        $order_no = '';
-        $product[] = [
-            'title' => NULL,
-            'sku' => NULL,
-            'qty' => NULL
-        ];
-
-        $ignore = explode(
-            ',',
-            trim(getSystemSettingsValue(
-                'ignore_label_title_keys',
-                'gun, lighter, gold, spark, Fuel, Heat, Oxygen, alcohols, flamable, seed, sliver, stone, leather, jewellery, fungicide, fertilizer, Magnet'
-            ))
-        );
-
-        if (!$label) {
-            return NULL;
-        }
-        $label_details_array = [];
-        $product = [];
-
-        foreach ($label as $key => $label_value) {
-            foreach ($label_value as $key1 => $label_details) {
-                if ($key1 == 'shipping_address') {
-                    $buyer_address = [];
-
-                    $new_label_add = preg_split('/-address-separator-,?/', $label_details);
-                    $new_add = count($new_label_add) > 2 ? $new_label_add[1] : $new_label_add[0];
-                    $shipping_address = json_decode($this->lableDataCleanup($new_add, 'address'));
-
-                    foreach ((array)$shipping_address as $add_key => $add_details) {
-
-                        if ($add_key == 'CountryCode') {
-                            $country_name = Mws_region::where('region_code', $add_details)->get('region')->first();
-                            if (isset($country_name->region)) {
-                                $buyer_address['country'] = $country_name->region;
-                            }
-                        }
-                        $buyer_address[$add_key] =  $add_details;
-                    }
-
-                    $label_data[$key1] = $buyer_address;
-                } elseif ($key1 == 'package_dimensions') {
-                    $dimensions = [];
-                    $shipping_address = json_decode($label_details);
-                    foreach ((array)$shipping_address as $add_key => $add_details) {
-                        $dimensions[$add_key] =  $add_details;
-                    }
-                    $label_data[$key1] = $dimensions;
-                } elseif ($key1 == 'title') {
-
-                    $title_array = explode('-label-title-', $label_details);
-                    $title_array = array_unique($title_array);
-
-                    $max_text = 100;
-                    if (count($title_array) > 6) {
-                        $max_text = 35;
-                    } elseif (count($title_array) > 4) {
-                        $max_text = 50;
-                    }
-
-                    foreach ($title_array as $key2 => $title) {
-                        $ignore_title = str_ireplace($ignore, '', $title);
-                        $product[$key2][$key1] = substr_replace($ignore_title, '..', $max_text);
-
-                        $sku_array = explode('-label-sku-', $label_value->sku);
-                        $sku_array = array_unique($sku_array);
-                        $product[$key2]['sku'] = $sku_array[$key2] ?? '';
-
-                        $qty_array = explode('-label-qty-', $label_value->qty);
-                        $product[$key2]['qty'] = $qty_array[$key2];
-                    }
-                } else {
-
-                    $label_data[$key1] = $label_details;
-                }
-            }
-            $label_data['product'] = $product;
-            $label_details_array[] = $label_data;
-            $product = [];
-            $label_data = [];
-        }
-
-        // po($label_details_array);
-        // exit;
-        return $label_details_array;
     }
 
     public function bladeOrderDetails()
@@ -1085,6 +970,122 @@ class labelManagementController extends Controller
             'success' => $html,
             'missing' => $missing_html,
         ];
+    }
+
+    public function labelDataFormating($id)
+    {
+        $label = '';
+        $order = config('database.connections.order.database');
+        $catalog = config('database.connections.catalog.database');
+        $web = config('database.connections.web.database');
+        $prefix = config('database.connections.web.prefix');
+
+        $where_condition = "web.id in ($id)";
+
+        $label = DB::select("SELECT ordetail.amazon_order_identifier,
+        GROUP_CONCAT(DISTINCT web.order_no)as order_no,
+        GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
+        GROUP_CONCAT(DISTINCT web.forwarder) as forwarder,
+        GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
+        GROUP_CONCAT(DISTINCT ordetail.shipping_address, '-address-separator-') as shipping_address,
+        GROUP_CONCAT(ordetail.title SEPARATOR '-label-title-') as title,
+        GROUP_CONCAT(ordetail.seller_sku SEPARATOR '-label-sku-') as sku,
+        GROUP_CONCAT(ordetail.quantity_ordered SEPARATOR '-label-qty-') as qty
+        from ${web}.${prefix}labels as web
+        JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
+        JOIN ${order}.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
+        WHERE $where_condition
+        GROUP BY ordetail.amazon_order_identifier
+        ORDER BY shipping_address
+        ");
+
+        $label_data = [];
+        $order_no = '';
+        $product[] = [
+            'title' => NULL,
+            'sku' => NULL,
+            'qty' => NULL
+        ];
+
+        $ignore = explode(
+            ',',
+            trim(getSystemSettingsValue(
+                'ignore_label_title_keys',
+                'gun, lighter, gold, spark, Fuel, Heat, Oxygen, alcohols, flamable, seed, sliver, stone, leather, jewellery, fungicide, fertilizer, Magnet'
+            ))
+        );
+
+        if (!$label) {
+            return NULL;
+        }
+        $label_details_array = [];
+        $product = [];
+
+        foreach ($label as $key => $label_value) {
+            foreach ($label_value as $key1 => $label_details) {
+                if ($key1 == 'shipping_address') {
+                    $buyer_address = [];
+
+                    $new_label_add = preg_split('/-address-separator-,?/', $label_details);
+                    $new_add = count($new_label_add) > 2 ? $new_label_add[1] : $new_label_add[0];
+                    $shipping_address = json_decode($this->lableDataCleanup($new_add, 'address'));
+
+                    foreach ((array)$shipping_address as $add_key => $add_details) {
+
+                        if ($add_key == 'CountryCode') {
+                            $country_name = Mws_region::where('region_code', $add_details)->get('region')->first();
+                            if (isset($country_name->region)) {
+                                $buyer_address['country'] = $country_name->region;
+                            }
+                        }
+                        $buyer_address[$add_key] =  $add_details;
+                    }
+
+                    $label_data[$key1] = $buyer_address;
+                } elseif ($key1 == 'package_dimensions') {
+                    $dimensions = [];
+                    $shipping_address = json_decode($label_details);
+                    foreach ((array)$shipping_address as $add_key => $add_details) {
+                        $dimensions[$add_key] =  $add_details;
+                    }
+                    $label_data[$key1] = $dimensions;
+                } elseif ($key1 == 'title') {
+
+                    $title_array = explode('-label-title-', $label_details);
+                    $title_array = array_unique($title_array);
+
+                    $max_text = 100;
+                    if (count($title_array) > 6) {
+                        $max_text = 35;
+                    } elseif (count($title_array) > 4) {
+                        $max_text = 50;
+                    }
+
+                    foreach ($title_array as $key2 => $title) {
+                        $ignore_title = str_ireplace($ignore, '', $title);
+                        $product[$key2][$key1] = substr_replace($ignore_title, '..', $max_text);
+
+                        $sku_array = explode('-label-sku-', $label_value->sku);
+                        $sku_array = array_unique($sku_array);
+                        $product[$key2]['sku'] = $sku_array[$key2] ?? '';
+
+                        $qty_array = explode('-label-qty-', $label_value->qty);
+                        $product[$key2]['qty'] = $qty_array[$key2];
+                    }
+                } else {
+
+                    $label_data[$key1] = $label_details;
+                }
+            }
+            $label_data['product'] = $product;
+            $label_details_array[] = $label_data;
+            $product = [];
+            $label_data = [];
+        }
+
+        // po($label_details_array);
+        // exit;
+        return $label_details_array;
     }
 
     public function lableDataCleanup($data, $type)
