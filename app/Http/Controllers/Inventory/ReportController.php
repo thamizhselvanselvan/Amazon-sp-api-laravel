@@ -153,13 +153,13 @@ class ReportController extends Controller
         $data = [
             "date" => $date,
             "open_stock" => $todayopeningstock,
-            "open_stock_amt" => $totalopenamt,
+            "open_stock_amt" =>round($totalopenamt,2),
             "inwarded" => $todayinward ? $todayinward : 0,
-            "tdy_inv_amt" => $totaldayinvamt,
-            "outwarded" => $todayoutward,
-            "tdy_out_amt" => $totaldayoutamt,
+            "tdy_inv_amt" =>round ($totaldayinvamt,2),
+            "outwarded" => $todayoutward ? $todayoutward :0,
+            "tdy_out_amt" =>round ($totaldayoutamt,2),
             "closing_stock" => $todayclosingstock,
-            "closing_amt" => $dayclosingamt
+            "closing_amt" => round($dayclosingamt,2)
         ];
 
         return view('inventory.report.daily', compact('ware_lists', 'data', 'tags'));
