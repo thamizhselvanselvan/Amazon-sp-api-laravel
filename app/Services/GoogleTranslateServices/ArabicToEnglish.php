@@ -16,7 +16,7 @@ class ArabicToEnglish
         $translate = new TranslateClient([
             'key' => config('app.google_translate_key')
         ]);
-
+        Log::alert($records);
         $AllRecords['amazon_order_identifier'] = $records['order_no'];
         foreach ($records['shipping_address'][0]['shipping_address'] as $key1 => $arabic) {
 

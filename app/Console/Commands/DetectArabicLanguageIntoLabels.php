@@ -57,7 +57,7 @@ class DetectArabicLanguageIntoLabels extends Command
         $forTranslation = [];
         $class = "GoogleTranslate\GoogleTranslateArabicToEnglish";
         $queue_delay = 0;
-        $queue_name = "GoogleTranslate";
+        $queue_name = "default";
         foreach ($order_ids as $order_no) {
             $check_order_id = Label::where('order_no', $order_no)
                 ->where('detect_language', 0)
@@ -81,10 +81,8 @@ class DetectArabicLanguageIntoLabels extends Command
                             'order_no' => $order_no,
                             'shipping_address' => $address
                         ];
+                        jobDispatchFunc($class, $forTranslation, $queue_name, $queue_delay);
                     }
-
-
-                    jobDispatchFunc($class, $forTranslation, $queue_name, $queue_delay);
                 }
             }
         }
