@@ -9,27 +9,27 @@
 @section('content_header')
 <div class="row mb-4">
     <div class="col-1">
-
         <a href="{{ route('label.manage') }}">
             <x-adminlte-button label='Back' class="btn-sm" theme="primary" icon="fas fa-long-arrow-alt-left" type="submit" />
         </a>
-
     </div>
     <div class="col">
-
         <h1 class=" text-dark text-center">Label Search By</h1>
     </div>
 </div>
 
 <div class="row mt-4">
-    <div class="col-1 ">
-        <input type="radio" class="order_id" name="priority" value="" checked />
-        <label for="P3">Order Id</label>
+    <div class="col-2 ">
+        <input type="radio" class="order_id radio_button" name="priority" value="Amazon Order Id" checked />
+        <label for="P3">Amazon Order Id</label>
     </div>
-    <div class="col-1 ">
-        <input type="radio" class="tracking_id" name="priority" value="">
-        <label for="P3">AWB No.</label>
-
+    <div class="col-2 ">
+        <input type="radio" class="tracking_id radio_button" name="priority" value="Outward Awb No">
+        <label for="P3">Outward AWB No.</label>
+    </div>
+    <div class="col-2 ">
+        <input type="radio" class="inward_tracking_id radio_button" name="priority" value="Inward Awb No">
+        <label for="P3">Inward AWB No.</label>
     </div>
 </div>
 
@@ -41,7 +41,6 @@
                 <h4 class="modal-title" id="customerCrudModal">Order Address Details Editer</h4>
             </div>
             <div class="modal-body">
-
                 <div class="text-center">
                     <div id="spinner-container" class="spinner-border justify-content-center" role="status">
                         <span class="sr-only">Loading...</span>
@@ -120,7 +119,6 @@
 </div>
 <!--  Edit address modal End -->
 
-
 @stop
 
 @section('content')
@@ -128,17 +126,10 @@
 
 <div class="row ">
     <div class="col search_by_order_id">
-        <label>Amazon Order Id</label>
-        <textarea class="form-control search_id" rows="4" placeholder="Eg:- Amazon Order Id: 333-7777777-7777777" name="order_id" id='order_id'></textarea>
+        <label class="txt_label">Amazon Order Id</label>
+        <textarea class="form-control search_id" rows="4" placeholder="Amazon Order Id" name="order_id" id='order_id'></textarea>
         <div class="text-right m-2">
-            <x-adminlte-button label='Search' class="btn-sm search-amazon-order-id" theme="primary" icon="fas fa-file-upload" type="submit" />
-        </div>
-    </div>
-    <div class="col search_by_tracking_id d-none">
-        <label> AWB No.</label>
-        <textarea class="form-control search_id" rows="4" placeholder="Enter Awb No." name="awb_no" id='awb_tracking_id'></textarea>
-        <div class="text-right m-2">
-            <x-adminlte-button label='Search' class="btn-sm search-by-awb-tracking-no" theme="primary" icon="fas fa-file-upload" type="submit" />
+            <x-adminlte-button label='Search' class="btn-sm search-amazon-order-id" theme="primary" icon="fas fa-file-upload" type="submit" onclick="search()" />
         </div>
     </div>
 </div>
@@ -153,7 +144,6 @@
                 <th>Awb No.</th>
                 <th>Courier Name</th>
                 <th>Order Date</th>
-                <!-- <th>SKU</th> -->
                 <th>Customer</th>
                 <th>Action</th>
             </tr>
@@ -167,7 +157,6 @@
     <table class='table table-bordered table-striped text-center'>
         <thead>
             <tr class='text-bold bg-info'>
-                <!-- <th>Selected All <br><input type='checkbox' id='selectAll' /></th> -->
                 <th>Order No.</th>
                 <th>AWB No.</th>
                 <th>Courier Name</th>
@@ -299,13 +288,23 @@
     }
 
     $(document).ready(function() {
+
+        $(document).on('click', '.radio_button', function() {
+            $value = $(this).val();
+            $('.txt_label').html($value);
+            $('.search_id').val('');
+            $(".search_id").attr("placeholder", $value).blur();
+            $('#checkTable').html('');
+            $('#showTable').addClass('d-none');
+            $('#showTableMissing').addClass('d-none');
+        });
+
         $(document).on('click', '.update', function() {
 
             let order_id = $(this).attr("ID");
             let tracking_id = $('#tracking' + order_id).val();
             let courier = $('#courier' + order_id).val();
-            // alert(tracking_id);
-            // alert(courier);
+
             $.ajax({
                 method: 'POST',
                 url: "{{ route('lable.update.tracking-details') }}",
@@ -330,56 +329,23 @@
         }
     });
 
-    $('.order_id').click(function() {
-        $('.search_by_tracking_id').addClass('d-none');
-        $('.search_by_order_id').removeClass('d-none');
-    });
+    function search() {
 
-    $('.tracking_id').click(function() {
-        $('.search_by_order_id').addClass('d-none');
-        $('.search_by_tracking_id').removeClass('d-none');
-    });
-
-    $('.search-amazon-order-id').on('click', function() {
-
+        $('#checkTable').html('');
         $('#showTable').addClass('d-none');
         $('#showTableMissing').addClass('d-none');
 
-        var form_data = $('.search_id').val();
-        $.ajax({
-            method: 'POST',
-            url: "{{ route('lable.search.amazon-order-id') }}",
-            data: {
-                'order_id': form_data,
-                "_token": "{{ csrf_token() }}",
-            },
-            success: function(response) {
-                if (response.success) {
-                    $('#showTable').removeClass('d-none');
-                    $('#checkTable').html(response.success);
-
-                    let view = $('.view').attr('href');
-                    window.open(view, '_blank');
-                }
-                if (response.missing) {
-                    $('#showTableMissing').removeClass('d-none');
-                    $('#checkTableMissing').html(response.missing);
-                }
-            }
-        });
-    });
-
-    $('.search-by-awb-tracking-no').click(function() {
-
-        let awb_no = $('#awb_tracking_id').val();
+        let awb_no = $('.search_id').val();
+        let value = $('input[name=priority]:checked').val();
         if (awb_no == '') {
-            alert('Please Enter Awb No.');
+            alert('Please Enter ' + value);
         } else {
             $.ajax({
                 method: 'POST',
-                url: "{{ route('lable.search.by.awb.no') }}",
+                url: "{{ route('lable.search.amazon-order-id') }}",
                 data: {
-                    'awb_no': awb_no,
+                    data_type: value,
+                    value: awb_no,
                     "_token": "{{ csrf_token() }}",
                 },
                 success: function(response) {
@@ -389,6 +355,10 @@
 
                         let view = $('.view').attr('href');
                         window.open(view, '_blank');
+                    } else {
+                        $('#showTable').removeClass('d-none');
+                        let no_data = "<tr><td colspan='7'>No data available in table</td> </tr>";
+                        $('#checkTable').html(no_data);
                     }
                     if (response.missing) {
                         $('#showTableMissing').removeClass('d-none');
@@ -397,7 +367,7 @@
                 }
             });
         }
-    });
+    }
 
     $('#checkTable').on('click', '#search_awb', function() {
         var order_item_identifier = $(this).data('order_item_identifier');
