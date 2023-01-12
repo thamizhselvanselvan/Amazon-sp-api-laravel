@@ -3,6 +3,7 @@
 use RedBeanPHP\R;
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Label;
 use League\Csv\Reader;
 use App\Events\testEvent;
 use App\Events\checkEvent;
@@ -14,6 +15,7 @@ use Smalot\PdfParser\Parser;
 use App\Models\Aws_credential;
 use App\Models\FileManagement;
 use App\Services\Zoho\ZohoApi;
+use App\Models\GoogleTranslate;
 use Dflydev\DotAccessData\Data;
 use SellingPartnerApi\Endpoint;
 use App\Models\Inventory\Shelve;
@@ -53,12 +55,13 @@ use Spatie\Permission\Models\Permission;
 use phpDocumentor\Reflection\Types\Null_;
 use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
+use Google\Cloud\Translate\V2\TranslateClient;
 use Symfony\Component\Validator\Constraints\File;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
 use App\Services\AWS_Business_API\Auth\AWS_Business;
+
 use SellingPartnerApi\Api\FeedsV20210630Api as FeedsApi;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
-
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
@@ -78,6 +81,112 @@ use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
 */
 // use ConfigTrait;
 Route::get('str', function () {
+
+    // $order_ids = Label::select('order_no')->where('detect_language', '1')->get()->toArray();
+    // $translate = new TranslateClient([
+    //     'key' => 'AIzaSyDxDFk4QnsvVaAeOTJpxKVvvyWzG10g7mc'
+    // ]);
+    // foreach ($order_ids as $key1 => $order_id) {
+    // }
+    // po($order_ids);
+    // exit;
+    $count = 0;
+    $find = Label::select('order_no')->where('detect_language', '0')->get()->toArray();
+    $detect_arabic = [];
+    $forTranslation = [];
+    $class = "GoogleTranslate\GoogleTranslateArabicToEnglish";
+    $queue_name = "GoogleTranslate";
+    $queue_delay = 0;
+    foreach ($find as $order_no) {
+        if ($order_no['order_no'] != '') {
+
+            $address = OrderItemDetails::select('shipping_address')
+                ->where('amazon_order_identifier', $order_no['order_no'])
+                ->get()
+                ->toArray();
+            if ($address != null) {
+
+                $ship_address = json_encode($address[0]['shipping_address']);
+                $arabic_lang = preg_match("/u06/", $ship_address);
+                if ($arabic_lang == 1) {
+
+                    $detect_arabic[] = [
+                        'order_no' => $order_no['order_no'],
+                        'detect_language' => $arabic_lang,
+                    ];
+
+                    $forTranslation = [
+                        'order_no' => $order_no['order_no'],
+                        'shipping_address' => $address
+                    ];
+                    jobDispatchFunc($class, $forTranslation, $queue_name, $queue_delay);
+                }
+                // po($arabic_lang);
+            }
+        }
+    }
+    po($detect_arabic);
+    po($forTranslation);
+    Label::upsert($detect_arabic, ['order_awb_no_unique'], ['order_no', 'detect_language']);
+
+
+
+
+
+
+    exit;
+    $var = json_decode('{"Name":"\u0627\u062d\u0645\u062f","AddressLine1":"48","AddressLine2":"4","City":"Abu Dhabi","County":"Old Shahamma","CountryCode":"AE","Phone":"0508262026"}');
+    // $testing = preg_match("/u06/", $var);
+    $name = json_encode($var->Name);
+    po($name);
+    po($var);
+    exit;
+    $translate = new TranslateClient([
+        'key' => 'AIzaSyDxDFk4QnsvVaAeOTJpxKVvvyWzG10g7mc'
+    ]);
+
+    // Translate text from english to french.
+    $result = $translate->translate('مردف شارع 39A, فيلا 27A', [
+        'target' => 'en'
+    ]);
+
+    echo $result['text'] . "\n";
+    // Detect the language of a string.
+    $result = $translate->detectLanguage('راشد سعيد راشد الحساني');
+
+    echo $result['languageCode'] . "\n";
+
+
+    exit;
+
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://translation.googleapis.com/language/translate/v2?key=AIzaSyDxDFk4QnsvVaAeOTJpxKVvvyWzG10g7mc',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => '{
+  "q": ["الفجيرة"],
+  "source": "ar",
+  "target": "en",
+  "format": "text"
+}',
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: text/html'
+        ),
+    ));
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+    echo $response;
+    exit;
+
     $str = 'Soft Bullet Toy Revolver, Empty Shell Ejecting, Two Types of Foam Darts 36, Education Toy Model, Realistic Toy Gifts for Holidays Birthday New Year Christmas Boys Gift Blue HitSong';
     $ignores = ['Revolver', 'Gun', 'Pistol'];
     // foreach ($ignores as $ignore) {

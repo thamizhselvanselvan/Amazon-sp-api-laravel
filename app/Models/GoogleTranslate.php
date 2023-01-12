@@ -11,7 +11,8 @@ class GoogleTranslate extends Model
     protected $fillable = [
         'amazon_order_identifier',
         'name',
-        'address',
+        'addressline1',
+        'addressline2',
         'city',
         'county'
     ];

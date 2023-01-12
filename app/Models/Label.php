@@ -13,8 +13,10 @@ class Label extends Model
         'status',
         'order_no',
         'awb_no',
+        'inward_awb',
         'bag_no',
         'forwarder',
+        'detect_language'
     ];
 
     // public function __construct(array $attributes = [])
