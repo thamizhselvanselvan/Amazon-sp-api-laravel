@@ -59,12 +59,10 @@ class import_product_file_SPAPI extends Command
 
         if (array_key_exists('reports', $response) && count($response['reports']) > 0) {
 
-            $report_id = $response['reports'][0]['reportId'];
+            //$report_id = $response['reports'][0]['reportId'];
             $report_document_id = $response['reports'][0]['reportDocumentId'];
 
             $result = $productreport->getReportDocumentByID($aws_key, $country_code, $report_document_id);
-
-
 
             if (array_key_exists('url', $result)) {
 
@@ -73,10 +71,14 @@ class import_product_file_SPAPI extends Command
                 if (array_key_exists('compressionAlgorithm', $result)) {
 
                     $httpResponse = gzdecode($httpResponse);
+
                 }
+
                 Storage::put('/aws-products/products_' . $seller_id . '.txt', $httpResponse);
             }
-            $this->insertdb($seller_id, $country_code);
+            
+            $this->insertdb($seller_id);
+
             return true;
         }
 
@@ -88,25 +90,31 @@ class import_product_file_SPAPI extends Command
 
         throw new Exception($response);
     }
-    public function insertdb($seller_id, $country_code)
+
+    public function insertdb($seller_id): void
     {
    
         $records = CSV_Reader("/aws-products/products_" . $seller_id . ".txt", "\t");
         $cnt = 1;
         $asin_lists = [];
-        foreach ($records as $key => $val) {
-            $cnt++;
+
+        foreach ($records as $record) {
+
             $asin_lists[] = [
                 'store_id' => $seller_id,
-                'asin' => $val['asin1'],
-                'store_price' => $val['price']
+                'asin' => $record['asin1'],
+                'store_price' => $record['price']
             ];
+            
             if ($cnt == 10000) {
 
                 product::upsert($asin_lists, ['asin', 'store_id'], ['store_price']);
+                
                 $cnt = 1;
                 $asin_lists = [];
             }
+
+            $cnt++;
         }
         // Artisan::call("mosh:price_priority_import $country_code");  //command will start crowling app 360 tables for Pricing
     }
