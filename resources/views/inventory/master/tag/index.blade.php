@@ -47,7 +47,7 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Store Name</th>
+                    <th>Tag Name</th>
                     <th>Action</th>
 
                 </tr>
@@ -81,7 +81,7 @@
                     orderable: false,
                     searchable: false
                 },
-            
+
             ]
         });
         $(document).on('click', ".delete", function(e) {

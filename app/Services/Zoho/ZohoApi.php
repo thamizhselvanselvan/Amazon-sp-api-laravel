@@ -91,8 +91,6 @@ class ZohoApi
             return $response->json();
         }
 
-        // Log::warning($response->body());
-        //Log::channel('slack')->info($response->body());
         return false;
     }
 
@@ -124,7 +122,6 @@ class ZohoApi
             ])->post($this->zoho_lead_base_url, [
                 "data" => [$parameters]
             ]);
-        //Log::warning($response->body());
 
         if ($response->status() == 201) {
             return $response->json();
