@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\label;
 
 use DateTime;
+use Exception;
 use App\Models;
 use ZipArchive;
 use RedBeanPHP\R;
@@ -14,23 +15,23 @@ use App\Models\Mws_region;
 use Illuminate\Http\Request;
 use App\Jobs\Orders\GetOrder;
 use App\Models\FileManagement;
+use App\Models\GoogleTranslate;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
+
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
-
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Artisan;
+
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
-
 use Illuminate\Support\Facades\Validator;
 use App\Models\order\OrderSellerCredentials;
-use Exception;
 
 class labelManagementController extends Controller
 {
@@ -118,6 +119,7 @@ class labelManagementController extends Controller
             $bag_no = $id_array[0];
             $table_id = $id_array[1];
             $result = $this->labelDataFormating("'$table_id'");
+            $getTranslatedText = $this->GetArabicToEnglisText($result);
 
             $result = $result[0];
             $awb_no = $result['awb_no'];
@@ -130,7 +132,7 @@ class labelManagementController extends Controller
 
             $generator = new BarcodeGeneratorPNG();
             $bar_code = base64_encode($generator->getBarcode($this->lableDataCleanup($awb_no, 'awb'), $generator::TYPE_CODE_39));
-            return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder', 'bag_no'));
+            return view('label.labelTemplate', compact('result', 'bar_code', 'awb_no', 'forwarder', 'bag_no', 'getTranslatedText'));
         }
     }
 
@@ -199,7 +201,7 @@ class labelManagementController extends Controller
     {
         $all_id_string = "'" . implode("','", explode('-', $id)) . "'";
         $results = $this->labelDataFormating($all_id_string);
-
+        $getTranslatedText = $this->GetArabicToEnglisText($results);
         $generator = new BarcodeGeneratorPNG();
 
         $result = [];
@@ -231,7 +233,7 @@ class labelManagementController extends Controller
             }
         }
 
-        return view('label.multipleLabel', compact('result', 'bar_code'));
+        return view('label.multipleLabel', compact('result', 'bar_code', 'getTranslatedText'));
     }
 
     public function DownloadSelected(Request $request)
@@ -339,7 +341,7 @@ class labelManagementController extends Controller
         }
         $data = Excel::toArray([], $file);
         $Label_excel_data = [];
-
+        $order_id = [];
         foreach ($data as $header) {
 
             foreach ($header as $key => $excel_data) {
@@ -351,10 +353,14 @@ class labelManagementController extends Controller
                         'bag_no'    => $excel_data[2],
                         'forwarder' => $excel_data[3],
                     ];
+                    $order_id[] = $excel_data[0];
                 }
             }
         }
+
+        $order_ids = implode('_', $order_id);
         Label::upsert($Label_excel_data, ['order_awb_no_unique'], ['order_no', 'awb_no', 'bag_no', 'forwarder']);
+        commandExecFunc("mosh:detect-arabic-language-into-label --order_id=${order_ids}");
         return response()->json(["success" => "All file uploaded successfully"]);
     }
 
@@ -1093,5 +1099,18 @@ class labelManagementController extends Controller
             return preg_replace("/[^a-zA-Z0-9]/", "", strtoupper($data));
         }
         return $data;
+    }
+
+    public function GetArabicToEnglisText($order_ids)
+    {
+        $googleTranslatedText = [];
+        foreach ($order_ids as $key1 => $order_id) {
+            $getTranslatedText = GoogleTranslate::select('name', 'addressline1', 'addressline2', 'city', 'county')
+                ->where('amazon_order_identifier', $order_id['amazon_order_identifier'])
+                ->get()
+                ->toArray();
+            $googleTranslatedText[] = isset($getTranslatedText[0]) ? $getTranslatedText[0] : [];
+        }
+        return $googleTranslatedText;
     }
 }
