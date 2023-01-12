@@ -73,20 +73,25 @@ class DetectArabicLanguageIntoLabels extends Command
 
                     $ship_address = json_encode($address[0]['shipping_address']);
                     $arabic_lang = preg_match("/u06/", $ship_address);
-                    $detect_arabic[] = [
-                        'order_no' => $order_no,
-                        'detect_language' => $arabic_lang,
-                    ];
 
-                    $forTranslation = [
-                        'order_no' => $order_no,
-                        'shipping_address' => $address
-                    ];
+                    if ($arabic_lang == 1) {
+                        $detect_arabic[] = $order_no;
+
+                        $forTranslation = [
+                            'order_no' => $order_no,
+                            'shipping_address' => $address
+                        ];
+                    }
+
+
                     jobDispatchFunc($class, $forTranslation, $queue_name, $queue_delay);
                 }
             }
         }
-        Label::upsert($detect_arabic, ['order_awb_no_unique'], ['order_no', 'detect_language']);
+        // Label::upsert($detect_arabic, ['order_awb_no_unique'], ['order_no', 'detect_language']);
+
+        Label::whereIn('order_no', $detect_arabic)
+            ->update(['detect_language' => 1]);
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
