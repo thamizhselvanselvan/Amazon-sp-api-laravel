@@ -334,10 +334,10 @@ class labelManagementController extends Controller
                 "bag_no" => $value['BagNo'],
                 "forwarder" => $value['Forwarder']
             ];
-            $order_ids[] = $value['OrderNo'];
+            $order_ids[] = trim($value['OrderNo']);
         }
 
-        $order_ids = implode('_', $order_ids);
+        $order_ids = "'" . implode('_', $order_ids) . "'";
 
         Label::upsert($label_csv_data, ['order_awb_no_unique'], ['order_no', 'awb_no', 'inward_awb', 'bag_no', 'forwarder']);
         commandExecFunc("mosh:detect-arabic-language-into-label --order_id=${order_ids}");

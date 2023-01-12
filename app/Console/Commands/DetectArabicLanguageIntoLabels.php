@@ -49,14 +49,15 @@ class DetectArabicLanguageIntoLabels extends Command
         ];
         $process_management_id = ProcessManagement::create($process_manage)->toArray();
         $pm_id = $process_management_id['id'];
+
         $order_ids = $this->option('order_id');
         $order_ids = explode('_', $order_ids);
+
         $detect_arabic = [];
         $forTranslation = [];
         $class = "GoogleTranslate\GoogleTranslateArabicToEnglish";
         $queue_delay = 0;
         $queue_name = "GoogleTranslate";
-
         foreach ($order_ids as $order_no) {
             $check_order_id = Label::where('order_no', $order_no)
                 ->where('detect_language', 0)
