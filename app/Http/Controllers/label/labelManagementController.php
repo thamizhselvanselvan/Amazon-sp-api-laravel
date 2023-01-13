@@ -911,6 +911,7 @@ class labelManagementController extends Controller
                 $found_order_id[] = $order_id;
 
                 $html .= "<tr>
+                            <td><input class='check_options' type='checkbox' value='$label_det->id' name='options[]' id='checkid$label_det->id'></td>
                             <td> $label_det->store_name </td> 
                             <td> $label_det->order_no </td>";
 
