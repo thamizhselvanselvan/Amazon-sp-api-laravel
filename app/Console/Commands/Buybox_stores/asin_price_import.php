@@ -122,15 +122,6 @@ class Asin_price_import extends Command
   
     }
 
-    public function product_upsert($data) {
-
-        Product::upsert(
-            $data,
-            ['asin_store_id_unique'],
-            ['app_360_price', 'bb_price', 'priority', 'availability', 'base_price', 'ceil_price', 'cyclic']
-        );
-    }
-
     public function pricingae($result_asins, $store_id)
     {
 
@@ -210,4 +201,15 @@ class Asin_price_import extends Command
 
         $this->product_upsert($insert_data);
     }
+
+    public function product_upsert($data)
+    {
+
+        Product::upsert(
+            $data,
+            ['asin_store_id_unique'],
+            ['app_360_price', 'bb_price', 'priority', 'availability', 'base_price', 'ceil_price', 'cyclic']
+        );
+    }
+
 }
