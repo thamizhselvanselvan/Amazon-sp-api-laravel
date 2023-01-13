@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Response;
 use App\Models\order\OrderSellerCredentials;
 use App\Services\SP_API\API\Order\OrderItem;
 use App\Services\Inventory\InventoryCsvImport;
+use Google\Cloud\Translate\V2\TranslateClient;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
 use App\Services\Catalog\AllPriceExportCsvServices;
 use App\Services\SP_API\API\Order\OrderUsingRedBean;
@@ -37,6 +38,39 @@ Route::get('test/seller/order/{seller_id}/{country_code}', 'TestController@getSe
 Route::get('test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
 Route::get('renameamazoninvoice/', 'TestController@RenameAmazonInvoice');
 Route::get('getPricing/', 'TestController@GetPricing');
+
+Route::get('test/translation/{order_id}', function ($order_id) {
+
+    $translate = new TranslateClient([
+        'key' => config('app.google_translate_key')
+    ]);
+
+    $address = OrderItemDetails::select('shipping_address')
+        ->where('amazon_order_identifier', $order_id)
+        ->get()
+        ->toArray();
+
+    $arabicToEnglish = [];
+    if ($address != null) {
+
+        $ship_address = json_encode($address[0]['shipping_address']);
+        $arabic_lang = preg_match("/u06/", $ship_address);
+        if ($arabic_lang == 1) {
+            $records = json_decode($ship_address);
+            po($records);
+            foreach ($records as $key => $record) {
+                if (preg_match('/u06/', json_encode($record)) == 1) {
+
+                    $translatedText = $translate->translate($record, [
+                        'target' => 'en'
+                    ]);
+                    $arabicToEnglish[$key] = $translatedText['text'];
+                }
+            }
+        }
+    }
+    po($arabicToEnglish);
+});
 
 Route::get('test1', function () {
 

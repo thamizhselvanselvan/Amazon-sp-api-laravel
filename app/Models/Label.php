@@ -16,6 +16,7 @@ class Label extends Model
         'inward_awb',
         'bag_no',
         'forwarder',
+        'detect_language'
     ];
 
     // public function __construct(array $attributes = [])
