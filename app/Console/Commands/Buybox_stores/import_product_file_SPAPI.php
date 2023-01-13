@@ -74,7 +74,7 @@ class import_product_file_SPAPI extends Command
 
                 }
 
-                Storage::put('/aws-products/products_' . $seller_id . '.txt', $httpResponse);
+                Storage::put('/aws-products/aws-store-files/products_' . $seller_id . '.txt', $httpResponse);
             }
             
             $this->insertdb($seller_id);
@@ -94,7 +94,7 @@ class import_product_file_SPAPI extends Command
     public function insertdb($seller_id): void
     {
    
-        $records = CSV_Reader("/aws-products/products_" . $seller_id . ".txt", "\t");
+        $records = CSV_Reader("/aws-products/aws-store-files/products_" . $seller_id . ".txt", "\t");
         $cnt = 1;
         $asin_lists = [];
 

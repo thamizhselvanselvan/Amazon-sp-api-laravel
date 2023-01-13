@@ -130,9 +130,14 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware(['web', 'maintenance_mode', 'auth'])
                 ->namespace($this->namespace)
                 ->group(base_path('routes/pms/zoho.php'));
+
             Route::middleware(['web', 'maintenance_mode', 'auth'])
                 ->namespace($this->namespace)
                 ->group(base_path('routes/pms/test.php'));
+
+            Route::middleware(['web', 'maintenance_mode', 'auth'])
+                ->namespace($this->namespace)
+                ->group(base_path('routes/pms/buybox_stores.php'));
         });
     }
 

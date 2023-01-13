@@ -138,7 +138,7 @@ Route::get('ty', function () {
     $data  = ['7', '8', '9', '10', '12',  '27'];
     foreach ($data as $store_id) {
 
-        $csv = Reader::createFromPath(Storage::path('/aws-products/products_' . $store_id . '.txt'), 'r');
+        $csv = Reader::createFromPath(Storage::path('/aws-products/aws-store-files/products_' . $store_id . '.txt'), 'r');
         $csv->setDelimiter("\t");
         $csv->setHeaderOffset(0);
 
