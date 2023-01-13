@@ -98,7 +98,7 @@ class CatalogDashboardService
                     FROM ${buybox_table}
                     WHERE asin IN ($asin)
                     AND delist = 0
-                    AND available = 2
+                    AND available != 1
                     ");
 
                         foreach ($bb_unavailable_asins as $bb_unavailable_asin) {
