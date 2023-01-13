@@ -8,7 +8,7 @@ use League\Csv\Reader;
 use App\Models\Aws_credential;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use App\Models\buybox_sotres\product;
+use App\Models\Buybox_stores\Product;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Services\buybox_stores\product_import;
@@ -99,22 +99,22 @@ class import_product_file_SPAPI extends Command
         $asin_lists = [];
 
         foreach ($records as $record) {
-
+            $cnt++;
             $asin_lists[] = [
                 'store_id' => $seller_id,
                 'asin' => $record['asin1'],
                 'store_price' => $record['price']
             ];
             
-            if ($cnt == 10000) {
+            if ($cnt == 12000) {
 
-                product::upsert($asin_lists, ['asin', 'store_id'], ['store_price']);
+                Product::upsert($asin_lists, ['asin', 'store_id'], ['store_price']);
                 
                 $cnt = 1;
                 $asin_lists = [];
             }
 
-            $cnt++;
+            
         }
         // Artisan::call("mosh:price_priority_import $country_code");  //command will start crowling app 360 tables for Pricing
     }

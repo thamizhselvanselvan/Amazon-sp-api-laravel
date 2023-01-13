@@ -3,7 +3,7 @@
 use League\Csv\Reader;
 use App\Models\Aws_credential;
 use Illuminate\Support\Facades\DB;
-use App\Models\buybox_sotres\product;
+use App\Models\Buybox_stores\Product;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Services\AWS_Business_API\AWS_POC\Orders;
@@ -134,7 +134,7 @@ Route::get('test', function () {
 
 
 Route::get('ty', function () {
-    exit;
+ 
     $data  = ['7', '8', '9', '10', '12',  '27'];
     foreach ($data as $store_id) {
 
@@ -150,7 +150,7 @@ Route::get('ty', function () {
                 'store_price' => $val['price'],
                 'cyclic' => '0'
             ];
-            product::upsert($data, ['asin', 'store_id'], ['store_price', 'cyclic']);
+            Product::upsert($data, ['asin', 'store_id'], ['store_price', 'cyclic']);
         }
     }
 });
