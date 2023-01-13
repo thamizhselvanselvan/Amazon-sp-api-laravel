@@ -84,14 +84,16 @@
                 margin: 0px;
                 padding: 0px;
                 /*
-                                                                                                            width: 384px;
-                                                                                                            height: 576px;
-                                                                                                            */
+                                                                                                                    width: 384px;
+                                                                                                                    height: 576px;
+                                                                                                                    */
             }
         }
 
         .ArToEn {
             font-size: 12px;
+            line-height: 12px;
+            margin: 0;
         }
     </style>
 @stop
@@ -219,7 +221,7 @@
                                                         isset($getTranslatedText[$key]['addressline1']) ||
                                                         isset($getTranslatedText[$key]['city']) ||
                                                         isset($getTranslatedText[$key]['county']))
-                                                        <span class="ArToEn">Add:
+                                                        <p class="ArToEn">Add:
                                                             {{ $getTranslatedText[$key]['name'] }},{{ $getTranslatedText[$key]['addressline1'] }},{{ $getTranslatedText[$key]['addressline2'] }},{{ $getTranslatedText[$key]['city'] }},{{ $getTranslatedText[$key]['county'] }}
                                                     @endif
 

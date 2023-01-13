@@ -97,6 +97,8 @@
 
         .ArToEn {
             font-size: 12px;
+            line-height: 12px;
+            margin: 0;
         }
     </style>
 @stop
@@ -207,7 +209,7 @@
                                             isset($getTranslatedText[0]['addressline2']) ||
                                             isset($getTranslatedText[0]['city']) ||
                                             isset($getTranslatedText[0]['county']))
-                                            <span class="ArToEn">Add:
+                                            <p class="ArToEn">Add:
                                                 {{ $getTranslatedText[0]['name'] }},{{ $getTranslatedText[0]['addressline1'] }},{{ $getTranslatedText[0]['addressline2'] }},{{ $getTranslatedText[0]['city'] }},{{ $getTranslatedText[0]['county'] }}
                                         @endif
 
