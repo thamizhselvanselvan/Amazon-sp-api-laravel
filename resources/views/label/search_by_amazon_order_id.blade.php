@@ -130,6 +130,7 @@
         <textarea class="form-control search_id" rows="4" placeholder="Amazon Order Id" name="order_id" id='order_id'></textarea>
         <div class="text-right m-2">
             <x-adminlte-button label='Search' class="btn-sm search-amazon-order-id" theme="primary" icon="fas fa-file-upload" type="submit" onclick="search()" />
+            <x-adminlte-button label="Print Selected" target="_blank" id='print_selected' theme="primary" icon="fas fa-print" class="btn-sm ml-2 d-none" />
         </div>
     </div>
 </div>
@@ -138,7 +139,7 @@
     <table class='table table-bordered table-striped text-center'>
         <thead>
             <tr class='text-bold bg-info'>
-                <!-- <th>Selected All <br><input type='checkbox' id='selectAll' /></th> -->
+                <th>Selected All <br><input type='checkbox' id='selectAll' /></th>
                 <th>Store Name</th>
                 <th>Order No.</th>
                 <th>Awb No.</th>
@@ -296,6 +297,7 @@
             $(".search_id").attr("placeholder", $value).blur();
             $('#checkTable').html('');
             $('#showTable').addClass('d-none');
+            $('#print_selected').addClass('d-none');
             $('#showTableMissing').addClass('d-none');
         });
 
@@ -334,6 +336,7 @@
         $('#checkTable').html('');
         $('#showTable').addClass('d-none');
         $('#showTableMissing').addClass('d-none');
+        $('#print_selected').addClass('d-none');
 
         let awb_no = $('.search_id').val();
         let value = $('input[name=priority]:checked').val();
@@ -350,9 +353,10 @@
                 },
                 success: function(response) {
                     if (response.success) {
+
                         $('#showTable').removeClass('d-none');
                         $('#checkTable').html(response.success);
-
+                        $('#print_selected').removeClass('d-none');
                         let view = $('.view').attr('href');
                         window.open(view, '_blank');
                     } else {
@@ -381,6 +385,32 @@
         $('#danger').hide();
         $('#success').hide();
 
+    });
+
+    $('#selectAll').change(function() {
+        if ($('#selectAll').is(':checked')) {
+
+            $('.check_options').prop('checked', true);
+        } else {
+            $('.check_options').prop('checked', false);
+
+        }
+    });
+
+    $('#print_selected').click(function() {
+        let id = '';
+        let count = '';
+        $("input[name='options[]']:checked").each(function() {
+            if (count == 0) {
+                id += $(this).val();
+            } else {
+                id += '-' + $(this).val();
+            }
+            count++;
+            // window.location.href = '/label/print-selected/' + id;
+        });
+        // alert(id);
+        window.open("/label/print-selected/" + id, "_blank");
     });
 </script>
 @stop
