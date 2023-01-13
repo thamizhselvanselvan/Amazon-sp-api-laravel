@@ -369,5 +369,6 @@
         });
     });
 </script>
-@('label.edit_label_details_master')
+
+@include('label.edit_label_details_master')
 @stop
