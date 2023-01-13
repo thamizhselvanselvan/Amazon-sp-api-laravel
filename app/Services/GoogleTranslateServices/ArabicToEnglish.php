@@ -25,7 +25,7 @@ class ArabicToEnglish
                 $translatedText = $translate->translate($arabic, [
                     'target' => 'en'
                 ]);
-                if ($key1 != 'CountryCode' && $key1 != 'Phone' && $key1 != 'AddressType' && $key1 != 'country') {
+                if ($key1 != 'CountryCode' && $key1 != 'Phone' && $key1 != 'AddressType' && $key1 != 'country' && $key1 != 'StateOrRegion') {
 
                     $AllRecords[strtolower($key1)] = $translatedText['text'];
                 }

@@ -583,7 +583,6 @@ class labelManagementController extends Controller
 
     public function editOrderAddress($order_item_identifier)
     {
-
         $order = config('database.connections.order.database');
         $order_details = DB::select("SELECT shipping_address,order_item_identifier
         from ${order}.orderitemdetails 
@@ -597,7 +596,6 @@ class labelManagementController extends Controller
 
     public function updateOrderAddress(Request $request, $id)
     {
-
         $validater = Validator::make($request->all(), [
             'name' => ['required'],
             'phone' => ['required'],
@@ -767,71 +765,6 @@ class labelManagementController extends Controller
         return view('label.search_by_date');
     }
 
-    public function editordersearchbyid($order_item_identifier)
-    {
-
-        $order = config('database.connections.order.database');
-        $order_details = DB::select("SELECT shipping_address,order_item_identifier
-        from ${order}.orderitemdetails 
-        WHERE order_item_identifier = '$order_item_identifier'");
-
-        $shipping_address = $order_details[0]->shipping_address;
-        $data = json_decode($shipping_address, true);
-
-
-        return Response($data);
-    }
-
-    public function updateordersearchbyid(Request $request, $id)
-    {
-
-        $validater = Validator::make($request->all(), [
-            'name' => ['required'],
-            'phone' => ['required'],
-            'county' => ['required'],
-            'countryCode' => ['required'],
-            'city' => ['required'],
-            'addressType' => ['required'],
-            'addressLine1' => ['required'],
-            'addressLine2' => ['required']
-        ]);
-
-        if ($validater->fails()) {
-            return response()->json([
-
-                'status' => '400',
-                'errors' => $validater->errors(),
-
-            ]);
-        } else {
-
-            $json_data = [];
-            $json_data = array(
-                "Name" => $request->input('name'),
-                "AddressLine1" => $request->input('addressLine1'),
-                "AddressLine2" => $request->input('addressLine2'),
-                "City" => $request->input('city'),
-                "County" => $request->input('county'),
-                "CountryCode" => $request->input('countryCode'),
-                "Phone" => $request->input('phone'),
-                "AddressType" => $request->input('addressType')
-            );
-            $shipping_address = json_encode($json_data);
-
-            $order = config('database.connections.order.database');
-            DB::select("UPDATE  ${order}.orderitemdetails 
-                        SET shipping_address = '$shipping_address'
-                         WHERE amazon_order_identifier = '$id'
-                        ");
-
-
-            return response()->json([
-                'status' => '200',
-                'message' => 'student updated successfully'
-            ]);
-        }
-    }
-
     public function LabelFileManagementMonitor(Request $request)
     {
         $type = $request->module_type;
@@ -911,6 +844,7 @@ class labelManagementController extends Controller
                 $found_order_id[] = $order_id;
 
                 $html .= "<tr>
+                            <td><input class='check_options' type='checkbox' value='$label_det->id' name='options[]' id='checkid$label_det->id'></td>
                             <td> $label_det->store_name </td> 
                             <td> $label_det->order_no </td>";
 
