@@ -100,6 +100,13 @@
             line-height: 12px;
             margin: 0;
         }
+
+        .address {
+            margin-top: 0;
+            margin-bottom: 0;
+            line-height: 15px;
+            padding: 5px;
+        }
     </style>
 @stop
 
@@ -210,7 +217,11 @@
                                             isset($getTranslatedText[0]['city']) ||
                                             isset($getTranslatedText[0]['county']))
                                             <p class="ArToEn">Add:
-                                                {{ $getTranslatedText[0]['name'] }},{{ $getTranslatedText[0]['addressline1'] }},{{ $getTranslatedText[0]['addressline2'] }},{{ $getTranslatedText[0]['city'] }},{{ $getTranslatedText[0]['county'] }}
+                                                {{ $getTranslatedText[0]['name'] == null ? $result->shipping_address['Name'] : $getTranslatedText[0]['name'] }},
+                                                {{ $getTranslatedText[0]['addressline1'] == null ? $result->shipping_address['AddressLine1'] : $getTranslatedText[0]['addressline1'] }},
+                                                {{ $getTranslatedText[0]['addressline2'] == null ? $result->shipping_address['AddressLine2'] : $getTranslatedText[0]['addressline2'] }},
+                                                {{ $getTranslatedText[0]['city'] == null ? $result->shipping_address['City'] : $getTranslatedText[0]['city'] }},
+                                                {{ $getTranslatedText[0]['county'] == null ? $result->shipping_address['County'] : $getTranslatedText[0]['county'] }}
                                         @endif
 
                                     </div>
@@ -249,9 +260,12 @@
 
                 </table>
 
-                <div class="pl-1 small return">
-                    <strong>Return Address: <strong>
-                            <span>Warehouse 61, Al Habtoor Warehouses, Industrial Area 3, Al Qusias, Dubai UAE</span>
+                <div class=" small return">
+
+                    <p class="address"><strong>Return Address:</strong>
+                        Warehouse 61, Al Habtoor Warehouses, Industrial Area 3, Al Qusias, Dubai UAE
+                    </p>
+
                 </div>
             </div>
 
