@@ -480,6 +480,20 @@ return [
                 //         ],
                 //     ],
                 // ],
+                [
+
+                    'text' => 'Buy-Box Stores',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin'],
+                    'submenu' => [
+                        [
+                            'text'  => 'Latency Update',
+                            'url'  => 'buybox/stores',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin']
+                        ],
+                    ],
+                ],
             ],
         ],
 
