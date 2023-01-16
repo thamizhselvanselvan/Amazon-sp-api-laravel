@@ -202,8 +202,6 @@ class ZohoOrderFormat
 
         $catalog_details = $this->get_catalog($amazon_order_identifier, $amazon_order_item_identifier, $value->asin, $country_code, $store_name, $value->fulfillment_channel, $this->amount_paid_by_customer($item_tax, $item_price));
 
-
-
         $prod_array["Designation"]        = preg_replace("/[^a-zA-Z0-9_ -\/]+/", "", substr($value->title, 0, 100));
         $prod_array["Product_Code"]       = $value->seller_sku;
         $prod_array["Product_Cost"]       = isset($item_price->Amount) ? $item_price->Amount : 0;
