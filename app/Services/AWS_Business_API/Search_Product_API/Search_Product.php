@@ -17,7 +17,7 @@ class Search_Product
     public function SearchProductByKey($searchKey, $siteId, $source)
     {
         $productSearchApi = new Search_Product_Request();
-        $getProducts = $productSearchApi->getASIN($searchKey);
+        $getProducts = $productSearchApi->getASIN($searchKey, 'key');
 
         $count = 0;
         $count2 = 0;

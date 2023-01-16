@@ -10,15 +10,8 @@ use App\Services\AWS_Business_API\ApiCall\ApiCall;
 class Search_Product_Request
 {
 
-    public function getASIN($searchKey)
+    public function getASIN($key_value, $type = null)
     {
-        $type = '';
-        $key_value = '';
-       
-        foreach ($searchKey as $key => $value) {
-            $type = $key;
-            $key_value = $value;
-        }
       
         date_default_timezone_set('Asia/Jakarta');
 
