@@ -219,8 +219,8 @@
                                             isset($getTranslatedText[0]['county']))
                                             <p class="ArToEn"><strong>Delivery Address:</strong>
                                                 {{ $getTranslatedText[0]['name'] == null ? $result->shipping_address['Name'] : $getTranslatedText[0]['name'] }},
-                                                {{ $getTranslatedText[0]['addressline1'] == null ? $result->shipping_address['AddressLine1'] : $getTranslatedText[0]['addressline1'] }},
-                                                {{ $getTranslatedText[0]['addressline2'] == null ? $result->shipping_address['AddressLine2'] : $getTranslatedText[0]['addressline2'] }},
+                                                {{ $getTranslatedText[0]['addressline1'] == null ? $result->shipping_address['AddressLine1'] ?? '' : $getTranslatedText[0]['addressline1'] }},
+                                                {{ $getTranslatedText[0]['addressline2'] == null ? $result->shipping_address['AddressLine2'] ?? '' : $getTranslatedText[0]['addressline2'] }},
                                                 {{ $getTranslatedText[0]['city'] == null ? $result->shipping_address['City'] : $getTranslatedText[0]['city'] }},
                                                 {{ $getTranslatedText[0]['county'] == null ? $result->shipping_address['County'] : $getTranslatedText[0]['county'] }}
                                         @endif
