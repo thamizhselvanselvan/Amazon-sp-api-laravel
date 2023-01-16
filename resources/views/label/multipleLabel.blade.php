@@ -84,9 +84,9 @@
                 margin: 0px;
                 padding: 0px;
                 /*
-                                                                                                                    width: 384px;
-                                                                                                                    height: 576px;
-                                                                                                                    */
+                            width: 384px;
+                            height: 576px;
+                            */
             }
         }
 
@@ -94,6 +94,13 @@
             font-size: 12px;
             line-height: 12px;
             margin: 0;
+        }
+
+        .address {
+            margin-top: 0;
+            margin-bottom: 0;
+            line-height: 15px;
+            padding: 5px;
         }
     </style>
 @stop
@@ -222,7 +229,11 @@
                                                         isset($getTranslatedText[$key]['city']) ||
                                                         isset($getTranslatedText[$key]['county']))
                                                         <p class="ArToEn">Add:
-                                                            {{ $getTranslatedText[$key]['name'] }},{{ $getTranslatedText[$key]['addressline1'] }},{{ $getTranslatedText[$key]['addressline2'] }},{{ $getTranslatedText[$key]['city'] }},{{ $getTranslatedText[$key]['county'] }}
+                                                            {{ $getTranslatedText[$key]['name'] == null ? $value->shipping_address['Name'] : $getTranslatedText[$key]['name'] }},
+                                                            {{ $getTranslatedText[$key]['addressline1'] == null ? $value->shipping_address['AddressLine1'] : $getTranslatedText[$key]['addressline1'] }},
+                                                            {{ $getTranslatedText[$key]['addressline2'] == null ? $value->shipping_address['AddressLine2'] : $getTranslatedText[$key]['addressline2'] }},
+                                                            {{ $getTranslatedText[$key]['city'] == null ? $value->shipping_address['City'] : $getTranslatedText[$key]['city'] }},
+                                                            {{ $getTranslatedText[$key]['county'] == null ? $value->shipping_address['County'] : $getTranslatedText[$key]['county'] }}
                                                     @endif
 
                                                 </div>
@@ -260,9 +271,11 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        <div class="mt-1 p-1 small return">
-                            <div>Return Address:</div>
-                            <span>Warehouse 61, Al Habtoor Warehouses, Industrial Area 3, Al Qusias, Dubai UAE</span>
+                        <div class=" small return">
+                            <p class="address">
+                                <strong>Return Address:</strong>
+                                Warehouse 61, Al Habtoor Warehouses, Industrial Area 3, Al Qusias, Dubai UAE
+                            </p>
                         </div>
                         <!-- </div> -->
                     </div>
