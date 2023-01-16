@@ -84,16 +84,17 @@
                 margin: 0px;
                 padding: 0px;
                 /*
-                            width: 384px;
-                            height: 576px;
-                            */
+                                                    width: 384px;
+                                                    height: 576px;
+                                                    */
             }
         }
 
         .ArToEn {
-            font-size: 12px;
-            line-height: 12px;
+            font-size: 15px;
+            line-height: 14px;
             margin: 0;
+            margin-top: 5px;
         }
 
         .address {
@@ -228,10 +229,10 @@
                                                         isset($getTranslatedText[$key]['addressline1']) ||
                                                         isset($getTranslatedText[$key]['city']) ||
                                                         isset($getTranslatedText[$key]['county']))
-                                                        <p class="ArToEn">Add:
+                                                        <p class="ArToEn"><strong>Delivery Address:</strong>
                                                             {{ $getTranslatedText[$key]['name'] == null ? $value->shipping_address['Name'] : $getTranslatedText[$key]['name'] }},
-                                                            {{ $getTranslatedText[$key]['addressline1'] == null ? $value->shipping_address['AddressLine1'] : $getTranslatedText[$key]['addressline1'] }},
-                                                            {{ $getTranslatedText[$key]['addressline2'] == null ? $value->shipping_address['AddressLine2'] : $getTranslatedText[$key]['addressline2'] }},
+                                                            {{ $getTranslatedText[$key]['addressline1'] == null ? $value->shipping_address['AddressLine1'] ?? '' : $getTranslatedText[$key]['addressline1'] }},
+                                                            {{ $getTranslatedText[$key]['addressline2'] == null ? $value->shipping_address['AddressLine2'] ?? '' : $getTranslatedText[$key]['addressline2'] }},
                                                             {{ $getTranslatedText[$key]['city'] == null ? $value->shipping_address['City'] : $getTranslatedText[$key]['city'] }},
                                                             {{ $getTranslatedText[$key]['county'] == null ? $value->shipping_address['County'] : $getTranslatedText[$key]['county'] }}
                                                     @endif
