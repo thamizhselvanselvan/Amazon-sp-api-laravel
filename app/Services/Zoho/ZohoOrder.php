@@ -100,9 +100,8 @@ class ZohoOrder
                 'Amazon Order ID = ' . $amazon_order_id . ' ' .
                 'Order Item Identifier = ' .  $amazon_order_id;
 
-
                 slack_notification('app360', 'Zoho Booking', $slackMessage);
-
+                
                 return OrderUpdateDetail::query()
                     ->where([
                         'order_item_id' => $order_item_details->order_item_identifier,
