@@ -153,7 +153,7 @@ class ZohoOrder
 
             OrderUpdateDetail::query()
                 ->where('amazon_order_id', $orderItems->amazon_order_id)
-                ->where('amazon_order_id', $orderItems->order_item_id)
+                ->where('order_item_id', $orderItems->order_item_id)
                 ->update(['zoho_status' => 5]);
 
             return $orderItems;
