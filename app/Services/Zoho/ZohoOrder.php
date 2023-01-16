@@ -19,7 +19,7 @@ use App\Services\Zoho\ZohoOrderFormat;
 use App\Models\order\OrderUpdateDetail;
 
 class ZohoOrder
-{       
+{
     public $zoho_order_format;
     public $zohoApi;
 
@@ -91,18 +91,28 @@ class ZohoOrder
             $country_code = $this->zoho_order_format->get_country_code($order_item_details->store_details);
 
             $prod_array = $this->zoho_order_format->zohoOrderFormating($order_item_details, $store_name, $country_code, $order_items);
+          
+            //update zoho status to 3 if not item name
+            if (!$prod_array) {
+                OrderUpdateDetail::query()
+                    ->where([
+                        'order_item_id' => $order_item_details->order_item_identifier,
+                        'amazon_order_id' => $order_item_details->amazon_order_identifier
+                    ])
+                    ->update(['zoho_status' => '3']);
+            }
 
             if ($zoho_search_order_exists && $force_update) {
 
                 return $this->zoho_force_update($this->zohoApi, $zoho_search_order_exists, $prod_array);
             } else if ($zoho_search_order_exists && !$force_update) {
-                
+
                 return $this->zoho_update($zoho_search_order_exists, $order_item_details, $prod_array, $amazon_order_id, $order_item_id);
-            } else if(!$zoho_search_order_exists) {
+            } else if (!$zoho_search_order_exists) {
 
                 return $this->zoho_save($this->zohoApi, $prod_array, $order_item_details, $amazon_order_id, $order_item_id);
             }
-            
+
             $notes['notes'][] = "Zoho Already exists with Amazon Order ID: {$amazon_order_id}, Order Item ID: {$order_item_id}";
 
             return $notes;
@@ -152,16 +162,16 @@ class ZohoOrder
         return false;
     }
 
-    public function zoho_save($zohoApi, $prod_array, $order_item_details, $amazon_order_id, $order_item_id) 
+    public function zoho_save($zohoApi, $prod_array, $order_item_details, $amazon_order_id, $order_item_id)
     {
 
         $zoho_search_order_exists = $this->zohoApi->search($amazon_order_id, $order_item_id);
 
-        if($zoho_search_order_exists) {
-      
+        if ($zoho_search_order_exists) {
+
             return $this->zoho_update($zoho_search_order_exists, $order_item_details, $prod_array, $amazon_order_id, $order_item_id);
         }
-        
+
         $zoho_api_save = $zohoApi->storeLead($prod_array);
 
         $zoho_response = ($zoho_api_save) ? $zoho_api_save : null;
@@ -199,7 +209,6 @@ class ZohoOrder
                 $notes['lead_id'] = $zoho_save_id;
 
                 return $notes;
-            
             } else {
                 Log::error(json_encode($zoho_response));
 
@@ -212,10 +221,9 @@ class ZohoOrder
             $notes['notes'][] = "Error No Response After Updating Zoho!";
             return $notes;
         }
-        
     }
 
-    public function zoho_update($zoho_search_order_exists, $order_item_details, $prod_array, $amazon_order_id, $order_item_id) 
+    public function zoho_update($zoho_search_order_exists, $order_item_details, $prod_array, $amazon_order_id, $order_item_id)
     {
 
         $zoho_lead_id = $zoho_search_order_exists['data'][0]['id'];
@@ -262,5 +270,4 @@ class ZohoOrder
 
         return $notes;
     }
-
 }
