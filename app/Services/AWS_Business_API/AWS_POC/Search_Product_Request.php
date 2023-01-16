@@ -2,6 +2,7 @@
 
 namespace App\Services\AWS_Business_API\AWS_POC;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Services\AWS_Business_API\ApiCall\ApiCall;
 
@@ -13,11 +14,12 @@ class Search_Product_Request
     {
         $type = '';
         $key_value = '';
-        $data[] = str_replace('_', '%20', $searchKey);
-        foreach ($data as $key => $value) {
+       
+        foreach ($searchKey as $key => $value) {
             $type = $key;
             $key_value = $value;
         }
+      
         date_default_timezone_set('Asia/Jakarta');
 
         $accessToken = file_get_contents(Storage::path('Business/token.txt'));
@@ -25,16 +27,7 @@ class Search_Product_Request
         $requestUrl = "https://na.business-api.amazon.com/products/2020-08-26/products/B07HSV8DTD";
         $uri = "/products/2020-08-26/products/B07HSV8DTD";
 
-        // $new = new ApiCall();
-
-        // $test = $new->getRequest($accessToken, $queryString, $requestUrl, $uri);
-
-        // dd($test);
-
-        // exit;
-
-
-        // require_once('refrashToken.php');
+        
         $client_id = "amzn1.application-oa2-client.6c64a78c8f214ae1999ba6725aa68bd5";
         $client_secret = "80b1db8f2e3ae4b755bd50a0bcc21228694381e6a35b178efdb43799ccedd1ae";
         $refresh_token =
@@ -48,7 +41,7 @@ class Search_Product_Request
 
         $reqToken =
             file_get_contents(Storage::path('Business/token.txt'));
-        // $reqToken = getToken($request_data);
+        
 
         $host               = "na.business-api.amazon.com";
         $accessKey          = "AKIARVGPJZCJHLW5MH63";

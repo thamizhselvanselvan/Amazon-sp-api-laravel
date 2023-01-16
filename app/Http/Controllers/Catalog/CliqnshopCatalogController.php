@@ -309,7 +309,7 @@ class CliqnshopCatalogController extends Controller
         $search_data = $request->all();
 
         $searchKey = $search_data['search'];
-        $searchKey = str_replace(' ', '_', $searchKey);
+        $searchKey = str_replace(' ', '%20', $searchKey);
         $siteId = $search_data['siteId'];
         $source = $search_data['source'];
 
