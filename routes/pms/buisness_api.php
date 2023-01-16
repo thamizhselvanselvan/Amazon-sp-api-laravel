@@ -16,7 +16,7 @@ use App\Services\AWS_Business_API\Details_dump\product_details;
 use App\Services\AWS_Business_API\AWS_POC\Search_Product_Request;
 use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
 
-Route::get('product/details', 'BuisnessAPI\SearchProductRequestController@searchproductRequest');
+Route::get('product/details/search', 'BuisnessAPI\SearchProductRequestController@searchproductRequest');
 Route::resource('business/search/products', 'BuisnessAPI\SearchProductRequestController');
 
 Route::get('buisness/product/details', 'BuisnessAPI\ProductsRequestController@productRequestasin');
