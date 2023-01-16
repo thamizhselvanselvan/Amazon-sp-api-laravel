@@ -45,7 +45,8 @@ class exportall extends Command
      */
     public function handle()
     {
-        Log::alert('Under DEVELOPMENT');
+        Log::alert(' EXPORT Under DEVELOPMENT');
+        po(' EXPORT Under DEVELOPMENT');
         exit;
         $total_csv = 10;
         $chunk = 10;
