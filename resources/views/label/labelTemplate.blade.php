@@ -96,9 +96,10 @@
         }
 
         .ArToEn {
-            font-size: 12px;
-            line-height: 12px;
+            font-size: 15px;
+            line-height: 14px;
             margin: 0;
+            margin-top: 5px;
         }
 
         .address {
@@ -216,7 +217,7 @@
                                             isset($getTranslatedText[0]['addressline2']) ||
                                             isset($getTranslatedText[0]['city']) ||
                                             isset($getTranslatedText[0]['county']))
-                                            <p class="ArToEn">Add:
+                                            <p class="ArToEn"><strong>Delivery Address:</strong>
                                                 {{ $getTranslatedText[0]['name'] == null ? $result->shipping_address['Name'] : $getTranslatedText[0]['name'] }},
                                                 {{ $getTranslatedText[0]['addressline1'] == null ? $result->shipping_address['AddressLine1'] : $getTranslatedText[0]['addressline1'] }},
                                                 {{ $getTranslatedText[0]['addressline2'] == null ? $result->shipping_address['AddressLine2'] : $getTranslatedText[0]['addressline2'] }},
