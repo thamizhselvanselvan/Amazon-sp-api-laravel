@@ -71,6 +71,7 @@
                 <th>Store Name</th>
                 <th>Order No.</th>
                 <th>Awb No.</th>
+                <th>Forwarder</th>
                 <th>Order Date</th>
                 <th>SKU</th>
                 <th>Customer</th>
@@ -133,92 +134,92 @@
             return true;
         }
 
-        $('#SearchByDate').click(function() {
-            if (($('#bag_no').val() == '')) {
-                alert('Please Input Bag No.');
-            } else {
+        // $('#SearchByDate').click(function() {
+        //     if (($('#bag_no').val() == '')) {
+        //         alert('Please Input Bag No.');
+        //     } else {
 
-                $('#showTable').removeClass('d-none');
-                let label_date = $('#bag_no').val();
-                // alert(label_date);
-                $.ajax({
-                    method: 'POST',
-                    url: "{{ url('/label/select-label') }}",
-                    data: {
-                        "bag_no": label_date,
-                        "_token": "{{ csrf_token() }}",
-                    },
-                    response: 'json',
-                    success: function(response) {
-                        // console.log(response);
-                        let table = '';
+        //         $('#showTable').removeClass('d-none');
+        //         let label_date = $('#bag_no').val();
+        //         // alert(label_date);
+        //         $.ajax({
+        //             method: 'POST',
+        //             url: "{{ url('/label/select-label') }}",
+        //             data: {
+        //                 "bag_no": label_date,
+        //                 "_token": "{{ csrf_token() }}",
+        //             },
+        //             response: 'json',
+        //             success: function(response) {
+        //                 // console.log(response);
+        //                 let table = '';
 
-                        $.each(response, function(i, response) {
-                            // alert(response);
-                            let label_id = response.order_no.replaceAll(/-/g, '_');
-                            let change_date = moment(response.purchase_date,
-                                    'YYYY-MM-DD ')
-                                .format('YYYY-MM-DD');
+        //                 $.each(response, function(i, response) {
+        //                     // alert(response);
+        //                     let label_id = response.order_no.replaceAll(/-/g, '_');
+        //                     let change_date = moment(response.purchase_date,
+        //                             'YYYY-MM-DD ')
+        //                         .format('YYYY-MM-DD');
 
-                            table += "<tr class='" + label_id + "'>";
+        //                     table += "<tr class='" + label_id + "'>";
 
-                            let t = isJsonString(response.shipping_address) ? JSON
-                                .parse(response.shipping_address) : null;
-                            let t_name = (t) ? t['Name'] : '';
-                            if (t_name != '') {
+        //                     let t = isJsonString(response.shipping_address) ? JSON
+        //                         .parse(response.shipping_address) : null;
+        //                     let t_name = (t) ? t['Name'] : '';
+        //                     if (t_name != '') {
 
-                                table +=
-                                    "<td><input class='check_options' type='checkbox' value=" +
-                                    response.id + " name='options[]' id='checkid" +
-                                    response
-                                    .id + "'></td>";
-                            } else {
+        //                         table +=
+        //                             "<td><input class='check_options' type='checkbox' value=" +
+        //                             response.id + " name='options[]' id='checkid" +
+        //                             response
+        //                             .id + "'></td>";
+        //                     } else {
 
-                                table += "<td>  </td>"
-                            }
+        //                         table += "<td>  </td>"
+        //                     }
 
-                            table += "<td>" + response.store_name + "</td><td>" +
-                                response
-                                .order_no + "</td>";
+        //                     table += "<td>" + response.store_name + "</td><td>" +
+        //                         response
+        //                         .order_no + "</td>";
 
-                            table += "<td>" + response.awb_no + "</td><td>" +
-                                change_date + "</td><td>" + response.seller_sku +
-                                "</td><td>" + t_name + "</td>";
-                            if (t_name != '') {
-                                table +=
-                                    "<td><div class='d-flex'><a href=/label/pdf-template/" +
-                                    response.id +
-                                    " class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/label/download-direct/" +
-                                    response.id +
-                                    "  class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a>";
+        //                     table += "<td>" + response.awb_no + "</td><td>" +
+        //                         change_date + "</td><td>" + response.seller_sku +
+        //                         "</td><td>" + t_name + "</td>";
+        //                     if (t_name != '') {
+        //                         table +=
+        //                             "<td><div class='d-flex'><a href=/label/pdf-template/" +
+        //                             response.id +
+        //                             " class='edit btn btn-success btn-sm' target='_blank'><i class='fas fa-eye'></i> View </a><div class='d-flex pl-2'><a href=/label/download-direct/" +
+        //                             response.id +
+        //                             "  class='edit btn btn-info btn-sm'><i class='fas fa-download'></i> Download </a>";
 
-                                table +=
-                                    "<div class='d-flex pl-2'><a id='edit-address' data-toggle='modal' data-id=" +
-                                    response.order_item_identifier +
-                                    " data-amazon_order_identifier=" + response
-                                    .order_no +
-                                    " href='javascript:void(0)' class='edit btn btn-secondary btn-sm'><i class='fas fa-address-card'></i> Address </a></td></tr>"
+        //                         table +=
+        //                             "<div class='d-flex pl-2'><a id='edit-address' data-toggle='modal' data-id=" +
+        //                             response.order_item_identifier +
+        //                             " data-amazon_order_identifier=" + response
+        //                             .order_no +
+        //                             " href='javascript:void(0)' class='edit btn btn-secondary btn-sm'><i class='fas fa-address-card'></i> Address </a></td></tr>"
 
 
-                            } else {
+        //                     } else {
 
-                                table += "<td> ";
-                                table +=
-                                    "<div class='d-flex'><a id='edit-address' data-toggle='modal' data-id=" +
-                                    response.order_item_identifier +
-                                    " data-amazon_order_identifier=" + response
-                                    .order_no +
-                                    " href='javascript:void(0)' class='edit btn btn-secondary btn-sm '><i class='fas fa-address-card'></i> Address </a></div>"
-                                table += "</td></tr>";
-                            }
-                        });
-                        $('#checkTable').html(table);
-                        // alert('Export pdf successfully');
-                    }
-                });
-            }
-            // <td>Invoice No.</td><td>Invoice Date</td><td>Channel</td><td>Shipped By</td><td>Awb No</td><td>Arn NO.</td><td>Hsn Code</td><td>Quantity</td><td>Product Price</td><td class='text-center'>Action</td></tr></thead><tbody>
-        });
+        //                         table += "<td> ";
+        //                         table +=
+        //                             "<div class='d-flex'><a id='edit-address' data-toggle='modal' data-id=" +
+        //                             response.order_item_identifier +
+        //                             " data-amazon_order_identifier=" + response
+        //                             .order_no +
+        //                             " href='javascript:void(0)' class='edit btn btn-secondary btn-sm '><i class='fas fa-address-card'></i> Address </a></div>"
+        //                         table += "</td></tr>";
+        //                     }
+        //                 });
+        //                 $('#checkTable').html(table);
+        //                 // alert('Export pdf successfully');
+        //             }
+        //         });
+        //     }
+        //     // <td>Invoice No.</td><td>Invoice Date</td><td>Channel</td><td>Shipped By</td><td>Awb No</td><td>Arn NO.</td><td>Hsn Code</td><td>Quantity</td><td>Product Price</td><td class='text-center'>Action</td></tr></thead><tbody>
+        // });
 
         $('#selectAll').change(function() {
             if ($('#selectAll').is(':checked')) {
@@ -328,6 +329,10 @@
                     {
                         data: 'awb_no',
                         name: 'awb_no'
+                    },
+                    {
+                        data: 'forwarder',
+                        name: 'forwarder'
                     },
                     {
                         data: 'purchase_date',
