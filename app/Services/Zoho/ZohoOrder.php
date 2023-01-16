@@ -85,7 +85,7 @@ class ZohoOrder
         if ($order_item_details) {
 
             $order_item_id = $order_item_details->order_item_identifier;
-            $zoho_search_order_exists = $this->zohoApi->search($amazon_order_id, $order_item_id);
+            $zoho_search_order_exists = $this->zohoApi->search($amazon_order_id, $amazon_order_id);
 
             $store_name = $this->zoho_order_format->get_store_name($order_item_details->store_details);
             $country_code = $this->zoho_order_format->get_country_code($order_item_details->store_details);
@@ -94,7 +94,16 @@ class ZohoOrder
           
             //update zoho status to 3 if not item name
             if (!$prod_array) {
-                OrderUpdateDetail::query()
+
+                //slack Notification 
+                $slackMessage = 'US Price not found ' .
+                'Amazon Order ID = ' . $amazon_order_id . ' ' .
+                'Order Item Identifier = ' .  $amazon_order_id;
+
+
+                slack_notification('app360', 'Zoho Booking', $slackMessage);
+
+                return OrderUpdateDetail::query()
                     ->where([
                         'order_item_id' => $order_item_details->order_item_identifier,
                         'amazon_order_id' => $order_item_details->amazon_order_identifier
