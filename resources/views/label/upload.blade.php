@@ -6,7 +6,7 @@
 
 <div class="row mt-3">
     <div class="col">
-        <h1 class="m-0 text-dark text-center ">Label Excel Upload</h1>
+        <h1 class="m-0 text-dark text-center ">Label CSV Upload</h1>
     </div>
 </div>
 
@@ -67,7 +67,7 @@
             <div class="col-3"></div>
 
             <div class="col-6">
-                <x-adminlte-input label="Select Excel" name="label_csv_file" id="files" type="file" />
+                <x-adminlte-input label="Select CSV File" name="label_csv_file" id="files" type="file" />
                 <label></label>
             </div>
             <div class="col-12">
