@@ -252,7 +252,7 @@ class BuyBoxPriceImport
 
                 $bb_store_key = [
                     'cyclic' => '1',
-                    'is_bb_own' => '',
+                    'is_bb_won' => '',
                     'bb_winner_id' => '',
                     'bb_winner_price' => '',
                     'lowest_seller_id' => '',
@@ -271,7 +271,7 @@ class BuyBoxPriceImport
 
                         $bb_winner_price = $listingPrice_amount[$key2];
 
-                        $bb_store_key['is_bb_own'] = $seller_store_id[$key2] == $merchant_id['seller_id'] ? 1 : 0;
+                        $bb_store_key['is_bb_won'] = $seller_store_id[$key2] == $merchant_id['seller_id'] ? 1 : 0;
                         $bb_store_key['bb_winner_id'] = $seller_store_id[$key2];
                         $bb_store_key['bb_winner_price'] = $bb_winner_price;
                     }
