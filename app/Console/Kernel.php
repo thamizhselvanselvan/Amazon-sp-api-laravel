@@ -20,6 +20,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('pms:seller-order-item-import')->everyTenMinutes();
 
         if (app()->environment() === 'production') {
+            $schedule->command('mosh:product_fetch')->everyTenMinutes();
 
             /*Inventory*/
             $schedule->command('pms:inventory-stock-tracking')->dailyAt('23:45'); //PM

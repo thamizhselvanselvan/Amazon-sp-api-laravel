@@ -112,7 +112,7 @@ class ZohoOrder
 
             if ($zoho_search_order_exists && $force_update) {
 
-                return $this->zoho_force_update($this->zohoApi, $zoho_search_order_exists, $prod_array);
+                return $this->zoho_force_update($zoho_search_order_exists, $prod_array);
             } else if ($zoho_search_order_exists && !$force_update) {
 
                 return $this->zoho_update($zoho_search_order_exists, $order_item_details, $prod_array, $amazon_order_id, $order_item_id);
@@ -261,14 +261,14 @@ class ZohoOrder
         return $notes;
     }
 
-    public function zoho_force_update($zohoApi, $zoho_search_order_exists, $prod_array)
+    public function zoho_force_update($zoho_search_order_exists, $prod_array)
     {
         $notes = [];
         $zoho_lead_id = $zoho_search_order_exists['data'][0]['id'];
         $amazon_order_id = $zoho_search_order_exists['data'][0]['Alternate_Order_No'];
         $order_item_id = $zoho_search_order_exists['data'][0]['Payment_Reference_Number1'];
 
-        $zoho_response = $zohoApi->updateLead($zoho_lead_id, $prod_array);
+        $zoho_response =  $this->zohoApi->updateLead($zoho_lead_id, $prod_array);
 
         if (isset($zoho_response) && array_key_exists('data', $zoho_response) && array_key_exists(0, $zoho_response['data']) && array_key_exists('code', $zoho_response['data'][0]) && $zoho_response['data'][0]['code'] == "SUCCESS") {
             $notes['notes'][] = "Amazon Order id: $amazon_order_id with Order Item ID: $order_item_id updated in Zoho successful";
