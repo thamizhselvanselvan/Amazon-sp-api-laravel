@@ -144,13 +144,15 @@ Route::get('ty', function () {
 
 
         foreach ($csv as $key => $val) {
+            // po($val['seller-sku']);
             $data = [
                 'store_id' => $store_id,
                 'asin' => $val['asin1'],
+                'product_sku' => $val['seller-sku'],
                 'store_price' => $val['price'],
                 'cyclic' => '0'
             ];
-            Product::upsert($data, ['asin', 'store_id'], ['store_price', 'cyclic']);
+            Product::upsert($data, ['asin', 'store_id'], ['store_price', 'product_sku','cyclic']);
         }
     }
 });

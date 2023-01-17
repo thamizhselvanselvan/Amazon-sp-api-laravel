@@ -251,6 +251,7 @@ class BuyBoxPriceImport
             foreach ($records as $bb_asin) {
 
                 $bb_store_key = [
+                    'cyclic' => '1',
                     'is_bb_own' => '',
                     'bb_winner_id' => '',
                     'bb_winner_price' => '',
@@ -269,6 +270,7 @@ class BuyBoxPriceImport
                     if ($bb_won == 1) {
 
                         $bb_winner_price = $listingPrice_amount[$key2];
+
                         $bb_store_key['is_bb_own'] = $seller_store_id[$key2] == $merchant_id['seller_id'] ? 1 : 0;
                         $bb_store_key['bb_winner_id'] = $seller_store_id[$key2];
                         $bb_store_key['bb_winner_price'] = $bb_winner_price;
