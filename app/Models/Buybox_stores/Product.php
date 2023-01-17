@@ -13,8 +13,8 @@ class Product extends Model
 
     protected $fillable = [
         'store_id', 'asin', 'cyclic', 'priority', 'availability',  'latency', 'base_price',
-        'ceil_price', 'app_360_price', 'bb_price', 'push_price', 'store_price',
+        'ceil_price', 'app_360_price', 'bb_price', 'push_price', 'store_price', 'cyclic_push',
         'lowest_seller_id', 'lowest_seller_price', 'highest_seller_id', 'highest_seller_price',
-        'bb_winner_id', 'bb_winner_price', 'is_bb_own',
+        'bb_winner_id', 'bb_winner_price', 'is_bb_won',
     ];
 }
