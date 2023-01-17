@@ -118,23 +118,25 @@ class labelManagementController extends Controller
         $records->setHeaderOffset(0);
 
         $label_csv_data = [];
-        $order_ids = [];
         foreach ($records as $value) {
 
             $label_csv_data[] = [
                 "order_no" => $value['OrderNo'],
+                "order_item_id" => $value['OrderItemId'],
                 "awb_no" => $value['OutwardAwb'],
                 "inward_awb" => $value['InwardAwb'],
                 "bag_no" => $value['BagNo'],
                 "forwarder" => $value['Forwarder']
             ];
-            $order_ids[] = trim($value['OrderNo']);
         }
 
-        $order_ids = "'" . implode('_', $order_ids) . "'";
+        Label::upsert(
+            $label_csv_data,
+            ['order_item_bag_unique'],
+            ['order_no', 'awb_no', 'inward_awb', 'bag_no', 'forwarder']
+        );
 
-        Label::upsert($label_csv_data, ['order_awb_no_unique'], ['order_no', 'awb_no', 'inward_awb', 'bag_no', 'forwarder']);
-        commandExecFunc("mosh:detect-arabic-language-into-label --order_id=${order_ids}");
+        commandExecFunc("mosh:detect-arabic-language-into-label");
 
         return redirect('label/upload')->with('success', 'Label File has been uploaded, checking file\'s data');
     }

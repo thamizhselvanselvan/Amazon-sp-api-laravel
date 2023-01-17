@@ -11,7 +11,8 @@ use App\Models\Catalog\Catalog_in;
 use App\Models\Catalog\Catalog_us;
 use Illuminate\Support\Facades\Log;
 
-class ZohoOrderFormat {
+class ZohoOrderFormat
+{
 
     public $store_lists = [
 
@@ -21,98 +22,98 @@ class ZohoOrderFormat {
             "source" => "India",
             "desination" => "KSA"
         ],
-    
+
         "Gotech UAE" => [
             "AE" => "Nit Shopp UAE",
             "sku" => "NT_",
             "source" => "India",
             "desination" => "UAE"
         ],
-    
+
         "Gotech USA" => [
             "US" => "Nit Shopp USA",
             "sku" => "NT_",
             "source" => "India",
             "desination" => "USA"
         ],
-    
+
         "Amazon.in-Pram" => [
             "IN" => "Infinitikart India",
             "sku" => "PR_",
             "source" => "USA",
             "desination" => "India"
         ],
-    
+
         "Amazon.sa-Infinitikart" => [
             "SA" => "Infinitikart KSA",
             "sku" => "PR_",
             "source" => "India",
             "desination" => "KSA"
         ],
-    
+
         "PRAM UAE" => [
             "AE" => "Infinitikart UAE",
             "sku" => "IFWH_",
             "source" => "USA",
             "desination" => "UAE"
         ],
-    
+
         "Amazon.in-MBM" => [
             "IN" => "MBM India",
             "sku" => "MBM_",
             "source" => "USA",
             "desination" => "India"
         ],
-    
+
         "MBM-SAUDI" => [
             "SA" => "MBM KSA",
             "sku" => "MBM_",
             "source" => "USA",
             "desination" => "KSA"
         ],
-    
+
         "Amazon.ae-MBM" => [
             "AE" => "MBM UAE",
             "sku" => "MBM_",
             "source" => "USA",
             "desination" => "UAE"
         ],
-    
+
         "Amazon.ae-New Media" => [
             "AE" => "New Media Store",
             "sku" => "NM_",
             "source" => "India",
             "desination" => "UAE"
         ],
-    
+
         "Amazon.in-Nitrous" => [
             "IN" => "Nitrous Stores India",
             "sku" => "NS_",
             "source" => "USA",
             "desination" => "India"
         ],
-    
+
         "Amazon.ae-Mahzuz" => [
             "AE" => "Mahzuz Stores UAE",
             "sku" => "MZ_",
             "source" => "USA",
             "desination" => "UAE"
         ],
-        
+
         "CKSHOP-Amazon.in" => [
             "IN" => "STS Shop India",
             "sku" => "CK_",
             "source" => "USA",
             "desination" => "India"
         ],
-    
+
         "Amazon.in-Gotech" => [
             "IN" => "M.A.Y. Store India (Nit)",
             "sku" => "NT_",
             "source" => "USA",
             "desination" => "India"
         ],
-    
+
         /*
         "Amazon.ae-Nitrous" => [
             "IN" => "WIP",
@@ -143,6 +144,10 @@ class ZohoOrderFormat {
         $AED_EXCHANGE_RATE = 3.8;
 
         $buyerDtls = (object)$value->shipping_address;
+
+        if (!isset($buyerDtls->Name)) {
+            return false;
+        }
 
         $buyerEmail = json_decode($value->buyer_info);
         $order_total = json_decode($value->order_total);
@@ -188,11 +193,14 @@ class ZohoOrderFormat {
         $prod_array["Customer_Type1"]     = ($value->is_business_order == 'true') ? 'B2B' : 'B2C';
         $prod_array["Fulfilment_Channel"] = $this->fulfillment_channel($value->fulfillment_channel);
 
+        $amazon_order_identifier = $value->amazon_order_identifier;
+        $amazon_order_item_identifier =  $value->order_item_identifier;
+
         ############################
         ### Inventory Management ###
         ############################
 
-        $catalog_details = $this->get_catalog($value->asin, $country_code, $store_name, $value->fulfillment_channel, $this->amount_paid_by_customer($item_tax, $item_price));
+        $catalog_details = $this->get_catalog($amazon_order_identifier, $amazon_order_item_identifier, $value->asin, $country_code, $store_name, $value->fulfillment_channel, $this->amount_paid_by_customer($item_tax, $item_price));
 
         $prod_array["Designation"]        = preg_replace("/[^a-zA-Z0-9_ -\/]+/", "", substr($value->title, 0, 100));
         $prod_array["Product_Code"]       = $value->seller_sku;
@@ -221,7 +229,8 @@ class ZohoOrderFormat {
         return $prod_array;
     }
 
-    public function amount_paid_by_customer($item_tax, $item_price): int {
+    public function amount_paid_by_customer($item_tax, $item_price): int
+    {
 
         $item_tax                 = isset($item_tax->Amount) ? $item_tax->Amount  : 0;
         $amount_paid_by_customer  = isset($item_price->Amount) ? $item_price->Amount + $item_tax : 0;
@@ -360,7 +369,7 @@ class ZohoOrderFormat {
         return $buyerDtls->PostalCode ?? '00000';
     }
 
-    public function get_catalog($asin, $country_code, $store_name, $fulfillment_channel = null, $amount_paid_by_customer = null)
+    public function get_catalog($amazon_order_identifier, $amazon_order_item_identifier, $asin, $country_code, $store_name, $fulfillment_channel = null, $amount_paid_by_customer = null)
     {
         $result = null;
         $price = 0;
@@ -376,16 +385,15 @@ class ZohoOrderFormat {
                     $result = Catalog_us::where('asin', $asin)->limit(1)->first();
                     $result_price = PricingUs::where('asin', $asin)->limit(1)->first();
 
-                    $price = $this->get_price_usa($result_price, $store_name, $fulfillment_channel, $amount_paid_by_customer);
+                    $price = $this->get_price_usa($amazon_order_identifier, $amazon_order_item_identifier, $result_price, $store_name, $fulfillment_channel, $amount_paid_by_customer);
 
                     echo "\n";
                     print($price);
                     echo "\n";
-
                 } else {
                     $result = Catalog_in::where('asin', $asin)->limit(1)->first();
                     $result_price = PricingIn::where('asin', $asin)->limit(1)->first();
-               
+
                     $price = $store_name == "Infinitikart UAE" ? 0 : $result_price->in_price;
                 }
 
@@ -409,19 +417,34 @@ class ZohoOrderFormat {
         return ['price' => $price, 'weight' => $weight, 'category' => $category];
     }
 
-    public function get_price_usa($result_price, $store_name, $fulfillment_channel, $amount_paid_by_customer) {
+    public function get_price_usa($amazon_order_identifier, $amazon_order_item_identifier, $result_price, $store_name, $fulfillment_channel, $amount_paid_by_customer)
+    {
 
-       
-        if(!isset($result_price->us_price) && $store_name == "Infinitikart India") {
+
+        if (!isset($result_price->us_price) && $store_name == "Infinitikart India") {
 
             return $amount_paid_by_customer * 0.012;
         }
-        
-        if($store_name == "Infinitikart UAE") {
-            
+
+        if ($store_name == "Infinitikart UAE") {
+
             return 0;
         }
 
+        if (!isset($result_price->us_price)) {
+
+            //slack Notification 
+            $slackMessage = 'US Price not found ' .
+                'Amazon Order ID = ' . $amazon_order_identifier . ' ' .
+                'Order Item Identifier = ' .  $amazon_order_item_identifier;
+
+
+            slack_notification('app360', 'Zoho Booking', $slackMessage);
+
+            // Log::channel('slack')->info($slackMessage);
+
+            return 0;
+        }
         return $result_price->us_price;
     }
 
@@ -459,5 +482,4 @@ class ZohoOrderFormat {
 
         return '';
     }
-
 }
