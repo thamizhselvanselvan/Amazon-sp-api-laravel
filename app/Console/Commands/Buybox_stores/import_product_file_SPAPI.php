@@ -90,7 +90,7 @@ class import_product_file_SPAPI extends Command
         throw new Exception($response);
     }
 
-    public function insertdb($seller_id): void
+    public function insertdb($seller_id) :void
     {
 
         $records = CSV_Reader("/aws-products/aws-store-files/products_" . $seller_id . ".txt", "\t");
@@ -107,11 +107,10 @@ class import_product_file_SPAPI extends Command
                 'store_price' => $record['price'],
                 'cyclic' => '0'
             ];
-
-            if ($cnt == 12000) {
+           
+            if ($cnt == 5000) {
 
                 Product::upsert($asin_lists, ['asin', 'store_id'], ['store_price', 'product_sku', 'cyclic']);
-
                 $cnt = 1;
                 $asin_lists = [];
             }
