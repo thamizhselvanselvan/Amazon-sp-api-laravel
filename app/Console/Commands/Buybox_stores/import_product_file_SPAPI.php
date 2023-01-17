@@ -71,12 +71,11 @@ class import_product_file_SPAPI extends Command
                 if (array_key_exists('compressionAlgorithm', $result)) {
 
                     $httpResponse = gzdecode($httpResponse);
-
                 }
 
                 Storage::put('/aws-products/aws-store-files/products_' . $seller_id . '.txt', $httpResponse);
             }
-            
+
             $this->insertdb($seller_id);
 
             return true;
@@ -93,8 +92,8 @@ class import_product_file_SPAPI extends Command
 
     public function insertdb($seller_id): void
     {
-   
-        $records = CSV_Reader("/aws-products/aws-store-files/products_" . $seller_id . ".txt", "\t");
+
+        $records = CSV_Reader("/aws-products/products_" . $seller_id . ".txt", "\t");
         $cnt = 1;
         $asin_lists = [];
 
@@ -105,16 +104,14 @@ class import_product_file_SPAPI extends Command
                 'asin' => $record['asin1'],
                 'store_price' => $record['price']
             ];
-            
+
             if ($cnt == 12000) {
 
                 Product::upsert($asin_lists, ['asin', 'store_id'], ['store_price']);
-                
+
                 $cnt = 1;
                 $asin_lists = [];
             }
-
-            
         }
         // Artisan::call("mosh:price_priority_import $country_code");  //command will start crowling app 360 tables for Pricing
     }
