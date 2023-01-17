@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\Buybox_stores\Product;
+use App\Models\Buybox_stores\Product_Push;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -76,7 +77,7 @@ class BuyBoxStoreController extends Controller
         
         if ($request->ajax()) {
 
-            $results = DB::connection("buybox_stores")->table("product_push")
+            $results = Product_Push::query()
             ->select('id', 'store_id', 'product_sku', 'latency', 'push_price', 'base_price')
             ->orderBy('id', 'DESC')
             ->get();
