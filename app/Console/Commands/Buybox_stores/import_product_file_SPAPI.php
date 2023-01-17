@@ -94,6 +94,7 @@ class import_product_file_SPAPI extends Command
     {
 
         $records = CSV_Reader("/aws-products/aws-store-files/products_" . $seller_id . ".txt", "\t");
+
         $cnt = 1;
         $asin_lists = [];
 
@@ -110,7 +111,6 @@ class import_product_file_SPAPI extends Command
             if ($cnt == 12000) {
 
                 Product::upsert($asin_lists, ['asin', 'store_id'], ['store_price', 'product_sku', 'cyclic']);
-
 
                 $cnt = 1;
                 $asin_lists = [];
