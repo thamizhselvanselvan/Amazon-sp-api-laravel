@@ -40,8 +40,8 @@ class productImportEveryDay extends Command
      */
     public function handle()
     {
-        // $stores = ['7', '8', '9', '10', '12', '20', '27'];
-        $stores = ['10'];
+  
+        $stores = [10];
 
         foreach ($stores as $seller_id) {
             Log::alert('Dispatch' . $seller_id);
