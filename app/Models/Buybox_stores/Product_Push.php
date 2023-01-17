@@ -13,7 +13,9 @@ class Product_Push extends Model
 
     protected $fillable = [
         'store_id',
+        'product_sku',
         'push_price',
+        'base_price',
         'latency',
         'feedback_id',
         'feedback_response'
