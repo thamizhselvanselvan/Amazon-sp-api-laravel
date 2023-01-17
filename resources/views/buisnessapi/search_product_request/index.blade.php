@@ -102,11 +102,11 @@
                 'key': key,
             }
         }
-        console.log(data);
+       
 
         $.ajax({
             method: 'GET',
-            url: '/product/details',
+            url: '/product/details/search',
             data: {
                 'data': data,
                 "_token": "{{ csrf_token() }}",
