@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Buybox_stores\Product;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
-use App\Services\buybox_stores\product_import;
+use App\Services\Buybox_stores\product_import;
 
 class import_product_file_SPAPI extends Command
 {
