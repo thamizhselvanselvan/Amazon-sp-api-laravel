@@ -128,76 +128,78 @@ Route::get('bb', function () {
     $seller_highest_price = [];
     $seller_store_id = [];
     $asin = [];
-    $store_id = Mws_region::with('aws_credential')->where('region_code', 'US')->get()->toArray();
-    foreach ($store_id[0]['aws_credential'] as $merchant_id) {
+    $store_id = Mws_region::with('aws_verified')->where('region_code', 'US')
+        ->get()->toArray();
+    po($store_id);
+    foreach ($store_id[0]['aws_verified'] as $merchant_id) {
         $seller_store_id[] = $merchant_id['seller_id'];
-    }
-    $bb_winner_price = '';
-    foreach ($asin_price as $key => $bb_asin) {
-
-        $bb_store_key = [
-            'bb_winner_id' => '',
-            'bb_winner_price' => '',
-            'lowest_seller_id' => '',
-            'lowest_seller_price' => '',
-            'highest_seller_id' => '',
-            'highest_seller_price' => ''
-        ];
-        $asin[] = $bb_asin->asin;
-        $is_bb_winners = explode(',', $bb_asin->is_buybox_winner);
-        $listingPrice_amount = explode(',', $bb_asin->listingprice_amount);
-        $seller_store_id = explode(',', $bb_asin->seller_store_id);
-        // po($bb_asin);
-        // po($listingPrice_amount);
         $bb_winner_price = '';
-        foreach ($is_bb_winners as $key2 => $bb_won) {
-            if ($bb_won == 1) {
+        foreach ($asin_price as $key => $bb_asin) {
 
-                $bb_winner_price = $listingPrice_amount[$key2];
-                $bb_store_key['bb_winner_id'] = $seller_store_id[$key2];
-                $bb_store_key['bb_winner_price'] = $bb_winner_price;
-            }
-        }
-        foreach ($is_bb_winners as $key1 => $is_bb_winner) {
+            $bb_store_key = [
+                'bb_winner_id' => '',
+                'bb_winner_price' => '',
+                'lowest_seller_id' => '',
+                'lowest_seller_price' => '',
+                'highest_seller_id' => '',
+                'highest_seller_price' => ''
+            ];
+            $asin[] = $bb_asin->asin;
+            $is_bb_winners = explode(',', $bb_asin->is_buybox_winner);
+            $listingPrice_amount = explode(',', $bb_asin->listingprice_amount);
+            $seller_store_id = explode(',', $bb_asin->seller_store_id);
+            // po($bb_asin);
+            // po($listingPrice_amount);
+            $bb_winner_price = '';
+            foreach ($is_bb_winners as $key2 => $bb_won) {
+                if ($bb_won == 1) {
 
-            if ($bb_winner_price != '') {
-
-                if ($listingPrice_amount[$key1] > $bb_winner_price) {
-                    $seller_highest_price[] = $listingPrice_amount[$key1];
-                    $highest_key[] = $key1;
+                    $bb_winner_price = $listingPrice_amount[$key2];
+                    $bb_store_key['bb_winner_id'] = $seller_store_id[$key2];
+                    $bb_store_key['bb_winner_price'] = $bb_winner_price;
                 }
+            }
+            foreach ($is_bb_winners as $key1 => $is_bb_winner) {
 
-                if ($listingPrice_amount[$key1] < $bb_winner_price) {
-                    $seller_lowest_price[] = $listingPrice_amount[$key1];
-                    $lowest_key[] = $key1;
+                if ($bb_winner_price != '') {
+
+                    if ($listingPrice_amount[$key1] > $bb_winner_price) {
+                        $seller_highest_price[] = $listingPrice_amount[$key1];
+                        $highest_key[] = $key1;
+                    }
+
+                    if ($listingPrice_amount[$key1] < $bb_winner_price) {
+                        $seller_lowest_price[] = $listingPrice_amount[$key1];
+                        $lowest_key[] = $key1;
+                    }
                 }
             }
-        }
 
-        if ($seller_highest_price != null) {
+            if ($seller_highest_price != null) {
 
-            $bb_store_key['highest_seller_id'] = $seller_store_id[min($highest_key)];
-            $bb_store_key['highest_seller_price'] = min($seller_highest_price);
-            $highest_key = [];
-            $seller_highest_price = [];
-        }
-        if ($seller_lowest_price != null) {
+                $bb_store_key['highest_seller_id'] = $seller_store_id[min($highest_key)];
+                $bb_store_key['highest_seller_price'] = min($seller_highest_price);
+                $highest_key = [];
+                $seller_highest_price = [];
+            }
+            if ($seller_lowest_price != null) {
 
-            $bb_store_key['lowest_seller_id'] = $seller_store_id[max($lowest_key)];
-            $bb_store_key['lowest_seller_price'] = max($seller_lowest_price);
-            $lowest_key = [];
-            $seller_lowest_price = [];
+                $bb_store_key['lowest_seller_id'] = $seller_store_id[max($lowest_key)];
+                $bb_store_key['lowest_seller_price'] = max($seller_lowest_price);
+                $lowest_key = [];
+                $seller_lowest_price = [];
+            }
+            // po($bb_store_key);
+            // echo '<hr>';
+
+            // Product::where('store_id', $merchant_id['seller_id'])
+            //     ->where('asin', $bb_asin->asin)
+            //     ->update($bb_store_key);
+            // $bb_store_key = [];
         }
+        // po($seller_store_id);
         // po($bb_store_key);
-        // echo '<hr>';
-
-        Product::where('store_id', $merchant_id['seller_id'])
-            ->where('asin', $bb_asin->asin)
-            ->update($bb_store_key);
-        // $bb_store_key = [];
     }
-    po($seller_store_id);
-    po($bb_store_key);
 });
 Route::get('cliqnshop', function () {
     $response =   Http::get('http://amazon-sp-api-laravel.app/api/product', [

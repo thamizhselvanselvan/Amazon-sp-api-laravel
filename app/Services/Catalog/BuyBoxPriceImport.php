@@ -217,18 +217,18 @@ class BuyBoxPriceImport
 
                         PricingIn::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
                         PricingIn::upsert($pricing_in, 'asin_unique', ['asin', 'available', 'is_sold_by_amazon', 'in_price', 'weight', 'ind_to_uae', 'ind_to_sg', 'ind_to_sa', 'price_updated_at']);
+                        $this->updateRecordIntoStoreTable($country_code, $asin_price);
+                    } elseif ($country_code_lr == 'ae') {
+
+                        PricingAe::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
+                        PricingAe::upsert($pricing_ae_sa, 'unique_asin', ['asin', 'available', 'weight', 'ae_price', 'price_updated_at']);
+                        $this->updateRecordIntoStoreTable($country_code, $asin_price);
                     }
-
-                    // elseif ($country_code_lr == 'ae') {
-
-                    //     PricingAe::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
-                    //     PricingAe::upsert($pricing_ae_sa, 'unique_asin', ['asin', 'available', 'weight', 'ae_price', 'price_updated_at']);
-                    //     //
-                    // } elseif ($country_code_lr == 'sa') {
+                    // elseif ($country_code_lr == 'sa') {
                     //     PricingSa::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
                     //     PricingSa::upsert($pricing_ae_sa, 'unique_asin', ['asin', 'available', 'weight', 'sa_price', 'price_updated_at']);
                     // }
-                    $this->updateRecordIntoStoreTable($country_code, $asin_price);
+                    // $this->updateRecordIntoStoreTable($country_code, $asin_price);
                 }
             } else {
                 //if all price are fetched fro selected priority then update status
@@ -245,8 +245,8 @@ class BuyBoxPriceImport
         $bb_winner_price = '';
         $seller_lowest_price = [];
         $seller_highest_price = [];
-        $store_id = Mws_region::with('aws_credential')->where('region_code', $country_code)->get()->toArray();
-        foreach ($store_id[0]['aws_credential'] as $merchant_id) {
+        $store_id = Mws_region::with('aws_verified')->where('region_code', $country_code)->get()->toArray();
+        foreach ($store_id[0]['aws_verified'] as $merchant_id) {
 
             foreach ($records as $bb_asin) {
 
