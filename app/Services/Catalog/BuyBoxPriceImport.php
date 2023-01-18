@@ -245,8 +245,8 @@ class BuyBoxPriceImport
         $bb_winner_price = '';
         $seller_lowest_price = [];
         $seller_highest_price = [];
-        $store_id = Mws_region::with('aws_verified')->where('region_code', $country_code)->get()->toArray();
-        foreach ($store_id[0]['aws_verified'] as $merchant_id) {
+        $store_id = Mws_region::with('aws_verified1')->where('region_code', $country_code)->get()->toArray();
+        foreach ($store_id[0]['aws_verified1'] as $merchant_id) {
 
             foreach ($records as $bb_asin) {
 

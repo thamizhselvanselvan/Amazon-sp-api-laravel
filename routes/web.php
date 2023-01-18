@@ -128,10 +128,10 @@ Route::get('bb', function () {
     $seller_highest_price = [];
     $seller_store_id = [];
     $asin = [];
-    $store_id = Mws_region::with('aws_verified')->where('region_code', 'US')
+    $store_id = Mws_region::with('aws_verified1')->where('region_code', 'AE')
         ->get()->toArray();
     po($store_id);
-    foreach ($store_id[0]['aws_verified'] as $merchant_id) {
+    foreach ($store_id[0]['aws_verified1'] as $merchant_id) {
         $seller_store_id[] = $merchant_id['seller_id'];
         $bb_winner_price = '';
         foreach ($asin_price as $key => $bb_asin) {
