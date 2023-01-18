@@ -583,17 +583,34 @@ class labelManagementController extends Controller
         return 'success';
     }
 
-    public function editOrderAddress($order_item_identifier)
+    public function editOrderAddress($order_id)
     {
         $order = config('database.connections.order.database');
-        $order_details = DB::select("SELECT shipping_address,order_item_identifier
-        from ${order}.orderitemdetails 
-        WHERE order_item_identifier = '$order_item_identifier'");
 
-        $shipping_address = $this->lableDataCleanup($order_details[0]->shipping_address, 'address');
+        $order_details = DB::select("SELECT 
+        seller_sku,order_item_identifier,
+        GROUP_CONCAT(DISTINCT shipping_address) as shipping_address
+        from $order.orderitemdetails 
+        WHERE amazon_order_identifier = '$order_id'
+        GROUP By order_item_identifier, seller_sku
+        ");
+
+        $qty_details = Label::query()->where('order_no', $order_id)
+            ->get(['order_no', 'order_item_id', 'qty'])
+            ->toArray();
+
+
+        $address = $order_details[0]->shipping_address;
+        $sku = [];
+
+        foreach ($order_details as $value) {
+            $sku[$value->order_item_identifier] = $value->seller_sku;
+        }
+
+        $shipping_address = $this->lableDataCleanup($address, 'address');
         $manage = json_decode($shipping_address, true);
 
-        return Response($manage);
+        return Response(['address' => $manage, 'qty' => $qty_details, 'sku' => $sku]);
     }
 
     public function updateOrderAddress(Request $request, $id)
@@ -606,15 +623,13 @@ class labelManagementController extends Controller
             'city' => ['required'],
             'addressType' => ['required'],
             'addressLine1' => ['required'],
-            'addressLine2' => ['required']
+            'addressLine2' => ['required'],
         ]);
 
         if ($validater->fails()) {
             return response()->json([
-
                 'status' => '400',
                 'errors' => $validater->errors(),
-
             ]);
         } else {
             $json_data = [];
@@ -630,12 +645,29 @@ class labelManagementController extends Controller
             );
             $shipping_address = json_encode($json_data);
 
+            $tracking_id = $request->input('tracking_id');
+            $forwarder = $request->input('forwarder');
+
+            $qty = $request->input('qty');
+
+            foreach ($qty as $key => $value) {
+                Label::where('order_item_id', $key)
+                    ->update(['qty' => $value]);
+            }
+
             $order = config('database.connections.order.database');
-            DB::select("UPDATE  ${order}.orderitemdetails 
+            DB::select("UPDATE  $order.orderitemdetails 
                         SET shipping_address = '$shipping_address'
                          WHERE amazon_order_identifier = '$id'
                         ");
 
+            Label::where('order_no', $id)
+                ->update(
+                    [
+                        'awb_no' => $tracking_id,
+                        'forwarder' => $forwarder
+                    ]
+                );
 
             return response()->json([
                 'status' => '200',
@@ -927,6 +959,7 @@ class labelManagementController extends Controller
         GROUP_CONCAT(ordetail.title SEPARATOR '-label-title-') as title,
         GROUP_CONCAT(ordetail.seller_sku SEPARATOR '-label-sku-') as sku,
         GROUP_CONCAT(ordetail.quantity_ordered SEPARATOR '-label-qty-') as qty
+        -- GROUP_CONCAT(web.qty SEPARATOR '-label-qty-') as qty
         from ${web}.${prefix}labels as web
         JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
         JOIN ${order}.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
