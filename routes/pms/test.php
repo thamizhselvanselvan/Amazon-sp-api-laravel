@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Label;
 use GuzzleHttp\Client;
 use League\Csv\Writer;
 use App\Models\Mws_region;
@@ -14,8 +15,8 @@ use App\Models\Catalog\Asin_master;
 use function Clue\StreamFilter\fun;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Route;
 
+use Illuminate\Support\Facades\Route;
 use App\Models\order\OrderItemDetails;
 use App\Models\order\OrderUpdateDetail;
 use App\Models\seller\AsinMasterSeller;
@@ -42,40 +43,45 @@ Route::get('getPricing/', 'TestController@GetPricing');
 
 Route::get('test/translation/{order_id}', function ($order_id) {
 
+    $order_ids = explode(',', $order_id);
     $translate = new TranslateClient([
         'key' => config('app.google_translate_key')
     ]);
+    foreach ($order_ids as $order_id) {
 
-    $address = OrderItemDetails::select('shipping_address')
-        ->where('amazon_order_identifier', $order_id)
-        ->get()
-        ->toArray();
+        $address = OrderItemDetails::select('shipping_address')
+            ->where('amazon_order_identifier', $order_id)
+            ->get()
+            ->toArray();
 
-    $arabicToEnglish = [];
-    if ($address != null) {
+        $arabicToEnglish = [];
+        if ($address != null) {
 
-        $ship_address = json_encode($address[0]['shipping_address']);
-        $arabic_lang = preg_match("/u06/", $ship_address);
-        if ($arabic_lang == 1) {
-            $records = json_decode($ship_address);
-            po($records);
-            $arabicToEnglish['amazon_order_identifier'] = $order_id;
-            foreach ($records as $key => $record) {
-                if (preg_match('/u06/', json_encode($record)) == 1) {
+            $ship_address = json_encode($address[0]['shipping_address']);
+            $arabic_lang = preg_match("/u06/", $ship_address);
+            if ($arabic_lang == 1) {
+                $records = json_decode($ship_address);
+                // po($records);
+                $arabicToEnglish['amazon_order_identifier'] = $order_id;
+                foreach ($records as $key => $record) {
+                    if (preg_match('/u06/', json_encode($record)) == 1) {
 
-                    $translatedText = $translate->translate($record, [
-                        'target' => 'en'
-                    ]);
-                    if ($key != 'CountryCode' && $key != 'Phone' && $key != 'AddressType' && $key != 'country' && $key != 'StateOrRegion') {
-                        $arabicToEnglish[strtolower($key)] = $translatedText['text'];
-                        // $arabicToEnglish[$key] = $translatedText['text'];
+                        $translatedText = $translate->translate($record, [
+                            'target' => 'en'
+                        ]);
+                        if ($key != 'CountryCode' && $key != 'Phone' && $key != 'AddressType' && $key != 'country' && $key != 'StateOrRegion') {
+                            $arabicToEnglish[strtolower($key)] = $translatedText['text'];
+                            // $arabicToEnglish[$key] = $translatedText['text'];
+                        }
                     }
                 }
             }
         }
+        GoogleTranslate::upsert($arabicToEnglish, ['amazon_order_id_unique'], ['amazon_order_identifier', 'name', 'addressline1', 'addressline2', 'city', 'county']);
+        Label::where('order_no', $order_id)->update(['detect_language' => 2]);
+        po($arabicToEnglish);
     }
-    po($arabicToEnglish);
-    GoogleTranslate::upsert($arabicToEnglish, ['amazon_order_id_unique'], ['amazon_order_identifier', 'name', 'addressline1', 'addressline2', 'city', 'county']);
+    echo 'Translated Successfully';
 });
 
 Route::get('test1', function () {
