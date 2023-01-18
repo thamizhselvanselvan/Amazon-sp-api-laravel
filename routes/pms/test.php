@@ -7,6 +7,7 @@ use League\Csv\Writer;
 use App\Models\Mws_region;
 use Smalot\PdfParser\Parser;
 use App\Services\Zoho\ZohoApi;
+use App\Models\GoogleTranslate;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use App\Models\Catalog\Asin_master;
@@ -14,8 +15,8 @@ use function Clue\StreamFilter\fun;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
-use App\Models\order\OrderItemDetails;
 
+use App\Models\order\OrderItemDetails;
 use App\Models\order\OrderUpdateDetail;
 use App\Models\seller\AsinMasterSeller;
 use Illuminate\Support\Facades\Storage;
@@ -58,18 +59,23 @@ Route::get('test/translation/{order_id}', function ($order_id) {
         if ($arabic_lang == 1) {
             $records = json_decode($ship_address);
             po($records);
+            $arabicToEnglish['amazon_order_identifier'] = $order_id;
             foreach ($records as $key => $record) {
                 if (preg_match('/u06/', json_encode($record)) == 1) {
 
                     $translatedText = $translate->translate($record, [
                         'target' => 'en'
                     ]);
-                    $arabicToEnglish[$key] = $translatedText['text'];
+                    if ($key != 'CountryCode' && $key != 'Phone' && $key != 'AddressType' && $key != 'country' && $key != 'StateOrRegion') {
+                        $arabicToEnglish[strtolower($key)] = $translatedText['text'];
+                        // $arabicToEnglish[$key] = $translatedText['text'];
+                    }
                 }
             }
         }
     }
     po($arabicToEnglish);
+    GoogleTranslate::upsert($arabicToEnglish, ['amazon_order_id_unique'], ['amazon_order_identifier', 'name', 'addressline1', 'addressline2', 'city', 'county']);
 });
 
 Route::get('test1', function () {
