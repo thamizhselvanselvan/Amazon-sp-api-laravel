@@ -73,6 +73,7 @@
                             </div>
 
                             <div class="col-12 float-left mt-2">
+                                <input type="hidden" name="export_type" value="via_priority">
                                 <x-adminlte-button label="Export" theme="success" class="btn btn-sm "
                                     icon="fas fa-file-export " type="submit" id="buyboxExport" />
                             </div>
@@ -104,6 +105,112 @@
         </div>
     </div>
 
+@stop
+
+@section('content')
+    <div class="loader d-none">
+        <div class="sub-loader position-relative ">
+            <div class="lds-hourglass"></div>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="col">
+                <div class="col">
+                    <div class="alert alert-warning alert-block info-msg d-none">
+                        <!-- <button type="button" class="close" data-dismiss="alert">×</button> -->
+                        <strong id='info-value'></strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+
+            @if (session()->has('success'))
+                <x-adminlte-alert theme="success" title="Success" dismissable>
+                    {{ session()->get('success') }}
+                </x-adminlte-alert>
+            @endif
+
+            @if (session()->has('error'))
+                <x-adminlte-alert theme="danger" title="Error" dismissable>
+                    {{ session()->get('error') }}
+                </x-adminlte-alert>
+            @endif
+            <div class="textarea-import ">
+                <form class="row" action="{{ route('catalog.buybox.export.csv') }}" method="POST"
+                    enctype="multipart/form-data">
+                    @csrf
+                    <div class="col-3"></div>
+
+                    <div class="col-6 ">
+                        <div class="card">
+                            <div class="card-header source">
+                                <label for="Select Source">Select Source</label>
+                                <div class="row ">
+                                    <div class="col-2">
+                                        <label for="IN">IN</label>
+                                        <input type="checkbox" class="destination-priority" name="source"
+                                            value="IN">
+                                    </div>
+                                    <div class="col-2">
+                                        <label for="US">US</label>
+                                        <input type="checkbox" class="destination-priority" name="source"
+                                            value="US">
+                                    </div>
+                                    <div class="col-2">
+                                        <label for="AE">AE</label>
+                                        <input type="checkbox" class="destination-priority" name="source"
+                                            value="AE">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body priority">
+                                <label for="Select Priority">Select Priority</label>
+                                <div class="row ">
+                                    <div class="col-2">
+                                        <label for="P1">P1</label>
+                                        <input type="radio" class="destination-priority" name="priority"
+                                            value="1">
+                                    </div>
+                                    <div class="col-2">
+                                        <label for="P2">P2</label>
+                                        <input type="radio" class="destination-priority" name="priority"
+                                            value="2">
+                                    </div>
+                                    <div class="col-2 ">
+                                        <label for="P3">P3</label>
+                                        <input type="radio" class="destination-priority" name="priority"
+                                            value="3">
+                                    </div>
+                                    <div class="col-2 ">
+                                        <label for="P4">P4</label>
+                                        <input type="radio" class="destination-priority" name="priority"
+                                            value="4">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-area">
+                                <x-adminlte-textarea label="ASIN By Text-area" name="text_area" type="text"
+                                    rows="6" placeholder="Enter ASIN " id="textarea" />
+                                <input type="hidden" name="export_type" value="text_area">
+
+                                <div class="text-center">
+                                    <x-adminlte-button label="Upload" theme="primary" class="add_asin"
+                                        icon="fas fa-plus" type="submit" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3"></div>
+                </form>
+            </div>
+        </div>
+        <div class="col"></div>
+    </div>
 @stop
 
 @section('js')

@@ -1,5 +1,5 @@
 <?php
-namespace App\Services\buybox_stores;
+namespace App\Services\Buybox_stores;
 
 use Exception;
 use App\Models\Aws_credential;
