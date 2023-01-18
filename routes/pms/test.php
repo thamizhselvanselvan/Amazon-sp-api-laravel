@@ -231,10 +231,13 @@ Route::get('test/inventory', function () {
 
 Route::get('test/zoho/read', function () {
 
-    $token = '1000.2df599745cecd34c94ba703cbe525ad2.6270c2f5ff7bb775da72344dfcce55d5';
+    $token = json_decode(Storage::get('zoho/access_token.txt'), true)['access_token'];
+
+    // $token = '1000.352840e62c060519048c3d41c3389561.06aaa4e24e9dcf1089693cf66706d74e';
     $url = 'https://www.zohoapis.com/crm/bulk/v2/read';
     $lead_url = 'https://www.zohoapis.com/crm/v2/Leads';
 
+    //test lead details
     // $response = Http::withoutVerifying()
     //     ->withHeaders([
     //         'Authorization' => 'Zoho-oauthtoken ' . $token
@@ -252,6 +255,7 @@ Route::get('test/zoho/read', function () {
         ],
     ];
 
+    //make request for csv file
     // $response = Http::withoutVerifying()
     //     ->withHeaders([
     //         'Authorization' => 'Zoho-oauthtoken ' . $token,
@@ -260,9 +264,10 @@ Route::get('test/zoho/read', function () {
 
     // dd($response->json());
 
+    //check requested file status
     $response = Http::withoutVerifying()->withHeaders([
         'Authorization' => 'Zoho-oauthtoken ' . $token,
-    ])->get($url . '/1929333000104021178/result');
+    ])->get($url . '/1929333000104511202');
 
     // return $response;
     // dd($response);

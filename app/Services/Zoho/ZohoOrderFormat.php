@@ -100,6 +100,13 @@ class ZohoOrderFormat
             "desination" => "UAE"
         ],
 
+        "Amazon.sa-Mahzuz" => [
+            "SA" => "MahzuzStores KSA",
+            "sku" => "MZ_",
+            "source" => "USA",
+            "desination" => "KSA"
+        ],
+
         "CKSHOP-Amazon.in" => [
             "IN" => "STS Shop India",
             "sku" => "CK_",
