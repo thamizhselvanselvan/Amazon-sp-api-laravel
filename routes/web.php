@@ -55,6 +55,7 @@ use Spatie\Permission\Models\Permission;
 use phpDocumentor\Reflection\Types\Null_;
 use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
+use App\Models\Buybox_stores\Product;
 use Google\Cloud\Translate\V2\TranslateClient;
 use Symfony\Component\Validator\Constraints\File;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
@@ -80,120 +81,128 @@ use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
 |
 */
 // use ConfigTrait;
-Route::get('str', function () {
+Route::get('bb', function () {
 
-    // $order_ids = Label::select('order_no')->where('detect_language', '1')->get()->toArray();
-    // $translate = new TranslateClient([
-    //     'key' => 'AIzaSyDxDFk4QnsvVaAeOTJpxKVvvyWzG10g7mc'
-    // ]);
-    // foreach ($order_ids as $key1 => $order_id) {
-    // }
-    // po($order_ids);
+    // -- group_concat(PPO.is_fulfilled_by_amazon) as is_fulfilled_by_amazon,
+    //                         -- group_concat(PPO.feedback_count) as feedback_count
+
+    $destination_model = table_model_create(country_code: 'IN', model: 'Asin_destination', table_name: 'asin_destination_');
+    $product_seller_details = "bb_product_aa_custom_p1_in_seller_details";
+    $product_lp = "bb_product_aa_custom_p1_in_offers";
+
+    $data = $destination_model->select(['asin', 'user_id'])
+        ->where('price_status', 0)->where('priority', '1')
+        ->limit(1000)
+        ->get()->toArray();
+
+    $asin = [];
+    foreach ($data as $value) {
+        $a = $value['asin'];
+        $asin[] = "'$a'";
+    }
+    $asin = implode(',', $asin);
+    $asin_price = DB::connection('buybox')
+        ->select("SELECT PPO.asin, LP.available,LP.is_sold_by_amazon,LP.buybox_listingprice_amount, LP.updated_at as updated_at,
+                            GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
+                            group_concat(PPO.listingprice_amount) as listingprice_amount,
+                            group_concat(PPO.seller_store_id) as seller_store_id
+                            FROM 
+                                $product_seller_details as PPO
+                                    JOIN
+                                 $product_lp as LP 
+                            ON 
+                                PPO.asin = LP.asin
+                            WHERE
+                                 PPO.asin IN ($asin)
+                            GROUP BY 
+                                PPO.asin
+                                
+                        ");
+    // po($asin_price);
     // exit;
-    $count = 0;
-    $find = Label::select('order_no')->where('detect_language', '0')->get()->toArray();
-    $detect_arabic = [];
-    $forTranslation = [];
-    $class = "GoogleTranslate\GoogleTranslateArabicToEnglish";
-    $queue_name = "GoogleTranslate";
-    $queue_delay = 0;
-    foreach ($find as $order_no) {
-        if ($order_no['order_no'] != '') {
 
-            $address = OrderItemDetails::select('shipping_address')
-                ->where('amazon_order_identifier', $order_no['order_no'])
-                ->get()
-                ->toArray();
-            if ($address != null) {
+    $lowest_key = [];
+    $highest_key = [];
+    $bb_winner_id = '';
+    $seller_lowest_price = [];
+    $seller_highest_price = [];
+    $seller_store_id = [];
+    $asin = [];
+    $store_id = Mws_region::with('aws_verified1')->where('region_code', 'IN')
+        ->get()->toArray();
 
-                $ship_address = json_encode($address[0]['shipping_address']);
-                $arabic_lang = preg_match("/u06/", $ship_address);
-                if ($arabic_lang == 1) {
+    foreach ($store_id[0]['aws_verified1'] as $merchant_id) {
+        $seller_store_id[] = $merchant_id['seller_id'];
+        $bb_winner_price = '';
+        foreach ($asin_price as $key => $bb_asin) {
 
-                    $detect_arabic[] = [
-                        'order_no' => $order_no['order_no'],
-                        'detect_language' => $arabic_lang,
-                    ];
+            $bb_store_key = [
+                'cyclic' => '5',
+                'is_bb_won' => '0',
+                'bb_winner_id' => '',
+                'bb_winner_price' => '',
+                'lowest_seller_id' => '',
+                'lowest_seller_price' => '',
+                'highest_seller_id' => '',
+                'highest_seller_price' => ''
+            ];
+            $asin[] = $bb_asin->asin;
+            $is_bb_winners = explode(',', $bb_asin->is_buybox_winner);
+            $listingPrice_amount = explode(',', $bb_asin->listingprice_amount);
+            $seller_store_id = explode(',', $bb_asin->seller_store_id);
+            // po($bb_asin);
+            // po($listingPrice_amount);
+            $bb_winner_price = '';
+            foreach ($is_bb_winners as $key2 => $bb_won) {
+                if ($bb_won == 1) {
 
-                    $forTranslation = [
-                        'order_no' => $order_no['order_no'],
-                        'shipping_address' => $address
-                    ];
-                    jobDispatchFunc($class, $forTranslation, $queue_name, $queue_delay);
+                    $bb_winner_price = $listingPrice_amount[$key2];
+                    $bb_store_key['is_bb_won'] = $seller_store_id[$key2] == $merchant_id['seller_id'] ? 1 : 2;
+                    $bb_store_key['bb_winner_id'] = $seller_store_id[$key2];
+                    $bb_store_key['bb_winner_price'] = $bb_winner_price;
                 }
-                // po($arabic_lang);
             }
+            foreach ($is_bb_winners as $key1 => $is_bb_winner) {
+
+                if ($bb_winner_price != '') {
+
+                    if ($listingPrice_amount[$key1] > $bb_winner_price) {
+                        $seller_highest_price[] = $listingPrice_amount[$key1];
+                        $highest_key[] = $key1;
+                    }
+
+                    if ($listingPrice_amount[$key1] < $bb_winner_price) {
+                        $seller_lowest_price[] = $listingPrice_amount[$key1];
+                        $lowest_key[] = $key1;
+                    }
+                }
+            }
+
+            if ($seller_highest_price != null) {
+
+                $bb_store_key['highest_seller_id'] = $seller_store_id[min($highest_key)];
+                $bb_store_key['highest_seller_price'] = min($seller_highest_price);
+                $highest_key = [];
+                $seller_highest_price = [];
+            }
+            if ($seller_lowest_price != null) {
+
+                $bb_store_key['lowest_seller_id'] = $seller_store_id[max($lowest_key)];
+                $bb_store_key['lowest_seller_price'] = max($seller_lowest_price);
+                $lowest_key = [];
+                $seller_lowest_price = [];
+            }
+            po($bb_store_key);
+            echo '<hr>';
+
+            // Product::where('store_id', $merchant_id['seller_id'])
+            //     ->where('asin', $bb_asin->asin)
+            //     ->update($bb_store_key);
+            // $bb_store_key = [];
         }
+        // po($seller_store_id);
+        // po($bb_store_key);
     }
-    po($detect_arabic);
-    po($forTranslation);
-    Label::upsert($detect_arabic, ['order_awb_no_unique'], ['order_no', 'detect_language']);
-
-
-
-
-
-
-    exit;
-    $var = json_decode('{"Name":"\u0627\u062d\u0645\u062f","AddressLine1":"48","AddressLine2":"4","City":"Abu Dhabi","County":"Old Shahamma","CountryCode":"AE","Phone":"0508262026"}');
-    // $testing = preg_match("/u06/", $var);
-    $name = json_encode($var->Name);
-    po($name);
-    po($var);
-    exit;
-    $translate = new TranslateClient([
-        'key' => 'AIzaSyDxDFk4QnsvVaAeOTJpxKVvvyWzG10g7mc'
-    ]);
-
-    // Translate text from english to french.
-    $result = $translate->translate('مردف شارع 39A, فيلا 27A', [
-        'target' => 'en'
-    ]);
-
-    echo $result['text'] . "\n";
-    // Detect the language of a string.
-    $result = $translate->detectLanguage('راشد سعيد راشد الحساني');
-
-    echo $result['languageCode'] . "\n";
-
-
-    exit;
-
-    $curl = curl_init();
-
-    curl_setopt_array($curl, array(
-        CURLOPT_URL => 'https://translation.googleapis.com/language/translate/v2?key=AIzaSyDxDFk4QnsvVaAeOTJpxKVvvyWzG10g7mc',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => '{
-  "q": ["الفجيرة"],
-  "source": "ar",
-  "target": "en",
-  "format": "text"
-}',
-        CURLOPT_HTTPHEADER => array(
-            'Content-Type: text/html'
-        ),
-    ));
-
-    $response = curl_exec($curl);
-
-    curl_close($curl);
-    echo $response;
-    exit;
-
-    $str = 'Soft Bullet Toy Revolver, Empty Shell Ejecting, Two Types of Foam Darts 36, Education Toy Model, Realistic Toy Gifts for Holidays Birthday New Year Christmas Boys Gift Blue HitSong';
-    $ignores = ['Revolver', 'Gun', 'Pistol'];
-    // foreach ($ignores as $ignore) {
-    if (preg_match('(Revolver|Gun|Pistol)', $str) !== 1) {
-        echo $str . '<br>';
-    }
-    // }
 });
 Route::get('cliqnshop', function () {
     $response =   Http::get('http://amazon-sp-api-laravel.app/api/product', [
@@ -285,7 +294,6 @@ Route::get('t', function () {
     dd($or);
 
     dd($order_item_details);
-
 });
 
 

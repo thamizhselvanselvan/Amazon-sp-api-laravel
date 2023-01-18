@@ -2,12 +2,15 @@
 
 namespace App\Services\Catalog;
 
+use App\Models\Mws_region;
 use App\Models\Catalog\PricingAe;
 use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingSa;
 use App\Models\Catalog\PricingUs;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\Buybox_stores\Product;
+use App\Services\Catalog\PriceConversion;
 
 class BuyBoxPriceImport
 {
@@ -92,9 +95,10 @@ class BuyBoxPriceImport
 
                     $asin = implode(',', $asin_array);
                     $asin_price = DB::connection('buybox')
-                        ->select("SELECT PPO.asin, LP.available,LP.is_sold_by_amazon, LP.updated_at as updated_at,
+                        ->select("SELECT PPO.asin, LP.available, LP.is_sold_by_amazon, LP.buybox_listingprice_amount, LP.updated_at as updated_at,
                             GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
-                            group_concat(PPO.listingprice_amount) as listingprice_amount
+                            group_concat(PPO.listingprice_amount) as listingprice_amount,
+                            group_concat(PPO.seller_store_id) as seller_store_id
                             FROM 
                                 $product_seller_details as PPO
                                     JOIN
@@ -213,22 +217,99 @@ class BuyBoxPriceImport
 
                         PricingIn::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
                         PricingIn::upsert($pricing_in, 'asin_unique', ['asin', 'available', 'is_sold_by_amazon', 'in_price', 'weight', 'ind_to_uae', 'ind_to_sg', 'ind_to_sa', 'price_updated_at']);
+                        $this->updateRecordIntoStoreTable($country_code, $asin_price);
+                    } elseif ($country_code_lr == 'ae') {
+
+                        PricingAe::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
+                        PricingAe::upsert($pricing_ae_sa, 'unique_asin', ['asin', 'available', 'weight', 'ae_price', 'price_updated_at']);
+                        $this->updateRecordIntoStoreTable($country_code, $asin_price);
                     }
-
-                    // elseif ($country_code_lr == 'ae') {
-
-                    //     PricingAe::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
-                    //     PricingAe::upsert($pricing_ae_sa, 'unique_asin', ['asin', 'available', 'weight', 'ae_price', 'price_updated_at']);
-                    //     //
-                    // } elseif ($country_code_lr == 'sa') {
+                    // elseif ($country_code_lr == 'sa') {
                     //     PricingSa::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
                     //     PricingSa::upsert($pricing_ae_sa, 'unique_asin', ['asin', 'available', 'weight', 'sa_price', 'price_updated_at']);
                     // }
+                    // $this->updateRecordIntoStoreTable($country_code, $asin_price);
                 }
             } else {
                 //if all price are fetched fro selected priority then update status
                 $prir_count = $destination_model->where('priority', $priority)->update(['price_status' => 0]);
                 // Log::info("$priority -> $prir_count updated");
+            }
+        }
+    }
+
+    public function updateRecordIntoStoreTable($country_code, $records)
+    {
+        $lowest_key = [];
+        $highest_key = [];
+        $bb_winner_price = '';
+        $seller_lowest_price = [];
+        $seller_highest_price = [];
+        $store_id = Mws_region::with('aws_verified1')->where('region_code', $country_code)->get()->toArray();
+        foreach ($store_id[0]['aws_verified1'] as $merchant_id) {
+
+            foreach ($records as $bb_asin) {
+
+                $bb_store_key = [
+                    'cyclic' => '5',
+                    'is_bb_won' => '0',
+                    'bb_winner_id' => '',
+                    'bb_winner_price' => '',
+                    'lowest_seller_id' => '',
+                    'lowest_seller_price' => '',
+                    'highest_seller_id' => '',
+                    'highest_seller_price' => ''
+                ];
+
+                $is_bb_winners = explode(',', $bb_asin->is_buybox_winner);
+                $listingPrice_amount = explode(',', $bb_asin->listingprice_amount);
+                $seller_store_id = explode(',', $bb_asin->seller_store_id);
+
+                $bb_winner_price = '';
+                foreach ($is_bb_winners as $key2 => $bb_won) {
+                    if ($bb_won == 1) {
+
+                        $bb_winner_price = $listingPrice_amount[$key2];
+
+                        $bb_store_key['is_bb_won'] = $seller_store_id[$key2] == $merchant_id['merchant_id'] ? 1 : 0;
+                        $bb_store_key['bb_winner_id'] = $seller_store_id[$key2];
+                        $bb_store_key['bb_winner_price'] = $bb_winner_price;
+                    }
+                }
+                foreach ($is_bb_winners as $key1 => $is_bb_winner) {
+
+                    if ($bb_winner_price != '') {
+
+                        if ($listingPrice_amount[$key1] > $bb_winner_price) {
+                            $seller_highest_price[] = $listingPrice_amount[$key1];
+                            $highest_key[] = $key1;
+                        }
+
+                        if ($listingPrice_amount[$key1] < $bb_winner_price) {
+                            $seller_lowest_price[] = $listingPrice_amount[$key1];
+                            $lowest_key[] = $key1;
+                        }
+                    }
+                }
+                if ($seller_highest_price != null) {
+
+                    $bb_store_key['highest_seller_id'] = $seller_store_id[min($highest_key)];
+                    $bb_store_key['highest_seller_price'] = min($seller_highest_price);
+                    $highest_key = [];
+                    $seller_highest_price = [];
+                }
+                if ($seller_lowest_price != null) {
+
+                    $bb_store_key['lowest_seller_id'] = $seller_store_id[max($lowest_key)];
+                    $bb_store_key['lowest_seller_price'] = max($seller_lowest_price);
+                    $lowest_key = [];
+                    $seller_lowest_price = [];
+                }
+
+                Product::where('store_id', $merchant_id['seller_id'])
+                    ->where('asin', $bb_asin->asin)
+                    ->update($bb_store_key);
+                $bb_store_key = [];
             }
         }
     }
