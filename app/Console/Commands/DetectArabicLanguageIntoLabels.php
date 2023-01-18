@@ -116,7 +116,7 @@ class DetectArabicLanguageIntoLabels extends Command
                 ];
 
                 $upsert_label[] = $order_no;
-                // jobDispatchFunc($class, $forTranslation, $queue_name, $queue_delay);
+                jobDispatchFunc($class, $forTranslation, $queue_name, $queue_delay);
             }
         }
 

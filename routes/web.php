@@ -86,9 +86,9 @@ Route::get('bb', function () {
     // -- group_concat(PPO.is_fulfilled_by_amazon) as is_fulfilled_by_amazon,
     //                         -- group_concat(PPO.feedback_count) as feedback_count
 
-    $destination_model = table_model_create(country_code: 'US', model: 'Asin_destination', table_name: 'asin_destination_');
-    $product_seller_details = "bb_product_aa_custom_p1_us_seller_details";
-    $product_lp = "bb_product_aa_custom_p1_us_offers";
+    $destination_model = table_model_create(country_code: 'IN', model: 'Asin_destination', table_name: 'asin_destination_');
+    $product_seller_details = "bb_product_aa_custom_p1_in_seller_details";
+    $product_lp = "bb_product_aa_custom_p1_in_offers";
 
     $data = $destination_model->select(['asin', 'user_id'])
         ->where('price_status', 0)->where('priority', '1')
@@ -128,15 +128,17 @@ Route::get('bb', function () {
     $seller_highest_price = [];
     $seller_store_id = [];
     $asin = [];
-    $store_id = Mws_region::with('aws_verified1')->where('region_code', 'AE')
+    $store_id = Mws_region::with('aws_verified1')->where('region_code', 'IN')
         ->get()->toArray();
-    po($store_id);
+
     foreach ($store_id[0]['aws_verified1'] as $merchant_id) {
         $seller_store_id[] = $merchant_id['seller_id'];
         $bb_winner_price = '';
         foreach ($asin_price as $key => $bb_asin) {
 
             $bb_store_key = [
+                'cyclic' => '5',
+                'is_bb_won' => '0',
                 'bb_winner_id' => '',
                 'bb_winner_price' => '',
                 'lowest_seller_id' => '',
@@ -155,6 +157,7 @@ Route::get('bb', function () {
                 if ($bb_won == 1) {
 
                     $bb_winner_price = $listingPrice_amount[$key2];
+                    $bb_store_key['is_bb_won'] = $seller_store_id[$key2] == $merchant_id['seller_id'] ? 1 : 2;
                     $bb_store_key['bb_winner_id'] = $seller_store_id[$key2];
                     $bb_store_key['bb_winner_price'] = $bb_winner_price;
                 }
@@ -189,8 +192,8 @@ Route::get('bb', function () {
                 $lowest_key = [];
                 $seller_lowest_price = [];
             }
-            // po($bb_store_key);
-            // echo '<hr>';
+            po($bb_store_key);
+            echo '<hr>';
 
             // Product::where('store_id', $merchant_id['seller_id'])
             //     ->where('asin', $bb_asin->asin)
