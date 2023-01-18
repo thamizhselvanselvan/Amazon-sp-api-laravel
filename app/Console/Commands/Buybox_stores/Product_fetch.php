@@ -46,17 +46,19 @@ class Product_fetch extends Command
 
         $products = Product::query()
             ->where("updated_at", ">=", Carbon::now()->subHour())
+            ->where("cyclic_push", 0)
             ->get();
 
         if($products->isEmpty()) {
             return false;
         }   
 
+
         foreach($products as $product) {
 
             if($product->is_bb_own == 1 && empty($product->lowest_seller_price) && empty($product->highest_seller_price)) {
 
-                $price_check = ($percent) ? addPercentage($product->app_360_price, $percent_price) : $product->app_360_price + $fixed_price;
+                $price_check = ($percent) ? addPercentage($product->bb_price, $percent_price) : $product->bb_price + $fixed_price;
 
                 if($price_check <= $product->ceil_price) {
 
@@ -75,9 +77,9 @@ class Product_fetch extends Command
 
             }
 
-            if($product->is_bb_own == 1 && !empty($product->highest_seller_price) && $product->highest_seller_price > $product->app_360_price) {
+            if($product->is_bb_own == 1 && !empty($product->highest_seller_price) && $product->highest_seller_price > $product->bb_price) {
 
-                $price_check = ($percent) ? addPercentage($product->app_360_price, $percent_price) : $product->app_360_price + $fixed_price;
+                $price_check = ($percent) ? addPercentage($product->bb_price, $percent_price) : $product->bb_price + $fixed_price;
 
                 if($price_check <= $product->ceil_price) {
 
@@ -96,12 +98,12 @@ class Product_fetch extends Command
 
             }
 
-            if($product->is_bb_own == 0 && !empty($product->bb_winner_price) && $product->bb_winner_price > $product->app_360_price) {
+            if($product->is_bb_own == 0 && !empty($product->bb_winner_price) && $product->bb_winner_price > $product->bb_price) {
 
-                $price_check = ($percent) ? addPercentage($product->app_360_price, $percent_price) : $product->app_360_price + $fixed_price;
+                $price_check = ($percent) ? addPercentage($product->bb_price, $percent_price) : $product->bb_price + $fixed_price;
 
                 if($price_check <= $product->ceil_price) {
-                    
+
                     DB::connection('buybox_stores')
                     ->table("product_push")
                     ->update([
@@ -117,9 +119,9 @@ class Product_fetch extends Command
                 
             }
 
-            if($product->is_bb_own == 0 && !empty($product->bb_winner_price) && $product->bb_winner_price < $product->app_360_price) {
+            if($product->is_bb_own == 0 && !empty($product->bb_winner_price) && $product->bb_winner_price < $product->bb_price) {
 
-                $price_check = ($percent) ? removePercentage($product->app_360_price, $percent_price) : $product->app_360_price - $fixed_price;
+                $price_check = ($percent) ? removePercentage($product->bb_price, $percent_price) : $product->bb_price - $fixed_price;
 
                 if($price_check >= $product->base_price) {
 
@@ -140,7 +142,10 @@ class Product_fetch extends Command
             
         }
 
-
+        foreach($products as $d) {
+            $d->cyclic_push = 1;
+            $d->save();
+        }
 
 
     }
