@@ -46,7 +46,7 @@ class import_product_file_SPAPI extends Command
      */
     public function handle()
     {
-        $stores  = [6,7,8,9,10,11,12,20,27];
+        $stores  = [6, 7, 8, 9, 10, 11, 12, 20, 27];
         // $seller_id = $this->argument('seller_id');
         foreach ($stores as $seller_id) {
             Log::alert('store' . '' . $seller_id);
@@ -77,8 +77,8 @@ class import_product_file_SPAPI extends Command
 
                     Storage::put('/aws-products/aws-store-files/products_' . $seller_id . '.txt', $httpResponse);
                 }
-
-                $this->insertdb($seller_id);
+                Log::alert('done');
+                // $this->insertdb($seller_id);
             }
 
             // $response = $productreport->createReport($aws_key, $country_code, $marketplace_id);
