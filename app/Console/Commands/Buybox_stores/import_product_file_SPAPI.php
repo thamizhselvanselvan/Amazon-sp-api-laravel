@@ -49,8 +49,7 @@ class import_product_file_SPAPI extends Command
         $stores  = [6, 7, 8, 9, 10, 11, 12, 20, 27];
         // $seller_id = $this->argument('seller_id');
         foreach ($stores as $seller_id) {
-            Log::alert('store' . '' . $seller_id);
-
+            Log::alert('store' .  ' ' . $seller_id );
             $aws = Aws_credential::with(['mws_region'])->where('seller_id', $seller_id)->where('api_type', 1)->first();
             $aws_key = $aws->id;
             $country_code = $aws->mws_region->region_code;
@@ -77,8 +76,8 @@ class import_product_file_SPAPI extends Command
 
                     Storage::put('/aws-products/aws-store-files/products_' . $seller_id . '.txt', $httpResponse);
                 }
-                Log::alert('done');
-                // $this->insertdb($seller_id);
+               
+                 $this->insertdb($seller_id);
             }
 
             // $response = $productreport->createReport($aws_key, $country_code, $marketplace_id);
