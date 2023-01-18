@@ -42,9 +42,9 @@ class productImportEveryDay extends Command
     {
         $stores  = ['7', '8', '9', '10', '12',  '27'];
        
-        foreach ($stores as $seller_id) {
-            Log::alert('Dispatch' . $seller_id);
-            ProductImportCommandExecute::dispatch($seller_id);
-        }
+        // foreach ($stores as $seller_id) {
+        //     Log::alert('Dispatch' . $seller_id);
+        //     ProductImportCommandExecute::dispatch($seller_id);
+        // }
     }
 }
