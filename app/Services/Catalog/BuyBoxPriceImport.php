@@ -251,7 +251,7 @@ class BuyBoxPriceImport
             foreach ($records as $bb_asin) {
 
                 $bb_store_key = [
-                    'cyclic' => '5',
+                    'bb_cyclic' => '1',
                     'is_bb_won' => '0',
                     'bb_winner_id' => '',
                     'bb_winner_price' => '',
