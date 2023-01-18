@@ -33,8 +33,18 @@ class Mws_region extends Model
         return $this->hasMany(Aws_credential::class, 'mws_region_id', 'id')->take(3);
     }
 
+    public function aws_credential1()
+    {
+        return $this->hasMany(Aws_credential::class, 'mws_region_id', 'id');
+    }
+
     public function aws_verified()
     {
         return $this->aws_credential()->where('verified', 1);
+    }
+
+    public function aws_verified1()
+    {
+        return $this->aws_credential1()->where('verified', 1);
     }
 }
