@@ -3,8 +3,9 @@
 namespace App\Console\Commands\Buybox_stores;
 
 use Exception;
-use Illuminate\Console\Command;
 use App\Models\Mws_region;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use App\Models\Buybox_stores\Product;
 use Illuminate\Support\Facades\Storage;
 
@@ -44,13 +45,17 @@ class Asin_price_import extends Command
      * @return int
      */
     public function handle()
-    {   
-        
+    {
+
         $datas = Product::select('asin', 'store_id')
             ->where('cyclic', '0')
             ->orderBy('id', 'asc')
             ->limit(1000)
             ->get();
+
+        $asins = $datas->pluck('asin');
+        Product::whereIn('asin', $asins)->update(['cyclic' => '1']);
+
 
         if ($datas->count() <= 0) {
 
@@ -58,19 +63,19 @@ class Asin_price_import extends Command
 
             return $this->handle();
         }
-        
+
+
         $new_datas = $datas->groupBy('store_id');
-        
+
         foreach ($new_datas as $store_id => $data) {
-            
+
             $result_asins = $data->pluck('asin');
             // Product::whereIn('asin', $result_asins)->update(['cyclic' => '5']);   //need to check after one cyclic all stores cyclic is mapping to 5
 
-            if ($store_id == '8' || $store_id == '10' || $store_id == '27') {
+            if ($store_id == '8' || $store_id == '10' || $store_id == '27' || $store_id == '6') {
 
                 $this->pricingin($result_asins, $store_id);
-
-            } else if ($store_id == '7' || $store_id == '9' || $store_id == '12') {
+            } else if ($store_id == '7' || $store_id == '9' || $store_id == '12' || $store_id == '11' || $store_id == '20') {
 
                 $this->pricingae($result_asins, $store_id);
             } else if ($store_id == '7' || $store_id == '9' || $store_id == '12') {
@@ -119,7 +124,6 @@ class Asin_price_import extends Command
         }
 
         $this->product_upsert($insert_data_in);
-  
     }
 
     public function pricingae($result_asins, $store_id)
@@ -139,7 +143,7 @@ class Asin_price_import extends Command
             ->join('pricing_aes', 'asin_destination_uss.asin', '=', 'pricing_aes.asin')
             ->join('pricing_uss', 'asin_destination_uss.asin', '=', 'pricing_uss.asin')
             ->whereIn("asin_destination_uss.asin", $result_asins)->get();
-   
+
         $insert_data = [];
 
         foreach ($data as $value) {
@@ -172,13 +176,13 @@ class Asin_price_import extends Command
             'pricing_uss.available',
             'pricing_uss.asin'
         ];
-        
+
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'asin_destination_');
 
         $data = $table_name->select($select_query)
             ->join('pricing_uss', 'asin_destination_uss.asin', '=', 'pricing_uss.asin')
             ->whereIn("asin_destination_uss.asin", $result_asins)->get();
-            
+
         $insert_data = [];
 
         foreach ($data as $value) {
@@ -211,5 +215,4 @@ class Asin_price_import extends Command
             ['app_360_price', 'bb_price', 'priority', 'availability', 'base_price', 'ceil_price', 'cyclic']
         );
     }
-
 }

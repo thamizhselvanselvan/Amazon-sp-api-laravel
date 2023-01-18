@@ -106,23 +106,53 @@ class BuyBoxImportExportController extends Controller
 
     public function ExportBuyBox(Request $request)
     {
-        $request->validate([
-            'priority' => 'required|in:1,2,3,4',
-            'source' => 'required|in:IN,US,AE',
-        ]);
-
         $user_id = Auth::user()->id;
-        $priority = $request->priority;
-        $country_code = $request->source;
+        $file_path = 'BuyBoxExport/AsinForbb.csv';
+        if ($request->export_type == 'text_area') {
 
-        $file_info = [
-            "user_id" => $user_id,
-            "type" => "BUYBOX_EXPORT",
-            "module" => "BUYBOX_EXPORT_${country_code}_${priority}",
-            "command_name" => "mosh:buybox-export-asin"
-        ];
-        FileManagement::create($file_info);
-        fileManagement();
+            $request->validate([
+                'priority' => 'required|in:1,2,3,4',
+                'source' => 'required|in:IN,US,AE',
+                'text_area' => 'required',
+            ]);
+            $priority = $request->priority;
+            $country_code = $request->source;
+            $textAreaData = $request->text_area;
+            $asins = preg_split('/[\r\n| |:|,]/', $textAreaData, -1, PREG_SPLIT_NO_EMPTY);
+            foreach ($asins as $asin) {
+                $records[] = ['ASIN' => $asin];
+            }
+            CSV_Write($file_path, ['ASIN'], $records);
+
+            $file_info = [
+                "user_id"       => $user_id,
+                "type"          => "BUYBOX_EXPORT",
+                "module"        => "BUYBOX_EXPORT_${country_code}_${priority}",
+                "file_path"     => $file_path,
+                "command_name"  => "mosh:buybox-export-asin"
+            ];
+            FileManagement::create($file_info);
+            fileManagement();
+        } elseif ($request->export_type == 'via_priority') {
+
+            $request->validate([
+                'priority' => 'required|in:1,2,3,4',
+                'source' => 'required|in:IN,US,AE',
+            ]);
+
+            $priority = $request->priority;
+            $country_code = $request->source;
+
+            $file_info = [
+                "user_id"        => $user_id,
+                "type"           => "BUYBOX_EXPORT",
+                "module"         => "BUYBOX_EXPORT_${country_code}_${priority}",
+                "file_path"      => $file_path,
+                "command_name"   => "mosh:buybox-export-asin"
+            ];
+            FileManagement::create($file_info);
+            fileManagement();
+        }
         return redirect('catalog/buybox/export')->with("success", "BuyBox data is exporting..");
     }
 }

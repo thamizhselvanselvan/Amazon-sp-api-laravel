@@ -1168,7 +1168,7 @@ if (!function_exists('CSV_Write')) {
 
             if ($records) {
                 Log::emergency('Writig Here ');
-                $CSV_Writer->insertaLL($records);
+                $CSV_Writer->insertAll($records);
             }
         }
 
