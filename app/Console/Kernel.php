@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
 
             //bb_stores
             $schedule->command('mosh:price_priority_import')->everyMinute(); //PM
-            
+
             /*Inventory*/
             $schedule->command('pms:inventory-stock-tracking')->dailyAt('23:45'); //PM
             $schedule->command('mosh:warehouse-track')->dailyAt('23:50');  //PM
@@ -45,8 +45,8 @@ class Kernel extends ConsoleKernel
 
             /*Catalog*/
             $schedule->command('mosh:catalog-amazon-import')->everyTwoMinutes(); //PM
-            $schedule->command('mosh:Catalog-price-import-bb-in')->everyMinute(); //PM
-            $schedule->command('mosh:Catalog-price-import-bb-us')->everyMinute(); //PM
+            $schedule->command('mosh:Catalog-price-import-bb-in')->everyTwoMinutes(); //PM
+            $schedule->command('mosh:Catalog-price-import-bb-us')->everyTwoMinutes(); //PM
             $schedule->command('mosh:Catalog-price-import-bb-ae')->everyMinute(); //PM
             $schedule->command('mosh:catalog-dashboard-file')->everyThirtyMinutes(); //PM
 
