@@ -31,12 +31,8 @@ Route::post('label/missing/address', 'label\labelManagementController@labelMissi
 Route::get('label/missing/address/export', 'label\labelManagementController@labelMissingAddressExport')->name('label.missing.address.export');
 
 Route::match(['get', 'post'], 'label/search/amazon-order-id', 'label\labelManagementController@labelSearchByOrderId')->name('lable.search.amazon-order-id');
-Route::match(['get', 'post'], 'label/search/awb-tracking-id', 'label\labelManagementController@labelSearchByAwnNo')->name('lable.search.by.awb.no');
 Route::match(['get', 'post'], 'label/update/tracking-details', 'label\labelManagementController@updateTrackingDetails')->name('lable.update.tracking-details');
 Route::get('label/edit-order-address/{id}', 'label\labelManagementController@editOrderAddress');
 Route::put('label/update-order-address/{id}', 'label\labelManagementController@updateOrderAddress');
-Route::get('label/edit-order-address-search-id/{id}', 'label\labelManagementController@editordersearchbyid');
-Route::put('label/update-order-address-search-id/{id}', 'label\labelManagementController@updateordersearchbyid');
 Route::get('label/file/management/monitor', 'label\labelManagementController@LabelFileManagementMonitor')->name('label.file.management.monitor');
-
 Route::match(['get', 'post'], 'label/search/date', 'label\labelManagementController@labelSearchByDate')->name('lable.search.date');

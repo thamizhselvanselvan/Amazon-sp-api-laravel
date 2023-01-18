@@ -459,24 +459,38 @@ return [
                     'can' =>  ['Admin']
                 ],
 
+                // [
+
+                //     'text' => 'Buy-Box Operation',
+                //     'icon' => 'far fa-fw fa-file',
+                //     'can' =>  ['Admin'],
+                //     'submenu' => [
+                //         [
+                //             'text'  => 'Buy-Box Import',
+                //             'url'  => 'catalog/buybox/import',
+                //             'icon' => 'far fa-fw fa-file',
+                //             'can' =>  ['Admin', 'Catalog']
+                //         ],
+
+                //         [
+                //             'text'  => 'Buy-Box Export',
+                //             'url'  => 'catalog/buybox/export',
+                //             'icon' => 'far fa-fw fa-file',
+                //             'can' =>  ['Admin', 'Catalog']
+                //         ],
+                //     ],
+                // ],
                 [
 
-                    'text' => 'Buy-Box Operation',
+                    'text' => 'Buy-Box Stores',
                     'icon' => 'far fa-fw fa-file',
                     'can' =>  ['Admin'],
                     'submenu' => [
                         [
-                            'text'  => 'Buy-Box Import',
-                            'url'  => 'catalog/buybox/import',
+                            'text'  => 'Latency Update',
+                            'url'  => 'buybox/stores',
                             'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin', 'Catalog']
-                        ],
-
-                        [
-                            'text'  => 'Buy-Box Export',
-                            'url'  => 'catalog/buybox/export',
-                            'icon' => 'far fa-fw fa-file',
-                            'can' =>  ['Admin', 'Catalog']
+                            'can' =>  ['Admin']
                         ],
                     ],
                 ],

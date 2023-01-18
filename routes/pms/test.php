@@ -2,28 +2,35 @@
 
 use Carbon\Carbon;
 use App\Models\User;
+use GuzzleHttp\Client;
 use League\Csv\Writer;
 use App\Models\Mws_region;
 use Smalot\PdfParser\Parser;
+use App\Services\Zoho\ZohoApi;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use App\Models\Catalog\Asin_master;
 use function Clue\StreamFilter\fun;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Models\order\OrderItemDetails;
+
 use App\Models\order\OrderUpdateDetail;
 use App\Models\seller\AsinMasterSeller;
 use Illuminate\Support\Facades\Storage;
-
 use App\Models\seller\SellerAsinDetails;
+use App\Services\SP_API\API\Order\Order;
 use Illuminate\Support\Facades\Response;
 use App\Models\order\OrderSellerCredentials;
+use App\Services\SP_API\API\Order\OrderItem;
 use App\Services\Inventory\InventoryCsvImport;
+use Google\Cloud\Translate\V2\TranslateClient;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
+use App\Services\Catalog\AllPriceExportCsvServices;
+use App\Services\SP_API\API\Order\OrderUsingRedBean;
 use App\Services\SP_API\API\Order\CheckStoreCredServices;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
-use App\Services\SP_API\API\Order\OrderItem;
 use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
 Route::get('test/catalog/{asin}/{country}', 'TestController@getASIN');
@@ -31,6 +38,39 @@ Route::get('test/seller/order/{seller_id}/{country_code}', 'TestController@getSe
 Route::get('test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
 Route::get('renameamazoninvoice/', 'TestController@RenameAmazonInvoice');
 Route::get('getPricing/', 'TestController@GetPricing');
+
+Route::get('test/translation/{order_id}', function ($order_id) {
+
+    $translate = new TranslateClient([
+        'key' => config('app.google_translate_key')
+    ]);
+
+    $address = OrderItemDetails::select('shipping_address')
+        ->where('amazon_order_identifier', $order_id)
+        ->get()
+        ->toArray();
+
+    $arabicToEnglish = [];
+    if ($address != null) {
+
+        $ship_address = json_encode($address[0]['shipping_address']);
+        $arabic_lang = preg_match("/u06/", $ship_address);
+        if ($arabic_lang == 1) {
+            $records = json_decode($ship_address);
+            po($records);
+            foreach ($records as $key => $record) {
+                if (preg_match('/u06/', json_encode($record)) == 1) {
+
+                    $translatedText = $translate->translate($record, [
+                        'target' => 'en'
+                    ]);
+                    $arabicToEnglish[$key] = $translatedText['text'];
+                }
+            }
+        }
+    }
+    po($arabicToEnglish);
+});
 
 Route::get('test1', function () {
 
@@ -183,19 +223,44 @@ Route::get('test/inventory', function () {
     //
 });
 
-Route::get('test/order', function () {
+Route::get('test/zoho/read', function () {
 
+    $token = '1000.2df599745cecd34c94ba703cbe525ad2.6270c2f5ff7bb775da72344dfcce55d5';
+    $url = 'https://www.zohoapis.com/crm/bulk/v2/read';
+    $lead_url = 'https://www.zohoapis.com/crm/v2/Leads';
 
-    $orderitem = new OrderItem();
+    // $response = Http::withoutVerifying()
+    //     ->withHeaders([
+    //         'Authorization' => 'Zoho-oauthtoken ' . $token
+    //     ])->get($lead_url . '/' . '1929333000104016133');
 
-    $order_it = '404-4698574-0689143';
-    $aws_id = '20';
-    $c_code = 'SA';
-    $source = 'IN';
-    $zoho = '0';
-    $courier_partner = '';
-    $store_name = '';
-    $result = $orderitem->OrderItemDetails($order_it, $aws_id, $c_code, $source, $zoho, $courier_partner, $store_name);
+    // if ($response->ok()) {
+    //     return $response->json();
+    // }
+    // exit;
 
-    po($result);
+    $payload = [
+        'query' => [
+            'module' => 'Leads',
+            'page' => 1,
+        ],
+    ];
+
+    // $response = Http::withoutVerifying()
+    //     ->withHeaders([
+    //         'Authorization' => 'Zoho-oauthtoken ' . $token,
+    //         'Content-Type' => 'application/json'
+    //     ])->post($url, $payload);
+
+    // dd($response->json());
+
+    $response = Http::withoutVerifying()->withHeaders([
+        'Authorization' => 'Zoho-oauthtoken ' . $token,
+    ])->get($url . '/1929333000104021178/result');
+
+    // return $response;
+    // dd($response);
+    dd($response->json());
+
+    //
 });

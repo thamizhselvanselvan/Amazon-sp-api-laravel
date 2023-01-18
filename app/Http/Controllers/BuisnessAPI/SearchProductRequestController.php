@@ -13,9 +13,20 @@ class SearchProductRequestController extends Controller
         return View('buisnessapi.search_product_request.index');
     }
     public function searchproductRequest(Request $request)
-    {
+    {   
+        $search_words = '';
+        $type = "key"; 
+
+        if($request->has('asin')) {
+            $type = "asin";
+            $search_words = $request->data['asin'];
+        } else {
+            $search_words = $request->data['key'];
+        }
+
+
         $ApiCall = new Search_Product_Request();
-        $data = $ApiCall->getAsin($request->data);
+        $data = $ApiCall->getAsin($search_words, $type);
         
         return response()->json(['success' => ' details successfully Fetched', $data]);
     }

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use App\Services\SP_API\API\Order\Order;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
+use App\Services\SP_API\API\Order\OrderUsingRedBean;
 
 class SellerOrdersImport extends Command
 {
@@ -63,6 +64,14 @@ class SellerOrdersImport extends Command
             ->where('cred_status', 1)
             ->get();
 
+        $check = getSystemSettingsValue('order_redbean', '1');
+
+        if ($check == 0) {
+            $order = new Order();
+        } else {
+            $order = new OrderUsingRedBean();
+        }
+
         foreach ($aws_data as $aws_value) {
 
             $awsCountryCode = $aws_value['country_code']; //Destination
@@ -72,7 +81,6 @@ class SellerOrdersImport extends Command
 
             $auth_code = NULL;
             $amazon_order_id = NULL;
-            $order = new Order();
             $order->SelectedSellerOrder($seller_id, $awsCountryCode, $source, $auth_code, $amazon_order_id, $store_name);
         }
 

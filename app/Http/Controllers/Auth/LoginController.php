@@ -39,40 +39,46 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    public function showLoginForm(){
-        
-        if(!Auth::check()){
+    public function showLoginForm()
+    {
+
+        if (!Auth::check()) {
             return view('auth.login');
         }
 
         // $authRole = Auth::user()->roles->first()->name ?? "";
         $authRole = Auth::user()->roles ?? "";
 
-        if($authRole == 'Admin') {
+        if ($authRole == 'Admin') {
             return redirect(Route('admin.dashboard'));
         }
 
-        if($authRole == 'Seller') {
+        if ($authRole == 'Seller') {
             return redirect(Route('dashboard'));
         }
-        
+
         Auth::logout();
         return redirect(Route('login'));
     }
 
-    public function redirectTo() {
+    public function redirectTo()
+    {
 
         // $authRole = Auth::user()->roles->first()->name;
         $authRole = Auth::user()->roles;
 
-        if($authRole == 'Admin') {
+        if ($authRole == 'Admin') {
             return Route('admin.dashboard');
         }
 
-        if($authRole == 'Seller') {
+        if ($authRole == 'Seller') {
             return Route('dashboard');
         }
 
         return Route('home');
+    }
+    protected function authenticated($request, $user)
+    {
+        Auth::logoutOtherDevices(request('password'));
     }
 }

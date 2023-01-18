@@ -153,13 +153,13 @@ class ReportController extends Controller
         $data = [
             "date" => $date,
             "open_stock" => $todayopeningstock,
-            "open_stock_amt" => $totalopenamt,
+            "open_stock_amt" =>round($totalopenamt,2),
             "inwarded" => $todayinward ? $todayinward : 0,
-            "tdy_inv_amt" => $totaldayinvamt,
-            "outwarded" => $todayoutward,
-            "tdy_out_amt" => $totaldayoutamt,
+            "tdy_inv_amt" =>round ($totaldayinvamt,2),
+            "outwarded" => $todayoutward ? $todayoutward :0,
+            "tdy_out_amt" =>round ($totaldayoutamt,2),
             "closing_stock" => $todayclosingstock,
-            "closing_amt" => $dayclosingamt
+            "closing_amt" => round($dayclosingamt,2)
         ];
 
         return view('inventory.report.daily', compact('ware_lists', 'data', 'tags'));
@@ -739,8 +739,9 @@ class ReportController extends Controller
             $startTime = Carbon::today()->subDays(31);
             $endTimeYesterday = Carbon::yesterday()->endOfDay();
             $data = Stocks::whereBetween('created_at', [$startTime, $endTimeYesterday])
-                ->orderBy('id', 'DESC')
-                ->get();
+            ->select('date', 'opeaning_stock', 'opeaning_amount', 'inwarding', 'inw_amount', 'outwarding', 'outw_amount', 'closing_stock', 'closing_amount')
+            ->orderBy('id', 'DESC')
+            ->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -766,7 +767,7 @@ class ReportController extends Controller
         return view('inventory.report.monthly', compact('ware_lists', 'tag_lists'));
     }
 
-    //weekly  report Export
+    //monthly  report Export
     public function eportinvmonthly()
     {
         $startTime = Carbon::today()->subDays(31);
@@ -800,7 +801,7 @@ class ReportController extends Controller
         return Storage::download($exportFilePath);
     }
 
-    //weekly warehouse wise report view
+    //monthly warehouse wise report view
     public function monthlywaredisp(Request $request)
     {
         if ($request->ajax()) {
@@ -818,7 +819,7 @@ class ReportController extends Controller
         }
     }
 
-    //weekly warehouse wise report export
+    //monthly warehouse wise report export
     public function monthlywareexpo(Request $request)
     {
         if ($request->ajax()) {
@@ -861,13 +862,13 @@ class ReportController extends Controller
         }
     }
 
-    //weekly warehouse wise report Download
+    //monthly warehouse wise report Download
     public function monthlywareexplocal($ware_id)
     {
         return Storage::download('/Inventory/monthlywarehouseReport' . $ware_id . '.csv');
     }
 
-    //weekly tag wise report view
+    //monthly tag wise report view
     public function monthtagrepdisp(Request $request)
     {
         if ($request->ajax()) {
@@ -885,7 +886,7 @@ class ReportController extends Controller
         }
     }
 
-    //weekly tah wise report export
+    //monthly tah wise report export
     public function monthtagrepexport(Request $request)
     {
         if ($request->ajax()) {
@@ -928,7 +929,7 @@ class ReportController extends Controller
         }
     }
 
-    //weekly warehouse wise report Download
+    //monthly warehouse wise report Download
     public function monthlytagexplocal($ware_id)
     {
         return Storage::download('/Inventory/monhlytagReport' . $ware_id . '.csv');

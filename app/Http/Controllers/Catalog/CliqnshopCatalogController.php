@@ -170,7 +170,7 @@ class CliqnshopCatalogController extends Controller
                             $img1["Images${counter}"] = $image_data_new['link'];
                         }
                     } else {
-                        $img1["Images${counter}"] = null;
+                        $img1["Images${counter}"] = '';
                     }
                     if ($counter == 10) {
                         break;
@@ -178,7 +178,7 @@ class CliqnshopCatalogController extends Controller
                 }
             } else {
                 for ($i = 1; $i <= 5; $i++) {
-                    $img1["Images${i}"] = null;
+                    $img1["Images${i}"] = '';
                 }
             }
             $image[$data['asin']] = $img1;
@@ -309,7 +309,7 @@ class CliqnshopCatalogController extends Controller
         $search_data = $request->all();
 
         $searchKey = $search_data['search'];
-        $searchKey = str_replace(' ', '_', $searchKey);
+        $searchKey = str_replace(' ', '%20', $searchKey);
         $siteId = $search_data['siteId'];
         $source = $search_data['source'];
 

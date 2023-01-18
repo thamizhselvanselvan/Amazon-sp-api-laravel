@@ -143,6 +143,8 @@ return [
 
     'zoho_refresh_token' => env('ZOHO_REFRESH_TOKEN'),
 
+    'google_translate_key' => env('GOOGLE_TRANSLATE_KEY'),
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers

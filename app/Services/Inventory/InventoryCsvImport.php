@@ -18,7 +18,7 @@ use App\Models\Inventory\Shipment_Inward_Details;
 class InventoryCsvImport
 {
     private $warehouse_details;
-    private $shelves_details;
+    // private $shelves_details;
     private $source_details;
     private $ship_id;
     private $currency_details;
@@ -27,7 +27,7 @@ class InventoryCsvImport
     public function __construct()
     {
         $this->warehouse_details = Warehouse::get(['id', 'name'])->toArray();
-        $this->shelves_details = Shelve::get(['id', 'warehouse', 'rack_id', 'shelve_id', 'name'])->toArray();
+        // $this->shelves_details = Shelve::get(['id', 'warehouse', 'rack_id', 'shelve_id', 'name'])->toArray();
         $this->source_details = Vendor::query()
             ->where('type', 'Source')
             ->get(['id', 'name'])
@@ -51,12 +51,12 @@ class InventoryCsvImport
             $source_array[$value['name']] = $value['id'];
         }
 
-        $rack_shelve_details = [];
-        foreach ($this->shelves_details as $value) {
-            if (array_key_exists($value['warehouse'], $warehouse_array)) {
-                $rack_shelve_details[$warehouse_array[$value['warehouse']]][$value['rack_id']][$value['shelve_id']] = $value['name'];
-            }
-        }
+        // $rack_shelve_details = [];
+        // foreach ($this->shelves_details as $value) {
+        //     if (array_key_exists($value['warehouse'], $warehouse_array)) {
+        //         $rack_shelve_details[$warehouse_array[$value['warehouse']]][$value['rack_id']][$value['shelve_id']] = $value['name'];
+        //     }
+        // }
 
         $currency_array = [];
         foreach ($this->currency_details as $value) {
@@ -91,36 +91,36 @@ class InventoryCsvImport
                 $ss_id = trim($value['Source ID']);
                 $rack_id = trim($value['Rack ID']);
                 $shelves_id = trim($value['Shelve ID']);
-                $bin_id = $value['Bin ID'];
+                // $bin_id = $value['Bin ID'];
                 $tag = $value['Tag'];
 
-                if (isset($rack_shelve_details[$warehouse_name][$rack_id][$shelves_id]) && isset($source_array[$source])) {
+                // if (isset($rack_shelve_details[$warehouse_name][$rack_id][$shelves_id]) && isset($source_array[$source])) {
 
-                    $data['inward_date'] = $inward_date;
-                    $data['asin'] = $asin;
-                    $data['item_name'] = $item_name;
-                    $data['qty'] = $qty;
-                    $data['pro_price'] = $pro_price;
-                    $data['sales_price'] = $sales_price;
-                    $data['currency'] = $currency;
-                    $data['warehouse_id'] = array_search($warehouse_name, $warehouse_array);
-                    $data['source'] = $source_array[$source];
-                    $data['source_id'] = $ss_id;
-                    $data['rack_id'] = $rack_id;
-                    $data['shelves_id'] = $shelves_id;
-                    $data['tag'] = $tag_array[$tag];
-                    $source_id[] = $source_array[$source];
+                $data['inward_date'] = $inward_date;
+                $data['asin'] = $asin;
+                $data['item_name'] = $item_name;
+                $data['qty'] = $qty;
+                $data['pro_price'] = $pro_price;
+                $data['sales_price'] = $sales_price;
+                $data['currency'] = $currency;
+                $data['warehouse_id'] = array_search($warehouse_name, $warehouse_array);
+                $data['source'] = $source_array[$source];
+                $data['source_id'] = $ss_id;
+                $data['rack_id'] = $rack_id;
+                $data['shelves_id'] = $shelves_id;
+                $data['tag'] = array_key_exists($tag, $tag_array) ? $tag_array[$tag] : '';
+                $source_id[] = $source_array[$source];
 
-                    $multi_source_id[] = $source;
+                $multi_source_id[] = $source;
 
-                    $this->InventoryDataInsert($data);
-                    $total_item_count++;
-                    $warehouse_id = $data['warehouse_id'];
-                    $currency_code = $currency;
-                } else {
+                $this->InventoryDataInsert($data);
+                $total_item_count++;
+                $warehouse_id = $data['warehouse_id'];
+                $currency_code = $currency;
+                // } else {
 
-                    //Send notification for invalid entries
-                }
+                //     //Send notification for invalid entries
+                // }
             } catch (Exception $e) {
 
                 Log::info($e);
