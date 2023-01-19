@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\Orders;
 
 use Illuminate\Http\Request;
-use App\Models\Order\ZohoMissing;
-use Illuminate\Support\Facades\Log;
+use App\Models\order\ZohoMissing;
 use App\Http\Controllers\Controller;
-use GrahamCampbell\ResultType\Success;
 use Yajra\DataTables\Facades\DataTables;
 
 class OrderMissingDetailsController extends Controller
