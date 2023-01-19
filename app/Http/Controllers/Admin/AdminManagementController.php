@@ -223,6 +223,7 @@ class AdminManagementController extends Controller
             $store_order_item = [];
             $shipntrack = [];
             $zoho = [];
+            $bb_store = [];
             $source_check = [];
             $destination_check = [];
             $courier_partner_check = [];
@@ -236,6 +237,13 @@ class AdminManagementController extends Controller
             $courier_partner = [
                 'B2CShip' => 'B2CShip'
             ];
+            $bb_store_status =  OrderSellerCredentials::where('buybox_stores', 1)->get();
+            foreach ($bb_store_status as $data) {
+                $seller = $data['seller_id'];
+                if ($data['buybox_stores']) {
+                    $bb_store[$seller] = 1;
+                }
+            }
 
             $store_status = OrderSellerCredentials::where('dump_order', 1)->get();
             foreach ($store_status as $key => $value) {
@@ -255,6 +263,7 @@ class AdminManagementController extends Controller
                 if ($value['zoho']) {
                     $zoho[$seller] = 1;
                 }
+
                 if ($value['source']) {
                     $source_check[$seller] = $value['source'];
                 }
@@ -332,6 +341,23 @@ class AdminManagementController extends Controller
                     }
                     return $action;
                 })
+
+                ->addColumn('buybox_stores', function ($row) use ($bb_store) {
+                    if (array_key_exists($row['seller_id'], $bb_store)) {
+                        $action = '<div class="pl-2">
+                            <input class="bb_store" type="checkbox" checked value=' . $row['seller_id'] . ' id="bb_store' . $row['seller_id'] . '" name="bb_store[]">
+                        </div>';
+                    } else {
+                        $action = '<div class="pl-2">
+                            <input class="bb_store" type="checkbox"  value=' . $row['seller_id'] . ' id="bb_store' . $row['seller_id'] . '" name="bb_store[]">
+                        </div>';
+                    }
+                    return $action;
+                })
+
+
+
+
                 ->addColumn('partner', function ($id) use ($courier_partner, $courier_partner_check) {
                     $action = '<div class="pl-2">
                                     <select name="courier[]" id="courier" class="courier_class">
@@ -373,7 +399,7 @@ class AdminManagementController extends Controller
                     }
                     return $action .= '</select></div>';
                 })
-                ->rawColumns(['store_name', 'region', 'order', 'order_item', 'enable_snt', 'partner', 'zoho', 'source', 'destination'])
+                ->rawColumns(['store_name', 'region', 'order', 'order_item', 'enable_snt', 'partner', 'zoho', 'buybox_stores', 'source', 'destination'])
                 ->make(true);
         }
 
@@ -382,16 +408,20 @@ class AdminManagementController extends Controller
 
     public function updateStore(Request $request)
     {
+
         $order_items = explode('-', $request->order_item);
         $selected_store = explode('-', $request->selected_store);
         $shipntrack = explode('-', $request->shipntrack);
         $zoho_enables = explode('-', $request->zoho_enable);
+        $bb_store_enables = explode('-', $request->bb_store_enable);
         $courier_partners = explode('-', $request->courier_partner);
         $source = explode('-', $request->source);
         $destination = explode('-', $request->destination);
 
+
         $shipntrack_array = [];
         $zoho_enable_array = [];
+        $bb_store_enable_array = [];
         $courier_partner_arr = [];
         $source_arr = [];
         $des_arr = [];
@@ -407,8 +437,11 @@ class AdminManagementController extends Controller
         foreach ($zoho_enables as $zoho_enable) {
             $zoho_enable_array[$zoho_enable] = 1;
         }
+        foreach ($bb_store_enables as $bb_store_enable) {
+            $bb_store_enable_array[$bb_store_enable] = $bb_store_enable;
+        }
 
-        if ($request->courier_partner) {
+        if (isset($request->courier_partner)) {
 
             foreach ($courier_partners as $courier_partner) {
                 $courier_partner_tem = explode(':', $courier_partner);
@@ -432,59 +465,80 @@ class AdminManagementController extends Controller
             'get_order_item' => 0,
             'enable_shipntrack' => 0,
             'zoho' => 0,
+            'buybox_stores' => 0,
             'courier_partner' => NULL,
             'source' => NULL,
             'destination' => NULL,
         ]);
+        
+        if ($selected_store['0'] != '') {
+            foreach ($selected_store as $id) {
 
-        foreach ($selected_store as $id) {
+                $aws_cred = Aws_credential::with(['mws_region'])->where('id', $id)->get();
+                $aws_cred_array = [
+                    'seller_id' => $aws_cred[0]->seller_id,
+                    'country_code' => $aws_cred[0]['mws_region']->region_code,
+                    'store_name' => $aws_cred[0]->store_name,
+                    'dump_order' => 1
+                ];
 
-            $aws_cred = Aws_credential::with(['mws_region'])->where('id', $id)->get();
-            $aws_cred_array = [
-                'seller_id' => $aws_cred[0]->seller_id,
-                'country_code' => $aws_cred[0]['mws_region']->region_code,
-                'store_name' => $aws_cred[0]->store_name,
-                'dump_order' => 1
-            ];
+                if (array_key_exists($id, $order_item)) {
+                    $aws_cred_array['get_order_item'] = 1;
+                }
 
-            if (array_key_exists($id, $order_item)) {
-                $aws_cred_array['get_order_item'] = 1;
+                if (array_key_exists($id, $shipntrack_array)) {
+                    $aws_cred_array['enable_shipntrack'] = 1;
+                }
+
+                if (array_key_exists($id, $zoho_enable_array)) {
+                    $aws_cred_array['zoho'] = 1;
+                }
+
+                if (array_key_exists($id, $courier_partner_arr)) {
+
+                    $aws_cred_array['courier_partner'] = $courier_partner_arr[$id];
+                }
+
+                if (array_key_exists($id, $source_arr)) {
+
+                    $aws_cred_array['source'] = $source_arr[$id];
+                }
+                if (array_key_exists($id, $des_arr)) {
+                    $aws_cred_array['destination'] =  $des_arr[$id];
+                }
+
+                OrderSellerCredentials::upsert([$aws_cred_array], ['seller_id'], [
+                    'seller_id',
+                    'store_name',
+                    'country_code',
+                    'dump_order',
+                    'get_order_item',
+                    'enable_shipntrack',
+                    'courier_partner',
+                    'zoho',
+                    'buybox_stores',
+                    'source',
+                    'destination'
+                ]);
             }
-
-            if (array_key_exists($id, $shipntrack_array)) {
-                $aws_cred_array['enable_shipntrack'] = 1;
-            }
-
-            if (array_key_exists($id, $zoho_enable_array)) {
-                $aws_cred_array['zoho'] = 1;
-            }
-
-            if (array_key_exists($id, $courier_partner_arr)) {
-
-                $aws_cred_array['courier_partner'] = $courier_partner_arr[$id];
-            }
-
-            if (array_key_exists($id, $source_arr)) {
-
-                $aws_cred_array['source'] = $source_arr[$id];
-            }
-            if (array_key_exists($id, $des_arr)) {
-                $aws_cred_array['destination'] =  $des_arr[$id];
-            }
-
-            OrderSellerCredentials::upsert([$aws_cred_array], ['seller_id'], [
-                'seller_id',
-                'store_name',
-                'country_code',
-                'dump_order',
-                'get_order_item',
-                'enable_shipntrack',
-                'courier_partner',
-                'zoho',
-                'source',
-                'destination'
-            ]);
         }
+
+        if (($bb_store_enables['0'] != '')) {
+
+            foreach ($bb_store_enable_array as $id) {
+                $aws_cred = Aws_credential::with(['mws_region'])->where('seller_id', $id)->get();
+                if ($aws_cred) {
+                    $aws_cred_array = [
+                        'seller_id' => $aws_cred[0]->seller_id,
+                        'country_code' => $aws_cred[0]['mws_region']->region_code,
+                        'store_name' => $aws_cred[0]->store_name,
+                        'buybox_stores' => 1
+                    ];
+                    OrderSellerCredentials::upsert($aws_cred_array, ['seller_id'], ['buybox_stores']);
+                }
+            }
+        }
+        
         return response()->json(['success' => 'Store Selected']);
     }
 }

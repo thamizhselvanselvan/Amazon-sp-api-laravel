@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Buybox_stores\Product;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use App\Models\order\OrderSellerCredentials;
 use App\Services\Buybox_stores\product_import;
 
 class import_product_file_SPAPI extends Command
@@ -47,9 +48,16 @@ class import_product_file_SPAPI extends Command
     public function handle()
     {
         $stores  = [6, 7, 8, 9, 10, 11, 12, 20, 27];
-        // $seller_id = $this->argument('seller_id');
+
+        // $stores[] = '';
+        // $stores_id =  OrderSellerCredentials::query()->select('seller_id', 'country_code')->where('buybox_stores', '1')->get();
+        // foreach($stores_id as $data)
+        // {
+        //     $stores [] =$data['seller_id'];
+        // }
+
         foreach ($stores as $seller_id) {
-            Log::alert('store' .  ' ' . $seller_id );
+            Log::alert('store' .  ' ' . $seller_id);
             $aws = Aws_credential::with(['mws_region'])->where('seller_id', $seller_id)->where('api_type', 1)->first();
             $aws_key = $aws->id;
             $country_code = $aws->mws_region->region_code;
@@ -76,8 +84,8 @@ class import_product_file_SPAPI extends Command
 
                     Storage::put('/aws-products/aws-store-files/products_' . $seller_id . '.txt', $httpResponse);
                 }
-               
-                 $this->insertdb($seller_id);
+
+                $this->insertdb($seller_id);
             }
 
             // $response = $productreport->createReport($aws_key, $country_code, $marketplace_id);
