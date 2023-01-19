@@ -2,22 +2,20 @@
 
 use Carbon\Carbon;
 use App\Models\User;
-use App\Models\Label;
 use GuzzleHttp\Client;
 use League\Csv\Writer;
 use App\Models\Mws_region;
 use Smalot\PdfParser\Parser;
 use App\Services\Zoho\ZohoApi;
-use App\Models\GoogleTranslate;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use App\Models\Catalog\Asin_master;
 use function Clue\StreamFilter\fun;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
-
 use Illuminate\Support\Facades\Route;
 use App\Models\order\OrderItemDetails;
+
 use App\Models\order\OrderUpdateDetail;
 use App\Models\seller\AsinMasterSeller;
 use Illuminate\Support\Facades\Storage;
@@ -43,45 +41,36 @@ Route::get('getPricing/', 'TestController@GetPricing');
 
 Route::get('test/translation/{order_id}', function ($order_id) {
 
-    $order_ids = explode(',', $order_id);
+
     $translate = new TranslateClient([
         'key' => config('app.google_translate_key')
     ]);
-    foreach ($order_ids as $order_id) {
 
-        $address = OrderItemDetails::select('shipping_address')
-            ->where('amazon_order_identifier', $order_id)
-            ->get()
-            ->toArray();
+    $address = OrderItemDetails::select('shipping_address')
+        ->where('amazon_order_identifier', $order_id)
+        ->get()
+        ->toArray();
 
-        $arabicToEnglish = [];
-        if ($address != null) {
+    $arabicToEnglish = [];
+    if ($address != null) {
 
-            $ship_address = json_encode($address[0]['shipping_address']);
-            $arabic_lang = preg_match("/u06/", $ship_address);
-            if ($arabic_lang == 1) {
-                $records = json_decode($ship_address);
-                // po($records);
-                $arabicToEnglish['amazon_order_identifier'] = $order_id;
-                foreach ($records as $key => $record) {
-                    if (preg_match('/u06/', json_encode($record)) == 1) {
+        $ship_address = json_encode($address[0]['shipping_address']);
+        $arabic_lang = preg_match("/u06/", $ship_address);
+        if ($arabic_lang == 1) {
+            $records = json_decode($ship_address);
+            po($records);
+            foreach ($records as $key => $record) {
+                if (preg_match('/u06/', json_encode($record)) == 1) {
 
-                        $translatedText = $translate->translate($record, [
-                            'target' => 'en'
-                        ]);
-                        if ($key != 'CountryCode' && $key != 'Phone' && $key != 'AddressType' && $key != 'country' && $key != 'StateOrRegion') {
-                            $arabicToEnglish[strtolower($key)] = $translatedText['text'];
-                            // $arabicToEnglish[$key] = $translatedText['text'];
-                        }
-                    }
+                    $translatedText = $translate->translate($record, [
+                        'target' => 'en'
+                    ]);
+                    $arabicToEnglish[$key] = $translatedText['text'];
                 }
             }
         }
-        GoogleTranslate::upsert($arabicToEnglish, ['amazon_order_id_unique'], ['amazon_order_identifier', 'name', 'addressline1', 'addressline2', 'city', 'county']);
-        Label::where('order_no', $order_id)->update(['detect_language' => 2]);
-        po($arabicToEnglish);
     }
-    echo 'Translated Successfully';
+    po($arabicToEnglish);
 });
 
 Route::get('test1', function () {
@@ -238,8 +227,9 @@ Route::get('test/inventory', function () {
 Route::get('test/zoho/read', function () {
 
     $token = json_decode(Storage::get('zoho/access_token.txt'), true)['access_token'];
+    // echo $token;
+    // exit;
 
-    // $token = '1000.352840e62c060519048c3d41c3389561.06aaa4e24e9dcf1089693cf66706d74e';
     $url = 'https://www.zohoapis.com/crm/bulk/v2/read';
     $lead_url = 'https://www.zohoapis.com/crm/v2/Leads';
 
@@ -255,25 +245,31 @@ Route::get('test/zoho/read', function () {
     // exit;
 
     $payload = [
+        'callback' => [
+            "url" => "https://www.app.360ecom.io/callback",
+            "method" => "post"
+        ],
         'query' => [
             'module' => 'Leads',
             'page' => 1,
         ],
     ];
 
-    //make request for csv file
-    // $response = Http::withoutVerifying()
-    //     ->withHeaders([
-    //         'Authorization' => 'Zoho-oauthtoken ' . $token,
-    //         'Content-Type' => 'application/json'
-    //     ])->post($url, $payload);
+    // 1929333000104501287
+    // make request for csv file
 
-    // dd($response->json());
+    $response = Http::withoutVerifying()
+        ->withHeaders([
+            'Authorization' => 'Zoho-oauthtoken ' . $token,
+            'Content-Type' => 'application/json'
+        ])->post($url, $payload);
+
+    dd($response->json());
 
     //check requested file status
     $response = Http::withoutVerifying()->withHeaders([
         'Authorization' => 'Zoho-oauthtoken ' . $token,
-    ])->get($url . '/1929333000104511202');
+    ])->get($url . '/1929333000104501287');
 
     // return $response;
     // dd($response);
