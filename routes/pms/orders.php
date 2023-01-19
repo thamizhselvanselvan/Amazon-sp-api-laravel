@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PMSPHPUnitTestController;
+use App\Models\Order\ZohoMissing;
 use Illuminate\Support\Facades\Route;
 
 Route::get('orders/dashboard', 'Orders\OrdersDashboardController@Dashboard');
@@ -29,3 +30,6 @@ Route::get('orders/statistics', 'Orders\OrderDetailsController@orderStatistics')
 Route::get('orders/statistics/{store_id}', 'Orders\OrderDetailsController@orderStatistics')->name('orders.statistics.store_id');
 
 Route::get('orders/file/management/monitor', 'Orders\OrdersDashboardController@OrderFileManagementMonitor')->name('orders.file.management.monitor');
+
+Route::get('orders/missing/price', 'Orders\OrderMissingDetailsController@index')->name('orders.missing');
+Route::post('orders/missing/update', 'Orders\OrderMissingDetailsController@updateview')->name('orders.missing.price.update');

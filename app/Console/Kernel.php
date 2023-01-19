@@ -23,7 +23,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('mosh:product_fetch')->everyTenMinutes();
 
             //bb_stores
-            $schedule->command('mosh:price_priority_import')->everyMinute(); //PM
+            // $schedule->command('mosh:price_priority_import')->everyMinute(); //PM
 
             /*Inventory*/
             $schedule->command('pms:inventory-stock-tracking')->dailyAt('23:45'); //PM
