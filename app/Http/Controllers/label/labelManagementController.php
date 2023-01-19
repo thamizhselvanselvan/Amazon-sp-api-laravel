@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use Illuminate\Support\Facades\Validator;
 use App\Models\order\OrderSellerCredentials;
+use App\Services\SP_API\API\Order\OrderUsingRedBean;
 
 class labelManagementController extends Controller
 {
@@ -351,8 +352,8 @@ class labelManagementController extends Controller
     public function missing()
     {
         $selected_store = OrderSellerCredentials::where('dump_order', '1')
-            ->where('get_order_item', '1')
-            ->get(['seller_id', 'store_name', 'country_code']);
+            ->where('cred_status', '1')
+            ->get(['seller_id', 'store_name', 'country_code', 'source']);
 
         return view('label.missing', compact('selected_store'));
     }
@@ -362,30 +363,34 @@ class labelManagementController extends Controller
         $seller = explode(',', $request->seller_id);
         $order_id = $request->order_id;
         $seller_id = $seller[0];
-        $country_code = $seller[1];
+        $store_name = $seller[1];
+        $country_code = $seller[2];
+        $source = $seller[3];
 
         $datas = preg_split('/[\r\n| |:|,]/', $order_id, -1, PREG_SPLIT_NO_EMPTY);
 
-        foreach ($datas as $amazon_order_id) {
-            if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
+        $max_order  = 50;
+        $order_count = 0;
+        $order_array = [];
+        $auth_code = NULL;
 
-                GetOrder::dispatch(
-                    [
-                        'country_code' => $country_code,
-                        'seller_id' => $seller_id,
-                        'amazon_order_id' => $amazon_order_id
-                    ]
-                )->onConnection('redis')->onQueue('default');
-            } else {
-                GetOrder::dispatch(
-                    [
-                        'country_code' => $country_code,
-                        'seller_id' => $seller_id,
-                        'amazon_order_id' => $amazon_order_id
-                    ]
-                );
+        foreach ($datas as $amazon_order_id) {
+
+            $order_array[] = $amazon_order_id;
+            $order_count++;
+            if ($order_count == $max_order) {
+
+                (new OrderUsingRedBean())->SelectedSellerOrder($seller_id, $country_code, $source, $auth_code, $order_array, $store_name);
+
+                $order_count = 0;
+                $order_array = [];
             }
         }
+
+        if ($order_array) {
+            (new OrderUsingRedBean())->SelectedSellerOrder($seller_id, $country_code, $source, $auth_code, $order_array, $store_name);
+        }
+
         return redirect('/label/manage')->with("success", "Order Details Is Updating, Please Wait.");
     }
 
