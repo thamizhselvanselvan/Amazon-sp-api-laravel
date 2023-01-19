@@ -83,7 +83,7 @@ class Search_Product
                 if ($key2 == 'browseClassification') {
                     $classifications = json_decode($catalog);
                     if (array_key_exists('classificationId', (array)$classifications)) {
-                        $catalog_for_cliqnshop[$key1]['category_code'] = $classifications->classificationId;
+                        $catalog_for_cliqnshop[$key1]['category_code'] = isset($classifications->classificationId) ? $classifications->classificationId : 'demo-new';
                     }
                 }
                 if ($key2 == 'images') {
@@ -114,7 +114,7 @@ class Search_Product
         foreach ($catalog_for_cliqnshop as $cliqnshop_catalog) {
 
             if (isset($cliqnshop_catalog['price'])) {
-                $category           = 'demo-new';
+                $category           = $cliqnshop_catalog['category_code'];
                 $asin               = $cliqnshop_catalog['asin'];
                 $item_name          = $cliqnshop_catalog['itemName'];
                 $brand              = $cliqnshop_catalog['brand'];
