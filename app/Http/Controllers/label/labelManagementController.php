@@ -372,18 +372,25 @@ class labelManagementController extends Controller
         $max_order  = 50;
         $order_count = 0;
         $order_array = [];
+        $auth_code = NULL;
 
         foreach ($datas as $amazon_order_id) {
 
-            if ($order_count < $max_order) {
-                $order_array[] = $amazon_order_id;
-            }
+            $order_array[] = $amazon_order_id;
             $order_count++;
+            if ($order_count == $max_order) {
+
+                (new OrderUsingRedBean())->SelectedSellerOrder($seller_id, $country_code, $source, $auth_code, $order_array, $store_name);
+
+                $order_count = 0;
+                $order_array = [];
+            }
         }
 
-        $auth_code  = NULL;
+        if ($order_array) {
+            (new OrderUsingRedBean())->SelectedSellerOrder($seller_id, $country_code, $source, $auth_code, $order_array, $store_name);
+        }
 
-        (new OrderUsingRedBean())->SelectedSellerOrder($seller_id, $country_code, $source, $auth_code, $order_array, $store_name);
         return redirect('/label/manage')->with("success", "Order Details Is Updating, Please Wait.");
     }
 
