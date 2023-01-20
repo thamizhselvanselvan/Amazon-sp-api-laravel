@@ -27,8 +27,6 @@ class OrderUsingRedBean
 
     public function SelectedSellerOrder($awsId, $awsCountryCode, $source, $awsAuth_code, $amazon_order_id, $store_name)
     {
-        Log::alert([$amazon_order_id]);
-        Log::alert("Order dumping through Redbean");
         $seller_id = $awsId;
         $this->store_name = $store_name;
 
