@@ -3,29 +3,30 @@
 namespace App\Http\Controllers\BOE;
 
 
+use Exception;
 use RedBeanPHP\R;
 use Carbon\Carbon;
 use App\Models\BOE;
 use League\Csv\Writer;
 use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
+use App\Models\Company_master;
+use App\Services\BOE\BOEmaster;
+use App\Services\BOE\BOEPdfReader;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Company\CompanyMaster;
 use Illuminate\Support\Facades\Schema;
+use App\Services\BOE\BOEPdefreader2018;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Concerns\ToArray;
 use Yajra\DataTables\Facades\DataTables;
 use AmazonPHP\SellingPartner\Model\MerchantFulfillment\Length;
-use App\Models\Company\CompanyMaster;
-use App\Models\Company_master;
-use App\Services\BOE\BOEPdfReader;
-use App\Services\BOE\BOEPdefreader2018;
-use App\Services\BOE\BOEmaster;
-use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Concerns\ToArray;
 
 class BOEController extends Controller
 {
@@ -203,7 +204,11 @@ class BOEController extends Controller
             $pdf = $pdfParser->parseFile($storage_path);
             $content = $pdf->getText();
 
-            $pdfReader->BOEmanage($content, $file_path . '/' . $file_name, $company_id, $user_id);
+            try {
+                $pdfReader->BOEmanage($content, $file_path . '/' . $file_name, $company_id, $user_id);
+            } catch(Exception $e) {
+                Log::notice("Not Working ". $path);
+            }
         }
         return response()->json(["message" => "all file uploaded successfully"]);
         // return redirect('/BOE/index')->with('success', 'All PDF Imported successfully');
