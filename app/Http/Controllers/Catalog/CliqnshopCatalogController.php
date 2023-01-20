@@ -116,7 +116,6 @@ class CliqnshopCatalogController extends Controller
 
         foreach ($csv_data as $data) {
             $asin[] = ($data['ASIN']);
-            $category[$data['ASIN']] = ($data['Category']);
         }
 
         $headers = [
@@ -219,10 +218,10 @@ class CliqnshopCatalogController extends Controller
 
 
             $catalog_code = json_decode($data['browse_classification'], true);
-            $category_code = 'new';
+            $category_code = 'demo-new';
 
             if ($catalog_code == null) {
-                $category_code = 'new';
+                $category_code = 'demo-new';
             } else if (isset($catalog_code['classificationId'])) {
                 $category_code = $catalog_code['classificationId'];
             }
