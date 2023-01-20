@@ -194,9 +194,10 @@ class BOEController extends Controller
             }
         }
         // reading saved file from storage
-
+        $error_lists = [];
         $file_path = 'BOE/' . $company_id . '/' . $year . '/' . $month;
         $path = (storage_path('app/' . $file_path));
+
         foreach ($pdfList as $file_name) {
 
             $storage_path = $path . '/' . $file_name;
@@ -207,10 +208,17 @@ class BOEController extends Controller
             try {
                 $pdfReader->BOEmanage($content, $file_path . '/' . $file_name, $company_id, $user_id);
             } catch(Exception $e) {
-                Log::notice("Not Working ". $path);
+                Log::notice("Not Working Boe's". $file_name);
+                $error_lists[] = $file_name;
             }
         }
-        return response()->json(["message" => "all file uploaded successfully"]);
+
+        $messsage = ["message" => "all file uploaded successfully"];
+        if(count($error_lists) > 0) {
+            $messsage = ["error" => $error_lists];  
+        }
+
+        return response()->json($messsage);
         // return redirect('/BOE/index')->with('success', 'All PDF Imported successfully');
     }
 
