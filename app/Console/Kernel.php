@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -78,10 +79,15 @@ class Kernel extends ConsoleKernel
                 Zoho - only one record at a time for staging
             */
             // $schedule->command('mosh:access_token_generate')->cron('*/55 * * * *');
-            $commands = Cache('key')->toArray();
-            foreach ($commands as $command) {
-                $schedule->command($command['command_name'])->cron($command['execution_time']);
-                Log::alert($command['command_name']);
+            if (Cache::has('Schedule_command')) {
+
+                $commands = Cache::get('Schedule_command')->toArray();
+                foreach ($commands as $command) {
+                    $schedule->command($command['command_name'])->cron($command['execution_time']);
+                    Log::alert($command['command_name']);
+                }
+            } else {
+                CacheForCommandScheduler();
             }
         }
 
