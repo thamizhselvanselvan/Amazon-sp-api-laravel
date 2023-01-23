@@ -246,7 +246,7 @@ Route::get('test/zoho/read', function () {
 
     $payload = [
         'callback' => [
-            "url" => "https://www.app.360ecom.io/callback",
+            "url" => "https://www.example.com/callback",
             "method" => "post"
         ],
         'query' => [
@@ -255,21 +255,21 @@ Route::get('test/zoho/read', function () {
         ],
     ];
 
-    // 1929333000104501287
+    // 1929333000104770055
     // make request for csv file
 
-    $response = Http::withoutVerifying()
-        ->withHeaders([
-            'Authorization' => 'Zoho-oauthtoken ' . $token,
-            'Content-Type' => 'application/json'
-        ])->post($url, $payload);
+    // $response = Http::withoutVerifying()
+    //     ->withHeaders([
+    //         'Authorization' => 'Zoho-oauthtoken ' . $token,
+    //         'Content-Type' => 'application/json'
+    //     ])->post($url, $payload);
 
-    dd($response->json());
+    // dd($response->json());
 
     //check requested file status
     $response = Http::withoutVerifying()->withHeaders([
         'Authorization' => 'Zoho-oauthtoken ' . $token,
-    ])->get($url . '/1929333000104501287');
+    ])->get($url . '/1929333000104770055');
 
     // return $response;
     // dd($response);
@@ -291,9 +291,18 @@ Route::get('test/mongodb', function () {
     ];
     DB::connection('mongodb')->collection('MongoDb')->insert($data);
     echo 'success';
-
-
-
-
     //
+});
+
+Route::get('test/boe', function () {
+
+    $pdfParser = new Parser();
+    $second_page = 1;
+    $path = 'D:\BOE\Gotech BOE 18-19\Newfolder\957299993.pdf';
+
+    $pdfParser = new Parser();
+    $pdf = $pdfParser->parseFile($path);
+    $content = $pdf->getText();
+    echo $content;
+    // dd($content);
 });
