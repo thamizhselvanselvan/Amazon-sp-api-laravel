@@ -67,7 +67,8 @@ use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
-use Composer\Cache;
+
+use Illuminate\Support\Facades\Cache;
 
 // use ConfigTrait;
 
@@ -86,7 +87,12 @@ use Composer\Cache;
 Route::get('bb', function () {
     // po(CommandScheduler::get()->toArray());
     // exit;
-    $commands = Cache('key')->toArray();
+    // Cache::flush();
+    if (Cache::has('Schedule_command')) {
+        po(Cache::get('Schedule_command'));
+    }
+    exit;
+    $commands = Cache('Schedule_command')->toArray();
     foreach ($commands as $command) {
         // $schedule->command($command['command_name'])->cron($command['execution_time']);
         po($command['command_name']);
@@ -95,7 +101,7 @@ Route::get('bb', function () {
 
     exit;
 
-    cache()->rememberForever('key', function () {
+    cache()->rememberForever('Schedule_command', function () {
         return CommandScheduler::get();
     });
 });

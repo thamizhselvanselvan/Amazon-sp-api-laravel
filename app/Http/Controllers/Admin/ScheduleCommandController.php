@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\CommandScheduler;
 use Yajra\DataTables\DataTables;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 
 
 class ScheduleCommandController extends Controller
@@ -43,6 +44,7 @@ class ScheduleCommandController extends Controller
             'status' => $request->status == '' ? 0 : 1
         ];
         CommandScheduler::upsert($formValue, ['command_name_unique'], ['command_name', 'execution_time', 'description', 'status']);
+        Cache::flush();
         CacheForCommandScheduler();
         return redirect('/admin/scheduler/management')->with("success", "Record has been inserted successfully!");
     }
@@ -64,6 +66,7 @@ class ScheduleCommandController extends Controller
         ];
 
         CommandScheduler::where('id', $id)->update($records);
+        Cache::flush();
         CacheForCommandScheduler();
         return redirect('/admin/scheduler/management')->with("success", "Record has been updated successfully!");
     }

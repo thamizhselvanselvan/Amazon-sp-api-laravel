@@ -1208,8 +1208,7 @@ if (!function_exists('ProcessManagementUpdate')) {
 if (!function_exists('CacheForCommandScheduler')) {
     function CacheForCommandScheduler()
     {
-        Cache::flush();
-        cache()->rememberForever('key', function () {
+        cache()->rememberForever('Schedule_command', function () {
             return CommandScheduler::where('status', '1')->get();
         });
     }
