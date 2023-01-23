@@ -116,7 +116,6 @@ class CliqnshopCatalogController extends Controller
 
         foreach ($csv_data as $data) {
             $asin[] = ($data['ASIN']);
-            $category[$data['ASIN']] = ($data['Category']);
         }
 
         $headers = [
@@ -219,16 +218,14 @@ class CliqnshopCatalogController extends Controller
 
 
             $catalog_code = json_decode($data['browse_classification'], true);
-            $cat_code = 'new';
-            $cat_code_type = 'all';
+            $category_code = 'demo-new';
+
             if ($catalog_code == null) {
-                $cat_code = 'new';
-                $cat_code_type = 'all';
+                $category_code = 'demo-new';
             } else if (isset($catalog_code['classificationId'])) {
-                $cat_code = $catalog_code['classificationId'];
-                $cat_code_type = null;
+                $category_code = $catalog_code['classificationId'];
             }
-           
+
             $brand_label = ' ';
             if ($data['brand']) {
 
@@ -271,13 +268,13 @@ class CliqnshopCatalogController extends Controller
                 }
             }
 
-            if ($category[$asin] == '') {
-                $category_code = 'demo-new';
-            } else {
+            // if ($category[$asin] == '') {
+            //     $category_code = 'demo-new';
+            // } else {
 
-                $category_code = $category[$asin];
-            }
-          
+            //     $category_code = $category[$asin];
+            // }
+
             $keyword = '';
             $insert_service = new CliqnshopCataloginsert();
             $insert_service->insertdata_cliqnshop(

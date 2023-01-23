@@ -43,12 +43,12 @@ class InventoryCsvImport
     {
         $warehouse_array = [];
         foreach ($this->warehouse_details as $value) {
-            $warehouse_array[$value['id']] = $value['name'];
+            $warehouse_array[$value['id']] = trim($value['name']);
         }
 
         $source_array = [];
         foreach ($this->source_details as $value) {
-            $source_array[$value['name']] = $value['id'];
+            $source_array[trim($value['name'])] = trim($value['id']);
         }
 
         // $rack_shelve_details = [];

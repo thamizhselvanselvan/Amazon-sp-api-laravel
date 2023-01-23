@@ -41,6 +41,7 @@ Route::get('getPricing/', 'TestController@GetPricing');
 
 Route::get('test/translation/{order_id}', function ($order_id) {
 
+
     $translate = new TranslateClient([
         'key' => config('app.google_translate_key')
     ]);
@@ -225,10 +226,14 @@ Route::get('test/inventory', function () {
 
 Route::get('test/zoho/read', function () {
 
-    $token = '1000.2df599745cecd34c94ba703cbe525ad2.6270c2f5ff7bb775da72344dfcce55d5';
+    $token = json_decode(Storage::get('zoho/access_token.txt'), true)['access_token'];
+    // echo $token;
+    // exit;
+
     $url = 'https://www.zohoapis.com/crm/bulk/v2/read';
     $lead_url = 'https://www.zohoapis.com/crm/v2/Leads';
 
+    //test lead details
     // $response = Http::withoutVerifying()
     //     ->withHeaders([
     //         'Authorization' => 'Zoho-oauthtoken ' . $token
@@ -240,27 +245,55 @@ Route::get('test/zoho/read', function () {
     // exit;
 
     $payload = [
+        'callback' => [
+            "url" => "https://www.app.360ecom.io/callback",
+            "method" => "post"
+        ],
         'query' => [
             'module' => 'Leads',
             'page' => 1,
         ],
     ];
 
-    // $response = Http::withoutVerifying()
-    //     ->withHeaders([
-    //         'Authorization' => 'Zoho-oauthtoken ' . $token,
-    //         'Content-Type' => 'application/json'
-    //     ])->post($url, $payload);
+    // 1929333000104501287
+    // make request for csv file
 
-    // dd($response->json());
+    $response = Http::withoutVerifying()
+        ->withHeaders([
+            'Authorization' => 'Zoho-oauthtoken ' . $token,
+            'Content-Type' => 'application/json'
+        ])->post($url, $payload);
 
+    dd($response->json());
+
+    //check requested file status
     $response = Http::withoutVerifying()->withHeaders([
         'Authorization' => 'Zoho-oauthtoken ' . $token,
-    ])->get($url . '/1929333000104021178/result');
+    ])->get($url . '/1929333000104501287');
 
     // return $response;
     // dd($response);
     dd($response->json());
+
+    //
+});
+
+Route::get('test/mongodb', function () {
+
+    // echo phpinfo();
+    // exit;
+    // dd(DB::connection('mongodb'));
+    $data = [
+        'Name' => 'Amit Singh',
+        'subName' => 'Raj',
+        'anjay' => 'c'
+
+    ];
+    DB::connection('mongodb')->collection('MongoDb')->insert($data);
+    echo 'success';
+
+
+
 
     //
 });

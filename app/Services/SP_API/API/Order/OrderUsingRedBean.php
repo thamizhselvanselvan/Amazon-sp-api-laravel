@@ -27,7 +27,6 @@ class OrderUsingRedBean
 
     public function SelectedSellerOrder($awsId, $awsCountryCode, $source, $awsAuth_code, $amazon_order_id, $store_name)
     {
-        Log::alert("Order dumping through Redbean");
         $seller_id = $awsId;
         $this->store_name = $store_name;
 
@@ -56,7 +55,9 @@ class OrderUsingRedBean
         $max_results_per_page = 100;
         $next_token = NULL;
 
-        $amazon_order_ids = $amazon_order_id ? [$amazon_order_id] : NULL;
+        $amazon_order_ids = $amazon_order_id ? $amazon_order_id : NULL;
+        $amazon_order_ids = is_array($amazon_order_ids) ? $amazon_order_id : [$amazon_order_ids];
+
         $order_statuses = [
             'Unshipped',
             'PartiallyShipped',
