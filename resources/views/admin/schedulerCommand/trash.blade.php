@@ -4,6 +4,9 @@
 
 @section('content_header')
     <h1 class="m-0 text-dark text-center">Command Scheduler Trash</h1>
+    <a href="{{ route('command.scheduler.index') }}" class="btn btn-primary btn-sm">
+        <i class="fas fa-long-arrow-alt-left"></i> Back
+    </a>
 @stop
 
 @section('content')
@@ -36,6 +39,7 @@
             <th>Id</th>
             <th>Command Name</th>
             <th>Execution Time</th>
+            <th>Description</th>
             <th>Status</th>
             <th>Action</th>
         </thead>
@@ -66,6 +70,10 @@
                 {
                     data: 'execution_time',
                     name: 'execution_time',
+                },
+                {
+                    data: 'description',
+                    name: 'description',
                 },
                 {
                     data: 'status',
