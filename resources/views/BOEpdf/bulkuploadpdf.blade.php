@@ -9,13 +9,7 @@
     <h1 class="m-0 text-dark text-center ">Bulk BOE Upload</h1>
   </div>
 </div>
-<!-- <div class="row">
-  <div class="col-6">
-    <a href="/BOE/index" class="btn btn-primary">
-      <i class="fas fa-long-arrow-alt-left"></i> Back
-    </a>
-  </div>
-</div> -->
+
 
 @stop
 
@@ -127,14 +121,15 @@
         dataType: 'json',
         success: (data) => {
           this.reset();
-          alert('Files has been uploaded');
           $("#upload_pdf").removeAttr('disabled');
           $("body").css("cursor", "default");
 
-          if (data.hasOwnProperty("error")) {
+          console.log(data);
 
+          if (data.hasOwnProperty("error")) {
+            alert('We are unabel to process some BOE, please check below list');
             let lists = $(".lists");
-            let html_array = "<h4 class='font-weight-bold'> Failed BoE Filenames</h4>";
+            let html_array = "<h4 class='font-weight-bold'> Failed BOE</h4>";
 
             $.each(data.error, function(index, value) {
 
@@ -145,6 +140,7 @@
             lists.html(html_array);
 
           } else {
+            alert('All Files has been uploaded');
             window.location.href = 'index';
 
           }
