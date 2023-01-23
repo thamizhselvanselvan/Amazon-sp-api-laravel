@@ -277,3 +277,23 @@ Route::get('test/zoho/read', function () {
 
     //
 });
+
+Route::get('test/mongodb', function () {
+
+    // echo phpinfo();
+    // exit;
+    // dd(DB::connection('mongodb'));
+    $data = [
+        'Name' => 'Amit Singh',
+        'subName' => 'Raj',
+        'anjay' => 'c'
+
+    ];
+    DB::connection('mongodb')->collection('MongoDb')->insert($data);
+    echo 'success';
+
+
+
+
+    //
+});
