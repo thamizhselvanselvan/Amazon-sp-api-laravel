@@ -701,7 +701,7 @@ return [
 
                 ],
                 [
-                    'text' => 'Zoho Order Missing',
+                    'text' => 'Zoho Price Missing',
                     'can' => ['Admin', 'Catalog'],
                     'icon' => 'fa fa-minus-circle',
                     'url' => "orders/missing/price",

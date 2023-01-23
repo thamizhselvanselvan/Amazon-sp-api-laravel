@@ -57,6 +57,14 @@
             </div>
             @endif
         </div>
+        <div class="alert_display">
+            @if (request('error'))
+            <div class="alert alert-danger alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>{{request('error')}}</strong>
+            </div>
+            @endif
+        </div>
     </div>
 </div>
 
@@ -206,6 +214,7 @@
     });
 
     $('#price_upload').click(function() {
+        $(this).prop('disabled', true);
         let asin = $('#asin').text();
         let order_id = $('#order_id').text();
         let item_id = $('#order_item_id').text();
@@ -213,6 +222,7 @@
 
         if (price == '') {
             alert('Please Enter Price');
+            $('#price_upload').prop('disabled', false);
             return false;
         }
         let data = [asin, order_id, item_id, price];
@@ -225,10 +235,19 @@
                 "_token": "{{ csrf_token() }}",
             },
             success: function(response) {
-
-                window.location.href = '/orders/missing/price?success=Price updated successfully'
+                $('#price_upload').prop('disabled', false);
+                console.log(response['error']);
+                if (response['data'] == 'success') {
+                    window.location.href = '/orders/missing/price?success=Price updated successfully'
+                } else if (response['data'] == 'error') {
+                    window.location.href = '/orders/missing/price?error=Price Not Updated(cheack Order ID, Order Item ID and Lead ID)'
+                } else {
+                    alert('success');
+                    window.location.reload();
+                }
             },
             error: function(response) {
+                $('#price_upload').prop('disabled', false);
                 alert('something went wrong Please Contact Admin');
             }
         });
