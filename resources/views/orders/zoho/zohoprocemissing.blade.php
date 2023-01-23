@@ -214,6 +214,7 @@
     });
 
     $('#price_upload').click(function() {
+        $(this).prop('disabled', true);
         let asin = $('#asin').text();
         let order_id = $('#order_id').text();
         let item_id = $('#order_item_id').text();
@@ -221,6 +222,7 @@
 
         if (price == '') {
             alert('Please Enter Price');
+            $('#price_upload').prop('disabled', false);
             return false;
         }
         let data = [asin, order_id, item_id, price];
@@ -233,6 +235,7 @@
                 "_token": "{{ csrf_token() }}",
             },
             success: function(response) {
+                $('#price_upload').prop('disabled', false);
                 console.log(response['error']);
                 if (response['data'] == 'success') {
                     window.location.href = '/orders/missing/price?success=Price updated successfully'
@@ -244,6 +247,7 @@
                 }
             },
             error: function(response) {
+                $('#price_upload').prop('disabled', false);
                 alert('something went wrong Please Contact Admin');
             }
         });
