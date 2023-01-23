@@ -71,7 +71,7 @@ class ScheduleCommandController extends Controller
     public function SchedulerFromTrash($id)
     {
         CommandScheduler::find($id)->delete();
-        return redirect('/admin/scheduler/management')->with("success", "Record has been updated successfully!");
+        return redirect('/admin/scheduler/management')->with("success", "Record has been deleted successfully!");
     }
 
     public function SchedulerBin(Request $request)
