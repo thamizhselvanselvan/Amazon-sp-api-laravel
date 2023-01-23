@@ -25,6 +25,7 @@ class Kernel extends ConsoleKernel
 
             if (Cache::has('Schedule_command')) {
                 $commands = Cache::get('Schedule_command')->toArray();
+
                 foreach ($commands as $command) {
                     $schedule->command($command['command_name'])->cron($command['execution_time']);
                 }
