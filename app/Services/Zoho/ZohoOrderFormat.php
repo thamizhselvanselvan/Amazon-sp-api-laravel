@@ -7,7 +7,7 @@ use Illuminate\Support\Carbon;
 use App\Models\Catalog\Catalog;
 use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingUs;
-use App\Models\Order\ZohoMissing;
+use App\Models\order\ZohoMissing;
 use App\Models\Catalog\Catalog_in;
 use App\Models\Catalog\Catalog_us;
 use Illuminate\Support\Facades\Log;
