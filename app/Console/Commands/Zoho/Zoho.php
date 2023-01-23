@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Services\Zoho\ZohoOrder;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
+use App\Models\SystemSetting\SystemSetting;
 
 class Zoho extends Command
 {
@@ -50,18 +51,20 @@ class Zoho extends Command
         $process_management_id = ProcessManagement::create($process_manage)->toArray();
         $pm_id = $process_management_id['id'];
 
-        //for ($i = 0; $i < 400; $i++) {
+        $zoho_order_dump_limit = SystemSetting::where("key", "zoho_order_dump_limit")->first();
 
-        $amazon_order_id = $this->option('amazon_order_id');
-        $force_update = $this->option('force');
+        for ($i = 0; $i < (int)$zoho_order_dump_limit->value; $i++) {
 
-        $zoho_order = new ZohoOrder;
-        $data = $zoho_order->index($amazon_order_id, $force_update);
+            $amazon_order_id = $this->option('amazon_order_id');
+            $force_update = $this->option('force');
 
-        po($data);
+            $zoho_order = new ZohoOrder;
+            $data = $zoho_order->index($amazon_order_id, $force_update);
 
-        # code...
-        //}
+            po($data);
+
+            # code...
+        }
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
