@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Orders;
 
 use Illuminate\Http\Request;
+use App\Services\Zoho\ZohoApi;
 use App\Models\order\ZohoMissing;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -21,19 +23,14 @@ class OrderMissingDetailsController extends Controller
                     $asin = $row['asin'];
                     return $asin . '  ' . "<a href='javascript:void(0)' value ='$asin'   class='badge badge-success' id='asin'><i class='fa fa-copy'></i></a>";
                 })
-
                 ->editColumn('amazon_order_id', function ($row) {
                     $amazon_order_id = $row['amazon_order_id'];
                     return $amazon_order_id . '  ' . "<a href='javascript:void(0)' value ='$amazon_order_id'   class='badge badge-success' id='order_id'><i class='fa fa-copy'></i></a>";
                 })
-
-
                 ->editColumn('order_item_id', function ($row) {
                     $order_item_id = $row['order_item_id'];
                     return $order_item_id . '  ' . "<a href='javascript:void(0)' value ='$order_item_id'   class='badge badge-success' id='order_item'><i class='fa fa-copy'></i></a>";
                 })
-
-
                 ->editColumn('price', function ($row) {
                     $price = $row['price'];
                     if ($price == 0) {
@@ -42,8 +39,6 @@ class OrderMissingDetailsController extends Controller
                         return $price;
                     }
                 })
-
-
                 ->editColumn('status', function ($row) {
                     $status = $row['status'];
                     if ($status == 0) {
@@ -74,8 +69,26 @@ class OrderMissingDetailsController extends Controller
         $order_id = $data['1'];
         $item_id = $data['2'];
         $price = $data['3'];
+
+        if ($order_id == null || $item_id == null) {
+            return response()->json(['data' =>  'error']);
+        }
+        //zoho api update
+        $zoho = new ZohoApi;
+        $zoho_lead_search = $zoho->search($order_id, $item_id);
+
+        if (!isset($zoho_lead_search['data'][0]['id'])) {
+
+            return response()->json(['data' => 'error']);
+        }
+
+        $lead_id = $zoho_lead_search['data'][0]['id'];
+        $zoho->updateLead($lead_id, ["Product_Cost" => $price]);
+
+        //table zoho_pricing Update
         ZohoMissing::where(['amazon_order_id' => $order_id, 'order_item_id' => $item_id, 'asin' => $asin])
             ->update(['price' => $price, 'status' => '1']);
-        return response()->json(['success' => 'Updated Sucessfully']);
+
+        return response()->json(['data' => 'success']);
     }
 }

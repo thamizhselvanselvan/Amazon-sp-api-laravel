@@ -57,6 +57,14 @@
             </div>
             @endif
         </div>
+        <div class="alert_display">
+            @if (request('error'))
+            <div class="alert alert-danger alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>{{request('error')}}</strong>
+            </div>
+            @endif
+        </div>
     </div>
 </div>
 
@@ -225,8 +233,15 @@
                 "_token": "{{ csrf_token() }}",
             },
             success: function(response) {
-
-                window.location.href = '/orders/missing/price?success=Price updated successfully'
+                console.log(response['error']);
+                if (response['data'] == 'success') {
+                    window.location.href = '/orders/missing/price?success=Price updated successfully'
+                } else if (response['data'] == 'error') {
+                    window.location.href = '/orders/missing/price?error=Price Not Updated(cheack Order ID, Order Item ID and Lead ID)'
+                } else {
+                    alert('success');
+                    window.location.reload();
+                }
             },
             error: function(response) {
                 alert('something went wrong Please Contact Admin');

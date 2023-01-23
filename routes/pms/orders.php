@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\PMSPHPUnitTestController;
-use App\Models\Order\ZohoMissing;
 use Illuminate\Support\Facades\Route;
 
 Route::get('orders/dashboard', 'Orders\OrdersDashboardController@Dashboard');
@@ -33,14 +32,3 @@ Route::get('orders/file/management/monitor', 'Orders\OrdersDashboardController@O
 
 Route::get('orders/missing/price', 'Orders\OrderMissingDetailsController@index')->name('orders.missing');
 Route::post('orders/missing/update', 'Orders\OrderMissingDetailsController@updateview')->name('orders.missing.price.update');
-Route::get('in', function () {
-
-    ZohoMissing::create([
-        'asin' => '1234456789',
-        'amazon_order_id' => '404-7872413-2311532',
-        'order_item_id' => '68008933985611',
-        'price' => '0',
-        'status' => '0'
-
-    ]);
-});

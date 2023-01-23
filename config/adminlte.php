@@ -357,6 +357,13 @@ return [
                     'url' => 'admin/job-management',
                     'can' => ['Admin'],
                     'icon' => 'fa fa-tasks',
+                ],
+
+                [
+                    'text' => 'Scheduler Management',
+                    'url' => 'admin/scheduler/management',
+                    'can' => ['Admin'],
+                    'icon' => 'fa fa-calendar',
                 ]
             ],
         ],
