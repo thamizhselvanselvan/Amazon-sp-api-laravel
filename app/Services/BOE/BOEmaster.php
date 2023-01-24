@@ -49,7 +49,9 @@ class BOEmaster
                     break 1;
                 }
             }
+            return true;
         } else {
+            Log::alert('Invalid Boe File');
             // slack_notification('app360', 'BOE', 'Invalid BOE Found');
             return false;
         }
