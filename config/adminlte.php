@@ -357,6 +357,13 @@ return [
                     'url' => 'admin/job-management',
                     'can' => ['Admin'],
                     'icon' => 'fa fa-tasks',
+                ],
+
+                [
+                    'text' => 'Scheduler Management',
+                    'url' => 'admin/scheduler/management',
+                    'can' => ['Admin'],
+                    'icon' => 'fa fa-calendar',
                 ]
             ],
         ],
@@ -651,7 +658,7 @@ return [
 
         [
             'text' => 'Orders',
-            'can' =>  ['Admin'],
+            'can' =>  ['Admin', 'Catalog'],
             'submenu' => [
                 [
                     'text' => 'Dashboard',
@@ -692,6 +699,12 @@ return [
                     'icon' => ' fa fa-check-circle-o',
                     'url' => "orders/statistics",
 
+                ],
+                [
+                    'text' => 'Zoho Order Missing',
+                    'can' => ['Admin', 'Catalog'],
+                    'icon' => 'fa fa-minus-circle',
+                    'url' => "orders/missing/price",
                 ],
             ],
         ],

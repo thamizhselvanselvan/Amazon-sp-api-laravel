@@ -217,12 +217,12 @@ class BuyBoxPriceImport
 
                         PricingIn::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
                         PricingIn::upsert($pricing_in, 'asin_unique', ['asin', 'available', 'is_sold_by_amazon', 'in_price', 'weight', 'ind_to_uae', 'ind_to_sg', 'ind_to_sa', 'price_updated_at']);
-                        $this->updateRecordIntoStoreTable($country_code, $asin_price);
+                        // $this->updateRecordIntoStoreTable($country_code, $asin_price);
                     } elseif ($country_code_lr == 'ae') {
 
                         PricingAe::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
                         PricingAe::upsert($pricing_ae_sa, 'unique_asin', ['asin', 'available', 'weight', 'ae_price', 'price_updated_at']);
-                        $this->updateRecordIntoStoreTable($country_code, $asin_price);
+                        // $this->updateRecordIntoStoreTable($country_code, $asin_price);
                     }
                     // elseif ($country_code_lr == 'sa') {
                     //     PricingSa::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
@@ -251,7 +251,7 @@ class BuyBoxPriceImport
             foreach ($records as $bb_asin) {
 
                 $bb_store_key = [
-                    'cyclic' => '5',
+                    'bb_cyclic' => '1',
                     'is_bb_won' => '0',
                     'bb_winner_id' => '',
                     'bb_winner_price' => '',

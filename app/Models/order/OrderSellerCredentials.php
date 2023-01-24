@@ -19,6 +19,7 @@ class OrderSellerCredentials extends Model
         'dump_order',
         'get_order_item',
         'enable_shipntrack',
+        'buybox_stores',
         'courier_partner',
         'zoho',
         'source',

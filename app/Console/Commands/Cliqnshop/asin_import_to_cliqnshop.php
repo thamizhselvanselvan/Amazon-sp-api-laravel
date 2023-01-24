@@ -53,7 +53,7 @@ class asin_import_to_cliqnshop extends Command
 
         foreach ($csv_data as $data) {
             $asin[] = ($data['ASIN']);
-            $category[] = ($data['Category']);
+            // $category[] = ($data['Category']);
         }
         // while (($data = fgetcsv($file, 200, ",")) !== FALSE) {
         //     $asin[] = ($data[0]);

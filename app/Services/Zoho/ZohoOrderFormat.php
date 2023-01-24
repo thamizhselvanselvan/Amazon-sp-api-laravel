@@ -7,6 +7,7 @@ use Illuminate\Support\Carbon;
 use App\Models\Catalog\Catalog;
 use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingUs;
+use App\Models\order\ZohoMissing;
 use App\Models\Catalog\Catalog_in;
 use App\Models\Catalog\Catalog_us;
 use Illuminate\Support\Facades\Log;
@@ -98,6 +99,13 @@ class ZohoOrderFormat
             "sku" => "MZ_",
             "source" => "USA",
             "desination" => "UAE"
+        ],
+
+        "Amazon.sa-Mahzuz" => [
+            "SA" => "MahzuzStores KSA",
+            "sku" => "MZ_",
+            "source" => "USA",
+            "desination" => "KSA"
         ],
 
         "CKSHOP-Amazon.in" => [
@@ -195,7 +203,6 @@ class ZohoOrderFormat
 
         $amazon_order_identifier = $value->amazon_order_identifier;
         $amazon_order_item_identifier =  $value->order_item_identifier;
-
         ############################
         ### Inventory Management ###
         ############################
@@ -385,7 +392,7 @@ class ZohoOrderFormat
                     $result = Catalog_us::where('asin', $asin)->limit(1)->first();
                     $result_price = PricingUs::where('asin', $asin)->limit(1)->first();
 
-                    $price = $this->get_price_usa($amazon_order_identifier, $amazon_order_item_identifier, $result_price, $store_name, $fulfillment_channel, $amount_paid_by_customer);
+                    $price = $this->get_price_usa($asin, $amazon_order_identifier, $amazon_order_item_identifier, $result_price, $store_name, $fulfillment_channel, $amount_paid_by_customer);
 
                     echo "\n";
                     print($price);
@@ -417,7 +424,7 @@ class ZohoOrderFormat
         return ['price' => $price, 'weight' => $weight, 'category' => $category];
     }
 
-    public function get_price_usa($amazon_order_identifier, $amazon_order_item_identifier, $result_price, $store_name, $fulfillment_channel, $amount_paid_by_customer)
+    public function get_price_usa($asin, $amazon_order_identifier, $amazon_order_item_identifier, $result_price, $store_name, $fulfillment_channel, $amount_paid_by_customer)
     {
 
 
@@ -437,12 +444,16 @@ class ZohoOrderFormat
             $slackMessage = 'US Price not found ' .
                 'Amazon Order ID = ' . $amazon_order_identifier . ' ' .
                 'Order Item Identifier = ' .  $amazon_order_item_identifier;
-
-
             slack_notification('app360', 'Zoho Booking', $slackMessage);
 
-            // Log::channel('slack')->info($slackMessage);
-
+            // insert to db (zoho_missin)
+            ZohoMissing::create([
+                'asin' => $asin,
+                'amazon_order_id' => $amazon_order_identifier,
+                'order_item_id' => $amazon_order_item_identifier,
+                'price' => '0',
+                'status' => '0'
+            ]);
             return 0;
         }
         return $result_price->us_price;

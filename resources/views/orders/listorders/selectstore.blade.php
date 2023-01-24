@@ -44,8 +44,9 @@
                     <th>Region</th>
                     <th>Order</th>
                     <th>Order Item</th>
-                    <th>Enable ShipNTrack</th>
-                    <th>Enable Zoho|Courier Booking|AWB Upload</th>
+                    <th>ShipNTrack</th>
+                    <th>Zoho|Courier Booking|AWB Upload</th>
+                    <th>BuyBox Stores</th>
                     <th>Courier Partner</th>
                     <th>Source</th>
                     <th>Destination</th>
@@ -106,6 +107,12 @@
                 searchable: false
             },
             {
+                data: 'buybox_stores',
+                name: 'buybox_stores',
+                orderable: false,
+                searchable: false
+            },
+            {
                 data: 'partner',
                 name: 'partner',
                 orderable: false,
@@ -162,6 +169,10 @@
         let shipntrack_count = 0;
         let zoho_enable_count = 0;
         let zoho_enable = '';
+
+        let bb_store_enable_count = 0;
+        let bb_store_enable = '';
+
         let count = 0;
         let courier_count = 0;
         let courier = '';
@@ -211,6 +222,22 @@
             zoho_enable_count++;
         });
 
+        $("input[name='bb_store[]']:checked").each(function() {
+
+            if (bb_store_enable_count == 0) {
+
+                bb_store_enable += $(this).val();
+            } else {
+                bb_store_enable += '-' + $(this).val();
+            }
+            bb_store_enable_count++;
+        });
+
+
+
+
+
+
         courier = '';
         $(".courier_class option:selected").each(function() {
             if ($(this).val() != 'NULL') {
@@ -247,10 +274,10 @@
             }
         });
 
-        if (selected_store == '') {
-            alert('Please Select Store');
-            return false;
-        }
+        // if (selected_store == '') {
+        //     alert('Please Select Store');
+        //     return false;
+        // }
 
         $.ajax({
             method: 'post',
@@ -262,6 +289,7 @@
                 'order_item': order_item,
                 'shipntrack': shipntrack,
                 'zoho_enable': zoho_enable,
+                'bb_store_enable': bb_store_enable,
                 'courier_partner': courier,
                 'source': source,
                 'destination': destination
