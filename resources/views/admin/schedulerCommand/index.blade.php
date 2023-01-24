@@ -68,6 +68,10 @@
                                 <x-adminlte-input label='Execution Time' type='text' name='executionTime'
                                     placeholder='Execution Time' value="{{ $record['execution_time'] ?? '' }}" />
                             </div>
+                            <div class="col">
+                                <x-adminlte-input label='Description' type='text' name='description'
+                                    placeholder='Description' value="{{ $record['description'] ?? '' }}" />
+                            </div>
                             <div class="form-group
                                         mt-0 text-center">
                                 <label for="Active">Active</label><br>
@@ -92,6 +96,7 @@
             <th>Id</th>
             <th>Command Name</th>
             <th>Execution Time</th>
+            <th>Description</th>
             <th>Status</th>
             <th>Action</th>
         </thead>
@@ -124,6 +129,10 @@
                 {
                     data: 'execution_time',
                     name: 'execution_time',
+                },
+                {
+                    data: 'description',
+                    name: 'description',
                 },
                 {
                     data: 'status',
