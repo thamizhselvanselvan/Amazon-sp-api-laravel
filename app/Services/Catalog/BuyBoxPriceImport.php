@@ -85,9 +85,16 @@ class BuyBoxPriceImport
                     $asin_array[] = "'$a'";
 
                     $unavaliable_asin[] = [
-                        'asin' => $a,
-                        'available' => 0,
-                        'is_sold_by_amazon' => 0
+                        'asin'                      => $a,
+                        'available'                 => 0,
+                        'is_sold_by_amazon'         => 0,
+                        'next_highest_seller_price' => 0,
+                        'next_highest_seller_id'    => 0,
+                        'next_lowest_seller_price'  => 0,
+                        'next_lowest_seller_id'     => 0,
+                        'bb_winner_price'           => 0,
+                        'bb_winner_id'              => 0,
+                        'is_any_our_seller_won_bb'  => 0,
                     ];
                 }
 
@@ -95,10 +102,16 @@ class BuyBoxPriceImport
 
                     $asin = implode(',', $asin_array);
                     $asin_price = DB::connection('buybox')
-                        ->select("SELECT PPO.asin, LP.available, LP.is_sold_by_amazon, LP.buybox_listingprice_amount, LP.updated_at as updated_at,
+                        ->select("SELECT PPO.asin, LP.available, LP.is_sold_by_amazon,LP.is_any_our_seller_own_bb, 
+                        LP.next_highest_seller_price,
+                        LP.next_highest_seller_id,
+                        LP.next_lowest_seller_price,
+                        LP.next_lowest_seller_id,
+                        LP.bb_winner_price,
+                        LP.bb_winner_id,
+                        LP.updated_at as updated_at,
                             GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
-                            group_concat(PPO.listingprice_amount) as listingprice_amount,
-                            group_concat(PPO.seller_store_id) as seller_store_id
+                            group_concat(PPO.listingprice_amount) as listingprice_amount
                             FROM 
                                 $product_seller_details as PPO
                                     JOIN
@@ -128,10 +141,16 @@ class BuyBoxPriceImport
                             ];
                         }
 
-                        $available = $value->available;
-                        $packet_weight = $calculated_weight[$asin_name];
-
-                        $is_sold_by_amazon = $value->is_sold_by_amazon;
+                        $available                  = $value->available;
+                        $packet_weight              = $calculated_weight[$asin_name];
+                        $is_sold_by_amazon          = $value->is_sold_by_amazon;
+                        $is_any_our_seller_won_bb   = $value->is_any_our_seller_own_bb;
+                        $next_highest_seller_price  = $value->next_highest_seller_price;
+                        $next_highest_seller_id     = $value->next_highest_seller_id;
+                        $next_lowest_seller_price   = $value->next_lowest_seller_price;
+                        $next_lowest_seller_id      = $value->next_lowest_seller_id;
+                        $bb_winner_price            = $value->bb_winner_price;
+                        $bb_winner_id               = $value->bb_winner_id;
 
                         foreach ($buybox_winner as $key =>  $value1) {
 
@@ -142,12 +161,19 @@ class BuyBoxPriceImport
 
                                 $asin_details =
                                     [
-                                        'asin' =>  $asin_name,
-                                        'available' => $available,
-                                        'is_sold_by_amazon' => $is_sold_by_amazon,
-                                        $price => $listing_price_amount,
+                                        'asin'                      =>  $asin_name,
+                                        'available'                 => $available,
+                                        'is_sold_by_amazon'         => $is_sold_by_amazon,
+                                        $price                      => $listing_price_amount,
                                         // 'price_updated_at' => $updated_at[array_key_last($updated_at)],
-                                        'price_updated_at' => $updated_at,
+                                        'next_highest_seller_price' => $next_highest_seller_price,
+                                        'next_highest_seller_id'    => $next_highest_seller_id,
+                                        'next_lowest_seller_price'  => $next_lowest_seller_price,
+                                        'next_lowest_seller_id'     => $next_lowest_seller_id,
+                                        'bb_winner_price'           => $bb_winner_price,
+                                        'bb_winner_id'              => $bb_winner_id,
+                                        'is_any_our_seller_won_bb'  => $is_any_our_seller_won_bb,
+                                        'price_updated_at'          => $updated_at,
                                     ];
                                 break 1;
                             } else {
@@ -155,12 +181,19 @@ class BuyBoxPriceImport
                                 $listing_price_amount =  min($listing_price);
                                 $asin_details =
                                     [
-                                        'asin' =>  $asin_name,
-                                        'available' => $available,
-                                        'is_sold_by_amazon' => $is_sold_by_amazon,
-                                        $price => $listing_price_amount,
+                                        'asin'                      =>  $asin_name,
+                                        'available'                 => $available,
+                                        'is_sold_by_amazon'         => $is_sold_by_amazon,
+                                        $price                      => $listing_price_amount,
                                         // 'price_updated_at' =>  max($updated_at),
-                                        'price_updated_at' => $updated_at,
+                                        'next_highest_seller_price' => $next_highest_seller_price,
+                                        'next_highest_seller_id'    => $next_highest_seller_id,
+                                        'next_lowest_seller_price'  => $next_lowest_seller_price,
+                                        'next_lowest_seller_id'     => $next_lowest_seller_id,
+                                        'bb_winner_price'           => $bb_winner_price,
+                                        'bb_winner_id'              => $bb_winner_id,
+                                        'is_any_our_seller_won_bb'  => $is_any_our_seller_won_bb,
+                                        'price_updated_at'          => $updated_at,
                                     ];
                             }
                         }
@@ -211,17 +244,99 @@ class BuyBoxPriceImport
 
                     if ($country_code_lr == 'us') {
 
-                        PricingUs::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
-                        PricingUs::upsert($pricing, 'unique_asin',  ['asin', 'available', 'is_sold_by_amazon', 'weight', 'us_price', 'usa_to_in_b2b', 'usa_to_in_b2c', 'usa_to_uae', 'usa_to_sg', 'price_updated_at']);
+                        PricingUs::upsert($unavaliable_asin, 'unique_asin', [
+                            'asin',
+                            'available',
+                            'is_sold_by_amazon',
+                            'next_highest_seller_price',
+                            'next_highest_seller_id',
+                            'next_lowest_seller_price',
+                            'next_lowest_seller_id',
+                            'bb_winner_price',
+                            'bb_winner_id',
+                            'is_any_our_seller_won_bb'
+                        ]);
+                        PricingUs::upsert($pricing, 'unique_asin',  [
+                            'asin',
+                            'available',
+                            'is_sold_by_amazon',
+                            'weight',
+                            'us_price',
+                            'usa_to_in_b2b',
+                            'usa_to_in_b2c',
+                            'usa_to_uae',
+                            'usa_to_sg',
+                            'next_highest_seller_price',
+                            'next_highest_seller_id',
+                            'next_lowest_seller_price',
+                            'next_lowest_seller_id',
+                            'bb_winner_price',
+                            'bb_winner_id',
+                            'is_any_our_seller_won_bb',
+                            'price_updated_at'
+                        ]);
                     } elseif ($country_code_lr == 'in') {
 
-                        PricingIn::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
-                        PricingIn::upsert($pricing_in, 'asin_unique', ['asin', 'available', 'is_sold_by_amazon', 'in_price', 'weight', 'ind_to_uae', 'ind_to_sg', 'ind_to_sa', 'price_updated_at']);
+                        PricingIn::upsert($unavaliable_asin, 'unique_asin', [
+                            'asin',
+                            'available',
+                            'is_sold_by_amazon',
+                            'next_highest_seller_price',
+                            'next_highest_seller_id',
+                            'next_lowest_seller_price',
+                            'next_lowest_seller_id',
+                            'bb_winner_price',
+                            'bb_winner_id',
+                            'is_any_our_seller_won_bb'
+                        ]);
+                        PricingIn::upsert($pricing_in, 'asin_unique', [
+                            'asin',
+                            'available',
+                            'is_sold_by_amazon',
+                            'in_price',
+                            'weight',
+                            'ind_to_uae',
+                            'ind_to_sg',
+                            'ind_to_sa',
+                            'next_highest_seller_price',
+                            'next_highest_seller_id',
+                            'next_lowest_seller_price',
+                            'next_lowest_seller_id',
+                            'bb_winner_price',
+                            'bb_winner_id',
+                            'is_any_our_seller_won_bb',
+                            'price_updated_at'
+                        ]);
                         // $this->updateRecordIntoStoreTable($country_code, $asin_price);
                     } elseif ($country_code_lr == 'ae') {
 
-                        PricingAe::upsert($unavaliable_asin, 'unique_asin', ['asin', 'available']);
-                        PricingAe::upsert($pricing_ae_sa, 'unique_asin', ['asin', 'available', 'weight', 'ae_price', 'price_updated_at']);
+                        PricingAe::upsert($unavaliable_asin, 'unique_asin', [
+                            'asin',
+                            'available',
+                            'is_sold_by_amazon',
+                            'next_highest_seller_price',
+                            'next_highest_seller_id',
+                            'next_lowest_seller_price',
+                            'next_lowest_seller_id',
+                            'bb_winner_price',
+                            'bb_winner_id',
+                            'is_any_our_seller_won_bb'
+                        ]);
+                        PricingAe::upsert($pricing_ae_sa, 'unique_asin', [
+                            'asin',
+                            'available',
+                            'is_sold_by_amazon',
+                            'weight',
+                            'ae_price',
+                            'next_highest_seller_price',
+                            'next_highest_seller_id',
+                            'next_lowest_seller_price',
+                            'next_lowest_seller_id',
+                            'bb_winner_price',
+                            'bb_winner_id',
+                            'is_any_our_seller_won_bb',
+                            'price_updated_at'
+                        ]);
                         // $this->updateRecordIntoStoreTable($country_code, $asin_price);
                     }
                     // elseif ($country_code_lr == 'sa') {
