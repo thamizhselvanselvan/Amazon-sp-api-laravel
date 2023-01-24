@@ -50,11 +50,11 @@ class Asin_price_import extends Command
         $datas = Product::select('asin', 'store_id')
             ->where('cyclic', '0')
             ->orderBy('id', 'asc')
-            ->limit(1000)
+            ->limit(2000)
             ->get();
 
-        $asins = $datas->pluck('asin');
-        Product::whereIn('asin', $asins)->update(['cyclic' => '1']);
+        // $asins = $datas->pluck('asin');
+        // Product::whereIn('asin', $asins)->update(['cyclic' => '1']);
 
 
         if ($datas->count() <= 0) {
@@ -136,7 +136,7 @@ class Asin_price_import extends Command
                 'bb_winner_id' => $value['bb_winner_id'],
                 'bb_winner_price' => $value['bb_winner_price'],
                 'is_bb_won' => $value['is_any_our_seller_won_bb'],
-                'cyclic' => '11',
+                'cyclic' => '1',
             ];
         }
 
@@ -191,7 +191,7 @@ class Asin_price_import extends Command
                 'bb_winner_id' => $value['bb_winner_id'],
                 'bb_winner_price' => $value['bb_winner_price'],
                 'is_bb_won' => $value['is_any_our_seller_won_bb'],
-                'cyclic' => '12',
+                'cyclic' => '1',
             ];
         }
 
@@ -245,7 +245,7 @@ class Asin_price_import extends Command
                 'bb_winner_id' => $value['bb_winner_id'],
                 'bb_winner_price' => $value['bb_winner_price'],
                 'is_bb_won' => $value['is_any_our_seller_won_bb'],
-                'cyclic' => '13',
+                'cyclic' => '1',
             ];
         }
 
