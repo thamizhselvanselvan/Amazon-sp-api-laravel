@@ -95,7 +95,7 @@
         <thead class="table-info">
             <th>Id</th>
             <th>Command Name</th>
-            <th>Execution Time</th>
+            <th>Execution Time <span>(Cron)</span> </th>
             <th>Description</th>
             <th>Status</th>
             <th>Action</th>
