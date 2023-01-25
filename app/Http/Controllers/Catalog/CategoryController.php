@@ -26,7 +26,7 @@ class CategoryController extends Controller
 
         $path = "Cliqnshop/category_import/category_asin.csv";
 
-        // Storage::put($path, $file);
+         Storage::put($path, $file);
 
         $csv_data_temp = ['asin', 'display_name', 'classification_id', 'tree'];
 
@@ -40,7 +40,7 @@ class CategoryController extends Controller
             }
             // po($asin);
             // exit;
-            $count = count($asin);
+            // $count = count($asin);
             $result = DB::connection('catalog')->table('catalognewuss')
                 ->whereIn('asin', $asin)->pluck('browse_classification', 'asin');
 
