@@ -67,6 +67,13 @@ Route::get('uploaded/catalog/cliqnshop/download/{index}', 'Catalog\CliqnshopCata
 Route::get('cliqnshop/db/upload', 'Catalog\CliqnshopCatalogController@insertCliqnshop')->name('cliqnshop.catalog.db.upload');
 Route::get('cliqnshop/category-poc','Catalog\CategoryController@index')->name('cliqnshop.category-poc');
 Route::post('cliqnshop/category-export','Catalog\CategoryController@export')->name('cliqnshop.category-export');
+Route::get('cliqnshop/category-download', function () {
+    $exportFilePath = 'test/Categories.csv';
+    if (!Storage::exists($exportFilePath)) {
+        Storage::put($exportFilePath, '');
+    }
+    return Storage::download($exportFilePath);
+});
 // Route::get('product/test', function () {
 //   // $data[] = $key;
 //   $searchKey = 'iPhone';
