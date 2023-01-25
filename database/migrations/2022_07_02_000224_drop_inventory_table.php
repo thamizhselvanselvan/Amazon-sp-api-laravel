@@ -25,7 +25,7 @@ class DropInventoryTable extends Migration
     {
         Schema::connection('inventory')->create('inventory', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('warehouse_id');
+            //$table->foreignId('warehouse_id');
             $table->string('asin');
             $table->string('item_name');
             $table->integer('quantity');

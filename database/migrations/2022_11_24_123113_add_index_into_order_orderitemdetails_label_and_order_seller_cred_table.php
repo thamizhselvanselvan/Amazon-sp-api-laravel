@@ -47,11 +47,11 @@ class AddIndexIntoOrderOrderitemdetailsLabelAndOrderSellerCredTable extends Migr
             $table->dropIndex('awb_no_index');
             $table->dropIndex('order_no_index');
         });
-        Schema::connection('order_no_prefix')->table('orders', function (Blueprint $table) {
+        Schema::connection('order')->table('orders', function (Blueprint $table) {
 
             $table->dropIndex('amazon_order_identifier_index');
         });
-        Schema::connection('order_no_prefix')->table('orderitemdetails', function (Blueprint $table) {
+        Schema::connection('order')->table('orderitemdetails', function (Blueprint $table) {
 
             $table->dropIndex('amazon_order_identifier_index');
         });
