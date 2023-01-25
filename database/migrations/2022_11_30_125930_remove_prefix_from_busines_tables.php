@@ -13,8 +13,8 @@ class RemovePrefixFromBusinesTables extends Migration
      */
     public function up()
     {
-        Schema::connection('business')->rename('bc_catalog_business',  'catalog_business');
-        Schema::connection('business')->rename('bc_orders',  'orders');
+        //Schema::connection('business')->rename('bc_catalog_business',  'catalog_business');
+        //Schema::connection('business')->rename('bc_orders',  'orders');
     }
 
     /**
@@ -24,7 +24,7 @@ class RemovePrefixFromBusinesTables extends Migration
      */
     public function down()
     {
-        Schema::connection('business')->rename('catalog_business',  'bc_catalog_business');
-        Schema::connection('business')->rename('orders',  'bc_orders');
+        //Schema::connection('business')->rename('catalog_business',  'bc_catalog_business');
+        //Schema::connection('business')->rename('orders',  'bc_orders');
     }
 }
