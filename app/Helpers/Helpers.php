@@ -1213,3 +1213,35 @@ if (!function_exists('CacheForCommandScheduler')) {
         });
     }
 }
+
+if (!function_exists('ZipFileConverter')) {
+    function ZipFileConverter($zipPath, $totalFile, $filePath): void
+    {
+        $zip = new ZipArchive;
+        $file_path = Storage::path($zipPath);
+        if (!Storage::exists($zipPath)) {
+            Storage::put($zipPath, '');
+        }
+        if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
+            foreach ($totalFile as $value) {
+
+                $path = Storage::path($filePath . "/" . $value);
+                $relativeNameInZipFile = basename($path);
+                $zip->addFile($path, $relativeNameInZipFile);
+            }
+            $zip->close();
+        }
+    }
+}
+
+if (!function_exists('DeleteFileFromFolder')) {
+    function DeleteFileFromFolder($folderName, $countryCode, $priority)
+    {
+        $files = glob(Storage::path('excel/downloads/' . $folderName . '/' . $countryCode . '/' . $priority . '/*'));
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
+    }
+}
