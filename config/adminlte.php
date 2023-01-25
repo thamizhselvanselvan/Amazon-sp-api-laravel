@@ -466,27 +466,27 @@ return [
                     'can' =>  ['Admin']
                 ],
 
-                // [
+                [
 
-                //     'text' => 'Buy-Box Operation',
-                //     'icon' => 'far fa-fw fa-file',
-                //     'can' =>  ['Admin'],
-                //     'submenu' => [
-                //         [
-                //             'text'  => 'Buy-Box Import',
-                //             'url'  => 'catalog/buybox/import',
-                //             'icon' => 'far fa-fw fa-file',
-                //             'can' =>  ['Admin', 'Catalog']
-                //         ],
+                    'text' => 'Buy-Box Operation',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin'],
+                    'submenu' => [
+                        [
+                            'text'  => 'Buy-Box Import',
+                            'url'  => 'catalog/buybox/import',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin', 'Catalog']
+                        ],
 
-                //         [
-                //             'text'  => 'Buy-Box Export',
-                //             'url'  => 'catalog/buybox/export',
-                //             'icon' => 'far fa-fw fa-file',
-                //             'can' =>  ['Admin', 'Catalog']
-                //         ],
-                //     ],
-                // ],
+                        [
+                            'text'  => 'Buy-Box Export',
+                            'url'  => 'catalog/buybox/export',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin', 'Catalog']
+                        ],
+                    ],
+                ],
                 [
 
                     'text' => 'Buy-Box Stores',
@@ -701,7 +701,7 @@ return [
 
                 ],
                 [
-                    'text' => 'Zoho Order Missing',
+                    'text' => 'Zoho Price Missing',
                     'can' => ['Admin', 'Catalog'],
                     'icon' => 'fa fa-minus-circle',
                     'url' => "orders/missing/price",

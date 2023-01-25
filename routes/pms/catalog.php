@@ -100,4 +100,7 @@ Route::match(['get', 'post'], 'catalog/buybox/upload', 'Catalog\BuyBoxImportExpo
 Route::get('catalog/buybox/file/monitor', 'Catalog\BuyBoxImportExportController@BuyBoxFileManagementMonitor')->name('buybox.file.management.monitor');
 
 Route::get('catalog/buybox/export', 'Catalog\BuyBoxImportExportController@ExportIndex')->name('catalog.buybox.export.home');
+Route::get('catalog/buybox/download/export/template', 'Catalog\BuyBoxImportExportController@DownloadBuyBoxTemplate')->name('catalog.buybox.download.export.template');
 Route::match(['get', 'post'], 'catalog/buybox/export/csv', 'Catalog\BuyBoxImportExportController@ExportBuyBox')->name('catalog.buybox.export.csv');
+Route::get('catalog/buybox/download/file', 'Catalog\BuyBoxImportExportController@GetBuyBoxFile')->name('catalog.buybox.file.download');
+Route::get('catalog/buybox/download/zip/{folder}/{countryCode}/{priority}', 'Catalog\BuyBoxImportExportController@DownloadBuyBoxFile');

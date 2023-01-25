@@ -218,7 +218,9 @@ Route::get('test/date', function () {
 });
 
 Route::get('test/inventory', function () {
-
+    $filePath = Storage::path('zoho_csv');
+    echo $filePath;
+    exit;
 
     (new InventoryCsvImport())->index('Inventory_CSV/Inventory2023-01-03-13-46-12.csv');
     //
@@ -227,53 +229,68 @@ Route::get('test/inventory', function () {
 Route::get('test/zoho/read', function () {
 
     $token = json_decode(Storage::get('zoho/access_token.txt'), true)['access_token'];
-    // echo $token;
-    // exit;
 
     $url = 'https://www.zohoapis.com/crm/bulk/v2/read';
-    $lead_url = 'https://www.zohoapis.com/crm/v2/Leads';
-
-    //test lead details
-    // $response = Http::withoutVerifying()
-    //     ->withHeaders([
-    //         'Authorization' => 'Zoho-oauthtoken ' . $token
-    //     ])->get($lead_url . '/' . '1929333000104016133');
-
-    // if ($response->ok()) {
-    //     return $response->json();
-    // }
-    // exit;
 
     $payload = [
-        'callback' => [
-            "url" => "https://www.app.360ecom.io/callback",
+        "callback" => [
+            "url" => "https://catalog-manager-mosh.com/api/test/zoho/webhook",
             "method" => "post"
         ],
         'query' => [
+
             'module' => 'Leads',
-            'page' => 1,
-        ],
+            'page' => 1
+        ]
     ];
 
-    // 1929333000104501287
-    // make request for csv file
+    // $response = Http::withoutVerifying()
+    //     ->withHeaders([
+    //         'Authorization' => 'Zoho-oauthtoken ' . $token,
+    //         'Content-Type' => 'application/json'
+    //     ])->post($url, $payload);
 
-    $response = Http::withoutVerifying()
-        ->withHeaders([
-            'Authorization' => 'Zoho-oauthtoken ' . $token,
-            'Content-Type' => 'application/json'
-        ])->post($url, $payload);
+    // po($response->json());
 
-    dd($response->json());
+    // exit;
 
-    //check requested file status
     $response = Http::withoutVerifying()->withHeaders([
         'Authorization' => 'Zoho-oauthtoken ' . $token,
-    ])->get($url . '/1929333000104501287');
+    ])->get('https://www.zohoapis.com/crm/bulk/v2/read/1929333000104835203');
 
-    // return $response;
-    // dd($response);
-    dd($response->json());
 
+    po($response->json());
+    exit;
+    Storage::put('zohocsv/1929333000104841066.zip', $response);
+
+    echo 'success';
+});
+
+Route::get('test/mongodb', function () {
+
+    // echo phpinfo();
+    // exit;
+    // dd(DB::connection('mongodb'));
+    $data = [
+        'Name' => 'Amit Singh',
+        'subName' => 'Raj',
+        'anjay' => 'c'
+
+    ];
+    DB::connection('mongodb')->collection('MongoDb')->insert($data);
+    echo 'success';
     //
+});
+
+Route::get('test/boe', function () {
+
+    $pdfParser = new Parser();
+    $second_page = 1;
+    $path = 'D:\BOE\Gotech BOE 18-19\Newfolder\957299993.pdf';
+
+    $pdfParser = new Parser();
+    $pdf = $pdfParser->parseFile($path);
+    $content = $pdf->getText();
+    echo $content;
+    // dd($content);
 });

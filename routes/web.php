@@ -56,6 +56,7 @@ use phpDocumentor\Reflection\Types\Null_;
 use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
 use App\Models\Buybox_stores\Product;
+use App\Models\CommandScheduler;
 use Google\Cloud\Translate\V2\TranslateClient;
 use Symfony\Component\Validator\Constraints\File;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
@@ -66,6 +67,8 @@ use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
+
+use Illuminate\Support\Facades\Cache;
 
 // use ConfigTrait;
 
@@ -82,127 +85,16 @@ use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
 */
 // use ConfigTrait;
 Route::get('bb', function () {
-
-    // -- group_concat(PPO.is_fulfilled_by_amazon) as is_fulfilled_by_amazon,
-    //                         -- group_concat(PPO.feedback_count) as feedback_count
-
-    $destination_model = table_model_create(country_code: 'IN', model: 'Asin_destination', table_name: 'asin_destination_');
-    $product_seller_details = "bb_product_aa_custom_p1_in_seller_details";
-    $product_lp = "bb_product_aa_custom_p1_in_offers";
-
-    $data = $destination_model->select(['asin', 'user_id'])
-        ->where('price_status', 0)->where('priority', '1')
-        ->limit(1000)
-        ->get()->toArray();
-
+    $file_path = 'BuyBoxExport/AsinForbb.csv';
+    $csv = Reader::createFromPath(Storage::path($file_path), 'r');
+    $records = $csv->setHeaderOffset(0);
     $asin = [];
-    foreach ($data as $value) {
-        $a = $value['asin'];
-        $asin[] = "'$a'";
+    foreach ($records as $record) {
+        $asin[] = $record['ASIN'];
     }
-    $asin = implode(',', $asin);
-    $asin_price = DB::connection('buybox')
-        ->select("SELECT PPO.asin, LP.available,LP.is_sold_by_amazon,LP.buybox_listingprice_amount, LP.updated_at as updated_at,
-                            GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
-                            group_concat(PPO.listingprice_amount) as listingprice_amount,
-                            group_concat(PPO.seller_store_id) as seller_store_id
-                            FROM 
-                                $product_seller_details as PPO
-                                    JOIN
-                                 $product_lp as LP 
-                            ON 
-                                PPO.asin = LP.asin
-                            WHERE
-                                 PPO.asin IN ($asin)
-                            GROUP BY 
-                                PPO.asin
-                                
-                        ");
-    // po($asin_price);
-    // exit;
-
-    $lowest_key = [];
-    $highest_key = [];
-    $bb_winner_id = '';
-    $seller_lowest_price = [];
-    $seller_highest_price = [];
-    $seller_store_id = [];
-    $asin = [];
-    $store_id = Mws_region::with('aws_verified1')->where('region_code', 'IN')
-        ->get()->toArray();
-
-    foreach ($store_id[0]['aws_verified1'] as $merchant_id) {
-        $seller_store_id[] = $merchant_id['seller_id'];
-        $bb_winner_price = '';
-        foreach ($asin_price as $key => $bb_asin) {
-
-            $bb_store_key = [
-                'cyclic' => '5',
-                'is_bb_won' => '0',
-                'bb_winner_id' => '',
-                'bb_winner_price' => '',
-                'lowest_seller_id' => '',
-                'lowest_seller_price' => '',
-                'highest_seller_id' => '',
-                'highest_seller_price' => ''
-            ];
-            $asin[] = $bb_asin->asin;
-            $is_bb_winners = explode(',', $bb_asin->is_buybox_winner);
-            $listingPrice_amount = explode(',', $bb_asin->listingprice_amount);
-            $seller_store_id = explode(',', $bb_asin->seller_store_id);
-            // po($bb_asin);
-            // po($listingPrice_amount);
-            $bb_winner_price = '';
-            foreach ($is_bb_winners as $key2 => $bb_won) {
-                if ($bb_won == 1) {
-
-                    $bb_winner_price = $listingPrice_amount[$key2];
-                    $bb_store_key['is_bb_won'] = $seller_store_id[$key2] == $merchant_id['seller_id'] ? 1 : 2;
-                    $bb_store_key['bb_winner_id'] = $seller_store_id[$key2];
-                    $bb_store_key['bb_winner_price'] = $bb_winner_price;
-                }
-            }
-            foreach ($is_bb_winners as $key1 => $is_bb_winner) {
-
-                if ($bb_winner_price != '') {
-
-                    if ($listingPrice_amount[$key1] > $bb_winner_price) {
-                        $seller_highest_price[] = $listingPrice_amount[$key1];
-                        $highest_key[] = $key1;
-                    }
-
-                    if ($listingPrice_amount[$key1] < $bb_winner_price) {
-                        $seller_lowest_price[] = $listingPrice_amount[$key1];
-                        $lowest_key[] = $key1;
-                    }
-                }
-            }
-
-            if ($seller_highest_price != null) {
-
-                $bb_store_key['highest_seller_id'] = $seller_store_id[min($highest_key)];
-                $bb_store_key['highest_seller_price'] = min($seller_highest_price);
-                $highest_key = [];
-                $seller_highest_price = [];
-            }
-            if ($seller_lowest_price != null) {
-
-                $bb_store_key['lowest_seller_id'] = $seller_store_id[max($lowest_key)];
-                $bb_store_key['lowest_seller_price'] = max($seller_lowest_price);
-                $lowest_key = [];
-                $seller_lowest_price = [];
-            }
-            po($bb_store_key);
-            echo '<hr>';
-
-            // Product::where('store_id', $merchant_id['seller_id'])
-            //     ->where('asin', $bb_asin->asin)
-            //     ->update($bb_store_key);
-            // $bb_store_key = [];
-        }
-        // po($seller_store_id);
-        // po($bb_store_key);
-    }
+    $chunk = array_chunk($asin, 5000);
+    po($chunk);
+    exit;
 });
 Route::get('cliqnshop', function () {
     $response =   Http::get('http://amazon-sp-api-laravel.app/api/product', [

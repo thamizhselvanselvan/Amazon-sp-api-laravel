@@ -10,12 +10,14 @@ use App\Models\FileManagement;
 use PhpParser\Node\Expr\Eval_;
 use App\Models\Catalog\Catalog;
 use App\Models\Admin\Ratemaster;
+use App\Models\CommandScheduler;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
@@ -1200,5 +1202,46 @@ if (!function_exists('ProcessManagementUpdate')) {
         $process_management_update->status = '1';
         $process_management_update->command_end_time = $command_end_time;
         $process_management_update->update();
+    }
+}
+
+if (!function_exists('CacheForCommandScheduler')) {
+    function CacheForCommandScheduler()
+    {
+        cache()->rememberForever('Schedule_command', function () {
+            return CommandScheduler::where('status', '1')->get();
+        });
+    }
+}
+
+if (!function_exists('ZipFileConverter')) {
+    function ZipFileConverter($zipPath, $totalFile, $filePath): void
+    {
+        $zip = new ZipArchive;
+        $file_path = Storage::path($zipPath);
+        if (!Storage::exists($zipPath)) {
+            Storage::put($zipPath, '');
+        }
+        if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
+            foreach ($totalFile as $value) {
+
+                $path = Storage::path($filePath . "/" . $value);
+                $relativeNameInZipFile = basename($path);
+                $zip->addFile($path, $relativeNameInZipFile);
+            }
+            $zip->close();
+        }
+    }
+}
+
+if (!function_exists('DeleteFileFromFolder')) {
+    function DeleteFileFromFolder($folderName, $countryCode, $priority)
+    {
+        $files = glob(Storage::path('excel/downloads/' . $folderName . '/' . $countryCode . '/' . $priority . '/*'));
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Catalog\BuyBox;
 
 use ZipArchive;
 use League\Csv\Writer;
@@ -66,32 +66,61 @@ class BuyBoxExportAsin extends Command
 
 
         $select_column = [
-            'id',
-            'asin',
-            'cyclic',
-            'delist',
-            'available',
-            'priority',
+            "id",
+            "asin",
+            "delist",
+            "available",
+            "is_sold_by_amazon",
+            "lowestprice_landedprice_amount",
+            "lowestprice_listingprice_amount",
+            "lowestprice_shipping_amount",
+            "buybox_landedprice_amount",
+            "buybox_listingprice_amount",
+            "buybox_shipping_amount",
+            "buybox_condition",
+            "updated_at",
+            "is_only_seller",
+            "is_any_our_seller_own_bb",
+            "next_highest_seller_price",
+            "next_highest_seller_id",
+            "next_lowest_seller_price",
+            "next_lowest_seller_id",
+            "bb_winner_price",
+            "bb_winner_id"
 
         ];
         $this->csv_headers = [
-            'id',
-            'asin',
-            'cyclic',
-            'delist',
-            'available',
-            'priority',
+            "id",
+            "asin",
+            "delist",
+            "available",
+            "is_sold_by_amazon",
+            "lowestprice_landedprice_amount",
+            "lowestprice_listingprice_amount",
+            "lowestprice_shipping_amount",
+            "buybox_landedprice_amount",
+            "buybox_listingprice_amount",
+            "buybox_shipping_amount",
+            "buybox_condition",
+            "updated_at",
+            "is_only_seller",
+            "is_any_our_seller_own_bb",
+            "next_highest_seller_price",
+            "next_highest_seller_id",
+            "next_lowest_seller_price",
+            "next_lowest_seller_id",
+            "bb_winner_price",
+            "bb_winner_id"
 
         ];
         $this->chunked_count = $record_per_csv / $chunk;
         $this->csvExportPath = "excel/downloads/BuyBox/" . $this->countryCode . "/" . $this->priority . "/asin";
-        $tableName = table_model_set(country_code: $this->countryCode, model: "bb_product_aa_custom_offer", table_name: "product_aa_custom_p" . $this->priority . "_" . $this->countryCode . "_offer");
+        $tableName = table_model_set(country_code: $this->countryCode, model: "bb_product_aa_custom_offer", table_name: "product_aa_custom_p" . $this->priority . "_" . strtolower($this->countryCode) . "_offer");
         $tableName->select($select_column)->chunkById($chunk, function ($tableData) {
-            $filePath = '';
             $records = $tableData->toArray();
 
             if ($this->count == 1) {
-                // $filePath = $this->csvExportPath . $this->offset . ".csv";
+
                 if (!Storage::exists($this->csvExportPath . $this->offset . '.csv')) {
                     Storage::put($this->csvExportPath . $this->offset . '.csv', '');
                 }
@@ -113,27 +142,10 @@ class BuyBoxExportAsin extends Command
             }
         });
 
-        $this->createZip();
+        $zipPath = "excel/downloads/BuyBox/" . $this->countryCode . '/' . $this->priority . '/zip/' . $this->countryCode . "BuyBoxAsin.zip";
+        $filePath = "excel/downloads/BuyBox/" . $this->countryCode . "/" . $this->priority;
+        ZipFileConverter($zipPath, $this->totalFile, $filePath);
         $command_end_time = now();
         fileManagementUpdate($fm_id, $command_end_time);
-        // exit;
-    }
-    public function createZip()
-    {
-        $zip = new ZipArchive;
-        $path = "excel/downloads/BuyBox/" . $this->countryCode . '/' . $this->priority . '/zip/' . $this->countryCode . "BuyBoxAsin.zip";
-        $file_path = Storage::path($path);
-        if (!Storage::exists($path)) {
-            Storage::put($path, '');
-        }
-        if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
-            foreach ($this->totalFile as $value) {
-
-                $path = Storage::path('excel/downloads/BuyBox/' . $this->countryCode . "/" . $this->priority . "/" . $value);
-                $relativeNameInZipFile = basename($path);
-                $zip->addFile($path, $relativeNameInZipFile);
-            }
-            $zip->close();
-        }
     }
 }

@@ -206,16 +206,19 @@ class BOEController extends Controller
             $content = $pdf->getText();
 
             try {
-                $pdfReader->BOEmanage($content, $file_path . '/' . $file_name, $company_id, $user_id);
-            } catch(Exception $e) {
-                Log::notice("Not Working Boe's". $file_name);
-                $error_lists[] = $file_name;
+                $response = $pdfReader->BOEmanage($content, $file_path . '/' . $file_name, $company_id, $user_id);
+                if (!$response) {
+                    $error_lists[] = substr($file_name, 13);
+                }
+            } catch (Exception $e) {
+                $error_lists[] = substr($file_name, 13);
             }
         }
 
         $messsage = ["message" => "all file uploaded successfully"];
-        if(count($error_lists) > 0) {
-            $messsage = ["error" => $error_lists];  
+
+        if (count($error_lists) > 0) {
+            $messsage = ["error" => $error_lists];
         }
 
         return response()->json($messsage);

@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\CommandScheduler;
 use Yajra\DataTables\DataTables;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 
 
 class ScheduleCommandController extends Controller
@@ -34,13 +35,17 @@ class ScheduleCommandController extends Controller
         $request->validate([
             'commandName' => 'required',
             'executionTime' => 'required',
+            'description' => 'required',
         ]);
         $formValue = [
             'command_name' => $request->commandName,
             'execution_time' => $request->executionTime,
+            'description' => $request->description,
             'status' => $request->status == '' ? 0 : 1
         ];
-        CommandScheduler::upsert($formValue, ['command_name_unique'], ['command_name', 'execution_time', 'status']);
+        CommandScheduler::upsert($formValue, ['command_name_unique'], ['command_name', 'execution_time', 'description', 'status']);
+        Cache::flush();
+        CacheForCommandScheduler();
         return redirect('/admin/scheduler/management')->with("success", "Record has been inserted successfully!");
     }
 
@@ -56,17 +61,20 @@ class ScheduleCommandController extends Controller
         $records = [
             'command_name' => $request->commandName,
             'execution_time' => $request->executionTime,
+            'description' => $request->description,
             'status' => $request->status == '' ? 0 : 1
         ];
 
         CommandScheduler::where('id', $id)->update($records);
+        Cache::flush();
+        CacheForCommandScheduler();
         return redirect('/admin/scheduler/management')->with("success", "Record has been updated successfully!");
     }
 
     public function SchedulerFromTrash($id)
     {
         CommandScheduler::find($id)->delete();
-        return redirect('/admin/scheduler/management')->with("success", "Record has been updated successfully!");
+        return redirect('/admin/scheduler/management')->with("success", "Record has been deleted successfully!");
     }
 
     public function SchedulerBin(Request $request)
