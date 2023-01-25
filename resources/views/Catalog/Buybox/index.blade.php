@@ -27,7 +27,14 @@
     <div class="row">
         <div class="col">
             <h1 class="m-0 text-dark"><b>BuyBox ASIN Import </b> </h1>
+
         </div>
+        <h2 class="ml-2">
+            <a href="{{ route('catalog.buybox.download.export.template') }}">
+                <x-adminlte-button label="Download BuyBox Template" theme="primary" class="btn-sm"
+                    icon="fas fa-file-download" />
+            </a>
+        </h2>
     </div>
     <div class="row mt-3">
         <div class="col">
