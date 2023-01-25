@@ -218,7 +218,9 @@ Route::get('test/date', function () {
 });
 
 Route::get('test/inventory', function () {
-
+    $filePath = Storage::path('zoho_csv');
+    echo $filePath;
+    exit;
 
     (new InventoryCsvImport())->index('Inventory_CSV/Inventory2023-01-03-13-46-12.csv');
     //
@@ -227,36 +229,20 @@ Route::get('test/inventory', function () {
 Route::get('test/zoho/read', function () {
 
     $token = json_decode(Storage::get('zoho/access_token.txt'), true)['access_token'];
-    // echo $token;
-    // exit;
 
     $url = 'https://www.zohoapis.com/crm/bulk/v2/read';
-    $lead_url = 'https://www.zohoapis.com/crm/v2/Leads';
-
-    //test lead details
-    // $response = Http::withoutVerifying()
-    //     ->withHeaders([
-    //         'Authorization' => 'Zoho-oauthtoken ' . $token
-    //     ])->get($lead_url . '/' . '1929333000104016133');
-
-    // if ($response->ok()) {
-    //     return $response->json();
-    // }
-    // exit;
 
     $payload = [
-        'callback' => [
-            "url" => "https://www.example.com/callback",
+        "callback" => [
+            "url" => "https://catalog-manager-mosh.com/api/test/zoho/webhook",
             "method" => "post"
         ],
         'query' => [
-            'module' => 'Leads',
-            'page' => 1,
-        ],
-    ];
 
-    // 1929333000104770055
-    // make request for csv file
+            'module' => 'Leads',
+            'page' => 1
+        ]
+    ];
 
     // $response = Http::withoutVerifying()
     //     ->withHeaders([
@@ -264,18 +250,20 @@ Route::get('test/zoho/read', function () {
     //         'Content-Type' => 'application/json'
     //     ])->post($url, $payload);
 
-    // dd($response->json());
+    // po($response->json());
 
-    //check requested file status
+    // exit;
+
     $response = Http::withoutVerifying()->withHeaders([
         'Authorization' => 'Zoho-oauthtoken ' . $token,
-    ])->get($url . '/1929333000104770055');
+    ])->get('https://www.zohoapis.com/crm/bulk/v2/read/1929333000104835203');
 
-    // return $response;
-    // dd($response);
-    dd($response->json());
 
-    //
+    po($response->json());
+    exit;
+    Storage::put('zohocsv/1929333000104841066.zip', $response);
+
+    echo 'success';
 });
 
 Route::get('test/mongodb', function () {

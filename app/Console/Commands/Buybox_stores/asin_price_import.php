@@ -81,6 +81,8 @@ class Asin_price_import extends Command
             } else if ($store_id == '7' || $store_id == '9' || $store_id == '12') {
 
                 $this->pricinguss($result_asins, $store_id);
+            } else {
+                Log::notice('store_id' . $store_id);
             }
         }
     }
@@ -93,7 +95,15 @@ class Asin_price_import extends Command
             'pricing_ins.in_price',
             'pricing_uss.usa_to_in_b2c',
             'pricing_uss.available',
-            'pricing_uss.asin'
+            'pricing_uss.asin',
+            'pricing_uss.next_highest_seller_price',
+            'pricing_uss.next_highest_seller_id',
+            'pricing_uss.next_lowest_seller_price',
+            'pricing_uss.next_lowest_seller_id',
+            'pricing_uss.bb_winner_price',
+            'pricing_uss.bb_winner_id',
+            'pricing_uss.is_any_our_seller_won_bb',
+
         ];
 
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'asin_destination_');
@@ -119,7 +129,14 @@ class Asin_price_import extends Command
                 'ceil_price' => $ceil_price,
                 'store_id' => $store_id,
                 'asin' => $value['asin'],
-                'cyclic' => '1',
+                'lowest_seller_id' => $value['next_lowest_seller_id'],
+                'lowest_seller_price' => $value['next_lowest_seller_price'],
+                'highest_seller_id' => $value['next_highest_seller_id'],
+                'highest_seller_price' => $value['next_highest_seller_price'],
+                'bb_winner_id' => $value['bb_winner_id'],
+                'bb_winner_price' => $value['bb_winner_price'],
+                'is_bb_won' => $value['is_any_our_seller_won_bb'],
+                'cyclic' => '11',
             ];
         }
 
@@ -134,7 +151,14 @@ class Asin_price_import extends Command
             'pricing_aes.ae_price',
             'pricing_uss.usa_to_uae',
             'pricing_uss.available',
-            'pricing_uss.asin'
+            'pricing_uss.asin',
+            'pricing_uss.next_highest_seller_price',
+            'pricing_uss.next_highest_seller_id',
+            'pricing_uss.next_lowest_seller_price',
+            'pricing_uss.next_lowest_seller_id',
+            'pricing_uss.bb_winner_price',
+            'pricing_uss.bb_winner_id',
+            'pricing_uss.is_any_our_seller_won_bb',
         ];
 
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'asin_destination_');
@@ -160,7 +184,14 @@ class Asin_price_import extends Command
                 'ceil_price' => $ceil_price,
                 'store_id' => $store_id,
                 'asin' => $value['asin'],
-                'cyclic' => '1',
+                'lowest_seller_id' => $value['next_lowest_seller_id'],
+                'lowest_seller_price' => $value['next_lowest_seller_price'],
+                'highest_seller_id' => $value['next_highest_seller_id'],
+                'highest_seller_price' => $value['next_highest_seller_price'],
+                'bb_winner_id' => $value['bb_winner_id'],
+                'bb_winner_price' => $value['bb_winner_price'],
+                'is_bb_won' => $value['is_any_our_seller_won_bb'],
+                'cyclic' => '12',
             ];
         }
 
@@ -174,7 +205,15 @@ class Asin_price_import extends Command
             'asin_destination_uss.priority',
             'pricing_uss.us_price',
             'pricing_uss.available',
-            'pricing_uss.asin'
+            'pricing_uss.asin',
+            'pricing_uss.next_highest_seller_price',
+            'pricing_uss.next_highest_seller_id',
+            'pricing_uss.next_lowest_seller_price',
+            'pricing_uss.next_lowest_seller_id',
+            'pricing_uss.bb_winner_price',
+            'pricing_uss.bb_winner_id',
+            'pricing_uss.is_any_our_seller_won_bb',
+
         ];
 
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'asin_destination_');
@@ -199,7 +238,14 @@ class Asin_price_import extends Command
                 'ceil_price' => $ceil_price,
                 'store_id' => $store_id,
                 'asin' => $value['asin'],
-                'cyclic' => '1',
+                'lowest_seller_id' => $value['next_lowest_seller_id'],
+                'lowest_seller_price' => $value['next_lowest_seller_price'],
+                'highest_seller_id' => $value['next_highest_seller_id'],
+                'highest_seller_price' => $value['next_highest_seller_price'],
+                'bb_winner_id' => $value['bb_winner_id'],
+                'bb_winner_price' => $value['bb_winner_price'],
+                'is_bb_won' => $value['is_any_our_seller_won_bb'],
+                'cyclic' => '13',
             ];
         }
 
@@ -212,7 +258,10 @@ class Asin_price_import extends Command
         Product::upsert(
             $data,
             ['asin_store_id_unique'],
-            ['app_360_price', 'bb_price', 'priority', 'availability', 'base_price', 'ceil_price', 'cyclic']
+            [
+                'app_360_price', 'bb_price', 'priority', 'availability', 'base_price', 'ceil_price', 'cyclic',
+                'lowest_seller_id', 'lowest_seller_price', 'highest_seller_id', 'highest_seller_price', 'bb_winner_id', 'bb_winner_price', 'is_bb_won',
+            ]
         );
     }
 }
