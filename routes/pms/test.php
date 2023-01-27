@@ -294,3 +294,23 @@ Route::get('test/boe', function () {
     echo $content;
     // dd($content);
 });
+
+Route::get('test/unzip', function () {
+
+
+    $zip = new ZipArchive;
+    $res = $zip->open(Storage::path("Zoho_data/Page_4_1929333000104839172.zip"));
+
+
+    if ($res === TRUE) {
+        $zip->extractTo(
+            Storage::path("Zoho_data/"),
+            array('H_W.gif', 'id.csv')
+        );
+
+        $zip->close();
+        echo 'Unzipped Process Successful!';
+    } else {
+        echo 'Unzipped Process failed';
+    }
+});
