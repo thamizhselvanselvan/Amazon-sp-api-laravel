@@ -55,6 +55,7 @@ class product_push_to_amazon extends Command
             $nxt_highest_seller = $data->highest_seller_price;
             $nxt_lowest_seller = $data->lowest_seller_price;
             $push_price = 0;
+            $base_price = $data->base_price;
             if (isset($data->ceil_price)) {
                 $push_price = $data->ceil_price;
             } else if ($availability == '0') {
@@ -96,9 +97,9 @@ class product_push_to_amazon extends Command
                 'asin' => $asin,
                 'product_sku' => $product_sku,
                 'store_id' =>  $store_id,
+                'base_price' => $base_price,
                 'availability' => $availability,
                 'push_price' => $push_price,
-                'base_price' => '',
                 'latency' => $latency,
 
             ];
