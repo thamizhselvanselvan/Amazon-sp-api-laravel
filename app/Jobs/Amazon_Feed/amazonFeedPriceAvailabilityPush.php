@@ -11,9 +11,10 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use App\Services\AmazonFeedApiServices\AmazonFeedProcess;
 
-class amazonFeedPriceAvailabilityPush implements ShouldQueue
+class AmazonFeedPriceAvailabilityPush implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
     public $payload;
     /**
      * Create a new job instance.
@@ -32,10 +33,21 @@ class amazonFeedPriceAvailabilityPush implements ShouldQueue
      */
     public function handle()
     {
+        Log::info($this->payload);
+
         $feedLists = $this->payload['feedLists'];
         $seller_id = $this->payload['seller_id'];
+        $availability = $this->payload['availability'];
 
-        $amazonFeedProcess = new AmazonFeedProcess();
-        $amazonFeedProcess->feedSubmit($feedLists, $seller_id);
+        if($availability) { // if condition is true then Update Availability & Price Both
+
+            (new AmazonFeedProcess)->feedSubmit($feedLists, $seller_id, true);
+            (new AmazonFeedProcess)->feedSubmit($feedLists, $seller_id, false);
+     
+        } else  { // Otherwise Update only Availability
+
+            (new AmazonFeedProcess)->feedSubmit($feedLists, $seller_id, true);
+        }
+
     }
 }

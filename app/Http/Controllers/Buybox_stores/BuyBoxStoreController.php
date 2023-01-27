@@ -100,34 +100,36 @@ class BuyBoxStoreController extends Controller
     {
 
         $stores = OrderSellerCredentials::select('store_name', 'seller_id')
-            ->where('buybox_stores', '1')
+            ->where('buybox_stores', 1)
             ->distinct()
             ->get();
 
         $request_store_id = $request->store_id;
         $url = "/stores/listing/price";
+
         if (isset($request_store_id)) {
             $url = "/stores/listing/price/" . $request_store_id;
         }
 
         if ($request->ajax()) {
-            Log::alert('fgh');
-            Log::alert($request->store_id);
+       
             $data = Product_Push::query()
-                ->when($request->store_id, function ($query) use ($request) {
-                    return $query->where('store_id', $request->store_id);
+                ->select('id', 'asin', 'product_sku', 'store_id', 'availability', 'push_price', 'base_price', 'latency')
+                ->when($request_store_id, function ($query) use ($request_store_id) {
+                    return $query->where('store_id', $request_store_id);
                 })
-                ->where('push_status', '0')
-                ->get();
+                ->where('push_status', 0);
+
             return DataTables::of($data)
-                ->addIndexColumn()
                 ->make(true);
         }
-        return view('buybox_stores.listing', compact('stores','url', 'request_store_id'));
+
+        return view('buybox_stores.listing', compact('stores', 'url', 'request_store_id'));
     }
+
     public function storespriceupdated(Request $request)
     {
-        $data =    Product_Push::query()
+        $data =  Product_Push::query()
             ->where('push_status', '1')
             ->get();
 
@@ -144,9 +146,12 @@ class BuyBoxStoreController extends Controller
         }
         return view('buybox_stores.priceupdated');
     }
-    public function updateprice($id){
+
+    public function updateprice(Request $request){
         //command to execute
         // commandExecFunc('');
+
+        echo $request->id;
 
     }
 }
