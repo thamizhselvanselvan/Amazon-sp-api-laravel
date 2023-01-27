@@ -1,74 +1,20 @@
 <?php
 
-use RedBeanPHP\R;
 use Carbon\Carbon;
-use App\Models\User;
-use App\Models\Label;
 use League\Csv\Reader;
-use App\Events\testEvent;
-use App\Events\checkEvent;
-use App\Models\Mws_region;
-use Maatwebsite\Excel\Row;
 use App\Jobs\TestQueueFail;
-use Illuminate\Support\Str;
-use Smalot\PdfParser\Parser;
-use App\Models\Aws_credential;
-use App\Models\FileManagement;
-use App\Services\Zoho\ZohoApi;
-use App\Models\GoogleTranslate;
-use Dflydev\DotAccessData\Data;
-use SellingPartnerApi\Endpoint;
-use App\Models\Inventory\Shelve;
-use App\Services\Zoho\ZohoOrder;
-use App\Models\Catalog\PricingIn;
-use App\Models\Catalog\PricingUs;
-use App\Models\Inventory\Country;
-use App\Models\ProcessManagement;
-use App\Models\Universal_textile;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
-use App\Services\AWS_Nitshop\Index;
-use function Clue\StreamFilter\fun;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\URL;
-use Spatie\Browsershot\Browsershot;
-use App\Models\Admin\ErrorReporting;
-use App\Models\Catalog\ExchangeRate;
-use App\Services\SP_API\API\Catalog;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
-use Maatwebsite\Excel\Facades\Excel;
-use SellingPartnerApi\Configuration;
 use Illuminate\Support\Facades\Route;
 use App\Models\order\OrderItemDetails;
-use App\Models\order\OrderUpdateDetail;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rules\Exists;
-use ParagonIE\Sodium\Core\Curve25519\H;
-use App\Http\Controllers\TestController;
-use App\Services\Inventory\ReportWeekly;
-use Illuminate\Support\Facades\Redirect;
-use Spatie\Permission\Models\Permission;
-use phpDocumentor\Reflection\Types\Null_;
-use SellingPartnerApi\Api\ProductPricingApi;
 use App\Jobs\Seller\Seller_catalog_import_job;
-use App\Models\Buybox_stores\Product;
-use App\Models\CommandScheduler;
-use Google\Cloud\Translate\V2\TranslateClient;
-use Symfony\Component\Validator\Constraints\File;
-use SellingPartnerApi\Api\CatalogItemsV20220401Api;
-use App\Services\AWS_Business_API\Auth\AWS_Business;
-
-use SellingPartnerApi\Api\FeedsV20210630Api as FeedsApi;
-use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
-use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
-use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
 
-use Illuminate\Support\Facades\Cache;
 
 // use ConfigTrait;
 
