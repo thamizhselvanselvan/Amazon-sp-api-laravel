@@ -20,8 +20,7 @@ class AmazonFeedProcess
         $aws_key = '';
 
         $aws = Aws_credential::where('seller_id', $seller_id)->where('api_type', 1)->with(['mws_region'])->first();
-        Log::alert($aws);
-        exit;
+
         $aws_key = $aws->id;
         $merchant_id = $aws->merchant_id;
         $mws_region = $aws->mws_region;
