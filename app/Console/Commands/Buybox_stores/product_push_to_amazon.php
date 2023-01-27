@@ -89,7 +89,7 @@ class product_push_to_amazon extends Command
             } else if ($nxt_highest_seller == '0' && $nxt_lowest_seller == '0' && $bb_won === '0') {
                 $push_price = $data->ceil_price;
             }
-            Log::notice('asin - '.$asin . ' ' .'price - '. $push_price . ' ' . 'availability -'. $availability);
+            Log::debug('asin - '.$asin . ' ' .'price - '. $push_price . ' ' . 'availability -'. $availability);
 
             Product::where('asin', $asin)->update(['cyclic_push' => '1']);
             $data_to_insert = [
