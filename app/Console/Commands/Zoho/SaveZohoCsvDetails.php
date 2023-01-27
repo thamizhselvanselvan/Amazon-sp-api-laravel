@@ -59,11 +59,13 @@ class SaveZohoCsvDetails extends Command
                 $more_records = $response['data'][0]['result']['more_records'];
                 Storage::put($this->file_details, json_encode($response));
 
+                $result = $this->downloadFileAndUpdate($id);
+                echo $result;
                 if ($more_records) {
                     $page = $response['data'][0]['result']['page'];
                     po($this->makeFileRequest($page + 1));
+                    echo "Next Page Request sent to Zoho, please wait for few minutes";
                 }
-                return $this->downloadFileAndUpdate($id);
             } else {
                 Storage::put($this->file_details, json_encode($response));
                 po($response);
