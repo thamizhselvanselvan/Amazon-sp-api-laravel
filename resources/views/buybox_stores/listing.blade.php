@@ -29,7 +29,7 @@
     </div>
     <div style="margin-top: -1.2rem;">
         <x-adminlte-select name="store_select" id="store_select" label="">
-            <option value="0">Select Store</option>
+            <option value="">Select Store</option>
             @foreach($stores as $store)
             <option value="{{$store->seller_id}}">{{$store->store_name}}</option>
             @endforeach
@@ -118,7 +118,6 @@
                 },
                 data: function(d) {
                     d.store_id = $('#store_select').val();
-                    alert(d.store_id);
                 },
             },
             columns: [{

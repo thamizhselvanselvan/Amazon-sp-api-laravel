@@ -145,7 +145,8 @@ class BuyBoxStoreController extends Controller
         return view('buybox_stores.priceupdated');
     }
     public function updateprice($id){
-        Log::info($id);
+        //command to execute
+        // commandExecFunc('');
 
     }
 }
