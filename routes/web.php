@@ -31,15 +31,13 @@ use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
 */
 // use ConfigTrait;
 Route::get('bb', function () {
-    $file_path = 'BuyBoxExport/AsinForbb.csv';
-    $csv = Reader::createFromPath(Storage::path($file_path), 'r');
-    $records = $csv->setHeaderOffset(0);
-    $asin = [];
-    foreach ($records as $record) {
-        $asin[] = $record['ASIN'];
+    $count = [];
+    for ($priority = 1; $priority < 4; $priority++) {
+
+        $tableName = "product_aa_custom_p" . $priority . "_us_seller_details";
+        $count['p' . $priority] = DB::connection('buybox')->table($tableName)->get()->count('asin');
     }
-    $chunk = array_chunk($asin, 5000);
-    po($chunk);
+    po($count);
     exit;
 });
 Route::get('cliqnshop', function () {

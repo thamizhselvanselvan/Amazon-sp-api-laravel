@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Catalog;
 use Illuminate\Http\Request;
 use App\Services\BB\PushAsin;
 use App\Models\FileManagement;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -199,5 +200,24 @@ class BuyBoxImportExportController extends Controller
         DeleteFileFromFolder($folder, $countryCode, $priority);
         $downloadPath = 'excel/downloads/' . $folder . '/' . $countryCode . '/' . $priority . '/zip/' . $countryCode . 'BuyBoxAsin.zip';
         return Storage::download($downloadPath);
+    }
+
+    public function BuyBoxSellerTableCount()
+    {
+        $count = [];
+        for ($priority = 1; $priority < 4; $priority++) {
+
+            $tableName = "product_aa_custom_p" . $priority . "_in_seller_details";
+            $count['p' . $priority] = DB::connection('buybox')->table($tableName)->get()->count('asin');
+        }
+        return response()->json($count);
+    }
+
+    public function BuyBoxTruncate(Request $request)
+    {
+        $request->validate([
+            'source' => 'required',
+            'priority' => 'required|in:1,2,3,4'
+        ]);
     }
 }
