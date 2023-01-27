@@ -45,16 +45,20 @@ class SaveZohoCsvDetails extends Command
         $this->token = json_decode(Storage::get('zoho/access_token.txt'), true)['access_token'];
 
         $file = $this->checkId();
+
         $page = 1;
         if ($file) {
             $id = $file['id'];
-            echo $id;
             $response = $this->getFileStatus($id);
-
+            po($response);
             $state = $response['data'][0]['state'];
             if ($state == 'COMPLETED') {
 
                 $more_records = $response['data'][0]['result']['more_records'];
+
+                $file_path = 'Zoho_data/file_details.txt';
+                Storage::put($file_path, json_encode($response));
+
                 if ($more_records) {
                     $page = $response['data'][0]['result']['page'];
                     po($this->makeFileRequest($page + 1));
@@ -62,7 +66,7 @@ class SaveZohoCsvDetails extends Command
                 $this->downloadFileAndUpdate($id);
             } else {
 
-                $file_path = 'zoho_data/file_details.txt';
+                $file_path = 'Zoho_data/file_details.txt';
                 Storage::put($file_path, json_encode($response));
 
                 po($response);
@@ -92,7 +96,9 @@ class SaveZohoCsvDetails extends Command
 
         $response = $response->json();
 
-        $file_path = 'zoho_data/file_details.txt';
+        $response = $this->verifyToken($response);
+
+        $file_path = 'Zoho_data/file_details.txt';
 
         Storage::put($file_path, json_encode($response));
         return $response;
@@ -100,17 +106,17 @@ class SaveZohoCsvDetails extends Command
 
     public function checkId()
     {
-        $file_path = 'zoho_data/file_details.txt';
+        $file_path = 'Zoho_data/file_details.txt';
         if (!Storage::exists($file_path)) {
-            Storage::put($file_path, '');
-
             po($this->makeFileRequest(1));
             return false;
         }
         $files = json_decode(Storage::get($file_path), true);
 
-        $code = $files['data'][0]['code'];
-        $id = $files['data'][0]['details']['id'];
+        $code = isset($files['data'][0]['code'])
+            ? $files['data'][0]['code'] : $files['data'][0]['state'];
+        $id = isset($files['data'][0]['details']['id'])
+            ? $files['data'][0]['details']['id'] : $files['data'][0]['id'];
 
         return [
             'code' => $code,
@@ -124,7 +130,8 @@ class SaveZohoCsvDetails extends Command
             'Authorization' => 'Zoho-oauthtoken ' . $this->token,
         ])->get('https://www.zohoapis.com/crm/bulk/v2/read/' . $id);
 
-        return $response->json();
+
+        return $this->verifyToken($response->json());
     }
 
     public function downloadFileAndUpdate($id)
@@ -133,26 +140,19 @@ class SaveZohoCsvDetails extends Command
             'Authorization' => 'Zoho-oauthtoken ' . $this->token,
         ])->get('https://www.zohoapis.com/crm/bulk/v2/read/' . $id . '/result');
 
-        Storage::put("zohoData/$id.zip", $response);
+        $response = $this->verifyToken($response);
+
+        Storage::put("Zoho_data/$id.zip", $response);
 
         $zip = new ZipArchive;
-        $res = $zip->open(Storage::path("zohoData/$id.zip"));
+        $res = $zip->open(Storage::path("Zoho_data/$id.zip"));
 
         if ($res === TRUE) {
-
-            $zip->extractTo(
-                '/Destination/Directory/',
-                array('H_W.gif', 'helloworld.php')
-            );
-
+            $zip->extractTo(Storage::path('Zoho_data'));
             $zip->close();
-            echo 'Unzipped Process Successful!';
-        } else {
-            echo 'Unzipped Process failed';
         }
 
-        $csv_data = CSV_Reader('zohoData/$id.zip');
-
+        $csv_data = CSV_Reader("Zoho_data/$id.csv");
         $count = 0;
         $data_array = [];
         foreach ($csv_data as $data) {
@@ -173,5 +173,14 @@ class SaveZohoCsvDetails extends Command
                 ->collection('zoho_datas')
                 ->insert($data_array);
         }
+    }
+
+    public function verifyToken($response)
+    {
+        if (isset($response['code']) &&  $response['code'] == 'INVALID_TOKEN') {
+            po($response);
+            exit;
+        }
+        return $response;
     }
 }
