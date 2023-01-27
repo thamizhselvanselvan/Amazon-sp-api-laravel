@@ -27,8 +27,8 @@ class AddColumnGetItemInOrderSellerCredentialsTable extends Migration
     public function down()
     {
         Schema::connection('order')->table('order_seller_credentials', function (Blueprint $table) {
-            
-            $table->dropColumn('get_order_items');
+
+            $table->dropColumn('get_order_item');
         });
     }
 }

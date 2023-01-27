@@ -14,8 +14,8 @@ class RemovePrefixFromSellerModule extends Migration
     public function up()
     {
 
-        Schema::connection('seller')->rename('se_asin_master_sellers',  'asin_master_sellers');
-        Schema::connection('seller')->rename('se_seller_asin_details',  'seller_asin_details');
+        //Schema::connection('seller')->rename('se_asin_master_sellers',  'asin_master_sellers');
+        //Schema::connection('seller')->rename('se_seller_asin_details',  'seller_asin_details');
 
     }
 
@@ -27,8 +27,8 @@ class RemovePrefixFromSellerModule extends Migration
     public function down()
     {
 
-        Schema::connection('seller')->rename('asin_master_sellers',  'se_asin_master_sellers');
-        Schema::connection('seller')->rename('seller_asin_details',  'se_seller_asin_details');
+        //Schema::connection('seller')->rename('asin_master_sellers',  'se_asin_master_sellers');
+        //Schema::connection('seller')->rename('seller_asin_details',  'se_seller_asin_details');
 
     }
 }

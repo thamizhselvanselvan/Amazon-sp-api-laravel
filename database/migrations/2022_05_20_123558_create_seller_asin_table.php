@@ -36,6 +36,6 @@ class CreateSellerAsinTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('asin_master_sellers');
+        Schema::connection('seller')->dropIfExists('asin_master_sellers');
     }
 }
