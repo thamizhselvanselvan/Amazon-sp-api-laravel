@@ -117,8 +117,8 @@ class Asin_price_import extends Command
 
         foreach ($data as $value) {
 
-            $base_price = addPercentage($value['in_price'], $this->base_percentage);
-            $ceil_price = removePercentage($value['in_price'], $this->ceil_percentage);
+            $ceil_price  = addPercentage($value['in_price'], $this->base_percentage);
+            $base_price  = removePercentage($value['in_price'], $this->ceil_percentage);
 
             $insert_data_in[] = [
                 'bb_price' => $value['in_price'],
@@ -172,8 +172,8 @@ class Asin_price_import extends Command
 
         foreach ($data as $value) {
 
-            $base_price = addPercentage($value['ae_price'], $this->base_percentage);
-            $ceil_price = removePercentage($value['ae_price'], $this->ceil_percentage);
+            $ceil_price = addPercentage($value['ae_price'], $this->base_percentage);
+            $base_price = removePercentage($value['ae_price'], $this->ceil_percentage);
 
             $insert_data[] = [
                 'bb_price' => $value['ae_price'],
@@ -226,8 +226,8 @@ class Asin_price_import extends Command
 
         foreach ($data as $value) {
 
-            $base_price = addPercentage($value['us_price'], $this->base_percentage);
-            $ceil_price = removePercentage($value['us_price'], $this->ceil_percentage);
+            $ceil_price = addPercentage($value['us_price'], $this->base_percentage);
+            $base_price = removePercentage($value['us_price'], $this->ceil_percentage);
 
             $insert_data[] = [
                 'bb_price' => $value['us_price'],
