@@ -28,6 +28,7 @@ use App\Services\Inventory\InventoryCsvImport;
 use Google\Cloud\Translate\V2\TranslateClient;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
 use App\Services\Catalog\AllPriceExportCsvServices;
+use App\Services\Courier_Booking\B2cshipBookingServices;
 use App\Services\SP_API\API\Order\OrderUsingRedBean;
 use App\Services\SP_API\API\Order\CheckStoreCredServices;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
@@ -297,7 +298,8 @@ Route::get('test/boe', function () {
 
 Route::get('test/unzip', function () {
 
-
+    return (new B2cshipBookingServices())->renameState('ANDAMAN & NICasdfOBAR ISLANDs');
+    exit;
     $zip = new ZipArchive;
     $res = $zip->open(Storage::path("Zoho_data/Page_4_1929333000104839172.zip"));
 
