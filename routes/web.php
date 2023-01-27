@@ -85,25 +85,16 @@ use Illuminate\Support\Facades\Cache;
 */
 // use ConfigTrait;
 Route::get('bb', function () {
-    // po(CommandScheduler::get()->toArray());
-    // exit;
-    // Cache::flush();
-    if (Cache::has('Schedule_command')) {
-        po(Cache::get('Schedule_command'));
+    $file_path = 'BuyBoxExport/AsinForbb.csv';
+    $csv = Reader::createFromPath(Storage::path($file_path), 'r');
+    $records = $csv->setHeaderOffset(0);
+    $asin = [];
+    foreach ($records as $record) {
+        $asin[] = $record['ASIN'];
     }
+    $chunk = array_chunk($asin, 5000);
+    po($chunk);
     exit;
-    $commands = Cache('Schedule_command')->toArray();
-    foreach ($commands as $command) {
-        // $schedule->command($command['command_name'])->cron($command['execution_time']);
-        po($command['command_name']);
-        po($command['execution_time']);
-    }
-
-    exit;
-
-    cache()->rememberForever('Schedule_command', function () {
-        return CommandScheduler::get();
-    });
 });
 Route::get('cliqnshop', function () {
     $response =   Http::get('http://amazon-sp-api-laravel.app/api/product', [
