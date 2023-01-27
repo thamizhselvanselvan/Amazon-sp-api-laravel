@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\Buybox_stores\Product;
 use Illuminate\Support\Facades\Route;
+use App\Models\Buybox_stores\Product_Push;
 
 Route::get('buybox/stores', 'Buybox_stores\BuyBoxStoreController@index')->name('buybox.stores');
 Route::post('buybox/latency', 'Buybox_stores\BuyBoxStoreController@latencyupdate')->name('buybox.latency.update');
@@ -10,3 +12,4 @@ Route::get('buybox/all/export/download/local/{index}', 'Buybox_stores\BuyBoxStor
 
 
 Route::get('buybox/sp_api_push', 'Buybox_stores\BuyBoxStoreController@get_price_push')->name('buybox.sp_spi_push_get');
+
