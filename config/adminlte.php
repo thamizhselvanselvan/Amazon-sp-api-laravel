@@ -701,7 +701,21 @@ return [
                     'text' => 'Zoho Price Missing',
                     'can' => ['Admin', 'Catalog'],
                     'icon' => 'fa fa-minus-circle',
-                    'url' => "orders/missing/price",
+                    'submenu' =>
+                    [
+                        [
+                            'text' => 'Price Missing',
+                            'url' => "orders/missing/price",
+                            'can' => ['Admin', 'Catalog'],
+                            'icon' => 'fa fa-minus-circle',
+                        ],
+                        [
+                            'text' => 'Price Updated',
+                            'url' => "orders/missing/price/updated",
+                            'can' => ['Admin'],
+                            'icon' => ' fa fa-check-circle-o',
+                        ],
+                    ],
                 ],
             ],
         ],
@@ -736,6 +750,26 @@ return [
                     'url' => 'seller/invoice',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-user',
+                ],
+                [
+                    'text' => ' stores',
+                    'can' => ['Admin'],
+                    'icon' => 'fas fa-store',
+                    'submenu' =>
+                    [
+                        [
+                            'text' => 'Price listing',
+                            'url' => 'stores/listing/price',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-list'
+                        ],
+                        [
+                            'text' => 'Price Updated',
+                            'url' => 'stores/price/updated',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-refresh'
+                        ],
+                    ],
                 ],
             ]
         ],

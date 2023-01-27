@@ -8,9 +8,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\Buybox_stores\Product;
-use App\Models\Buybox_stores\Product_Push;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\Buybox_stores\Product_Push;
+use App\Models\order\OrderSellerCredentials;
 
 class BuyBoxStoreController extends Controller
 {
@@ -67,30 +68,85 @@ class BuyBoxStoreController extends Controller
         }
         return response()->json($catalogfiles);
     }
-    
+
     public function DownloadCataloglocal($index)
     {
         return Storage::download('aws-products/exports/' . $index);
     }
 
-    public function get_price_push(Request $request) {
-        
+    public function get_price_push(Request $request)
+    {
+
         if ($request->ajax()) {
 
             $results = Product_Push::query()
-            ->select('id', 'store_id', 'product_sku', 'latency', 'push_price', 'base_price')
-            ->orderBy('id', 'DESC')
-            ->get();
+                ->select('id', 'store_id', 'product_sku', 'latency', 'push_price', 'base_price')
+                ->orderBy('id', 'DESC')
+                ->get();
 
             return DataTables::of($results)
                 // ->addColumn('status', function ($file_management) {
                 //     $process = $file_management['command_end_time'] == '0000-00-00 00:00:00' ? 'Processing...' : 'Processed';
                 //     return $process;
                 // })
-               // ->rawColumns(['id', 'user_name', 'type', 'module', 'start_time', 'end_time', 'processed_time', 'status'])
+                // ->rawColumns(['id', 'user_name', 'type', 'module', 'start_time', 'end_time', 'processed_time', 'status'])
                 ->make(true);
         }
-        
+
         return view('buybox_stores.sp_api_push');
+    }
+
+    public function storeslisting(Request $request)
+    {
+
+        $stores = OrderSellerCredentials::select('store_name', 'seller_id')
+            ->where('buybox_stores', '1')
+            ->distinct()
+            ->get();
+
+        $request_store_id = $request->store_id;
+        $url = "/stores/listing/price";
+        if (isset($request_store_id)) {
+            $url = "/stores/listing/price/" . $request_store_id;
+        }
+
+        if ($request->ajax()) {
+            Log::alert('fgh');
+            Log::alert($request->store_id);
+            $data = Product_Push::query()
+                ->when($request->store_id, function ($query) use ($request) {
+                    return $query->where('store_id', $request->store_id);
+                })
+                ->where('push_status', '0')
+                ->get();
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->make(true);
+        }
+        return view('buybox_stores.listing', compact('stores','url', 'request_store_id'));
+    }
+    public function storespriceupdated(Request $request)
+    {
+        $data =    Product_Push::query()
+            ->where('push_status', '1')
+            ->get();
+
+        if ($request->ajax()) {
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $id = $row->asin . '_' . $row->product_sku . '_' . $row->store_id;
+                    $actionBtn = "<a href='javascript:void(0)' value='$id'class='edit btn btn-success btn-sm'><i class='fas fa-refresh'></i> Update Price</a>";
+                    return $actionBtn;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+        return view('buybox_stores.priceupdated');
+    }
+    public function updateprice($id){
+        //command to execute
+        // commandExecFunc('');
+
     }
 }
