@@ -44,6 +44,7 @@ class product_push_to_amazon extends Command
             ->where(['cyclic' => '1', 'cyclic_push' => '0'])
             ->limit(100)
             ->get();
+
         foreach ($datas as $data) {
             $store_id = $data->store_id;
             $asin = $data->asin;
@@ -93,6 +94,7 @@ class product_push_to_amazon extends Command
             Log::debug('asin - '.$asin . ' ' .'price - '. $push_price . ' ' . 'availability -'. $availability);
 
             Product::where('asin', $asin)->update(['cyclic_push' => '1']);
+            
             $data_to_insert = [
                 'asin' => $asin,
                 'product_sku' => $product_sku,

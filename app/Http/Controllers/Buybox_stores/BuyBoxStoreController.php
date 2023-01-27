@@ -118,7 +118,8 @@ class BuyBoxStoreController extends Controller
                 ->when($request_store_id, function ($query) use ($request_store_id) {
                     return $query->where('store_id', $request_store_id);
                 })
-                ->where('push_status', 0);
+                ->where('push_status', 0)
+                ->orderBy('id', 'DESC');
 
             return DataTables::of($data)
                 ->make(true);
