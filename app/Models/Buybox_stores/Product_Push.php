@@ -14,6 +14,7 @@ class Product_Push extends Model
     protected $fillable = [
         'asin',
         'store_id',
+        'availability',
         'product_sku',
         'push_price',
         'base_price',
