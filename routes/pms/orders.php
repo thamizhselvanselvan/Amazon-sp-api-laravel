@@ -32,3 +32,4 @@ Route::get('orders/file/management/monitor', 'Orders\OrdersDashboardController@O
 
 Route::get('orders/missing/price', 'Orders\OrderMissingDetailsController@index')->name('orders.missing');
 Route::post('orders/missing/update', 'Orders\OrderMissingDetailsController@updateview')->name('orders.missing.price.update');
+Route::get('orders/missing/price/updated', 'Orders\OrderMissingDetailsController@zohopriceupdated')->name('orders.zoho.missing.update');
