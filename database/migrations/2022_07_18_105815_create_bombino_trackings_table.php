@@ -24,7 +24,7 @@ class CreateBombinoTrackingsTable extends Migration
             $table->dateTime('ship_date')->nullable();
             $table->string('status')->nullable();
             $table->string('weight')->nullable();
-            $table->unique("awbno");
+            $table->unique("awbno", "awbno_unique");
             $table->timestamps();
             $table->softDeletes();
         });
