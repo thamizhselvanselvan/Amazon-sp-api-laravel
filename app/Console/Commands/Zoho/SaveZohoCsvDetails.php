@@ -25,6 +25,8 @@ class SaveZohoCsvDetails extends Command
      */
     protected $description = 'Save Csv Details into Database';
     public $token;
+    public $file_details = 'Zoho_data/file_details.txt';
+    public $url = 'https://www.zohoapis.com/crm/bulk/v2/read';
     /**
      * Create a new command instance.
      *
@@ -55,20 +57,15 @@ class SaveZohoCsvDetails extends Command
             if ($state == 'COMPLETED') {
 
                 $more_records = $response['data'][0]['result']['more_records'];
-
-                $file_path = 'Zoho_data/file_details.txt';
-                Storage::put($file_path, json_encode($response));
+                Storage::put($this->file_details, json_encode($response));
 
                 if ($more_records) {
                     $page = $response['data'][0]['result']['page'];
                     po($this->makeFileRequest($page + 1));
                 }
-                $this->downloadFileAndUpdate($id);
+                return $this->downloadFileAndUpdate($id);
             } else {
-
-                $file_path = 'Zoho_data/file_details.txt';
-                Storage::put($file_path, json_encode($response));
-
+                Storage::put($this->file_details, json_encode($response));
                 po($response);
             }
         }
@@ -76,8 +73,6 @@ class SaveZohoCsvDetails extends Command
 
     public function makeFileRequest($page = 1)
     {
-        $url = 'https://www.zohoapis.com/crm/bulk/v2/read';
-
         $payload = [
             "callback" => [
                 "url" => "https://catalog-manager-mosh.com/api/test/zoho/webhook",
@@ -92,15 +87,12 @@ class SaveZohoCsvDetails extends Command
             ->withHeaders([
                 'Authorization' => 'Zoho-oauthtoken ' . $this->token,
                 'Content-Type' => 'application/json'
-            ])->post($url, $payload);
+            ])->post($this->url, $payload);
 
         $response = $response->json();
+        $response = $this->verifyResponse($response);
 
-        $response = $this->verifyToken($response);
-
-        $file_path = 'Zoho_data/file_details.txt';
-
-        Storage::put($file_path, json_encode($response));
+        Storage::put($this->file_details, json_encode($response));
         return $response;
     }
 
@@ -128,31 +120,29 @@ class SaveZohoCsvDetails extends Command
     {
         $response = Http::withoutVerifying()->withHeaders([
             'Authorization' => 'Zoho-oauthtoken ' . $this->token,
-        ])->get('https://www.zohoapis.com/crm/bulk/v2/read/' . $id);
+        ])->get($this->url . '/' . $id);
 
-
-        return $this->verifyToken($response->json());
+        return $this->verifyResponse($response->json());
     }
 
     public function downloadFileAndUpdate($id)
     {
         $response = Http::withoutVerifying()->withHeaders([
             'Authorization' => 'Zoho-oauthtoken ' . $this->token,
-        ])->get('https://www.zohoapis.com/crm/bulk/v2/read/' . $id . '/result');
+        ])->get($this->url . '/' . $id . '/result');
 
-        $response = $this->verifyToken($response);
+        $response = $this->verifyResponse($response);
 
         Storage::put("Zoho_data/$id.zip", $response);
 
-        $zip = new ZipArchive;
-        $res = $zip->open(Storage::path("Zoho_data/$id.zip"));
-
-        if ($res === TRUE) {
-            $zip->extractTo(Storage::path('Zoho_data'));
-            $zip->close();
+        if ($this->extractZipFile("Zoho_data/$id.zip")) {
+            return $this->saveCsvData("Zoho_data/$id.csv");
         }
+    }
 
-        $csv_data = CSV_Reader("Zoho_data/$id.csv");
+    public function saveCsvData($path)
+    {
+        $csv_data = CSV_Reader($path);
         $count = 0;
         $data_array = [];
         foreach ($csv_data as $data) {
@@ -173,9 +163,24 @@ class SaveZohoCsvDetails extends Command
                 ->collection('zoho_datas')
                 ->insert($data_array);
         }
+        return 'Zoho Csv\'s data Saved Into Database';
     }
 
-    public function verifyToken($response)
+    public function extractZipFile($path)
+    {
+        $zip = new ZipArchive;
+        $res = $zip->open(Storage::path($path));
+
+        if ($res === TRUE) {
+            $zip->extractTo(Storage::path('Zoho_data'));
+            $zip->close();
+            return true;
+        }
+        echo "File Not Found";
+        return false;
+    }
+
+    public function verifyResponse($response)
     {
         if (isset($response['code']) &&  $response['code'] == 'INVALID_TOKEN') {
             po($response);
