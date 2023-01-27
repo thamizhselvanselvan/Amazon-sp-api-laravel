@@ -13,6 +13,7 @@ class RemovePrefixFromInventoryTables extends Migration
      */
     public function up()
     {
+        /*
         Schema::connection('inventory')->rename('in_bins', 'bins');
         Schema::connection('inventory')->rename('in_catalogs',  'catalogs');
         Schema::connection('inventory')->rename('in_cities',   'cities');
@@ -32,6 +33,7 @@ class RemovePrefixFromInventoryTables extends Migration
         Schema::connection('inventory')->rename('in_vendors',    'vendors');
         Schema::connection('inventory')->rename('in_warehouses',    'warehouses');
         Schema::connection('inventory')->rename('in_warehouse_stocks', 'warehouse_stocks');
+        */
     }
 
     /**
@@ -41,6 +43,7 @@ class RemovePrefixFromInventoryTables extends Migration
      */
     public function down()
     {
+        /*
         Schema::connection('inventory')->rename('bins',  'in_bins');
         Schema::connection('inventory')->rename('catalogs',  'in_catalogs');
         Schema::connection('inventory')->rename('cities',  'in_cities');
@@ -60,5 +63,6 @@ class RemovePrefixFromInventoryTables extends Migration
         Schema::connection('inventory')->rename('vendors',  'in_vendors');
         Schema::connection('inventory')->rename('warehouses',  'in_warehouses');
         Schema::connection('inventory')->rename('warehouse_stocks',  'in_warehouse_stocks');
+        */
     }
 }

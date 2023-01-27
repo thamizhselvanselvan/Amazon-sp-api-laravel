@@ -28,8 +28,8 @@ class AddSourcePriceMakeUniqueColumnIntoAsinMasterTable extends Migration
     public function down()
     {
         Schema::connection('catalog')->table('asin_masters', function (Blueprint $table) {
-            $table->dropColumn('source_price');
             $table->dropUnique('user_asin_source_unique');
+            $table->dropColumn('source_price');
             $table->unique(["asin"], 'asin_masters_asin_unique');
         });
     }
