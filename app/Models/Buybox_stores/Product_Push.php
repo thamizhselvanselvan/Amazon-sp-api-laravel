@@ -13,14 +13,15 @@ class Product_Push extends Model
 
     protected $fillable = [
         'asin',
+        'product_sku',
         'store_id',
         'availability',
-        'product_sku',
         'push_price',
         'base_price',
-        'push_status',
         'latency',
-        'feedback_id',
-        'feedback_response'
+        'push_status',
+        'feedback_price_id',
+        'feedback_response',
+        'feedback-availability_id'
     ];
 }
