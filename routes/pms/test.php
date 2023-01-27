@@ -28,6 +28,7 @@ use App\Services\Inventory\InventoryCsvImport;
 use Google\Cloud\Translate\V2\TranslateClient;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
 use App\Services\Catalog\AllPriceExportCsvServices;
+use App\Services\Courier_Booking\B2cshipBookingServices;
 use App\Services\SP_API\API\Order\OrderUsingRedBean;
 use App\Services\SP_API\API\Order\CheckStoreCredServices;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
@@ -203,20 +204,6 @@ Route::get('test/download-file/{path}', function ($path) {
 
 Route::match(['get', 'post'], 'test/zoho/webhook', 'TestController@zohoWebhookResponse');
 
-
-
-Route::get('test/date', function () {
-
-    $date =  Carbon::now()->getPreciseTimestamp(3);
-    $originalDate = '1644325822000+0530';
-    echo date("Y-m-d H:i:s", strtotime($date));
-
-    exit;
-    echo (strtotime('1644325822000+0530'));
-    dd($date);
-    // /
-});
-
 Route::get('test/inventory', function () {
     $filePath = Storage::path('zoho_csv');
     echo $filePath;
@@ -256,7 +243,7 @@ Route::get('test/zoho/read', function () {
 
     $response = Http::withoutVerifying()->withHeaders([
         'Authorization' => 'Zoho-oauthtoken ' . $token,
-    ])->get('https://www.zohoapis.com/crm/bulk/v2/read/1929333000104835203');
+    ])->get('https://www.zohoapis.com/crm/bulk/v2/read/1929333000105130037');
 
 
     po($response->json());
@@ -264,33 +251,4 @@ Route::get('test/zoho/read', function () {
     Storage::put('zohocsv/1929333000104841066.zip', $response);
 
     echo 'success';
-});
-
-Route::get('test/mongodb', function () {
-
-    // echo phpinfo();
-    // exit;
-    // dd(DB::connection('mongodb'));
-    $data = [
-        'Name' => 'Amit Singh',
-        'subName' => 'Raj',
-        'anjay' => 'c'
-
-    ];
-    DB::connection('mongodb')->collection('MongoDb')->insert($data);
-    echo 'success';
-    //
-});
-
-Route::get('test/boe', function () {
-
-    $pdfParser = new Parser();
-    $second_page = 1;
-    $path = 'D:\BOE\Gotech BOE 18-19\Newfolder\957299993.pdf';
-
-    $pdfParser = new Parser();
-    $pdf = $pdfParser->parseFile($path);
-    $content = $pdf->getText();
-    echo $content;
-    // dd($content);
 });

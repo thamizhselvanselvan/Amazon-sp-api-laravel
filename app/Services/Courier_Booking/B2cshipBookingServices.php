@@ -443,10 +443,16 @@ class B2cshipBookingServices
 
     public function renameState($state_name)
     {
-        if (strtoupper($state_name) == 'JAMMU & KASHMIR') {
-            return 'JK';
-        } else if (strtoupper($state_name) == 'WEST BANGAL') {
-            return 'West Bengal';
+        $state_name_upper = strtoupper($state_name);
+
+        $state_name_array = [
+            'JAMMU & KASHMIR' => 'JK',
+            'WEST BANGAL' => 'WEST BENGAL',
+            'ANDAMAN & NICOBAR ISLANDS' => 'AN'
+        ];
+
+        if (array_key_exists($state_name_upper, $state_name_array)) {
+            return $state_name_array[$state_name_upper];
         }
         return $state_name;
     }
