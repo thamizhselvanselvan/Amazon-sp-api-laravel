@@ -15,7 +15,7 @@ class OrderMissingDetailsController extends Controller
     {
         if ($request->ajax()) {
 
-            $data  = ZohoMissing::orderby('id', 'desc')->get();
+            $data  = ZohoMissing::orderby('id', 'desc')->where('status','0')->get();
             return DataTables::of($data)
                 ->addIndexColumn()
 
@@ -90,5 +90,32 @@ class OrderMissingDetailsController extends Controller
             ->update(['price' => $price, 'status' => '1']);
 
         return response()->json(['data' => 'success']);
+    }
+
+
+    public function zohopriceupdated(Request $request)
+    {
+        if($request->ajax())
+        {
+             $data  = ZohoMissing::orderby('id', 'desc')
+             ->where('status','1')
+             ->get();
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->editColumn('status', function ($row) {
+                    $status = $row['status'];
+                    if ($status == 0) {
+                        return
+                            '<a href="#" data-toggle="tooltip" title="No Price Found Update Price"><i class="fa fa-times wrong" color-"red" aria-hidden="true" ></i> </a>';
+                    } else if ($status == 1) {
+                        return  '<a href="#" data-toggle="tooltip" title="Price Updated"><i class="fa fa-check click" color-"" aria-hidden="true" ></i> </a>';
+                    } else {
+                        return 'Unknown';
+                    }
+                })
+                ->escapeColumns([])
+                ->make(true);
+        }
+        return view('orders.zoho.zohoproceupdated');
     }
 }
