@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\buybox_stores;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use App\Models\Buybox_stores\Product;
@@ -42,10 +43,16 @@ class product_push_to_amazon extends Command
      */
     public function handle()
     {
+
+        $start_date = Carbon::now()->subMinutes(10);
+        $end_date = Carbon::now()->subMinutes(5);
+
         $products = Product::query()
             ->where(['cyclic' => 1, 'cyclic_push' => 0])
-            ->limit(100)
+            ->whereBetween("updated_at", [$start_date, $end_date])
             ->get();
+
+        Log::notice($products->count() . " Count of Product Update & pushing to Product Push Table");
 
         $data_to_insert = [];    
 
@@ -56,29 +63,38 @@ class product_push_to_amazon extends Command
             Product::where('asin', $product->asin)->update(['cyclic_push' => 1]);
             
             // if Push is not equal to existing store price then don't push it
-            if($push_price != $product->store_price) {
+            if(isset($push_price) && $push_price != $product->store_price) {
 
                 $data_to_insert[] = [
                     'asin' => $product->asin,
                     'product_sku' => $product->product_sku,
                     'store_id' =>  $product->store_id,
-                    'push_availability_status' => $product->availability,
+                    'availability' => $product->availability,
                     'push_price' => $push_price,
                     'base_price' => $product->base_price,
                     'latency' => $product->latency,
                     'current_store_price' => $product->store_price,
+                    'lowest_seller_id' => $product->lowest_seller_id,
+                    'lowest_seller_price' => $product->lowest_seller_price,
+                    'highest_seller_id' => $product->highest_seller_id,
+                    'highest_seller_price' => $product->highest_seller_price,
+                    'bb_winner_id' => $product->bb_winner_id,
                     'bb_winner_price' => $product->bb_winner_price,
-
+                    'is_bb_won' => $product->is_bb_won,
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ];
 
+            } else {
+                Log::notice(" ASIN: $product->asin - STORE_ID: $product->store_id - PUSH_PRICE: $push_price - BASE_PRICE: $product->base_price, STORE_PRICE: $product->store_price, BB_PRICE: $product->bb_winner_price");
             }
 
         }
 
-        Product_Push::create($data_to_insert);
+        Product_Push::insert($data_to_insert);
     }
 
-    public function push_price_logic($product): string {
+    public function push_price_logic($product) {
 
         if ($product->is_bb_won) {
             
