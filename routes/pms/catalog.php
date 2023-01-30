@@ -106,4 +106,4 @@ Route::get('catalog/buybox/download/file', 'Catalog\BuyBoxImportExportController
 Route::get('catalog/buybox/download/zip/{folder}/{countryCode}/{priority}', 'Catalog\BuyBoxImportExportController@DownloadBuyBoxFile');
 
 Route::get('catalog/buybox/count', 'Catalog\BuyBoxImportExportController@BuyBoxSellerTableCount')->name('catalog.buybox.count');
-Route::get('catalog/buybox/truncate', 'Catalog\BuyBoxImportExportController@BuyBoxTruncate')->name('catalog.buybox.truncate');
+Route::post('catalog/buybox/truncate', 'Catalog\BuyBoxImportExportController@BuyBoxTruncate')->name('catalog.buybox.truncate');

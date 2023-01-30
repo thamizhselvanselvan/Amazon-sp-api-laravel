@@ -36,10 +36,10 @@
             </a>
         </h2>
 
-        {{-- <h2 class="ml-2">
+        <h2 class="ml-2">
             <x-adminlte-button label="Truncate BuyBox" theme="primary" class="btn-sm" icon="fa fa-remove text-danger"
                 id="TruncateBuyBox" data-toggle="modal" data-target="#BuyBoxTruncate" />
-        </h2> --}}
+        </h2>
         <div class="modal fade" id="BuyBoxTruncate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
             aria-hidden="true">
             <div class="modal-dialog" role="document">
