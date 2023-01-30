@@ -349,7 +349,7 @@
                 url: "{{ route('catalog.buybox.count') }}",
                 response: 'json',
                 success: function(response) {
-
+                    console.log(response);
                     record = '<tr>';
                     $.each(response, function(key, value) {
                         if (key == null) {
