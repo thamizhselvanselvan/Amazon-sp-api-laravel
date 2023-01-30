@@ -76,6 +76,7 @@ class product_push_to_amazon extends Command
                     'availability' => $product->availability,
                     'push_price' => $push_price,
                     'base_price' => $product->base_price,
+                    'ceil_price' => $product->ceil_price,
                     'latency' => $product->latency,
                     'current_store_price' => $product->store_price,
                     'lowest_seller_id' => $product->lowest_seller_id,

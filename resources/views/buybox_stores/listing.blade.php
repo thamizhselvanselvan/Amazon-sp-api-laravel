@@ -72,6 +72,7 @@
                         <th>Current Price</th>
                         <th>Push Price</th>
                         <th>BB Price</th>
+                        <th>Base / Ceil Price</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -161,6 +162,12 @@
                 {
                     data: 'bb_winner_price',
                     name: 'bb_winner_price'
+                },
+                {
+                    data: 'base_ceil_price',
+                    name: 'base_ceil_price',
+                    orderable: false,
+                    searchable: false
                 },
                 {
                     data: 'action',
