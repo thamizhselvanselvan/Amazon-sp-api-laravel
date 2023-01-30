@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\buybox_stores;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use App\Models\Buybox_stores\Product;
@@ -42,10 +43,16 @@ class product_push_to_amazon extends Command
      */
     public function handle()
     {
+
+        $start_date = Carbon::now()->subMinutes(10);
+        $end_date = Carbon::now()->subMinutes(5);
+
         $products = Product::query()
             ->where(['cyclic' => 1, 'cyclic_push' => 0])
-            ->limit(100)
+            ->whereBetween("updated_at", [$start_date, $end_date])
             ->get();
+
+        Log::notice($products->count() . " Count of Product Update & pushing to Product Push Table");
 
         $data_to_insert = [];    
 
@@ -67,8 +74,7 @@ class product_push_to_amazon extends Command
                     'base_price' => $product->base_price,
                     'latency' => $product->latency,
                     'current_store_price' => $product->store_price,
-                    'bb_winner_price' => $product->bb_winner_price,
-
+                    'bb_winner_price' => $product->bb_winner_price
                 ];
 
             }
