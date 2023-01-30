@@ -114,7 +114,48 @@ class BuyBoxStoreController extends Controller
         if ($request->ajax()) {
        
             $data = Product_Push::query()
-                ->select('id', 'asin', 'product_sku', 'store_id', 'availability', 'push_price', 'base_price', 'latency')
+                ->select('id', 'asin', 'product_sku', 'push_price', 'bb_winner_price')
+                ->when($request_store_id, function ($query) use ($request_store_id) {
+                    return $query->where('store_id', $request_store_id);
+                })
+                ->where('push_status', 0)
+                ->where('push_availability_status', 1)
+                ->orderBy('id', 'DESC');
+
+            return DataTables::of($data)
+                ->addColumn('current_store_price', function() {
+                    return '';
+                })
+                ->addColumn('action', function() {
+                    return '<button class="price_process">Process</button>';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('buybox_stores.listing', compact('stores', 'url', 'request_store_id'));
+    }
+
+
+    public function availability(Request $request)
+    {
+
+        $stores = OrderSellerCredentials::select('store_name', 'seller_id')
+            ->where('buybox_stores', 1)
+            ->distinct()
+            ->get();
+
+        $request_store_id = $request->store_id;
+        $url = "/stores/listing/availability";
+
+        if (isset($request_store_id)) {
+            $url = "/stores/listing/availability/" . $request_store_id;
+        }
+
+        if ($request->ajax()) {
+       
+            $data = Product_Push::query()
+                ->select('id', 'asin', 'product_sku', 'current_availability_status', 'push_availability_status')
                 ->when($request_store_id, function ($query) use ($request_store_id) {
                     return $query->where('store_id', $request_store_id);
                 })
@@ -122,10 +163,14 @@ class BuyBoxStoreController extends Controller
                 ->orderBy('id', 'DESC');
 
             return DataTables::of($data)
+                ->addColumn('action', function() {
+                    return '<button class="price_process">Process</button>';
+                })
+                ->rawColumns(['action'])
                 ->make(true);
         }
 
-        return view('buybox_stores.listing', compact('stores', 'url', 'request_store_id'));
+        return view('buybox_stores.availability', compact('stores', 'url', 'request_store_id'));
     }
 
     public function storespriceupdated(Request $request)

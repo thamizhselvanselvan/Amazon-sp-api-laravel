@@ -69,9 +69,8 @@
                         <th>ID</th>
                         <th>ASIN</th>
                         <th>Product SKU</th>
-                        <th>Current Price</th>
-                        <th>Push Price</th>
-                        <th>BB Price</th>
+                        <th>Current Availability Status</th>
+                        <th>Push Availability Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -98,7 +97,7 @@
         $('#store_select').on('change', function() {
 
             let p = $(this).val();
-            window.location = "/stores/listing/price/" + $(this).val();
+            window.location = "/stores/listing/availability/" + $(this).val();
         });
 
         $('#update_price').on('click', function() {
@@ -151,16 +150,12 @@
                     name: 'product_sku'
                 },
                 {
-                    data: 'current_store_price',
-                    name: 'current_store_price'
+                    data: 'current_availability_status',
+                    name: 'current_availability_status'
                 },
                 {
-                    data: 'push_price',
-                    name: 'push_price'
-                },
-                {
-                    data: 'bb_winner_price',
-                    name: 'bb_winner_price'
+                    data: 'push_availability_status',
+                    name: 'push_availability_status'
                 },
                 {
                     data: 'action',

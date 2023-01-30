@@ -48,29 +48,27 @@ class Asin_price_import extends Command
     {
 
         $datas = Product::select('asin', 'store_id')
-            ->where('cyclic', '0')
+            ->where('cyclic', 0)
             ->orderBy('id', 'asc')
             ->limit(5000)
             ->get();
-
-        $asins = $datas->pluck('asin');
-        Product::whereIn('asin', $asins)->update(['cyclic' => '1']);
-
-
+            
         if ($datas->count() <= 0) {
-
-            Product::where('cyclic', '1')->update(['cyclic' => '0']);
-
+            
+            Product::where('cyclic', 1)->update(['cyclic' => 0]);
+            
             return $this->handle();
         }
 
-
+        $asins = $datas->pluck('asin');
+            
+        Product::whereIn('asin', $asins)->update(['cyclic' => 1]);
+        
         $new_datas = $datas->groupBy('store_id');
 
         foreach ($new_datas as $store_id => $data) {
 
             $result_asins = $data->pluck('asin');
-            // Product::whereIn('asin', $result_asins)->update(['cyclic' => '5']);   //need to check after one cyclic all stores cyclic is mapping to 5
 
             if ($store_id == '8' || $store_id == '10' || $store_id == '27' || $store_id == '6') {
 
@@ -78,9 +76,11 @@ class Asin_price_import extends Command
             } else if ($store_id == '7' || $store_id == '9' || $store_id == '12' || $store_id == '11' || $store_id == '20') {
 
                 $this->pricingae($result_asins, $store_id);
+
             } else if ($store_id == '7' || $store_id == '9' || $store_id == '12') {
 
                 $this->pricinguss($result_asins, $store_id);
+
             } else {
                 Log::notice('store_id' . $store_id);
             }
@@ -102,8 +102,7 @@ class Asin_price_import extends Command
             'pricing_uss.next_lowest_seller_id',
             'pricing_uss.bb_winner_price',
             'pricing_uss.bb_winner_id',
-            'pricing_uss.is_any_our_seller_won_bb',
-
+            'pricing_uss.is_any_our_seller_won_bb'
         ];
 
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'asin_destination_');
@@ -136,7 +135,7 @@ class Asin_price_import extends Command
                 'bb_winner_id' => $value['bb_winner_id'],
                 'bb_winner_price' => $value['bb_winner_price'],
                 'is_bb_won' => $value['is_any_our_seller_won_bb'],
-                'cyclic' => '1',
+                'cyclic' => 1
             ];
         }
 
@@ -191,7 +190,7 @@ class Asin_price_import extends Command
                 'bb_winner_id' => $value['bb_winner_id'],
                 'bb_winner_price' => $value['bb_winner_price'],
                 'is_bb_won' => $value['is_any_our_seller_won_bb'],
-                'cyclic' => '1',
+                'cyclic' => 1
             ];
         }
 
@@ -212,8 +211,7 @@ class Asin_price_import extends Command
             'pricing_uss.next_lowest_seller_id',
             'pricing_uss.bb_winner_price',
             'pricing_uss.bb_winner_id',
-            'pricing_uss.is_any_our_seller_won_bb',
-
+            'pricing_uss.is_any_our_seller_won_bb'
         ];
 
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'asin_destination_');
@@ -245,7 +243,7 @@ class Asin_price_import extends Command
                 'bb_winner_id' => $value['bb_winner_id'],
                 'bb_winner_price' => $value['bb_winner_price'],
                 'is_bb_won' => $value['is_any_our_seller_won_bb'],
-                'cyclic' => '1',
+                'cyclic' => 1
             ];
         }
 
