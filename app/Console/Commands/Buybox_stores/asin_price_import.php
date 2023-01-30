@@ -57,6 +57,7 @@ class Asin_price_import extends Command
             ->orderBy('id', 'asc')
             ->limit(5000)
             ->get();
+        Log::debug($datas->count() . " ASIN PRICE IMPORT COUNT");
             
         if ($datas->count() <= 0) {
             
@@ -66,8 +67,13 @@ class Asin_price_import extends Command
         }
 
         $asins = $datas->pluck('asin');
-            
-        Product::whereIn('asin', $asins)->update(['cyclic' => 1]);
+
+        $asins_collections = array_chunk($asins, 500);
+
+        foreach($asins_collections as $asin_collection) {
+
+            Product::whereIn('asin', $asin_collection)->update(['cyclic' => 1]);
+        }
         
         $new_datas = $datas->groupBy('store_id');
 

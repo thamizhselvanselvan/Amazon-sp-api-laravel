@@ -51,12 +51,12 @@ class product_push_to_amazon extends Command
             ->whereBetween("updated_at", [$start_date, $end_date])
             ->get();
 
+        Log::debug($products->count() . " PRODUCT PUSH COUNT");   
+
         if($products->count() <= 0) {
             Log::notice(" Product to Product Push is empty");
             return false;
         }    
-
-        Log::notice($products->count() . " Count of Product Update & pushing to Product Push Table");
 
         $data_to_insert = [];    
 
