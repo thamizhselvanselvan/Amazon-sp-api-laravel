@@ -208,8 +208,8 @@ class BuyBoxImportExportController extends Controller
         for ($priority = 1; $priority < 4; $priority++) {
 
             $tableName = "product_aa_custom_p" . $priority . "_ae_seller_detail";
-            $modelName = table_model_set(country_code: 'ae', model: "bb_product_aa_custom_seller_detail", table_name: $tableName);
-            $count['p' . $priority] = $modelName->get()->count('asin');
+            $modelName = table_model_set(country_code: 'AE', model: "bb_product_aa_custom_seller_detail", table_name: $tableName);
+            $count['p' . $priority] = $modelName->count('id');
         }
         return response()->json($count);
     }
