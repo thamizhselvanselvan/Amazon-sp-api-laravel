@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Buybox_stores\Product;
 use App\Services\Catalog\PriceConversion;
-use Carbon\Carbon;
 
 class BuyBoxPriceImport
 {
@@ -101,16 +100,9 @@ class BuyBoxPriceImport
 
                 if ($asin_array) {
 
-                    $startTime = getSystemSettingsValue('crowel_buybox_since_subminutes', 10);
-                    $start = "'" . Carbon::now()->subMinutes($startTime)->toDateTimeString() . "'";
-                    $end = "'" . Carbon::now()->toDateTimeString() . "'";
-
                     $asin = implode(',', $asin_array);
-                    Log::alert($asin);
                     $asin_price = DB::connection('buybox')
-                        ->select("SELECT PPO.asin, LP.available, 
-                        LP.is_sold_by_amazon,
-                        LP.is_any_our_seller_own_bb, 
+                        ->select("SELECT PPO.asin, LP.available, LP.is_sold_by_amazon,LP.is_any_our_seller_own_bb, 
                         LP.next_highest_seller_price,
                         LP.next_highest_seller_id,
                         LP.next_lowest_seller_price,
@@ -126,14 +118,12 @@ class BuyBoxPriceImport
                                  $product_lp as LP 
                             ON 
                                 PPO.asin = LP.asin
-                            WHERE LP.updated_at BETWEEN $start AND $end
-
-                            AND PPO.asin IN ($asin)
-                                
+                            WHERE
+                                 PPO.asin IN ($asin)
                             GROUP BY 
                                 PPO.asin
                         ");
-                    Log::warning($asin_price);
+
                     foreach ($asin_price as $value) {
 
                         $buybox_winner = explode(',', $value->is_buybox_winner);
@@ -253,7 +243,6 @@ class BuyBoxPriceImport
                     // $destination_model->upsert($des_asin_update, 'user_asin_unique', ['price_status']);
 
                     if ($country_code_lr == 'us') {
-                        Log::notice($pricing);
 
                         PricingUs::upsert($unavaliable_asin, 'unique_asin', [
                             'asin',
