@@ -63,7 +63,7 @@ class product_push_to_amazon extends Command
             Product::where('asin', $product->asin)->update(['cyclic_push' => 1]);
             
             // if Push is not equal to existing store price then don't push it
-            if($push_price != $product->store_price) {
+            if(isset($push_price) && $push_price != $product->store_price) {
 
                 $data_to_insert[] = [
                     'asin' => $product->asin,
@@ -77,6 +77,8 @@ class product_push_to_amazon extends Command
                     'bb_winner_price' => $product->bb_winner_price
                 ];
 
+            } else {
+                Log::notice(" $product->asin - $product->store_id ");
             }
 
         }
@@ -84,7 +86,7 @@ class product_push_to_amazon extends Command
         Product_Push::create($data_to_insert);
     }
 
-    public function push_price_logic($product): string {
+    public function push_price_logic($product) {
 
         if ($product->is_bb_won) {
             
