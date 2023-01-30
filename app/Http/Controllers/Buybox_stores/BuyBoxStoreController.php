@@ -23,6 +23,7 @@ class BuyBoxStoreController extends Controller
             ->whereIN('seller_id', $stores)
             ->select('seller_id', 'store_name')
             ->get();
+
         return view('buybox_stores.index', compact('stores'));
     }
 
@@ -128,7 +129,7 @@ class BuyBoxStoreController extends Controller
                     return $query->base_price .' / '. $query->ceil_price;
                 })
                 ->addColumn('action', function() {
-                    return '<button class="price_process">Process</button>';
+                    return '<button class="price_process btn btn-primary">Process</button>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
