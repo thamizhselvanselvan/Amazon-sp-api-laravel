@@ -19,6 +19,7 @@ class Product_Push extends Model
         'push_price',
         'base_price',
         'latency',
+        'applied_rules',
         'current_store_price',
         'lowest_seller_id',
         'lowest_seller_price',
