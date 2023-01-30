@@ -63,7 +63,8 @@ class CatalogPriceImport extends Command
 
         $country_code = 'US';
         $seller_id = '40';
-        $limit = 3000;
+        // $limit = 3000;
+        $limit = getSystemSettingsValue('us_cat_price_limit', 3000);
 
         $buy_box_price = new BuyBoxPriceImport();
         $buy_box_price->fetchPriceFromBB($country_code, $seller_id, $limit);
