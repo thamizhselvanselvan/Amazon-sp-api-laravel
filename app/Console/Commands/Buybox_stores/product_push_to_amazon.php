@@ -69,7 +69,7 @@ class product_push_to_amazon extends Command
                     'asin' => $product->asin,
                     'product_sku' => $product->product_sku,
                     'store_id' =>  $product->store_id,
-                    'push_availability_status' => $product->availability,
+                    'availability' => $product->availability,
                     'push_price' => $push_price,
                     'base_price' => $product->base_price,
                     'latency' => $product->latency,
