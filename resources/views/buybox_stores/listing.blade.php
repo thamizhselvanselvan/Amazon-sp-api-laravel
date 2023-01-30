@@ -69,11 +69,13 @@
                         <th>ID</th>
                         <th>ASIN</th>
                         <th>Product SKU</th>
-                        <th>Current Price</th>
-                        <th>Push Price</th>
-                        <th>BB Price</th>
+                        <th>Current Store Price</th>
+                        <th>Current BB Price</th>
+                        <th>Excel Price</th>
                         <th>Base / Ceil Price</th>
-                        <th>Action</th>
+                        <th>API Push Price</th>
+                        <th>Source BB Price</th>
+                        {{-- <th>Action</th> --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -156,12 +158,12 @@
                     name: 'current_store_price'
                 },
                 {
-                    data: 'push_price',
-                    name: 'push_price'
+                    data: 'destination_bb_price',
+                    name: 'destination_bb_price'
                 },
                 {
-                    data: 'bb_winner_price',
-                    name: 'bb_winner_price'
+                    data: 'app_360_price',
+                    name: 'app_360_price'
                 },
                 {
                     data: 'base_ceil_price',
@@ -170,11 +172,19 @@
                     searchable: false
                 },
                 {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                }
+                    data: 'push_price',
+                    name: 'push_price'
+                },
+                {
+                    data: 'bb_winner_price',
+                    name: 'bb_winner_price'
+                },
+                // {
+                //     data: 'action',
+                //     name: 'action',
+                //     orderable: false,
+                //     searchable: false
+                // }
             ]
         });
 
