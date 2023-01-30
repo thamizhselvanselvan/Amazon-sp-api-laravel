@@ -19,15 +19,7 @@ class Catalog_Manager extends Seeder
     {
         $roleCatalog = Role::create(['name' => 'Catalog']);
         $permissionCatalog = Permission::create(['name' => 'Catalog']);
-        
+
         $roleCatalog->givePermissionTo($permissionCatalog);
-
-        $mudassir = User::create([
-            'name' => 'Mudassir',
-            'email' => 'mudassir@moshecom.com',
-            'password' => Hash::make(123456),
-        ]);
-
-        $mudassir->assignRole('Catalog');
     }
 }
