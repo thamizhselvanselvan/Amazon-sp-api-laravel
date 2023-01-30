@@ -13,9 +13,9 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
+
 .env.local.example
 .env.live.example
 .env.prod.example
+
 /bash/push2production.sh
-
-
