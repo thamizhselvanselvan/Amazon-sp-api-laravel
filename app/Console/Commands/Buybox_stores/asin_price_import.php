@@ -53,8 +53,9 @@ class Asin_price_import extends Command
 
         $datas = Product::select('asin', 'store_id')
             ->where('cyclic', 0)
-            ->whereBetween("updated_at", [$start_date, $end_date])
+            //->whereBetween("updated_at", [$start_date, $end_date])
             ->orderBy('id', 'asc')
+            ->limit(5000)
             ->get();
             
         if ($datas->count() <= 0) {
