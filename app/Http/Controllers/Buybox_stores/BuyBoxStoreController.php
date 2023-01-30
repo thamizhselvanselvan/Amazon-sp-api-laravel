@@ -119,7 +119,7 @@ class BuyBoxStoreController extends Controller
                     return $query->where('store_id', $request_store_id);
                 })
                 ->where('push_status', 0)
-                ->where('push_availability_status', 1)
+                ->where('availability', 1)
                 ->orderBy('id', 'DESC');
 
             return DataTables::of($data)
