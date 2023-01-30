@@ -14,7 +14,7 @@ class AddAppliedRulesColumnToProductPushTable extends Migration
     public function up()
     {
         Schema::connection("buybox_stores")->table('product_push', function (Blueprint $table) {
-            $table->text("applied_rules")->default(0)->after('latency');
+            $table->text("applied_rules")->nullable()->after('latency');
         });
     }
 
