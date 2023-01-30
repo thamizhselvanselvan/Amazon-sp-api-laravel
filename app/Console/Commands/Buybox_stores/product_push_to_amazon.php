@@ -74,7 +74,15 @@ class product_push_to_amazon extends Command
                     'base_price' => $product->base_price,
                     'latency' => $product->latency,
                     'current_store_price' => $product->store_price,
-                    'bb_winner_price' => $product->bb_winner_price
+                    'lowest_seller_id' => $product->lowest_seller_id,
+                    'lowest_seller_price' => $product->lowest_seller_price,
+                    'highest_seller_id' => $product->highest_seller_id,
+                    'highest_seller_price' => $product->highest_seller_price,
+                    'bb_winner_id' => $product->bb_winner_id,
+                    'bb_winner_price' => $product->bb_winner_price,
+                    'is_bb_won' => $product->is_bb_won,
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ];
 
             } else {
@@ -83,7 +91,7 @@ class product_push_to_amazon extends Command
 
         }
 
-        Product_Push::create($data_to_insert);
+        Product_Push::insert($data_to_insert);
     }
 
     public function push_price_logic($product) {
