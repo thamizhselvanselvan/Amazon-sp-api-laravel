@@ -16,7 +16,12 @@ Route::get('buybox/sp_api_push', 'Buybox_stores\BuyBoxStoreController@get_price_
 
 
 Route::post('stores/listing/price/updated', 'Buybox_stores\BuyBoxStoreController@storespriceupdated')->name('buybox.store.updated');
+
 Route::get('stores/listing/price', 'Buybox_stores\BuyBoxStoreController@storeslisting')->name('buybox.store.listing');
 Route::get('stores/listing/price/{store_id}', 'Buybox_stores\BuyBoxStoreController@storeslisting')->name('buybox.store.listing.storewise');
+
+Route::get('stores/listing/availability', 'Buybox_stores\BuyBoxStoreController@availability')->name('buybox.store.availability');
+Route::get('stores/listing/availability/{store_id}', 'Buybox_stores\BuyBoxStoreController@availability')->name('buybox.store.availability.storewise');
+
 Route::get('stores/listing/price/update/{id}', 'Buybox_stores\BuyBoxStoreController@updateprice')->name('buybox.store.listing.storewise.update');
 
