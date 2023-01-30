@@ -78,7 +78,7 @@ class product_push_to_amazon extends Command
                 ];
 
             } else {
-                Log::notice(" $product->asin - $product->store_id ");
+                Log::notice(" ASIN: $product->asin - STORE_ID: $product->store_id - PUSH_PRICE: $push_price - BASE_PRICE: $product->base_price, STORE_PRICE: $product->store_price, BB_PRICE: $product->bb_winner_price");
             }
 
         }
