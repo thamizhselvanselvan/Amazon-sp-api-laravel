@@ -11,6 +11,7 @@ use App\Models\Buybox_stores\Product_Push;
 class product_push_to_amazon extends Command
 {
     private $increase_by_percent = 1;
+    private $rules_applied = []; 
 
     /**
      * The name and signature of the console command.
@@ -48,17 +49,23 @@ class product_push_to_amazon extends Command
         $end_date = Carbon::now()->subMinutes(5);
 
         $products = Product::query()
-            ->where(['cyclic' => 1, 'cyclic_push' => 0])
             ->whereBetween("updated_at", [$start_date, $end_date])
             ->get();
 
-        Log::notice($products->count() . " Count of Product Update & pushing to Product Push Table");
+        Log::debug($products->count() . " PRODUCT PUSH COUNT");   
+
+        if($products->count() <= 0) {
+            Log::notice(" Product to Product Push is empty");
+            return false;
+        }    
 
         $data_to_insert = [];    
 
         foreach ($products as $product) {
 
-            $push_price = $this->push_price_logic($product);
+            $id_rules_applied = $product->asin."_".$product->store_id;
+
+            $push_price = $this->push_price_logic($product, $id_rules_applied);
 
             Product::where('asin', $product->asin)->update(['cyclic_push' => 1]);
             
@@ -72,6 +79,7 @@ class product_push_to_amazon extends Command
                     'availability' => $product->availability,
                     'push_price' => $push_price,
                     'base_price' => $product->base_price,
+                    'ceil_price' => $product->ceil_price,
                     'latency' => $product->latency,
                     'current_store_price' => $product->store_price,
                     'lowest_seller_id' => $product->lowest_seller_id,
@@ -81,6 +89,7 @@ class product_push_to_amazon extends Command
                     'bb_winner_id' => $product->bb_winner_id,
                     'bb_winner_price' => $product->bb_winner_price,
                     'is_bb_won' => $product->is_bb_won,
+                    'applied_rules' => $this->rules_applied[$id_rules_applied] ?? "No Rules Applied",
                     'created_at' => now(),
                     'updated_at' => now()
                 ];
@@ -94,7 +103,7 @@ class product_push_to_amazon extends Command
         Product_Push::insert($data_to_insert);
     }
 
-    public function push_price_logic($product) {
+    public function push_price_logic($product, $id_rules_applied) {
 
         if ($product->is_bb_won) {
             
@@ -103,11 +112,16 @@ class product_push_to_amazon extends Command
 
                 $push_price = addPercentage($product->bb_price, $this->increase_by_percent);
 
-                if($product->push_price < $product->ceil_price) {
+                if($push_price < $product->ceil_price) {
+
+                    $this->rules_applied[$id_rules_applied] = [
+                        'if we have own the BB then no otherr sellers are selling that product then we increase the price',
+                        "BB Price: $product->bb_price, Increase Percent: $this->increase_by_percent, Push Price: $push_price, Ceil Price: $product->ceil_price"
+                    ];
+
                     return $push_price;
                 }
 
-                return $product->bb_price;
             } 
 
             // if we have own the BB then if next highest seller is there then increase the price closest to the next highest price guy but not more than him
@@ -116,11 +130,25 @@ class product_push_to_amazon extends Command
                 $push_price = addPercentage($product->bb_price, $this->increase_by_percent);
 
                 if($product->highest_seller_price > $push_price && $push_price < $product->ceil_price) {
+
+                    $this->rules_applied[$id_rules_applied] = [
+                        'if we have own the BB then if next highest seller is there then increase the price closest to the next highest price guy but not more than him',
+                        "BB Price: $product->bb_price, Increase Percent: $this->increase_by_percent, Push Price: $push_price, 
+                        Ceil Price: $product->ceil_price, Highest Seller Price: $product->highest_seller_price"
+                    ];
+
                     return $push_price;
                 }
 
-                return $product->bb_price;
             }
+
+            $this->rules_applied[$id_rules_applied] = [
+                'No Rule applied to it',
+                'if we have own the BB then no otherr sellers are selling that product then we increase the price',
+                "BB Price: $product->bb_price, Increase Percent: $this->increase_by_percent, Push Price: $push_price, Ceil Price: $product->ceil_price"
+            ];
+
+            return $product->bb_price;
 
         } else {
             
@@ -129,11 +157,17 @@ class product_push_to_amazon extends Command
 
                 $push_price = addPercentage($product->bb_price, $this->increase_by_percent);
 
-                if($product->push_price < $product->ceil_price) {
+                if($push_price < $product->ceil_price) {
+
+                    $this->rules_applied[$id_rules_applied] = [
+                        'if we have lost the BB then no other sellers are sellling that product then we increase that prices',
+                        "BB Price: $product->bb_price, Increase Percent: $this->increase_by_percent, Push Price: $push_price, 
+                        Ceil Price: $product->ceil_price, Highest Seller Price: $product->highest_seller_price"
+                    ];
+
                     return $push_price;
                 }
 
-                return $product->bb_price;
             } 
 
             // if we have lost the BB then if BB has been won by somebody then check  
@@ -144,10 +178,16 @@ class product_push_to_amazon extends Command
                     $push_price = removePercentage($product->bb_winner_price, $this->increase_by_percent);
 
                     if($push_price > $product->base_price && $push_price < $product->ceil_price) {
+
+                        $this->rules_applied[$id_rules_applied] = [
+                            'if we have lost the BB then if BB has been won by somebody then check, if BB winner price is greater than our price.',
+                            "BB Price: $product->bb_price, Increase Percent: $this->increase_by_percent, Push Price: $push_price, 
+                            Ceil Price: $product->ceil_price, Highest Seller Price: $product->highest_seller_price, Base Price: $product->base_price"
+                        ];
+
                         return $push_price;
                     }
 
-                    return $product->bb_price;
                 }
 
                 if($product->bb_winner_price < $product->bb_price) {
@@ -155,16 +195,28 @@ class product_push_to_amazon extends Command
                     $push_price = removePercentage($product->bb_winner_price, $this->increase_by_percent);
 
                     if($push_price > $product->base_price && $push_price < $product->ceil_price) {
+
+                        $this->rules_applied[$id_rules_applied] = [
+                            'if we have lost the BB then if BB has been won by somebody then check, if BB winner price is lesser than our price.',
+                            "BB Price: $product->bb_price, Increase Percent: $this->increase_by_percent, Push Price: $push_price, 
+                            Ceil Price: $product->ceil_price, Highest Seller Price: $product->highest_seller_price, Base Price: $product->base_price"
+                        ];
+
                         return $push_price;
                     }
 
-                    return $product->bb_price;
                 }
 
                 return $product->bb_price;
             } 
 
         }
+
+        $this->rules_applied[$id_rules_applied] = [
+            'No Rule applied to it',
+            'if we have own the BB then no otherr sellers are selling that product then we increase the price',
+            "BB Price: $product->bb_price, Increase Percent: $this->increase_by_percent, Push Price: $push_price, Ceil Price: $product->ceil_price"
+        ];
 
         return $product->bb_price;
     }

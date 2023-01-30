@@ -4,6 +4,7 @@ namespace App\Console\Commands\Buybox_stores;
 
 use Exception;
 use App\Models\Mws_region;
+use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use App\Models\Buybox_stores\Product;
@@ -47,11 +48,16 @@ class Asin_price_import extends Command
     public function handle()
     {
 
+        $start_date = Carbon::now()->subMinutes(10);
+        $end_date = Carbon::now()->subMinutes(5);
+
         $datas = Product::select('asin', 'store_id')
             ->where('cyclic', 0)
+            //->whereBetween("updated_at", [$start_date, $end_date])
             ->orderBy('id', 'asc')
             ->limit(5000)
             ->get();
+        Log::debug($datas->count() . " ASIN PRICE IMPORT COUNT");
             
         if ($datas->count() <= 0) {
             
@@ -61,8 +67,13 @@ class Asin_price_import extends Command
         }
 
         $asins = $datas->pluck('asin');
-            
-        Product::whereIn('asin', $asins)->update(['cyclic' => 1]);
+
+        $asins_collections = array_chunk($asins, 500);
+
+        foreach($asins_collections as $asin_collection) {
+
+            Product::whereIn('asin', $asin_collection)->update(['cyclic' => 1]);
+        }
         
         $new_datas = $datas->groupBy('store_id');
 

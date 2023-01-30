@@ -23,6 +23,7 @@ class BuyBoxStoreController extends Controller
             ->whereIN('seller_id', $stores)
             ->select('seller_id', 'store_name')
             ->get();
+
         return view('buybox_stores.index', compact('stores'));
     }
 
@@ -114,7 +115,7 @@ class BuyBoxStoreController extends Controller
         if ($request->ajax()) {
        
             $data = Product_Push::query()
-                ->select('id', 'asin', 'product_sku', 'push_price', 'bb_winner_price')
+                ->select('id', 'asin', 'product_sku', 'push_price', 'current_store_price', 'bb_winner_price', 'base_price', 'ceil_price')
                 ->when($request_store_id, function ($query) use ($request_store_id) {
                     return $query->where('store_id', $request_store_id);
                 })
@@ -123,11 +124,12 @@ class BuyBoxStoreController extends Controller
                 ->orderBy('id', 'DESC');
 
             return DataTables::of($data)
-                ->addColumn('current_store_price', function() {
-                    return '';
+                ->addColumn('base_ceil_price', function($query) {
+
+                    return $query->base_price .' / '. $query->ceil_price;
                 })
                 ->addColumn('action', function() {
-                    return '<button class="price_process">Process</button>';
+                    return '<button class="price_process btn btn-primary">Process</button>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
