@@ -207,8 +207,9 @@ class BuyBoxImportExportController extends Controller
         $count = [];
         for ($priority = 1; $priority < 4; $priority++) {
 
-            $tableName = "product_aa_custom_p" . $priority . "_in_seller_details";
-            $count['p' . $priority] = DB::connection('buybox')->table($tableName)->get()->count('asin');
+            $tableName = "product_aa_custom_p" . $priority . "_ae_seller_detail";
+            $modelName = table_model_set(country_code: 'ae', model: "bb_product_aa_custom_seller_detail", table_name: $tableName);
+            $count['p' . $priority] = $modelName->get()->count('asin');
         }
         return response()->json($count);
     }
@@ -219,5 +220,12 @@ class BuyBoxImportExportController extends Controller
             'source' => 'required',
             'priority' => 'required|in:1,2,3,4'
         ]);
+
+        $source = $request->source;
+        $priority = $request->priority;
+
+        commandExecFunc("mosh:buybox-offers-seller-details-table-truncate ${source} ${priority}");
+
+        return redirect('catalog/buybox/import')->with('success', 'Table is truncating...');
     }
 }
