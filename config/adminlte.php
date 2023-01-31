@@ -467,7 +467,7 @@ return [
 
                     'text' => 'Buy-Box Operation',
                     'icon' => 'far fa-fw fa-file',
-                    'can' =>  ['Admin'],
+                    'can' =>  ['Admin', 'Catalog'],
                     'submenu' => [
                         [
                             'text'  => 'Buy-Box Import',
