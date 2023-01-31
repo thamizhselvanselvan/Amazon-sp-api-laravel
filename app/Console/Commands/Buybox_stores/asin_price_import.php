@@ -59,11 +59,6 @@ class Asin_price_import extends Command
             ->limit(1300)
             ->get();
 
-        Log::debug($datas->count() . " ASIN PRICE IMPORT COUNT");
-
-        echo PHP_EOL;
-        echo $datas->count() . " ASIN PRICE IMPORT COUNT";
-            
         if ($datas->count() <= 0) {
             
             Product::where('cyclic', 1)->update(['cyclic' => 0]);
@@ -149,7 +144,7 @@ class Asin_price_import extends Command
                 'cyclic' => 1
             ];
         }
-        echo count($insert_data_in) ." Insert  \n";
+
         $this->product_upsert($insert_data_in);
     }
 
@@ -267,7 +262,7 @@ class Asin_price_import extends Command
 
     public function product_upsert($data)
     {
-        print_r($data);
+
         Product::upsert(
             $data,
             ['asin_store_id_unique'],
