@@ -94,6 +94,7 @@ class ImportPriceFromBuyBox
             $pricing_in = [];
             $pricing_us = [];
             Log::notice($country_code_lr . '=>' . count($BBRecords));
+            $count1 = 0;
             foreach ($BBRecords as $BBRecord) {
 
                 $asin = $BBRecord->asin;
@@ -170,6 +171,29 @@ class ImportPriceFromBuyBox
                     ];
 
                     $pricing_us[] = [...$asinDetails, ...$price_us_source];
+                    if ($count1 == 1000) {
+                        PricingUs::upsert($pricing_us, 'unique_asin',  [
+                            'asin',
+                            'available',
+                            'is_sold_by_amazon',
+                            'weight',
+                            'us_price',
+                            'usa_to_in_b2b',
+                            'usa_to_in_b2c',
+                            'usa_to_uae',
+                            'usa_to_sg',
+                            'next_highest_seller_price',
+                            'next_highest_seller_id',
+                            'next_lowest_seller_price',
+                            'next_lowest_seller_id',
+                            'bb_winner_price',
+                            'bb_winner_id',
+                            'is_any_our_seller_won_bb',
+                            'price_updated_at'
+                        ]);
+                        $count1 = 0;
+                        $pricing_us = [];
+                    }
                 } elseif ($country_code_lr == 'in') {
 
                     $packet_weight_kg = poundToKg($packet_weight);
@@ -184,7 +208,30 @@ class ImportPriceFromBuyBox
                         'weight' => $packet_weight_kg
                     ];
                     $pricing_in[] = [...$asinDetails, ...$destination_price];
+                    if ($count1 == 1000) {
+                        PricingIn::upsert($pricing_in, 'asin_unique', [
+                            'asin',
+                            'available',
+                            'is_sold_by_amazon',
+                            'in_price',
+                            'weight',
+                            'ind_to_uae',
+                            'ind_to_sg',
+                            'ind_to_sa',
+                            'next_highest_seller_price',
+                            'next_highest_seller_id',
+                            'next_lowest_seller_price',
+                            'next_lowest_seller_id',
+                            'bb_winner_price',
+                            'bb_winner_id',
+                            'is_any_our_seller_won_bb',
+                            'price_updated_at'
+                        ]);
+                        $count1 = 0;
+                        $pricing_in = [];
+                    }
                 }
+                $count1++;
             }
             if ($country_code_lr == 'us') {
 
