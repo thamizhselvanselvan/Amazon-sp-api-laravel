@@ -319,7 +319,7 @@ class ZohoOrderFormat
 
     public function get_product_link($country_code, $asin)
     {
-        if ($country_code != 'AE') {
+        if ($country_code == 'AE') {
 
             return 'http://www.amazon.ae/gp/product/' . $asin;
         }
