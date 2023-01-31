@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingUs;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Services\Catalog\PriceConversion;
 
 
@@ -13,11 +14,13 @@ class ImportPriceFromBuyBox
 {
     public function GetPriceFromBuyBox($country_code)
     {
-        $priorityArray = ['P1' => 1, 'P2' => 2, 'P3' => 3, 'P4' => 4];
+        $priorityArray = ['P1' => 1, 'P2' => 2, 'P3' => 3];
         $price_convert = new PriceConversion();
+
         foreach ($priorityArray as $priority) {
 
-            $start = "'" . Carbon::now()->subDay()->toDateTimeString() . "'";
+            $subMinutes = getSystemSettingsValue('fetch_buybox_of_last_minutes', 5);
+            $start = "'" . Carbon::now()->subMinutes($subMinutes)->toDateTimeString() . "'";
             $end = "'" . Carbon::now()->toDateTimeString() . "'";
 
             $country_code_lr = strtolower($country_code);
@@ -43,18 +46,18 @@ class ImportPriceFromBuyBox
                                 WHERE LP.updated_at BETWEEN $start AND $end 
                                 GROUP BY PPO.asin
                             ");
-            $asins = [];
             $count = 0;
-            $catalogRecords = [];
+            $asins = [];
             $Records = [];
-
+            $catalogRecords = [];
+            Log::notice($country_code_lr . '=>' . count($BuyBoxRecords));
             $catalogTable = table_model_create(country_code: $country_code_lr, model: 'Catalog', table_name: 'catalognew');
             foreach ($BuyBoxRecords as $BuyBoxRecord) {
 
                 $Records[$BuyBoxRecord->asin] = $BuyBoxRecord;
                 $asins[] = $BuyBoxRecord->asin;
 
-                if ($count == 500) {
+                if ($count == 1000) {
                     $catalogRecords[] = $catalogTable->select('asin', 'dimensions')
                         ->whereIn('asin', $asins)
                         ->get()
@@ -90,7 +93,8 @@ class ImportPriceFromBuyBox
             $BBlistingPrice = '';
             $pricing_in = [];
             $pricing_us = [];
-
+            Log::notice($country_code_lr . '=>' . count($BBRecords));
+            $count1 = 0;
             foreach ($BBRecords as $BBRecord) {
 
                 $asin = $BBRecord->asin;
@@ -110,7 +114,8 @@ class ImportPriceFromBuyBox
                 $listingAmount = explode(',', $BBRecord->listingprice_amount);
 
                 foreach ($isBuyBoxWinner as $key1 => $BuyBoxWinner) {
-                    $price = 'us_price';
+                    $price = $country_code_lr . '_price';
+
                     if ($BuyBoxWinner == 1) {
 
                         $BBlistingPrice = $listingAmount[$key1];
@@ -166,6 +171,29 @@ class ImportPriceFromBuyBox
                     ];
 
                     $pricing_us[] = [...$asinDetails, ...$price_us_source];
+                    if ($count1 == 1000) {
+                        PricingUs::upsert($pricing_us, 'unique_asin',  [
+                            'asin',
+                            'available',
+                            'is_sold_by_amazon',
+                            'weight',
+                            'us_price',
+                            'usa_to_in_b2b',
+                            'usa_to_in_b2c',
+                            'usa_to_uae',
+                            'usa_to_sg',
+                            'next_highest_seller_price',
+                            'next_highest_seller_id',
+                            'next_lowest_seller_price',
+                            'next_lowest_seller_id',
+                            'bb_winner_price',
+                            'bb_winner_id',
+                            'is_any_our_seller_won_bb',
+                            'price_updated_at'
+                        ]);
+                        $count1 = 0;
+                        $pricing_us = [];
+                    }
                 } elseif ($country_code_lr == 'in') {
 
                     $packet_weight_kg = poundToKg($packet_weight);
@@ -180,7 +208,30 @@ class ImportPriceFromBuyBox
                         'weight' => $packet_weight_kg
                     ];
                     $pricing_in[] = [...$asinDetails, ...$destination_price];
+                    if ($count1 == 1000) {
+                        PricingIn::upsert($pricing_in, 'asin_unique', [
+                            'asin',
+                            'available',
+                            'is_sold_by_amazon',
+                            'in_price',
+                            'weight',
+                            'ind_to_uae',
+                            'ind_to_sg',
+                            'ind_to_sa',
+                            'next_highest_seller_price',
+                            'next_highest_seller_id',
+                            'next_lowest_seller_price',
+                            'next_lowest_seller_id',
+                            'bb_winner_price',
+                            'bb_winner_id',
+                            'is_any_our_seller_won_bb',
+                            'price_updated_at'
+                        ]);
+                        $count1 = 0;
+                        $pricing_in = [];
+                    }
                 }
+                $count1++;
             }
             if ($country_code_lr == 'us') {
 
@@ -224,6 +275,7 @@ class ImportPriceFromBuyBox
                     'price_updated_at'
                 ]);
             }
+            // Log::alert($pricing_us);
         }
     }
 }
