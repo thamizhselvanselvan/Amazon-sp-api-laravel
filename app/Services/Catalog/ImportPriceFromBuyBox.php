@@ -50,7 +50,7 @@ class ImportPriceFromBuyBox
             $asins = [];
             $Records = [];
             $catalogRecords = [];
-
+            Log::notice(count($BuyBoxRecords));
             $catalogTable = table_model_create(country_code: $country_code_lr, model: 'Catalog', table_name: 'catalognew');
             foreach ($BuyBoxRecords as $BuyBoxRecord) {
 
@@ -93,7 +93,7 @@ class ImportPriceFromBuyBox
             $BBlistingPrice = '';
             $pricing_in = [];
             $pricing_us = [];
-            Log::notice($BBRecords);
+            Log::notice(count($BBRecords));
             foreach ($BBRecords as $BBRecord) {
 
                 $asin = $BBRecord->asin;

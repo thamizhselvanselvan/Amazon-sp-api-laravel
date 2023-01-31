@@ -60,7 +60,7 @@ Route::get('testing', function () {
     $count = 0;
     $catalogRecords = [];
     $Records = [];
-
+    po(count($BuyBoxRecords));
     $catalogTable = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
     foreach ($BuyBoxRecords as $BuyBoxRecord) {
 
@@ -103,7 +103,7 @@ Route::get('testing', function () {
     $BBlistingPrice = '';
     $pricing_in = [];
     $pricing_us = [];
-
+    po(count($BBRecords));
     foreach ($BBRecords as $BBRecord) {
 
         $asin = $BBRecord->asin;
