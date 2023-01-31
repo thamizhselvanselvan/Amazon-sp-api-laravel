@@ -176,7 +176,7 @@ class BuyBoxStoreController extends Controller
                 ->addColumn('action', function() {
                     return '<button class="price_process btn btn-primary">Process</button>';
                 })
-                ->rawColumns(['action', 'asin', 'product_sku'])
+                ->rawColumns(['action', 'asin', 'product_sku', 'highest_seller_name', 'lowest_seller_name', 'destination_bb_seller'])
                 ->make(true);
         }
 
