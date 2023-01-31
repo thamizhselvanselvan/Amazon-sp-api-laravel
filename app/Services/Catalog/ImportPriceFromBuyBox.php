@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingUs;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Services\Catalog\PriceConversion;
 
 
@@ -13,11 +14,13 @@ class ImportPriceFromBuyBox
 {
     public function GetPriceFromBuyBox($country_code)
     {
-        $priorityArray = ['P1' => 1, 'P2' => 2, 'P3' => 3, 'P4' => 4];
+        $priorityArray = ['P1' => 1, 'P2' => 2, 'P3' => 3];
         $price_convert = new PriceConversion();
+
         foreach ($priorityArray as $priority) {
 
-            $start = "'" . Carbon::now()->subDay()->toDateTimeString() . "'";
+            $subMinutes = getSystemSettingsValue('fetch_buybox_of_last_minutes', 5);
+            $start = "'" . Carbon::now()->subMinutes($subMinutes)->toDateTimeString() . "'";
             $end = "'" . Carbon::now()->toDateTimeString() . "'";
 
             $country_code_lr = strtolower($country_code);
@@ -43,10 +46,10 @@ class ImportPriceFromBuyBox
                                 WHERE LP.updated_at BETWEEN $start AND $end 
                                 GROUP BY PPO.asin
                             ");
-            $asins = [];
             $count = 0;
-            $catalogRecords = [];
+            $asins = [];
             $Records = [];
+            $catalogRecords = [];
 
             $catalogTable = table_model_create(country_code: $country_code_lr, model: 'Catalog', table_name: 'catalognew');
             foreach ($BuyBoxRecords as $BuyBoxRecord) {
@@ -54,7 +57,7 @@ class ImportPriceFromBuyBox
                 $Records[$BuyBoxRecord->asin] = $BuyBoxRecord;
                 $asins[] = $BuyBoxRecord->asin;
 
-                if ($count == 500) {
+                if ($count == 1000) {
                     $catalogRecords[] = $catalogTable->select('asin', 'dimensions')
                         ->whereIn('asin', $asins)
                         ->get()
@@ -110,7 +113,8 @@ class ImportPriceFromBuyBox
                 $listingAmount = explode(',', $BBRecord->listingprice_amount);
 
                 foreach ($isBuyBoxWinner as $key1 => $BuyBoxWinner) {
-                    $price = 'us_price';
+                    $price = $country_code_lr . '_price';
+
                     if ($BuyBoxWinner == 1) {
 
                         $BBlistingPrice = $listingAmount[$key1];
@@ -225,5 +229,6 @@ class ImportPriceFromBuyBox
                 ]);
             }
         }
+        Log::alert($pricing_us);
     }
 }
