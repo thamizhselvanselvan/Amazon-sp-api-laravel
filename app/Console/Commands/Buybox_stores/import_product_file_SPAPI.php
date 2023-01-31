@@ -49,6 +49,8 @@ class import_product_file_SPAPI extends Command
     {
         $stores  = [6, 7, 8, 9, 10, 11, 12, 20, 27];
 
+        $stores  = [6];
+
         // $stores[] = '';
         // $stores_id =  OrderSellerCredentials::query()->select('seller_id', 'country_code')->where('buybox_stores', '1')->get();
         // foreach($stores_id as $data)

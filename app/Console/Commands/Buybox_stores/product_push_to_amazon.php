@@ -73,8 +73,8 @@ class product_push_to_amazon extends Command
 
             $push_price = $this->push_price_logic($product, $id_rules_applied);
 
-            echo $product->asin."-".$push_price."-".$id_rules_applied;
-            echo "\n";
+            // echo $product->asin."-".$push_price."-".$id_rules_applied;
+            // echo "\n";
 
             Product::where('asin', $product->asin)->where("store_id", $product->store_id)->update(['cyclic_push' => 1]);
             
@@ -110,6 +110,7 @@ class product_push_to_amazon extends Command
                 ]);
 
             } else {
+                echo $push_price .' - '. $product->store_price . " - " . $product->ceil_price ."\n";
                // Log::notice(" ASIN: $product->asin - STORE_ID: $product->store_id - PUSH_PRICE: $push_price - BASE_PRICE: $product->base_price, STORE_PRICE: $product->store_price, BB_PRICE: $product->bb_winner_price");
             }
 

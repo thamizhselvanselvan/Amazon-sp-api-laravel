@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Storage;
 class Asin_price_import extends Command
 {
 
-    private $base_percentage = 5;
-    private $ceil_percentage = 5;
+    private $base_percentage = 20;
+    private $ceil_percentage = 20;
     private $price_calculate_type = "percent";
 
     /**
@@ -56,8 +56,9 @@ class Asin_price_import extends Command
             ->where('cyclic', 0)
             //->whereBetween("updated_at", [$start_date, $end_date])
             ->orderBy('id', 'asc')
-            ->limit(3000)
+            ->limit(1300)
             ->get();
+
         Log::debug($datas->count() . " ASIN PRICE IMPORT COUNT");
 
         echo PHP_EOL;
@@ -70,20 +71,13 @@ class Asin_price_import extends Command
             return $this->handle();
         }
 
-        $asins = $datas->pluck('asin');
-
-        $asins_collections = array_chunk($asins->toArray(), 500);
-
-        foreach($asins_collections as $asin_collection) {
-
-            Product::whereIn('asin', $asin_collection)->update(['cyclic' => 1]);
-        }
-        
         $new_datas = $datas->groupBy('store_id');
 
         foreach ($new_datas as $store_id => $data) {
 
             $result_asins = $data->pluck('asin');
+
+            Product::where('store_id', $store_id)->whereIn('asin', $result_asins)->update(['cyclic' => 1]);
 
             if ($store_id == '8' || $store_id == '10' || $store_id == '27' || $store_id == '6') {
 
@@ -155,7 +149,7 @@ class Asin_price_import extends Command
                 'cyclic' => 1
             ];
         }
-
+        echo count($insert_data_in) ." Insert  \n";
         $this->product_upsert($insert_data_in);
     }
 
@@ -273,7 +267,7 @@ class Asin_price_import extends Command
 
     public function product_upsert($data)
     {
-
+        print_r($data);
         Product::upsert(
             $data,
             ['asin_store_id_unique'],
