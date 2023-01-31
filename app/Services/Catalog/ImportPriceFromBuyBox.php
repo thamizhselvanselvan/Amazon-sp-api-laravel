@@ -93,7 +93,7 @@ class ImportPriceFromBuyBox
             $BBlistingPrice = '';
             $pricing_in = [];
             $pricing_us = [];
-
+            Log::notice($BBRecords);
             foreach ($BBRecords as $BBRecord) {
 
                 $asin = $BBRecord->asin;
@@ -228,7 +228,7 @@ class ImportPriceFromBuyBox
                     'price_updated_at'
                 ]);
             }
+            Log::alert($pricing_us);
         }
-        Log::alert($pricing_us);
     }
 }
