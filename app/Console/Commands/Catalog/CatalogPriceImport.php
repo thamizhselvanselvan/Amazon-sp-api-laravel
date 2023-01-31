@@ -13,6 +13,7 @@ use App\Models\Catalog\AsinDestination;
 use App\Services\Catalog\PriceConversion;
 use App\Services\Catalog\BuyBoxPriceImport;
 use AmazonPHP\SellingPartner\Model\ProductPricing\BuyBoxPriceType;
+use App\Services\Catalog\ImportPriceFromBuyBox;
 
 class CatalogPriceImport extends Command
 {
@@ -62,11 +63,14 @@ class CatalogPriceImport extends Command
         $pm_id = $process_management_id['id'];
 
         $country_code = 'US';
-        $seller_id = '40';
-        $limit = 3000;
+        // $seller_id = '40';
+        // $limit = 3000;
 
-        $buy_box_price = new BuyBoxPriceImport();
-        $buy_box_price->fetchPriceFromBB($country_code, $seller_id, $limit);
+        $buy_box_price = new ImportPriceFromBuyBox();
+        $buy_box_price->GetPriceFromBuyBox($country_code);
+
+        // $buy_box_price = new BuyBoxPriceImport();
+        // $buy_box_price->fetchPriceFromBB($country_code, $seller_id, $limit);
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
