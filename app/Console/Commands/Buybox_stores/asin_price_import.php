@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Storage;
 class Asin_price_import extends Command
 {
 
-    private $base_percentage = 20;
-    private $ceil_percentage = 20;
+    private $base_percentage = 10;
+    private $ceil_percentage = 10;
 
     /**
      * The name and signature of the console command.
@@ -58,6 +58,9 @@ class Asin_price_import extends Command
             ->limit(5000)
             ->get();
         Log::debug($datas->count() . " ASIN PRICE IMPORT COUNT");
+
+        echo PHP_EOL;
+        echo $datas->count() . " ASIN PRICE IMPORT COUNT";
             
         if ($datas->count() <= 0) {
             
@@ -68,7 +71,7 @@ class Asin_price_import extends Command
 
         $asins = $datas->pluck('asin');
 
-        $asins_collections = array_chunk($asins, 500);
+        $asins_collections = array_chunk($asins->toArray(), 500);
 
         foreach($asins_collections as $asin_collection) {
 
@@ -127,8 +130,8 @@ class Asin_price_import extends Command
 
         foreach ($data as $value) {
 
-            $ceil_price  = addPercentage($value['in_price'], $this->base_percentage);
-            $base_price  = removePercentage($value['in_price'], $this->ceil_percentage);
+            $ceil_price  = addPercentage($value['usa_to_in_b2c'], $this->base_percentage);
+            $base_price  = removePercentage($value['usa_to_in_b2c'], $this->ceil_percentage);
 
             $insert_data_in[] = [
                 'bb_price' => $value['in_price'],
@@ -182,8 +185,8 @@ class Asin_price_import extends Command
 
         foreach ($data as $value) {
 
-            $ceil_price = addPercentage($value['ae_price'], $this->base_percentage);
-            $base_price = removePercentage($value['ae_price'], $this->ceil_percentage);
+            $ceil_price = addPercentage($value['usa_to_uae'], $this->base_percentage);
+            $base_price = removePercentage($value['usa_to_uae'], $this->ceil_percentage);
 
             $insert_data[] = [
                 'bb_price' => $value['ae_price'],

@@ -115,7 +115,7 @@ class BuyBoxStoreController extends Controller
         if ($request->ajax()) {
        
             $data = Product_Push::query()
-                ->select('id', 'asin', 'product_sku', 'push_price', 'current_store_price', 'bb_winner_price', 'base_price', 'ceil_price')
+                ->select('id', 'asin', 'product_sku', 'push_price', 'current_store_price', 'bb_winner_price', 'base_price', 'ceil_price', 'app_360_price', 'destination_bb_price')
                 ->when($request_store_id, function ($query) use ($request_store_id) {
                     return $query->where('store_id', $request_store_id);
                 })
@@ -124,6 +124,14 @@ class BuyBoxStoreController extends Controller
                 ->orderBy('id', 'DESC');
 
             return DataTables::of($data)
+                ->editColumn('asin', function($query) {
+
+                    return "<a target='_blank' href='https://amazon.com/dp/".$query->asin."'>".$query->asin."</a>";
+                })
+                ->editColumn('product_sku', function($query) {
+
+                    return "<a target='_blank' href='https://amazon.in/dp/".$query->asin."'>".$query->product_sku."</a>";
+                })
                 ->addColumn('base_ceil_price', function($query) {
 
                     return $query->base_price .' / '. $query->ceil_price;
@@ -131,7 +139,7 @@ class BuyBoxStoreController extends Controller
                 ->addColumn('action', function() {
                     return '<button class="price_process btn btn-primary">Process</button>';
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'asin', 'product_sku'])
                 ->make(true);
         }
 

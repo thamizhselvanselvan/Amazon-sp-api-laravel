@@ -18,6 +18,8 @@ class Product_Push extends Model
         'availability',
         'push_price',
         'base_price',
+        'app_360_price',
+        'destination_bb_price',
         'latency',
         'applied_rules',
         'current_store_price',
