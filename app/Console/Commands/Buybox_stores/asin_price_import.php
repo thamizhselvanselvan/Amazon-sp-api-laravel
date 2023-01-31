@@ -55,7 +55,7 @@ class Asin_price_import extends Command
             ->where('cyclic', 0)
             //->whereBetween("updated_at", [$start_date, $end_date])
             ->orderBy('id', 'asc')
-            ->limit(5000)
+            ->limit(3000)
             ->get();
         Log::debug($datas->count() . " ASIN PRICE IMPORT COUNT");
 
