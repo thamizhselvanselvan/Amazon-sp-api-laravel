@@ -13,8 +13,9 @@ use Illuminate\Support\Facades\Storage;
 class Asin_price_import extends Command
 {
 
-    private $base_percentage = 10;
-    private $ceil_percentage = 10;
+    private $base_percentage = 5;
+    private $ceil_percentage = 5;
+    private $price_calculate_type = "percent";
 
     /**
      * The name and signature of the console command.
@@ -130,16 +131,18 @@ class Asin_price_import extends Command
 
         foreach ($data as $value) {
 
-            $ceil_price  = addPercentage($value['usa_to_in_b2c'], $this->base_percentage);
-            $base_price  = removePercentage($value['usa_to_in_b2c'], $this->ceil_percentage);
+            //$ceil_price  = addPercentage($value['usa_to_in_b2c'], $this->base_percentage);
+            //$base_price  = removePercentage($value['usa_to_in_b2c'], $this->ceil_percentage);
+
+            $price_calculate = $this->calculate($value['usa_to_in_b2c']);
 
             $insert_data_in[] = [
                 'bb_price' => $value['in_price'],
                 'app_360_price' => $value['usa_to_in_b2c'],
                 'priority' => $value['priority'],
                 'availability' => $value['available'],
-                'base_price' => $base_price,
-                'ceil_price' => $ceil_price,
+                'base_price' => $price_calculate['base_price'],
+                'ceil_price' => $price_calculate['ceil_price'],
                 'store_id' => $store_id,
                 'asin' => $value['asin'],
                 'lowest_seller_id' => $value['next_lowest_seller_id'],
@@ -185,16 +188,18 @@ class Asin_price_import extends Command
 
         foreach ($data as $value) {
 
-            $ceil_price = addPercentage($value['usa_to_uae'], $this->base_percentage);
-            $base_price = removePercentage($value['usa_to_uae'], $this->ceil_percentage);
+            // $ceil_price = addPercentage($value['usa_to_uae'], $this->base_percentage);
+            // $base_price = removePercentage($value['usa_to_uae'], $this->ceil_percentage);
+
+            $price_calculate = $this->calculate($value['usa_to_uae']);
 
             $insert_data[] = [
                 'bb_price' => $value['ae_price'],
                 'app_360_price' => $value['usa_to_uae'],
                 'priority' => $value['priority'],
                 'availability' => $value['available'],
-                'base_price' => $base_price,
-                'ceil_price' => $ceil_price,
+                'base_price' => $price_calculate['base_price'],
+                'ceil_price' => $price_calculate['ceil_price'],
                 'store_id' => $store_id,
                 'asin' => $value['asin'],
                 'lowest_seller_id' => $value['next_lowest_seller_id'],
@@ -238,16 +243,18 @@ class Asin_price_import extends Command
 
         foreach ($data as $value) {
 
-            $ceil_price = addPercentage($value['us_price'], $this->base_percentage);
-            $base_price = removePercentage($value['us_price'], $this->ceil_percentage);
+            /* $ceil_price = addPercentage($value['us_price'], $this->base_percentage);
+            $base_price = removePercentage($value['us_price'], $this->ceil_percentage); */
+
+            $price_calculate = $this->calculate($value['usa_to_uae']);
 
             $insert_data[] = [
                 'bb_price' => $value['us_price'],
                 'app_360_price' => $value['us_price'],
                 'priority' => $value['priority'],
                 'availability' => $value['available'],
-                'base_price' => $base_price,
-                'ceil_price' => $ceil_price,
+                'base_price' => $price_calculate['base_price'],
+                'ceil_price' => $price_calculate['ceil_price'],
                 'store_id' => $store_id,
                 'asin' => $value['asin'],
                 'lowest_seller_id' => $value['next_lowest_seller_id'],
@@ -275,5 +282,21 @@ class Asin_price_import extends Command
                 'lowest_seller_id', 'lowest_seller_price', 'highest_seller_id', 'highest_seller_price', 'bb_winner_id', 'bb_winner_price', 'is_bb_won',
             ]
         );
+    }
+
+    public function calculate($price) {
+
+        if($this->price_calculate_type == "percent") {
+            
+            $ceil_price  = addPercentage($price, $this->base_percentage);
+            $base_price  = removePercentage($price, $this->ceil_percentage);
+
+            return ['ceil_price' => $ceil_price, 'base_price' => $base_price];
+        } 
+
+        $ceil_price = $price + $this->ceil_percentage;
+        $base_price = $price - $this->base_percentage;
+
+        return ['ceil_price' => $ceil_price, 'base_price' => $base_price];
     }
 }
