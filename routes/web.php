@@ -245,31 +245,3 @@ Route::get('testing', function () {
         ]);
     }
 });
-
-function upsert($country_code_lr, $insertingRecords)
-{
-    po($insertingRecords);
-    exit;
-    if ($country_code_lr == 'us') {
-
-        PricingUs::upsert($insertingRecords, 'unique_asin',  [
-            'asin',
-            'available',
-            'is_sold_by_amazon',
-            'weight',
-            'us_price',
-            'usa_to_in_b2b',
-            'usa_to_in_b2c',
-            'usa_to_uae',
-            'usa_to_sg',
-            'next_highest_seller_price',
-            'next_highest_seller_id',
-            'next_lowest_seller_price',
-            'next_lowest_seller_id',
-            'bb_winner_price',
-            'bb_winner_id',
-            'is_any_our_seller_won_bb',
-            'price_updated_at'
-        ]);
-    }
-}
