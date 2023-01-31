@@ -121,7 +121,8 @@ class BuyBoxStoreController extends Controller
                 'product_sku', 
                 'push_price', 
                 'current_store_price', 
-                'bb_winner_price', 
+                'bb_winner_price',
+                'bb_winner_id',
                 'base_price', 
                 'ceil_price', 
                 'app_360_price', 
@@ -153,6 +154,12 @@ class BuyBoxStoreController extends Controller
                     $seller_name = (Seller_id_name::where('seller_store_id', $query->lowest_seller_id)->first())->seller_name ?? "";
 
                     return $query->lowest_seller_id ." / ".$seller_name;
+                })
+                ->editColumn('destination_bb_seller', function($query) {
+
+                    $seller_name = (Seller_id_name::where('seller_store_id', $query->bb_winner_id)->first())->seller_name ?? "";
+
+                    return $query->bb_winner_id ." / ".$seller_name;
                 })
                 ->editColumn('asin', function($query) {
 
