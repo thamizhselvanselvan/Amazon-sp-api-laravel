@@ -42,8 +42,7 @@ class catalog_upload_to_cliqnshop extends Command
     {
         $site_id = $this->argument('site_id');
         $file_path = $this->argument('path');
-        Log::info('start');
-
+   
 
         $csv_data =  CSV_Reader($file_path);
 
