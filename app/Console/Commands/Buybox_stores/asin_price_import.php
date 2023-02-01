@@ -100,13 +100,13 @@ class Asin_price_import extends Command
             'pricing_uss.usa_to_in_b2c',
             'pricing_uss.available',
             'pricing_uss.asin',
-            'pricing_uss.next_highest_seller_price',
-            'pricing_uss.next_highest_seller_id',
-            'pricing_uss.next_lowest_seller_price',
-            'pricing_uss.next_lowest_seller_id',
-            'pricing_uss.bb_winner_price',
-            'pricing_uss.bb_winner_id',
-            'pricing_uss.is_any_our_seller_won_bb'
+            'pricing_ins.next_highest_seller_price',
+            'pricing_ins.next_highest_seller_id',
+            'pricing_ins.next_lowest_seller_price',
+            'pricing_ins.next_lowest_seller_id',
+            'pricing_ins.bb_winner_price',
+            'pricing_ins.bb_winner_id',
+            'pricing_ins.is_any_our_seller_won_bb'
         ];
 
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'asin_destination_');
@@ -126,20 +126,20 @@ class Asin_price_import extends Command
             $price_calculate = $this->calculate($value['usa_to_in_b2c']);
 
             $insert_data_in[] = [
-                'bb_price' => $value['in_price'],
-                'app_360_price' => $value['usa_to_in_b2c'],
-                'priority' => $value['priority'],
-                'availability' => $value['available'],
-                'base_price' => $price_calculate['base_price'],
-                'ceil_price' => $price_calculate['ceil_price'],
                 'store_id' => $store_id,
                 'asin' => $value['asin'],
+                'priority' => $value['priority'],
+                'availability' => $value['available'],
+                'bb_price' => ceil($value['in_price']),
+                'app_360_price' => ceil($value['usa_to_in_b2c']),
+                'base_price' => ceil($price_calculate['base_price']),
+                'ceil_price' => ceil($price_calculate['ceil_price']),
                 'lowest_seller_id' => $value['next_lowest_seller_id'],
-                'lowest_seller_price' => $value['next_lowest_seller_price'],
+                'lowest_seller_price' => ceil($value['next_lowest_seller_price']),
                 'highest_seller_id' => $value['next_highest_seller_id'],
-                'highest_seller_price' => $value['next_highest_seller_price'],
+                'highest_seller_price' => ceil($value['next_highest_seller_price']),
                 'bb_winner_id' => $value['bb_winner_id'],
-                'bb_winner_price' => $value['bb_winner_price'],
+                'bb_winner_price' => ceil($value['bb_winner_price']),
                 'is_bb_won' => $value['is_any_our_seller_won_bb'],
                 'cyclic' => 1
             ];
@@ -157,13 +157,13 @@ class Asin_price_import extends Command
             'pricing_uss.usa_to_uae',
             'pricing_uss.available',
             'pricing_uss.asin',
-            'pricing_uss.next_highest_seller_price',
-            'pricing_uss.next_highest_seller_id',
-            'pricing_uss.next_lowest_seller_price',
-            'pricing_uss.next_lowest_seller_id',
-            'pricing_uss.bb_winner_price',
-            'pricing_uss.bb_winner_id',
-            'pricing_uss.is_any_our_seller_won_bb',
+            'pricing_aes.next_highest_seller_price',
+            'pricing_aes.next_highest_seller_id',
+            'pricing_aes.next_lowest_seller_price',
+            'pricing_aes.next_lowest_seller_id',
+            'pricing_aes.bb_winner_price',
+            'pricing_aes.bb_winner_id',
+            'pricing_aes.is_any_our_seller_won_bb',
         ];
 
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'asin_destination_');
@@ -183,20 +183,20 @@ class Asin_price_import extends Command
             $price_calculate = $this->calculate($value['usa_to_uae']);
 
             $insert_data[] = [
-                'bb_price' => $value['ae_price'],
-                'app_360_price' => $value['usa_to_uae'],
-                'priority' => $value['priority'],
-                'availability' => $value['available'],
-                'base_price' => $price_calculate['base_price'],
-                'ceil_price' => $price_calculate['ceil_price'],
                 'store_id' => $store_id,
                 'asin' => $value['asin'],
+                'priority' => $value['priority'],
+                'availability' => $value['available'],
+                'bb_price' => ceil($value['ae_price']),
+                'app_360_price' => ceil($value['usa_to_uae']),
+                'base_price' => ceil($price_calculate['base_price']),
+                'ceil_price' => ceil($price_calculate['ceil_price']),
                 'lowest_seller_id' => $value['next_lowest_seller_id'],
-                'lowest_seller_price' => $value['next_lowest_seller_price'],
+                'lowest_seller_price' => ceil($value['next_lowest_seller_price']),
                 'highest_seller_id' => $value['next_highest_seller_id'],
-                'highest_seller_price' => $value['next_highest_seller_price'],
+                'highest_seller_price' => ceil($value['next_highest_seller_price']),
                 'bb_winner_id' => $value['bb_winner_id'],
-                'bb_winner_price' => $value['bb_winner_price'],
+                'bb_winner_price' => ceil($value['bb_winner_price']),
                 'is_bb_won' => $value['is_any_our_seller_won_bb'],
                 'cyclic' => 1
             ];
@@ -238,20 +238,20 @@ class Asin_price_import extends Command
             $price_calculate = $this->calculate($value['usa_to_uae']);
 
             $insert_data[] = [
-                'bb_price' => $value['us_price'],
-                'app_360_price' => $value['us_price'],
+                'asin' => $value['asin'],
+                'store_id' => $store_id,
                 'priority' => $value['priority'],
                 'availability' => $value['available'],
-                'base_price' => $price_calculate['base_price'],
-                'ceil_price' => $price_calculate['ceil_price'],
-                'store_id' => $store_id,
-                'asin' => $value['asin'],
+                'bb_price' => ceil($value['us_price']),
+                'app_360_price' => ceil($value['us_price']),
+                'base_price' => ceil($price_calculate['base_price']),
+                'ceil_price' => ceil($price_calculate['ceil_price']),
                 'lowest_seller_id' => $value['next_lowest_seller_id'],
-                'lowest_seller_price' => $value['next_lowest_seller_price'],
+                'lowest_seller_price' => ceil($value['next_lowest_seller_price']),
                 'highest_seller_id' => $value['next_highest_seller_id'],
-                'highest_seller_price' => $value['next_highest_seller_price'],
+                'highest_seller_price' => ceil($value['next_highest_seller_price']),
                 'bb_winner_id' => $value['bb_winner_id'],
-                'bb_winner_price' => $value['bb_winner_price'],
+                'bb_winner_price' => ceil($value['bb_winner_price']),
                 'is_bb_won' => $value['is_any_our_seller_won_bb'],
                 'cyclic' => 1
             ];

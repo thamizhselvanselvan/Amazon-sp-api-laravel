@@ -15,6 +15,28 @@
         padding: 2;
         padding-left: 5px;
     }
+
+    .product_label {
+        font-size: 15px;
+        font-weight: 600 !important;
+    }
+
+    .pop_over {
+        width: 80px;
+        cursor: pointer;
+    }
+
+    .pop_over_data {
+        color: #2c3e50;
+        background: #fff;
+        width: 260px;
+        padding: 10px;
+        z-index: 10000;
+    }
+
+    .yajra-datatable {
+        font-size: 14px;
+    }
 </style>
 @stop
 
@@ -68,16 +90,17 @@
                     <tr class="table-info">
                         <th>ID</th>
                         <th>ASIN</th>
-                        <th>Product SKU</th>
-                        <th>Current Store Price</th>
-                        <th>Current BB Price</th>
-                        <th>Current BB Seller Name/ID</th>
-                        <th>Next Highest Seller</th>
-                        <th>Next Highest Seller Name/ID</th>
-                        <th>Next Lowest Price</th>
-                        <th>Next Lowest Seller Name/ID</th>
-                        <th>Base / Ceil Price</th>
-                        <th>API Push Price</th>
+                        <th>SKU</th>
+                        <th title="Current Store Price">SP</th>
+                        <th title="Current BB Price">BB</th>
+                        <th title="Current BB Seller Name/ID">BB Seller</th>
+                        <th title="Next Highest Seller">NHS</th>
+                        <th title="Next Highest Seller Name/ID">NHS Name</th>
+                        <th title="Next Lowest Price">NLS</th>
+                        <th title="Next Lowest Seller Name/ID">NLS Name</th>
+                        <th>Base Price</th>
+                        <th>Ceil Price</th>
+                        <th>Push Price</th>
                         {{-- <th>Action</th> --}}
                     </tr>
                 </thead>
@@ -99,6 +122,29 @@
             if ($('#store_select').val() == '') {
                 $('#update_price').hide();
             }
+
+            $(document).on('click', ".pop_over", function(e) {
+
+                let pop_over = $('.pop_over_data');
+
+                $('.pop_over_data').each(function() {
+
+                    if(!$(this).hasClass('d-none')) {
+                        $(this).addClass('d-none');
+                    }
+
+                });
+
+                $(this).find('.pop_over_data').toggleClass('d-none');
+            });
+
+            $(document).on('click', function(e) {
+                let container = $('.pop_over');
+                if (!container.is(e.target) && container.has(e.target).length === 0) {
+                    $('.pop_over_data').addClass('d-none');
+                }
+            });
+
         });
 
         $('#store_select').on('change', function() {
@@ -158,7 +204,9 @@
                 },
                 {
                     data: 'current_store_price',
-                    name: 'current_store_price'
+                    name: 'current_store_price',
+                    // orderable: false,
+                    // searchable: false
                 },
                 {
                     data: 'destination_bb_price',
@@ -185,8 +233,14 @@
                     name: 'lowest_seller_name'
                 },
                 {
-                    data: 'base_ceil_price',
-                    name: 'base_ceil_price',
+                    data: 'ceil_price',
+                    name: 'ceil_price',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'ceil_price',
+                    name: 'ceil_price',
                     orderable: false,
                     searchable: false
                 },
