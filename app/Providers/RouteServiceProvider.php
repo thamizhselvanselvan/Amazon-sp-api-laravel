@@ -142,10 +142,17 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware(['web', 'maintenance_mode', 'auth'])
                 ->namespace($this->namespace)
                 ->group(base_path('routes/pms/scheduler.php'));
+
+            Route::middleware(['web', 'maintenance_mode', 'auth'])
+                ->namespace($this->namespace)
+                ->group(base_path('routes/v2/masters.php'));
+            Route::middleware(['web', 'maintenance_mode', 'auth'])
+                ->namespace($this->namespace)
+                ->group(base_path('routes/v2/oms.php'));
         });
     }
 
-    /**
+    /**                                                
      * Configure the rate limiters for the application.
      *
      * @return void
