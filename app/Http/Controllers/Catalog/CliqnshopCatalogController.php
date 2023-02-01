@@ -69,8 +69,7 @@ class CliqnshopCatalogController extends Controller
             'cliqnshop_csv' => 'required',
             'country' => 'required',
         ]);
-        // $site_id = $request->country;
-        $site_id = '1.';
+        $site_id = $request->country;
         $file = file_get_contents($request->cliqnshop_csv);
         $current_time = Carbon::now()->toDateTimeString();
         $time =  str_replace(array(':', ' '), array('-', '_'), $current_time);
@@ -81,32 +80,34 @@ class CliqnshopCatalogController extends Controller
         if (!Storage::exists($path)) {
             return false;
         } else {
-            $user_id = Auth::user()->id;
-            $file_info = [
-                'user_id' => $user_id,
-                'type' => 'Import',
-                'module' => "Cliqnshop_db_insert",
-                'file_path' => $path,
-                'command_name' => "mosh:catalog_insert_cliqnshop ${path} ${site_id}",
-            ];
+            // $user_id = Auth::user()->id;
+            // $header = ["path" => "${path},$ "site_id"=${site_id}"];
+            // $file_info = [
+            //     'user_id' => $user_id,
+            //     'type' => 'Import',
+            //     'module' => "Cliqnshop_insert",
+            //     'file_path' => $path,
+            //     'command_name' => "mosh:catalog_insert_cliqnshop",
+            //     "header"        => "${path}_${site_id}"
+            // ];
 
-            FileManagement::create($file_info);
-            fileManagement();
+            // FileManagement::create($file_info);
+            // fileManagement();
 
-            $file_info = [
-                'user_id' => $user_id,
-                'type' => 'Import',
-                'module' => "Cliqnshop_db_export",
-                'file_path' => $path,
-                'command_name' => "mosh:export_catalog_imported_asin ${path}",
-            ];
+            // $file_info = [
+            //     'user_id' => $user_id,
+            //     'type' => 'Import',
+            //     'module' => "Cliqnshop_export",
+            //     'file_path' => $path,
+            //     'command_name' => "mosh:export_catalog_imported_asin ${path}",
+            // ];
 
-            FileManagement::create($file_info);
-            fileManagement();
+            // FileManagement::create($file_info);
+            // fileManagement();
 
 
-            // commandExecFunc("mosh:catalog_insert_cliqnshop ${path} ${site_id}");
-            // commandExecFunc("mosh:export_catalog_imported_asin ${path}");
+            commandExecFunc("mosh:catalog_insert_cliqnshop ${path} ${site_id}");
+            commandExecFunc("mosh:export_catalog_imported_asin ${path}");
             // $this->insertCliqnshop($site_id);
 
             return back()->with('success', 'Cliqnshop Catalog file has been uploaded successfully !');

@@ -355,9 +355,6 @@ class AdminManagementController extends Controller
                     return $action;
                 })
 
-
-
-
                 ->addColumn('partner', function ($id) use ($courier_partner, $courier_partner_check) {
                     $action = '<div class="pl-2">
                                     <select name="courier[]" id="courier" class="courier_class">
@@ -399,7 +396,14 @@ class AdminManagementController extends Controller
                     }
                     return $action .= '</select></div>';
                 })
-                ->rawColumns(['store_name', 'region', 'order', 'order_item', 'enable_snt', 'partner', 'zoho', 'buybox_stores', 'source', 'destination'])
+
+                ->addColumn('push_price_type', function ($id) {
+                    $action = '<div class="d-flex justify-content-center "><a id="update-push-price" href="javascript:void(0)" class=" btn btn-success btn-sm " data-toggle="modal" data-id=' . $id['id'] . '><i class="fas fa-edit"></i> Edit</a></div>';
+
+                    // $action = '<a href="/admin/stores/update/' . $id['id'] . ' " class=" btn btn-success btn-sm " ><i class="fas fa-edit"></i> Edit</a></div>';
+                    return $action;
+                })
+                ->rawColumns(['store_name', 'region', 'order', 'order_item', 'enable_snt', 'partner', 'zoho', 'buybox_stores', 'source', 'destination', 'push_price_type'])
                 ->make(true);
         }
 
@@ -470,7 +474,7 @@ class AdminManagementController extends Controller
             'source' => NULL,
             'destination' => NULL,
         ]);
-        
+
         if ($selected_store['0'] != '') {
             foreach ($selected_store as $id) {
 
@@ -538,7 +542,29 @@ class AdminManagementController extends Controller
                 }
             }
         }
-        
+
         return response()->json(['success' => 'Store Selected']);
+    }
+
+    public function UpdatePushPriceColumn(Request $request)
+    {
+        $id = $request->updated_id;
+        $request->validate([
+            'type' => 'required|in:fixed,percentage',
+            'value' => 'required'
+        ]);
+        $Updated_data = [
+            'price_calculation_type' => $request->type,
+            'price_calculation_value' => $request->value
+        ];
+
+        OrderSellerCredentials::where('id', $id)->update($Updated_data);
+        return redirect()->intended('/admin/stores')->with('success', 'Records has been updated successfully');
+    }
+
+    public function EditPushPriceColumn($id)
+    {
+        $records = OrderSellerCredentials::select('price_calculation_type', 'price_calculation_value')->where('id', $id)->get();
+        return response()->json($records);
     }
 }
