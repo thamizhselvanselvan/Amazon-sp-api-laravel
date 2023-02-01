@@ -23,6 +23,8 @@ class OrderSellerCredentials extends Model
         'courier_partner',
         'zoho',
         'source',
-        'destination'
+        'destination',
+        'push_price_type',
+        'push_price_value'
     ];
 }
