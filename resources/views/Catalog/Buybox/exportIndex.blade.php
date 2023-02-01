@@ -12,13 +12,25 @@
         <div class="col d-flex justify-content-end">
 
             <h2 class="ml-2">
+                <a href="{{ route('catalog.buybox.download.export.template') }}">
+                    <x-adminlte-button label="Download BuyBox Template" theme="primary" class="btn-sm"
+                        icon="fas fa-file-download" />
+                </a>
+            </h2>
+
+            <h2 class="ml-2">
+                <x-adminlte-button label="Download BuyBox File" theme="primary" class="btn-sm" icon="fas fa-file-export"
+                    id="BuyBoxUploadedFile" data-toggle="modal" data-target="#BuyBoxUploadedFileModal" />
+            </h2>
+
+            <h2 class="ml-2">
                 <x-adminlte-button label="Export BuyBox" theme="primary" class="btn-sm" icon="fas fa-file-export"
                     id="exportBuyBox" data-toggle="modal" data-target="#BuyBoxExport" />
             </h2>
 
             <h2 class="ml-2">
                 <x-adminlte-button label="Download BuyBox" theme="primary" class="btn-sm" icon="fas fa-download"
-                    id="downloadBuyBox" data-toggle="modal" data-target="#downloadBuyBox" />
+                    id="downloadBuyBox" data-toggle="modal" data-target="#downloadBuyBoxModal" />
             </h2>
         </div>
 
@@ -75,7 +87,7 @@
                             <div class="col-12 float-left mt-2">
                                 <input type="hidden" name="export_type" value="via_priority">
                                 <x-adminlte-button label="Export" theme="success" class="btn btn-sm "
-                                    icon="fas fa-file-export " type="submit" id="buyboxExport" />
+                                    icon="fas fa-file-export " type="submit" id="buyboxExportDD" />
                             </div>
                         </form>
                     </div>
@@ -87,14 +99,31 @@
             </div>
         </div>
 
-        <div class="modal" id="downloadBuyBox">
+        <div class="modal" id="downloadBuyBoxModal">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">Download BuyBox Zip</h4>
+                        <h4 class="modal-title">Download BuyBox According To Priority Zip</h4>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body BuyBoxFiles">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="BuyBoxUploadedFileModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Download BuyBox Of Uploaded File</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body BuyBoxUploadedFiles">
 
                     </div>
                     <div class="modal-footer">
@@ -144,9 +173,9 @@
                 <form class="row" action="{{ route('catalog.buybox.export.csv') }}" method="POST"
                     enctype="multipart/form-data">
                     @csrf
-                    <div class="col-3"></div>
+                    <div class="col-2"></div>
 
-                    <div class="col-6 ">
+                    <div class="col-8 ">
                         <div class="card">
                             <div class="card-header source">
                                 <label for="Select Source">Select Source</label>
@@ -194,18 +223,17 @@
                                 </div>
                             </div>
                             <div class="card-footer text-area">
-                                <x-adminlte-textarea label="ASIN By Text-area" name="text_area" type="text"
-                                    rows="6" placeholder="Enter ASIN " id="textarea" />
-                                <input type="hidden" name="export_type" value="text_area">
+                                <x-adminlte-input label="Select CSV File" name="csvFile" type="file" />
+                                <input type="hidden" name="export_type" value="csvFile">
 
                                 <div class="text-center">
                                     <x-adminlte-button label="Upload" theme="primary" class="add_asin"
-                                        icon="fas fa-plus" type="submit" />
+                                        icon="fas fa-plus" type="submit" id="BuyBoxSubmitButton" />
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-3"></div>
+                    <div class="col-2"></div>
                 </form>
             </div>
         </div>
@@ -228,7 +256,8 @@
                 success: function(response) {
                     console.log(response);
                     if (response.status == 'Processing') {
-                        $('#buyboxExport').prop('disabled', true);
+                        $('#buyboxExportDD').prop('disabled', true);
+                        $('#BuyBoxSubmitButton').prop('disabled', true);
 
                         $('.info-msg').removeClass('d-none');
                         $('#info-value').append(response.description);
@@ -239,6 +268,82 @@
                         $('#info-value').append(response.description);
                     }
 
+                },
+            });
+        });
+
+        $('#downloadBuyBox').click(function() {
+
+            $.ajax({
+                url: "{{ route('catalog.buybox.file.download') }}",
+                method: "GET",
+                data: {
+                    "folder": "BuyBox",
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
+                    console.log(response);
+                    if (response == '') {
+                        $('.BuyBoxFiles').append('File Downloading..');
+                    } else {
+
+                        $('.BuyBoxFiles').empty();
+                        let files = '';
+                        $.each(response, function(index, response) {
+                            let data = response;
+                            $.each(data, function(key, data) {
+
+                                files += "<li class=' ml-0'>";
+                                files +=
+                                    "<a href='/catalog/buybox/download/zip/BuyBox/" +
+                                    index + "/" + key +
+                                    "' class='p-0 m-0'> BuyBox " + index + '&nbsp;' +
+                                    'P' + key + "</a> ";
+                                files += data;
+                                files += "</li>";
+                            });
+
+                        });
+                        $('.BuyBoxFiles').html(files);
+                    }
+                },
+            });
+        });
+
+        $('#BuyBoxUploadedFile').click(function() {
+
+            $.ajax({
+                url: "{{ route('catalog.buybox.file.download') }}",
+                method: "GET",
+                data: {
+                    "folder": "BuyBoxOfUploadedFile",
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
+                    console.log(response);
+                    if (response == '') {
+                        $('.BuyBoxUploadedFiles').append('File Downloading..');
+                    } else {
+
+                        $('.BuyBoxUploadedFiles').empty();
+                        let files = '';
+                        $.each(response, function(index, response) {
+                            let data = response;
+                            $.each(data, function(key, data) {
+
+                                files += "<li class=' ml-0'>";
+                                files +=
+                                    "<a href='/catalog/buybox/download/zip/BuyBoxOfUploadedFile/" +
+                                    index + "/" + key +
+                                    "' class='p-0 m-0'> BuyBox " + index + '&nbsp;' +
+                                    'P' + key + "</a> ";
+                                files += data;
+                                files += "</li>";
+                            });
+
+                        });
+                        $('.BuyBoxUploadedFiles').html(files);
+                    }
                 },
             });
         });

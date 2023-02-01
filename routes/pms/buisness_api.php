@@ -1,20 +1,7 @@
 <?php
 
-use League\Csv\Reader;
-use App\Models\Aws_credential;
-use Illuminate\Support\Facades\DB;
-use App\Models\Buybox_stores\Product;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
-use App\Services\AWS_Business_API\AWS_POC\Orders;
-use App\Http\Controllers\PMSPHPUnitTestController;
-use App\Http\Controllers\Cliqnshop\ImageBrandController;
-use PhpOffice\PhpSpreadsheet\Calculation\TextData\Search;
-
-use App\Http\Controllers\BuisnessAPI\ProductsRequestController;
-use App\Services\AWS_Business_API\Details_dump\product_details;
-use App\Services\AWS_Business_API\AWS_POC\Search_Product_Request;
-use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
 
 Route::get('product/details/search', 'BuisnessAPI\SearchProductRequestController@searchproductRequest');
 Route::resource('business/search/products', 'BuisnessAPI\SearchProductRequestController');
@@ -79,7 +66,17 @@ Route::post('cliqnshop/catalog/csv/import', 'Catalog\CliqnshopCatalogController@
 Route::get('catalog/cliqnshop/new_asin', 'Catalog\CliqnshopCatalogController@uploaded_export_download')->name('uploaded.asin.catalog.export.cliqnshop');
 Route::get('uploaded/catalog/cliqnshop/download/{index}', 'Catalog\CliqnshopCatalogController@Download_uploaded_asin_catalog')->name('uploaded.asin.catalog.export.cliqnshop.download');
 Route::get('cliqnshop/db/upload', 'Catalog\CliqnshopCatalogController@insertCliqnshop')->name('cliqnshop.catalog.db.upload');
+Route::get('cliqnshop/category-poc', 'Catalog\CategoryController@index')->name('cliqnshop.category-poc');
+Route::post('cliqnshop/category-export', 'Catalog\CategoryController@export')->name('cliqnshop.category-export');
 
+
+Route::get('cliqnshop/category-download', function () {
+    $exportFilePath = 'test/Categories.csv';
+    if (!Storage::exists($exportFilePath)) {
+        Storage::put($exportFilePath, '');
+    }
+    return Storage::download($exportFilePath);
+});
 // Route::get('product/test', function () {
 //   // $data[] = $key;
 //   $searchKey = 'iPhone';
@@ -89,70 +86,3 @@ Route::get('cliqnshop/db/upload', 'Catalog\CliqnshopCatalogController@insertCliq
 //   $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
 //   po($result);
 // });
-Route::get('test', function () {
-    exit;
-    $seller_id = '8';
-    $aws = Aws_credential::with(['mws_region'])->where('seller_id', $seller_id)->where('api_type', 1)->first();
-    $aws_key = $aws->id;
-    $country_code = $aws->mws_region->region_code;
-    $marketplace_id = $aws->mws_region->marketplace_id;
-
-
-    $productreport = new ImageBrandController;
-    $response = $productreport->getReports($aws_key, $country_code, $marketplace_id);
-
-
-
-    if (array_key_exists('reports', $response) && count($response['reports']) > 0) {
-
-        $report_id = $response['reports'][0]['reportId'];
-        $report_document_id = $response['reports'][0]['reportDocumentId'];
-
-        $result = $productreport->getReportDocumentByID($aws_key, $country_code, $report_document_id);
-
-        if (array_key_exists('url', $result)) {
-
-            $httpResponse = file_get_contents($result['url']);
-            if (array_key_exists('compressionAlgorithm', $result)) {
-
-                $httpResponse = gzdecode($httpResponse);
-            }
-            Storage::put('/aws-products/attempt_' . $seller_id . '.txt', $httpResponse);
-        }
-
-        return true;
-    }
-
-    $response = $productreport->createReport($aws_key, $country_code, $marketplace_id);
-
-    if (array_key_exists('reportId', $response)) {
-        return $this->handle();
-    }
-
-    throw new Exception($response);
-});
-
-
-Route::get('ty', function () {
- 
-    $data  = ['7', '8', '9', '10', '12',  '27'];
-    foreach ($data as $store_id) {
-
-        $csv = Reader::createFromPath(Storage::path('/aws-products/aws-store-files/products_' . $store_id . '.txt'), 'r');
-        $csv->setDelimiter("\t");
-        $csv->setHeaderOffset(0);
-
-
-        foreach ($csv as $key => $val) {
-            // po($val['seller-sku']);
-            $data = [
-                'store_id' => $store_id,
-                'asin' => $val['asin1'],
-                'product_sku' => $val['seller-sku'],
-                'store_price' => $val['price'],
-                'cyclic' => '0'
-            ];
-            Product::upsert($data, ['asin', 'store_id'], ['store_price', 'product_sku','cyclic']);
-        }
-    }
-});

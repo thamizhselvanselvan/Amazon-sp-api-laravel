@@ -13,8 +13,8 @@ class RemovePrefixFromOrderDatabase extends Migration
      */
     public function up()
     {
-        Schema::connection('order')->rename('ord_order_seller_credentials', 'order_seller_credentials');
-        Schema::connection('order')->rename('ord_order_update_details', 'order_update_details');
+        //Schema::connection('order')->rename('ord_order_seller_credentials', 'order_seller_credentials');
+        //Schema::connection('order')->rename('ord_order_update_details', 'order_update_details');
     }
 
     /**
@@ -24,7 +24,7 @@ class RemovePrefixFromOrderDatabase extends Migration
      */
     public function down()
     {
-        Schema::connection('order')->rename('order_seller_credentials', 'ord_order_seller_credentials');
-        Schema::connection('order')->rename('order_update_details', 'ord_order_update_details');
+        //Schema::connection('order')->rename('order_seller_credentials', 'ord_order_seller_credentials');
+        //Schema::connection('order')->rename('order_update_details', 'ord_order_update_details');
     }
 }

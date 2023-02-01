@@ -26,7 +26,7 @@ class AddRackIdtostringInBinsTable extends Migration
     public function down()
     {
         Schema::connection('inventory')->table('bins', function (Blueprint $table) {
-            $table->dropColumn('rack_id');
+            $table->foreignId('rack_id')->change();
         });
     }
 }

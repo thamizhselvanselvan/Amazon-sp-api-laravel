@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Catalog;
 use Illuminate\Http\Request;
 use App\Services\BB\PushAsin;
 use App\Models\FileManagement;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use League\CommonMark\Extension\CommonMark\Node\Inline\Strong;
 
 class BuyBoxImportExportController extends Controller
 {
@@ -104,32 +106,34 @@ class BuyBoxImportExportController extends Controller
         return view('Catalog.Buybox.exportIndex');
     }
 
+    public function DownloadBuyBoxTemplate()
+    {
+        return  response()->download(public_path('template/BuyBoxTemplate.csv'));
+    }
+
     public function ExportBuyBox(Request $request)
     {
         $user_id = Auth::user()->id;
         $file_path = 'BuyBoxExport/AsinForbb.csv';
-        if ($request->export_type == 'text_area') {
+        if ($request->export_type == 'csvFile') {
 
             $request->validate([
                 'priority' => 'required|in:1,2,3,4',
                 'source' => 'required|in:IN,US,AE',
-                'text_area' => 'required',
+                'csvFile' => 'required|mimes:txt,csv',
             ]);
             $priority = $request->priority;
             $country_code = $request->source;
-            $textAreaData = $request->text_area;
-            $asins = preg_split('/[\r\n| |:|,]/', $textAreaData, -1, PREG_SPLIT_NO_EMPTY);
-            foreach ($asins as $asin) {
-                $records[] = ['ASIN' => $asin];
-            }
-            CSV_Write($file_path, ['ASIN'], $records);
+            $csvFileData = file_get_contents($request->csvFile);
+
+            Storage::put($file_path, $csvFileData);
 
             $file_info = [
                 "user_id"       => $user_id,
                 "type"          => "BUYBOX_EXPORT",
                 "module"        => "BUYBOX_EXPORT_${country_code}_${priority}",
                 "file_path"     => $file_path,
-                "command_name"  => "mosh:buybox-export-asin"
+                "command_name"  => "mosh:buybox-export-by-csv-file"
             ];
             FileManagement::create($file_info);
             fileManagement();
@@ -154,5 +158,74 @@ class BuyBoxImportExportController extends Controller
             fileManagement();
         }
         return redirect('catalog/buybox/export')->with("success", "BuyBox data is exporting..");
+    }
+
+    public function GetBuyBoxFile(Request $request)
+    {
+        $folderName = $request->folder;
+
+        $catalogfiles = [];
+        $path = (Storage::path("excel/downloads/" . $folderName));
+        $files = scandir($path);
+        foreach ($files as $key => $file) {
+            if ($key > 1) {
+                $file_path = Storage::path('excel/downloads/' . $folderName . '/' . $file);
+                $file_paths = scandir($file_path);
+
+                foreach ($file_paths as $key2 => $filename) {
+                    if ($key2 > 1) {
+                        $final_path = Storage::path('excel/downloads/' . $folderName . '/' . $file . '/' . $filename);
+                        $final_paths = scandir($final_path);
+                        foreach ($final_paths as $key3 => $final_file) {
+                            if ($key3 > 1) {
+
+                                $search_paths = glob(Storage::path('excel/downloads/' . $folderName . '/' . $file . '/' . $filename . '/zip/*'));
+                                foreach ($search_paths as $search_path) {
+                                    if (str_contains($search_path, '.zip')) {
+                                        $catfile = basename($final_file, '.zip');
+                                        $catalogfiles[$file][$filename] = date("F d Y H:i:s.", filemtime($final_path . '/' . $final_file));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return response()->json($catalogfiles);
+    }
+
+    public function DownloadBuyBoxFile($folder, $countryCode, $priority)
+    {
+        DeleteFileFromFolder($folder, $countryCode, $priority);
+        $downloadPath = 'excel/downloads/' . $folder . '/' . $countryCode . '/' . $priority . '/zip/' . $countryCode . 'BuyBoxAsin.zip';
+        return Storage::download($downloadPath);
+    }
+
+    public function BuyBoxSellerTableCount()
+    {
+        $count = [];
+        for ($priority = 1; $priority < 4; $priority++) {
+
+            $tableName = "product_aa_custom_p" . $priority . "_ae_seller_detail";
+            $modelName = table_model_set(country_code: 'AE', model: "bb_product_aa_custom_seller_detail", table_name: $tableName);
+            $count['p' . $priority] = $modelName->count('id');
+        }
+        return response()->json($count);
+    }
+
+    public function BuyBoxTruncate(Request $request)
+    {
+        $request->validate([
+            'source' => 'required',
+            'priority' => 'required|in:1,2,3,4'
+        ]);
+
+        $source = $request->source;
+        $priority = $request->priority;
+
+        commandExecFunc("mosh:buybox-offers-seller-details-table-truncate ${source} ${priority}");
+
+        return redirect('catalog/buybox/import')->with('success', 'Table is truncating...');
     }
 }

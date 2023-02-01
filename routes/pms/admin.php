@@ -32,7 +32,8 @@ Route::delete('admin/catalog/{id}/user_delete', 'Admin\CatalogManagementControll
 
 Route::get('admin/stores', 'Admin\AdminManagementController@selectStore')->name('admin.store');
 Route::post('admin/update-store', 'Admin\AdminManagementController@updateStore');
-
+Route::match(['get', 'post'], 'admin/stores/update', 'Admin\AdminManagementController@UpdatePushPriceColumn')->name('admin.store.update.push.price.column');
+Route::get('admin/stores/edit/{id}', 'Admin\AdminManagementController@EditPushPriceColumn')->name('admin.store.edit.push.price.column');
 
 Route::get('admin/system-setting', 'SystemSetting\SystemSettingController@index')->name('system.setting.home');
 Route::post('admin/system-setting/add', 'SystemSetting\SystemSettingController@AddSystemSetting')->name('add.system.setting');
