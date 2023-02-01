@@ -11,6 +11,7 @@ use App\Models\Buybox_stores\Product;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Buybox_stores\Product_Push;
+use App\Models\Buybox_stores\Seller_id_name;
 use App\Models\order\OrderSellerCredentials;
 
 class BuyBoxStoreController extends Controller
@@ -113,9 +114,27 @@ class BuyBoxStoreController extends Controller
         }
 
         if ($request->ajax()) {
+
+            $select_query = [
+                'id', 
+                'asin', 
+                'product_sku', 
+                'push_price', 
+                'current_store_price', 
+                'bb_winner_price',
+                'bb_winner_id',
+                'base_price', 
+                'ceil_price', 
+                'app_360_price', 
+                'destination_bb_price', 
+                'highest_seller_price',
+                'highest_seller_id',
+                'lowest_seller_price',
+                'lowest_seller_id',
+            ];
        
             $data = Product_Push::query()
-                ->select('id', 'asin', 'product_sku', 'push_price', 'current_store_price', 'bb_winner_price', 'base_price', 'ceil_price', 'app_360_price', 'destination_bb_price')
+                ->select($select_query)
                 ->when($request_store_id, function ($query) use ($request_store_id) {
                     return $query->where('store_id', $request_store_id);
                 })
@@ -124,6 +143,24 @@ class BuyBoxStoreController extends Controller
                 ->orderBy('id', 'DESC');
 
             return DataTables::of($data)
+                ->editColumn('highest_seller_name', function($query) {
+
+                    $seller_name = (Seller_id_name::where('seller_store_id', $query->highest_seller_id)->first())->seller_name ?? "";
+
+                    return $query->highest_seller_id ." / ".$seller_name;
+                })
+                ->editColumn('lowest_seller_name', function($query) {
+
+                    $seller_name = (Seller_id_name::where('seller_store_id', $query->lowest_seller_id)->first())->seller_name ?? "";
+
+                    return $query->lowest_seller_id ." / ".$seller_name;
+                })
+                ->editColumn('destination_bb_seller', function($query) {
+
+                    $seller_name = (Seller_id_name::where('seller_store_id', $query->bb_winner_id)->first())->seller_name ?? "";
+
+                    return $query->bb_winner_id ." / ".$seller_name;
+                })
                 ->editColumn('asin', function($query) {
 
                     return "<a target='_blank' href='https://amazon.com/dp/".$query->asin."'>".$query->asin."</a>";
@@ -139,7 +176,7 @@ class BuyBoxStoreController extends Controller
                 ->addColumn('action', function() {
                     return '<button class="price_process btn btn-primary">Process</button>';
                 })
-                ->rawColumns(['action', 'asin', 'product_sku'])
+                ->rawColumns(['action', 'asin', 'product_sku', 'highest_seller_name', 'lowest_seller_name', 'destination_bb_seller'])
                 ->make(true);
         }
 

@@ -71,10 +71,13 @@
                         <th>Product SKU</th>
                         <th>Current Store Price</th>
                         <th>Current BB Price</th>
-                        <th>Excel Price</th>
+                        <th>Current BB Seller Name/ID</th>
+                        <th>Next Highest Seller</th>
+                        <th>Next Highest Seller Name/ID</th>
+                        <th>Next Lowest Price</th>
+                        <th>Next Lowest Seller Name/ID</th>
                         <th>Base / Ceil Price</th>
                         <th>API Push Price</th>
-                        <th>Source BB Price</th>
                         {{-- <th>Action</th> --}}
                     </tr>
                 </thead>
@@ -162,8 +165,24 @@
                     name: 'destination_bb_price'
                 },
                 {
-                    data: 'app_360_price',
-                    name: 'app_360_price'
+                    data: 'destination_bb_seller',
+                    name: 'destination_bb_seller'
+                },
+                {
+                    data: 'highest_seller_price',
+                    name: 'highest_seller_price'
+                },
+                {
+                    data: 'highest_seller_name',
+                    name: 'highest_seller_name'
+                },
+                {
+                    data: 'lowest_seller_price',
+                    name: 'lowest_seller_price'
+                },
+                {
+                    data: 'lowest_seller_name',
+                    name: 'lowest_seller_name'
                 },
                 {
                     data: 'base_ceil_price',
@@ -174,10 +193,6 @@
                 {
                     data: 'push_price',
                     name: 'push_price'
-                },
-                {
-                    data: 'bb_winner_price',
-                    name: 'bb_winner_price'
                 },
                 // {
                 //     data: 'action',
