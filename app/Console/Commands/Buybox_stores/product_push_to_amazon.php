@@ -199,7 +199,7 @@ class product_push_to_amazon extends Command
                         $this->rules_applied[$id_rules_applied] = [
                             "We have lost the BB",
                             "BB has been won by ($product->bb_winner_id) seller & BB winner price is greater than our price",
-                            "So we increased our price by $this->decrease_by_price than BB winner"
+                            "So we have increased our price by $this->decrease_by_price than BB winner"
                         ];
 
                         return $push_price;
@@ -218,8 +218,6 @@ class product_push_to_amazon extends Command
                             "We have lost the BB",
                             "BB has been won by ($product->bb_winner_id) seller & BB winner price is greater than our price",
                             "So we decreased our price by $this->decrease_by_price than BB winner",
-
-                            'if we have lost the BB then if BB has been won by somebody then check, if BB winner price is lesser than our price.',
                         ];
 
                         return $push_price;
@@ -228,9 +226,8 @@ class product_push_to_amazon extends Command
                 }
 
                 $this->rules_applied[$id_rules_applied] = [
-                    'No Rule applied to it',
-                    'if we have own the BB then no otherr sellers are selling that product then we increase the price',
-                    "BB Price: $product->store_price, Increase Percent: $this->increase_by_price, Ceil Price: $product->ceil_price"
+                    "We have lost the BB",
+                    "So no rule applied to it & No Price Changes Made"
                 ];
 
                 return $product->store_price;
@@ -239,9 +236,8 @@ class product_push_to_amazon extends Command
         }
 
         $this->rules_applied[$id_rules_applied] = [
-            'No Rule applied to it',
-            'if we have own the BB then no otherr sellers are selling that product then we increase the price',
-            "BB Price: $product->store_price, Increase Percent: $this->increase_by_price, Ceil Price: $product->ceil_price"
+            "We have lost the BB",
+            "So no rule applied to it & No Price Changes Made"
         ];
 
         return $product->store_price;

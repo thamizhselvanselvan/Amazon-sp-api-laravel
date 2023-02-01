@@ -37,6 +37,11 @@
     .yajra-datatable {
         font-size: 14px;
     }
+
+    table.dataTable tbody tr:hover {
+        color: white;
+        background-color: #20262E;  /* Not working */
+    }
 </style>
 @stop
 
@@ -233,8 +238,8 @@
                     name: 'lowest_seller_name'
                 },
                 {
-                    data: 'ceil_price',
-                    name: 'ceil_price',
+                    data: 'base_price',
+                    name: 'base_price',
                     orderable: false,
                     searchable: false
                 },
