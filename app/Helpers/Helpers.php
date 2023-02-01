@@ -1025,7 +1025,7 @@ if (!function_exists('fileManagement')) {
 
             $destination = str_replace(',', '_', $destination);
 
-            commandExecFunc("${command_name} --columns=fm_id=${fm_id},store_id=${store_id},user_id=${user_id},destination=${destination},priority=${priority},path=${path},header=${header}");
+            commandExecFunc("{$command_name} --columns=fm_id={$fm_id},store_id={$store_id},user_id={$user_id},destination={$destination},priority={$priority},path={$path},header={$header}");
 
             $file_management_update->update();
         }

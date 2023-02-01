@@ -324,6 +324,10 @@ class ZohoOrderFormat
             return 'http://www.amazon.ae/gp/product/' . $asin;
         }
 
+        if ($country_code == 'IN') {
+            return 'http://www.amazon.in/gp/product/' . $asin;
+        }
+
         return 'http://www.amazon.in/gp/product/' . $asin;
     }
 
