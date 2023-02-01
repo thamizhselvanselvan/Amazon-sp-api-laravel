@@ -101,7 +101,7 @@ class PriceConversion
 
         if ($weight < 0.5) {
 
-            $weight = 0.5;
+            $weight = 1;
         }
 
         $duty_rate = $this->exchange_rate_data[6]['duty_rate'] / 100;
