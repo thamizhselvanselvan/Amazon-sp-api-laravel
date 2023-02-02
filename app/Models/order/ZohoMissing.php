@@ -9,7 +9,7 @@ class ZohoMissing extends Model
 {
     use HasFactory;
     protected $connection = 'order';
-    protected $table = 'zogo_missing';
+    protected $table = 'zoho_missing';
 
     protected $fillable = [
         'asin',

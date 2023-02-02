@@ -159,9 +159,8 @@ class FeedOrderDetailsApp360
         return true;
     }
 
-    public function  getFeedStatus($feed_id, $seller_id)
+    public function  getFeedStatus($feed_id, $seller_id, $country_code = 'IN')
     {
-        $country_code = 'IN';
 
         $config = $this->config($seller_id, $country_code, $token = NULL);
         $apiInstance = new FeedsApi($config);
