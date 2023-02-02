@@ -31,7 +31,7 @@
         <form class="text-center" method="POST" action="{{ route('geo.state') }}">
             @csrf
             <div class="m-2">
-                <select class="form-control w-25 m-auto" name="country_id" aria-label="Default select example">
+                <select class="form-control w-25 m-auto" name="country_id" aria-label="Default select example" required>
                     <option value="" selected>Select Country</option>
                     @foreach ($countries as $country1)
                         <option id="country_id" value="{{ $country1->id }}">{{ $country1->name }}</option>
