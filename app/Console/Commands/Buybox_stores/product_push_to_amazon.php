@@ -52,6 +52,7 @@ class product_push_to_amazon extends Command
 
         $products = Product::query()
             ->whereBetween("updated_at", [$start_date, $end_date])
+            ->where("cyclic", 1)
             ->where("cyclic_push", 0)
             ->limit(1000)
             ->get();
