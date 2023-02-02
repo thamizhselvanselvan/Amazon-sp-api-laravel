@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
 use App\Services\Catalog\BuyBoxPriceImport;
+use App\Services\Catalog\ImportPriceFromBuyBox;
 
 class CatalogPriceImportIN extends Command
 {
@@ -55,8 +56,11 @@ class CatalogPriceImportIN extends Command
         $seller_id = '39';
         $limit = 1000;
 
-        $buy_box_price = new BuyBoxPriceImport();
-        $buy_box_price->fetchPriceFromBB($country_code, $seller_id, $limit);
+        $buy_box_price = new ImportPriceFromBuyBox();
+        $buy_box_price->GetPriceFromBuyBox($country_code);
+
+        // $buy_box_price = new BuyBoxPriceImport();
+        // $buy_box_price->fetchPriceFromBB($country_code, $seller_id, $limit);
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);

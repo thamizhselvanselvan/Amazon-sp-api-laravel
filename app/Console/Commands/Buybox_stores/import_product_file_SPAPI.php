@@ -49,6 +49,8 @@ class import_product_file_SPAPI extends Command
     {
         $stores  = [6, 7, 8, 9, 10, 11, 12, 20, 27];
 
+        $stores  = [6];
+
         // $stores[] = '';
         // $stores_id =  OrderSellerCredentials::query()->select('seller_id', 'country_code')->where('buybox_stores', '1')->get();
         // foreach($stores_id as $data)
@@ -57,8 +59,11 @@ class import_product_file_SPAPI extends Command
         // }
 
         foreach ($stores as $seller_id) {
+
             Log::alert('store' .  ' ' . $seller_id);
+
             $aws = Aws_credential::with(['mws_region'])->where('seller_id', $seller_id)->where('api_type', 1)->first();
+            
             $aws_key = $aws->id;
             $country_code = $aws->mws_region->region_code;
             $marketplace_id = $aws->mws_region->marketplace_id;
@@ -68,7 +73,6 @@ class import_product_file_SPAPI extends Command
 
             if (array_key_exists('reports', $response) && count($response['reports']) > 0) {
 
-                //$report_id = $response['reports'][0]['reportId'];
                 $report_document_id = $response['reports'][0]['reportDocumentId'];
 
                 $result = $productreport->getReportDocumentByID($aws_key, $country_code, $report_document_id);
@@ -88,13 +92,7 @@ class import_product_file_SPAPI extends Command
                 $this->insertdb($seller_id);
             }
 
-            // $response = $productreport->createReport($aws_key, $country_code, $marketplace_id);
-
-            // if (array_key_exists('reportId', $response)) {
-            //     return $this->handle();
-            // }
-            // throw new Exception($response);
-        }
+        } // END of Foreach Loop
     }
 
     public function insertdb($seller_id): void
@@ -106,22 +104,36 @@ class import_product_file_SPAPI extends Command
         $asin_lists = [];
 
         foreach ($records as $record) {
-            $cnt++;
+
             $asin_lists[] = [
                 'store_id' => $seller_id,
                 'asin' => $record['asin1'],
                 'product_sku' => $record['seller-sku'],
                 'store_price' => $record['price'],
-                'cyclic' => '0'
+                'cyclic' => 0
             ];
 
             if ($cnt == 5000) {
 
-                Product::upsert($asin_lists, ['asin', 'store_id'], ['store_price', 'product_sku', 'cyclic']);
+                $this->product_upsert_query(asin_lists: $asin_lists);
+
                 $cnt = 1;
                 $asin_lists = [];
             }
+            
+            $cnt++;
         }
-        // Artisan::call("mosh:price_priority_import $country_code");  //command will start crowling app 360 tables for Pricing
+
+        if(count($asin_lists) > 0) {
+
+            $this->product_upsert_query(asin_lists: $asin_lists);
+            
+        }
+
+    }
+
+    public function product_upsert_query(array $asin_lists) {
+
+        return Product::upsert($asin_lists, ['asin', 'store_id'], ['store_price', 'product_sku', 'cyclic']);
     }
 }

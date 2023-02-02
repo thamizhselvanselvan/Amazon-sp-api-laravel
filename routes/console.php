@@ -40,4 +40,8 @@ if ('staging' === App::environment() || 'production' === App::environment() || '
     Artisan::command('migrate:reset', function () {
         $this->comment('You are not allowed to do this in production!');
     })->describe('Override default command in production.');
+
+    Artisan::command('db:seed', function () {
+        $this->comment('You are not allowed to do this in production!');
+    })->describe('Override default command in production.');
 }

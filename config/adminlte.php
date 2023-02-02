@@ -416,14 +416,14 @@ return [
                     'can' => ['Admin', 'Catalog'],
                     'submenu' => [
                         [
-                            'text' => 'Catalog & Price Export',
+                            'text' => 'Only Price Export',
                             'url' => 'catalog/product',
                             'icon' => 'far fa-fw fa-file',
                             'can' => ['Admin', 'Catalog']
                         ],
 
                         [
-                            'text' => 'Catalog With Price Export',
+                            'text' => 'Price Export With Catalog Details',
                             'url' => 'catalog/export-with-price',
                             'icon' => 'far fa-fw fa-file',
                             'can' => ['Admin', 'Catalog']
@@ -463,27 +463,27 @@ return [
                     'can' => ['Admin']
                 ],
 
-                // [
+                [
 
-                //     'text' => 'Buy-Box Operation',
-                //     'icon' => 'far fa-fw fa-file',
-                //     'can' =>  ['Admin'],
-                //     'submenu' => [
-                //         [
-                //             'text'  => 'Buy-Box Import',
-                //             'url'  => 'catalog/buybox/import',
-                //             'icon' => 'far fa-fw fa-file',
-                //             'can' =>  ['Admin', 'Catalog']
-                //         ],
+                    'text' => 'Buy-Box Operation',
+                    'icon' => 'far fa-fw fa-file',
+                    'can' =>  ['Admin', 'Catalog'],
+                    'submenu' => [
+                        [
+                            'text'  => 'Buy-Box Import',
+                            'url'  => 'catalog/buybox/import',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin', 'Catalog']
+                        ],
 
-                //         [
-                //             'text'  => 'Buy-Box Export',
-                //             'url'  => 'catalog/buybox/export',
-                //             'icon' => 'far fa-fw fa-file',
-                //             'can' =>  ['Admin', 'Catalog']
-                //         ],
-                //     ],
-                // ],
+                        [
+                            'text'  => 'Buy-Box Export',
+                            'url'  => 'catalog/buybox/export',
+                            'icon' => 'far fa-fw fa-file',
+                            'can' =>  ['Admin', 'Catalog']
+                        ],
+                    ],
+                ],
                 [
 
                     'text' => 'Buy-Box Stores',
@@ -701,7 +701,21 @@ return [
                     'text' => 'Zoho Price Missing',
                     'can' => ['Admin', 'Catalog'],
                     'icon' => 'fa fa-minus-circle',
-                    'url' => "orders/missing/price",
+                    'submenu' =>
+                    [
+                        [
+                            'text' => 'Price Missing',
+                            'url' => "orders/missing/price",
+                            'can' => ['Admin', 'Catalog'],
+                            'icon' => 'fa fa-minus-circle',
+                        ],
+                        [
+                            'text' => 'Price Updated',
+                            'url' => "orders/missing/price/updated",
+                            'can' => ['Admin'],
+                            'icon' => ' fa fa-check-circle-o',
+                        ],
+                    ],
                 ],
             ],
         ],
@@ -736,6 +750,32 @@ return [
                     'url' => 'seller/invoice',
                     'can' => ['Admin'],
                     'icon' => 'far fa-fw fa-user',
+                ],
+                [
+                    'text' => ' stores',
+                    'can' => ['Admin'],
+                    'icon' => 'fas fa-store',
+                    'submenu' =>
+                    [
+                        [
+                            'text' => 'Price listing',
+                            'url' => 'stores/listing/price',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-list'
+                        ],
+                        [
+                            'text' => 'Availability',
+                            'url' => 'stores/listing/availability',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-list'
+                        ],
+                        [
+                            'text' => 'Price Updated',
+                            'url' => 'stores/price/updated',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-refresh'
+                        ],
+                    ],
                 ],
             ]
         ],

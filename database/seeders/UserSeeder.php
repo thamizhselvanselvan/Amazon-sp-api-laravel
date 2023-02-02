@@ -49,19 +49,19 @@ class UserSeeder extends Seeder
 
         $amit = User::create([
             'name' => 'Amit Kumar',
-            'email' => 'nu.palmate@gmail.com',
+            'email' => 'nu.mosh.services@gmail.com',
             'password' => Hash::make(123456),
         ]);
 
         $satish = User::create([
             'name' => 'Kappa',
-            'email' => 'kappa.palmate@gmail.com',
+            'email' => 'kappa.mosh.services@gmail.com',
             'password' => Hash::make(123456),
         ]);
 
         $sanjay = User::create([
             'name' => 'Sanjay K',
-            'email' => 'epsilon.palmate@gmail.com',
+            'email' => 'epsilon.mosh.services@gmail.com',
             'password' => Hash::make(123456),
         ]);
 
@@ -73,7 +73,7 @@ class UserSeeder extends Seeder
 
         $vikesh = User::create([
             'name'  => 'Vikesh kumar',
-            'email' =>  'zeta.palmate@gmail.com',
+            'email' =>  'zeta.mosh.services@gmail.com',
             'password' => Hash::make(123456),
         ]);
 
@@ -82,12 +82,6 @@ class UserSeeder extends Seeder
             'email' => 'cliqnshop@app360.io',
             'password' => Hash::make(123456),
         ]);
-
-
-
-
-
-
 
         $robin_cliqnshop->assignRole('Cliqnshop');
 

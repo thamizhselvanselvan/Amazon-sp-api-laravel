@@ -53,7 +53,6 @@ class Product_fetch extends Command
             return false;
         }   
 
-
         foreach($products as $product) {
 
             if($product->is_bb_own == 1 && empty($product->lowest_seller_price) && empty($product->highest_seller_price)) {
@@ -143,7 +142,7 @@ class Product_fetch extends Command
         }
 
         foreach($products as $d) {
-            $d->cyclic_push = 1;
+           // $d->cyclic_push = 1;
             $d->save();
         }
 

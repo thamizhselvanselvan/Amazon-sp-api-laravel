@@ -8,9 +8,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\Buybox_stores\Product;
-use App\Models\Buybox_stores\Product_Push;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\Buybox_stores\Product_Push;
+use App\Models\Buybox_stores\Seller_id_name;
+use App\Models\order\OrderSellerCredentials;
 
 class BuyBoxStoreController extends Controller
 {
@@ -22,6 +24,7 @@ class BuyBoxStoreController extends Controller
             ->whereIN('seller_id', $stores)
             ->select('seller_id', 'store_name')
             ->get();
+
         return view('buybox_stores.index', compact('stores'));
     }
 
@@ -67,30 +70,181 @@ class BuyBoxStoreController extends Controller
         }
         return response()->json($catalogfiles);
     }
-    
+
     public function DownloadCataloglocal($index)
     {
         return Storage::download('aws-products/exports/' . $index);
     }
 
-    public function get_price_push(Request $request) {
-        
+    public function get_price_push(Request $request)
+    {
+
         if ($request->ajax()) {
 
             $results = Product_Push::query()
-            ->select('id', 'store_id', 'product_sku', 'latency', 'push_price', 'base_price')
-            ->orderBy('id', 'DESC')
-            ->get();
+                ->select('id', 'store_id', 'product_sku', 'latency', 'push_price', 'base_price')
+                ->orderBy('id', 'DESC')
+                ->get();
 
             return DataTables::of($results)
                 // ->addColumn('status', function ($file_management) {
                 //     $process = $file_management['command_end_time'] == '0000-00-00 00:00:00' ? 'Processing...' : 'Processed';
                 //     return $process;
                 // })
-               // ->rawColumns(['id', 'user_name', 'type', 'module', 'start_time', 'end_time', 'processed_time', 'status'])
+                // ->rawColumns(['id', 'user_name', 'type', 'module', 'start_time', 'end_time', 'processed_time', 'status'])
                 ->make(true);
         }
-        
+
         return view('buybox_stores.sp_api_push');
+    }
+
+    public function storeslisting(Request $request)
+    {
+
+        $stores = OrderSellerCredentials::select('store_name', 'seller_id')
+            ->where('buybox_stores', 1)
+            ->distinct()
+            ->get();
+
+        $request_store_id = $request->store_id;
+        $url = "/stores/listing/price";
+
+        if (isset($request_store_id)) {
+            $url = "/stores/listing/price/" . $request_store_id;
+        }
+
+        if ($request->ajax()) {
+
+            $select_query = [
+                'id', 
+                'asin', 
+                'product_sku', 
+                'push_price', 
+                'current_store_price', 
+                'bb_winner_price',
+                'bb_winner_id',
+                'base_price', 
+                'ceil_price', 
+                'app_360_price', 
+                'destination_bb_price', 
+                'highest_seller_price',
+                'highest_seller_id',
+                'lowest_seller_price',
+                'lowest_seller_id',
+            ];
+       
+            $data = Product_Push::query()
+                ->select($select_query)
+                ->when($request_store_id, function ($query) use ($request_store_id) {
+                    return $query->where('store_id', $request_store_id);
+                })
+                ->where('push_status', 0)
+                ->where('availability', 1)
+                ->orderBy('id', 'DESC');
+
+            return DataTables::of($data)
+                ->editColumn('highest_seller_name', function($query) {
+
+                    $seller_name = (Seller_id_name::where('seller_store_id', $query->highest_seller_id)->first())->seller_name ?? "";
+
+                    return $query->highest_seller_id ." / ".$seller_name;
+                })
+                ->editColumn('lowest_seller_name', function($query) {
+
+                    $seller_name = (Seller_id_name::where('seller_store_id', $query->lowest_seller_id)->first())->seller_name ?? "";
+
+                    return $query->lowest_seller_id ." / ".$seller_name;
+                })
+                ->editColumn('destination_bb_seller', function($query) {
+
+                    $seller_name = (Seller_id_name::where('seller_store_id', $query->bb_winner_id)->first())->seller_name ?? "";
+
+                    return $query->bb_winner_id ." / ".$seller_name;
+                })
+                ->editColumn('asin', function($query) {
+
+                    return "<a target='_blank' href='https://amazon.com/dp/".$query->asin."'>".$query->asin."</a>";
+                })
+                ->editColumn('product_sku', function($query) {
+
+                    return "<a target='_blank' href='https://amazon.in/dp/".$query->asin."'>".$query->product_sku."</a>";
+                })
+                ->addColumn('base_ceil_price', function($query) {
+
+                    return $query->base_price .' / '. $query->ceil_price;
+                })
+                ->addColumn('action', function() {
+                    return '<button class="price_process btn btn-primary">Process</button>';
+                })
+                ->rawColumns(['action', 'asin', 'product_sku', 'highest_seller_name', 'lowest_seller_name', 'destination_bb_seller'])
+                ->make(true);
+        }
+
+        return view('buybox_stores.listing', compact('stores', 'url', 'request_store_id'));
+    }
+
+
+    public function availability(Request $request)
+    {
+
+        $stores = OrderSellerCredentials::select('store_name', 'seller_id')
+            ->where('buybox_stores', 1)
+            ->distinct()
+            ->get();
+
+        $request_store_id = $request->store_id;
+        $url = "/stores/listing/availability";
+
+        if (isset($request_store_id)) {
+            $url = "/stores/listing/availability/" . $request_store_id;
+        }
+
+        if ($request->ajax()) {
+       
+            $data = Product_Push::query()
+                ->select('id', 'asin', 'product_sku', 'current_availability_status', 'push_availability_status')
+                ->when($request_store_id, function ($query) use ($request_store_id) {
+                    return $query->where('store_id', $request_store_id);
+                })
+                ->where('push_status', 0)
+                ->orderBy('id', 'DESC');
+
+            return DataTables::of($data)
+                ->addColumn('action', function() {
+                    return '<button class="price_process">Process</button>';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('buybox_stores.availability', compact('stores', 'url', 'request_store_id'));
+    }
+
+    public function storespriceupdated(Request $request)
+    {
+        $data =  Product_Push::query()
+            ->where('push_status', '1')
+            ->get();
+
+        if ($request->ajax()) {
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $id = $row->asin . '_' . $row->product_sku . '_' . $row->store_id;
+                    $actionBtn = "<a href='javascript:void(0)' value='$id'class='edit btn btn-success btn-sm'><i class='fas fa-refresh'></i> Update Price</a>";
+                    return $actionBtn;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+        return view('buybox_stores.priceupdated');
+    }
+
+    public function updateprice(Request $request){
+        //command to execute
+        // commandExecFunc('');
+
+        echo $request->id;
+
     }
 }
