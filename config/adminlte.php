@@ -416,14 +416,14 @@ return [
                     'can' => ['Admin', 'Catalog'],
                     'submenu' => [
                         [
-                            'text' => 'Catalog & Price Export',
+                            'text' => 'Only Price Export',
                             'url' => 'catalog/product',
                             'icon' => 'far fa-fw fa-file',
                             'can' => ['Admin', 'Catalog']
                         ],
 
                         [
-                            'text' => 'Catalog With Price Export',
+                            'text' => 'Price Export With Catalog Details',
                             'url' => 'catalog/export-with-price',
                             'icon' => 'far fa-fw fa-file',
                             'can' => ['Admin', 'Catalog']
