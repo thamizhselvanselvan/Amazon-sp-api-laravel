@@ -47,52 +47,50 @@ class import_product_file_SPAPI extends Command
      */
     public function handle()
     {
-        $stores  = [6, 7, 8, 9, 10, 11, 12, 20, 27];
+        // $stores_id  = [6, 7, 8, 9, 10, 11, 12, 20, 27];
+      
+        $stores_id =  OrderSellerCredentials::query()->select('seller_id', 'country_code')->where('buybox_stores', '1')->get();
 
-        $stores  = [6];
+        foreach ($stores_id as $data) {
+            try {
+                $seller_id = $data['seller_id'];
 
-        // $stores[] = '';
-        // $stores_id =  OrderSellerCredentials::query()->select('seller_id', 'country_code')->where('buybox_stores', '1')->get();
-        // foreach($stores_id as $data)
-        // {
-        //     $stores [] =$data['seller_id'];
-        // }
+                Log::alert('store' .  ' ' . $seller_id);
 
-        foreach ($stores as $seller_id) {
+                $aws = Aws_credential::with(['mws_region'])->where('seller_id', $seller_id)->where('api_type', 1)->first();
 
-            Log::alert('store' .  ' ' . $seller_id);
+                $aws_key = $aws->id;
+                $country_code = $aws->mws_region->region_code;
+                $marketplace_id = $aws->mws_region->marketplace_id;
 
-            $aws = Aws_credential::with(['mws_region'])->where('seller_id', $seller_id)->where('api_type', 1)->first();
-            
-            $aws_key = $aws->id;
-            $country_code = $aws->mws_region->region_code;
-            $marketplace_id = $aws->mws_region->marketplace_id;
+                $productreport = new product_import;
+                $response = $productreport->getReports($aws_key, $country_code, $marketplace_id);
 
-            $productreport = new product_import;
-            $response = $productreport->getReports($aws_key, $country_code, $marketplace_id);
+                if (array_key_exists('reports', $response) && count($response['reports']) > 0) {
 
-            if (array_key_exists('reports', $response) && count($response['reports']) > 0) {
+                    $report_document_id = $response['reports'][0]['reportDocumentId'];
 
-                $report_document_id = $response['reports'][0]['reportDocumentId'];
+                    $result = $productreport->getReportDocumentByID($aws_key, $country_code, $report_document_id);
 
-                $result = $productreport->getReportDocumentByID($aws_key, $country_code, $report_document_id);
+                    if (array_key_exists('url', $result)) {
 
-                if (array_key_exists('url', $result)) {
+                        $httpResponse = file_get_contents($result['url']);
 
-                    $httpResponse = file_get_contents($result['url']);
+                        if (array_key_exists('compressionAlgorithm', $result)) {
 
-                    if (array_key_exists('compressionAlgorithm', $result)) {
+                            $httpResponse = gzdecode($httpResponse);
+                        }
 
-                        $httpResponse = gzdecode($httpResponse);
+                        Storage::put('/aws-products/aws-store-files/products_' . $seller_id . '.txt', $httpResponse);
                     }
 
-                    Storage::put('/aws-products/aws-store-files/products_' . $seller_id . '.txt', $httpResponse);
+                     $this->insertdb($seller_id);
                 }
-
-                $this->insertdb($seller_id);
+            } catch (Exception $e) {
+                Log::notice('Store File Not Found' . ' ' . $seller_id);
             }
-
         } // END of Foreach Loop
+
     }
 
     public function insertdb($seller_id): void
@@ -120,19 +118,18 @@ class import_product_file_SPAPI extends Command
                 $cnt = 1;
                 $asin_lists = [];
             }
-            
+
             $cnt++;
         }
 
-        if(count($asin_lists) > 0) {
+        if (count($asin_lists) > 0) {
 
             $this->product_upsert_query(asin_lists: $asin_lists);
-            
         }
-
     }
 
-    public function product_upsert_query(array $asin_lists) {
+    public function product_upsert_query(array $asin_lists)
+    {
 
         return Product::upsert($asin_lists, ['asin', 'store_id'], ['store_price', 'product_sku', 'cyclic']);
     }

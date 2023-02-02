@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use App\Models\Buybox_stores\Product;
 use Illuminate\Support\Facades\Storage;
+use App\Models\order\OrderSellerCredentials;
 
 class Asin_price_import extends Command
 {
@@ -60,9 +61,9 @@ class Asin_price_import extends Command
             ->get();
 
         if ($datas->count() <= 0) {
-            
+
             Product::where('cyclic', 1)->update(['cyclic' => 0]);
-            
+
             return $this->handle();
         }
 
@@ -74,19 +75,17 @@ class Asin_price_import extends Command
 
             Product::where('store_id', $store_id)->whereIn('asin', $result_asins)->update(['cyclic' => 1]);
 
-            if ($store_id == '8' || $store_id == '10' || $store_id == '27' || $store_id == '6') {
+            $country = OrderSellerCredentials::where('seller_id', $store_id)->select('country_code')->get();
+            $country_code = $country['0']->country_code;
 
+            if ($country_code == 'IN') {
                 $this->pricingin($result_asins, $store_id);
-            } else if ($store_id == '7' || $store_id == '9' || $store_id == '12' || $store_id == '11' || $store_id == '20') {
-
+            } else if ($country_code == 'AE') {
                 $this->pricingae($result_asins, $store_id);
-
-            } else if ($store_id == '7' || $store_id == '9' || $store_id == '12') {
-
+            } else if ($country_code == 'US') {
                 $this->pricinguss($result_asins, $store_id);
-
             } else {
-                Log::notice('store_id' . $store_id);
+                Log::notice('store_id' . $store_id . '-' . 'Country Code'. $country_code .'No pricing Logic Found');
             }
         }
     }
@@ -273,15 +272,16 @@ class Asin_price_import extends Command
         );
     }
 
-    public function calculate($price) {
+    public function calculate($price)
+    {
 
-        if($this->price_calculate_type == "percent") {
-            
+        if ($this->price_calculate_type == "percent") {
+
             $ceil_price  = addPercentage($price, $this->base_percentage);
             $base_price  = removePercentage($price, $this->ceil_percentage);
 
             return ['ceil_price' => $ceil_price, 'base_price' => $base_price];
-        } 
+        }
 
         $ceil_price = $price + $this->ceil_percentage;
         $base_price = $price - $this->base_percentage;
