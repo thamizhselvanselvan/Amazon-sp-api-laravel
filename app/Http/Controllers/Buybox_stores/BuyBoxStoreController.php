@@ -150,7 +150,7 @@ class BuyBoxStoreController extends Controller
 
                     $highest_seller = (isset($seller_name)) ? $seller_name : $query->highest_seller_id ;
 
-                    return (isset($highest_seller) && $highest_seller != "") ? $highest_seller : "No Lowest Seller" ;
+                    return (isset($highest_seller) && $highest_seller != "") ? $highest_seller : "Non" ;
                 })
                 ->editColumn('lowest_seller_name', function($query) {
 
@@ -158,7 +158,7 @@ class BuyBoxStoreController extends Controller
 
                     $lowest_seller = (isset($seller_name)) ? $seller_name : $query->lowest_seller_id ;
 
-                    return (isset($lowest_seller) && $lowest_seller != "") ? $lowest_seller : "No Lowest Seller" ;
+                    return (isset($lowest_seller) && $lowest_seller != "") ? $lowest_seller : "Non" ;
                 })
                 ->editColumn('destination_bb_seller', function($query) {
 
@@ -166,7 +166,7 @@ class BuyBoxStoreController extends Controller
 
                     $bb_winner = (isset($seller_name)) ? $seller_name : $query->bb_winner_id;
 
-                    return (isset($bb_winner) && $bb_winner != "") ? $bb_winner : "No BB Winner" ;
+                    return (isset($bb_winner) && $bb_winner != "") ? $bb_winner : "Non" ;
                 })
                 ->editColumn('asin', function($query) {
 
@@ -183,7 +183,7 @@ class BuyBoxStoreController extends Controller
                     return $applied_rules;
                 })
                 ->addColumn('action', function() {
-                    return '<button class="price_process btn btn-primary">Process</button>';
+                    return '<button class="price_process btn btn-sm btn-primary">Process</button>';
                 })
                 ->rawColumns(['action', 'asin', 'product_sku', 'highest_seller_name', 'lowest_seller_name', 'destination_bb_seller', 'current_store_price'])
                 ->make(true);
