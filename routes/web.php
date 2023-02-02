@@ -245,8 +245,7 @@ Route::get('testing', function () {
         ]);
     }
 });
-<<<<<<< HEAD
+
 // uncomment this one it is commented
 // include_route_files(__DIR__ . '/pms/');
-=======
->>>>>>> 0f997d83f0f173c775dcc3ae70f46bb279c7844f
+
