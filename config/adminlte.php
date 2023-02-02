@@ -1147,16 +1147,8 @@ return [
                     'submenu' => [
 
                         [
-                            'text' => 'Department',
-                            'url' => 'oms/department/list',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa-fw fa-file',
-
-                        ],
-
-                        [
                             'text' => 'Status Master',
-                            'url' => 'oms',
+                            'url' => 'v2/oms',
                             'can' => ['Admin'],
                             'icon' => 'far fa-fw fa-file',
 
@@ -1167,6 +1159,110 @@ return [
             ],
         ],
 
+        [
+            'text' => 'MV2',
+            'can' => ['Admin'],
+            'submenu' => [
+                [
+                    'text' => 'Master',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa-fw fa-file',
+                    'submenu' => [
+
+                        [
+                            'text' => 'Roles',
+                            'url' => 'v2/master/roles',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa-fw fa-user',
+
+                        ],
+
+                        [
+                            'text' => 'Departments',
+                            'url' => 'v2/master/departments',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ],
+
+                        [
+                            'text' => 'Company',
+                            'url' => 'v2/master/company',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa-fw fa-file',
+
+                        ],
+
+                        [
+                            'text' => 'Users',
+                            'url' => 'v2/master/users',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa-fw fa-user',
+
+                        ],
+
+                        [
+                            'text' => 'Store',
+                            'url' => 'store',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa-fw fa-file',
+                            'submenu' => [
+                                [
+                                    'text' => 'Currency',
+                                    'url'   => 'v2/master/store/currency',
+                                    'icon'  => 'far fa-fw fa-file',
+                                    'can'   => ['Admin'],
+                                ],
+                                [
+                                    'text' => 'Regions',
+                                    'url' => 'v2/master/store/regions',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' => ['Admin'],
+                                ],
+                                [
+                                    'text' => 'Credentials',
+                                    'url' => 'v2/master/store/credentials',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' => ['Admin'],
+                                ],
+
+                            ],
+
+                        ],
+
+
+                        [
+                            'text' => 'Geo',
+                            'url' => 'geo',
+                            'can' => ['Admin'],
+                            'icon' => 'fas fa-globe-asia',
+                            'submenu' => [
+                                [
+                                    'text' => 'Country',
+                                    'url' => 'v2/master/geo/country',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' => ['Admin'],
+                                ],
+                                [
+                                    'text' => 'State',
+                                    'url' => 'v2/master/geo/state',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' => ['Admin'],
+                                ],
+                                [
+                                    'text' => 'City',
+                                    'url' => 'v2/master/geo/city',
+                                    'icon' => 'far fa-fw fa-file',
+                                    'can' => ['Admin'],
+                                ],
+                            ],
+
+                        ],
+                    ]
+
+                ],
+            ],
+        ],
     ],
 
     /*
