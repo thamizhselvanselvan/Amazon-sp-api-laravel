@@ -131,6 +131,7 @@ class BuyBoxStoreController extends Controller
                 'highest_seller_id',
                 'lowest_seller_price',
                 'lowest_seller_id',
+                'applied_rules'
             ];
        
             $data = Product_Push::query()
@@ -147,19 +148,25 @@ class BuyBoxStoreController extends Controller
 
                     $seller_name = (Seller_id_name::where('seller_store_id', $query->highest_seller_id)->first())->seller_name ?? "";
 
-                    return $query->highest_seller_id ." / ".$seller_name;
+                    $highest_seller = (isset($seller_name)) ? $seller_name : $query->highest_seller_id ;
+
+                    return (isset($highest_seller) && $highest_seller != "") ? $highest_seller : "No Lowest Seller" ;
                 })
                 ->editColumn('lowest_seller_name', function($query) {
 
                     $seller_name = (Seller_id_name::where('seller_store_id', $query->lowest_seller_id)->first())->seller_name ?? "";
 
-                    return $query->lowest_seller_id ." / ".$seller_name;
+                    $lowest_seller = (isset($seller_name)) ? $seller_name : $query->lowest_seller_id ;
+
+                    return (isset($lowest_seller) && $lowest_seller != "") ? $lowest_seller : "No Lowest Seller" ;
                 })
                 ->editColumn('destination_bb_seller', function($query) {
 
                     $seller_name = (Seller_id_name::where('seller_store_id', $query->bb_winner_id)->first())->seller_name ?? "";
 
-                    return $query->bb_winner_id ." / ".$seller_name;
+                    $bb_winner = (isset($seller_name)) ? $seller_name : $query->bb_winner_id;
+
+                    return (isset($bb_winner) && $bb_winner != "") ? $bb_winner : "No BB Winner" ;
                 })
                 ->editColumn('asin', function($query) {
 
@@ -169,18 +176,44 @@ class BuyBoxStoreController extends Controller
 
                     return "<a target='_blank' href='https://amazon.in/dp/".$query->asin."'>".$query->product_sku."</a>";
                 })
-                ->addColumn('base_ceil_price', function($query) {
+                ->editColumn('current_store_price', function($query) {
 
-                    return $query->base_price .' / '. $query->ceil_price;
+                    $applied_rules = '<div class="pop_over position-relative"> '.$query->current_store_price.' ' . $this->pop_over_data($query->applied_rules) . '</div>';
+
+                    return $applied_rules;
                 })
                 ->addColumn('action', function() {
                     return '<button class="price_process btn btn-primary">Process</button>';
                 })
-                ->rawColumns(['action', 'asin', 'product_sku', 'highest_seller_name', 'lowest_seller_name', 'destination_bb_seller'])
+                ->rawColumns(['action', 'asin', 'product_sku', 'highest_seller_name', 'lowest_seller_name', 'destination_bb_seller', 'current_store_price'])
                 ->make(true);
         }
 
         return view('buybox_stores.listing', compact('stores', 'url', 'request_store_id'));
+    }
+
+    public function pop_over_data($applied_rules) {
+        $html = '<span class="d-block"> No Rules Applied </span>';
+        if($applied_rules) {
+
+            $applied_rules = json_decode($applied_rules, true);
+
+            if(count($applied_rules) > 0) {
+
+                $html = '<ul class="m-0 p-0 pl-3">';
+                foreach($applied_rules as $applied_rule) {
+                    
+                    $html .= '<li class="mt-1">'. $applied_rule .'</li>';
+                }
+
+                $html .= '</ul>';
+
+            }
+
+            
+        } 
+
+        return '<div class="pop_over_data position-absolute shadow border d-none">' . $html . '</div>';
     }
 
 
@@ -240,7 +273,7 @@ class BuyBoxStoreController extends Controller
         return view('buybox_stores.priceupdated');
     }
 
-    public function updateprice(Request $request){
+    public function updateprice(Request $request) {
         //command to execute
         // commandExecFunc('');
 
