@@ -280,4 +280,18 @@ class BuyBoxStoreController extends Controller
         echo $request->id;
 
     }
+
+    public function updatepricelisting(Request $request)
+    {
+        $data =  Product_Push::query()
+            ->where('push_status', '1')
+            ->get();
+
+        if ($request->ajax()) {
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->make(true);
+        }
+         return view('buybox_stores.update_listing');
+    }
 }
