@@ -28,7 +28,14 @@ Route::get('home', 'Admin\HomeController@dashboard')->name('home');
 
 // include_route_files(__DIR__ . '/pms/');
 Route::get('testing', function () {
+    $asins = DB::connection('catalog')->select("SELECT asin, user_id
+    FROM asin_source_uss
+    WHERE status='0'
+    ORDER BY id DESC
+    LIMIT 1000
+    ");
 
+    po($asins);
     $priceConversion = new PriceConversion();
     queryAgain:
     $records = PricingUs::query()
@@ -62,4 +69,3 @@ Route::get('testing', function () {
 
 // uncomment this one it is commented
 // include_route_files(__DIR__ . '/pms/');
-
