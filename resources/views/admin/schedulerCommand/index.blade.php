@@ -89,6 +89,7 @@
         </div>
         <div class="col-1"></div>
     </div>
+    Visit this site for cron :<a href="https://crontab.guru/" target="_blank"> https://crontab.guru/ </a>
 
     <table class="table table-striped yajra-datatable table-bordered text-center table-sm">
 
