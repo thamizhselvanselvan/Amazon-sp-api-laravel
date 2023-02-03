@@ -227,6 +227,7 @@ class BuyBoxStoreController extends Controller
 
             
         } 
+        //comment
 
         return '<div class="pop_over_data position-absolute shadow border d-none">' . $html . '</div>';
     }
@@ -294,5 +295,19 @@ class BuyBoxStoreController extends Controller
 
         echo $request->id;
 
+    }
+
+    public function updatepricelisting(Request $request)
+    {
+        $data =  Product_Push::query()
+            ->where('push_status', '1')
+            ->get();
+
+        if ($request->ajax()) {
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->make(true);
+        }
+         return view('buybox_stores.update_listing');
     }
 }

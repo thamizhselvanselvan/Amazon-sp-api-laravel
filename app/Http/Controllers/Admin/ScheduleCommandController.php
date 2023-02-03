@@ -21,9 +21,9 @@ class ScheduleCommandController extends Controller
 
             return Datatables::of($records)
                 ->addColumn('action', function ($record) {
-                    $action = '<div class="d-flex justify-content-center"><a href="/admin/scheduler/management/edit/' . $record['id'] . ' " class=" btn btn-success btn-sm " ><i class="fas fa-edit"></i> Edit</a>
-                    <a href="/admin/scheduler/management/remove/' . $record['id'] . ' " class=" ml-2 btn btn-danger btn-sm remove"><i class="fa fa-trash"></i> Remove</a>';
+                    $action = '<div class="d-flex justify-content-center"><a href="/admin/scheduler/management/edit/' . $record['id'] . ' " class=" btn btn-success btn-sm " ><i class="fas fa-edit"></i> Edit</a>';
                     return $action;
+                    // <a href="/admin/scheduler/management/remove/' . $record['id'] . ' " class=" ml-2 btn btn-danger btn-sm remove"><i class="fa fa-trash"></i> Remove</a>
                 })
                 ->make(true);
         }
