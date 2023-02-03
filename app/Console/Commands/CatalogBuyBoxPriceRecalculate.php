@@ -65,16 +65,19 @@ class CatalogBuyBoxPriceRecalculate extends Command
         $updatingRecord = [];
         foreach ($records as $record) {
 
-            $convertedPrice = $priceConversion->USAToINDB2B($record['weight'], $record['us_price']);
+            $convertedPriceB2B = $priceConversion->USAToINDB2B($record['weight'], $record['us_price']);
+            $convertedPriceB2C = $priceConversion->USAToINDB2C($record['weight'], $record['us_price']);
+
             $updatingRecord[] = [
                 'asin' => $record['asin'],
                 'status' => 1,
                 'weight' => $record['weight'],
                 'us_price' => $record['us_price'],
-                'usa_to_in_b2b' => $convertedPrice
+                'usa_to_in_b2b' => $convertedPriceB2B,
+                'usa_to_in_b2c' => $convertedPriceB2C
             ];
         }
-        PricingUs::upsert($updatingRecord, ['asin_unique'], ['asin', 'status', 'weight', 'us_price', 'usa_to_in_b2b']);
+        PricingUs::upsert($updatingRecord, ['asin_unique'], ['asin', 'status', 'weight', 'us_price', 'usa_to_in_b2b', 'usa_to_in_b2c']);
         $data = PricingUs::where('status', 0)->get()->count('id');
 
         if ($data != 0) {
