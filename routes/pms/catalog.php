@@ -83,6 +83,7 @@ Route::post('catalog/asin-destination/search-delete', 'Catalog\AsinDestinationCo
 Route::get('catalog/exchange-rate', 'Catalog\CatalogExchangeManagementController@index');
 Route::post('catalog/update/exchange-rate', 'Catalog\CatalogExchangeManagementController@CatalogUpdate')->name('catalog.update.exchange.rate');
 Route::get('catalog/record/auto-load', 'Catalog\CatalogExchangeManagementController@CatalogRecordAutoload')->name('catalog.record.auto.load');
+Route::get('catalog/buybox/prie/recalculate', 'Catalog\CatalogExchangeManagementController@CatalogBuyBoxPriceRecalculate')->name('catalog.buybox.price.recalculate');
 
 Route::get('catalog/index', 'Catalog\CliqnshopCatalogController@index')->name('cliqnshop.catalog.index');
 Route::get('catalog/cliqnshop/export', 'Catalog\CliqnshopCatalogController@catalogexport')->name('catalog.export.cliqnshop');
