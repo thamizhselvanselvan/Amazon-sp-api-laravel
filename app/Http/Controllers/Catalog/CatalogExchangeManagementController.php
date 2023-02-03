@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Catalog;
 
 
 use Illuminate\Http\Request;
+use App\Models\FileManagement;
+use App\Models\Catalog\PricingUs;
 use App\Http\Controllers\Controller;
 use App\Models\Catalog\ExchangeRate;
+use Illuminate\Support\Facades\Auth;
 
 class CatalogExchangeManagementController extends Controller
 {
@@ -48,5 +51,23 @@ class CatalogExchangeManagementController extends Controller
         $records = ExchangeRate::where('source_destination', $source_destination)->get()->toArray();
 
         return response()->json($records);
+    }
+
+    public function CatalogBuyBoxPriceRecalculate()
+    {
+        PricingUs::where('status', 1)->update(['status' => 0]);
+        $user_id = Auth::user()->id;
+
+        $file_info = [
+            "user_id" => $user_id,
+            "type" => "BUYBOX_PRICE_ReCALCULATE",
+            "module" => "BUYBOX_PRICE_ReCALCULATE",
+            "command_name" => "mosh:catalog-buybox-price-recalculate"
+
+        ];
+        FileManagement::create($file_info);
+        fileManagement();
+
+        return redirect('/catalog/exchange-rate')->with("success", "BuyBox price is re-calculating...");
     }
 }

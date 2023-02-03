@@ -194,19 +194,21 @@ class Order
                     $missing_clmn .= $detailsKey . ', ';
                 }
             }
+            if ($amazon_order_details['order_status'] == 'Shipped' || $amazon_order_details['order_status'] == 'Unshipped' || $amazon_order_details['order_status'] == 'PartiallyShipped') {
 
-            OrderModel::upsert(
-                $amazon_order_details,
-                ['amazon_order_identifier_UNIQUE'],
-                [
-                    'id',
-                    'buyer_info',
-                    'last_update_date',
-                    'order_status',
-                    'number_of_items_shipped',
-                    'number_of_items_unshipped',
-                ]
-            );
+                OrderModel::upsert(
+                    $amazon_order_details,
+                    ['amazon_order_identifier_UNIQUE'],
+                    [
+                        'id',
+                        'buyer_info',
+                        'last_update_date',
+                        'order_status',
+                        'number_of_items_shipped',
+                        'number_of_items_unshipped',
+                    ]
+                );
+            }
 
             $this->notifyMissingClmns($missing_clmn, $awsId, $amazon_order_id);
         }
