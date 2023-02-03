@@ -36,6 +36,7 @@ Route::get('testing', function () {
     ");
 
     po($asins);
+    exit;
     $priceConversion = new PriceConversion();
     queryAgain:
     $records = PricingUs::query()
