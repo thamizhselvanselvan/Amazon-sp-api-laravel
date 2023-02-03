@@ -156,7 +156,7 @@ class BuyBoxStoreController extends Controller
 
                     $highest_seller = (isset($seller_name)) ? $seller_name : $query->highest_seller_id ;
 
-                    return (isset($highest_seller) && $highest_seller != "") ? $highest_seller : "Non" ;
+                    return (isset($highest_seller) && $highest_seller != "") ? $highest_seller : "None" ;
                 })
                 ->editColumn('lowest_seller_name', function($query) {
 
@@ -168,7 +168,7 @@ class BuyBoxStoreController extends Controller
 
                     $lowest_seller = (isset($seller_name)) ? $seller_name : $query->lowest_seller_id ;
 
-                    return (isset($lowest_seller) && $lowest_seller != "") ? $lowest_seller : "Non" ;
+                    return (isset($lowest_seller) && $lowest_seller != "") ? $lowest_seller : "None" ;
                 })
                 ->editColumn('destination_bb_seller', function($query) {
 
@@ -181,7 +181,7 @@ class BuyBoxStoreController extends Controller
 
                     $bb_winner = (isset($seller_name)) ? $seller_name : $query->bb_winner_id;
 
-                    return (isset($bb_winner) && $bb_winner != "") ? $bb_winner : "Non" ;
+                    return (isset($bb_winner) && $bb_winner != "") ? $bb_winner : "None" ;
                 })
                 ->editColumn('asin', function($query) {
 
