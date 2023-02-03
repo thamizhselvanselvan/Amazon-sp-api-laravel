@@ -25,3 +25,7 @@ Route::get('stores/listing/availability/{store_id}', 'Buybox_stores\BuyBoxStoreC
 
 Route::get('stores/listing/price/update/{id}', 'Buybox_stores\BuyBoxStoreController@updateprice')->name('buybox.store.listing.storewise.update');
 
+
+
+Route::get('stores/price/updated', 'Buybox_stores\BuyBoxStoreController@updatepricelisting')->name('buybox.store.listing.updated');
+

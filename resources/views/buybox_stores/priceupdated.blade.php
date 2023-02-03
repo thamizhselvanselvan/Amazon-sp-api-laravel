@@ -11,6 +11,7 @@
         padding-left: 4px;
     }
 
+
     .table th {
         padding: 2;
         padding-left: 3px;
@@ -57,6 +58,7 @@
         </table>
     </div>
 </div>
+
 @stop
 
 @section('js')
