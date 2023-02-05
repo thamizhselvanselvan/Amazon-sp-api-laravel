@@ -75,8 +75,8 @@ class Asin_price_import extends Command
 
             Product::where('store_id', $store_id)->whereIn('asin', $result_asins)->update(['cyclic' => 1]);
 
-            $country = OrderSellerCredentials::where('seller_id', $store_id)->select('country_code')->get();
-            $country_code = $country['0']->country_code;
+            $country = OrderSellerCredentials::where('seller_id', $store_id)->select('country_code')->first();
+            $country_code = $country->country_code;
 
             if ($country_code == 'IN') {
                 $this->pricingin($result_asins, $store_id);
