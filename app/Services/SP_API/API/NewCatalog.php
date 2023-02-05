@@ -256,8 +256,8 @@ class NewCatalog
                         'salesRanks',
                     ]);
                 }
-                $source_mode->upsert($asinSourceUpdate, ['user_asin_unique'], ['asin', 'status']);
             }
+            $source_mode->upsert($asinSourceUpdate, ['user_asin_unique'], ['asin', 'status']);
         }
     }
 
