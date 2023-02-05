@@ -339,17 +339,17 @@ class NewCatalog
             }
 
 
-            $source_mode = table_model_create(country_code: $country_code, model: 'Asin_source', table_name: 'asin_source_');
-            $miss_asin = [];
-            $diffs = array_diff($asins, $check_asin);
-            foreach ($diffs as $diff) {
-                $miss_asin[] = [
-                    'asin' => $diff,
-                    'user_id' => $seller_id,
-                    'status' => '2',
-                ];
-            }
-            $source_mode->upsert($miss_asin, ['user_asin_unique'], ['asin', 'user_id', 'status']);
+            // $source_mode = table_model_create(country_code: $country_code, model: 'Asin_source', table_name: 'asin_source_');
+            // $miss_asin = [];
+            // $diffs = array_diff($asins, $check_asin);
+            // foreach ($diffs as $diff) {
+            //     $miss_asin[] = [
+            //         'asin' => $diff,
+            //         'user_id' => $seller_id,
+            //         'status' => '2',
+            //     ];
+            // }
+            // $source_mode->upsert($miss_asin, ['user_asin_unique'], ['asin', 'user_id', 'status']);
             // CatalogMissingAsin::upsert($miss_asin, ['asin_unique'], ['asin', 'source']);
 
             return $queue_data;
