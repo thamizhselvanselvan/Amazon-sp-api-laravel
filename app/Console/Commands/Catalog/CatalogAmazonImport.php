@@ -133,7 +133,7 @@ class CatalogAmazonImport extends Command
                     $asin_upsert_source[] = [
                         'asin' => $asin,
                         'user_id' => $seller_id,
-                        'status' => '5'
+                        'status' => '2'
                     ];
 
                     $aws_id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
