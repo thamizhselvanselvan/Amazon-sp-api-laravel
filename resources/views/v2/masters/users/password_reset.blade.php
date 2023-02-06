@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Admin Password Reset')
+@section('title', 'Password Reset')
 
 @section('css')
 
@@ -12,7 +12,7 @@
 
     <div class="row">
         <div class="col">
-            <a href="{{route('admin.user_list')}}" class="btn btn-primary">
+            <a href="{{route('users.home')}}" class="btn btn-primary">
 
                 <i class="fas fa-long-arrow-alt-left"></i> Back
             </a>
@@ -21,7 +21,7 @@
 
     <div class="row mt-3">
         <div class="col">
-            <h1 class="m-0 text-dark text-center">Admin Reset Password</h1>
+            <h1 class="m-0 text-dark text-center">Reset Password</h1>
         </div>
     </div>
 
@@ -46,7 +46,7 @@
             </div>
         @endif
   
-        <form action="{{Route ('admin.password_reset_save', $user_id)}}" method="POST" id="admin_adminpassword">
+        <form action="{{Route ('users.password_reset_save', $user_id)}}" method="POST" id="admin_adminpassword">
             @csrf
 
             <div class="row">

@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\V2\Masters;
 
-
-
-
-use App\Models\V2\Masters\CompanyMaster;
-use App\Models\V2\Masters\Roles;
-use App\Models\V2\Masters\User;
 use Illuminate\Http\Request;
+use App\Models\V2\Masters\User;
+use App\Models\V2\Masters\Roles;
+use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\V2\Masters\Department;
+use App\Models\V2\Masters\CompanyMaster;
 use Yajra\DataTables\Facades\DataTables;
 
 
@@ -23,43 +23,111 @@ class UserController extends Controller
         $login_id = $user->id;
         $role = $user->roles->first()->name;
         $users = User::latest()->where('id', '>', '1')->orderBy('id', 'DESC')->get();
-        if ($request->ajax()) {
+        if ($request->isMethod('get')) {
+            if ($request->ajax()) {
 
-            return DataTables::of($users)
-                ->addIndexColumn()
-                ->addColumn('action', function ($user) use ($login_id, $role) {
-                    $edit = '';
-                    if ($login_id == $user->id || $role == 'Admin' && $user->id != 1) {
-                        $edit = "<a href='/v2/master/users/password_reset/" . $user->id . "' class='btn btn-primary btn-sm mr-2'><i class='fas fa-edit'></i>Change password</a>";
-                    }
-                    if ($login_id == $user->id || $role == 'Admin' && $user->id != 1) {
-                        $edit .= '<a href="/v2/master/users/' . $user->id . '/edit" class="edit btn btn-success btn-sm"> <i class="fas fa-edit"></i> Edit</a>';
-                    }
-                    if ($login_id == $user->id || $role == 'Admin' && $user->id != 1) {
-                        $edit .= '<button  remove-btn="' . $user->id . '" class="ml-2 btn btn-danger btn-sm" id="remove">
+                return DataTables::of($users)
+                    ->addIndexColumn()
+                    ->addColumn('action', function ($user) use ($login_id, $role) {
+                        $edit = '';
+                        if ($login_id == $user->id || $role == 'Admin' && $user->id != 1) {
+                            $edit = "<a href='/v2/master/users/password_reset/" . $user->id . "' class='btn btn-primary btn-sm mr-2'><i class='fas fa-edit'></i>Change password</a>";
+                        }
+                        if ($login_id == $user->id || $role == 'Admin' && $user->id != 1) {
+                            $edit .= '<a href="/v2/master/users/' . $user->id . '/edit" class="edit btn btn-success btn-sm"> <i class="fas fa-edit"></i> Edit</a>';
+                        }
+                        if ($login_id == $user->id || $role == 'Admin' && $user->id != 1) {
+                            $edit .= '<button  remove-btn="' . $user->id . '" class="ml-2 btn btn-danger btn-sm" id="remove">
                         <i class="fa fa-remove"></i> Remove</button>';
-                    }
-                    return $edit;
-                })
-                ->addColumn('permission', function ($permission) {
-                    $roles = $permission->roles;
-                    $roles = json_decode($roles);
-                    $multiple_roles = '';
-                    foreach ($roles as $key => $role) {
-                        $multiple_roles .= $role->name . ', ';
-                    }
+                        }
+                        return $edit;
+                    })
+                    ->addColumn('permission', function ($permission) {
+                        $roles = $permission->roles;
+                        $roles = json_decode($roles);
+                        $multiple_roles = '';
+                        foreach ($roles as $key => $role) {
+                            $multiple_roles .= $role->name . ', ';
+                        }
 
-                    return rtrim($multiple_roles, ', ');
-                })
-                ->rawColumns(['action', 'permission'])
-                ->make(true);
+                        return rtrim($multiple_roles, ', ');
+                    })
+                    ->rawColumns(['action', 'permission'])
+                    ->make(true);
+            }
+            return view('v2.masters.users.index');
         }
-        return view('v2.masters.users.index');
+        else
+        {
+            $request->validate([
+                'password' => 'required|confirmed|min:3|max:18'
+            ]);
+           
+            $am = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'company_id' => $request->company,
+                'department_id' => 1,
+    
+            ]);
+            //$role = $request->role;
+            //$role = Role::where("name", $request->role)->first();
+
+            // po($request->role);
+
+            $role = $request->role;
+            $am->assignRole($role);
+            return redirect()->intended('/v2/master/users')->with('success', 'User ' . $request->name . ' has been created successfully');
+        }
     }
     public function create()
     {
         $roles = Roles::get('name');
-        $companys = CompanyMaster::get();
-        return view('v2.masters.users.add', compact(['roles', 'companys']));
+        $companys = CompanyMaster::where('user_id',Auth::id())->get();
+        $departments = Department::get();
+        return view('v2.masters.users.add', compact(['roles', 'companys','departments']));
     }
+
+    function password_reset(Request $request, $id)
+    {
+
+        $user = User::where('id', $id)->exists();
+
+        if (!$user) {
+            return redirect()->intended('/v2/master/users')->with("error", "User does not exists");
+        }
+
+        $user = Auth::user();
+        $login_id = $user->id;
+        $role = $user->roles->first()->name;
+
+        $user_id = $request->id;
+
+        if ($login_id == $user_id || $role == 'Admin' && $user_id != 1) {
+            return view('v2.masters.users.password_reset', compact('user_id'));
+        }
+
+        return redirect()->intended('/v2/master/users')->with("error", "You don't have permission to change the password");
+    }
+
+    public function password_reset_save(Request $request, $id)
+    {
+        $request->validate([
+            'password' => 'required|confirmed|min:3|max:18'
+        ]);
+
+        $user = User::where('id', $id)->exists();
+
+        if (!$user) {
+            return redirect()->intended('/v2/master/users')->with("error", "User does not exists");
+        }
+
+        User::where('id', $id)->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        return redirect()->intended('/v2/master/users')->with('success', 'Password has been changed successfully');
+    }
+
 }

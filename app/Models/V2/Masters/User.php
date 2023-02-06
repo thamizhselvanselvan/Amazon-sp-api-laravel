@@ -16,6 +16,7 @@ class User extends Authenticatable
 
     protected $table = 'users'; 
     protected $connection = 'web'; 
+    protected $guard_name = 'web';
     
 
     /**
@@ -29,6 +30,7 @@ class User extends Authenticatable
         'email',
         'password',
         'company_id',
+        'department_id',
     ];
 
     /**
