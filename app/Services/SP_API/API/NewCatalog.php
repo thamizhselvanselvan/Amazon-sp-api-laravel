@@ -34,6 +34,7 @@ class NewCatalog
         $auth_id = '';
         $token = '';
         $seller_id = '';
+        $asinSourceUpdate = [];
 
         foreach ($records as $record) {
 
@@ -75,7 +76,7 @@ class NewCatalog
 
         $NewCatalogs = [];
         $country_code1 = strtolower($country_code1);
-        $asinSourceUpdate = [];
+
         foreach ($queue_data as $record) {
 
             if ($record) {

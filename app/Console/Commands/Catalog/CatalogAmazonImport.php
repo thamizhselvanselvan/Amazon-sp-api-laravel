@@ -117,6 +117,7 @@ class CatalogAmazonImport extends Command
                 foreach ($asins as $details) {
                     $seller_id  =  $details->user_id;
                     $asin = $details->asin;
+
                     $asin_upsert_source[] = [
                         'asin' => $asin,
                         'user_id' => $seller_id,
@@ -129,7 +130,6 @@ class CatalogAmazonImport extends Command
 
                         jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
                         $source_mode->upsert($asin_upsert_source, ['user_asin_unique'], ['status']);
-                        // $catalog_class->Catalog($asin_source);
                         $auth_count++;
                         $asin_source = [];
                         $asin_upsert_source = [];
@@ -151,9 +151,10 @@ class CatalogAmazonImport extends Command
                     }
                 }
 
-                // $catalog_class->Catalog($asin_source);
                 jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
                 $source_mode->upsert($asin_upsert_source, ['user_asin_unique'], ['status']);
+                $asin_upsert_source = [];
+                $asin_source = [];
             } else {
 
                 // DB::connection('catalog')->update("UPDATE ${asin_table_name} as source

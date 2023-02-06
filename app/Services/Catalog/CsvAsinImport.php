@@ -41,6 +41,7 @@ class CsvAsinImport
             $asin_details[] = [
                 'asin' => $asin,
                 'user_id' => $records['user_id'],
+                'status' => '0',
                 ...$des_priority
             ];
 
