@@ -129,7 +129,6 @@ class CatalogAmazonImport extends Command
 
                         jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
                         $source_mode->upsert($asin_upsert_source, ['user_asin_unique'], ['status']);
-                        // $catalog_class->Catalog($asin_source);
                         $auth_count++;
                         $asin_source = [];
                         $asin_upsert_source = [];
@@ -151,7 +150,6 @@ class CatalogAmazonImport extends Command
                     }
                 }
 
-                // $catalog_class->Catalog($asin_source);
                 jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
                 $source_mode->upsert($asin_upsert_source, ['user_asin_unique'], ['status']);
             } else {
