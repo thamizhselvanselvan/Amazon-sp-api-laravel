@@ -94,29 +94,29 @@
 
     });
 
-    $(document).ready(function() {
+    // $(document).ready(function() {
 
-        $.ajax({
-                url: "{{route('orders.zoho.force.dump.view')}}",
-                method: 'get',
-                data: {
-                    'command': 'command',
-                    "_token": "{{ csrf_token() }}",
-                },
-                success: function(result) {
+    //     $.ajax({
+    //             url: "{{route('orders.zoho.force.dump.view')}}",
+    //             method: 'get',
+    //             data: {
+    //                 'command': 'command',
+    //                 "_token": "{{ csrf_token() }}",
+    //             },
+    //             success: function(result) {
 
-                if (result.data.hasOwnProperty("error")) {
-                    if ((result['data']['error']['0']['status']) == '0') {
-                        alert('Previous Order ID is Still Processing Please Wait...');
-                        document.getElementById("upload").disabled = true;
-                    }
-                }
-            },
-            error: function() {
-                alert('ERROR');
-            }
-        });
+    //             if (result.data.hasOwnProperty("error")) {
+    //                 if ((result['data']['error']['0']['status']) == '0') {
+    //                     alert('Previous Order ID is Still Processing Please Wait...');
+    //                     document.getElementById("upload").disabled = true;
+    //                 }
+    //             }
+    //         },
+    //         error: function() {
+    //             alert('ERROR');
+    //         }
+    //     });
 
-    });
+    // });
 </script>
 @stop
