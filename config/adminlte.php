@@ -1166,14 +1166,14 @@ return [
                 [
                     'text' => 'Master',
                     'can' => ['Admin'],
-                    'icon' => 'far fa-fw fa-file',
+                    'icon' => 'far far fa fa-cog',
                     'submenu' => [
 
                         [
                             'text' => 'Roles',
                             'url' => 'v2/master/roles',
                             'can' => ['Admin'],
-                            'icon' => 'far fa-fw fa-user',
+                            'icon' => 'far fa fa-file-text-o',
 
                         ],
 
@@ -1181,7 +1181,7 @@ return [
                             'text' => 'Departments',
                             'url' => 'v2/master/departments',
                             'can' => ['Admin'],
-                            'icon' => 'far fa-fw fa-file',
+                            'icon' => 'far fa fa-sitemap',
 
                         ],
 
@@ -1189,7 +1189,7 @@ return [
                             'text' => 'Company',
                             'url' => 'v2/master/company',
                             'can' => ['Admin'],
-                            'icon' => 'far fa-fw fa-file',
+                            'icon' => 'far fa fa-building-o',
 
                         ],
 
@@ -1205,24 +1205,24 @@ return [
                             'text' => 'Store',
                             'url' => 'store',
                             'can' => ['Admin'],
-                            'icon' => 'far fa-fw fa-file',
+                            'icon' => 'fas fa-store',
                             'submenu' => [
                                 [
                                     'text' => 'Currency',
                                     'url'   => 'v2/master/store/currency',
-                                    'icon'  => 'far fa-fw fa-file',
+                                    'icon'  => 'far fa fa-money',
                                     'can'   => ['Admin'],
                                 ],
                                 [
                                     'text' => 'Regions',
                                     'url' => 'v2/master/store/regions',
-                                    'icon' => 'far fa-fw fa-file',
+                                    'icon' => 'far fa fa-map-marker',
                                     'can' => ['Admin'],
                                 ],
                                 [
                                     'text' => 'Credentials',
                                     'url' => 'v2/master/store/credentials',
-                                    'icon' => 'far fa-fw fa-file',
+                                    'icon' => 'far fa-id-card',
                                     'can' => ['Admin'],
                                 ],
 
@@ -1240,19 +1240,19 @@ return [
                                 [
                                     'text' => 'Country',
                                     'url' => 'v2/master/geo/country',
-                                    'icon' => 'far fa-fw fa-file',
+                                    'icon' => 'far fa fa-globe',
                                     'can' => ['Admin'],
                                 ],
                                 [
                                     'text' => 'State',
                                     'url' => 'v2/master/geo/state',
-                                    'icon' => 'far fa-fw fa-file',
+                                    'icon' => 'far fa fa-flag',
                                     'can' => ['Admin'],
                                 ],
                                 [
                                     'text' => 'City',
                                     'url' => 'v2/master/geo/city',
-                                    'icon' => 'far fa-fw fa-file',
+                                    'icon' => 'far fa fa-building-o',
                                     'can' => ['Admin'],
                                 ],
                             ],
