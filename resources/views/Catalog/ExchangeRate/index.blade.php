@@ -12,6 +12,7 @@
             <h1 class="m-0 text-dark">Catalog Exchange Rate</h1>
         </div>
     </div>
+
 @stop
 
 @section('content')
@@ -31,7 +32,11 @@
 
     <div class="row">
 
-        <div class="col-2"></div>
+        <div class="col-2 mt-4">
+            <div class="alert alert-warning alert-block info-msg d-none">
+                <strong id='info-value'></strong>
+            </div>
+        </div>
 
         <div class="col-8">
             <form action="{{ route('catalog.update.exchange.rate') }}" method="post">
@@ -101,7 +106,13 @@
                     </div>
                 </div>
                 <p class="text-center">
-                    <x-adminlte-button label="Update" type="submit" theme="success" icon="fa fa-refresh" class="btn-sm" />
+                    <x-adminlte-button label="Update" type="submit" theme="success" icon="fa fa-refresh"
+                        class="btn-sm mr-2" />
+
+                    <a href="{{ route('catalog.buybox.price.recalculate') }}">
+                        <x-adminlte-button label="Re-calculate" theme="primary" class="btn-sm" icon="fas fa-calculator"
+                            id="PriceReCalculate" />
+                    </a>
                 </p>
             </form>
         </div>
@@ -146,6 +157,37 @@
 
             });
 
+        });
+
+        $('#PriceReCalculate').click(function() {
+
+            let bool = confirm('Are you sure you want to re-calculate USAToINDB2B price ?');
+            if (!bool) {
+                return false;
+            }
+        });
+
+        $(document).ready(function() {
+
+            $.ajax({
+                method: 'get',
+                url: "{{ route('catalog.export.file.management.monitor') }}",
+                data: {
+                    "module_type": "BUYBOX_PRICE_ReCALCULATE",
+                    "_token": "{{ csrf_token() }}",
+                },
+                response: 'json',
+                success: function(response) {
+                    if (response.status == 'Processing') {
+                        console.log(response);
+
+                        $('#PriceReCalculate').prop('disabled', true);
+
+                        $('.info-msg').removeClass('d-none');
+                        $('#info-value').append('BuyBox price is re-calculating...');
+                    }
+                },
+            });
         });
     </script>
 @stop
