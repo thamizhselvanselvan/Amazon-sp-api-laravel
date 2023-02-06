@@ -23,9 +23,9 @@
                     <x-adminlte-button label="Add Region" theme="primary" icon="fas fa-plus" />
                 </a>
              
-                 <a href="{{route('trash-view.region')}} ">
+                 <!-- <a href="{{route('trash-view.region')}} ">
                     <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" />
-                </a>
+                </a> -->
             </h2> 
 
             <div class="alert_display">
@@ -38,7 +38,7 @@
             </div>
             
             <table class="table table-bordered yajra-datatable table-striped">
-                <thead>
+                <thead class='table-primary'>
                     <tr>
                         <th>No</th>
                         <th>Region</th>

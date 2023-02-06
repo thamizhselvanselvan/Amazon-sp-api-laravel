@@ -27,12 +27,12 @@
     <a href="/v2/master/store/currency/create">
         <x-adminlte-button label="Add Currency" theme="primary" icon="fas fa-plus" />
     </a>
-    <a href="/v2/master/store/currency/trash-view">
+    <!-- <a href="/v2/master/store/currency/trash-view">
         <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" />
-    </a>
+    </a> -->
 </h2>
 <table class="table table-bordered yajra-datatable table-sm">
-    <thead>
+    <thead class='table-primary'>
         <tr>
             <th>ID</th>
             <th>Name</th>
