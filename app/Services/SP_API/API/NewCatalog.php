@@ -258,6 +258,7 @@ class NewCatalog
                 }
             }
             $source_mode->upsert($asinSourceUpdate, ['user_asin_unique'], ['asin', 'status']);
+            $asinSourceUpdate = [];
         }
     }
 
