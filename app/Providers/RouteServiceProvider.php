@@ -152,6 +152,10 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware(['web', 'maintenance_mode', 'auth'])
                 ->namespace($this->namespace)
                 ->group(base_path('routes/v2/test-sanjay.php'));
+
+            Route::middleware(['web', 'maintenance_mode', 'auth'])
+                ->namespace($this->namespace)
+                ->group(base_path('routes/v2/test-vikesh.php'));
         });
     }
 
