@@ -67,6 +67,3 @@ Route::get('testing', function () {
         // PricingUs::where('status', 1)->update(['status' => 0]);
     }
 });
-
-// uncomment this one it is commented
-// include_route_files(__DIR__ . '/pms/');

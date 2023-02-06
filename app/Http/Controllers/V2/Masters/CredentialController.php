@@ -43,7 +43,7 @@ class CredentialController extends Controller
 
             $request->validate([
                 'company' => 'required',
-                'store_name' => 'required',
+                'store_name' => 'required|regex:/^[\pL\s\-]+$/u|min:2|max:255',
                 'seller_id' => 'required',
                 'auth_code' => 'required',
                 'marketplace_id' => 'required',

@@ -2,18 +2,22 @@
 
 namespace App\Console\Commands\buybox_stores;
 
+use App\Models\Aws_credential;
 use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use App\Models\Buybox_stores\Product;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Buybox_stores\Product_Push;
 
 class product_push_to_amazon extends Command
 {
     private $increase_by_price = 5;
     private $decrease_by_price = 5;
+    private $increase_by_excel_price = 10;
     private $rules_applied = []; 
     private $price_calculate_type = 'fixed';
+    private $our_merchant_ids = [];
 
     /**
      * The name and signature of the console command.
@@ -46,12 +50,15 @@ class product_push_to_amazon extends Command
      */
     public function handle()
     {
+       
+        $this->our_merchant_ids = aws_merchant_ids();
 
         $start_date = Carbon::now()->subMinutes(30);
         $end_date = Carbon::now()->subMinutes(1);
 
         $products = Product::query()
             ->whereBetween("updated_at", [$start_date, $end_date])
+            ->where("cyclic", 1)
             ->where("cyclic_push", 0)
             ->limit(1000)
             ->get();
@@ -121,19 +128,29 @@ class product_push_to_amazon extends Command
 
     public function push_price_logic($product, $id_rules_applied) {
 
-        if ($product->is_bb_won) {
+        $store_id = $product->store_id;
+        $base_price = $product->base_price;
+        $ceil_price = $product->ceil_price;
+        $store_price = $product->store_price;
+        $excel_price = $product->app_360_price;
+        $bb_winner_id = $product->bb_winner_id;
+        $bb_winner_price = $product->bb_winner_price;
+        $lowest_seller_price = $product->lowest_seller_price;
+        $highest_seller_price = $product->highest_seller_price;
+
+        if ($this->i_have_bb(store_id: $store_id, bb_winner_id: $bb_winner_id)) {
             
             // if we have own the BB then no otherr sellers are selling that product then we increase the price
-            if (empty($product->highest_seller_price) && empty($product->lowest_seller_price)) {
+            if (empty($highest_seller_price) && empty($lowest_seller_price)) {
 
-                //$push_price = addPercentage($product->store_price, $this->increase_by_price);
-                $push_price = $this->calculate($product->store_price, 'increase');
+                //$push_price = $this->calculate($product->store_price, 'increase');
+                $push_price = $this->only_seller_excel_price_increase(excel_calculated_price: $excel_price);
                 
-                if($push_price < $product->ceil_price) {
+                if($push_price < $ceil_price) {
 
                     $this->rules_applied[$id_rules_applied] = [
                         "We have won the BB",
-                        "No other sellers are selling this product so increased the price by $this->increase_by_price"
+                        "No other sellers are selling this product so increased the price by $excel_price + $this->increase_by_excel_price %, But not more than ceil price"
                     ];
 
                     return $push_price;
@@ -141,17 +158,41 @@ class product_push_to_amazon extends Command
 
             } 
 
-            // if we have own the BB then if next highest seller is there then increase the price closest to the next highest price guy but not more than him
-            if(!empty($product->highest_seller_price)) {
+            // if we have own the BB then if next highest seller is there & he is not our own seller means then we increase the price closest to the next highest price guy but not more than him
+            if(!empty($highest_seller_price) && !$this->our_own_store_won_bb(store_id: $store_id, bb_winner_id: $bb_winner_id)) {
 
                 //$push_price = addPercentage($product->store_price, $this->increase_by_price);
-                $push_price = $this->calculate($product->highest_seller_price, 'decrease');
+                $push_price = $this->calculate(price: $highest_seller_price, type: 'decrease');
 
-                if($product->highest_seller_price < $push_price && $push_price < $product->ceil_price) {
+                if($highest_seller_price < $push_price && $push_price < $ceil_price) {
 
                     $this->rules_applied[$id_rules_applied] = [
                         "We have won the BB",
-                        "There is next highest seller so we have increased the price by $this->increase_by_price & closest to the next highest seller price but not more than that price"
+                        "There is next highest seller",
+                        "He is not any of our seller",
+                        "so we have increased the price by $this->increase_by_price & closest to the next highest seller price but not more than that price"
+                    ];
+
+                    return $push_price;
+                }
+
+            }
+
+            // if we have own the BB then if next highest seller is there & he is our own store then we increase the price excel price + $this->increase_by_excel_price % but not more than ceil price
+            if(!empty($highest_seller_price) && $this->our_own_store_won_bb(store_id: $store_id, bb_winner_id: $bb_winner_id)) {
+
+                //$push_price = $this->calculate($product->highest_seller_price, 'decrease');
+                $push_price = $this->only_seller_excel_price_increase(excel_calculated_price: $excel_price);
+
+                if($push_price < $ceil_price) {
+
+                    $our_own = $this->our_own_store_won_bb(store_id: $store_id, bb_winner_id: $bb_winner_id);
+
+                    $this->rules_applied[$id_rules_applied] = [
+                        "We have won the BB",
+                        "There is next highest seller",
+                        "He is our own seller {$our_own}",
+                        "so we have increased the price by $excel_price + $this->increase_by_excel_price %, But not more than ceil price"
                     ];
 
                     return $push_price;
@@ -161,89 +202,101 @@ class product_push_to_amazon extends Command
 
             $this->rules_applied[$id_rules_applied] = [
                 "We have won the BB",
-                "Ceil Price has reached, So no rule applied to it & No Price Changes Made"
+                "No Condition Matched",
+                "So no rule applied to it & No Price Changes Made"
             ];
 
             return $product->store_price;
-
-        } else {
+        } 
             
-            // if we have lost the BB then no other sellers are sellling that product then we increase that prices
-            if (empty($product->bb_winner_id) && empty($product->highest_seller_price) && empty($product->lowest_seller_price)) {
+        // if we have lost the BB then no other sellers are sellling that product then we increase that prices
+        if (empty($bb_winner_id) && empty($highest_seller_price) && empty($lowest_seller_price)) {
 
-                //$push_price = addPercentage($product->store_price, $this->increase_by_price);
-                $push_price = $this->calculate($product->store_price, 'increase');
+            //$push_price = $this->calculate($product->store_price, 'increase');
+            $push_price = $this->only_seller_excel_price_increase(excel_calculated_price: $excel_price);
 
-                if($push_price < $product->ceil_price) {
-
-                    $this->rules_applied[$id_rules_applied] = [
-                        "We have lost the BB",
-                        "No other selling this product so increased the price by $this->increase_by_price",
-                    ];
-
-                    return $push_price;
-                }
-
-            } 
-
-            // if we have lost the BB then if BB has been won by somebody then check  
-            if (!empty($product->bb_winner_id)) {
-
-                if($product->bb_winner_price > $product->store_price) {
-
-                    //$push_price = removePercentage($product->bb_winner_price, $this->increase_by_price);
-                    $push_price = $this->calculate($product->bb_winner_price, 'decrease');
-
-                    if($push_price > $product->base_price && $push_price < $product->ceil_price) {
-
-                        $this->rules_applied[$id_rules_applied] = [
-                            "We have lost the BB",
-                            "BB has been won by ($product->bb_winner_id) seller & BB winner price is greater than our price",
-                            "So we have increased our price by $this->decrease_by_price than BB winner"
-                        ];
-
-                        return $push_price;
-                    }
-
-                }
-
-                if($product->bb_winner_price < $product->store_price) {
-
-                    //$push_price = removePercentage($product->bb_winner_price, $this->increase_by_price);
-                    $push_price = $this->calculate($product->bb_winner_price, 'decrease');
-
-                    if($push_price > $product->base_price && $push_price < $product->ceil_price) {
-
-                        $this->rules_applied[$id_rules_applied] = [
-                            "We have lost the BB",
-                            "BB has been won by ($product->bb_winner_id) seller & BB winner price is greater than our price",
-                            "So we decreased our price by $this->decrease_by_price than BB winner",
-                        ];
-
-                        return $push_price;
-                    }
-
-                }
+            if($push_price < $ceil_price) {
 
                 $this->rules_applied[$id_rules_applied] = [
                     "We have lost the BB",
-                    "So no rule applied to it & No Price Changes Made"
+                    "No other selling this product so increased the price by $excel_price + $this->increase_by_excel_price %, But not more than ceil price",
                 ];
 
-                return $product->store_price;
-            } 
+                return $push_price;
+            }
+
+        }
+
+        // if we have lost the BB & BB is won by any of our own sellers.
+        if (!empty($bb_winner_id) && $this->our_own_store_won_bb(store_id: $store_id, bb_winner_id: $bb_winner_id)) {
+
+            $push_price = $this->only_seller_excel_price_increase(excel_calculated_price: $excel_price);
+
+            if($push_price < $ceil_price) {
+
+                $our_own_seller = $this->our_own_store_won_bb(store_id: $store_id, bb_winner_id: $bb_winner_id);
+
+                $this->rules_applied[$id_rules_applied] = [
+                    "We have lost the BB",
+                    "But any one of our own seller ($our_own_seller) has won the BB",
+                    "So increased the price by $excel_price + $this->increase_by_excel_price %, But not more than ceil price",
+                ];
+
+                return $push_price;
+            }
+
+        }
+
+        // if we have lost the BB & BB is not won by any of our own sellers but won by someday else & bb winner price is more than our store price
+        if (!empty($bb_winner_id) && !$this->our_own_store_won_bb(store_id: $store_id, bb_winner_id: $bb_winner_id) && $bb_winner_price > $store_price) {
+
+            //$push_price = removePercentage($product->bb_winner_price, $this->increase_by_price);
+            $push_price = $this->calculate(price: $bb_winner_price, type: 'decrease');
+
+            if($push_price > $base_price && $push_price < $ceil_price) {
+
+                $this->rules_applied[$id_rules_applied] = [
+                    "We have lost the BB",
+                    "BB has been won by ($bb_winner_id) seller",
+                    "BB winner price is greater than our store price",
+                    "So we have increased our price by $this->decrease_by_price than BB winner but not more than ceil price or below base price"
+                ];
+
+                return $push_price;
+            }
+  
+        } 
+
+        // if we have lost the BB & BB is not won by any of our own sellers but won by someday else & bb winner has lesser price than our store price
+        if(!empty($bb_winner_id) && !$this->our_own_store_won_bb(store_id: $store_id, bb_winner_id: $bb_winner_id) && $bb_winner_price < $store_price) {
+
+            //$push_price = removePercentage($bb_winner_price, $this->increase_by_price);
+            $push_price = $this->calculate(price: $bb_winner_price, type: 'decrease');
+
+            if($push_price > $base_price && $push_price < $ceil_price) {
+
+                $this->rules_applied[$id_rules_applied] = [
+                    "We have lost the BB",
+                    "BB has been won by ($bb_winner_id) seller",
+                    "BB winner price is lesser than our store price",
+                    "So we decreased our price by $this->decrease_by_price than BB winner but not more than ceil price or below base price",
+                ];
+
+                return $push_price;
+            }
 
         }
 
         $this->rules_applied[$id_rules_applied] = [
             "We have lost the BB",
+            "No Condition matched",
             "So no rule applied to it & No Price Changes Made"
         ];
 
         return $product->store_price;
     }
 
-    public function calculate($price, $type = 'increase') {
+    public function calculate(string|int|float $price, string $type = 'increase') {
 
         if($this->price_calculate_type == "percent") {
 
@@ -264,6 +317,24 @@ class product_push_to_amazon extends Command
         if($type == "decrease") {
             return $price - $this->decrease_by_price;
         }
+    }
+
+    public function only_seller_excel_price_increase(string|float|int $excel_calculated_price): float|int {
+
+        return addPercentage($excel_calculated_price, $this->increase_by_excel_price);
+    }
+
+    public function our_own_store_won_bb(int $store_id, string $bb_winner_id): bool {
+
+        if(array_key_exists($store_id, $this->our_merchant_ids) && $store_id != $bb_winner_id) {
+            return $this->our_merchant_ids[$store_id];
+        }
+
+        return false;
+    }
+
+    public function i_have_bb(string $store_id, string $bb_winner_id): bool {
+        return $store_id == $bb_winner_id;
     }
 
     public function push_price_logic_old($data): array {
