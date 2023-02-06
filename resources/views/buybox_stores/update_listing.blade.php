@@ -11,7 +11,6 @@
         padding-left: 4px;
     }
 
-
     .table th {
         padding: 2;
         padding-left: 3px;
@@ -44,13 +43,10 @@
                     <th>ID</th>
                     <th>ASIN</th>
                     <th>Product SKU</th>
-                    <th>Store ID</th>
-                    <th>Availability</th>
                     <th>Push Price</th>
-                    <th>Base Price</th>
-                    <th>Latency</th>
                     <th>Feedback ID</th>
                     <th>Feedback Responce</th>
+                    <th>Feedback Availability ID</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,7 +54,6 @@
         </table>
     </div>
 </div>
-
 @stop
 
 @section('js')
@@ -73,7 +68,7 @@
         let yajra_table = $('.yajra-datatable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{route('buybox.store.updated') }}",
+            ajax: "{{route('buybox.store.listing.updated') }}",
             columns: [{
                     data: 'DT_RowIndex',
                     name: 'DT_RowIndex',
@@ -89,34 +84,21 @@
                     name: 'product_sku'
                 },
                 {
-                    data: 'store_id',
-                    name: 'store_id'
-                },
-                {
-                    data: 'availability',
-                    name: 'availability'
-                },
-                {
                     data: 'push_price',
                     name: 'push_price'
                 },
                 {
-                    data: 'base_price',
-                    name: 'base_price'
-                },
-                {
-                    data: 'latency',
-                    name: 'latency'
-                },
-                {
-                    data: 'feedback_id',
-                    name: 'feedback_id'
+                    data: 'feedback_price_id',
+                    name: 'feedback_price_id'
                 },
                 {
                     data: 'feedback_response',
                     name: 'feedback_response'
                 },
-
+                {
+                    data: 'feedback_availability_id',
+                    name: 'feedback_availability_id'
+                },
             ]
         });
 

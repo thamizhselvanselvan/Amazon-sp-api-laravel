@@ -763,12 +763,12 @@ return [
                             'can' => ['Admin'],
                             'icon' => 'fa fa-list'
                         ],
-                        [
-                            'text' => 'Availability',
-                            'url' => 'stores/listing/availability',
-                            'can' => ['Admin'],
-                            'icon' => 'fa fa-list'
-                        ],
+                        // [
+                        //     'text' => 'Availability',
+                        //     'url' => 'stores/listing/availability',
+                        //     'can' => ['Admin'],
+                        //     'icon' => 'fa fa-list'
+                        // ],
                         [
                             'text' => 'Price Updated',
                             'url' => 'stores/price/updated',

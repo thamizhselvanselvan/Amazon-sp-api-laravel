@@ -88,14 +88,21 @@ class CatalogAmazonImport extends Command
                 //     WHERE cat.seller_id IS NULL ");
             } else {
 
-                $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id
-                    FROM $asin_table_name as source
-                    LEFT JOIN $catalog_table_name as cat
-                    ON cat.asin = source.asin
-                    WHERE cat.asin IS NULL
-                    AND source.status = '0'
-                    LIMIT $limit
-                    ");
+                // $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id
+                //     FROM $asin_table_name as source
+                //     LEFT JOIN $catalog_table_name as cat
+                //     ON cat.asin = source.asin
+                //     WHERE cat.asin IS NULL
+                //     AND source.status = '0'
+                //     LIMIT $limit
+                //     ");
+
+                $asins = DB::connection('catalog')->select("SELECT asin, user_id
+                FROM $asin_table_name
+                WHERE status='0'
+                ORDER BY id DESC
+                LIMIT $limit
+                ");
 
                 // asin_destination_uss
                 // $asin_table_name = 'asin_destination_uss';
@@ -126,7 +133,7 @@ class CatalogAmazonImport extends Command
                     $asin_upsert_source[] = [
                         'asin' => $asin,
                         'user_id' => $seller_id,
-                        'status' => '1'
+                        'status' => '2'
                     ];
 
                     $aws_id = $mws_regions[0]['aws_verified'][$auth_count]['id'];

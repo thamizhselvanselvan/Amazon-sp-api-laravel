@@ -19,7 +19,7 @@
             <h1 class="m-0 text-dark text-center"><strong>Command Scheduler</strong> </h1>
         </div>
         <a href="{{ route('command.scheduler.form.bin') }}">
-            <x-adminlte-button label="Bin" theme="danger" icon="fas fa-trash" class="btn btn-sm" />
+            {{-- <x-adminlte-button label="Bin" theme="danger" icon="fas fa-trash" class="btn btn-sm" /> --}}
         </a>
     </div>
 @stop
@@ -89,6 +89,7 @@
         </div>
         <div class="col-1"></div>
     </div>
+    Visit this site for cron :<a href="https://crontab.guru/" target="_blank"> https://crontab.guru/ </a>
 
     <table class="table table-striped yajra-datatable table-bordered text-center table-sm">
 

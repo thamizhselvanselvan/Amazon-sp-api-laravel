@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\Buybox_stores\Product;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Buybox_stores\Product_Push;
@@ -146,27 +147,41 @@ class BuyBoxStoreController extends Controller
             return DataTables::of($data)
                 ->editColumn('highest_seller_name', function($query) {
 
-                    $seller_name = (Seller_id_name::where('seller_store_id', $query->highest_seller_id)->first())->seller_name ?? "";
+                    //$seller_name = (Seller_id_name::where('seller_store_id', $query->highest_seller_id)->first())->seller_name ?? "";
+                    $seller_name = Cache::get($query->highest_seller_id, function () use($query) {
+                        return Seller_id_name::where('seller_store_id', $query->highest_seller_id)->first();
+                    });
+
+                    $seller_name = $seller_name->seller_name ?? "";
 
                     $highest_seller = (isset($seller_name)) ? $seller_name : $query->highest_seller_id ;
 
-                    return (isset($highest_seller) && $highest_seller != "") ? $highest_seller : "No Lowest Seller" ;
+                    return (isset($highest_seller) && $highest_seller != "") ? $highest_seller : "None" ;
                 })
                 ->editColumn('lowest_seller_name', function($query) {
 
-                    $seller_name = (Seller_id_name::where('seller_store_id', $query->lowest_seller_id)->first())->seller_name ?? "";
+                    $seller_name = Cache::get($query->lowest_seller_id, function () use($query) {
+                        return Seller_id_name::where('seller_store_id', $query->lowest_seller_id)->first();
+                    });
+
+                    $seller_name = $seller_name->seller_name ?? "";
 
                     $lowest_seller = (isset($seller_name)) ? $seller_name : $query->lowest_seller_id ;
 
-                    return (isset($lowest_seller) && $lowest_seller != "") ? $lowest_seller : "No Lowest Seller" ;
+                    return (isset($lowest_seller) && $lowest_seller != "") ? $lowest_seller : "None" ;
                 })
                 ->editColumn('destination_bb_seller', function($query) {
 
-                    $seller_name = (Seller_id_name::where('seller_store_id', $query->bb_winner_id)->first())->seller_name ?? "";
+                    //$seller_name = (Seller_id_name::where('seller_store_id', $query->bb_winner_id)->first())->seller_name ?? "";
+                    $seller_name = Cache::get($query->bb_winner_id, function () use($query) {
+                        return Seller_id_name::where('seller_store_id', $query->bb_winner_id)->first();
+                    });
+
+                    $seller_name = $seller_name->seller_name ?? "";
 
                     $bb_winner = (isset($seller_name)) ? $seller_name : $query->bb_winner_id;
 
-                    return (isset($bb_winner) && $bb_winner != "") ? $bb_winner : "No BB Winner" ;
+                    return (isset($bb_winner) && $bb_winner != "") ? $bb_winner : "None" ;
                 })
                 ->editColumn('asin', function($query) {
 
@@ -183,7 +198,7 @@ class BuyBoxStoreController extends Controller
                     return $applied_rules;
                 })
                 ->addColumn('action', function() {
-                    return '<button class="price_process btn btn-primary">Process</button>';
+                    return '<button class="price_process btn btn-sm btn-primary">Process</button>';
                 })
                 ->rawColumns(['action', 'asin', 'product_sku', 'highest_seller_name', 'lowest_seller_name', 'destination_bb_seller', 'current_store_price'])
                 ->make(true);
@@ -212,6 +227,7 @@ class BuyBoxStoreController extends Controller
 
             
         } 
+        //comment
 
         return '<div class="pop_over_data position-absolute shadow border d-none">' . $html . '</div>';
     }
@@ -279,5 +295,19 @@ class BuyBoxStoreController extends Controller
 
         echo $request->id;
 
+    }
+
+    public function updatepricelisting(Request $request)
+    {
+        $data =  Product_Push::query()
+            ->where('push_status', '1')
+            ->get();
+
+        if ($request->ajax()) {
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->make(true);
+        }
+         return view('buybox_stores.update_listing');
     }
 }

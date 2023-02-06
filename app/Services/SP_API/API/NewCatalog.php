@@ -33,6 +33,7 @@ class NewCatalog
         $count = 0;
         $auth_id = '';
         $token = '';
+        $seller_id = '';
 
         foreach ($records as $record) {
 
@@ -74,12 +75,17 @@ class NewCatalog
 
         $NewCatalogs = [];
         $country_code1 = strtolower($country_code1);
-
+        $asinSourceUpdate = [];
         foreach ($queue_data as $record) {
 
             if ($record) {
-
                 foreach ($record as $key1 => $value) {
+
+                    $asinSourceUpdate[$key1] = [
+                        'asin' => $value['asin'],
+                        'user_id' => $value['seller_id'],
+                        'status' => '1'
+                    ];
 
                     foreach ($value as $key => $data) {
 
@@ -97,27 +103,161 @@ class NewCatalog
                             $NewCatalogs[$key1][$key] = $data;
                         }
                     }
-
-                    $NewCatalogs[$key1]['created_at'] = now();
-                    $NewCatalogs[$key1]['updated_at'] = now();
+                    // $NewCatalogs[$key1]['created_at'] = now();
+                    // $NewCatalogs[$key1]['updated_at'] = now();
                 }
             }
         }
 
         if (isset($country_code1) && !empty($country_code1)) {
 
-            foreach ($NewCatalogs as $NewCatalog) {
+            $source_mode = table_model_create(country_code: $country_code1, model: 'Asin_source', table_name: 'asin_source_');
+
+            foreach ($NewCatalogs as  $NewCatalog) {
 
                 if (strtolower($country_code1) == "us") {
-                    Catalog_us::insert($NewCatalog);
+
+                    Catalog_us::upsert($NewCatalog, ['asin_unique'], [
+                        'seller_id',
+                        'source',
+                        'asin',
+                        'attributes',
+                        'height',
+                        'unit',
+                        'length',
+                        'weight',
+                        'weight_unit',
+                        'width',
+                        'images',
+                        'product_types',
+                        'marketplace',
+                        'brand',
+                        'browse_classification',
+                        'color',
+                        'item_classification',
+                        'item_name',
+                        'manufacturer',
+                        'model_number',
+                        'package_quantity',
+                        'part_number',
+                        'size',
+                        'website_display_group',
+                        'style',
+                        'dimensions',
+                        'identifiers',
+                        'relationships',
+                        'salesRanks',
+                    ]);
                 } else  if (strtolower($country_code1) == "in") {
-                    Catalog_in::insert($NewCatalog);
+
+                    Catalog_in::upsert(
+                        $NewCatalog,
+                        ['asin_unique'],
+                        [
+                            'asin',
+                            'seller_id',
+                            'source',
+                            'attributes',
+                            'height',
+                            'unit',
+                            'length',
+                            'weight',
+                            'weight_unit',
+                            'width',
+                            'images',
+                            'product_types',
+                            'marketplace',
+                            'brand',
+                            'browse_classification',
+                            'color',
+                            'item_classification',
+                            'item_name',
+                            'manufacturer',
+                            'model_number',
+                            'package_quantity',
+                            'part_number',
+                            'size',
+                            'website_display_group',
+                            'style',
+                            'dimensions',
+                            'identifiers',
+                            'relationships',
+                            'salesRanks',
+                        ]
+                    );
                 } else  if (strtolower($country_code1) == "ae") {
-                    Catalog_ae::insert($NewCatalog);
+
+                    Catalog_ae::upsert($NewCatalog, [
+                        'asin_unique'
+                    ], [
+                        'asin',
+                        'seller_id',
+                        'source',
+                        'attributes',
+                        'height',
+                        'unit',
+                        'length',
+                        'weight',
+                        'weight_unit',
+                        'width',
+                        'images',
+                        'product_types',
+                        'marketplace',
+                        'brand',
+                        'browse_classification',
+                        'color',
+                        'item_classification',
+                        'item_name',
+                        'manufacturer',
+                        'model_number',
+                        'package_quantity',
+                        'part_number',
+                        'size',
+                        'website_display_group',
+                        'style',
+                        'dimensions',
+                        'identifiers',
+                        'relationships',
+                        'salesRanks',
+                    ]);
                 } else  if (strtolower($country_code1) == "sa") {
-                    Catalog_sa::insert($NewCatalog);
+
+                    Catalog_sa::upsert($NewCatalog, [
+                        'asin_unique'
+                    ], [
+                        'asin',
+                        'seller_id',
+                        'source',
+                        'attributes',
+                        'height',
+                        'unit',
+                        'length',
+                        'weight',
+                        'weight_unit',
+                        'width',
+                        'images',
+                        'product_types',
+                        'marketplace',
+                        'brand',
+                        'browse_classification',
+                        'color',
+                        'item_classification',
+                        'item_name',
+                        'manufacturer',
+                        'model_number',
+                        'package_quantity',
+                        'part_number',
+                        'size',
+                        'website_display_group',
+                        'style',
+                        'dimensions',
+                        'identifiers',
+                        'relationships',
+                        'salesRanks',
+                    ]);
                 }
             }
+            $source_mode->upsert($asinSourceUpdate, ['user_asin_unique'], ['asin', 'status']);
         }
     }
 
@@ -139,7 +279,7 @@ class NewCatalog
         $page_token = null;
         $keywords_locale = null;
 
-        $incdata = ['attributes', 'dimensions', 'productTypes', 'images', 'summaries'];
+        $incdata = ['attributes', 'dimensions', 'identifiers', 'relationships', 'salesRanks', 'productTypes', 'images', 'summaries'];
 
         try {
             $result = $apiInstance->searchCatalogItems(
@@ -198,17 +338,18 @@ class NewCatalog
                 }
             }
 
-            // $miss_asin_array = [];
 
+            // $source_mode = table_model_create(country_code: $country_code, model: 'Asin_source', table_name: 'asin_source_');
             // $miss_asin = [];
             // $diffs = array_diff($asins, $check_asin);
             // foreach ($diffs as $diff) {
             //     $miss_asin[] = [
             //         'asin' => $diff,
             //         'user_id' => $seller_id,
-            //         'source' => $country_code,
+            //         'status' => '2',
             //     ];
             // }
+            // $source_mode->upsert($miss_asin, ['user_asin_unique'], ['asin', 'user_id', 'status']);
             // CatalogMissingAsin::upsert($miss_asin, ['asin_unique'], ['asin', 'source']);
 
             return $queue_data;

@@ -14,33 +14,34 @@ class Catalog_us extends Model
 
     protected $fillable = [
         'asin',
+        'seller_id',
+        'source',
         'attributes',
+        'height',
+        'unit',
+        'length',
+        'weight',
+        'weight_unit',
+        'width',
+        'images',
+        'product_types',
+        'marketplace',
         'brand',
         'browse_classification',
         'color',
-        'created_at',
-        'dimensions',
-        'height',
-        'images',
         'item_classification',
         'item_name',
-        'length',
         'manufacturer',
-        'marketplace',
         'model_number',
         'package_quantity',
         'part_number',
-        'product_types',
-        'seller_id',
         'size',
-        'source',
-        'style',
-        'unit',
-        'updated_at',
         'website_display_group',
-        'weight',
-        'weight_unit',
-        'width'
+        'style',
+        'dimensions',
+        'identifiers',
+        'relationships',
+        'salesRanks',
     ];
 
     public function __construct(array $attributes = [])
@@ -50,53 +51,53 @@ class Catalog_us extends Model
         $this->getConnection()->setTablePrefix('');
     }
 
-    public function setAttributesAttribute($value)
-    {
-        return json_encode($this->attributes['attributes']);
-    }
+    // public function setAttributesAttribute($value)
+    // {
+    //     return json_encode($this->attributes['attributes']);
+    // }
 
-    public function setDimensionsAttribute($value)
-    {
-        return json_encode($this->attributes['dimensions']);
-    }
+    // public function setDimensionsAttribute($value)
+    // {
+    //     return json_encode($this->attributes['dimensions']);
+    // }
 
-    public function setProductTypesAttribute($value)
-    {
-        return json_encode($this->attributes['product_types']);
-    }
+    // public function setProductTypesAttribute($value)
+    // {
+    //     return json_encode($this->attributes['product_types']);
+    // }
 
-    public function setImagesAttribute($value)
-    {
-        return json_encode($this->attributes['images']);
-    }
+    // public function setImagesAttribute($value)
+    // {
+    //     return json_encode($this->attributes['images']);
+    // }
 
-    public function setBrowseClassificationAttribute($value)
-    {
-        return json_encode($this->attributes['browse_classification']);
-    }
+    // public function setBrowseClassificationAttribute($value)
+    // {
+    //     return json_encode($this->attributes['browse_classification']);
+    // }
 
-    public function getAttributesAttribute($value)
-    {
-        return json_decode($this->attributes['attributes'], true);
-    }
+    // public function getAttributesAttribute($value)
+    // {
+    //     return json_decode($this->attributes['attributes'], true);
+    // }
 
-    public function getDimensionsAttribute($value)
-    {
-        return json_decode($this->attributes['dimensions'], true);
-    }
+    // public function getDimensionsAttribute($value)
+    // {
+    //     return json_decode($this->attributes['dimensions'], true);
+    // }
 
-    public function getProductTypesAttribute($value)
-    {
-        return json_decode($this->attributes['product_types'], true);
-    }
+    // public function getProductTypesAttribute($value)
+    // {
+    //     return json_decode($this->attributes['product_types'], true);
+    // }
 
-    public function getImagesAttribute($value)
-    {
-        return json_decode($this->attributes['images'], true);
-    }
+    // public function getImagesAttribute($value)
+    // {
+    //     return json_decode($this->attributes['images'], true);
+    // }
 
-    public function getBrowseClassificationAttribute($value)
-    {
-        return json_decode($this->attributes['browse_classification'], true);
-    }
+    // public function getBrowseClassificationAttribute($value)
+    // {
+    //     return json_decode($this->attributes['browse_classification'], true);
+    // }
 }
