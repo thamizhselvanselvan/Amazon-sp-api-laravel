@@ -57,8 +57,8 @@ class RegionController extends Controller
                 'region_code' => 'required|alpha|min:2|max:255',
                 'region' => 'required|alpha|min:2|max:255',
                 'marketplace_id' => 'required',
-                'url' => 'required',
-                'site_url' => 'required',
+                'url' => 'required|url',
+                'site_url' => 'required|url',
                 
 
             ]);
@@ -96,8 +96,8 @@ class RegionController extends Controller
             'region_code' => 'required|alpha|min:2|max:255',
             'region' => 'required|alpha|min:2|max:255',
             'marketplace_id' => 'required',
-            'url' => 'required',
-            'site_url' => 'required',
+            'url' => 'required|url',
+            'site_url' => 'required|url',
         ]);
         $records = [
             'region_code' => $request->region_code,
