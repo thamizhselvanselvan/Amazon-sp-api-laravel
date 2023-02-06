@@ -124,6 +124,7 @@ class ImportPriceFromBuyBox
                 $packet_width  = $catalogWeight[$asin]['width'];
                 $dimension = $packet_height * $packet_length * $packet_width;
 
+
                 $available = $BBRecord->available;
                 $is_sold_by_amazon = $BBRecord->is_sold_by_amazon;
                 $is_our_seller_bb_winner = $BBRecord->is_any_our_seller_own_bb;
@@ -184,7 +185,7 @@ class ImportPriceFromBuyBox
                     }
                 }
                 if ($country_code_lr == 'us') {
-
+                    $packet_weight = $volumetricPounds > $packet_weight ? $volumetricPounds : $packet_weight;
                     $price_in_b2c = $price_convert->USAToINDB2C($packet_weight, $BBlistingPrice);
                     $price_in_b2b = $price_convert->USAToINDB2B($packet_weight, $BBlistingPrice);
                     $price_ae = $price_convert->USATOUAE($packet_weight, $BBlistingPrice);
@@ -230,6 +231,7 @@ class ImportPriceFromBuyBox
                 } elseif ($country_code_lr == 'in') {
 
                     $packet_weight_kg = poundToKg($packet_weight);
+                    $packet_weight_kg = $volumetricKg > $packet_weight_kg ? $volumetricKg : $packet_weight_kg;
                     $price_saudi = $price_convert->INDToSA($packet_weight_kg, $BBlistingPrice);
                     $price_singapore = $price_convert->INDToSG($packet_weight_kg, $BBlistingPrice);
                     $price_uae = $price_convert->INDToUAE($packet_weight_kg, $BBlistingPrice);
