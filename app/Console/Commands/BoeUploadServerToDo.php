@@ -72,7 +72,7 @@ class BoeUploadServerToDo extends Command
             foreach ($files_path as $fp) {
                 $file = storage_path('app/' . $fp->download_file_path);
 
-                if(Storage::exists($$file)) {
+                if(Storage::exists($file)) {
 
                     Storage::disk('do')->put($path . $fp->download_file_path, file_get_contents($file));
                     BOE::where('id', $fp->id)->update(['do' => 1]);
