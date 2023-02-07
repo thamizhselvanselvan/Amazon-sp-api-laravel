@@ -109,7 +109,7 @@
                         <th title="Current BB Seller Name/ID">BB Seller</th>
                         <th title="Next Highest Seller Name/ID">Highest Name</th>
                         <th title="Next Lowest Seller Name/ID">Lowest Name</th>
-                        {{-- <th>Action</th> --}}
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -184,7 +184,7 @@
                         base_price: base_price,
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    dataType: 'json'
+                    dataType: 'json',
                     success: function(response) {
                         self.prop("disabled", false);
                         console.log(response);
