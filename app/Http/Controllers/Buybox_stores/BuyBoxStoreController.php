@@ -14,6 +14,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Models\Buybox_stores\Product_Push;
 use App\Models\Buybox_stores\Seller_id_name;
 use App\Models\order\OrderSellerCredentials;
+use App\Services\AmazonFeedApiServices\AmazonFeedProcess;
 
 class BuyBoxStoreController extends Controller
 {
@@ -197,8 +198,12 @@ class BuyBoxStoreController extends Controller
 
                     return $applied_rules;
                 })
-                ->addColumn('action', function() {
-                    return '<button class="price_process btn btn-sm btn-primary">Process</button>';
+                ->addColumn('action', function($query) {
+                    
+                    return "<button class='price_process btn btn-sm btn-primary'
+                              asin='{$query->asin}' productsku=='{$query->product_sku}' pushprice='{$query->push_price}' storeid={$query->store_id} data-id={$query->id} 
+                              base_price={$query->base_price}
+                            >Process</button>";
                 })
                 ->rawColumns(['action', 'asin', 'product_sku', 'highest_seller_name', 'lowest_seller_name', 'destination_bb_seller', 'current_store_price'])
                 ->make(true);
@@ -269,24 +274,40 @@ class BuyBoxStoreController extends Controller
         return view('buybox_stores.availability', compact('stores', 'url', 'request_store_id'));
     }
 
-    public function storespriceupdated(Request $request)
+    public function push_price_update(Request $request)
     {
-        $data =  Product_Push::query()
-            ->where('push_status', '1')
-            ->get();
 
-        if ($request->ajax()) {
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function ($row) {
-                    $id = $row->asin . '_' . $row->product_sku . '_' . $row->store_id;
-                    $actionBtn = "<a href='javascript:void(0)' value='$id'class='edit btn btn-success btn-sm'><i class='fas fa-refresh'></i> Update Price</a>";
-                    return $actionBtn;
-                })
-                ->rawColumns(['action'])
-                ->make(true);
+        $id = $request->id;
+        $product_sku = $request->productsku;
+        $push_price = $request->pushprice;
+        $store_id = $request->storeid;
+        $base_price = $request->base_price;
+
+        $feedLists[] = [
+            "push_price" => $push_price,
+            "product_sku" => $product_sku,
+            "base_price" => $base_price,
+        ];
+
+        // $price_update = [
+        //     "id" => $id,
+        //     "seller_id" => $store_id,
+        //     "feedLists" => [
+        //         "push_price" => $push_price,
+        //         "product_sku" => $product_sku,
+        //         "base_price" => $base_price,
+        //     ],
+        //     "availability" => 1
+        // ];
+
+        //jobDispatchFunc("Amazon_Feed\AmazonFeedPriceAvailabilityPush", $price_update);
+        $price_update = (new AmazonFeedProcess)->feedSubmit($feedLists, $store_id, $id, false);
+
+        if($price_update) {
+            return ["success" => true];
         }
-        return view('buybox_stores.priceupdated');
+
+        return ["failed" => true];
     }
 
     public function updateprice(Request $request) {
