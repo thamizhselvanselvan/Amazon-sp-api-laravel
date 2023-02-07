@@ -51,12 +51,13 @@ Route::get("amazo", function() {
     //dd($feedSubmit);
     //po($response);
 
-    //$feedback_id = $feedSubmit;
-    $feedback_id = '50923019394';
+   //$feedback_id = $feedSubmit;
+    $feedback_id = 50928019395;
+    $feedback_id = 50929019395;
 
    // $url  = (new FeedOrderDetailsApp360())->getLists($feedLists, $store_id, $country_code);
-    $url  = (new FeedOrderDetailsApp360())->get($feedback_id, $store_id, $country_code);
-    //$url  = (new FeedOrderDetailsApp360())->getLists($feedback_id, $store_id, $country_code);
+   // $url  = (new FeedOrderDetailsApp360())->get($feedback_id, $store_id, $country_code);
+   $url  = (new FeedOrderDetailsApp360())->getLists($feedback_id, $store_id, $country_code);
 
-    dd($url);
+   dd($url);
 });

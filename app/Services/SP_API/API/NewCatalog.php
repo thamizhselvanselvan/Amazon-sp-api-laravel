@@ -33,7 +33,37 @@ class NewCatalog
         $auth_id = '';
         $token = '';
         $seller_id = '';
-
+        $columnName = [
+            'asin',
+            'seller_id',
+            'source',
+            'attributes',
+            'height',
+            'unit',
+            'length',
+            'weight',
+            'weight_unit',
+            'width',
+            'images',
+            'product_types',
+            'marketplace',
+            'brand',
+            'browse_classification',
+            'color',
+            'item_classification',
+            'item_name',
+            'manufacturer',
+            'model_number',
+            'package_quantity',
+            'part_number',
+            'size',
+            'website_display_group',
+            'style',
+            'dimensions',
+            'identifiers',
+            'relationships',
+            'salesRanks',
+        ];
         foreach ($records as $record) {
 
             $asin = $record['asin'];
@@ -91,15 +121,18 @@ class NewCatalog
                             $key = ($key == "itemName") ? "item_name" : $key;
                             $key = ($key == "partNumber") ? "part_number" : $key;
 
-                            $NewCatalogs[$key1][$key] = $data;
+                            if (in_array($key, $columnName)) {
+                                $NewCatalogs[$key1][$key] = $data;
+                            }
                         }
+                        $count++;
                     }
                     // $NewCatalogs[$key1]['created_at'] = now();
                     // $NewCatalogs[$key1]['updated_at'] = now();
                 }
             }
         }
-
+        // Log::alert($NewCatalogs);
         if (isset($country_code1) && !empty($country_code1)) {
 
             $source_mode = table_model_create(country_code: $country_code1, model: 'Asin_source', table_name: 'asin_source_');
