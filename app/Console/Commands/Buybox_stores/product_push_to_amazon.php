@@ -394,7 +394,5 @@ class product_push_to_amazon extends Command
 
         return [];
     }
-
-
-
+    
 }

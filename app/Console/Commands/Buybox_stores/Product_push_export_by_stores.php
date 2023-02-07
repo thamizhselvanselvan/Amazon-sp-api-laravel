@@ -80,7 +80,7 @@ class Product_push_export_by_stores extends Command
         $file_time = now()->format('Y-m-d-H-i-s');
         $file_name = "product_push_{$store_id}_export_{$file_time}.csv";
 
-        CSV_w("product_push/".$file_name, $csv_collections, $headers);
+        CSV_w("public/product_push/".$file_name, $csv_collections, $headers);
 
         $this->info("CSV Generation Finished");
     }
