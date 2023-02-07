@@ -9,7 +9,7 @@
 @stop
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Admin And User Lists</h1>
+    <h1 class="m-0 text-dark">User Lists</h1>
 
 @stop
 
@@ -37,11 +37,8 @@
             </div>
 
             <h2 class="mb-2">
-                <a href="{{ route('create.user') }}">
+                <a href="{{ route('users.create') }}">
                     <x-adminlte-button label="Add User" theme="primary" icon="fas fa-plus" />
-                </a>
-                <a href="{{ ('users\bin') }}">
-                    <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" />
                 </a>
             </h2>
 
