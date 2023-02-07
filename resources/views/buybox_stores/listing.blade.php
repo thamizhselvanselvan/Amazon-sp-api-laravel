@@ -161,26 +161,49 @@
                 window.location = "/stores/listing/price/" + $(this).val();
             });
 
-            $('#update_price').on('click', function() {
+            $('.price_process').on('click', function() {
+                let self = $(this);
+                let asin = self.attr("asin");
+                let productsku = self.attr("productsku");
+                let pushprice = self.attr("pushprice");
+                let storeid = self.attr("storeid");
+                let id = self.attr("data-id");
+                let base_price = self.attr("base_price");
 
-                let id = $('#store_select').val();
-                //window.location = "/stores/listing/price/update/" + id;
+                self.prop('disabled', true);
 
                 $.ajax({
-                    url: "/stores/listing/price/updated",
+                    url: "/stores/listing/price/price_push_update",
                     method: "POST",
                     data: {
                         id: id,
+                        asin: asin,
+                        productsku: productsku,
+                        pushprice: pushprice,
+                        storeid: storeid,
+                        base_price: base_price,
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
+                    dataType: 'json'
                     success: function(response) {
+                        self.prop("disabled", false);
                         console.log(response);
+
+                        if(response.hasOwnProperty("success")) {
+                            alert("price updated successfully done");
+                        }
+
+                        if(response.hasOwnProperty("failed")) {
+                            alert("price updated failed");
+                        }
                     }
                 });
             });
 
             $.extend($.fn.dataTable.defaults, {
                 pageLength: 100,
+                orderable: false,
+                searchable: false
             });
 
             let yajra_table = $('.yajra-datatable').DataTable({
@@ -266,9 +289,7 @@
                     },
                     {
                         data: 'destination_bb_seller',
-                        name: 'destination_bb_seller',
-                        orderable: false,
-                        searchable: false
+                        name: 'destination_bb_seller'
                     },
                     {
                         data: 'highest_seller_name',
@@ -281,13 +302,13 @@
                         name: 'lowest_seller_name',
                         orderable: false,
                         searchable: false
+                    },
+                    {
+                       data: 'action',
+                       name: 'action',
+                        orderable: false,
+                        searchable: false
                     }
-                    //{
-                     //   data: 'action',
-                       // name: 'action',
-                        //orderable: false,
-                        //searchable: false
-                    //}
                 ]
             });
 
