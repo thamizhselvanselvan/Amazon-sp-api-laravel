@@ -679,9 +679,7 @@ class CliqnshopCataloginsert
             'langid' => 'en',
             'url' => $product_data['url'],
             'name' => $product_data['label'],
-            'content' => $product_data['code'] . '<pre>' . $product_data['label'] . '<pre>' . $keyword .
-                '<pre>' . $catagory_label . '<pre>' . $brand_insert['label'] . '<pre>' . $attribute['label'] . '<pre>'
-                . $text_short['content'] . '<pre>' . $text_long['content'],
+            'content' => $product_data['code'] . '<pre>' . $product_data['label'] . '<pre>' . $keyword ,
             'mtime' => $date_time,
         ];
         DB::connection('cliqnshop')->table('mshop_index_text')->upsert(

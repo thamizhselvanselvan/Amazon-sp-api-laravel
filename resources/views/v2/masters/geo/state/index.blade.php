@@ -2,49 +2,32 @@
 
 @section('title', 'States')
 
-@section('css')
-
-    <link rel="stylesheet" href="/css/styles.css">
-    <style>
-        .table td {
-            padding: 0;
-            padding-left: 6px;
-        }
-
-        .table th {
-            padding: 2;
-            padding-left: 5px;
-        }
-    </style>
-@stop
-
 @section('content_header')
     <h1 class="m-0 text-dark">States</h1>
 
 @stop
 @section('content')
-    @if (session()->has('message'))
-        <div class="alert alert-success alert-block">
-            <button type="button" class="close" data-dismiss="alert">×</button>
-            {{ session()->get('message') }}
-        </div>
-    @elseif(session()->has('danger'))
-        <div class="alert alert-danger alert-block">
-            <button type="button" class="close" data-dismiss="alert">×</button>
-            {{ session()->get('danger') }}
-        </div>
-    @endif
-    </div>
-    </div>
     <div class="row">
         <div class="col">
+            @if (session()->has('message'))
+                <div class="alert alert-success alert-block">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    {{ session()->get('message') }}
+                </div>
+            @elseif(session()->has('danger'))
+                <div class="alert alert-danger alert-block">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    {{ session()->get('danger') }}
+                </div>
+            @endif
+    
             <h2 class="mb-4">
                 <a href="{{ route('geo.state.create') }}">
                     <x-adminlte-button class="ml-2" label="Add State" theme="primary" icon="fas fa-plus" />
                 </a>
             </h2>
-            <table class="table table-bordered yajra-datatable table-striped">
-                <thead>
+            <table class="table table-bordered yajra-datatable table-striped table-sm">
+                <thead class='table-primary'>
                     <tr>
                         <th>ID</th>
                         <th>Country Name</th>

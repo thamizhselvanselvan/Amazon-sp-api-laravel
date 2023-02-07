@@ -121,6 +121,6 @@ class getEDDfororders extends Command
                 Log::alert('exception In mosh:get_edd command');
             }
         }
-        po($latest_delivery_date);
+        
     }
 }

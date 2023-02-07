@@ -27,7 +27,6 @@ class NewCatalog
     public function Catalog($records, $seller_id = NULL)
     {
         $queue_data = [];
-        $upsert_asin = [];
         $country_code1 = '';
         $asins = [];
         $count = 0;
@@ -43,14 +42,7 @@ class NewCatalog
             $seller_id = $record['seller_id'];
             $auth_id = $record['id'];
 
-            $upsert_asin[] = [
-                'asin'  => $asin,
-                'user_id' => $seller_id,
-                'status'   => 1,
-            ];
-
             $asins[] = $asin;
-
             $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
             $token = $aws_token[0];
 
@@ -65,7 +57,6 @@ class NewCatalog
                 $count = 0;
                 $asins = [];
             }
-
             $count++;
         }
 
@@ -112,6 +103,8 @@ class NewCatalog
         if (isset($country_code1) && !empty($country_code1)) {
 
             $source_mode = table_model_create(country_code: $country_code1, model: 'Asin_source', table_name: 'asin_source_');
+            $source_mode->upsert($asinSourceUpdate, ['user_asin_unique'], ['asin', 'user_id', 'status']);
+            $asinSourceUpdate = [];
 
             foreach ($NewCatalogs as  $NewCatalog) {
 
@@ -256,7 +249,6 @@ class NewCatalog
                         'salesRanks',
                     ]);
                 }
-                $source_mode->upsert($asinSourceUpdate, ['user_asin_unique'], ['asin', 'status']);
             }
         }
     }
