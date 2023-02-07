@@ -305,11 +305,11 @@ class product_push_to_amazon extends Command
         if($this->price_calculate_type == "percent") {
 
             if($type == "increase") {
-                return addPercentage($price, $this->increase_by_price);
+                return addPercentage_product_push($price, $this->increase_by_price);
             }
 
             if($type == "decrease") {
-                return removePercentage($price, $this->decrease_by_price);
+                return removePercentage_product_push($price, $this->decrease_by_price);
             }
         
         } 
@@ -325,8 +325,7 @@ class product_push_to_amazon extends Command
 
     public function only_seller_excel_price_increase($excel_calculated_price): float|int {
 
-        print($excel_calculated_price);
-        return addPercentage($excel_calculated_price, $this->increase_by_excel_price);
+        return addPercentage_product_push($excel_calculated_price, $this->increase_by_excel_price);
     }
 
     public function our_own_store_won_bb(int $store_id, string $bb_winner_id): bool {

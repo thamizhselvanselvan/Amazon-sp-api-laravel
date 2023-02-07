@@ -52,6 +52,22 @@ if (!function_exists('removePercentage')) {
     }
 }
 
+if (!function_exists('addPercentage_product_push')) {
+
+    function addPercentage_product_push($originalAmount, $percentageChange)
+    {
+        return (float)$originalAmount + ($percentageChange / 100) * (float)$originalAmount;
+    }
+}
+
+if (!function_exists('removePercentage_product_push')) {
+    function removePercentage_product_push($originalAmount, $percentageChange)
+    {
+        return (float)$originalAmount - ($percentageChange / 100) * (float)$originalAmount;
+    }
+}
+
+
 if (!function_exists('getPercentageChange')) {
 
     function getPercentageChange($oldAmount, $newAmount)
