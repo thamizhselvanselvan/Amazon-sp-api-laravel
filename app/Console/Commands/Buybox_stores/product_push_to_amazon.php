@@ -323,7 +323,7 @@ class product_push_to_amazon extends Command
         }
     }
 
-    public function only_seller_excel_price_increase(string|float|int $excel_calculated_price): float|int {
+    public function only_seller_excel_price_increase($excel_calculated_price): float|int {
 
         print($excel_calculated_price);
         return addPercentage($excel_calculated_price, $this->increase_by_excel_price);

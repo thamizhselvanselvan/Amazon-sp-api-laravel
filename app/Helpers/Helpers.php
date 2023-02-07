@@ -41,7 +41,7 @@ if (!function_exists('addPercentage')) {
 
     function addPercentage($originalAmount, $percentageChange)
     {
-        return number_format($originalAmount) + ($percentageChange / 100) * number_format($originalAmount);
+        return (float)$originalAmount + ($percentageChange / 100) * (float)$originalAmount;
     }
 }
 
