@@ -3,6 +3,8 @@
 use App\Http\Controllers\PMSPHPUnitTestController;
 use Illuminate\Support\Facades\Route;
 
+$method = ['get', 'post'];
+
 Route::get('orders/dashboard', 'Orders\OrdersDashboardController@Dashboard');
 Route::get('orders/list', 'Orders\OrdersListController@index');
 Route::get('orders/getlist', 'Orders\OrdersListController@GetOrdersList')->name('getOrder.list');
@@ -33,3 +35,7 @@ Route::get('orders/file/management/monitor', 'Orders\OrdersDashboardController@O
 Route::get('orders/missing/price', 'Orders\OrderMissingDetailsController@index')->name('orders.missing');
 Route::post('orders/missing/update', 'Orders\OrderMissingDetailsController@updateview')->name('orders.missing.price.update');
 Route::get('orders/missing/price/updated', 'Orders\OrderMissingDetailsController@zohopriceupdated')->name('orders.zoho.missing.update');
+
+
+Route::match($method, 'orders/missing/force/dump/view', 'Orders\OrderMissingDetailsController@zohoforcedumpview')->name('orders.zoho.force.dump.view');
+Route::match($method, 'orders/missing/force/dump', 'Orders\OrderMissingDetailsController@zohoforcedump')->name('orders.zoho.force.dump');
