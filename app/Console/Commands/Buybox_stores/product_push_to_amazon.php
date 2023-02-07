@@ -132,7 +132,7 @@ class product_push_to_amazon extends Command
         $base_price = $product->base_price;
         $ceil_price = $product->ceil_price;
         $store_price = $product->store_price;
-        $excel_price = $product->app_360_price;
+        $excel_price = $product->app_360_price ?? "";
         $bb_winner_id = $product->bb_winner_id ?? "";
         $bb_winner_price = $product->bb_winner_price;
         $lowest_seller_price = $product->lowest_seller_price;
@@ -212,8 +212,12 @@ class product_push_to_amazon extends Command
         // if we have lost the BB then no other sellers are sellling that product then we increase that prices
         if (empty($bb_winner_id) && empty($highest_seller_price) && empty($lowest_seller_price)) {
 
+            print($excel_price);
+
             //$push_price = $this->calculate($product->store_price, 'increase');
             $push_price = $this->only_seller_excel_price_increase(excel_calculated_price: $excel_price);
+
+
 
             if($push_price < $ceil_price) {
 
@@ -321,6 +325,7 @@ class product_push_to_amazon extends Command
 
     public function only_seller_excel_price_increase(string|float|int $excel_calculated_price): float|int {
 
+        print($excel_calculated_price);
         return addPercentage($excel_calculated_price, $this->increase_by_excel_price);
     }
 

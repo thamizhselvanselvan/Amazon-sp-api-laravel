@@ -26,7 +26,7 @@ use App\Models\ShipNTrack\SMSA\SmsaTrackings;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
 use App\Models\ShipNTrack\Bombino\BombinoTracking;
 use App\Models\ShipNTrack\Bombino\BombinoTrackingDetails;
-
+use Faker\Core\Number;
 
 if (!function_exists('ddp')) {
     function ddp($value)
@@ -41,7 +41,7 @@ if (!function_exists('addPercentage')) {
 
     function addPercentage($originalAmount, $percentageChange)
     {
-        return $originalAmount + ($percentageChange / 100) * $originalAmount;
+        return number_format($originalAmount) + ($percentageChange / 100) * number_format($originalAmount);
     }
 }
 
