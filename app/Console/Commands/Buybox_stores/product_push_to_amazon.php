@@ -75,7 +75,7 @@ class product_push_to_amazon extends Command
         $data_to_insert = [];    
 
         foreach ($products as $product) {
-
+            
             $id_rules_applied = $product->asin."_".$product->store_id;
 
             $push_price = $this->push_price_logic($product, $id_rules_applied);
@@ -338,7 +338,7 @@ class product_push_to_amazon extends Command
     }
 
     public function i_have_bb(string $store_id, string $bb_winner_id): bool {
-        return $store_id == $bb_winner_id;
+        return  $this->our_merchant_ids[$store_id] == $bb_winner_id;
     }
 
     public function push_price_logic_old($data): array {
