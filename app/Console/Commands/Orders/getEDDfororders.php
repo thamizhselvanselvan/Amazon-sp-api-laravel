@@ -4,6 +4,8 @@ namespace App\Console\Commands\Orders;
 
 use Exception;
 use App\Models\order\Order;
+use App\Models\order\OrderItemDetails;
+use App\Services\Zoho\ZohoApi;
 use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -18,7 +20,7 @@ class getEDDfororders extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:get_edd';
+    protected $signature = 'mosh:get_edd {orderids} {store_id}';
 
     /**
      * The console command description.
@@ -44,6 +46,15 @@ class getEDDfororders extends Command
      */
     public function handle()
     {
+        $order_ids = $this->argument('orderids');
+        $country = $this->argument('store_id');
+
+        $order_idarray = explode(',', $order_ids);
+        $source_data  = explode('_', $country);
+
+        $seller_id = $source_data['0'];
+        $country_code = $source_data['1'];
+
         // $headers = [
         //     'our_seller_identifier',
         //     'country',
@@ -59,28 +70,7 @@ class getEDDfororders extends Command
         // $country_code = ($order_item_details->country);
         // $order_id = ($order_item_details->amazon_order_identifier);
 
-        $ids = [
-            '404-0947553-1634738',
-            '405-8949677-3684365',
-            '403-7903481-7949167',
-            '408-2061111-4011569',
-            '406-7464497-9203554',
-            '404-9273813-3154717',
-            '407-5645384-7051518',
-            '404-7197412-5357144',
-            '171-4977865-9773930',
-            '406-2312827-3843518',
-            '403-1836120-5412359'   
-           
-        ];
-
-        foreach ($ids as $data) {
-
-            $seller_id = '47';
-            $country_code = 'SA';
-            $order_id = $data;
-            Log::alert($data);
-
+        foreach ($order_idarray as $order_id) {
             $token = NULL;
             $config = $this->config($seller_id, $country_code, $token);
 
@@ -114,13 +104,36 @@ class getEDDfororders extends Command
                     if (isset($result_data['orders']['0']['latest_delivery_date'])) {
 
                         $latest_delivery_date = ($result_data['orders']['0']['latest_delivery_date']);
-                        Order::where('amazon_order_identifier', $order_id)->update(['latest_delivery_date' => $latest_delivery_date]);
+
+                        $item_ids =  OrderItemDetails::query()
+                            ->select('order_item_identifier', 'asin')
+                            ->where('amazon_order_identifier', $order_id)
+                            ->get();
+
+                        foreach ($item_ids as $data) {
+
+                            $item_id =   $data['order_item_identifier'];
+                            $zoho = new ZohoApi;
+                            $zoho_lead_search = $zoho->search($order_id, $item_id);
+
+                            if (isset($zoho_lead_search['data']['0']['id'])) {
+
+                                $lead_id = $zoho_lead_search['data']['0']['id'];
+                                $data = Carbon::parse($latest_delivery_date)->format('Y-m-d');
+                                Log::alert('edd', $data);
+                                Log::alert('lead_id', $lead_id);
+                                Log::alert('order_id', $order_id);
+                                // $zoho->updateLead($lead_id, ["US_EDD" => $data]);
+                                // Order::where('amazon_order_identifier', $order_id)->update(['latest_delivery_date' => $latest_delivery_date]);
+                            } else {
+                                Log::info("Not A valid Key For EDD(zoho) " . ' ' . $order_id);
+                            }
+                        }
                     }
                 }
             } catch (Exception $e) {
                 Log::alert('exception In mosh:get_edd command');
             }
         }
-        
     }
 }

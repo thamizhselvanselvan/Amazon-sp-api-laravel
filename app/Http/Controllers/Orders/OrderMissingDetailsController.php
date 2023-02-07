@@ -8,6 +8,7 @@ use App\Models\order\ZohoMissing;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Artisan;
 use Yajra\DataTables\Facades\DataTables;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
@@ -159,6 +160,22 @@ class OrderMissingDetailsController extends Controller
         $orderids = implode(',', $order_ids);
 
         commandExecFunc("mosh:zoho_force_dump ${orderids} ${store_id}");
+        return redirect('/orders/missing/force/dump/view')->with('success', 'Order Is Updating...');
+    }
+
+    public function zohosync(Request $request)
+    {
+
+        $order_ids = preg_split('/[\r\n| |:|,]/', $request->order_ids, -1, PREG_SPLIT_NO_EMPTY);;
+
+        if (count($order_ids) > 12) {
+            return redirect('/orders/missing/force/dump/view')->with(['warning' => 'order Ids Must be Less Than 10']);
+        }
+        $store_id = $request->store_data;
+        $orderids = implode(',', $order_ids);
+        commandExecFunc("mosh:get_edd ${orderids} ${store_id}");
+        // Artisan::call("mosh:get_edd ${orderids} ${store_id}");
+
         return redirect('/orders/missing/force/dump/view')->with('success', 'Order Is Updating...');
     }
 }
