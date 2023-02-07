@@ -715,6 +715,12 @@ return [
                             'can' => ['Admin'],
                             'icon' => ' fa fa-check-circle-o',
                         ],
+                        [
+                            'text' => 'Zoho Dump',
+                            'url' => "orders/missing/force/dump/view",
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-plus-circle',
+                        ],
                     ],
                 ],
             ],

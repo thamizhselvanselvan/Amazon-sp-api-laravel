@@ -77,6 +77,10 @@ class ImportPriceFromBuyBox
             $BBRecords = [];
             $catalogWeight = [];
             $asinDetails = [];
+            $weight = '';
+            $height = '';
+            $length = '';
+            $width = '';
 
             foreach ($catalogRecords as $catalogRecord) {
                 foreach ($catalogRecord as $catalog) {
@@ -86,10 +90,26 @@ class ImportPriceFromBuyBox
                     if (isset(json_decode($catalog['dimensions'])[0]->package->weight->value)) {
                         $weight = json_decode($catalog['dimensions'])[0]->package->weight->value;
                     }
-                    $catalogWeight[$catalog['asin']] = $weight;
+
+                    if (isset(json_decode($catalog['dimensions'])[0]->package->height->value)) {
+                        $height = json_decode($catalog['dimensions'])[0]->package->height->value;
+                    }
+
+                    if (isset(json_decode($catalog['dimensions'])[0]->package->length->value)) {
+                        $length = json_decode($catalog['dimensions'])[0]->package->length->value;
+                    }
+
+                    if (isset(json_decode($catalog['dimensions'])[0]->package->width->value)) {
+                        $width = json_decode($catalog['dimensions'])[0]->package->width->value;
+                    }
+
+                    $catalogWeight[$catalog['asin']]['weight'] = $weight;
+                    $catalogWeight[$catalog['asin']]['height'] = $height;
+                    $catalogWeight[$catalog['asin']]['length'] = $length;
+                    $catalogWeight[$catalog['asin']]['width'] = $width;
                 }
             }
-
+            Log::notice($catalogWeight);
             $BBlistingPrice = '';
             $pricing_in = [];
             $pricing_us = [];
@@ -98,7 +118,12 @@ class ImportPriceFromBuyBox
             foreach ($BBRecords as $BBRecord) {
 
                 $asin = $BBRecord->asin;
-                $packet_weight = $catalogWeight[$asin];
+                $packet_weight = $catalogWeight[$asin]['weight'];
+                $packet_height = $catalogWeight[$asin]['height'];
+                $packet_length = $catalogWeight[$asin]['length'];
+                $packet_width  = $catalogWeight[$asin]['width'];
+                $dimension = $packet_height * $packet_length * $packet_width;
+
                 $available = $BBRecord->available;
                 $is_sold_by_amazon = $BBRecord->is_sold_by_amazon;
                 $is_our_seller_bb_winner = $BBRecord->is_any_our_seller_own_bb;
@@ -112,6 +137,9 @@ class ImportPriceFromBuyBox
 
                 $isBuyBoxWinner = explode(',', $BBRecord->is_buybox_winner);
                 $listingAmount = explode(',', $BBRecord->listingprice_amount);
+
+                $volumetricPounds = VolumetricIntoPounds($dimension);
+                $volumetricKg = VolumetricIntoKG($dimension);
 
                 foreach ($isBuyBoxWinner as $key1 => $BuyBoxWinner) {
                     $price = $country_code_lr . '_price';
@@ -162,12 +190,15 @@ class ImportPriceFromBuyBox
                     $price_ae = $price_convert->USATOUAE($packet_weight, $BBlistingPrice);
                     $price_sg =  $price_convert->USATOSG($packet_weight, $BBlistingPrice);
 
+
                     $price_us_source = [
                         'usa_to_in_b2c' => $price_in_b2c,
                         'usa_to_in_b2b' => $price_in_b2b,
                         'usa_to_uae' => $price_ae,
                         'usa_to_sg' => $price_sg,
-                        'weight' => $packet_weight
+                        'weight' => $packet_weight,
+                        'volumetric_weight_pounds' => $volumetricPounds,
+                        'volumetric_weight_kg' => $volumetricKg
                     ];
 
                     $pricing_us[] = [...$asinDetails, ...$price_us_source];
@@ -177,6 +208,8 @@ class ImportPriceFromBuyBox
                             'available',
                             'is_sold_by_amazon',
                             'weight',
+                            'volumetric_weight_pounds',
+                            'volumetric_weight_kg',
                             'us_price',
                             'usa_to_in_b2b',
                             'usa_to_in_b2c',
@@ -205,7 +238,9 @@ class ImportPriceFromBuyBox
                         'ind_to_uae' => $price_uae,
                         'ind_to_sg' => $price_singapore,
                         'ind_to_sa' => $price_saudi,
-                        'weight' => $packet_weight_kg
+                        'weight' => $packet_weight_kg,
+                        'volumetric_weight_pounds' => $volumetricPounds,
+                        'volumetric_weight_kg' => $volumetricKg
                     ];
                     $pricing_in[] = [...$asinDetails, ...$destination_price];
                     if ($count1 == 1000) {
@@ -215,6 +250,8 @@ class ImportPriceFromBuyBox
                             'is_sold_by_amazon',
                             'in_price',
                             'weight',
+                            'volumetric_weight_pounds',
+                            'volumetric_weight_kg',
                             'ind_to_uae',
                             'ind_to_sg',
                             'ind_to_sa',
@@ -240,6 +277,8 @@ class ImportPriceFromBuyBox
                     'available',
                     'is_sold_by_amazon',
                     'weight',
+                    'volumetric_weight_pounds',
+                    'volumetric_weight_kg',
                     'us_price',
                     'usa_to_in_b2b',
                     'usa_to_in_b2c',
@@ -262,6 +301,8 @@ class ImportPriceFromBuyBox
                     'is_sold_by_amazon',
                     'in_price',
                     'weight',
+                    'volumetric_weight_pounds',
+                    'volumetric_weight_kg',
                     'ind_to_uae',
                     'ind_to_sg',
                     'ind_to_sa',
