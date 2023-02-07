@@ -184,7 +184,7 @@ class ZohoOrder
 
         $zoho_response = ($zoho_api_save) ? $zoho_api_save : null;
 
-        if (isset($zoho_response) && count($zoho_response) > 0 && array_key_exists('data', $zoho_response) && array_key_exists(0, $zoho_response['data']) && array_key_exists('code', $zoho_response['data'][0])) {
+        if (isset($zoho_response) && gettype($zoho_response) == "array" && array_key_exists('data', $zoho_response) && array_key_exists(0, $zoho_response['data']) && array_key_exists('code', $zoho_response['data'][0])) {
 
             $zoho_save_id = $zoho_response['data'][0]['details']['id'];
 
