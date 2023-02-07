@@ -105,7 +105,6 @@ class getEDDfororders extends Command
 
                         $latest_delivery_date = ($result_data['orders']['0']['latest_delivery_date']);
 
-
                         $item_ids =  OrderItemDetails::query()
                             ->select('order_item_identifier', 'asin')
                             ->where('amazon_order_identifier', $order_id)
@@ -116,12 +115,11 @@ class getEDDfororders extends Command
                             $item_id =   $data['order_item_identifier'];
                             $zoho = new ZohoApi;
                             $zoho_lead_search = $zoho->search($order_id, $item_id);
-                            Log::alert($order_id);
+
                             if (isset($zoho_lead_search['data'][0]['id'])) {
                                 $lead_id = $zoho_lead_search['data']['0']['id'];
                                 $value = Carbon::parse($latest_delivery_date)->format('Y-m-d');
-                                Log::alert($data);
-                                Log::alert($lead_id);
+
                                 $zoh =    $zoho->updateLead($lead_id, ["US_EDD" => $value]);
                                 Log::notice($zoh);
                                 Order::where('amazon_order_identifier', $order_id)->update(['latest_delivery_date' => $latest_delivery_date]);
