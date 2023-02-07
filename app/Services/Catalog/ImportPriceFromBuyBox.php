@@ -109,7 +109,7 @@ class ImportPriceFromBuyBox
                     $catalogWeight[$catalog['asin']]['width'] = $width;
                 }
             }
-            Log::notice($catalogWeight);
+            // Log::notice($catalogWeight);
             $BBlistingPrice = '';
             $pricing_in = [];
             $pricing_us = [];

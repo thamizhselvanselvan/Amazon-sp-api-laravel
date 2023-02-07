@@ -626,7 +626,7 @@ if (!function_exists('poundToKg')) {
 if (!function_exists('VolumetricIntoKG')) {
     function VolumetricIntoKG($dimension)
     {
-        $divisor = getSystemSettingsValue('volumetric_divisor', 6000);
+        $divisor = getSystemSettingsValue('volumetric_divisor_for_pricing', 6000);
         $cm = $dimension * 16.388;  // convert inch to centimeters.
         $volumetricOfKg = $cm / $divisor; // volumetric in kg.
         return round($volumetricOfKg, 2);
@@ -636,7 +636,7 @@ if (!function_exists('VolumetricIntoKG')) {
 if (!function_exists('VolumetricIntoPounds')) {
     function VolumetricIntoPounds($dimension)
     {
-        $divisor = getSystemSettingsValue('volumetric_divisor', 6000);
+        $divisor = getSystemSettingsValue('volumetric_divisor_for_pricing', 6000);
         $volumetricOfPounds = $dimension / $divisor;
         return round($volumetricOfPounds, 2);
     }
