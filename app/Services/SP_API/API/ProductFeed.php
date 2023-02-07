@@ -21,22 +21,19 @@ class ProductFeed
     {   
      
         $apiInstance = new FeedsApi($this->config($aws_key, $country_code));
-        $feedType = ($available) ? FeedType::POST_INVENTORY_AVAILABILITY_DATA : FeedType::POST_PRODUCT_PRICING_DATA;
+        $feedType = FeedType::POST_PRODUCT_PRICING_DATA;
 
         $feedContents = ($available) ? $this->xml_availability($feedLists, $merchant_id) : $this->xml($feedLists, $merchant_id, $currency_code);
         
         try {                                                         
             $createFeedDocSpec  = new CreateFeedDocumentSpecification(['content_type' => $feedType['contentType']]); // \SellingPartnerApi\Model\Feeds\CreateFeedDocumentSpecification
             $feedDocumentInfo = $apiInstance->createFeedDocument($createFeedDocSpec);
-            Log::notice(json_encode($createFeedDocSpec));
+
             $feedDocumentId = $feedDocumentInfo->getFeedDocumentId();
-            dd($feedType);
             
             $feedContents = ($available) ? $this->xml_availability($feedLists, $merchant_id) : $this->xml($feedLists, $merchant_id, $currency_code);
 
-            Log::debug((string)$available);
-
-            exit;
+            Log::debug($feedContents);
 
             $docToUpload = new Document($feedDocumentInfo, $feedType);
             $docToUpload->upload($feedContents);

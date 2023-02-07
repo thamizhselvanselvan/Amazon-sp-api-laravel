@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f6f9e1b05f1059c1ba822398920e4568",
+    "content-hash": "3a47ffcac29e81dd368961e0e390d5eb",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -3979,16 +3979,16 @@
         },
         {
             "name": "jlevers/selling-partner-api",
-            "version": "5.3.0",
+            "version": "5.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jlevers/selling-partner-api.git",
-                "reference": "130004acda21f0706f6abc3890337bc65774372d"
+                "reference": "547667af5663af1b5a826c5171ced41a5e1271db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jlevers/selling-partner-api/zipball/130004acda21f0706f6abc3890337bc65774372d",
-                "reference": "130004acda21f0706f6abc3890337bc65774372d",
+                "url": "https://api.github.com/repos/jlevers/selling-partner-api/zipball/547667af5663af1b5a826c5171ced41a5e1271db",
+                "reference": "547667af5663af1b5a826c5171ced41a5e1271db",
                 "shasum": ""
             },
             "require": {
@@ -4001,7 +4001,7 @@
                 "phpoffice/phpspreadsheet": "^1.19"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.12",
+                "friendsofphp/php-cs-fixer": "^3.4",
                 "phpunit/phpunit": "^8.0 || ^9.0"
             },
             "type": "library",
@@ -4025,7 +4025,6 @@
                 "amazon",
                 "api",
                 "ecommerce",
-                "php",
                 "rest",
                 "sdk",
                 "selling-partner-api",
@@ -4033,9 +4032,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jlevers/selling-partner-api/issues",
-                "source": "https://github.com/jlevers/selling-partner-api/tree/v5.3.0"
+                "source": "https://github.com/jlevers/selling-partner-api/tree/v5.5.4"
             },
-            "time": "2022-08-18T01:25:11+00:00"
+            "time": "2023-01-23T20:26:36+00:00"
         },
         {
             "name": "justinrainbow/json-schema",

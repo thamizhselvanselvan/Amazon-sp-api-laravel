@@ -4,6 +4,7 @@ use App\Models\Buybox_stores\Product;
 use Illuminate\Support\Facades\Route;
 use App\Models\Buybox_stores\Product_Push;
 use App\Services\AmazonFeedApiServices\AmazonFeedProcess;
+use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 
 Route::get('buybox/stores', 'Buybox_stores\BuyBoxStoreController@index')->name('buybox.stores');
 Route::post('buybox/latency', 'Buybox_stores\BuyBoxStoreController@latencyupdate')->name('buybox.latency.update');
@@ -33,14 +34,29 @@ Route::get('stores/price/updated', 'Buybox_stores\BuyBoxStoreController@updatepr
 Route::get("amazo", function() {
 
     $id = 0;
-    $store_id = 6;
+    $store_id = 10;
+    $seller_id = 'A2BWJVKSWP7TR2';
+    $country_code = 'IN';
+    $sku = 'DL-B001E63NE4';
+    $marketplace_ids = 'A21TJRUUN4KGV';
 
     $feedLists[] = [
-        "push_price" => 3085,
-        "product_sku" => "NS_B07CXV6S9R",
-        "base_price" => 4000,
+        "push_price" => '3801',
+        "product_sku" => "DL-B001E63NE4",
+        "base_price" => "3500",
     ];
 
-    $price_update = (new AmazonFeedProcess)->feedSubmit($feedLists, $store_id, $id, false);
+   //$feedSubmit = (new AmazonFeedProcess)->feedSubmit($feedLists, $store_id, $id, false);
+    // $response = json_decode(json_encode($feedSubmit));
+    //dd($feedSubmit);
+    //po($response);
 
+    //$feedback_id = $feedSubmit;
+    $feedback_id = '50923019394';
+
+   // $url  = (new FeedOrderDetailsApp360())->getLists($feedLists, $store_id, $country_code);
+    $url  = (new FeedOrderDetailsApp360())->get($feedback_id, $store_id, $country_code);
+    //$url  = (new FeedOrderDetailsApp360())->getLists($feedback_id, $store_id, $country_code);
+
+    dd($url);
 });
