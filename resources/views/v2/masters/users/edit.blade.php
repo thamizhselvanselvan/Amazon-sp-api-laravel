@@ -10,7 +10,7 @@
 
     <div class="row">
         <div class="col">
-            <a href="{{ Route('admin.user_list') }}" class="btn btn-primary">
+            <a href="{{ Route('users.home') }}" class="btn btn-primary">
                 <i class="fas fa-long-arrow-alt-left"></i> Back
             </a>
         </div>
@@ -49,7 +49,7 @@
                 </x-adminlte-alert>
             @endif
 
-            <form action="{{ route('admin.update_user', $user_id) }}" method="POST" id="admin_user">
+            <form action="{{ route('users.update', $users->id ) }}" method="POST" id="admin_user">
 
 
                 @csrf
@@ -57,41 +57,50 @@
                 <div class="row">
                     <div class="col-6">
                         <x-adminlte-input label="Name" name="name" id="name" type="text" placeholder="Name"
-                            value="{{$user_name }}" />
+                            value="{{$users->name }}" />
                     </div>
                     <div class="col-6">
                         <x-adminlte-input label="Email" name="email" id="email" type="text" placeholder="Email"
-                            value="{{ $user_email}}" />
+                            value="{{ $users->email}}" />
                     </div>
                 </div>
 
                 <div class="row">
-                    <div class="col-6">
+                <div class="col-6">
 
-                        <x-adminlte-select name="Role[]" id="status" label="Role" multiple>
-                            @foreach ($roles as $role)
-                                @if($role->name == $selected_roles)
-                                     <option value="{{ $role->name }}" selected>{{ $role->name }}</option>
-                                @else
-                                    <option value="{{ $role->name }}"> {{ $role->name }}</option>
-                                @endif
-                            @endforeach
-                        </x-adminlte-select>
+                    <label for="role">
+                        Role
+                    </label>
+                    <div class="form-check">
+                        @foreach ($roles as $role)
+                        <input type="checkbox" id="role" value="{{ $role->name }}" name="role[]" {{in_array($role->name,$selected_roles) ? 'checked' : ''}} >
+                        <label class="form-check-label" for="role"> {{ $role->name }} </label>
+                        @endforeach
                     </div>
-                    <div class="col-6">
-
-                        <x-adminlte-select name="company" id="company" label="Company">
-                            @foreach ($companys as $company)
-                                @if($company ->id == $selected_company)
-                                <option value="{{ $company->id }}" selected> {{ $company->company_name }}</option>
-                                @else
-                                <option value="{{ $company->id }}"> {{ $company->company_name }}</option>
-                                @endif
-                            @endforeach
-                        </x-adminlte-select>
+                </div>
+                <div class="col-6">
+                    <label for="department">Department</label>
+                    <div class="form-check">
+                        @foreach ($departments as $department)
+                        <input type="radio" id="department" name="department" value="{{ $department->id }}" {{ $department->id == $users->department_id ? 'checked' : '' }}>
+                        <label class="form-check-label" for="department"> {{ $department->department }}</label>
+                        @endforeach
                     </div>
 
                 </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+
+                    <x-adminlte-select name="company" id="company" label="Company">
+                        <option value="0"> --Select-- </option>
+                        @foreach ($companys as $company)
+                        <option value="{{ $company->id }}"{{ $company->id == $users->company_id ? 'selected' : ''}} > {{ $company->company_name }}</option>
+                        @endforeach
+                    </x-adminlte-select>
+                </div>
+
+            </div>
 
 
 

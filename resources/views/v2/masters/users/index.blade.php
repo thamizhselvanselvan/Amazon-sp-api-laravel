@@ -106,7 +106,7 @@
             let id = $(this).attr('remove-btn');
             $.ajax({
                 method: 'GET',
-                url: "/v2/master/users/"+id+"/remove",
+                url: "/v2/master/users/"+id+"/delete",
                 data: {
                     "_token": "{{ csrf_token() }}",
                 },

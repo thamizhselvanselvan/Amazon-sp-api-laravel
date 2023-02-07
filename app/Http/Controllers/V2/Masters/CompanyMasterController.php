@@ -35,7 +35,7 @@ class CompanyMasterController extends Controller
         else {
 
             $request->validate([
-                'company_name' => 'required'
+                'company_name' => 'required|min:3|max:255'
             ]);
             CompanyMaster::create([
                 'company_name' => $request->company_name,
@@ -73,7 +73,7 @@ class CompanyMasterController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'company_name' => 'required'
+            'company_name' => 'required|min:3|max:255'
         ]);
 
         CompanyMaster::where('id', $request->id)->update(['company_name' => $request->company_name]);

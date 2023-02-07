@@ -217,25 +217,6 @@ class GeoManagementController extends Controller
   //   return redirect('v2/master/geo/city')->with('message', $city->name . ' Added');
   // }
 
-  // public function show_country(Country $country)
-  // {
-  //   $countries = Country::all();
-  //   return view('v2.masters.geo.country.index', compact('countries'));
-  // }
-
-  // public function show_state(Country $country, State $state)
-  // {
-  //   $countries = Country::all();
-  //   $states = State::all();
-  //   return view('v2.masters.geo.state.index', compact('countries', 'states'));
-  // }
-
-  // public function show_city(State $state, City $city)
-  // {
-  //   $states = State::all();
-  //   $cities = City::all();
-  //   return view('v2.masters.geo.city.index', compact('cities', 'states'));
-  // }
 
   public function destroy_country(Country $country, $country_id)
   {
@@ -254,7 +235,6 @@ class GeoManagementController extends Controller
 
       $city_ids = City::select('id')->where('state_id', $state_id)->get()->pluck('id')->toArray();
       if (count($city_ids) != 0) {
-        // return false;
         City::whereIn('id', $city_ids)->delete();
       }
     }
@@ -308,15 +288,15 @@ class GeoManagementController extends Controller
   {
     $geo_data = $request->validate(
       [
-        'name' => 'required:App\Models\Inventory\Country',
-        'country_code' => 'required:App\Models\Inventory\Country',
-        'code' => 'required:App\Models\Inventory\Country',
-        'numeric_code' => 'required:App\Models\Inventory\Country',
-        'phone_code' => 'required:App\Models\Inventory\Country',
-        'capital' => 'required:App\Models\Inventory\Country',
-        'currency' => 'required:App\Models\Inventory\Country',
-        'currency_name' => 'required:App\Models\Inventory\Country',
-        'currency_symbol' => 'required:App\Models\Inventory\Country',
+        'name' => 'required',
+        'country_code' => 'required',
+        'code' => 'required',
+        'numeric_code' => 'required',
+        'phone_code' => 'required',
+        'capital' => 'required',
+        'currency' => 'required',
+        'currency_name' => 'required',
+        'currency_symbol' => 'required',
       ]
     );
     $country_name = $request->name;

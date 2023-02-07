@@ -79,7 +79,7 @@
                     </label>
                     <div class="form-check">
                         @foreach ($roles as $role)
-                        <input type="checkbox" id="role" value="{{ $role->name }}" name="role[]">
+                        <input type="checkbox" id="role" value="{{ $role->name }}" name="role[]" >
                         <label class="form-check-label" for="role"> {{ $role->name }} </label>
                         @endforeach
                     </div>
