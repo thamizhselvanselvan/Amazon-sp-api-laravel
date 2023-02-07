@@ -328,7 +328,7 @@ class product_push_to_amazon extends Command
         return addPercentage_product_push($excel_calculated_price, $this->increase_by_excel_price);
     }
 
-    public function our_own_store_won_bb(int $store_id, string $bb_winner_id): bool {
+    public function our_own_store_won_bb(int $store_id, string $bb_winner_id): bool|array {
 
         if(array_key_exists($store_id, $this->our_merchant_ids) && $store_id != $bb_winner_id) {
             return $this->our_merchant_ids[$store_id];
