@@ -47,7 +47,7 @@ class import_product_file_SPAPI extends Command
      */
     public function handle()
     {
-        // $stores_id  = [6, 7, 8, 9, 10, 11, 12, 20, 27];
+       // $stores_id  = [6, 7, 8, 9, 10, 11, 12, 20, 27, 44];
       
         $stores_id =  OrderSellerCredentials::query()->select('seller_id', 'country_code')->where('buybox_stores', 1)->get();
 
@@ -56,6 +56,7 @@ class import_product_file_SPAPI extends Command
             try {
                 
                 $seller_id = $data['seller_id'];
+                //$seller_id = $data;
 
                 Log::alert('store' .  ' ' . $seller_id);
 
@@ -84,9 +85,10 @@ class import_product_file_SPAPI extends Command
                         }
 
                         Storage::put('/aws-products/aws-store-files/products_' . $seller_id . '.txt', $httpResponse);
+
                     }
 
-                     $this->insertdb($seller_id);
+                    $this->insertdb($seller_id);
                 }
             } catch (Exception $e) {
                 Log::notice('Store File Not Found' . ' ' . $seller_id);

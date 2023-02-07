@@ -26,7 +26,7 @@ use App\Models\ShipNTrack\SMSA\SmsaTrackings;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
 use App\Models\ShipNTrack\Bombino\BombinoTracking;
 use App\Models\ShipNTrack\Bombino\BombinoTrackingDetails;
-
+use Faker\Core\Number;
 
 if (!function_exists('ddp')) {
     function ddp($value)
@@ -41,7 +41,7 @@ if (!function_exists('addPercentage')) {
 
     function addPercentage($originalAmount, $percentageChange)
     {
-        return $originalAmount + ($percentageChange / 100) * $originalAmount;
+        return (float)$originalAmount + ($percentageChange / 100) * (float)$originalAmount;
     }
 }
 
@@ -51,6 +51,22 @@ if (!function_exists('removePercentage')) {
         return $originalAmount - ($percentageChange / 100) * $originalAmount;
     }
 }
+
+if (!function_exists('addPercentage_product_push')) {
+
+    function addPercentage_product_push($originalAmount, $percentageChange)
+    {
+        return (float)$originalAmount + ($percentageChange / 100) * (float)$originalAmount;
+    }
+}
+
+if (!function_exists('removePercentage_product_push')) {
+    function removePercentage_product_push($originalAmount, $percentageChange)
+    {
+        return (float)$originalAmount - ($percentageChange / 100) * (float)$originalAmount;
+    }
+}
+
 
 if (!function_exists('getPercentageChange')) {
 
@@ -626,7 +642,7 @@ if (!function_exists('poundToKg')) {
 if (!function_exists('VolumetricIntoKG')) {
     function VolumetricIntoKG($dimension)
     {
-        $divisor = getSystemSettingsValue('volumetric_divisor', 6000);
+        $divisor = getSystemSettingsValue('volumetric_divisor_for_pricing', 6000);
         $cm = $dimension * 16.388;  // convert inch to centimeters.
         $volumetricOfKg = $cm / $divisor; // volumetric in kg.
         return round($volumetricOfKg, 2);
@@ -636,7 +652,7 @@ if (!function_exists('VolumetricIntoKG')) {
 if (!function_exists('VolumetricIntoPounds')) {
     function VolumetricIntoPounds($dimension)
     {
-        $divisor = getSystemSettingsValue('volumetric_divisor', 6000);
+        $divisor = getSystemSettingsValue('volumetric_divisor_for_pricing', 6000);
         $volumetricOfPounds = $dimension / $divisor;
         return round($volumetricOfPounds, 2);
     }

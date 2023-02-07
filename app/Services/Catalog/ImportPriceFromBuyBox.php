@@ -109,7 +109,7 @@ class ImportPriceFromBuyBox
                     $catalogWeight[$catalog['asin']]['width'] = $width;
                 }
             }
-            Log::notice($catalogWeight);
+            // Log::notice($catalogWeight);
             $BBlistingPrice = '';
             $pricing_in = [];
             $pricing_us = [];
@@ -185,11 +185,11 @@ class ImportPriceFromBuyBox
                     }
                 }
                 if ($country_code_lr == 'us') {
-                    $packet_weight = $volumetricPounds > $packet_weight ? $volumetricPounds : $packet_weight;
-                    $price_in_b2c = $price_convert->USAToINDB2C($packet_weight, $BBlistingPrice);
-                    $price_in_b2b = $price_convert->USAToINDB2B($packet_weight, $BBlistingPrice);
-                    $price_ae = $price_convert->USATOUAE($packet_weight, $BBlistingPrice);
-                    $price_sg =  $price_convert->USATOSG($packet_weight, $BBlistingPrice);
+                    $vol_packet_weight = $volumetricPounds > $packet_weight ? $volumetricPounds : $packet_weight;
+                    $price_in_b2c = $price_convert->USAToINDB2C($vol_packet_weight, $BBlistingPrice);
+                    $price_in_b2b = $price_convert->USAToINDB2B($vol_packet_weight, $BBlistingPrice);
+                    $price_ae = $price_convert->USATOUAE($vol_packet_weight, $BBlistingPrice);
+                    $price_sg =  $price_convert->USATOSG($vol_packet_weight, $BBlistingPrice);
 
 
                     $price_us_source = [
@@ -231,10 +231,10 @@ class ImportPriceFromBuyBox
                 } elseif ($country_code_lr == 'in') {
 
                     $packet_weight_kg = poundToKg($packet_weight);
-                    $packet_weight_kg = $volumetricKg > $packet_weight_kg ? $volumetricKg : $packet_weight_kg;
-                    $price_saudi = $price_convert->INDToSA($packet_weight_kg, $BBlistingPrice);
-                    $price_singapore = $price_convert->INDToSG($packet_weight_kg, $BBlistingPrice);
-                    $price_uae = $price_convert->INDToUAE($packet_weight_kg, $BBlistingPrice);
+                    $vol_packet_weight_kg = $volumetricKg > $packet_weight_kg ? $volumetricKg : $packet_weight_kg;
+                    $price_saudi = $price_convert->INDToSA($vol_packet_weight_kg, $BBlistingPrice);
+                    $price_singapore = $price_convert->INDToSG($vol_packet_weight_kg, $BBlistingPrice);
+                    $price_uae = $price_convert->INDToUAE($vol_packet_weight_kg, $BBlistingPrice);
 
                     $destination_price = [
                         'ind_to_uae' => $price_uae,
