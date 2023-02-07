@@ -130,20 +130,20 @@ class OrderMissingDetailsController extends Controller
             ->distinct()
             ->get();
 
-        if ($request->ajax()) {
-            $data =   ProcessManagement::where(['module' => 'Orders', 'command_name' => 'mosh:zoho_force_dump','status' =>'0'])
-                ->select('status')
-                ->orderby('updated_at', 'desc')
-                ->limit(1)
-                ->get();
+        // if ($request->ajax()) {
+        //     $data =   ProcessManagement::where(['module' => 'Orders', 'command_name' => 'mosh:zoho_force_dump','status' =>'0'])
+        //         ->select('status')
+        //         ->orderby('updated_at', 'desc')
+        //         ->limit(1)
+        //         ->get();
 
 
-            $messsage = ["success" => 'ok'];
-            if (count($data) > 0) {
-                $messsage = ["error" => $data];
-            }
-            return response()->json(['success' => true, "data" => $messsage]);
-        }
+        //     $messsage = ["success" => 'ok'];
+        //     if (count($data) > 0) {
+        //         $messsage = ["error" => $data];
+        //     }
+        //     return response()->json(['success' => true, "data" => $messsage]);
+        // }
         return view('orders.zoho.zohoforcedump', compact('stores'));
     }
 
