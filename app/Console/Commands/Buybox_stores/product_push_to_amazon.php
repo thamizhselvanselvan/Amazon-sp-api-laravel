@@ -133,7 +133,7 @@ class product_push_to_amazon extends Command
         $ceil_price = $product->ceil_price;
         $store_price = $product->store_price;
         $excel_price = $product->app_360_price;
-        $bb_winner_id = $product->bb_winner_id;
+        $bb_winner_id = $product->bb_winner_id ?? "";
         $bb_winner_price = $product->bb_winner_price;
         $lowest_seller_price = $product->lowest_seller_price;
         $highest_seller_price = $product->highest_seller_price;
