@@ -36,8 +36,8 @@ class CurrencyController extends Controller
             return view('v2.masters.store.currency.index');
         } else {
             $request->validate([
-                'currency' => 'required',
-                'code' => 'required'
+                'currency' => 'required|regex:/^[\pL\s\-]+$/u|min:3|max:150',
+                'code' => 'required|alpha|max:10'
             ]);
             Currency::create([
                 'name' => $request->currency,
@@ -64,8 +64,8 @@ class CurrencyController extends Controller
     public function update(Request $request,$id)
     {
         $request->validate([
-            'currency' => 'required',
-            'code' => 'required'
+            'currency' => 'required|regex:/^[\pL\s\-]+$/u|min:3|max:150',
+            'code' => 'required|alpha|max:10'
         ]);
         $records = [
             'name' => $request->currency,

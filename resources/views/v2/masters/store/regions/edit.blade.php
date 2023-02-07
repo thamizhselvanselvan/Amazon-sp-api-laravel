@@ -74,8 +74,8 @@
             <div class="col-6">
                 <div class="form-group">
                     <x-adminlte-select id="status" name="status" label="Status">
-                    <option value="1" {{ $currency['status'] == "1"  ? 'selected' : '' }}>Active</option>
-                        <option value="0" {{ $currency['status'] == "0"  ? 'selected' : '' }}>Inactive</option>
+                    <option value="1" {{ $region['status'] == "1"  ? 'selected' : '' }}>Active</option>
+                        <option value="0" {{ $region['status'] == "0"  ? 'selected' : '' }}>Inactive</option>
                     </x-adminlte-select>
                 </div>
             </div>

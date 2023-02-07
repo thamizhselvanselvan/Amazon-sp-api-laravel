@@ -45,9 +45,9 @@
                     <input type="text" class="form-control w-25 m-auto" id="name" name="name" placeholder="State"
                         autofocus required autocomplete="off">
                     <span class="text-danger">
-                        @error('name')
+                        <!-- @error('name')
                             {{ $message = 'This State already exist' }}
-                        @enderror
+                        @enderror -->
             </div>
             <br>
             <x-adminlte-button label=" Submit" theme="primary" icon="fas fa-plus" type="submit" />

@@ -98,8 +98,8 @@
             <div class="row">
                 <div class="col-6">
 
-                    <x-adminlte-select name="company" id="company" label="Company">
-                        <option value="0"> --Select-- </option>
+                    <x-adminlte-select name="company" id="company" label="Company" required>
+                        <option value=""> --Select-- </option>
                         @foreach ($companys as $company)
                         <option value="{{ $company->id }}"> {{ $company->company_name }}</option>
                         @endforeach

@@ -34,7 +34,7 @@ class GeoManagementController extends Controller
      {
       $geo_data = $request->validate(
         [
-          'name' => 'required|unique:App\Models\V2\Masters\Country',
+          'name' => 'required|regex:/^[\pL\s\-]+$/u|unique:App\Models\V2\Masters\Country',
           'country_code' => 'required|unique:App\Models\V2\Masters\Country',
           'code' => 'required|unique:App\Models\V2\Masters\Country',
           'numeric_code' => 'required|unique:App\Models\V2\Masters\Country',
@@ -100,7 +100,8 @@ class GeoManagementController extends Controller
       $request->validate(
         [
           'country_id' => 'required',
-          'name' => 'unique:App\Models\V2\Masters\State',
+          'name' => 'required|regex:/^[\pL\s\-]+$/u'
+          
         ]
       );
       $state = new State;
@@ -288,7 +289,7 @@ class GeoManagementController extends Controller
   {
     $geo_data = $request->validate(
       [
-        'name' => 'required',
+        'name' => 'required|regex:/^[\pL\s\-]+$/u',
         'country_code' => 'required',
         'code' => 'required',
         'numeric_code' => 'required',
@@ -309,7 +310,7 @@ class GeoManagementController extends Controller
     $request->validate(
       [
         'country' => 'required',
-        'state_name' => 'required',
+        'state_name' => 'required|regex:/^[\pL\s\-]+$/u',
       ]
     );
     $states = State::find($id);

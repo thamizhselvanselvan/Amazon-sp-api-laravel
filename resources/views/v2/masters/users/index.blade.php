@@ -49,6 +49,7 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Role</th>
+                        <th>Company</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -86,6 +87,10 @@
                     {
                         data: 'permission',
                         name: 'permission'
+                    },
+                    {
+                        data: 'company',
+                        name: 'company'
                     },
                     {
                         data: 'action',

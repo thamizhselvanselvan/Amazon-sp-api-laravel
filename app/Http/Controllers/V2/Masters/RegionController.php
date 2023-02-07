@@ -54,9 +54,9 @@ class RegionController extends Controller
         } else {
           
             $request->validate([
-                'region_code' => 'required|alpha|min:2|max:255',
-                'region' => 'required|alpha|min:2|max:255',
-                'marketplace_id' => 'required',
+                'region_code' => 'required|alpha|min:2|max:35',
+                'region' => 'required|regex:/^[\pL\s\-]+$/u|min:2|max:150',
+                'marketplace_id' => 'required|alpha_num|min:14|max:35',
                 'url' => 'required|url',
                 'site_url' => 'required|url',
                 
@@ -93,9 +93,9 @@ class RegionController extends Controller
     public function update(Request $request,$id)
     {
         $request->validate([
-            'region_code' => 'required|alpha|min:2|max:255',
-            'region' => 'required|alpha|min:2|max:255',
-            'marketplace_id' => 'required',
+            'region_code' => 'required|alpha|min:2|max:35',
+            'region' => 'required|regex:/^[\pL\s\-]+$/u|min:2|max:150',
+            'marketplace_id' => 'required|alpha_num|min:14|max:35',
             'url' => 'required|url',
             'site_url' => 'required|url',
         ]);

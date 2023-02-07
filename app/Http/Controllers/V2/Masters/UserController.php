@@ -22,7 +22,7 @@ class UserController extends Controller
         $user = Auth::user();
         $login_id = $user->id;
         $role = $user->roles->first()->name;
-        $users = User::latest()->where('id', '>', '1')->orderBy('id', 'DESC')->get();
+        $users = User::has('company')->latest()->where('id', '>', '1')->orderBy('id', 'DESC')->get();
         if ($request->isMethod('get')) {
             if ($request->ajax()) {
 
@@ -52,6 +52,11 @@ class UserController extends Controller
 
                         return rtrim($multiple_roles, ', ');
                     })
+                    ->editColumn('company', function ($data) {
+                       
+                            return ($data['company']['company_name']);
+                       
+                    })
                     ->rawColumns(['action', 'permission'])
                     ->make(true);
             }
@@ -60,9 +65,9 @@ class UserController extends Controller
         else
         {
             $request->validate([
-                'name' =>'required|regex:/^[\pL\s\-]+$/u|min:3|max:255',
-                'email' =>'required|email|unique:App\Models\V2\Masters\User|max:255',
-                'password' => 'required|confirmed|min:6|max:255',
+                'name' =>'required|regex:/^[\pL\s\-]+$/u|min:3|max:150',
+                'email' =>'required|email|unique:App\Models\V2\Masters\User|max:150',
+                'password' => 'required|confirmed|min:6|max:20',
                
             ]);
            
@@ -112,7 +117,7 @@ class UserController extends Controller
     public function password_reset_save(Request $request, $id)
     {
         $request->validate([
-            'password' => 'required|confirmed|min:3|max:18'
+            'password' => 'required|confirmed|min:6|max:20'
         ]);
 
         $user = User::where('id', $id)->exists();
@@ -141,8 +146,8 @@ class UserController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-                'name' =>'required|regex:/^[\pL\s\-]+$/u|min:3|max:255',
-                'email' =>'required|email|max:255',
+                'name' =>'required|regex:/^[\pL\s\-]+$/u|min:3|max:150',
+                'email' =>'required|email|max:150',
         ]);
         $user = User::find($request->id);
 
