@@ -3,17 +3,15 @@
 namespace App\Http\Controllers\V2\Masters;
 
 
-use App\Models\V2\Masters\BB\BB_User;
+
+
 use App\Models\V2\Masters\CompanyMaster;
-use App\Models\V2\Masters\User;
 use App\Models\V2\Masters\Roles;
+use App\Models\V2\Masters\User;
 use Illuminate\Http\Request;
-use App\Models\Aws_credential;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
-use App\Models\order\OrderSellerCredentials;//Need to change
 
 
 class UserController extends Controller
@@ -29,7 +27,7 @@ class UserController extends Controller
 
             return DataTables::of($users)
                 ->addIndexColumn()
-                ->addColumn('action', function ($user)  use ($login_id, $role) {
+                ->addColumn('action', function ($user) use ($login_id, $role) {
                     $edit = '';
                     if ($login_id == $user->id || $role == 'Admin' && $user->id != 1) {
                         $edit = "<a href='/v2/master/users/password_reset/" . $user->id . "' class='btn btn-primary btn-sm mr-2'><i class='fas fa-edit'></i>Change password</a>";
@@ -57,5 +55,11 @@ class UserController extends Controller
                 ->make(true);
         }
         return view('v2.masters.users.index');
+    }
+    public function create()
+    {
+        $roles = Roles::get('name');
+        $companys = CompanyMaster::get();
+        return view('v2.masters.users.add', compact(['roles', 'companys']));
     }
 }

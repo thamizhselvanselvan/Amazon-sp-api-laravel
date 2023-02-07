@@ -124,7 +124,11 @@ Route::prefix('v2/master/')->group(function () {
         }
         );
 });
-Route::match (['get', 'post'], '/users',[UserController::class,'index'])->name('users.home');
+    Route::match (['get', 'post'], '/users',[UserController::class,'index'])->name('users.home');
+    Route::prefix('/users')->group(function () {
+        Route::get('/create', [UserController::class, 'create'])->name('users.create');
+    }
+    );
 
 
 
