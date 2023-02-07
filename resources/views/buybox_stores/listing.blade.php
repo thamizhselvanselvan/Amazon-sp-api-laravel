@@ -235,6 +235,9 @@
                 let id = self.attr("data-id");
                 let base_price = self.attr("base_price");
 
+                alert("Work In Progress");
+                return false;
+
                 self.prop('disabled', true);
 
                 $.ajax({
