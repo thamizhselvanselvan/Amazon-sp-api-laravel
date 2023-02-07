@@ -62,8 +62,10 @@ class AmazonFeedProcess
     public function createFeedDocument($aws_key, $country_code, $feedLists, $merchant_id, $currency_code, $marketplace_ids, $available = false)
     {
 
+        
+
         $apiInstance = new FeedsApi($this->config($aws_key, $country_code));
-        $feedType = FeedType::POST_FLAT_FILE_PRICEANDQUANTITYONLY_UPDATE_DATA;
+        $feedType = FeedType::POST_PRODUCT_PRICING_DATA;
 
         try {
             $createFeedDocSpec  = new CreateFeedDocumentSpecification(['content_type' => $feedType['contentType']]);
@@ -101,7 +103,7 @@ class AmazonFeedProcess
 
             $FEED = $this->createFeed($apiInstance, $marketplace_ids, $feedDocumentId, $available);
 
-            Log::info($FEED);
+            Log::info(" FEED ID " . $FEED);
                 
             return $FEED;
 
@@ -128,6 +130,7 @@ class AmazonFeedProcess
             $messages .= '
                 <Message>
                     <MessageID>' . $counter . '</MessageID>
+                    <OperationType>Update</OperationType>
                     <Price>
                         <SKU>' . $feedlist['product_sku'] . '</SKU>
                         <StandardPrice currency="INR">' . $feedlist['push_price'] . '</StandardPrice>
@@ -136,11 +139,11 @@ class AmazonFeedProcess
 
             $counter++;
         }
-
+        //xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd"
         $feed = '<?xml version="1.0" encoding="utf-8"?>
-            <AmazonEnvelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd">
+            <AmazonEnvelope >
                 <Header>
-                    <DocumentVersion>1.01</DocumentVersion>
+                    <DocumentVersion>1.02</DocumentVersion>
                     <MerchantIdentifier>' . $merchant_id . '</MerchantIdentifier>
                 </Header>
                 <MessageType>Price</MessageType>
@@ -155,13 +158,15 @@ class AmazonFeedProcess
 
         //$apiInstance = new FeedsApi($this->config($aws_key, $country_code));
         $body = new CreateFeedSpecification();
-        $body->setFeedType('POST_FLAT_FILE_PRICEANDQUANTITYONLY_UPDATE_DATA');
+        $body->setFeedType('POST_PRODUCT_PRICING_DATA');
         $body->setMarketplaceIds($marketplace_ids);
         $body->setInputFeedDocumentId($feedDocumentId);
 
         try {
             $result = $apiInstance->createFeed($body);
+
             return $result->getFeedId();
+            
             Log::notice($marketplace_ids);
             Log::notice("Create Feed ID" ." - ". $feedDocumentId ." - ". json_encode($result));
 
@@ -207,5 +212,11 @@ class AmazonFeedProcess
 
         echo "<pre>";
         print_r($result);
+    }
+
+    public function test() {
+
+        //SellingPartnerApi::submitFeed();
+
     }
 }
