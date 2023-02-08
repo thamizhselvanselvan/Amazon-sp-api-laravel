@@ -10,7 +10,7 @@
 
     <div class="row">
         <div class="col">
-            <a href="{{ Route('user.home') }}" class="btn btn-primary">
+            <a href="{{ Route('users.home') }}" class="btn btn-primary">
                 <i class="fas fa-long-arrow-alt-left"></i> Back
             </a>
         </div>
@@ -49,7 +49,7 @@
                 </x-adminlte-alert>
             @endif
 
-            <form action="{{ route('add.user') }}" method="POST" id="admin_user">
+            <form action="{{ route('users.home') }}" method="POST" id="admin_user">
 
 
                 @csrf
@@ -98,9 +98,9 @@
 
                         <x-adminlte-select name="bb_user"  label="Buy Box User">
                             <option value="0" > --Select-- </option>
-                            @foreach ($bb_user as $user)
+                            <!-- @foreach ($bb_user as $user)
                                 <option value="{{ $user->id }}"> {{ $user->name }}</option>
-                            @endforeach
+                            @endforeach -->
                         </x-adminlte-select>
                     </div>
 

@@ -1204,6 +1204,26 @@ return [
                             'url' => 'v2/master/users',
                             'can' => ['Admin'],
                             'icon' => 'far fa-fw fa-user',
+                            'submenu' =>[
+                                [
+                                    'text' => 'Role',
+                                    'url'   => 'v2/master/users',
+                                    'icon'  => 'far fa-fw fa-file',
+                                    'can'   => ['Admin'],
+                                ],
+                                // [
+                                //     'text' => 'Department',
+                                //     'url'   => 'v2/master/store/currency',
+                                //     'icon'  => 'far fa-fw fa-file',
+                                //     'can'   => ['Admin'],
+                                // ],
+                                // [
+                                //     'text' => 'Company',
+                                //     'url'   => 'v2/master/store/currency',
+                                //     'icon'  => 'far fa-fw fa-file',
+                                //     'can'   => ['Admin'],
+                                // ],
+                            ]
 
                         ],
 

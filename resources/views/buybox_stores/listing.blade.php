@@ -70,10 +70,35 @@
 
         <div class="col-3">
             <h2>
-                <x-adminlte-button type="button" label="Update" theme="primary" icon="fas fa-refresh" id="update_price" />
+                {{-- <x-adminlte-button type="button" label="Update" theme="primary" icon="fas fa-refresh" id="update_price" /> --}}
+                <x-adminlte-button type="button" label="Export CSV" theme="primary" icon="fas fa-refresh" id="store_data_export" />
+                <x-adminlte-button type="button" label="Show Exported CSV" theme="primary" icon="fas fa-refresh" id="show_exported_csv" />
             </h2>
         </div>
 
+    </div>
+
+    <div class="modal fade" id="show_exported_csv_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Exported CSV</h5>
+                    <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="font-size:15px">
+
+                    <div class="show_exported_csv_modal_body">
+                
+                            @foreach ($new_files as $file)
+                                <a href="{{ url('') }}{{ $file }}">{{ basename($file) }}</a>
+                            @endforeach
+                  
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 @stop
@@ -109,7 +134,7 @@
                         <th title="Current BB Seller Name/ID">BB Seller</th>
                         <th title="Next Highest Seller Name/ID">Highest Name</th>
                         <th title="Next Lowest Seller Name/ID">Lowest Name</th>
-                        {{-- <th>Action</th> --}}
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -128,7 +153,7 @@
             $(document).ready(function() {
 
                 if ($('#store_select').val() == '') {
-                    $('#update_price').hide();
+                    //$('#update_price').hide();
                 }
 
                 $(document).on('click', ".pop_over", function(e) {
@@ -155,6 +180,46 @@
 
             });
 
+            $("#show_exported_csv").on("click", function() {
+
+                $("#show_exported_csv_modal").modal("show");
+
+            });
+
+            $("#store_data_export").on("click", function() {
+                    let self= $(this);
+                    let store_id = $('#store_select').val();
+
+                    if (store_id == '') {
+                        alert("please select a store please");
+                        return false;
+                    }
+
+                    self.prop('disabled', true);
+
+                    $.ajax({
+                        url: "/stores/listing/price/store_data_export",
+                        method: "POST",
+                        data: {
+                            store_id: store_id,
+                            "_token": "{{ csrf_token() }}",
+                        },
+                        success: function(response) {
+                            self.prop("disabled", false);
+                            console.log(response);
+
+                            if(response == "success") {
+                                alert("Exporting the data...");
+                            }
+
+                            if(response == "error") {
+                                alert("Please select any store id ");
+                            }
+                        }
+                    });
+
+                });
+
             $('#store_select').on('change', function() {
 
                 let p = $(this).val();
@@ -170,6 +235,9 @@
                 let id = self.attr("data-id");
                 let base_price = self.attr("base_price");
 
+                alert("Work In Progress");
+                return false;
+
                 self.prop('disabled', true);
 
                 $.ajax({
@@ -182,9 +250,9 @@
                         pushprice: pushprice,
                         storeid: storeid,
                         base_price: base_price,
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        "_token": "{{ csrf_token() }}",
                     },
-                    dataType: 'json'
+                    dataType: 'json',
                     success: function(response) {
                         self.prop("disabled", false);
                         console.log(response);

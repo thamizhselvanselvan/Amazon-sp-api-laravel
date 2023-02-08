@@ -115,6 +115,13 @@ class BuyBoxStoreController extends Controller
             $url = "/stores/listing/price/" . $request_store_id;
         }
 
+        $files = Storage::files('public/product_push');
+        $new_files = [];
+
+        foreach($files as $file) {
+            $new_files[] = '/storage/product_push/'.basename($file);
+        }
+
         if ($request->ajax()) {
 
             $select_query = [
@@ -209,7 +216,7 @@ class BuyBoxStoreController extends Controller
                 ->make(true);
         }
 
-        return view('buybox_stores.listing', compact('stores', 'url', 'request_store_id'));
+        return view('buybox_stores.listing', compact('stores', 'url', 'request_store_id', 'new_files'));
     }
 
     public function pop_over_data($applied_rules) {
@@ -330,5 +337,44 @@ class BuyBoxStoreController extends Controller
                 ->make(true);
         }
          return view('buybox_stores.update_listing');
+    }
+
+    public function store_data_export(Request $request) {
+        
+
+        if(!$request->has("store_id")) {
+            return "error";
+        }
+        
+        $store_id = $request->store_id;
+
+        commandExecFunc("mosh:bb:product_push:export $store_id");
+
+        return 'success';
+    }
+
+    public function list_all_the_export() {
+
+        // Get all CSV files in the directory
+        $files = Storage::files('product_push');
+
+        if(count($files) > 0) {
+            return response()->json(['error' => "No Files are there to show"]);
+        }
+
+        // Set the file retention period to 30 days
+        $fileRetentionPeriod = 30;
+
+        // Iterate through each file and delete older files
+        foreach ($files as $file) {
+            $fileModifiedDate = Storage::lastModified($file);
+            $dateDifference = date_diff(date_create(), date_create("@$fileModifiedDate"))->format("%a");
+
+            if ($dateDifference > $fileRetentionPeriod) {
+                Storage::delete($file);
+            }
+        }
+
+        return response()->json($files);
     }
 }
