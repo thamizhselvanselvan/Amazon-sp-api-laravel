@@ -37,7 +37,7 @@ class ImageBrandController extends Controller
         $now =  carbon::now();
         if (app()->environment() === 'local') {
             $old_data = '';
-            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
+            $old_data = DB::connection('cliqnshop')->table('cns_home_page_contents')->select('content')
                 ->where("section", '3_banner_section')
                 ->where("country", $request->country)
                 ->get();
@@ -110,7 +110,7 @@ class ImageBrandController extends Controller
             ];
             $data =   ((json_encode($three_banners)));
             $condition = strval($request->country);
-            DB::connection('cliqnshop')->table('home_page_contents')
+            DB::connection('cliqnshop')->table('cns_home_page_contents')
                 ->where('section', '3_banner_section')
                 ->where('country', $condition)
                 ->update(['content' => $data,  'updated_at' => $now]);
@@ -119,7 +119,7 @@ class ImageBrandController extends Controller
 
         if (app()->environment() === 'staging') {
             $old_data = '';
-            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
+            $old_data = DB::connection('cliqnshop')->table('cns_home_page_contents')->select('content')
                 ->where("section", '3_banner_section')
                 ->where("country", $request->country)
                 ->get();
@@ -192,7 +192,7 @@ class ImageBrandController extends Controller
             ];
             $data =   ((json_encode($three_banners)));
             $condition = strval($request->country);
-            DB::connection('cliqnshop')->table('home_page_contents')
+            DB::connection('cliqnshop')->table('cns_home_page_contents')
                 ->where('section', '3_banner_section')
                 ->where('country', $condition)
                 ->update(['content' => $data,  'updated_at' => $now]);
@@ -201,7 +201,7 @@ class ImageBrandController extends Controller
 
         if (app()->environment() === 'production') {
             $old_data = '';
-            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
+            $old_data = DB::connection('cliqnshop')->table('cns_home_page_contents')->select('content')
                 ->where("section", '3_banner_section')
                 ->where("country", $request->country)
                 ->get();
@@ -274,7 +274,7 @@ class ImageBrandController extends Controller
             ];
             $data =   ((json_encode($three_banners)));
             $condition = strval($request->country);
-            DB::connection('cliqnshop')->table('home_page_contents')
+            DB::connection('cliqnshop')->table('cns_home_page_contents')
                 ->where('section', '3_banner_section')
                 ->where('country', $condition)
                 ->update(['content' => $data,  'updated_at' => $now]);
@@ -286,7 +286,7 @@ class ImageBrandController extends Controller
     {
         $country = $request->country;
         if ($request->ajax()) {
-            $data = DB::connection('cliqnshop')->table('home_page_contents')
+            $data = DB::connection('cliqnshop')->table('cns_home_page_contents')
                 ->where('section', 'top_selling_products_section')
                 ->where('country', $country)
                 ->select('content')
@@ -320,7 +320,7 @@ class ImageBrandController extends Controller
         $country = $request->country;
         $now =  carbon::now();
         $condition = strval($request->country);
-        DB::connection('cliqnshop')->table('home_page_contents')
+        DB::connection('cliqnshop')->table('cns_home_page_contents')
             ->where('section', 'top_selling_products_section')
             ->where('country', $condition)
             ->update(['content' => $data,  'updated_at' => $now]);
@@ -370,7 +370,7 @@ class ImageBrandController extends Controller
 
         $now = Carbon::now();
         $old_data = '';
-        $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
+        $old_data = DB::connection('cliqnshop')->table('cns_home_page_contents')->select('content')
             ->where("section", '2_banner_section')
             ->where("country", $country)
             ->get();
@@ -432,7 +432,7 @@ class ImageBrandController extends Controller
         $data =   json_encode($two_banners);
         $condition = strval($country);
 
-        DB::connection('cliqnshop')->table('home_page_contents')
+        DB::connection('cliqnshop')->table('cns_home_page_contents')
             ->where('section', '2_banner_section')
             ->where('country', $condition)
             ->update(['content' => $data,  'updated_at' => $now]);
@@ -471,7 +471,7 @@ class ImageBrandController extends Controller
         ]);
         if (app()->environment() === 'local') {
             $old_data = '';
-            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
+            $old_data = DB::connection('cliqnshop')->table('cns_home_page_contents')->select('content')
                 ->where("section", '1_banner_section')
                 ->where("country", $request->country)
                 ->get();
@@ -517,7 +517,7 @@ class ImageBrandController extends Controller
 
             $condition = strval($request->country);
 
-            DB::connection('cliqnshop')->table('home_page_contents')
+            DB::connection('cliqnshop')->table('cns_home_page_contents')
                 ->where('section', '1_banner_section')
                 ->where('country', $condition)
                 ->update(['content' => $data,  'updated_at' => $now]);
@@ -525,7 +525,7 @@ class ImageBrandController extends Controller
         }
         if (app()->environment() === 'staging') {
             $old_data = '';
-            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
+            $old_data = DB::connection('cliqnshop')->table('cns_home_page_contents')->select('content')
                 ->where("section", '1_banner_section')
                 ->where("country", $request->country)
                 ->get();
@@ -568,7 +568,7 @@ class ImageBrandController extends Controller
 
             $condition = strval($request->country);
 
-            DB::connection('cliqnshop')->table('home_page_contents')
+            DB::connection('cliqnshop')->table('cns_home_page_contents')
                 ->where('section', '1_banner_section')
                 ->where('country', $condition)
                 ->update(['content' => $data,  'updated_at' => $now]);
@@ -576,7 +576,7 @@ class ImageBrandController extends Controller
         }
         if (app()->environment() === 'production') {
             $old_data = '';
-            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
+            $old_data = DB::connection('cliqnshop')->table('cns_home_page_contents')->select('content')
                 ->where("section", '1_banner_section')
                 ->where("country", $request->country)
                 ->get();
@@ -619,7 +619,7 @@ class ImageBrandController extends Controller
 
             $condition = strval($request->country);
 
-            DB::connection('cliqnshop')->table('home_page_contents')
+            DB::connection('cliqnshop')->table('cns_home_page_contents')
                 ->where('section', '1_banner_section')
                 ->where('country', $condition)
                 ->update(['content' => $data,  'updated_at' => $now]);
@@ -644,7 +644,7 @@ class ImageBrandController extends Controller
         ]);
 
         if (app()->environment() === 'local') {
-            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
+            $old_data = DB::connection('cliqnshop')->table('cns_home_page_contents')->select('content')
                 ->where("section", 'trending_brands_section')
                 ->where("country", $request->country)
                 ->get();
@@ -782,7 +782,7 @@ class ImageBrandController extends Controller
             $data =  (json_encode($trending_brands));
             $condition = strval($request->country);
 
-            DB::connection('cliqnshop')->table('home_page_contents')
+            DB::connection('cliqnshop')->table('cns_home_page_contents')
                 ->where('section', 'trending_brands_section')
                 ->where('country', $condition)
                 ->update(['content' => $data,  'updated_at' => $now]);
@@ -791,7 +791,7 @@ class ImageBrandController extends Controller
         }
 
         if (app()->environment() === 'staging') {
-            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
+            $old_data = DB::connection('cliqnshop')->table('cns_home_page_contents')->select('content')
                 ->where("section", 'trending_brands_section')
                 ->where("country", $request->country)
                 ->get();
@@ -927,7 +927,7 @@ class ImageBrandController extends Controller
             $data =  (json_encode($trending_brands));
             $condition = strval($request->country);
 
-            DB::connection('cliqnshop')->table('home_page_contents')
+            DB::connection('cliqnshop')->table('cns_home_page_contents')
                 ->where('section', 'trending_brands_section')
                 ->where('country', $condition)
                 ->update(['content' => $data,  'updated_at' => $now]);
@@ -936,7 +936,7 @@ class ImageBrandController extends Controller
         }
 
         if (app()->environment() === 'production') {
-            $old_data = DB::connection('cliqnshop')->table('home_page_contents')->select('content')
+            $old_data = DB::connection('cliqnshop')->table('cns_home_page_contents')->select('content')
                 ->where("section", 'trending_brands_section')
                 ->where("country", $request->country)
                 ->get();
@@ -1071,7 +1071,7 @@ class ImageBrandController extends Controller
             $data =  (json_encode($trending_brands));
             $condition = strval($request->country);
 
-            DB::connection('cliqnshop')->table('home_page_contents')
+            DB::connection('cliqnshop')->table('cns_home_page_contents')
                 ->where('section', 'trending_brands_section')
                 ->where('country', $condition)
                 ->update(['content' => $data,  'updated_at' => $now]);
@@ -1112,7 +1112,7 @@ class ImageBrandController extends Controller
             'url'  => $url,
         ];
         $condition = strval($request->country);
-        DB::connection('cliqnshop')->table('home_page_contents')
+        DB::connection('cliqnshop')->table('cns_home_page_contents')
             ->where('section', 'promo_banner_section')
             ->where('country', $condition)
             ->update(['content' => json_encode($data),  'updated_at' => $now]);
