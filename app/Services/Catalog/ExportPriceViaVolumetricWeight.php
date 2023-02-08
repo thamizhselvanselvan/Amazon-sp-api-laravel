@@ -22,7 +22,7 @@ class ExportPriceViaVolumetricWeight
     private $fileNameOffset = 0;
     private $totalFile = [];
     private $writer;
-    private $limit = 1000;
+    private $limit = 5000;
     private $record_per_csv = 1000000;
 
     public function index($countryCode, $fmID, $priority)
@@ -80,48 +80,68 @@ class ExportPriceViaVolumetricWeight
             'vol_pound_INDTOSA'
         ];
         query1:
+        $query_limit = 5000;
         $us_destination  = table_model_create(country_code: $this->countryCode, model: 'Asin_destination', table_name: 'asin_destination_');
-        $us_destination->select('asin', 'priority')
+        $total_asin_count = $us_destination->select('asin', 'priority')
             ->when($this->priority != 'All', function ($query) {
                 return $query->where('priority', $this->priority);
             })
-            ->chunk(2000, function ($asin) use ($headers_in, $headers_us) {
+            ->where('export', 0)
+            ->orderBy('id', 'asc')
+            ->count();
 
-                $asin = $asin->toArray();
+        // ->chunk(5000, function ($asin) use ($headers_in, $headers_us) {
+        // });
 
-                $where_asin = [];
-                foreach ($asin as $value) {
-                    $where_asin[] = $value['asin'];
-                }
-                $data = [];
-                if ($this->countryCode == 'US') {
-                    $pricing_details = PricingUs::join("catalognewuss", "catalognewuss.asin", "pricing_uss.asin")
-                        ->select(["catalognewuss.dimensions", "pricing_uss.asin", "pricing_uss.us_price"])
-                        ->whereIn('pricing_uss.asin', $where_asin)
-                        ->get()
-                        ->toArray();
+        $total_loop = ceil($total_asin_count / $query_limit);
 
-                    foreach ($pricing_details as $details) {
-                        $data[] = $details;
-                    }
-                    $this->dataFormatting($data, $this->countryCode, $headers_us);
-                    $where_asin = [];
-                } elseif ($this->countryCode == 'IN') {
+        for ($i = 0; $i < $total_loop; $i++) {
 
-                    $pricing_details = PricingIn::join("catalognewins", "catalognewins.asin", "pricing_ins.asin")
-                        ->select(["catalognewins.dimensions", "pricing_ins.asin", "pricing_ins.in_price"])
-                        ->whereIn('pricing_ins.asin', $where_asin)
-                        ->get()
-                        ->toArray();
+            $asin = $us_destination->select('asin', 'priority')
+                ->when($this->priority != 'All', function ($query) {
+                    return $query->where('priority', $this->priority);
+                })
+                ->where('export', 0)
+                ->orderBy('id', 'asc')
+                ->limit($query_limit)
+                ->get()
+                ->toArray();
 
-                    foreach ($pricing_details as $details) {
-                        $data[] = $details;
-                    }
-                    $this->dataFormatting($data, $this->countryCode, $headers_in);
-                    $where_asin = [];
-                }
-            });
+            $where_asin = [];
+            foreach ($asin as $value) {
+                $where_asin[] = $value['asin'];
+            }
+
+            if ($this->countryCode == 'US') {
+                $pricing_details = PricingUs::join("catalognewuss", "catalognewuss.asin", "pricing_uss.asin")
+                    ->select(["catalognewuss.dimensions", "pricing_uss.asin", "pricing_uss.us_price"])
+                    ->whereIn('pricing_uss.asin', $where_asin)
+                    ->get()
+                    ->toArray();
+
+                $this->dataFormatting($pricing_details, $this->countryCode, $headers_us);
+            } elseif ($this->countryCode == 'IN') {
+
+                $pricing_details = PricingIn::join("catalognewins", "catalognewins.asin", "pricing_ins.asin")
+                    ->select(["catalognewins.dimensions", "pricing_ins.asin", "pricing_ins.in_price"])
+                    ->whereIn('pricing_ins.asin', $where_asin)
+                    ->get()
+                    ->toArray();
+
+                $this->dataFormatting($pricing_details, $this->countryCode, $headers_in);
+            }
+
+            $us_destination->when($this->priority != 'All', function ($query) {
+                return $query->where('priority', $this->priority);
+            })->whereIn('asin', $where_asin)
+                ->update(["export" => 1]);
+        }
+
         $this->createZip($fmID);
+        $us_destination->when($this->priority != 'All', function ($query) {
+            return $query->where('priority', $this->priority);
+        })->where('export', 1)
+            ->update(["export" => 0]);
     }
 
     public function dataFormatting($catalog_details, $countryCode, $headers)
@@ -203,8 +223,6 @@ class ExportPriceViaVolumetricWeight
                 }
             }
         }
-        Log::alert($asin_data);
-        Log::alert('data-formatting');
         $this->createCsv($headers, $asin_data);
         $asin_data = [];
         return true;
@@ -250,8 +268,7 @@ class ExportPriceViaVolumetricWeight
                 ];
             }
         }
-        Log::alert($pricing);
-        Log::alert('pricing');
+
         return $pricing;
     }
 
