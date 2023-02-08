@@ -29,7 +29,7 @@ class ExportPriceViaVolumetricWeight
     {
         $this->countryCode = strtoupper($countryCode);
         $this->priority = $priority;
-        $id = Auth::user()->id;
+        // $id = Auth::user()->id;
         $this->export_file_path = "excel/downloads/catalog_price/" . $this->countryCode . '/' . $this->priority . "/CatalogPrice";
 
         $headers_us = [
@@ -96,7 +96,7 @@ class ExportPriceViaVolumetricWeight
 
             $upsert_data[] = [
                 'asin' => $value['asin'],
-                'user_id' => $id,
+                'user_id' => '1',
                 'export' => '1',
             ];
         }
