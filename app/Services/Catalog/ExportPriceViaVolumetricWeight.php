@@ -24,12 +24,16 @@ class ExportPriceViaVolumetricWeight
     private $writer;
     private $limit = 5000;
     private $record_per_csv = 1000000;
+    private $price_convert;
+
+
 
     public function index($countryCode, $fmID, $priority)
     {
+        $this->price_convert = new PriceConversion();
         $this->countryCode = strtoupper($countryCode);
         $this->priority = $priority;
-        // $id = Auth::user()->id;
+
         $this->export_file_path = "excel/downloads/catalog_price/" . $this->countryCode . '/' . $this->priority . "/CatalogPrice";
 
         $headers_us = [
@@ -79,10 +83,9 @@ class ExportPriceViaVolumetricWeight
             'vol_pound_INDTOSG',
             'vol_pound_INDTOSA'
         ];
-        query1:
         $query_limit = 5000;
 
-        $start_time = startTime();
+
 
         $us_destination  = table_model_create(country_code: $this->countryCode, model: 'Asin_destination', table_name: 'asin_destination_');
         $total_asin_count = $us_destination->when($this->priority != 'All', function ($query) {
@@ -92,16 +95,11 @@ class ExportPriceViaVolumetricWeight
             ->orderBy('id', 'asc')
             ->count();
 
-        Log::debug("Destination Total count " . endTime($start_time));
-
-        // ->chunk(5000, function ($asin) use ($headers_in, $headers_us) {
-        // });
-
         $total_loop = ceil($total_asin_count / $query_limit);
 
         for ($i = 0; $i < $total_loop; $i++) {
 
-            $start_destination_time = startTime();
+
 
             $asin = $us_destination->select('asin', 'priority')
                 ->when($this->priority != 'All', function ($query) {
@@ -113,14 +111,12 @@ class ExportPriceViaVolumetricWeight
                 ->get()
                 ->toArray();
 
-            Log::debug("Destination Query count " . endTime($start_destination_time));
-
             $where_asin = [];
             foreach ($asin as $value) {
                 $where_asin[] = $value['asin'];
             }
 
-            $start_price_query = startTime();
+
             if ($this->countryCode == 'US') {
 
                 $pricing_details = PricingUs::join("catalognewuss", "catalognewuss.asin", "pricing_uss.asin")
@@ -129,11 +125,8 @@ class ExportPriceViaVolumetricWeight
                     ->get()
                     ->toArray();
 
-                Log::debug("Pricing Joing Query Time " . endTime($start_price_query));
 
-                $start_format_time = startTime();
                 $this->dataFormatting($pricing_details, $this->countryCode, $headers_us);
-                Log::debug("Data format overall Time " . endTime($start_format_time));
             } elseif ($this->countryCode == 'IN') {
 
                 $pricing_details = PricingIn::join("catalognewins", "catalognewins.asin", "pricing_ins.asin")
@@ -141,21 +134,14 @@ class ExportPriceViaVolumetricWeight
                     ->whereIn('pricing_ins.asin', $where_asin)
                     ->get()
                     ->toArray();
-                Log::debug("Pricing Joing Query Time " . endTime($start_price_query));
 
-                $start_format_time = startTime();
                 $this->dataFormatting($pricing_details, $this->countryCode, $headers_in);
-                Log::debug("Data format overall Time " . endTime($start_format_time));
             }
-
-            $start_export_time = startTime();
 
             $us_destination->when($this->priority != 'All', function ($query) {
                 return $query->where('priority', $this->priority);
             })->whereIn('asin', $where_asin)
                 ->update(["export" => 1]);
-
-            Log::debug("Destination export Update Time " . endTime($start_export_time));
         }
 
         $this->createZip($fmID);
@@ -169,7 +155,7 @@ class ExportPriceViaVolumetricWeight
     public function dataFormatting($catalog_details, $countryCode, $headers)
     {
         $asin_data = [];
-        $start_format_loop_time = startTime();
+
         foreach ($catalog_details as $key => $catalog_detail) {
             $weight = 0;
             $height = 0;
@@ -177,8 +163,6 @@ class ExportPriceViaVolumetricWeight
             $width = 0;
             $packet_dimensions = 0;
             $dimension = json_decode($catalog_detail['dimensions'], true);
-
-
 
             if (array_key_exists('package', $dimension[0])) {
                 if (isset($dimension[0]['package']['weight']['value']) || isset($dimension[0]['package']['height']['value']) || isset($dimension[0]['package']['length']['value']) || isset($dimension[0]['package']['width']['value'])) {
@@ -197,7 +181,7 @@ class ExportPriceViaVolumetricWeight
                     $packet_dimensions = $height * $length * $width;
 
                     if ($countryCode == 'IN') {
-                        if (isset($catalog_detail['in_price'])) {
+                        if (isset($catalog_detail['in_price']) && gettype($catalog_detail) == "array") {
 
                             $in_price = $catalog_detail['in_price'] ?? 0;
                             $asin_data[$key]['price'] = $in_price;
@@ -221,7 +205,7 @@ class ExportPriceViaVolumetricWeight
                             }
                         }
                     } elseif ($countryCode == 'US') {
-                        if (isset($catalog_detail['us_price'])) {
+                        if (isset($catalog_detail['us_price']) && gettype($catalog_detail) == "array") {
 
                             $us_price = $catalog_detail['us_price'] ?? 0;
                             $asin_data[$key]['price'] = $us_price;
@@ -248,7 +232,6 @@ class ExportPriceViaVolumetricWeight
                 }
             }
         }
-        Log::debug("Data Format Loop end Time " . $start_format_loop_time);
 
         $this->createCsv($headers, $asin_data);
         $asin_data = [];
@@ -258,13 +241,13 @@ class ExportPriceViaVolumetricWeight
     public function priceConversion($weight, $bbPrice, $countryCode, $type)
     {
         $pricing = [];
-        $price_convert = new PriceConversion();
+
         if ($countryCode == 'US') {
 
-            $price_in_b2c = $price_convert->USAToINDB2C($weight, $bbPrice);
-            $price_in_b2b = $price_convert->USAToINDB2B($weight, $bbPrice);
-            $price_ae = $price_convert->USATOUAE($weight, $bbPrice);
-            $price_sg =  $price_convert->USATOSG($weight, $bbPrice);
+            $price_in_b2c = $this->price_convert->USAToINDB2C($weight, $bbPrice);
+            $price_in_b2b = $this->price_convert->USAToINDB2B($weight, $bbPrice);
+            $price_ae = $this->price_convert->USATOUAE($weight, $bbPrice);
+            $price_sg =  $this->price_convert->USATOSG($weight, $bbPrice);
             $pricing = [
                 $type . '_USATOINB2C' => $price_in_b2c,
                 $type . '_USATOINB2B' => $price_in_b2b,
@@ -275,9 +258,9 @@ class ExportPriceViaVolumetricWeight
             if ($type == 'packet') {
 
                 $packet_weight_kg = poundToKg($weight);
-                $price_uae = $price_convert->INDToUAE($packet_weight_kg, $bbPrice);
-                $price_singapore = $price_convert->INDToSG($packet_weight_kg, $bbPrice);
-                $price_saudi = $price_convert->INDToSA($packet_weight_kg, $bbPrice);
+                $price_uae = $this->price_convert->INDToUAE($packet_weight_kg, $bbPrice);
+                $price_singapore = $this->price_convert->INDToSG($packet_weight_kg, $bbPrice);
+                $price_saudi = $this->price_convert->INDToSA($packet_weight_kg, $bbPrice);
                 $pricing = [
                     $type . '_kg' => $packet_weight_kg,
                     $type . '_INDTOAE' => $price_uae,
@@ -285,9 +268,9 @@ class ExportPriceViaVolumetricWeight
                     $type . '_INDTOSA' => $price_saudi
                 ];
             } else {
-                $price_uae = $price_convert->INDToUAE($weight, $bbPrice);
-                $price_singapore = $price_convert->INDToSG($weight, $bbPrice);
-                $price_saudi = $price_convert->INDToSA($weight, $bbPrice);
+                $price_uae = $this->price_convert->INDToUAE($weight, $bbPrice);
+                $price_singapore = $this->price_convert->INDToSG($weight, $bbPrice);
+                $price_saudi = $this->price_convert->INDToSA($weight, $bbPrice);
                 $pricing = [
                     $type . '_INDTOAE' => $price_uae,
                     $type . '_INDTOSG' => $price_singapore,
@@ -301,7 +284,7 @@ class ExportPriceViaVolumetricWeight
 
     public function createCsv($csv_header, $records)
     {
-        $start_csv_creation_time = startTime();
+
         if ($this->count == 1) {
             if (!Storage::exists($this->export_file_path . $this->fileNameOffset . '.csv')) {
                 Storage::put($this->export_file_path . $this->fileNameOffset . '.csv', '');
@@ -311,17 +294,8 @@ class ExportPriceViaVolumetricWeight
             $this->writer->insertOne($csv_header);
         }
 
-        Log::debug("CSV Creation Time " . endTime($start_csv_creation_time));
-
-        $start_csv_insert_time = startTime();
-        // foreach ($records as $record) {
         $this->writer->insertAll($records);
 
-        Log::debug("CSV Insertion Time " . endTime($start_csv_insert_time));
-
-        //}
-        //    Log::alert($records);
-        //Log::alert('csv-export');
         $remender = $this->record_per_csv / $this->limit;
         if ($remender == $this->count) {
             $this->fileNameOffset++;
