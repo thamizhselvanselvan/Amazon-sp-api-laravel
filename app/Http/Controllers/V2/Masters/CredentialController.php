@@ -43,9 +43,9 @@ class CredentialController extends Controller
 
             $request->validate([
                 'company' => 'required',
-                'store_name' => 'required|regex:/^[\pL\s\-]+$/u|min:2|max:255',
-                'seller_id' => 'required',
-                'auth_code' => 'required',
+                'store_name' => 'required|alpha_num|min:2|max:150',
+                'seller_id' => 'required|alpha_num|max:35',
+                'auth_code' => 'required|alpha_num|max:1000',
                 'marketplace_id' => 'required',
                 
             ]);
@@ -81,9 +81,9 @@ class CredentialController extends Controller
     {
         $request->validate([
             'company' => 'required',
-            'store_name' => 'required',
-            'seller_id' => 'required',
-            'auth_code' => 'required',
+            'store_name' => 'required|alpha_num|min:2|max:150',
+            'seller_id' => 'required|alpha_num|max:35',
+            'auth_code' => 'required|alpha_num|max:1000',
             'marketplace_id' => 'required',
             
         ]);

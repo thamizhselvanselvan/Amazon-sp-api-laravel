@@ -43,12 +43,13 @@
             </h2>
 
             <table class="table table-bordered yajra-datatable table-striped text-center" style="line-height:12px">
-                <thead>
+                <thead class="table-primary">
                     <tr>
                         <th>ID</th>
                         <th>Name</th>
                         <th>Email</th>
                         <th>Role</th>
+                        <th>Company</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -88,6 +89,10 @@
                         name: 'permission'
                     },
                     {
+                        data: 'company',
+                        name: 'company'
+                    },
+                    {
                         data: 'action',
                         orderable: false,
                         searchable: false
@@ -106,7 +111,7 @@
             let id = $(this).attr('remove-btn');
             $.ajax({
                 method: 'GET',
-                url: "/v2/master/users/"+id+"/remove",
+                url: "/v2/master/users/"+id+"/delete",
                 data: {
                     "_token": "{{ csrf_token() }}",
                 },

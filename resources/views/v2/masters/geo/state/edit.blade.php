@@ -42,11 +42,11 @@
             <input type="text" class="form-control w-25 m-auto" id="state" name="state_name" value="{{ $states->name }}" placeholder="State" autofocus required autocomplete="off">
             <span class="text-danger">
                 @error('state_name')
-                {{ $message = 'This State already exist' }}
+                {{ $message }}
                 @enderror
         </div>
         <br>
-        <x-adminlte-button label=" Submit" theme="primary" icon="fas fa-plus" type="submit" />
+        <x-adminlte-button label=" Update" theme="primary" icon="fas fa-plus" type="submit" />
     </form>
 </div>
 

@@ -287,18 +287,18 @@ class CliqnshopCataloginsert
             }
         }
 
-        $text_short = [
-            'siteid' => $site_id,
-            'type' => 'short',
-            // 'langid' => NULL,
-            'domain' => 'product',
-            'label' => 'short description',
-            'content' => $short_description,
-            // 'status' => 1,
-            'mtime' => $date_time,
-            'ctime' => $date_time,
-            'editor' => 'test',
-        ];
+        // $text_short = [
+        //     'siteid' => $site_id,
+        //     'type' => 'short',
+        //     // 'langid' => NULL,
+        //     'domain' => 'product',
+        //     'label' => 'short description',
+        //     'content' => $short_description,
+        //     // 'status' => 1,
+        //     'mtime' => $date_time,
+        //     'ctime' => $date_time,
+        //     'editor' => 'test',
+        // ];
 
         $text_long = [
             'siteid' => $site_id,
@@ -314,10 +314,10 @@ class CliqnshopCataloginsert
         ];
 
         //id_text_short fetch
-        DB::connection('cliqnshop')->table('mshop_text')->updateOrInsert($text_short);
-        $id_short_text = DB::connection('cliqnshop')->table('mshop_text')->where('siteid', $text_short['siteid'])->where('content', $text_short['content'])
-            ->pluck('id')->ToArray();
-        $id_text_short  = $id_short_text[0];
+        // DB::connection('cliqnshop')->table('mshop_text')->updateOrInsert($text_short);
+        // $id_short_text = DB::connection('cliqnshop')->table('mshop_text')->where('siteid', $text_short['siteid'])->where('content', $text_short['content'])
+        //     ->pluck('id')->ToArray();
+        // $id_text_short  = $id_short_text[0];
 
         //id_text_long fetch
         DB::connection('cliqnshop')->table('mshop_text')->updateOrInsert($text_long);
@@ -494,28 +494,28 @@ class CliqnshopCataloginsert
             );
         }
         //domain_attribute(short Description) insert to mshop_product_list
-        $domain_text_short = [
-            'siteid' => $site_id,
-            'parentid' => $get_product_id,
-            'key' => 'text|default|' . $id_text_short,
-            'type' => 'default',
-            'domain' => 'text',
-            'refid' => $id_text_short,
-            // 'start' => NULL,
-            // 'end' => NULL,
-            'config' => '[]',
-            // 'pos' => 0,
-            // 'status' => 1,
-            'mtime' => $date_time,
-            'ctime' => $date_time,
-            'editor' => 'test',
-        ];
-        // DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_text_short, [$domain_text_short['siteid'], $domain_text_short['parentid']]);
-        DB::connection('cliqnshop')->table('mshop_product_list')->upsert(
-            $domain_text_short,
-            ['unq_msproli_pid_dm_ty_rid_sid'],
-            ['siteid', 'parentid', 'key', 'refid', 'type', 'domain', 'config', 'mtime', 'ctime', 'editor']
-        );
+        // $domain_text_short = [
+        //     'siteid' => $site_id,
+        //     'parentid' => $get_product_id,
+        //     'key' => 'text|default|' . $id_text_short,
+        //     'type' => 'default',
+        //     'domain' => 'text',
+        //     'refid' => $id_text_short,
+        //     // 'start' => NULL,
+        //     // 'end' => NULL,
+        //     'config' => '[]',
+        //     // 'pos' => 0,
+        //     // 'status' => 1,
+        //     'mtime' => $date_time,
+        //     'ctime' => $date_time,
+        //     'editor' => 'test',
+        // ];
+        // // DB::connection('cliqnshop')->table('mshop_product_list')->upsert($domain_text_short, [$domain_text_short['siteid'], $domain_text_short['parentid']]);
+        // DB::connection('cliqnshop')->table('mshop_product_list')->upsert(
+        //     $domain_text_short,
+        //     ['unq_msproli_pid_dm_ty_rid_sid'],
+        //     ['siteid', 'parentid', 'key', 'refid', 'type', 'domain', 'config', 'mtime', 'ctime', 'editor']
+        // );
 
         //domain_attribute(short Description) insert to mshop_product_list
         $domain_text_long = [

@@ -103,9 +103,10 @@
             },
             response: 'json',
             success: function(response) {
+                console.log(response)
                 $('.yajra-datatable').DataTable().ajax.reload();
+                $('.alert_display').html(response);
                 alert('Delete success');
-                window.location='/v2/master/store/currency'
             },
             error: function(response) {
 

@@ -52,10 +52,10 @@
                     @enderror
                     <br>
                     <input type="text" class="form-control w-25 m-auto" id="city" name="name" placeholder="City"
-                        autofocus required autocomplete="off">
+                        autofocus required autocomplete="off" value="{{old('name')}}">
                     <span class="text-danger">
                         @error('name')
-                            {{ $message = 'City is Required' }}
+                            {{ $message }}
                         @enderror
             </div>
             <br>

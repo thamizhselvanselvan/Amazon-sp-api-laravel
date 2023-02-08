@@ -155,7 +155,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal"><i class="fas fa-window-close" aria-hidden="true"></i> Close</button>
             </div>
         </div>
     </div>
@@ -184,7 +184,7 @@
         }
 
     });
-    
+
     $("#upload_sync").on('click', function(e) {
         let data_sync = $('.up_asin_sync').val();
         let store_sync = $('#store_select_sync').val();

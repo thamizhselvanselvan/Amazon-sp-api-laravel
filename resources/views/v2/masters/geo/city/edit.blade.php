@@ -39,14 +39,14 @@
                 </select>
                 <br>
                 <input type="text" class="form-control w-25 m-auto" id="city" name="city_name" placeholder="City"
-                    value={{ $cities->name }} autofocus required autocomplete="off">
+                    value="{{ $cities->name }}" autofocus required autocomplete="off">
                 <span class="text-danger">
                     @error('city_name')
-                        {{ $message = 'City is Required' }}
+                        {{ $message }}
                     @enderror
             </div>
             <br>
-            <x-adminlte-button label=" Submit" theme="primary" icon="fas fa-plus" type="submit" />
+            <x-adminlte-button label=" Update" theme="primary" icon="fas fa-plus" type="submit" />
         </form>
     </div>
 
