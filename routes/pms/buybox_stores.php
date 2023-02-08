@@ -3,6 +3,8 @@
 use App\Models\Buybox_stores\Product;
 use Illuminate\Support\Facades\Route;
 use App\Models\Buybox_stores\Product_Push;
+use App\Services\AmazonFeedApiServices\AmazonFeedProcess;
+use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 
 Route::get('buybox/stores', 'Buybox_stores\BuyBoxStoreController@index')->name('buybox.stores');
 Route::post('buybox/latency', 'Buybox_stores\BuyBoxStoreController@latencyupdate')->name('buybox.latency.update');
@@ -15,7 +17,8 @@ Route::get('buybox/sp_api_push', 'Buybox_stores\BuyBoxStoreController@get_price_
 
 
 
-Route::post('stores/listing/price/updated', 'Buybox_stores\BuyBoxStoreController@storespriceupdated')->name('buybox.store.updated');
+Route::post('stores/listing/price/price_push_update', 'Buybox_stores\BuyBoxStoreController@push_price_update')->name('buybox.store.push_price_update');
+Route::post('stores/listing/price/store_data_export', 'Buybox_stores\BuyBoxStoreController@store_data_export')->name('buybox.store.store_data_export');
 
 Route::get('stores/listing/price', 'Buybox_stores\BuyBoxStoreController@storeslisting')->name('buybox.store.listing');
 Route::get('stores/listing/price/{store_id}', 'Buybox_stores\BuyBoxStoreController@storeslisting')->name('buybox.store.listing.storewise');
@@ -29,3 +32,33 @@ Route::get('stores/listing/price/update/{id}', 'Buybox_stores\BuyBoxStoreControl
 
 Route::get('stores/price/updated', 'Buybox_stores\BuyBoxStoreController@updatepricelisting')->name('buybox.store.listing.updated');
 
+Route::get("amazo", function() {
+
+    $id = 0;
+    $store_id = 10;
+    $seller_id = 'A2BWJVKSWP7TR2';
+    $country_code = 'IN';
+    $sku = 'DL-B001E63NE4';
+    $marketplace_ids = 'A21TJRUUN4KGV';
+
+    $feedLists[] = [
+        "push_price" => '3801',
+        "product_sku" => "DL-B001E63NE4",
+        "base_price" => "3500",
+    ];
+
+   //$feedSubmit = (new AmazonFeedProcess)->feedSubmit($feedLists, $store_id, $id, false);
+    // $response = json_decode(json_encode($feedSubmit));
+    //dd($feedSubmit);
+    //po($response);
+
+   //$feedback_id = $feedSubmit;
+    $feedback_id = 50928019395;
+    $feedback_id = 50929019395;
+
+   // $url  = (new FeedOrderDetailsApp360())->getLists($feedLists, $store_id, $country_code);
+   // $url  = (new FeedOrderDetailsApp360())->get($feedback_id, $store_id, $country_code);
+   $url  = (new FeedOrderDetailsApp360())->getLists($feedback_id, $store_id, $country_code);
+
+   dd($url);
+});

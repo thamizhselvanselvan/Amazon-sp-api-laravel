@@ -39,14 +39,13 @@ class AmazonFeedPriceAvailabilityPush implements ShouldQueue
         $seller_id = $this->payload['seller_id'];
         $availability = $this->payload['availability'];
 
-        if($availability) { // if condition is true then Update Availability & Price Both
+        if($availability) { // if condition is true then Update Availability
 
             (new AmazonFeedProcess)->feedSubmit($feedLists, $seller_id, true);
-            (new AmazonFeedProcess)->feedSubmit($feedLists, $seller_id, false);
      
-        } else  { // Otherwise Update only Availability
+        } else  { // Otherwise Update only price
 
-            (new AmazonFeedProcess)->feedSubmit($feedLists, $seller_id, true);
+            (new AmazonFeedProcess)->feedSubmit($feedLists, $seller_id, false);
         }
 
     }

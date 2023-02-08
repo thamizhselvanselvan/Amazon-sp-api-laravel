@@ -18,7 +18,7 @@
         "guzzlehttp/guzzle": "^7.4",
         "jenssegers/mongodb": "^3.8",
         "jeroennoten/laravel-adminlte": "^3.7",
-        "jlevers/selling-partner-api": "^5.3",
+        "jlevers/selling-partner-api": "^5.5",
         "laravel/framework": "^8.75",
         "laravel/horizon": "^5.9",
         "laravel/sanctum": "^2.11",

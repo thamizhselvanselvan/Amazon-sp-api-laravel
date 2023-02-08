@@ -14,6 +14,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Models\Buybox_stores\Product_Push;
 use App\Models\Buybox_stores\Seller_id_name;
 use App\Models\order\OrderSellerCredentials;
+use App\Services\AmazonFeedApiServices\AmazonFeedProcess;
 
 class BuyBoxStoreController extends Controller
 {
@@ -114,6 +115,13 @@ class BuyBoxStoreController extends Controller
             $url = "/stores/listing/price/" . $request_store_id;
         }
 
+        $files = Storage::files('public/product_push');
+        $new_files = [];
+
+        foreach($files as $file) {
+            $new_files[] = '/storage/product_push/'.basename($file);
+        }
+
         if ($request->ajax()) {
 
             $select_query = [
@@ -197,14 +205,18 @@ class BuyBoxStoreController extends Controller
 
                     return $applied_rules;
                 })
-                ->addColumn('action', function() {
-                    return '<button class="price_process btn btn-sm btn-primary">Process</button>';
+                ->addColumn('action', function($query) {
+                    
+                    return "<button class='price_process btn btn-sm btn-primary'
+                              asin='{$query->asin}' productsku=='{$query->product_sku}' pushprice='{$query->push_price}' storeid={$query->store_id} data-id={$query->id} 
+                              base_price={$query->base_price}
+                            >Process</button>";
                 })
                 ->rawColumns(['action', 'asin', 'product_sku', 'highest_seller_name', 'lowest_seller_name', 'destination_bb_seller', 'current_store_price'])
                 ->make(true);
         }
 
-        return view('buybox_stores.listing', compact('stores', 'url', 'request_store_id'));
+        return view('buybox_stores.listing', compact('stores', 'url', 'request_store_id', 'new_files'));
     }
 
     public function pop_over_data($applied_rules) {
@@ -269,24 +281,40 @@ class BuyBoxStoreController extends Controller
         return view('buybox_stores.availability', compact('stores', 'url', 'request_store_id'));
     }
 
-    public function storespriceupdated(Request $request)
+    public function push_price_update(Request $request)
     {
-        $data =  Product_Push::query()
-            ->where('push_status', '1')
-            ->get();
 
-        if ($request->ajax()) {
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function ($row) {
-                    $id = $row->asin . '_' . $row->product_sku . '_' . $row->store_id;
-                    $actionBtn = "<a href='javascript:void(0)' value='$id'class='edit btn btn-success btn-sm'><i class='fas fa-refresh'></i> Update Price</a>";
-                    return $actionBtn;
-                })
-                ->rawColumns(['action'])
-                ->make(true);
+        $id = $request->id;
+        $product_sku = $request->productsku;
+        $push_price = $request->pushprice;
+        $store_id = $request->storeid;
+        $base_price = $request->base_price;
+
+        $feedLists[] = [
+            "push_price" => $push_price,
+            "product_sku" => $product_sku,
+            "base_price" => $base_price,
+        ];
+
+        // $price_update = [
+        //     "id" => $id,
+        //     "seller_id" => $store_id,
+        //     "feedLists" => [
+        //         "push_price" => $push_price,
+        //         "product_sku" => $product_sku,
+        //         "base_price" => $base_price,
+        //     ],
+        //     "availability" => 1
+        // ];
+
+        //jobDispatchFunc("Amazon_Feed\AmazonFeedPriceAvailabilityPush", $price_update);
+        $price_update = (new AmazonFeedProcess)->feedSubmit($feedLists, $store_id, $id, false);
+
+        if($price_update) {
+            return ["success" => true];
         }
-        return view('buybox_stores.priceupdated');
+
+        return ["failed" => true];
     }
 
     public function updateprice(Request $request) {
@@ -309,5 +337,44 @@ class BuyBoxStoreController extends Controller
                 ->make(true);
         }
          return view('buybox_stores.update_listing');
+    }
+
+    public function store_data_export(Request $request) {
+        
+
+        if(!$request->has("store_id")) {
+            return "error";
+        }
+        
+        $store_id = $request->store_id;
+
+        commandExecFunc("mosh:bb:product_push:export $store_id");
+
+        return 'success';
+    }
+
+    public function list_all_the_export() {
+
+        // Get all CSV files in the directory
+        $files = Storage::files('product_push');
+
+        if(count($files) > 0) {
+            return response()->json(['error' => "No Files are there to show"]);
+        }
+
+        // Set the file retention period to 30 days
+        $fileRetentionPeriod = 30;
+
+        // Iterate through each file and delete older files
+        foreach ($files as $file) {
+            $fileModifiedDate = Storage::lastModified($file);
+            $dateDifference = date_diff(date_create(), date_create("@$fileModifiedDate"))->format("%a");
+
+            if ($dateDifference > $fileRetentionPeriod) {
+                Storage::delete($file);
+            }
+        }
+
+        return response()->json($files);
     }
 }
