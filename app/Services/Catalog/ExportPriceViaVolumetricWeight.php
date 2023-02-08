@@ -85,7 +85,7 @@ class ExportPriceViaVolumetricWeight
             ->when($this->priority != 'All', function ($query) {
                 return $query->where('priority', $this->priority);
             })
-            ->chunk(2000, function ($asin) use ($headers_in, $headers_us) {
+            ->chunk(5000, function ($asin) use ($headers_in, $headers_us) {
 
                 $asin = $asin->toArray();
 
@@ -101,10 +101,10 @@ class ExportPriceViaVolumetricWeight
                         ->get()
                         ->toArray();
 
-                    foreach ($pricing_details as $details) {
-                        $data[] = $details;
-                    }
-                    $this->dataFormatting($data, $this->countryCode, $headers_us);
+                    // foreach ($pricing_details as $details) {
+                    //     $data[] = $details;
+                    // }
+                    $this->dataFormatting($pricing_details, $this->countryCode, $headers_us);
                     $where_asin = [];
                 } elseif ($this->countryCode == 'IN') {
 
@@ -114,10 +114,10 @@ class ExportPriceViaVolumetricWeight
                         ->get()
                         ->toArray();
 
-                    foreach ($pricing_details as $details) {
-                        $data[] = $details;
-                    }
-                    $this->dataFormatting($data, $this->countryCode, $headers_in);
+                    // foreach ($pricing_details as $details) {
+                    //     $data[] = $details;
+                    // }
+                    $this->dataFormatting($pricing_details, $this->countryCode, $headers_in);
                     $where_asin = [];
                 }
             });
@@ -203,8 +203,6 @@ class ExportPriceViaVolumetricWeight
                 }
             }
         }
-        Log::alert($asin_data);
-        Log::alert('data-formatting');
         $this->createCsv($headers, $asin_data);
         $asin_data = [];
         return true;
@@ -250,8 +248,7 @@ class ExportPriceViaVolumetricWeight
                 ];
             }
         }
-        Log::alert($pricing);
-        Log::alert('pricing');
+
         return $pricing;
     }
 

@@ -91,6 +91,8 @@ Route::get('export', function () {
                 foreach ($pricing_details as $details) {
                     $data[] = $details;
                 }
+                po($data);
+                exit;
                 // dataFormatting($data, $countryCode, $priority, $headers);
             }
         });
