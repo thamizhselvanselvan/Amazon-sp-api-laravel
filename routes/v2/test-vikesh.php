@@ -53,82 +53,88 @@ Route::get('export', function () {
         'vol_kg_USATOAE',
         'vol_kg_USATOSG'
     ];
-    $countryCode = 'US';
+    $countryCode = 'IN';
     $priority = 2;
 
     $us_destination  = table_model_create(country_code: $countryCode, model: 'Asin_destination', table_name: 'asin_destination_');
-    $asin = $us_destination->select('asin', 'priority')
+    $us_destination->select('asin', 'priority')
         ->when($priority != 'All', function ($query) use ($priority) {
             return $query->where('priority', $priority);
         })
         ->where('export', '0')
-        ->limit(1000)
-        ->get()
-        ->toArray();
-    $where_asin = [];
-    $data = [];
-    foreach ($asin as $value) {
-        $where_asin[] = $value['asin'];
-    }
-    if ($countryCode == 'US') {
+        ->chunk(100, function ($asin) use ($countryCode, $priority, $headers) {
+            $asin = $asin->toArray();
+            $where_asin = [];
+            $data = [];
 
-        $pricing_details = PricingUs::whereIn('asin', $where_asin)->get(['asin', 'us_price'])->toArray();
-        $catalog_details = Catalog_us::whereIn('asin', $where_asin)->get(['asin', 'dimensions'])->toArray();
+            foreach ($asin as $value) {
+                $where_asin[] = $value['asin'];
+            }
+            if ($countryCode == 'US') {
 
-        foreach ($catalog_details as $key1 => $catalog) {
-            $data[] = [...$catalog, ...$pricing_details[$key1]];
-        }
-        // dataFormatting($data, $countryCode, $priority, $headers);
-    } elseif ($countryCode == 'IN') {
+                $pricing_details = PricingUs::with(['catalogUS'])->whereIn('asin', $where_asin)->get(['asin', 'us_price'])->toArray();
+                po($pricing_details);
+                exit;
+                $catalog_details = Catalog_us::whereIn('asin', $where_asin)->get(['asin', 'dimensions'])->toArray();
 
-        $pricing_details = PricingIn::whereIn('asin', $where_asin)->get(['asin', 'in_price'])->toArray();
-        $catalog_details = Catalog_in::whereIn('asin', $where_asin)->get(['asin', 'dimensions'])->toArray();
-        foreach ($catalog_details as $key1 => $catalog) {
-            $data[] = [...$catalog, ...$pricing_details[$key1]];
-        }
-        // dataFormatting($data, $countryCode, $priority, $headers);
-    }
+                foreach ($catalog_details as $key1 => $catalog) {
+                    $data[] = [...$catalog, ...$pricing_details[$key1] ?? ''];
+                }
+                // dataFormatting($data, $countryCode, $priority, $headers);
+            } elseif ($countryCode == 'IN') {
+
+                $pricing_details = PricingIn::join("catalognewins", "catalognewins.asin", "pricing_ins.asin")
+                    ->select(["catalognewins.dimensions", "pricing_ins.asin", "pricing_ins.in_price"])
+                    ->whereIn('pricing_ins.asin', $where_asin)
+                    ->get()
+                    ->toArray();
+                foreach ($pricing_details as $details) {
+                    $data[] = $details;
+                }
+                // dataFormatting($data, $countryCode, $priority, $headers);
+            }
+        });
 });
 
 // function dataFormatting($catalog_details, $countryCode, $priority, $headers)
 // {
 //     $asin_data = [];
 //     foreach ($catalog_details as $key1 => $catalog_detail) {
-//         $weight = 0;
-//         if (isset($catalog_detail['dimensions'][0]) && array_key_exists('package', $catalog_detail['dimensions'][0])) {
 
-//             if (isset($catalog_detail['dimensions'][0]['package']['weight']['value'])) {
+//         $dimension = json_decode($catalog_detail['dimensions'], true);
 
-//                 $weight = $catalog_detail['dimensions'][0]['package']['weight']['value'];
+//         if (array_key_exists('package', $dimension[0])) {
+//             if (isset($dimension[0]['package']['weight']['value']) || isset($dimension[0]['package']['height']['value']) || isset($dimension[0]['package']['length']['value']) || isset($dimension[0]['package']['width']['value'])) {
+//                 // po($dimension[0]['package']);
+//                 $weight = $dimension[0]['package']['weight']['value'] ?? 0;
+//                 $height = $dimension[0]['package']['height']['value'] ?? 0;
+//                 $length = $dimension[0]['package']['length']['value'] ?? 0;
+//                 $width = $dimension[0]['package']['width']['value'] ?? 0;
 
-//                 $asin_data[$key1]['asin'] = $catalog_detail['asin'];
-//                 $asin_data[$key1]['height'] = ($catalog_detail['dimensions'][0]['package']['height']['value']);
-//                 $asin_data[$key1]['length'] = ($catalog_detail['dimensions'][0]['package']['length']['value']);
-//                 $asin_data[$key1]['width'] = ($catalog_detail['dimensions'][0]['package']['width']['value']);
-//                 $asin_data[$key1]['unit'] = ($catalog_detail['dimensions'][0]['package']['width']['unit']);
+//                 $asin_data[$key1]['height'] = $height;
+//                 $asin_data[$key1]['length'] = $length;
+//                 $asin_data[$key1]['width'] = $width;
+//                 $asin_data[$key1]['unit'] = ($dimension[0]['package']['width']['unit']) ?? 'inches';
 //                 $asin_data[$key1]['weight'] = $weight;
-//                 $asin_data[$key1]['weight_unit'] = ($catalog_detail['dimensions'][0]['package']['weight']['unit']);
+//                 $asin_data[$key1]['weight_unit'] = ($dimension[0]['package']['weight']['unit']) ?? 'inches';
 //             }
-//         }
-//         if ($countryCode == 'IN') {
-//             // if (isset($catalog_detail['in_price'])) {
+//             if ($countryCode == 'IN') {
 
-//             $in_price = $catalog_detail['in_price'] ?? 0;
-//             $asin_data[$key1]['price'] = $in_price;
-//             $packetPrice = priceConversion($weight, $in_price, $countryCode, 'packet');
-//             foreach ($packetPrice as $key2 => $price) {
-//                 $asin_data[$key1][$key2] = $price;
+//                 $in_price = $catalog_detail['in_price'] ?? 0;
+//                 $asin_data[$key1]['price'] = $in_price;
+//                 $packetPrice = priceConversion($weight, $in_price, $countryCode, 'packet');
+//                 foreach ($packetPrice as $key2 => $price) {
+//                     $asin_data[$key1][$key2] = $price;
+//                 }
+//             } elseif ($countryCode == 'US') {
+
+//                 $us_price = $catalog_detail['us_price'] ?? 0;
+//                 $asin_data[$key1]['price'] = $us_price;
+//                 $packetPrice = priceConversion($weight, $us_price, $countryCode, 'packet');
+//                 foreach ($packetPrice as $key2 => $price) {
+//                     $asin_data[$key1][$key2] = $price;
+//                 }
 //             }
-//             // }
-//         } elseif ($countryCode == 'US') {
-//             // if (isset($catalog_detail['us_price'])) {
-//             $us_price = $catalog_detail['us_price'] ?? 0;
-//             $asin_data[$key1]['price'] = $us_price;
-//             $packetPrice = priceConversion($weight, $us_price, $countryCode, 'packet');
-//             foreach ($packetPrice as $key2 => $price) {
-//                 $asin_data[$key1][$key2] = $price;
-//             }
-//             // }
 //         }
 //     }
 //     po($asin_data);
