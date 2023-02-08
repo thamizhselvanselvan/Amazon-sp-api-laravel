@@ -79,14 +79,14 @@ class RegionController extends Controller
 
     public function add()
     {
-        $currencies = Currency::all();
+        $currencies = Currency::where('status', 1)->get();
         return view('v2.masters.store.regions.add',compact('currencies'));
     }
 
     public function edit($id)
     {
         $region = Region::find($id);
-        $currencies = Currency::all();
+        $currencies = Currency::where('status', 1)->get();
         return view('v2.masters.store.regions.edit',compact('region','currencies'));
     }
 

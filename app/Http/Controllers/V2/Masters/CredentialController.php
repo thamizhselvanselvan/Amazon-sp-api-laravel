@@ -43,9 +43,9 @@ class CredentialController extends Controller
 
             $request->validate([
                 'company' => 'required',
-                'store_name' => 'required|alpha_num|min:2|max:150',
+                'store_name' => 'required|regex:/^[a-zA-Z0-9 ]+$/|min:2|max:150',
                 'seller_id' => 'required|alpha_num|max:35',
-                'auth_code' => 'required|alpha_num|max:1000',
+                'auth_code' => 'required|max:1000',
                 'marketplace_id' => 'required',
                 
             ]);
@@ -65,14 +65,14 @@ class CredentialController extends Controller
     public function create()
     {
         $companys = CompanyMaster::select('id', 'company_name')->where('user_id', Auth::id())->get();
-        $regions = Region::with(['currency'])->get();
+        $regions = Region::with(['currency'])->where('status',1)->get();
         return view('v2.masters.store.credentials.add',compact('companys','regions'));
     }
 
     public function edit($id)
     {
         $companys = CompanyMaster::select('id', 'company_name')->where('user_id', Auth::id())->get();
-        $regions = Region::with(['currency'])->get();
+        $regions = Region::with(['currency'])->where('status',1)->get();
         $credential = Credential::find($id);
         return view('v2.masters.store.credentials.edit', compact('credential','companys','regions'));
     }
@@ -81,9 +81,9 @@ class CredentialController extends Controller
     {
         $request->validate([
             'company' => 'required',
-            'store_name' => 'required|alpha_num|min:2|max:150',
+            'store_name' => 'required|regex:/^[a-zA-Z0-9 ]+$/|min:2|max:150',
             'seller_id' => 'required|alpha_num|max:35',
-            'auth_code' => 'required|alpha_num|max:1000',
+            'auth_code' => 'required|max:1000',
             'marketplace_id' => 'required',
             
         ]);

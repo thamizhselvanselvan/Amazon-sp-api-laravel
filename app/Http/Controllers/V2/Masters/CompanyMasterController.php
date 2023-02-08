@@ -35,7 +35,7 @@ class CompanyMasterController extends Controller
         else {
 
             $request->validate([
-                'company_name' => 'required|alpha_num|min:3|max:150'
+                'company_name' => 'required|regex:/^[a-zA-Z0-9 ]+$/|min:3|max:150'
             ]);
             CompanyMaster::create([
                 'company_name' => $request->company_name,
@@ -73,7 +73,7 @@ class CompanyMasterController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'company_name' => 'required|alpha_num|min:3|max:150'
+            'company_name' => 'required|regex:/^[a-zA-Z0-9 ]+$/|min:3|max:150'
         ]);
 
         CompanyMaster::where('id', $request->id)->update(['company_name' => $request->company_name]);
