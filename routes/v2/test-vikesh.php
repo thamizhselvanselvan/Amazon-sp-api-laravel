@@ -80,7 +80,7 @@ Route::get('export', function () {
                 foreach ($catalog_details as $key1 => $catalog) {
                     $data[] = [...$catalog, ...$pricing_details[$key1] ?? ''];
                 }
-                dataFormatting($data, $countryCode, $priority, $headers);
+                // dataFormatting($data, $countryCode, $priority, $headers);
             } elseif ($countryCode == 'IN') {
 
                 $pricing_details = PricingIn::join("catalognewins", "catalognewins.asin", "pricing_ins.asin")
@@ -91,84 +91,84 @@ Route::get('export', function () {
                 foreach ($pricing_details as $details) {
                     $data[] = $details;
                 }
-                dataFormatting($data, $countryCode, $priority, $headers);
+                // dataFormatting($data, $countryCode, $priority, $headers);
             }
         });
 });
 
-function dataFormatting($catalog_details, $countryCode, $priority, $headers)
-{
-    $asin_data = [];
-    foreach ($catalog_details as $key1 => $catalog_detail) {
+// function dataFormatting($catalog_details, $countryCode, $priority, $headers)
+// {
+//     $asin_data = [];
+//     foreach ($catalog_details as $key1 => $catalog_detail) {
 
-        $dimension = json_decode($catalog_detail['dimensions'], true);
+//         $dimension = json_decode($catalog_detail['dimensions'], true);
 
-        if (array_key_exists('package', $dimension[0])) {
-            if (isset($dimension[0]['package']['weight']['value']) || isset($dimension[0]['package']['height']['value']) || isset($dimension[0]['package']['length']['value']) || isset($dimension[0]['package']['width']['value'])) {
-                // po($dimension[0]['package']);
-                $weight = $dimension[0]['package']['weight']['value'] ?? 0;
-                $height = $dimension[0]['package']['height']['value'] ?? 0;
-                $length = $dimension[0]['package']['length']['value'] ?? 0;
-                $width = $dimension[0]['package']['width']['value'] ?? 0;
+//         if (array_key_exists('package', $dimension[0])) {
+//             if (isset($dimension[0]['package']['weight']['value']) || isset($dimension[0]['package']['height']['value']) || isset($dimension[0]['package']['length']['value']) || isset($dimension[0]['package']['width']['value'])) {
+//                 // po($dimension[0]['package']);
+//                 $weight = $dimension[0]['package']['weight']['value'] ?? 0;
+//                 $height = $dimension[0]['package']['height']['value'] ?? 0;
+//                 $length = $dimension[0]['package']['length']['value'] ?? 0;
+//                 $width = $dimension[0]['package']['width']['value'] ?? 0;
 
-                $asin_data[$key1]['height'] = $height;
-                $asin_data[$key1]['length'] = $length;
-                $asin_data[$key1]['width'] = $width;
-                $asin_data[$key1]['unit'] = ($dimension[0]['package']['width']['unit']) ?? 'inches';
-                $asin_data[$key1]['weight'] = $weight;
-                $asin_data[$key1]['weight_unit'] = ($dimension[0]['package']['weight']['unit']) ?? 'inches';
-            }
-            if ($countryCode == 'IN') {
+//                 $asin_data[$key1]['height'] = $height;
+//                 $asin_data[$key1]['length'] = $length;
+//                 $asin_data[$key1]['width'] = $width;
+//                 $asin_data[$key1]['unit'] = ($dimension[0]['package']['width']['unit']) ?? 'inches';
+//                 $asin_data[$key1]['weight'] = $weight;
+//                 $asin_data[$key1]['weight_unit'] = ($dimension[0]['package']['weight']['unit']) ?? 'inches';
+//             }
+//             if ($countryCode == 'IN') {
 
-                $in_price = $catalog_detail['in_price'] ?? 0;
-                $asin_data[$key1]['price'] = $in_price;
-                $packetPrice = priceConversion($weight, $in_price, $countryCode, 'packet');
-                foreach ($packetPrice as $key2 => $price) {
-                    $asin_data[$key1][$key2] = $price;
-                }
-            } elseif ($countryCode == 'US') {
+//                 $in_price = $catalog_detail['in_price'] ?? 0;
+//                 $asin_data[$key1]['price'] = $in_price;
+//                 $packetPrice = priceConversion($weight, $in_price, $countryCode, 'packet');
+//                 foreach ($packetPrice as $key2 => $price) {
+//                     $asin_data[$key1][$key2] = $price;
+//                 }
+//             } elseif ($countryCode == 'US') {
 
-                $us_price = $catalog_detail['us_price'] ?? 0;
-                $asin_data[$key1]['price'] = $us_price;
-                $packetPrice = priceConversion($weight, $us_price, $countryCode, 'packet');
-                foreach ($packetPrice as $key2 => $price) {
-                    $asin_data[$key1][$key2] = $price;
-                }
-            }
-        }
-    }
-    po($asin_data);
-}
+//                 $us_price = $catalog_detail['us_price'] ?? 0;
+//                 $asin_data[$key1]['price'] = $us_price;
+//                 $packetPrice = priceConversion($weight, $us_price, $countryCode, 'packet');
+//                 foreach ($packetPrice as $key2 => $price) {
+//                     $asin_data[$key1][$key2] = $price;
+//                 }
+//             }
+//         }
+//     }
+//     po($asin_data);
+// }
 
-function priceConversion($weight, $bbPrice, $countryCode, $type)
-{
-    $price_convert = new PriceConversion();
-    // $pricing = [];
-    if ($countryCode == 'US') {
+// function priceConversion($weight, $bbPrice, $countryCode, $type)
+// {
+//     $price_convert = new PriceConversion();
+//     // $pricing = [];
+//     if ($countryCode == 'US') {
 
-        $price_in_b2c = $price_convert->USAToINDB2C($weight, $bbPrice) ?? 'NA';
-        $price_in_b2b = $price_convert->USAToINDB2B($weight, $bbPrice) ?? 'NA';
-        $price_ae = $price_convert->USATOUAE($weight, $bbPrice) ?? 'NA';
-        $price_sg =  $price_convert->USATOSG($weight, $bbPrice) ?? 'NA';
-        $pricing = [
-            $type . '_USATOINB2C' => $price_in_b2c,
-            $type . '_USATOINB2B' => $price_in_b2b,
-            $type . '_USATOAE' => $price_ae,
-            $type . '_USATOSG' => $price_sg
-        ];
-    } else if ($countryCode == 'IN') {
+//         $price_in_b2c = $price_convert->USAToINDB2C($weight, $bbPrice) ?? 'NA';
+//         $price_in_b2b = $price_convert->USAToINDB2B($weight, $bbPrice) ?? 'NA';
+//         $price_ae = $price_convert->USATOUAE($weight, $bbPrice) ?? 'NA';
+//         $price_sg =  $price_convert->USATOSG($weight, $bbPrice) ?? 'NA';
+//         $pricing = [
+//             $type . '_USATOINB2C' => $price_in_b2c,
+//             $type . '_USATOINB2B' => $price_in_b2b,
+//             $type . '_USATOAE' => $price_ae,
+//             $type . '_USATOSG' => $price_sg
+//         ];
+//     } else if ($countryCode == 'IN') {
 
-        $packet_weight_kg = poundToKg($weight);
-        $price_uae = $price_convert->INDToUAE($packet_weight_kg, $bbPrice) ?? 'NA';
-        $price_singapore = $price_convert->INDToSG($packet_weight_kg, $bbPrice) ?? 'NA';
-        $price_saudi = $price_convert->INDToSA($packet_weight_kg, $bbPrice) ?? 'NA';
-        $pricing = [
-            $type . '_weight_kg' => $packet_weight_kg,
-            $type . '_INDTOAE' => $price_uae,
-            $type . '_INDTOSG' => $price_singapore,
-            $type . '_INDTOSA' => $price_saudi
-        ];
-    }
+//         $packet_weight_kg = poundToKg($weight);
+//         $price_uae = $price_convert->INDToUAE($packet_weight_kg, $bbPrice) ?? 'NA';
+//         $price_singapore = $price_convert->INDToSG($packet_weight_kg, $bbPrice) ?? 'NA';
+//         $price_saudi = $price_convert->INDToSA($packet_weight_kg, $bbPrice) ?? 'NA';
+//         $pricing = [
+//             $type . '_weight_kg' => $packet_weight_kg,
+//             $type . '_INDTOAE' => $price_uae,
+//             $type . '_INDTOSG' => $price_singapore,
+//             $type . '_INDTOSA' => $price_saudi
+//         ];
+//     }
 
-    return $pricing;
-}
+//     return $pricing;
+// }
