@@ -26,7 +26,7 @@ use App\Models\ShipNTrack\SMSA\SmsaTrackings;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
 use App\Models\ShipNTrack\Bombino\BombinoTracking;
 use App\Models\ShipNTrack\Bombino\BombinoTrackingDetails;
-
+use Faker\Core\Number;
 
 if (!function_exists('ddp')) {
     function ddp($value)
@@ -41,7 +41,7 @@ if (!function_exists('addPercentage')) {
 
     function addPercentage($originalAmount, $percentageChange)
     {
-        return $originalAmount + ($percentageChange / 100) * $originalAmount;
+        return (float)$originalAmount + ($percentageChange / 100) * (float)$originalAmount;
     }
 }
 
@@ -51,6 +51,22 @@ if (!function_exists('removePercentage')) {
         return $originalAmount - ($percentageChange / 100) * $originalAmount;
     }
 }
+
+if (!function_exists('addPercentage_product_push')) {
+
+    function addPercentage_product_push($originalAmount, $percentageChange)
+    {
+        return (float)$originalAmount + ($percentageChange / 100) * (float)$originalAmount;
+    }
+}
+
+if (!function_exists('removePercentage_product_push')) {
+    function removePercentage_product_push($originalAmount, $percentageChange)
+    {
+        return (float)$originalAmount - ($percentageChange / 100) * (float)$originalAmount;
+    }
+}
+
 
 if (!function_exists('getPercentageChange')) {
 

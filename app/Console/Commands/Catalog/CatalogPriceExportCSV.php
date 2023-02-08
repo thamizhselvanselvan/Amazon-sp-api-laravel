@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use App\Services\Catalog\PriceExport;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Catalog\AllPriceExportCsvServices;
+use App\Services\Catalog\ExportPriceViaVolumetricWeight;
 
 class CatalogPriceExportCSV extends Command
 {
@@ -121,8 +122,10 @@ class CatalogPriceExportCSV extends Command
         $this->priority = $final_data['priority'];
 
         // (new PriceExport())->index($this->country_code, $fm_id, $this->priority);
+        $priceExport = new ExportPriceViaVolumetricWeight();
+        $priceExport->index($this->country_code, $fm_id, $this->priority);
 
-        (new AllPriceExportCsvServices())->index($this->country_code, $fm_id, $this->priority);
+        // (new AllPriceExportCsvServices())->index($this->country_code, $fm_id, $this->priority);
         return true;
     }
 }

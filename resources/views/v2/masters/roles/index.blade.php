@@ -48,10 +48,6 @@
                         data: 'name',
                         name: 'name'
                     },
-                    // {
-                    //     data: 'permissions',
-                    //     name: 'permissions'
-                    // }
                 ]
             });
 

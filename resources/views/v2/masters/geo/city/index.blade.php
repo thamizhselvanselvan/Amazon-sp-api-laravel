@@ -58,8 +58,6 @@
                 {
                     data: 'states.name',
                     name: 'states.name',
-                    // orderable: false,
-                    // searchable: false,
                 },
                 {
                     data: 'name',

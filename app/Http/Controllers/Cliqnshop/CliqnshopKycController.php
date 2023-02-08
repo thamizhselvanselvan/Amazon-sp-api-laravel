@@ -16,7 +16,7 @@ class CliqnshopKycController extends Controller
 
     
         $data = DB::connection('cliqnshop')->table('users')
-            ->leftjoin('cliqnshop_kycs as kyc', function ($query) {
+            ->leftjoin('cns_kycs as kyc', function ($query) {
                 $query->on('kyc.customer_id', '=', 'users.id');
             })
             ->get();
@@ -59,7 +59,7 @@ class CliqnshopKycController extends Controller
         if ($request->ajax()) {
             $id = $request->id;
             $kyc = DB::connection('cliqnshop')->table('users')
-                ->join('cliqnshop_kycs as kyc', function ($query) {
+                ->join('cns_kycs as kyc', function ($query) {
                     $query->on('kyc.customer_id', '=', 'users.id');
                 })
                 ->where('kyc.customer_id', $id)->get();
@@ -100,7 +100,7 @@ class CliqnshopKycController extends Controller
             'kyc_aproved_date' => $date ,
             ];
 
-        DB::connection('cliqnshop')->table('cliqnshop_kycs')->where('customer_id', $id)->update($kyc_status);
+        DB::connection('cliqnshop')->table('cns_kycs')->where('customer_id', $id)->update($kyc_status);
 
         return back()->with('success', 'KYC Status has  updated successfully');
     }
