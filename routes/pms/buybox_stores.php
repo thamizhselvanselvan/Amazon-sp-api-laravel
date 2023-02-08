@@ -18,6 +18,7 @@ Route::get('buybox/sp_api_push', 'Buybox_stores\BuyBoxStoreController@get_price_
 
 
 Route::post('stores/listing/price/price_push_update', 'Buybox_stores\BuyBoxStoreController@push_price_update')->name('buybox.store.push_price_update');
+Route::post('stores/listing/price/store_data_export', 'Buybox_stores\BuyBoxStoreController@store_data_export')->name('buybox.store.store_data_export');
 
 Route::get('stores/listing/price', 'Buybox_stores\BuyBoxStoreController@storeslisting')->name('buybox.store.listing');
 Route::get('stores/listing/price/{store_id}', 'Buybox_stores\BuyBoxStoreController@storeslisting')->name('buybox.store.listing.storewise');
