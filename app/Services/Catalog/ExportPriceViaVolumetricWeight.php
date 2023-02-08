@@ -134,14 +134,17 @@ class ExportPriceViaVolumetricWeight
         $asin_data = [];
         foreach ($catalog_details as $key => $catalog_detail) {
             $weight = 0;
+            $height = 0;
+            $length = 0;
+            $width = 0;
             $dimensions = 0;
             if (isset($catalog_detail['dimensions'][0]) && array_key_exists('package', $catalog_detail['dimensions'][0])) {
-                if (isset($catalog_detail['dimensions'][0]['package']['weight']['value'])) {
+                if (isset($catalog_detail['dimensions'][0]['package']['weight']['value']) || isset($catalog_detail['dimensions'][0]['package']['height']['value']) || isset($catalog_detail['dimensions'][0]['package']['length']['value']) || isset($catalog_detail['dimensions'][0]['package']['width']['value'])) {
 
-                    $height = ($catalog_detail['dimensions'][0]['package']['height']['value']);
-                    $length = ($catalog_detail['dimensions'][0]['package']['length']['value']);
-                    $width = ($catalog_detail['dimensions'][0]['package']['width']['value']);
-                    $weight = ($catalog_detail['dimensions'][0]['package']['weight']['value']);
+                    $height = ($catalog_detail['dimensions'][0]['package']['height']['value']) ?? 0;
+                    $length = ($catalog_detail['dimensions'][0]['package']['length']['value']) ?? 0;
+                    $width = ($catalog_detail['dimensions'][0]['package']['width']['value']) ?? 0;
+                    $weight = ($catalog_detail['dimensions'][0]['package']['weight']['value']) ?? 0;
 
                     $asin_data[$key]['asin'] = $catalog_detail['asin'];
                     $asin_data[$key]['height'] = $height;
@@ -205,6 +208,7 @@ class ExportPriceViaVolumetricWeight
             }
         }
         Log::alert($asin_data);
+        Log::alert('data-formatting');
         $this->createCsv($headers, $asin_data);
         $asin_data = [];
         return true;
@@ -250,7 +254,8 @@ class ExportPriceViaVolumetricWeight
                 ];
             }
         }
-        log::alert($pricing);
+        Log::alert($pricing);
+        Log::alert('pricing');
         return $pricing;
     }
 
@@ -268,6 +273,7 @@ class ExportPriceViaVolumetricWeight
             $this->writer->insertOne($record);
         }
         Log::alert($records);
+        Log::alert('csv-export');
         $remender = $this->record_per_csv / $this->limit;
         if ($remender == $this->count) {
             $this->fileNameOffset++;
@@ -296,6 +302,7 @@ class ExportPriceViaVolumetricWeight
             }
             $zip->close();
         }
+        Log::alert('zip-created');
         $command_end_time = now();
         fileManagementUpdate($fmID, $command_end_time);
     }
