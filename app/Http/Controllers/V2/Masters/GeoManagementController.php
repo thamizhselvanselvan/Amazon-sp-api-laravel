@@ -100,7 +100,7 @@ class GeoManagementController extends Controller
       $request->validate(
         [
           'country_id' => 'required',
-          'name' => 'required|regex:/^[\pL\s\-]+$/u'
+          'name' => 'required|regex:/^[\pL\s\-]+$/u|unique:App\Models\V2\Masters\State'
           
         ]
       );
@@ -114,7 +114,7 @@ class GeoManagementController extends Controller
 
   public function getStates(Request $request)
   {
-    // dd($request->cid);
+    
     $state = State::select('id', 'name')->where('country_id', $request->cid)->get()->toArray();
     echo json_encode($state);
     
@@ -154,8 +154,9 @@ class GeoManagementController extends Controller
 
       $request->validate(
         [
+          'country_id' => 'required',
           'state_id' => 'required',
-          'name' => 'required',
+          'name' => 'required|regex:/^[\pL\s\-]+$/u',
         ]
       );
       $city = new City;
@@ -325,7 +326,7 @@ class GeoManagementController extends Controller
     $request->validate(
       [
         'state' => 'required',
-        'city_name' => 'required',
+        'city_name' => 'required|regex:/^[\pL\s\-]+$/u',
       ]
     );
     $cities = City::find($id);

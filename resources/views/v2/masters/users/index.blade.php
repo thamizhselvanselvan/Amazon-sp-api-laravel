@@ -43,7 +43,7 @@
             </h2>
 
             <table class="table table-bordered yajra-datatable table-striped text-center" style="line-height:12px">
-                <thead>
+                <thead class="table-primary">
                     <tr>
                         <th>ID</th>
                         <th>Name</th>

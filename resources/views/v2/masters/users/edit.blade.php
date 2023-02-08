@@ -7,7 +7,16 @@
 @stop
 
 @section('content_header')
-
+<style>
+    .role-section{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+.input-align{
+    display: flex;
+    align-items: center;
+}
+</style>
     <div class="row">
         <div class="col">
             <a href="{{ Route('users.home') }}" class="btn btn-primary">
@@ -71,10 +80,12 @@
                     <label for="role">
                         Role
                     </label>
-                    <div class="form-check">
+                    <div class="form-check role-section">
                         @foreach ($roles as $role)
-                        <input type="checkbox" id="role" value="{{ $role->name }}" name="role[]" {{in_array($role->name,$selected_roles) ? 'checked' : ''}} >
+                        <div class="input-align">
+                        <input type="checkbox" id="role[]" value="{{ $role->name }}" name="role[]" {{in_array($role->name,$selected_roles) ? 'checked' : ''}} >
                         <label class="form-check-label" for="role"> {{ $role->name }} </label>
+                        </div>
                         @endforeach
                     </div>
                 </div>
@@ -93,7 +104,7 @@
                 <div class="col-6">
 
                     <x-adminlte-select name="company" id="company" label="Company">
-                        <option value="0"> --Select-- </option>
+                        <option value=""> --Select-- </option>
                         @foreach ($companys as $company)
                         <option value="{{ $company->id }}"{{ $company->id == $users->company_id ? 'selected' : ''}} > {{ $company->company_name }}</option>
                         @endforeach

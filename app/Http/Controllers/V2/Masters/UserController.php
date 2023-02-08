@@ -5,7 +5,6 @@ namespace App\Http\Controllers\V2\Masters;
 use Illuminate\Http\Request;
 use App\Models\V2\Masters\User;
 use App\Models\V2\Masters\Roles;
-use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -68,6 +67,7 @@ class UserController extends Controller
                 'name' =>'required|regex:/^[\pL\s\-]+$/u|min:3|max:150',
                 'email' =>'required|email|unique:App\Models\V2\Masters\User|max:150',
                 'password' => 'required|confirmed|min:6|max:20',
+                'company' =>'required'
                
             ]);
            
@@ -148,6 +148,7 @@ class UserController extends Controller
         $request->validate([
                 'name' =>'required|regex:/^[\pL\s\-]+$/u|min:3|max:150',
                 'email' =>'required|email|max:150',
+                'company' =>'required'
         ]);
         $user = User::find($request->id);
 
