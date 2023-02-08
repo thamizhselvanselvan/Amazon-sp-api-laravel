@@ -139,7 +139,7 @@ class ExportPriceViaVolumetricWeight
             $width = 0;
             $dimensions = 0;
             if (isset($catalog_detail['dimensions'][0]) && array_key_exists('package', $catalog_detail['dimensions'][0])) {
-                if (isset($catalog_detail['dimensions'][0]['package']['weight']['value']) || isset($catalog_detail['dimensions'][0]['package']['height']['value']) || isset($catalog_detail['dimensions'][0]['package']['length']['value']) || isset($catalog_detail['dimensions'][0]['package']['width']['value'])) {
+                if (isset($catalog_detail['dimensions'][0]['package']['weight']['value']) || isset($catalog_detail['dimensions'][0]['package']['height']['value']) || isset($catalog_detail['dimensions'][0]['package']['length']['value']) || isset($catalog_detail['dimensions'][0]['package']['width']['value']) || isset($catalog_detail['dimensions'][0]['package']['width']['unit'])) {
 
                     $height = ($catalog_detail['dimensions'][0]['package']['height']['value']) ?? 0;
                     $length = ($catalog_detail['dimensions'][0]['package']['length']['value']) ?? 0;
@@ -150,9 +150,9 @@ class ExportPriceViaVolumetricWeight
                     $asin_data[$key]['height'] = $height;
                     $asin_data[$key]['length'] = $length;
                     $asin_data[$key]['width'] = $width;
-                    $asin_data[$key]['unit'] = ($catalog_detail['dimensions'][0]['package']['width']['unit']);
+                    $asin_data[$key]['unit'] = ($catalog_detail['dimensions'][0]['package']['width']['unit']) ?? 'inches';
                     $asin_data[$key]['weight'] = $weight;
-                    $asin_data[$key]['weight_unit'] = ($catalog_detail['dimensions'][0]['package']['weight']['unit']);
+                    $asin_data[$key]['weight_unit'] = ($catalog_detail['dimensions'][0]['package']['weight']['unit']) ?? 'inches';
 
                     $dimensions = $height * $length * $width;
                 }
