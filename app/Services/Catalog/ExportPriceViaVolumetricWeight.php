@@ -81,14 +81,18 @@ class ExportPriceViaVolumetricWeight
         ];
         query1:
         $query_limit = 5000;
+
+        $start_time = startTime();
+
         $us_destination  = table_model_create(country_code: $this->countryCode, model: 'Asin_destination', table_name: 'asin_destination_');
-        $total_asin_count = $us_destination->select('asin', 'priority')
-            ->when($this->priority != 'All', function ($query) {
-                return $query->where('priority', $this->priority);
-            })
+        $total_asin_count = $us_destination->when($this->priority != 'All', function ($query) {
+            return $query->where('priority', $this->priority);
+        })
             ->where('export', 0)
             ->orderBy('id', 'asc')
             ->count();
+
+        Log::debug("Destination Total count " . endTime($start_time));
 
         // ->chunk(5000, function ($asin) use ($headers_in, $headers_us) {
         // });
@@ -96,6 +100,8 @@ class ExportPriceViaVolumetricWeight
         $total_loop = ceil($total_asin_count / $query_limit);
 
         for ($i = 0; $i < $total_loop; $i++) {
+
+            $start_destination_time = startTime();
 
             $asin = $us_destination->select('asin', 'priority')
                 ->when($this->priority != 'All', function ($query) {
@@ -107,19 +113,27 @@ class ExportPriceViaVolumetricWeight
                 ->get()
                 ->toArray();
 
+            Log::debug("Destination Query count " . endTime($start_destination_time));
+
             $where_asin = [];
             foreach ($asin as $value) {
                 $where_asin[] = $value['asin'];
             }
 
+            $start_price_query = startTime();
             if ($this->countryCode == 'US') {
+
                 $pricing_details = PricingUs::join("catalognewuss", "catalognewuss.asin", "pricing_uss.asin")
                     ->select(["catalognewuss.dimensions", "pricing_uss.asin", "pricing_uss.us_price"])
                     ->whereIn('pricing_uss.asin', $where_asin)
                     ->get()
                     ->toArray();
 
+                Log::debug("Pricing Joing Query Time " . endTime($start_price_query));
+
+                $start_format_time = startTime();
                 $this->dataFormatting($pricing_details, $this->countryCode, $headers_us);
+                Log::debug("Data format overall Time " . endTime($start_format_time));
             } elseif ($this->countryCode == 'IN') {
 
                 $pricing_details = PricingIn::join("catalognewins", "catalognewins.asin", "pricing_ins.asin")
@@ -127,17 +141,25 @@ class ExportPriceViaVolumetricWeight
                     ->whereIn('pricing_ins.asin', $where_asin)
                     ->get()
                     ->toArray();
+                Log::debug("Pricing Joing Query Time " . endTime($start_price_query));
 
+                $start_format_time = startTime();
                 $this->dataFormatting($pricing_details, $this->countryCode, $headers_in);
+                Log::debug("Data format overall Time " . endTime($start_format_time));
             }
+
+            $start_export_time = startTime();
 
             $us_destination->when($this->priority != 'All', function ($query) {
                 return $query->where('priority', $this->priority);
             })->whereIn('asin', $where_asin)
                 ->update(["export" => 1]);
+
+            Log::debug("Destination export Update Time " . endTime($start_export_time));
         }
 
         $this->createZip($fmID);
+
         $us_destination->when($this->priority != 'All', function ($query) {
             return $query->where('priority', $this->priority);
         })->where('export', 1)
@@ -147,6 +169,7 @@ class ExportPriceViaVolumetricWeight
     public function dataFormatting($catalog_details, $countryCode, $headers)
     {
         $asin_data = [];
+        $start_format_loop_time = startTime();
         foreach ($catalog_details as $key => $catalog_detail) {
             $weight = 0;
             $height = 0;
@@ -154,6 +177,8 @@ class ExportPriceViaVolumetricWeight
             $width = 0;
             $packet_dimensions = 0;
             $dimension = json_decode($catalog_detail['dimensions'], true);
+
+
 
             if (array_key_exists('package', $dimension[0])) {
                 if (isset($dimension[0]['package']['weight']['value']) || isset($dimension[0]['package']['height']['value']) || isset($dimension[0]['package']['length']['value']) || isset($dimension[0]['package']['width']['value'])) {
@@ -223,6 +248,8 @@ class ExportPriceViaVolumetricWeight
                 }
             }
         }
+        Log::debug("Data Format Loop end Time " . $start_format_loop_time);
+
         $this->createCsv($headers, $asin_data);
         $asin_data = [];
         return true;
@@ -274,6 +301,7 @@ class ExportPriceViaVolumetricWeight
 
     public function createCsv($csv_header, $records)
     {
+        $start_csv_creation_time = startTime();
         if ($this->count == 1) {
             if (!Storage::exists($this->export_file_path . $this->fileNameOffset . '.csv')) {
                 Storage::put($this->export_file_path . $this->fileNameOffset . '.csv', '');
@@ -282,11 +310,18 @@ class ExportPriceViaVolumetricWeight
             $this->writer = Writer::createFromPath(Storage::path($this->export_file_path . $this->fileNameOffset . '.csv'), "w");
             $this->writer->insertOne($csv_header);
         }
-        foreach ($records as $record) {
-            $this->writer->insertOne($record);
-        }
-        Log::alert($records);
-        Log::alert('csv-export');
+
+        Log::debug("CSV Creation Time " . endTime($start_csv_creation_time));
+
+        $start_csv_insert_time = startTime();
+        // foreach ($records as $record) {
+        $this->writer->insertAll($records);
+
+        Log::debug("CSV Insertion Time " . endTime($start_csv_insert_time));
+
+        //}
+        //    Log::alert($records);
+        //Log::alert('csv-export');
         $remender = $this->record_per_csv / $this->limit;
         if ($remender == $this->count) {
             $this->fileNameOffset++;
