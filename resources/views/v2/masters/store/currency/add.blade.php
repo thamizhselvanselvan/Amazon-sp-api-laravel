@@ -53,10 +53,10 @@
                 @csrf
                 <div class="card-body">
                     <div class="form-group">
-                        <x-adminlte-input label="Name" name="currency" id="name" type="text" placeholder="Currency Name" value="" />
+                        <x-adminlte-input label="Name" name="currency" id="name" type="text" placeholder="Currency Name" value="{{old('currency')}}" />
                     </div>
                     <div class="form-group">
-                        <x-adminlte-input label="Code" name="code" id="code" type="text" placeholder="Currency Code" value="" />
+                        <x-adminlte-input label="Code" name="code" id="code" type="text" placeholder="Currency Code" value="{{old('code')}}" />
                     </div>
                     <div class="form-group">
                     <x-adminlte-select name="status" label="Status">

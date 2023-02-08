@@ -23,9 +23,6 @@
                     <x-adminlte-button label="Add Region" theme="primary" icon="fas fa-plus" />
                 </a>
              
-                 <!-- <a href="{{route('trash-view.region')}} ">
-                    <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" />
-                </a> -->
             </h2> 
 
             <div class="alert_display">
@@ -37,7 +34,7 @@
                 @endif
             </div>
             
-            <table class="table table-bordered yajra-datatable table-striped">
+            <table class="table table-bordered yajra-datatable table-sm">
                 <thead class='table-primary'>
                     <tr>
                         <th>No</th>
@@ -102,7 +99,7 @@
             success: function(response) {
                 $('.yajra-datatable').DataTable().ajax.reload();
                 alert('Delete success');
-                window.location='/v2/master/store/regions'
+                $('.alert_display').html(response);
             },
             error: function(response) {
 

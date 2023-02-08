@@ -3,13 +3,6 @@
 
 @section('css')
 <link rel="stylesheet" href="/css/styles.css">
-<!-- <style>
-    .checkBox {
-        width: 20px;
-        height: 20px;
-        margin-top: 9px;
-    }
-</style> -->
 @stop
 @section('content_header')
 <div class='row'>

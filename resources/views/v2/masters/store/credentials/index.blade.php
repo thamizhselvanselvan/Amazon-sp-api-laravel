@@ -116,7 +116,7 @@
             success: function(response) {
                 $('.yajra-datatable').DataTable().ajax.reload();
                 alert('Delete success');
-                window.location='/v2/master/store/credentials'
+                $('.alert_display').html(response);
             },
             error: function(response) {
 

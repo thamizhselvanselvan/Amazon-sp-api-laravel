@@ -46,7 +46,7 @@
                         autofocus required autocomplete="off">
                     <span class="text-danger">
                         @error('name')
-                            {{ $message = 'This State already exist' }}
+                            {{ $message }}
                         @enderror
             </div>
             <br>

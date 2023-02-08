@@ -27,9 +27,6 @@
     <a href="/v2/master/company/create">
         <x-adminlte-button label="Add Company" theme="primary" icon="fas fa-plus" />
     </a>
-    <!-- <a href="/v2/master/company/trash-view">
-        <x-adminlte-button label="Company Trash" theme="primary" icon="fas fa-trash" />
-    </a> -->
 </h2>
 <table class="table table-bordered yajra-datatable table-sm">
     <thead class='table-primary'>
@@ -94,6 +91,7 @@
             response: 'json',
             success: function(response) {
                 $('.yajra-datatable').DataTable().ajax.reload();
+                $('.alert_display').html(response);
                 alert('Delete success');
             },
             error: function(response) {

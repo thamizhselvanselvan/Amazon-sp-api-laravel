@@ -47,21 +47,21 @@
             @csrf
             <div class="col-6">
                 <div class="form-group">
-                    <x-adminlte-input label="Region Code" name="region_code" id="region_code" type="text" placeholder="Region Code" value="" />
+                    <x-adminlte-input label="Region Code" name="region_code" id="region_code" type="text" placeholder="Region Code" value="{{old('region_code')}}" />
                 </div>
                 <div class="form-group">
-                    <x-adminlte-input label="Region" id="region" name="region" type="text" placeholder="Region" value="" />
+                    <x-adminlte-input label="Region" id="region" name="region" type="text" placeholder="Region" value="{{old('region')}}" />
                 </div>
                 <div class="form-group">
-                    <x-adminlte-input label="Marketplace ID" id="marketplace_id" name="marketplace_id" type="text" placeholder="Marketplace ID" value="" />
+                    <x-adminlte-input label="Marketplace ID" id="marketplace_id" name="marketplace_id" type="text" placeholder="Marketplace ID" value="{{old('marketplace_id')}}" />
                 </div>
             </div>
             <div class="col-6">
                 <div class="form-group">
-                    <x-adminlte-input label="URL" id="url" name="url" type="text" placeholder="URL" value="" />
+                    <x-adminlte-input label="URL" id="url" name="url" type="text" placeholder="URL" value="{{old('url')}}" />
                 </div>
                 <div class="form-group">
-                    <x-adminlte-input label="Site URL" id="site_url" name="site_url" type="text" placeholder="Site URL" value="" />
+                    <x-adminlte-input label="Site URL" id="site_url" name="site_url" type="text" placeholder="Site URL" value="{{old('site_url')}}" />
                 </div>
                 <div class="form-group">
                     <x-adminlte-select id="currency_id" name="currency_id" label="Currency">
