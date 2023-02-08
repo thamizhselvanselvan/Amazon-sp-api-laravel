@@ -18,7 +18,7 @@ class RegionController extends Controller
             if ($request->ajax()) {
                 $getData = ['id', 'region', 'region_code', 'url', 'site_url', 'marketplace_id', 'currency_id', 'status'];
 
-                $data = Region::with(['currency'])->latest()->get($getData);
+                $data = Region::with(['currency'])->orderBy('id', 'DESC')->get($getData);
                 return DataTables::of($data)
                     ->addIndexColumn()
                     ->addColumn('url', function ($row) {
@@ -79,14 +79,14 @@ class RegionController extends Controller
 
     public function add()
     {
-        $currencies = Currency::all();
+        $currencies = Currency::where('status', 1)->get();
         return view('v2.masters.store.regions.add',compact('currencies'));
     }
 
     public function edit($id)
     {
         $region = Region::find($id);
-        $currencies = Currency::all();
+        $currencies = Currency::where('status', 1)->get();
         return view('v2.masters.store.regions.edit',compact('region','currencies'));
     }
 

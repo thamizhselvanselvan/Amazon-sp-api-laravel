@@ -6,6 +6,7 @@ use Exception;
 use App\Models\Mws_region;
 use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Buybox_stores\Product;
 use Illuminate\Support\Facades\Storage;
@@ -50,15 +51,21 @@ class Asin_price_import extends Command
     public function handle()
     {
 
-        $start_date = Carbon::now()->subMinutes(10);
+        $start_date = Carbon::now()->subMinutes(20);
         $end_date = Carbon::now()->subMinutes(5);
 
-        $datas = Product::select('asin', 'store_id')
+        $datas = Product::select(DB::raw("count(*)"), 'asin', 'store_id')
             ->where('cyclic', 0)
-            //->whereBetween("updated_at", [$start_date, $end_date])
             ->orderBy('id', 'asc')
-            ->limit(1300)
-            ->get();
+            ->groupBy('store_id', 'asin')
+            ->whereBetween("updated_at", [$start_date, $end_date])
+            ->limit(5)
+            ->get()->toArray();
+
+        print_r($datas);
+        
+        exit;
+
 
         if ($datas->count() <= 0) {
 

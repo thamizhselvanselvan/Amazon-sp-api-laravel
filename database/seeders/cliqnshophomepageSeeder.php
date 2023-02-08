@@ -27,14 +27,14 @@ class cliqnshophomepageSeeder extends Seeder
         foreach ($sections as $section) {
             $datas = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid')->get();
                 foreach ($datas as $data) {
-                $sector = DB::connection('cliqnshop')->table('home_page_contents')
+                $sector = DB::connection('cliqnshop')->table('cns_home_page_contents')
                     ->where('section', $section)
                     ->where('country', $data->siteid)
                     ->get();
 
                 if (count($sector)) {
                 } else {
-                    $datas = DB::connection('cliqnshop')->table('home_page_contents')
+                    $datas = DB::connection('cliqnshop')->table('cns_home_page_contents')
                         ->insert([
                             [
                                 'section' => $section,
