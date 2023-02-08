@@ -29,7 +29,7 @@ class ExportPriceViaVolumetricWeight
     {
         $this->countryCode = strtoupper($countryCode);
         $this->priority = $priority;
-
+        $id = Auth::user()->id;
         $this->export_file_path = "excel/downloads/catalog_price/" . $this->countryCode . '/' . $this->priority . "/CatalogPrice";
 
         $headers_us = [
@@ -96,7 +96,7 @@ class ExportPriceViaVolumetricWeight
 
             $upsert_data[] = [
                 'asin' => $value['asin'],
-                'user_id' => Auth::user()->id,
+                'user_id' => $id,
                 'export' => '1',
             ];
         }
@@ -134,7 +134,7 @@ class ExportPriceViaVolumetricWeight
         $asin_data = [];
         foreach ($catalog_details as $key => $catalog_detail) {
             $weight = 0;
-            $dimensions = '';
+            $dimensions = 0;
             if (isset($catalog_detail['dimensions'][0]) && array_key_exists('package', $catalog_detail['dimensions'][0])) {
                 if (isset($catalog_detail['dimensions'][0]['package']['weight']['value'])) {
 
