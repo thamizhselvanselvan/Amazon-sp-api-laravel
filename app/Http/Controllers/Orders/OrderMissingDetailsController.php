@@ -154,7 +154,7 @@ class OrderMissingDetailsController extends Controller
         $order_ids = preg_split('/[\r\n| |:|,]/', $request->order_ids, -1, PREG_SPLIT_NO_EMPTY);
 
         if (count($order_ids) > 12) {
-            return redirect('/orders/missing/force/dump/view')->with(['warning' => 'order Ids Must be Less Than 12']);
+            return redirect('/orders/missing/force/dump/view')->with(['warning' => 'order Ids Must be Less Than 12 (Zoho Dump)']);
         }
         $store_id = $request->country_code;
         $orderids = implode(',', $order_ids);
@@ -165,11 +165,10 @@ class OrderMissingDetailsController extends Controller
 
     public function zohosync(Request $request)
     {
-
         $order_ids = preg_split('/[\r\n| |:|,]/', $request->order_ids, -1, PREG_SPLIT_NO_EMPTY);;
 
         if (count($order_ids) > 12) {
-            return redirect('/orders/missing/force/dump/view')->with(['warning' => 'order Ids Must be Less Than 10']);
+            return redirect('/orders/missing/force/dump/view')->with(['warning' => 'order Ids Must be Less Than 10 (Zoho Sync)']);
         }
         $store_id = $request->store_data;
         $orderids = implode(',', $order_ids);

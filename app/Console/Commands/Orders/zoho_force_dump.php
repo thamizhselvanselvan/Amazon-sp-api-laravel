@@ -60,14 +60,6 @@ class zoho_force_dump extends Command
         // $pm_id = ProcessManagementCreate($process_manage['command_name']);
         //Process Management end
 
-
-
-
-
-
-
-
-
         $order_ids = $this->argument('orderids');
         $country = $this->argument('store_id');
 
@@ -76,17 +68,11 @@ class zoho_force_dump extends Command
 
         $seller_id = $source_data['0'];
         $country_code = $source_data['1'];
-        // $order_idarray = ['407-2391624-7025132', '402-0630891-3772313'];
-        // $seller_id = '35';
-        // $country_code = 'AE';
 
         foreach ($order_idarray as $order_id) {
 
-
-
             $token = NULL;
             $config = $this->config($seller_id, $country_code, $token);
-
             $marketplace_ids = $this->marketplace_id($country_code);
             $marketplace_ids = [$marketplace_ids];
 
@@ -99,8 +85,6 @@ class zoho_force_dump extends Command
             $next_token = NULL;
             $amazon_order_ids = [$order_id];
 
-
-
             try {
 
                 $order = $apiInstance->getOrders($marketplace_ids, $createdAfter, $created_before = null, $last_updated_after = null, $last_updated_before = null, $order_statuses, $fulfillment_channels = null, $payment_methods = null, $buyer_email = null, $seller_order_id = null, $max_results_per_page, $easy_ship_shipment_statuses = null, null, $next_token, $amazon_order_ids, $actual_fulfillment_supply_source_id = null, $is_ispu = null, $store_chain_store_id = null, $data_elements = null);
@@ -112,10 +96,10 @@ class zoho_force_dump extends Command
                 Log::alert('Order Details Not Found for ' . $order_id);
             }
         }
+
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
     }
-
 
     public function OrderDataFormating($results, $awsCountryCode, $awsId, $source)
     {
