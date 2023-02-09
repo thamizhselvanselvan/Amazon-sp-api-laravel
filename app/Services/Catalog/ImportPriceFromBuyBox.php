@@ -118,10 +118,10 @@ class ImportPriceFromBuyBox
             foreach ($BBRecords as $BBRecord) {
 
                 $asin = $BBRecord->asin;
-                $packet_weight = $catalogWeight[$asin]['weight'];
-                $packet_height = $catalogWeight[$asin]['height'];
-                $packet_length = $catalogWeight[$asin]['length'];
-                $packet_width  = $catalogWeight[$asin]['width'];
+                $packet_weight = $catalogWeight[$asin]['weight'] ?? 0;
+                $packet_height = $catalogWeight[$asin]['height'] ?? 0;
+                $packet_length = $catalogWeight[$asin]['length'] ?? 0;
+                $packet_width  = $catalogWeight[$asin]['width'] ?? 0;
                 $dimension = $packet_height * $packet_length * $packet_width;
 
 
