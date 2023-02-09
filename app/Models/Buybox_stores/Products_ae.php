@@ -5,10 +5,9 @@ namespace App\Models\Buybox_stores;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Products_in extends Model
+class Products_ae extends Model
 {
     use HasFactory;
-    
     protected $connection = 'buybox_stores';
 
     protected $fillable = [
@@ -33,6 +32,6 @@ class Products_in extends Model
         'highest_seller_price',
         'bb_winner_id',
         'bb_winner_price',
-        'is_bb_own',
+        'is_bb_won',
     ];
 }

@@ -5,34 +5,36 @@ namespace App\Models\Buybox_stores;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Products_in extends Model
+class Product_push_ae extends Model
 {
     use HasFactory;
-    
     protected $connection = 'buybox_stores';
 
+
     protected $fillable = [
-        'store_id',
         'asin',
         'product_sku',
-        'cyclic',
-        'bb_cyclic',
-        'priority',
+        'store_id',
         'availability',
-        'latency',
-        'base_price',
-        'ceil_price',
-        'app_360_price',
-        'bb_price',
         'push_price',
-        'store_price',
-        'cyclic_push',
+        'base_price',
+        'app_360_price',
+        'destination_bb_price',
+        'latency',
+        'applied_rules',
+        'current_store_price',
         'lowest_seller_id',
         'lowest_seller_price',
         'highest_seller_id',
         'highest_seller_price',
         'bb_winner_id',
         'bb_winner_price',
-        'is_bb_own',
+        'is_bb_won',
+        'push_status',
+        'feedback_price_id',
+        'feedback_response',
+        'feedback-availability_id',
+        'feedback_price_status',
+        'ceil_price'
     ];
 }

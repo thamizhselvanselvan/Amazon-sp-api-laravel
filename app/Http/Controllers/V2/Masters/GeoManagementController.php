@@ -34,7 +34,7 @@ class GeoManagementController extends Controller
      {
       $geo_data = $request->validate(
         [
-          'name' => 'required|unique:App\Models\V2\Masters\Country',
+          'name' => 'required|regex:/^[\pL\s\-]+$/u|unique:App\Models\V2\Masters\Country',
           'country_code' => 'required|unique:App\Models\V2\Masters\Country',
           'code' => 'required|unique:App\Models\V2\Masters\Country',
           'numeric_code' => 'required|unique:App\Models\V2\Masters\Country',
@@ -100,7 +100,8 @@ class GeoManagementController extends Controller
       $request->validate(
         [
           'country_id' => 'required',
-          'name' => 'unique:App\Models\V2\Masters\State',
+          'name' => 'required|regex:/^[\pL\s\-]+$/u|unique:App\Models\V2\Masters\State'
+          
         ]
       );
       $state = new State;
@@ -113,7 +114,7 @@ class GeoManagementController extends Controller
 
   public function getStates(Request $request)
   {
-    // dd($request->cid);
+    
     $state = State::select('id', 'name')->where('country_id', $request->cid)->get()->toArray();
     echo json_encode($state);
     
@@ -153,8 +154,9 @@ class GeoManagementController extends Controller
 
       $request->validate(
         [
+          'country_id' => 'required',
           'state_id' => 'required',
-          'name' => 'required',
+          'name' => 'required|regex:/^[\pL\s\-]+$/u',
         ]
       );
       $city = new City;
@@ -217,25 +219,6 @@ class GeoManagementController extends Controller
   //   return redirect('v2/master/geo/city')->with('message', $city->name . ' Added');
   // }
 
-  // public function show_country(Country $country)
-  // {
-  //   $countries = Country::all();
-  //   return view('v2.masters.geo.country.index', compact('countries'));
-  // }
-
-  // public function show_state(Country $country, State $state)
-  // {
-  //   $countries = Country::all();
-  //   $states = State::all();
-  //   return view('v2.masters.geo.state.index', compact('countries', 'states'));
-  // }
-
-  // public function show_city(State $state, City $city)
-  // {
-  //   $states = State::all();
-  //   $cities = City::all();
-  //   return view('v2.masters.geo.city.index', compact('cities', 'states'));
-  // }
 
   public function destroy_country(Country $country, $country_id)
   {
@@ -254,7 +237,6 @@ class GeoManagementController extends Controller
 
       $city_ids = City::select('id')->where('state_id', $state_id)->get()->pluck('id')->toArray();
       if (count($city_ids) != 0) {
-        // return false;
         City::whereIn('id', $city_ids)->delete();
       }
     }
@@ -308,15 +290,15 @@ class GeoManagementController extends Controller
   {
     $geo_data = $request->validate(
       [
-        'name' => 'required:App\Models\Inventory\Country',
-        'country_code' => 'required:App\Models\Inventory\Country',
-        'code' => 'required:App\Models\Inventory\Country',
-        'numeric_code' => 'required:App\Models\Inventory\Country',
-        'phone_code' => 'required:App\Models\Inventory\Country',
-        'capital' => 'required:App\Models\Inventory\Country',
-        'currency' => 'required:App\Models\Inventory\Country',
-        'currency_name' => 'required:App\Models\Inventory\Country',
-        'currency_symbol' => 'required:App\Models\Inventory\Country',
+        'name' => 'required|regex:/^[\pL\s\-]+$/u',
+        'country_code' => 'required',
+        'code' => 'required',
+        'numeric_code' => 'required',
+        'phone_code' => 'required',
+        'capital' => 'required',
+        'currency' => 'required',
+        'currency_name' => 'required',
+        'currency_symbol' => 'required',
       ]
     );
     $country_name = $request->name;
@@ -329,7 +311,7 @@ class GeoManagementController extends Controller
     $request->validate(
       [
         'country' => 'required',
-        'state_name' => 'required',
+        'state_name' => 'required|regex:/^[\pL\s\-]+$/u',
       ]
     );
     $states = State::find($id);
@@ -344,7 +326,7 @@ class GeoManagementController extends Controller
     $request->validate(
       [
         'state' => 'required',
-        'city_name' => 'required',
+        'city_name' => 'required|regex:/^[\pL\s\-]+$/u',
       ]
     );
     $cities = City::find($id);
