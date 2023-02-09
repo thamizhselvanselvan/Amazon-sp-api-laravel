@@ -36,7 +36,7 @@ class DepartmentController extends Controller
        else
         {
             $request->validate([
-                'department' => 'required',
+                'department' => 'required|regex:/^[a-zA-Z0-9 ]+$/|min:3|max:50',
             ]);
             $formValue = [
                 'department' => $request->department,
@@ -70,7 +70,7 @@ class DepartmentController extends Controller
     public function UpdateDepartments(Request $request, $id)
     {
         $request->validate([
-            'department' => 'required',
+            'department' => 'required|regex:/^[a-zA-Z0-9 ]+$/|min:3|max:50'
         ]);
         $records = [
             'department' => $request->department,

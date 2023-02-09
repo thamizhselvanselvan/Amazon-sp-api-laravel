@@ -26,7 +26,7 @@ use App\Models\ShipNTrack\SMSA\SmsaTrackings;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
 use App\Models\ShipNTrack\Bombino\BombinoTracking;
 use App\Models\ShipNTrack\Bombino\BombinoTrackingDetails;
-
+use Faker\Core\Number;
 
 if (!function_exists('ddp')) {
     function ddp($value)
@@ -41,7 +41,7 @@ if (!function_exists('addPercentage')) {
 
     function addPercentage($originalAmount, $percentageChange)
     {
-        return $originalAmount + ($percentageChange / 100) * $originalAmount;
+        return (float)$originalAmount + ($percentageChange / 100) * (float)$originalAmount;
     }
 }
 
@@ -51,6 +51,22 @@ if (!function_exists('removePercentage')) {
         return $originalAmount - ($percentageChange / 100) * $originalAmount;
     }
 }
+
+if (!function_exists('addPercentage_product_push')) {
+
+    function addPercentage_product_push($originalAmount, $percentageChange)
+    {
+        return (float)$originalAmount + ($percentageChange / 100) * (float)$originalAmount;
+    }
+}
+
+if (!function_exists('removePercentage_product_push')) {
+    function removePercentage_product_push($originalAmount, $percentageChange)
+    {
+        return (float)$originalAmount - ($percentageChange / 100) * (float)$originalAmount;
+    }
+}
+
 
 if (!function_exists('getPercentageChange')) {
 
@@ -622,6 +638,26 @@ if (!function_exists('poundToKg')) {
         return $weight_kg;
     }
 }
+
+if (!function_exists('VolumetricIntoKG')) {
+    function VolumetricIntoKG($dimension)
+    {
+        $divisor = getSystemSettingsValue('volumetric_divisor_for_pricing', 6000);
+        $cm = $dimension * 16.388;  // convert inch to centimeters.
+        $volumetricOfKg = $cm / $divisor; // volumetric in kg.
+        return round($volumetricOfKg, 2);
+    }
+}
+
+if (!function_exists('VolumetricIntoPounds')) {
+    function VolumetricIntoPounds($dimension)
+    {
+        $divisor = getSystemSettingsValue('volumetric_divisor_for_pricing', 6000);
+        $volumetricOfPounds = $dimension / $divisor;
+        return round($volumetricOfPounds, 2);
+    }
+}
+
 if (!function_exists('getWeight')) {
 
     function getWeight($dimensions)
@@ -1217,14 +1253,14 @@ if (!function_exists('CacheForCommandScheduler')) {
 if (!function_exists('aws_merchant_ids')) {
     function aws_merchant_ids()
     {
-        if(Cache::has("aws_merchant_ids")) {
+        if (Cache::has("aws_merchant_ids")) {
             return Cache::get("aws_merchant_ids");
         }
 
         $get_datas = [];
         $aws_merchant_ids = Aws_credential::select('seller_id', 'merchant_id')->where("merchant_id", "!=", "Patch")->get()->toArray();
 
-        foreach($aws_merchant_ids as $aws_merchant_id) {
+        foreach ($aws_merchant_ids as $aws_merchant_id) {
             $get_datas[$aws_merchant_id['seller_id']] = $aws_merchant_id['merchant_id'];
         }
 

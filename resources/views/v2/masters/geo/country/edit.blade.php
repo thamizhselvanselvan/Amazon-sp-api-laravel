@@ -31,15 +31,15 @@
       <div class="row">
         <div class="col-sm">
           <label class="ml-2 m-0" for="country">Country</label>
-        <input type="text" class="form-control m-2" id="country" name ="name" placeholder = "Country" required autofocus autocomplete="off" value= {{$countries->name}}>
+        <input type="text" class="form-control m-2" id="country" name ="name" placeholder = "Country" required autofocus autocomplete="off" value="{{$countries->name}}">
         </div>
         <div class="col-sm">
           <label class="ml-2 m-0" for="country_code">Country Code</label>
-          <input type="text" class="form-control m-2" id="country_code" name ="country_code" placeholder = "Country Code" required autocomplete="off" value={{$countries->country_code}}>
+          <input type="text" class="form-control m-2" id="country_code" name ="country_code" placeholder = "Country Code" required autocomplete="off" value="{{$countries->country_code}}">
         </div>
         <div class="col-sm">
            <label class="ml-2 m-0" for="code">Code</label>
-          <input type="text" class="form-control m-2" id="code" name ="code" placeholder = "Code" required autocomplete="off" value={{$countries->code}}>
+          <input type="text" class="form-control m-2" id="code" name ="code" placeholder = "Code" required autocomplete="off" value="{{$countries->code}}">
         </div>
       </div>
     </div>
@@ -76,7 +76,7 @@
         </div>
         <div class="col-sm">
            <label class="ml-2 m-0" for="capital">Capital</label>
-          <input type="text" class="form-control m-2" id="capital" name ="capital" placeholder = "Capital" required autocomplete="off" value={{$countries->capital}}>
+          <input type="text" class="form-control m-2" id="capital" name ="capital" placeholder = "Capital" required autocomplete="off" value="{{$countries->capital}}">
         </div>
     </div>
   </div>
@@ -106,11 +106,11 @@
       <div class="row">
         <div class="col-sm">
            <label class="ml-2 m-0" for="currency">Currency</label>
-          <input type="text" class="form-control m-2" id="currency" name ="currency" placeholder = "Currency" required autocomplete="off" value={{$countries->currency}}>
+          <input type="text" class="form-control m-2" id="currency" name ="currency" placeholder = "Currency" required autocomplete="off" value="{{$countries->currency}}">
         </div>
         <div class="col-sm">
            <label class="ml-2 m-0" for="currency_name">Currency Name</label>
-          <input type="text" class="form-control m-2" id="currency_name" name ="currency_name" placeholder = "Currency Name" required autocomplete="off" value={{$countries->currency_name}}>
+          <input type="text" class="form-control m-2" id="currency_name" name ="currency_name" placeholder = "Currency Name" required autocomplete="off" value="{{$countries->currency_name}}">
         </div>
         <div class="col-sm">
            <label class="ml-2 m-0" for="currency_symbol">Currency Symbol</label>  
@@ -143,7 +143,7 @@
     <div class="container">
       <div class="row">
         <div class="m-auto">
-      <x-adminlte-button label=" Submit" theme="primary" icon="fas fa-plus" type="submit" />
+      <x-adminlte-button label=" Update" theme="primary" icon="fas fa-plus" type="submit" />
       </div>
       </div>
       </div>

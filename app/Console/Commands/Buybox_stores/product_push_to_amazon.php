@@ -75,7 +75,7 @@ class product_push_to_amazon extends Command
         $data_to_insert = [];    
 
         foreach ($products as $product) {
-
+            
             $id_rules_applied = $product->asin."_".$product->store_id;
 
             $push_price = $this->push_price_logic($product, $id_rules_applied);
@@ -132,8 +132,8 @@ class product_push_to_amazon extends Command
         $base_price = $product->base_price;
         $ceil_price = $product->ceil_price;
         $store_price = $product->store_price;
-        $excel_price = $product->app_360_price;
-        $bb_winner_id = $product->bb_winner_id;
+        $excel_price = $product->app_360_price ?? "";
+        $bb_winner_id = $product->bb_winner_id ?? "";
         $bb_winner_price = $product->bb_winner_price;
         $lowest_seller_price = $product->lowest_seller_price;
         $highest_seller_price = $product->highest_seller_price;
@@ -212,8 +212,12 @@ class product_push_to_amazon extends Command
         // if we have lost the BB then no other sellers are sellling that product then we increase that prices
         if (empty($bb_winner_id) && empty($highest_seller_price) && empty($lowest_seller_price)) {
 
+            print($excel_price);
+
             //$push_price = $this->calculate($product->store_price, 'increase');
             $push_price = $this->only_seller_excel_price_increase(excel_calculated_price: $excel_price);
+
+
 
             if($push_price < $ceil_price) {
 
@@ -301,11 +305,11 @@ class product_push_to_amazon extends Command
         if($this->price_calculate_type == "percent") {
 
             if($type == "increase") {
-                return addPercentage($price, $this->increase_by_price);
+                return addPercentage_product_push($price, $this->increase_by_price);
             }
 
             if($type == "decrease") {
-                return removePercentage($price, $this->decrease_by_price);
+                return removePercentage_product_push($price, $this->decrease_by_price);
             }
         
         } 
@@ -319,12 +323,12 @@ class product_push_to_amazon extends Command
         }
     }
 
-    public function only_seller_excel_price_increase(string|float|int $excel_calculated_price): float|int {
+    public function only_seller_excel_price_increase($excel_calculated_price): float|int {
 
-        return addPercentage($excel_calculated_price, $this->increase_by_excel_price);
+        return addPercentage_product_push($excel_calculated_price, $this->increase_by_excel_price);
     }
 
-    public function our_own_store_won_bb(int $store_id, string $bb_winner_id): bool {
+    public function our_own_store_won_bb(int $store_id, string $bb_winner_id): bool|array {
 
         if(array_key_exists($store_id, $this->our_merchant_ids) && $store_id != $bb_winner_id) {
             return $this->our_merchant_ids[$store_id];
@@ -334,7 +338,7 @@ class product_push_to_amazon extends Command
     }
 
     public function i_have_bb(string $store_id, string $bb_winner_id): bool {
-        return $store_id == $bb_winner_id;
+        return  $this->our_merchant_ids[$store_id] == $bb_winner_id;
     }
 
     public function push_price_logic_old($data): array {
@@ -390,7 +394,5 @@ class product_push_to_amazon extends Command
 
         return [];
     }
-
-
-
+    
 }

@@ -21,31 +21,32 @@
             </div>
             @endif
         </div>
-    </div>
-</div>
-<h2 class="mb-4">
-    <a href="/v2/master/store/credentials/create">
-        <x-adminlte-button label="Add Credentials" theme="primary" icon="fas fa-plus" />
-    </a>
-    <a href="/v2/master/store/credentials/trash-view">
+   
+    <h2 class="mb-4">
+        <a href="/v2/master/store/credentials/create">
+            <x-adminlte-button label="Add Credentials" theme="primary" icon="fas fa-plus" />
+        </a>
+    <!-- <a href="/v2/master/store/credentials/trash-view">
         <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" />
-    </a>
-</h2>
-<table class="table table-bordered yajra-datatable table-sm">
-    <thead>
-        <tr>
-            <th>ID</th>   
-            <th>Company</th>
-            <th>Store Name</th>
-            <th>Seller/Merchant ID</th>
-            <th>Auth Code</th>
-            <th>Marketplace ID</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
+    </a> -->
+    </h2>
+    <table class="table table-bordered yajra-datatable table-sm">
+        <thead class='table-primary'>
+            <tr>
+                <th>ID</th>   
+                <th>Company</th>
+                <th>Store Name</th>
+                <th>Seller/Merchant ID</th>
+                <th>Auth Code</th>
+                <th>Marketplace ID</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+</div>
 
 @stop
 
@@ -115,7 +116,7 @@
             success: function(response) {
                 $('.yajra-datatable').DataTable().ajax.reload();
                 alert('Delete success');
-                window.location='/v2/master/store/credentials'
+                $('.alert_display').html(response);
             },
             error: function(response) {
 

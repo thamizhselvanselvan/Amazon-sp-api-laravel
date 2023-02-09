@@ -124,6 +124,19 @@ Route::prefix('v2/master/')->group(function () {
         }
         );
 });
+    Route::match (['get', 'post'], '/users',[UserController::class,'index'])->name('users.home');
+    Route::prefix('/users')->group(function () {
+        Route::get('/create', [UserController::class, 'create'])->name('users.create');
+        Route::get('/password_reset/{id}', [UserController::class, 'password_reset'])->name('users.password_reset');
+        Route::post('/password_reset_save/{id}', [UserController::class,'password_reset_save'])->name('users.password_reset_save');
+        Route::get('/{id}/edit/', [UserController::class, 'edit']);
+        Route::post('/update/{id}', [UserController::class,'update'])->name('users.update');
+        Route::get('/{id}/delete/', [UserController::class,'delete'])->name('users.delete');
+    }
+    );
+
+
+
 
       
 

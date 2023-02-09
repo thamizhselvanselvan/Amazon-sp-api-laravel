@@ -5,17 +5,23 @@ namespace App\Http\Controllers\Orders;
 use Illuminate\Http\Request;
 use App\Services\Zoho\ZohoApi;
 use App\Models\order\ZohoMissing;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Artisan;
 use Yajra\DataTables\Facades\DataTables;
+use App\Services\SP_API\Config\ConfigTrait;
+use App\Models\order\OrderSellerCredentials;
 
 class OrderMissingDetailsController extends Controller
 {
+    use ConfigTrait;
+
     public function index(Request $request)
     {
         if ($request->ajax()) {
 
-            $data  = ZohoMissing::orderby('id', 'desc')->where('status','0')->get();
+            $data  = ZohoMissing::orderby('id', 'desc')->where('status', '0')->get();
             return DataTables::of($data)
                 ->addIndexColumn()
 
@@ -95,11 +101,10 @@ class OrderMissingDetailsController extends Controller
 
     public function zohopriceupdated(Request $request)
     {
-        if($request->ajax())
-        {
-             $data  = ZohoMissing::orderby('id', 'desc')
-             ->where('status','1')
-             ->get();
+        if ($request->ajax()) {
+            $data  = ZohoMissing::orderby('id', 'desc')
+                ->where('status', '1')
+                ->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->editColumn('status', function ($row) {
@@ -117,5 +122,59 @@ class OrderMissingDetailsController extends Controller
                 ->make(true);
         }
         return view('orders.zoho.zohoproceupdated');
+    }
+
+    public function zohoforcedumpview(Request $request)
+    {
+        $stores = OrderSellerCredentials::select('store_name', 'seller_id', 'country_code')
+            ->where('dump_order', 1)
+            ->distinct()
+            ->get();
+
+        // if ($request->ajax()) {
+        //     $data =   ProcessManagement::where(['module' => 'Orders', 'command_name' => 'mosh:zoho_force_dump','status' =>'0'])
+        //         ->select('status')
+        //         ->orderby('updated_at', 'desc')
+        //         ->limit(1)
+        //         ->get();
+
+
+        //     $messsage = ["success" => 'ok'];
+        //     if (count($data) > 0) {
+        //         $messsage = ["error" => $data];
+        //     }
+        //     return response()->json(['success' => true, "data" => $messsage]);
+        // }
+        return view('orders.zoho.zohoforcedump', compact('stores'));
+    }
+
+
+    public function zohoforcedump(Request $request)
+    {
+        $order_ids = preg_split('/[\r\n| |:|,]/', $request->order_ids, -1, PREG_SPLIT_NO_EMPTY);
+
+        if (count($order_ids) > 12) {
+            return redirect('/orders/missing/force/dump/view')->with(['warning' => 'order Ids Must be Less Than 12 (Zoho Dump)']);
+        }
+        $store_id = $request->country_code;
+        $orderids = implode(',', $order_ids);
+
+        commandExecFunc("mosh:zoho_force_dump ${orderids} ${store_id}");
+        return redirect('/orders/missing/force/dump/view')->with('success', 'Order Is Updating...');
+    }
+
+    public function zohosync(Request $request)
+    {
+        $order_ids = preg_split('/[\r\n| |:|,]/', $request->order_ids, -1, PREG_SPLIT_NO_EMPTY);;
+
+        if (count($order_ids) > 12) {
+            return redirect('/orders/missing/force/dump/view')->with(['warning' => 'order Ids Must be Less Than 10 (Zoho Sync)']);
+        }
+        $store_id = $request->store_data;
+        $orderids = implode(',', $order_ids);
+        commandExecFunc("mosh:get_edd ${orderids} ${store_id}");
+        // Artisan::call("mosh:get_edd ${orderids} ${store_id}");
+
+        return redirect('/orders/missing/force/dump/view')->with('success', 'Order Is Updating...');
     }
 }

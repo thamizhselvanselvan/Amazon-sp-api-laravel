@@ -2,15 +2,19 @@
 
 namespace App\Console\Commands\Buybox_stores;
 
-use Exception;
+use in;
 
+use Exception;
 use League\Csv\Reader;
 use App\Models\Aws_credential;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use App\Models\Buybox_stores\Product;
+use com\zoho\crm\api\record\Products;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Buybox_stores\Products_ae;
+use App\Models\Buybox_stores\Products_sa;
+use App\Models\Buybox_stores\Products_in;
 use App\Models\order\OrderSellerCredentials;
 use App\Services\Buybox_stores\product_import;
 
@@ -47,15 +51,16 @@ class import_product_file_SPAPI extends Command
      */
     public function handle()
     {
-        // $stores_id  = [6, 7, 8, 9, 10, 11, 12, 20, 27];
-      
+        // $stores_id  = [6, 7, 8, 9, 10, 11, 12, 20, 27, 44];
+
         $stores_id =  OrderSellerCredentials::query()->select('seller_id', 'country_code')->where('buybox_stores', 1)->get();
 
         foreach ($stores_id as $data) {
 
             try {
-                
+
                 $seller_id = $data['seller_id'];
+                //$seller_id = $data;
 
                 Log::alert('store' .  ' ' . $seller_id);
 
@@ -64,7 +69,6 @@ class import_product_file_SPAPI extends Command
                 $aws_key = $aws->id;
                 $country_code = $aws->mws_region->region_code;
                 $marketplace_id = $aws->mws_region->marketplace_id;
-
                 $productreport = new product_import;
                 $response = $productreport->getReports($aws_key, $country_code, $marketplace_id);
 
@@ -86,7 +90,7 @@ class import_product_file_SPAPI extends Command
                         Storage::put('/aws-products/aws-store-files/products_' . $seller_id . '.txt', $httpResponse);
                     }
 
-                     $this->insertdb($seller_id);
+                    $this->insertdb($seller_id, $country_code);
                 }
             } catch (Exception $e) {
                 Log::notice('Store File Not Found' . ' ' . $seller_id);
@@ -95,9 +99,8 @@ class import_product_file_SPAPI extends Command
 
     }
 
-    public function insertdb($seller_id): void
+    public function insertdb($seller_id, $country_code): void
     {
-
         $records = CSV_Reader("/aws-products/aws-store-files/products_" . $seller_id . ".txt", "\t");
 
         $cnt = 1;
@@ -113,9 +116,9 @@ class import_product_file_SPAPI extends Command
                 'cyclic' => 0
             ];
 
-            if ($cnt == 5000) {
+            if ($cnt == 1000) {
 
-                $this->product_upsert_query(asin_lists: $asin_lists);
+                $this->product_upsert_query(asin_lists: $asin_lists, country_code: $country_code);
 
                 $cnt = 1;
                 $asin_lists = [];
@@ -126,13 +129,29 @@ class import_product_file_SPAPI extends Command
 
         if (count($asin_lists) > 0) {
 
-            $this->product_upsert_query(asin_lists: $asin_lists);
+            $this->product_upsert_query(asin_lists: $asin_lists, country_code: $country_code);
         }
     }
 
-    public function product_upsert_query(array $asin_lists)
+    public function product_upsert_query(array $asin_lists, string $country_code)
     {
+        $country_code = strtoupper($country_code);
+        if ($country_code == 'AE') {
 
-        return Product::upsert($asin_lists, ['asin', 'store_id'], ['store_price', 'product_sku', 'cyclic']);
+            return Products_ae::upsert($asin_lists, ['asin', 'store_id'], ['store_price', 'product_sku', 'cyclic']);
+        } else if ($country_code == 'SA') {
+
+            return Products_sa::upsert($asin_lists, ['asin', 'store_id'], ['store_price', 'product_sku', 'cyclic']);
+        } else if ($country_code == 'IN') {
+
+            return Products_in::upsert($asin_lists, ['asin', 'store_id'], ['store_price', 'product_sku', 'cyclic']);
+        } else {
+
+            $slackMessage = "Message: Undefined Country Code,
+            module:Stores,
+            country : $country_code,
+            Operation: ' Import File From SPAPI'";
+            slack_notification('slack_monitor', 'Stores', $slackMessage);
+        }
     }
 }

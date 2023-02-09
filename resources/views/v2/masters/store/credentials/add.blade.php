@@ -60,13 +60,13 @@
                     </x-adminlte-select>
                     </div>
                     <div class="form-group">
-                        <x-adminlte-input label="Store Name" name="store_name" id="store-name" type="text" placeholder="Store Name" value="" />
+                        <x-adminlte-input label="Store Name" name="store_name" id="store-name" type="text" placeholder="Store Name" value="{{old('store_name')}}" />
                     </div>
                     <div class="form-group">
-                        <x-adminlte-input label="Seller/Merchant ID" name="seller_id" id="seller-id" type="text" placeholder="Merchant ID" value="" />
+                        <x-adminlte-input label="Seller/Merchant ID" name="seller_id" id="seller-id" type="text" placeholder="Merchant ID" value="{{old('seller_id')}}" />
                     </div>
                     <div class="form-group">
-                        <x-adminlte-input label="Auth Code" name="auth_code" id="auth-code" type="text" placeholder="Auth Code" value="" />
+                        <x-adminlte-input label="Auth Code" name="auth_code" id="auth-code" type="text" placeholder="Auth Code" value="{{old('auth_code')}}"/>
                     </div>
                     <div class="form-group">
                         <x-adminlte-select name="marketplace_id" label="Marketplace ID">

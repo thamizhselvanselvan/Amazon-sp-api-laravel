@@ -70,10 +70,35 @@
 
         <div class="col-3">
             <h2>
-                <x-adminlte-button type="button" label="Update" theme="primary" icon="fas fa-refresh" id="update_price" />
+                {{-- <x-adminlte-button type="button" label="Update" theme="primary" icon="fas fa-refresh" id="update_price" /> --}}
+                <x-adminlte-button type="button" label="Export CSV" theme="primary" icon="fas fa-refresh" id="store_data_export" />
+                <x-adminlte-button type="button" label="Show Exported CSV" theme="primary" icon="fas fa-refresh" id="show_exported_csv" />
             </h2>
         </div>
 
+    </div>
+
+    <div class="modal fade" id="show_exported_csv_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Exported CSV</h5>
+                    <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="font-size:15px">
+
+                    <div class="show_exported_csv_modal_body">
+                
+                            @foreach ($new_files as $file)
+                                <a href="{{ url('') }}{{ $file }}">{{ basename($file) }}</a>
+                            @endforeach
+                  
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 @stop
@@ -109,7 +134,7 @@
                         <th title="Current BB Seller Name/ID">BB Seller</th>
                         <th title="Next Highest Seller Name/ID">Highest Name</th>
                         <th title="Next Lowest Seller Name/ID">Lowest Name</th>
-                        {{-- <th>Action</th> --}}
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -128,7 +153,7 @@
             $(document).ready(function() {
 
                 if ($('#store_select').val() == '') {
-                    $('#update_price').hide();
+                    //$('#update_price').hide();
                 }
 
                 $(document).on('click', ".pop_over", function(e) {
@@ -155,32 +180,98 @@
 
             });
 
+            $("#show_exported_csv").on("click", function() {
+
+                $("#show_exported_csv_modal").modal("show");
+
+            });
+
+            $("#store_data_export").on("click", function() {
+                    let self= $(this);
+                    let store_id = $('#store_select').val();
+
+                    if (store_id == '') {
+                        alert("please select a store please");
+                        return false;
+                    }
+
+                    self.prop('disabled', true);
+
+                    $.ajax({
+                        url: "/stores/listing/price/store_data_export",
+                        method: "POST",
+                        data: {
+                            store_id: store_id,
+                            "_token": "{{ csrf_token() }}",
+                        },
+                        success: function(response) {
+                            self.prop("disabled", false);
+                            console.log(response);
+
+                            if(response == "success") {
+                                alert("Exporting the data...");
+                            }
+
+                            if(response == "error") {
+                                alert("Please select any store id ");
+                            }
+                        }
+                    });
+
+                });
+
             $('#store_select').on('change', function() {
 
                 let p = $(this).val();
                 window.location = "/stores/listing/price/" + $(this).val();
             });
 
-            $('#update_price').on('click', function() {
+            $('.price_process').on('click', function() {
+                let self = $(this);
+                let asin = self.attr("asin");
+                let productsku = self.attr("productsku");
+                let pushprice = self.attr("pushprice");
+                let storeid = self.attr("storeid");
+                let id = self.attr("data-id");
+                let base_price = self.attr("base_price");
 
-                let id = $('#store_select').val();
-                //window.location = "/stores/listing/price/update/" + id;
+                alert("Work In Progress");
+                return false;
+
+                self.prop('disabled', true);
 
                 $.ajax({
-                    url: "/stores/listing/price/updated",
+                    url: "/stores/listing/price/price_push_update",
                     method: "POST",
                     data: {
                         id: id,
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        asin: asin,
+                        productsku: productsku,
+                        pushprice: pushprice,
+                        storeid: storeid,
+                        base_price: base_price,
+                        "_token": "{{ csrf_token() }}",
                     },
+                    dataType: 'json',
                     success: function(response) {
+                        self.prop("disabled", false);
                         console.log(response);
+
+                        if(response.hasOwnProperty("success")) {
+                            alert("price updated successfully done");
+                        }
+
+                        if(response.hasOwnProperty("failed")) {
+                            alert("price updated failed");
+                        }
                     }
                 });
             });
 
             $.extend($.fn.dataTable.defaults, {
                 pageLength: 100,
+                orderable: false,
+                searchable: false
             });
 
             let yajra_table = $('.yajra-datatable').DataTable({
@@ -266,9 +357,7 @@
                     },
                     {
                         data: 'destination_bb_seller',
-                        name: 'destination_bb_seller',
-                        orderable: false,
-                        searchable: false
+                        name: 'destination_bb_seller'
                     },
                     {
                         data: 'highest_seller_name',
@@ -281,13 +370,13 @@
                         name: 'lowest_seller_name',
                         orderable: false,
                         searchable: false
+                    },
+                    {
+                       data: 'action',
+                       name: 'action',
+                        orderable: false,
+                        searchable: false
                     }
-                    //{
-                     //   data: 'action',
-                       // name: 'action',
-                        //orderable: false,
-                        //searchable: false
-                    //}
                 ]
             });
 

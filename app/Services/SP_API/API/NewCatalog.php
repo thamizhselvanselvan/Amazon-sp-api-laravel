@@ -27,14 +27,43 @@ class NewCatalog
     public function Catalog($records, $seller_id = NULL)
     {
         $queue_data = [];
-        $upsert_asin = [];
         $country_code1 = '';
         $asins = [];
         $count = 0;
         $auth_id = '';
         $token = '';
         $seller_id = '';
-
+        $columnName = [
+            'asin',
+            'seller_id',
+            'source',
+            'attributes',
+            'height',
+            'unit',
+            'length',
+            'weight',
+            'weight_unit',
+            'width',
+            'images',
+            'product_types',
+            'marketplace',
+            'brand',
+            'browse_classification',
+            'color',
+            'item_classification',
+            'item_name',
+            'manufacturer',
+            'model_number',
+            'package_quantity',
+            'part_number',
+            'size',
+            'website_display_group',
+            'style',
+            'dimensions',
+            'identifiers',
+            'relationships',
+            'salesRanks',
+        ];
         foreach ($records as $record) {
 
             $asin = $record['asin'];
@@ -43,14 +72,7 @@ class NewCatalog
             $seller_id = $record['seller_id'];
             $auth_id = $record['id'];
 
-            $upsert_asin[] = [
-                'asin'  => $asin,
-                'user_id' => $seller_id,
-                'status'   => 1,
-            ];
-
             $asins[] = $asin;
-
             $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
             $token = $aws_token[0];
 
@@ -65,7 +87,6 @@ class NewCatalog
                 $count = 0;
                 $asins = [];
             }
-
             $count++;
         }
 
@@ -100,18 +121,23 @@ class NewCatalog
                             $key = ($key == "itemName") ? "item_name" : $key;
                             $key = ($key == "partNumber") ? "part_number" : $key;
 
-                            $NewCatalogs[$key1][$key] = $data;
+                            if (in_array($key, $columnName)) {
+                                $NewCatalogs[$key1][$key] = $data;
+                            }
                         }
+                        $count++;
                     }
                     // $NewCatalogs[$key1]['created_at'] = now();
                     // $NewCatalogs[$key1]['updated_at'] = now();
                 }
             }
         }
-
+        // Log::alert($NewCatalogs);
         if (isset($country_code1) && !empty($country_code1)) {
 
             $source_mode = table_model_create(country_code: $country_code1, model: 'Asin_source', table_name: 'asin_source_');
+            $source_mode->upsert($asinSourceUpdate, ['user_asin_unique'], ['asin', 'user_id', 'status']);
+            $asinSourceUpdate = [];
 
             foreach ($NewCatalogs as  $NewCatalog) {
 
@@ -256,7 +282,6 @@ class NewCatalog
                         'salesRanks',
                     ]);
                 }
-                $source_mode->upsert($asinSourceUpdate, ['user_asin_unique'], ['asin', 'status']);
             }
         }
     }
@@ -339,17 +364,17 @@ class NewCatalog
             }
 
 
-            $source_mode = table_model_create(country_code: $country_code, model: 'Asin_source', table_name: 'asin_source_');
-            $miss_asin = [];
-            $diffs = array_diff($asins, $check_asin);
-            foreach ($diffs as $diff) {
-                $miss_asin[] = [
-                    'asin' => $diff,
-                    'user_id' => $seller_id,
-                    'status' => '2',
-                ];
-            }
-            $source_mode->upsert($miss_asin, ['user_asin_unique'], ['asin', 'user_id', 'status']);
+            // $source_mode = table_model_create(country_code: $country_code, model: 'Asin_source', table_name: 'asin_source_');
+            // $miss_asin = [];
+            // $diffs = array_diff($asins, $check_asin);
+            // foreach ($diffs as $diff) {
+            //     $miss_asin[] = [
+            //         'asin' => $diff,
+            //         'user_id' => $seller_id,
+            //         'status' => '2',
+            //     ];
+            // }
+            // $source_mode->upsert($miss_asin, ['user_asin_unique'], ['asin', 'user_id', 'status']);
             // CatalogMissingAsin::upsert($miss_asin, ['asin_unique'], ['asin', 'source']);
 
             return $queue_data;

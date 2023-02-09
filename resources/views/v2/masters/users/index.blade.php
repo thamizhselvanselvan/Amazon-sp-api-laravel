@@ -9,7 +9,7 @@
 @stop
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Admin And User Lists</h1>
+    <h1 class="m-0 text-dark">User Lists</h1>
 
 @stop
 
@@ -37,21 +37,19 @@
             </div>
 
             <h2 class="mb-2">
-                <a href="{{ route('create.user') }}">
+                <a href="{{ route('users.create') }}">
                     <x-adminlte-button label="Add User" theme="primary" icon="fas fa-plus" />
-                </a>
-                <a href="{{ ('users\bin') }}">
-                    <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" />
                 </a>
             </h2>
 
             <table class="table table-bordered yajra-datatable table-striped text-center" style="line-height:12px">
-                <thead>
+                <thead class="table-primary">
                     <tr>
                         <th>ID</th>
                         <th>Name</th>
                         <th>Email</th>
                         <th>Role</th>
+                        <th>Company</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -91,6 +89,10 @@
                         name: 'permission'
                     },
                     {
+                        data: 'company',
+                        name: 'company'
+                    },
+                    {
                         data: 'action',
                         orderable: false,
                         searchable: false
@@ -109,7 +111,7 @@
             let id = $(this).attr('remove-btn');
             $.ajax({
                 method: 'GET',
-                url: "/v2/master/users/"+id+"/remove",
+                url: "/v2/master/users/"+id+"/delete",
                 data: {
                     "_token": "{{ csrf_token() }}",
                 },
