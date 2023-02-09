@@ -373,7 +373,7 @@ class ZohoOrderFormat
         }
 
         if ($return == "state") {
-            Log::info(json_encode($buyerDtls));
+            //Log::info(json_encode($buyerDtls));
             return $buyerDtls->StateOrRegion ?? $buyerDtls->County;
         }
 
