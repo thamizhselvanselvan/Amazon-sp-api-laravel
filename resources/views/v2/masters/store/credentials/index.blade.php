@@ -30,7 +30,7 @@
         <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" />
     </a> -->
     </h2>
-    <table class="table table-bordered yajra-datatable table-sm grid" style="width:650px">
+    <table class="table table-bordered yajra-datatable table-sm">
         <thead class='table-primary'>
             <tr>
                 <th>ID</th>   
@@ -98,11 +98,12 @@
         ],
         columnDefs: [
             { "width":"50px" , "targets": 0},
-            { "width":"80px" , "targets": 1},
-            { "width":"80px" , "targets": 2},
-            { "width":"50px" , "targets":3},
+            { "width":"100px" , "targets": 1},
+            { "width":"100px" , "targets": 2},
+            { "width":"150px" , "targets":3},
             { "width":"50px" , "targets": 4},
-            { "width":"50px" , "targets": 5}
+            { "width":"50px" , "targets": 5},
+            { "width":"120px" , "targets": 6}
            
         ],
         fixedColumns: true
