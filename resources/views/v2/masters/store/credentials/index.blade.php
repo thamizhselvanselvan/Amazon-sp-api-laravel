@@ -30,7 +30,7 @@
         <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" />
     </a> -->
     </h2>
-    <table class="table table-bordered yajra-datatable table-sm">
+    <table class="table table-bordered yajra-datatable table-sm" style="width:100%">
         <thead class='table-primary'>
             <tr>
                 <th>ID</th>   
@@ -59,10 +59,10 @@
         serverSide: true,
 
         ajax: "{{ url('/v2/master/store/credentials') }}",
-        scrollY:        "300px",
+        scrollY:        true,
         scrollX:        true,
         scrollCollapse: true,
-        'autowidth' :false,
+        autowidth :false,
         columns: [{
                 data: 'id',
                 name: 'id',
