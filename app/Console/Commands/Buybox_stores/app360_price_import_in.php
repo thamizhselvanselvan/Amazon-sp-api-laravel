@@ -59,7 +59,7 @@ class app360_price_import_in extends Command
             ->limit(500)
             ->get()->toArray();
 
-            
+
             if (count($datas) <= 0) {
 
                 Products_in::where('cyclic', 1)->update(['cyclic' => 0]);
@@ -83,7 +83,7 @@ class app360_price_import_in extends Command
         $select_query = [
             'asin_destination_uss.priority',
             'pricing_ins.in_price',
-            'pricing_uss.usa_to_in_b2c',
+            'pricing_uss.usa_to_in_b2b',
             'pricing_uss.available',
             'pricing_uss.asin',
             'pricing_ins.next_highest_seller_price',
@@ -109,10 +109,10 @@ class app360_price_import_in extends Command
 
         foreach ($data as $value) {
 
-            //$ceil_price  = addPercentage($value['usa_to_in_b2c'], $this->base_percentage);
-            //$base_price  = removePercentage($value['usa_to_in_b2c'], $this->ceil_percentage);
+            //$ceil_price  = addPercentage($value['usa_to_in_b2b'], $this->base_percentage);
+            //$base_price  = removePercentage($value['usa_to_in_b2b'], $this->ceil_percentage);
 
-            $price_calculate = $this->calculate($value['usa_to_in_b2c']);
+            $price_calculate = $this->calculate($value['usa_to_in_b2b']);
 
             $insert_data_in[] = [
                 'store_id' => $store_id,
@@ -120,7 +120,7 @@ class app360_price_import_in extends Command
                 'priority' => $value['priority'],
                 'availability' => $value['available'],
                 'bb_price' => ceil($value['in_price']),
-                'app_360_price' => ceil($value['usa_to_in_b2c']),
+                'app_360_price' => ceil($value['usa_to_in_b2b']),
                 'base_price' => ceil($price_calculate['base_price']),
                 'ceil_price' => ceil($price_calculate['ceil_price']),
                 'lowest_seller_id' => $value['next_lowest_seller_id'],
