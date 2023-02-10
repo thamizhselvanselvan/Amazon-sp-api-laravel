@@ -388,7 +388,7 @@ class NewCatalog
             Code: $getCode
             File: $getFile";
 
-            slack_notification('app360', 'Amazon Catalog Import', $slackMessage);
+            // slack_notification('app360', 'Amazon Catalog Import', $slackMessage);
         }
     }
 
