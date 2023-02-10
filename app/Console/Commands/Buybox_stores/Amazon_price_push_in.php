@@ -69,15 +69,14 @@ class Amazon_price_push_in extends Command
         }    
 
         $data_to_insert = [];    
-
+        $asins = [];
         foreach ($products as $product) {
             
             $id_rules_applied = $product->asin."_".$product->store_id;
 
             $push_price = $this->push_price_logic($product, $id_rules_applied);
-            
-            Products_in::where('asin', $product->asin)->where("store_id", $product->store_id)->update(['cyclic_push' => 1]);
-            
+
+                $asins[] = $product->asin;
             // if Push is not equal to existing store price then don't push it
             if(isset($push_price) && $push_price != $product->store_price) {
 
@@ -113,6 +112,8 @@ class Amazon_price_push_in extends Command
             }
 
         }
+
+        Products_in::whereIn('asin', $asins)->where("store_id", $product->store_id)->update(['cyclic_push' => 1]);
     }
 
     public function push_price_logic($product, $id_rules_applied) {
@@ -313,7 +314,7 @@ class Amazon_price_push_in extends Command
         return addPercentage_product_push($excel_calculated_price, $this->increase_by_excel_price);
     }
 
-    public function our_own_store_won_bb(int $store_id, string $bb_winner_id):string|bool {
+    public function our_own_store_won_bb(int $store_id, string $bb_winner_id) {
 
         if(array_key_exists($store_id, $this->our_merchant_ids) && $store_id != $bb_winner_id) {
             return $this->our_merchant_ids[$store_id];
