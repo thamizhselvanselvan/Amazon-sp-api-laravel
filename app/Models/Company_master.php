@@ -10,4 +10,9 @@ class Company_master extends Model
     use HasFactory;
 
     protected $table='company_masters';
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
 }

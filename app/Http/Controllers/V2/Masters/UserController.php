@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V2\Masters;
 
+use App\Models\V2\Masters\UserCompany;
 use Illuminate\Http\Request;
 use App\Models\V2\Masters\User;
 use App\Models\V2\Masters\Roles;
@@ -21,7 +22,7 @@ class UserController extends Controller
         $user = Auth::user();
         $login_id = $user->id;
         $role = $user->roles->first()->name;
-        $users = User::has('company')->latest()->where('id', '>', '1')->orderBy('id', 'DESC')->get();
+        $users = User::with('companys')->latest()->where('id', '>', '1')->orderBy('id', 'DESC')->get();
         if ($request->isMethod('get')) {
             if ($request->ajax()) {
 
@@ -52,33 +53,47 @@ class UserController extends Controller
                         return rtrim($multiple_roles, ', ');
                     })
                     ->editColumn('company', function ($data) {
-                       
-                            return ($data['company']['company_name']);
-                       
+                        $user_companys='';
+                        foreach($data->companys as $company)
+                        {
+                            $user_companys.=$company->company_name.",";
+                        }
+                        
+                        // return ($data['company']['company_name']);
+                        return $user_companys;
                     })
                     ->rawColumns(['action', 'permission'])
                     ->make(true);
             }
             return view('v2.masters.users.index');
-        }
-        else
-        {
+        } else {
+
             $request->validate([
-                'name' =>'required|regex:/^[\pL\s\-]+$/u|min:3|max:150',
-                'email' =>'required|email|unique:App\Models\V2\Masters\User|max:150',
+                'name' => 'required|regex:/^[\pL\s\-]+$/u|min:3|max:150',
+                'email' => 'required|email|unique:App\Models\V2\Masters\User|max:150',
                 'password' => 'required|confirmed|min:6|max:20',
-                'company' =>'required'
-               
+                'company' => 'required'
+
             ]);
-           
+
             $am = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'company_id' => $request->company,
+                // 'company_id' => $request->company,
                 'department_id' => $request->department,
-    
+
             ]);
+
+            foreach ($request->company as $companys) {
+                if($companys!="")
+                {
+                UserCompany::create([
+                    'user_id' => $am->id,
+                    'company_id' => $companys,
+                ]);
+            }
+            }
             $role = $request->role;
             $am->assignRole($role);
             return redirect()->intended('/v2/master/users')->with('success', 'User ' . $request->name . ' has been created successfully');
@@ -87,9 +102,9 @@ class UserController extends Controller
     public function create()
     {
         $roles = Roles::get('name');
-        $companys = CompanyMaster::where('user_id',Auth::id())->get();
-        $departments = Department::where('status',1)->get();
-        return view('v2.masters.users.add', compact(['roles', 'companys','departments']));
+        $companys = CompanyMaster::where('user_id', Auth::id())->get();
+        $departments = Department::where('status', 1)->get();
+        return view('v2.masters.users.add', compact(['roles', 'companys', 'departments']));
     }
 
     function password_reset(Request $request, $id)
@@ -138,25 +153,25 @@ class UserController extends Controller
         $users = User::find($request->id);
         $selected_roles = $users->roles->pluck('name')->toArray();
         $roles = Roles::get('name');
-        $companys = CompanyMaster::where('user_id',Auth::id())->get();
-        $departments = Department::where('status',1)->get();
-        return view('v2.masters.users.edit', compact(['roles', 'companys', 'departments', 'selected_roles','users']));
+        $companys = CompanyMaster::where('user_id', Auth::id())->get();
+        $departments = Department::where('status', 1)->get();
+        return view('v2.masters.users.edit', compact(['roles', 'companys', 'departments', 'selected_roles', 'users']));
     }
 
     public function update(Request $request)
     {
         $request->validate([
-                'name' =>'required|regex:/^[\pL\s\-]+$/u|min:3|max:150',
-                'email' =>'required|email|max:150',
-                'company' =>'required'
+            'name' => 'required|regex:/^[\pL\s\-]+$/u|min:3|max:150',
+            'email' => 'required|email|max:150',
+            'company' => 'required'
         ]);
         $user = User::find($request->id);
 
         $user->update([
-                'name' => $request->name,
-                'email' => $request->email,
-                'company_id' => $request->company,
-                'department_id' => $request->department,
+            'name' => $request->name,
+            'email' => $request->email,
+            'company_id' => $request->company,
+            'department_id' => $request->department,
         ]);
 
         $role = $request->role;
@@ -170,5 +185,4 @@ class UserController extends Controller
         User::find($id)->delete();
         return response()->json(['success' => 'User has been deleted successfully']);
     }
-
 }
