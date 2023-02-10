@@ -48,7 +48,7 @@ class Product_push_export_by_stores extends Command
             "Highest Seller ID", "Highest Seller Price", "BB ID", "BB Price", "i have BB", "Any of our seller own BB"
         ];
         
-        $product_push_datas = DB::connection("buybox_stores")->table('product_push')
+        $product_push_datas = DB::connection("buybox_stores")->table('product_push_ins')
         ->where('store_id', $store_id)
         ->get()->toArray();
 

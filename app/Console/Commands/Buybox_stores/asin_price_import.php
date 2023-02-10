@@ -54,11 +54,9 @@ class Asin_price_import extends Command
         $start_date = Carbon::now()->subMinutes(20);
         $end_date = Carbon::now()->subMinutes(5);
 
-        $datas = Product::select(DB::raw("count(*)"), 'asin', 'store_id')
+        $datas = Product::select(DB::raw("count(*), group_concat('asin', ',')"), 'store_id')
             ->where('cyclic', 0)
-            ->orderBy('id', 'asc')
-            ->groupBy('store_id', 'asin')
-            ->whereBetween("updated_at", [$start_date, $end_date])
+            ->groupBy('store_id')
             ->limit(5)
             ->get()->toArray();
 
@@ -88,9 +86,11 @@ class Asin_price_import extends Command
             if ($country_code == 'IN') {
                 $this->pricingin($result_asins, $store_id);
             } else if ($country_code == 'AE') {
-                $this->pricingae($result_asins, $store_id);
+                //$this->pricingae($result_asins, $store_id);
             } else if ($country_code == 'US') {
                 $this->pricinguss($result_asins, $store_id);
+            } else if ($country_code == 'SA') {
+                //$this->pricinguss($result_asins, $store_id);
             } else {
                 Log::notice('store_id' . $store_id . '-' . 'Country Code'. $country_code .'No pricing Logic Found');
             }
