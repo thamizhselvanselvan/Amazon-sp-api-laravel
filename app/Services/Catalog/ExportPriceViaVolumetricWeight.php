@@ -39,6 +39,7 @@ class ExportPriceViaVolumetricWeight
 
         $headers_us = [
             'ASIN',
+            'AVAILABLE',
             'LENGTH_INCH',
             'WIDTH_INCH',
             'HEIGHT_INCH',
@@ -55,6 +56,7 @@ class ExportPriceViaVolumetricWeight
 
         $headers_in = [
             'ASIN',
+            'AVAILABLE',
             'LENGTH_CM',
             'WIDTH_CM',
             'HEIGHT_CM',
@@ -102,7 +104,7 @@ class ExportPriceViaVolumetricWeight
             if ($this->countryCode == 'US') {
 
                 $pricing_details = PricingUs::join("catalognewuss", "catalognewuss.asin", "pricing_uss.asin")
-                    ->select(["catalognewuss.dimensions", "pricing_uss.asin", "pricing_uss.us_price", "pricing_uss.updated_at"])
+                    ->select(["catalognewuss.dimensions", "pricing_uss.asin", "pricing_uss.available", "pricing_uss.us_price", "pricing_uss.updated_at"])
                     ->whereIn('pricing_uss.asin', $where_asin)
                     ->get()
                     ->toArray();
@@ -112,7 +114,7 @@ class ExportPriceViaVolumetricWeight
             } elseif ($this->countryCode == 'IN') {
 
                 $pricing_details = PricingIn::join("catalognewins", "catalognewins.asin", "pricing_ins.asin")
-                    ->select(["catalognewins.dimensions", "pricing_ins.asin", "pricing_ins.in_price", "pricing_ins.updated_at"])
+                    ->select(["catalognewins.dimensions", "pricing_ins.asin", "pricing_ins.available", "pricing_ins.in_price", "pricing_ins.updated_at"])
                     ->whereIn('pricing_ins.asin', $where_asin)
                     ->get()
                     ->toArray();
@@ -166,6 +168,8 @@ class ExportPriceViaVolumetricWeight
                                 $volKg = VolumetricIntoKG($packet_dimensions);
                                 $actual_weight_kg = $poundToKg > $volKg ? $poundToKg : $volKg;
 
+
+                                $asin_data[$key]['AVAILABLE'] = $catalog_detail['available'];
                                 $asin_data[$key]['LENGHT_CM'] = $length * 2.54;         //inch to cm
                                 $asin_data[$key]['WIDTH_CM']  = $width * 2.54;          //inch to cm
                                 $asin_data[$key]['HEIGHT_CM'] = $height * 2.54;         //inch to cm
@@ -188,6 +192,7 @@ class ExportPriceViaVolumetricWeight
                                 $volPound = VolumetricIntoPounds($packet_dimensions);
                                 $actual_weight_pound = $weight > $volPound ? $weight : $volPound;
 
+                                $asin_data[$key]['AVAILABLE'] = $catalog_detail['available'];
                                 $asin_data[$key]['LENGTH_INCH'] = $length;
                                 $asin_data[$key]['WIDTH_INCH'] = $width;
                                 $asin_data[$key]['HEIGHT_INCH'] = $height;

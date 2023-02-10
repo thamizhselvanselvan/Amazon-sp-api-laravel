@@ -77,10 +77,10 @@ class ImportPriceFromBuyBox
             $BBRecords = [];
             $catalogWeight = [];
             $asinDetails = [];
-            $weight = '';
-            $height = '';
-            $length = '';
-            $width = '';
+            $weight = 0;
+            $height = 0;
+            $length = 0;
+            $width = 0;
 
             foreach ($catalogRecords as $catalogRecord) {
                 foreach ($catalogRecord as $catalog) {
