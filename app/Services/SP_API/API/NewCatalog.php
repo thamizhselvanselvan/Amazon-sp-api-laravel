@@ -61,7 +61,6 @@ class NewCatalog
             'salesRanks',
         ];
 
-        Log::notice($records);
         $aws_id = NULL;
         $country_code = strtolower($records[0]['source']);
         $seller_id = $records[0]['seller_id'];
@@ -101,7 +100,6 @@ class NewCatalog
         $asinSourceUpdate = [];
         $catalogTable = [];
         $classification = '';
-        Log::warning($queue_data);
         // foreach ($queue_data as $record) {
 
         if (isset($queue_data[0])) {
@@ -313,11 +311,6 @@ class NewCatalog
 
     public function FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id)
     {
-        log::alert($asins);
-        log::alert($country_code);
-        log::alert($seller_id);
-        log::alert($token);
-        log::alert($aws_id);
         $country_code = strtoupper($country_code);
         $config =   $this->config($aws_id, $country_code, $token);
         $apiInstance = new CatalogItemsV20220401Api($config);
