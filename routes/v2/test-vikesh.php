@@ -1,6 +1,10 @@
 <?php
 
 use League\Csv\Writer;
+use App\Models\Catalog\catalogae;
+use App\Models\Catalog\catalogin;
+use App\Models\Catalog\catalogsa;
+use App\Models\Catalog\catalogus;
 use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingUs;
 use App\Models\Catalog\Catalog_in;
@@ -10,7 +14,9 @@ use Illuminate\Support\Facades\Storage;
 use App\Services\Catalog\PriceConversion;
 
 Route::get('volume', function () {
-    echo date("Y-m-d H:i:s", strtotime("2010-06-23T20:47:48-04:00"));
+
+    $source_mode = table_model_create(country_code: 'sa', model: 'Catalog', table_name: 'catalog');
+    po($source_mode->get());
     exit;
     $catalogTable = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
     $catalogRecords = $catalogTable->select('asin', 'height', 'length', 'width', 'unit', 'weight')
