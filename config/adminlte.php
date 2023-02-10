@@ -335,7 +335,7 @@ return [
                         [
                             'text' => 'Credentials Management',
                             'url' => 'admin/creds/manage',
-                            'icon' => 'fa  fa-task',
+                            'icon' => 'far fa-id-card',
                             'can' => ['Admin']
                         ],
                     ]
