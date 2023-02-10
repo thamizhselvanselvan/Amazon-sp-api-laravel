@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Buybox_stores;
 
+use in;
 use Illuminate\Http\Request;
 use App\Models\Aws_credential;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Buybox_stores\Product_Push;
+use App\Models\Buybox_stores\Product_Push_in;
 use App\Models\Buybox_stores\Seller_id_name;
 use App\Models\order\OrderSellerCredentials;
 use App\Services\AmazonFeedApiServices\AmazonFeedProcess;
@@ -105,6 +107,7 @@ class BuyBoxStoreController extends Controller
 
         $stores = OrderSellerCredentials::select('store_name', 'seller_id')
             ->where('buybox_stores', 1)
+            ->whereIn("seller_id", [6, 8, 10, 27])
             ->distinct()
             ->get();
 
@@ -143,7 +146,7 @@ class BuyBoxStoreController extends Controller
                 'applied_rules'
             ];
        
-            $data = Product_Push::query()
+            $data = Product_Push_in::query()
                 ->select($select_query)
                 ->when($request_store_id, function ($query) use ($request_store_id) {
                     return $query->where('store_id', $request_store_id);
@@ -205,13 +208,13 @@ class BuyBoxStoreController extends Controller
 
                     return $applied_rules;
                 })
-                ->addColumn('action', function($query) {
+                // ->addColumn('action', function($query) {
                     
-                    return "<button class='price_process btn btn-sm btn-primary'
-                              asin='{$query->asin}' productsku=='{$query->product_sku}' pushprice='{$query->push_price}' storeid={$query->store_id} data-id={$query->id} 
-                              base_price={$query->base_price}
-                            >Process</button>";
-                })
+                //     return "<button class='price_process btn btn-sm btn-primary'
+                //               asin='{$query->asin}' productsku=='{$query->product_sku}' pushprice='{$query->push_price}' storeid={$query->store_id} data-id={$query->id} 
+                //               base_price={$query->base_price}
+                //             >Process</button>";
+                // })
                 ->rawColumns(['action', 'asin', 'product_sku', 'highest_seller_name', 'lowest_seller_name', 'destination_bb_seller', 'current_store_price'])
                 ->make(true);
         }
@@ -262,7 +265,7 @@ class BuyBoxStoreController extends Controller
 
         if ($request->ajax()) {
        
-            $data = Product_Push::query()
+            $data = Product_Push_in::query()
                 ->select('id', 'asin', 'product_sku', 'current_availability_status', 'push_availability_status')
                 ->when($request_store_id, function ($query) use ($request_store_id) {
                     return $query->where('store_id', $request_store_id);
@@ -327,15 +330,15 @@ class BuyBoxStoreController extends Controller
 
     public function updatepricelisting(Request $request)
     {
-        $data =  Product_Push::query()
-            ->where('push_status', '1')
-            ->get();
+        // $data =  Product_Push::query()
+        //     ->where('push_status', '1')
+        //     ->get();
 
-        if ($request->ajax()) {
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->make(true);
-        }
+        // if ($request->ajax()) {
+        //     return DataTables::of($data)
+        //         ->addIndexColumn()
+        //         ->make(true);
+        // }
          return view('buybox_stores.update_listing');
     }
 
