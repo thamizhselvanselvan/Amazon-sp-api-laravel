@@ -226,6 +226,9 @@ class Amazon_price_push_in extends Command
 
                 $our_own_seller = $this->our_own_store_won_bb(store_id: $store_id, bb_winner_id: $bb_winner_id);
 
+                Log::notice("OUR OWN SELLER");
+                Log::notice($our_own_seller);
+
                 $this->rules_applied[$id_rules_applied] = [
                     "We have lost the BB",
                     "But any one of our own seller ($our_own_seller) has won the BB",
