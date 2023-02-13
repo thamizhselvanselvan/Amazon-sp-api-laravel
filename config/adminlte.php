@@ -332,6 +332,12 @@ return [
                             'icon' => 'far fa fa-money',
                             'can' => ['Admin']
                         ],
+                        [
+                            'text' => 'Credentials Management',
+                            'url' => 'admin/creds/manage',
+                            'icon' => 'far fa-id-card',
+                            'can' => ['Admin']
+                        ],
                     ]
                 ],
                 [
