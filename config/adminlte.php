@@ -666,7 +666,7 @@ return [
                         [
                             'text' => 'Zoho Dump',
                             'url' => "orders/missing/force/dump/view",
-                            'can' => ['Admin'],
+                            'can' => ['Admin', 'Catalog'],
                             'icon' => 'fa fa-plus-circle',
                         ],
                     ],
