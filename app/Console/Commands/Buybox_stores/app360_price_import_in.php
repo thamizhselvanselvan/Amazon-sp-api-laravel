@@ -59,7 +59,7 @@ class app360_price_import_in extends Command
             ->limit(500)
             ->get()->toArray();
 
-            
+
             if (count($datas) <= 0) {
 
                 Products_in::where('cyclic', 1)->update(['cyclic' => 0]);
