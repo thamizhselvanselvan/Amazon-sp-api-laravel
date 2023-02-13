@@ -27,12 +27,8 @@ class NewCatalog
     public function Catalog($records, $seller_id = NULL)
     {
         $queue_data = [];
-        $country_code1 = '';
-        $asins = [];
         $count = 0;
-        $auth_id = '';
-        $token = '';
-        $seller_id = '';
+
         $columnName = [
             'asin',
             'seller_id',
@@ -64,80 +60,107 @@ class NewCatalog
             'relationships',
             'salesRanks',
         ];
+
+        $aws_id = NULL;
+        $country_code = strtolower($records[0]['source']);
+        $seller_id = $records[0]['seller_id'];
+        $auth_id = $records[0]['id'];
+        $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
+        $token = $aws_token[0];
+
         foreach ($records as $record) {
 
-            $asin = $record['asin'];
-            $country_code = $record['source'];
-            $country_code1 = $country_code;
-            $seller_id = $record['seller_id'];
-            $auth_id = $record['id'];
+            $asin[] = $record['asin'];
+            // $country_code = $record['source'];
+            // $country_code1 = $country_code;
+            // $seller_id = $record['seller_id'];
+            // $auth_id = $record['id'];
 
-            $asins[] = $asin;
-            $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
-            $token = $aws_token[0];
+            // $asins[] = $asin;
+            // $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
+            // $token = $aws_token[0];
 
-            $country_code = strtolower($country_code);
-            $catalog_table = 'catalognew' . $country_code . 's';
+            // $country_code = strtolower($country_code);
+            // $catalog_table = 'catalognew' . $country_code . 's';
 
-            $aws_id = NULL;
+            // $aws_id = NULL;
 
-            if ($count == 9) {
+            // if ($count == 9) {
 
-                $queue_data[] = $this->FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id);
-                $count = 0;
-                $asins = [];
-            }
-            $count++;
+            //     $queue_data[] = $this->FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id);
+            //     $count = 0;
+            //     $asins = [];
+            // }
+            // $count++;
         }
-
-        if ($asins) {
-            $queue_data[] = $this->FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id);
-        }
+        $queue_data[] = $this->FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id);
 
         $NewCatalogs = [];
-        $country_code1 = strtolower($country_code1);
+        $country_code1 = $country_code;
         $asinSourceUpdate = [];
-        foreach ($queue_data as $record) {
+        $catalogTable = [];
+        $classification = '';
+        // foreach ($queue_data as $record) {
 
-            if ($record) {
-                foreach ($record as $key1 => $value) {
+        if (isset($queue_data[0])) {
+            foreach ($queue_data[0] as $key1 => $value) {
 
-                    $asinSourceUpdate[$key1] = [
-                        'asin' => $value['asin'],
-                        'user_id' => $value['seller_id'],
-                        'status' => '1'
-                    ];
+                $asinSourceUpdate[$key1] = [
+                    'asin' => $value['asin'],
+                    'user_id' => $value['seller_id'],
+                    'status' => '1'
+                ];
 
-                    foreach ($value as $key => $data) {
+                if (isset($value['browseClassification'])) {
+                    $browse = (array) json_decode($value['browseClassification'], true);
+                    $classification = $browse['classificationId'] ?? '';
+                }
+                $catalogTable[$key1] = [
+                    'asin'              => $value['asin'],
+                    'source'            => $value['source'],
+                    'length'            => $value['length'] ?? 0,
+                    'width'             => $value['width'] ?? 0,
+                    'height'            => $value['height'] ?? 0,
+                    'unit'              => $value['unit'] ?? '',
+                    'weight'            => $value['weight'] ?? 0,
+                    'weight_unit'       => $value['weight_unit'] ?? '',
+                    'classification_id' => $classification,
+                    'brand'             => $value['brand'] ?? '',
+                    'manufacturer'      => $value['manufacturer'] ?? ''
+                ];
 
-                        if ($key != '0') {
+                foreach ($value as $key => $data) {
 
-                            $key = ($key == "browseClassification") ? "browse_classification" : $key;
-                            $key = ($key == "itemClassification") ? "item_classification" : $key;
-                            $key = ($key == "modelNumber") ? "model_number" : $key;
-                            $key = ($key == "packageQuantity") ? "package_quantity" : $key;
-                            $key = ($key == "productTypes") ? "product_types" : $key;
-                            $key = ($key == "websiteDisplayGroup") ? "product_types" : $key;
-                            $key = ($key == "itemName") ? "item_name" : $key;
-                            $key = ($key == "partNumber") ? "part_number" : $key;
+                    if ($key != '0') {
 
-                            if (in_array($key, $columnName)) {
-                                $NewCatalogs[$key1][$key] = $data;
-                            }
+                        $key = ($key == "browseClassification") ? "browse_classification" : $key;
+                        $key = ($key == "itemClassification") ? "item_classification" : $key;
+                        $key = ($key == "modelNumber") ? "model_number" : $key;
+                        $key = ($key == "packageQuantity") ? "package_quantity" : $key;
+                        $key = ($key == "productTypes") ? "product_types" : $key;
+                        $key = ($key == "websiteDisplayGroup") ? "product_types" : $key;
+                        $key = ($key == "itemName") ? "item_name" : $key;
+                        $key = ($key == "partNumber") ? "part_number" : $key;
+
+                        if (in_array($key, $columnName)) {
+                            $NewCatalogs[$key1][$key] = $data;
                         }
-                        $count++;
                     }
-                    // $NewCatalogs[$key1]['created_at'] = now();
-                    // $NewCatalogs[$key1]['updated_at'] = now();
+                    $count++;
                 }
             }
         }
+        // }
         // Log::alert($NewCatalogs);
         if (isset($country_code1) && !empty($country_code1)) {
 
             $source_mode = table_model_create(country_code: $country_code1, model: 'Asin_source', table_name: 'asin_source_');
             $source_mode->upsert($asinSourceUpdate, ['user_asin_unique'], ['asin', 'user_id', 'status']);
+
+            $catalog_table = table_model_create(country_code: $country_code1, model: 'Catalog', table_name: 'catalog');
+            $catalog_table->upsert($catalogTable, ['asin_unique'], ['asin', 'source', 'length', 'width', 'height', 'unit', 'weight', 'weight_unit', 'classification_id', 'brand', 'manufacturer']);
             $asinSourceUpdate = [];
+            $catalogTable = [];
 
             foreach ($NewCatalogs as  $NewCatalog) {
 
@@ -325,6 +348,7 @@ class NewCatalog
 
             $queue_data = [];
             $check_asin = [];
+
             foreach ($result['items'] as $key => $record) {
                 $check_asin[] = $record->asin;
 
