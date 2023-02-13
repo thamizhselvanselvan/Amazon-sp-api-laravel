@@ -89,7 +89,7 @@ class Search_Product
                 if ($key2 == 'images') {
                     $catalog_images = json_decode($catalog);
                     foreach ($catalog_images[0]->images as $key3 => $images) {
-                        if ($key3 <= 9 && $images->height >= 500 && $images->height <= 700) {
+                        if ($key3 <= 9 && $images->height >= 1000 && $images->height <= 2000) {
                             $catalog_for_cliqnshop[$key1]['images'][$catalog_data['asin']]['image' . $key3 + 1] = $images->link;
                         }
                     }

@@ -49,4 +49,8 @@ class Inventory extends Model
     {
         return $this->hasOne(Shelve::class, 'shelve_id', 'bin');
     }
+    public function tags()
+    {
+        return $this->hasOne(Tag::class, 'id', 'tag');
+    }
 }

@@ -10,10 +10,10 @@ Route::get('test/order/{order_id}/{seller_id}/{country_code}', 'TestController@g
 Route::get('sanju/test/images', function () {
 
 
-    $data = ('[{"marketplaceId":"ATVPDKIKX0DER","images":[{"variant":"MAIN","link":"https:\/\/m.media-amazon.com\/images\/I\/61MDJPrqerL.jpg","height":1328,"width":1351},{"variant":"MAIN","link":"https:\/\/m.media-amazon.com\/images\/I\/41qMNss2AWL.jpg","height":491,"width":500},{"variant":"MAIN","link":"https:\/\/m.media-amazon.com\/images\/I\/41qMNss2AWL._SL75_.jpg","height":74,"width":75},{"variant":"PT01","link":"https:\/\/m.media-amazon.com\/images\/I\/51zJ-EspMHL.jpg","height":1392,"width":1550},{"variant":"PT01","link":"https:\/\/m.media-amazon.com\/images\/I\/31zkHA+YvfL.jpg","height":449,"width":500},{"variant":"PT01","link":"https:\/\/m.media-amazon.com\/images\/I\/31zkHA+YvfL._SL75_.jpg","height":67,"width":75}]}]');
+    $data = ('[{"marketplaceId":"ATVPDKIKX0DER","images":[{"variant":"MAIN","link":"https:\/\/m.media-amazon.com\/images\/I\/71OWSOnk+zL.jpg","height":1000,"width":1000},{"variant":"MAIN","link":"https:\/\/m.media-amazon.com\/images\/I\/61Wpkl8oVDL.jpg","height":500,"width":500},{"variant":"MAIN","link":"https:\/\/m.media-amazon.com\/images\/I\/61Wpkl8oVDL._SL75_.jpg","height":75,"width":75},{"variant":"PT01","link":"https:\/\/m.media-amazon.com\/images\/I\/71--NVjLvhL.jpg","height":1000,"width":1000},{"variant":"PT01","link":"https:\/\/m.media-amazon.com\/images\/I\/61XF+tw0r0L.jpg","height":500,"width":500},{"variant":"PT01","link":"https:\/\/m.media-amazon.com\/images\/I\/61XF+tw0r0L._SL75_.jpg","height":75,"width":75},{"variant":"PT02","link":"https:\/\/m.media-amazon.com\/images\/I\/715M80emuTL.jpg","height":1000,"width":1000},{"variant":"PT02","link":"https:\/\/m.media-amazon.com\/images\/I\/616EHH0o7YL.jpg","height":500,"width":500},{"variant":"PT02","link":"https:\/\/m.media-amazon.com\/images\/I\/616EHH0o7YL._SL75_.jpg","height":75,"width":75}]}]');
     $imagedata = json_decode($data, true);
-po($imagedata);
-exit;
+    po($imagedata);
+    // exit;
     if (isset($imagedata[0]['images'])) {
 
         foreach ($imagedata[0]['images'] as $counter => $image_data_new) {
@@ -28,6 +28,8 @@ exit;
                 } else if ($counter == 7) {
                     ($img1["Images${counter}"] = $image_data_new['link']);
                 } else if ($counter == 10) {
+                    ($img1["Images${counter}"] = $image_data_new['link']);
+                } else if ($counter == 13) {
                     ($img1["Images${counter}"] = $image_data_new['link']);
                 }
             }
