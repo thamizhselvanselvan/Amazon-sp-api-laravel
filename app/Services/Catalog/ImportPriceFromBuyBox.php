@@ -146,7 +146,7 @@ class ImportPriceFromBuyBox
                     $price = $country_code_lr . '_price';
 
                     if ($BuyBoxWinner == 1) {
-                        Log::warning($listingAmount);
+
                         $BBlistingPrice = $listingAmount[$key1] ?? 0;
 
                         $asinDetails = [
