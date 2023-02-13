@@ -156,7 +156,7 @@ class CliqnshopCataloginsert
         //length(mshop_attribute)
         $length_attribute = [];
         $get_attribute_id_length = '';
-        if ($length_value != '' ) {
+        if ($length_value != '') {
             $length_attribute = [
                 'siteid' => $site_id,
                 'key' => "product|length|" . $length_value,
@@ -220,6 +220,7 @@ class CliqnshopCataloginsert
         }
 
         //price(mshop_price)
+        $price = [];
         if ($Price_US_IN != '') {
             $price = [
                 'siteid' => $site_id,
@@ -478,7 +479,7 @@ class CliqnshopCataloginsert
 
         //domain_attribute(price) insert to mshop_product_list
 
-        if (count($price) > 0 && isset($id_price)) {
+        if (!empty($price) && isset($id_price)) {
             $domain_price = [
                 'siteid' => $site_id,
                 'parentid' => $get_product_id,
@@ -571,7 +572,7 @@ class CliqnshopCataloginsert
 
         //index (asin) to mshop_index_attribute
 
-        if (count($attribute['label']) > 0) {
+        if (!empty($attribute['label']) ) {
 
             $index_attribute = [
                 'prodid' => $get_product_id,
@@ -591,7 +592,7 @@ class CliqnshopCataloginsert
         }
 
         //index (length) to mshop_index_attribute
-        if (count($length_attribute) > 0) {
+        if (!empty($length_attribute)) {
             $index_attribute_length = [
                 'prodid' => $get_product_id,
                 'siteid' => $site_id,
@@ -610,7 +611,7 @@ class CliqnshopCataloginsert
         }
 
         //index (width) to mshop_index_attribute
-        if (count($width_attribute) > 0) {
+        if (!empty($width_attribute)) {
 
             $index_attribute_width = [
                 'prodid' => $get_product_id,

@@ -14,7 +14,7 @@ use App\Models\order\OrderSellerCredentials;
 class app360_price_import_in extends Command
 {
     private $base_percentage = 20;
-    private $ceil_percentage = 20;
+    private $ceil_percentage = 30;
     private $price_calculate_type = "percent";
 
     /**
@@ -51,15 +51,15 @@ class app360_price_import_in extends Command
 
         $stores = [6, 8, 10, 27];
 
-        foreach($stores as $store_id) {
-
+        foreach ($stores as $store_id) {
+           
             $datas = Products_in::select('asin')
-            ->where('cyclic', 0)
-            ->where("store_id", $store_id)
-            ->limit(500)
-            ->get()->toArray();
+                ->where('cyclic', 0)
+                ->where("store_id", $store_id)
+                ->limit(5)
+                ->get()->toArray();
 
-            
+            Products_in::where('store_id', $store_id)->whereIn('asin', $datas)->update(['cyclic' => 1]);
             if (count($datas) <= 0) {
 
                 Products_in::where('cyclic', 1)->update(['cyclic' => 0]);
@@ -68,7 +68,6 @@ class app360_price_import_in extends Command
             } else {
                 $this->pricingin($datas, $store_id);
             }
-
         }
 
         return true;
@@ -92,7 +91,9 @@ class app360_price_import_in extends Command
             'pricing_ins.next_lowest_seller_id',
             'pricing_ins.bb_winner_price',
             'pricing_ins.bb_winner_id',
-            'pricing_ins.is_any_our_seller_won_bb'
+            'pricing_ins.is_any_our_seller_won_bb',
+            'cyclic' => 1
+
         ];
 
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'asin_destination_');
@@ -138,11 +139,10 @@ class app360_price_import_in extends Command
 
         $this->product_upsert($insert_data_in);
 
-        if(count($asins) > 0) {
+        if (count($asins) > 0) {
 
             Products_in::where('store_id', $store_id)->whereIn('asin', $asins)->update(['cyclic' => 1]);
         }
-
     }
 
     public function product_upsert($data)

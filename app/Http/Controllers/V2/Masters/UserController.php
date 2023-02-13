@@ -21,7 +21,7 @@ class UserController extends Controller
         $user = Auth::user();
         $login_id = $user->id;
         $role = $user->roles->first()->name;
-        $users = User::has('company')->latest()->where('id', '>', '1')->orderBy('id', 'DESC')->get();
+        $users = User::with('companys')->latest()->where('id', '>', '1')->orderBy('id', 'DESC')->get();
         if ($request->isMethod('get')) {
             if ($request->ajax()) {
 
@@ -52,44 +52,43 @@ class UserController extends Controller
                         return rtrim($multiple_roles, ', ');
                     })
                     ->editColumn('company', function ($data) {
-                       
-                            return ($data['company']['company_name']);
-                       
+                        $user_companys=$data->companys->pluck('company_name')->toArray();
+                        return implode(',',$user_companys);
                     })
                     ->rawColumns(['action', 'permission'])
                     ->make(true);
             }
             return view('v2.masters.users.index');
-        }
-        else
-        {
+        } else {
+
             $request->validate([
-                'name' =>'required|regex:/^[\pL\s\-]+$/u|min:3|max:150',
-                'email' =>'required|email|unique:App\Models\V2\Masters\User|max:150',
+                'name' => 'required|regex:/^[\pL\s\-]+$/u|min:3|max:150',
+                'email' => 'required|email|unique:App\Models\V2\Masters\User|max:150',
                 'password' => 'required|confirmed|min:6|max:20',
-                'company' =>'required'
-               
+                'company' => 'required'
+
             ]);
-           
-            $am = User::create([
+
+            $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'company_id' => $request->company,
                 'department_id' => $request->department,
-    
+
             ]);
+
+            $user->companys()->attach($request->company);//insert data to pivot table
             $role = $request->role;
-            $am->assignRole($role);
+            $user->assignRole($role);
             return redirect()->intended('/v2/master/users')->with('success', 'User ' . $request->name . ' has been created successfully');
         }
     }
     public function create()
     {
         $roles = Roles::get('name');
-        $companys = CompanyMaster::where('user_id',Auth::id())->get();
-        $departments = Department::where('status',1)->get();
-        return view('v2.masters.users.add', compact(['roles', 'companys','departments']));
+        $companys = CompanyMaster::where('user_id', Auth::id())->get();
+        $departments = Department::where('status', 1)->get();
+        return view('v2.masters.users.add', compact(['roles', 'companys', 'departments']));
     }
 
     function password_reset(Request $request, $id)
@@ -138,27 +137,26 @@ class UserController extends Controller
         $users = User::find($request->id);
         $selected_roles = $users->roles->pluck('name')->toArray();
         $roles = Roles::get('name');
-        $companys = CompanyMaster::where('user_id',Auth::id())->get();
-        $departments = Department::where('status',1)->get();
-        return view('v2.masters.users.edit', compact(['roles', 'companys', 'departments', 'selected_roles','users']));
+        $companys = CompanyMaster::where('user_id', Auth::id())->get();
+        $departments = Department::where('status', 1)->get();
+        $userCompanys = $users->companys()->allRelatedIds()->toArray();
+        return view('v2.masters.users.edit', compact(['roles', 'companys', 'departments', 'selected_roles', 'users','userCompanys']));
     }
 
     public function update(Request $request)
     {
         $request->validate([
-                'name' =>'required|regex:/^[\pL\s\-]+$/u|min:3|max:150',
-                'email' =>'required|email|max:150',
-                'company' =>'required'
+            'name' => 'required|regex:/^[\pL\s\-]+$/u|min:3|max:150',
+            'email' => 'required|email|max:150',
+            'company' => 'required'
         ]);
         $user = User::find($request->id);
-
         $user->update([
-                'name' => $request->name,
-                'email' => $request->email,
-                'company_id' => $request->company,
-                'department_id' => $request->department,
+            'name' => $request->name,
+            'email' => $request->email,
+            'department_id' => $request->department,
         ]);
-
+        $user->companys()->sync($request->company); //requested companies  will be kept and others will  be removed from pivot table
         $role = $request->role;
         $user->roles()->detach();
         $user->assignRole($role);
@@ -167,8 +165,8 @@ class UserController extends Controller
 
     public function delete($id)
     {
+        User::find($id)->companys()->detach();
         User::find($id)->delete();
         return response()->json(['success' => 'User has been deleted successfully']);
     }
-
 }

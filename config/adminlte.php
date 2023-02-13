@@ -625,6 +625,25 @@ return [
             'can' => ['Admin', 'Catalog','Inventory', 'BOE', 'KYC'],
             'submenu' => [
                 [
+                    'text' => 'Dashboard',
+                    'can' => ['Admin'],
+                    'icon' => 'fa fa-dashboard',
+                    'submenu' => [
+                        [
+                            'text' => 'Order Details',
+                            'url' => 'orders/dashboard',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa fa-file-text-o ',
+                        ],
+                        [
+                            'text' => 'Order Item Details',
+                            'url' => 'orders/item/dashboard',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa fa-cube',
+                        ],
+                    ],
+                ],
+                [
                     'text' => 'Order Details',
                     'can' => ['Admin'],
                     'icon' => 'fa fa-search',
@@ -660,7 +679,7 @@ return [
                         [
                             'text' => 'Price Updated',
                             'url' => "orders/missing/price/updated",
-                            'can' => ['Admin'],
+                            'can' => ['Admin', 'Catalog'],
                             'icon' => ' fa fa-check-circle-o',
                         ],
                         [
@@ -868,25 +887,6 @@ return [
                     'url' => 'amazon/invoice',
                     'icon' => 'far fa fa-bullseye',
                     'can' => ['Admin', 'KYC'],
-                ],
-                [
-                    'text' => 'Dashboard',
-                    'can' => ['Admin'],
-                    'icon' => 'fa fa-dashboard',
-                    'submenu' => [
-                        [
-                            'text' => 'Order Details',
-                            'url' => 'orders/dashboard',
-                            'can' => ['Admin'],
-                            'icon' => 'fa fa fa-file-text-o ',
-                        ],
-                        [
-                            'text' => 'Order Item Details',
-                            'url' => 'orders/item/dashboard',
-                            'can' => ['Admin'],
-                            'icon' => 'fa fa fa-cube',
-                        ],
-                    ],
                 ],
                 [
                     'text' => 'B2C Ship',
