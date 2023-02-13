@@ -12,7 +12,8 @@ class Asin_source extends Model
     protected $connection = 'catalog';
     protected $fillable = [
         'asin',
-        'user_id'
+        'user_id',
+        'status'
     ];
 
 
