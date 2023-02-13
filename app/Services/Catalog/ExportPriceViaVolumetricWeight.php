@@ -102,7 +102,7 @@ class ExportPriceViaVolumetricWeight
 
 
             if ($this->countryCode == 'US') {
-                $start_time = startTime();
+                // $start_time = startTime();
 
                 $pricing_details = PricingUs::join("catalognewuss", "catalognewuss.asin", "pricing_uss.asin")
                     ->select(["catalognewuss.dimensions", "pricing_uss.asin", "pricing_uss.available", "pricing_uss.us_price", "pricing_uss.updated_at"])
@@ -110,11 +110,11 @@ class ExportPriceViaVolumetricWeight
                     ->get()
                     ->toArray();
 
-                Log::debug("query" . endTime($start_time));
+                // Log::debug("query" . endTime($start_time));
 
-                $start_time = startTime();
+                // $start_time = startTime();
                 $this->dataFormatting($pricing_details, $this->countryCode, $headers_us);
-                Log::debug('data-formatting' . endTime($start_time));
+                // Log::debug('data-formatting' . endTime($start_time));
             } elseif ($this->countryCode == 'IN') {
 
                 $pricing_details = PricingIn::join("catalognewins", "catalognewins.asin", "pricing_ins.asin")
@@ -206,9 +206,9 @@ class ExportPriceViaVolumetricWeight
                                 $us_price = $catalog_detail['us_price'] ?? 0;
                                 $asin_data[$key]['US_PRICE'] = $us_price;
 
-                                $start_time = startTime();
+                                // $start_time = startTime();
                                 $packetPrice = $this->priceConversion($actual_weight_pound, $us_price, $countryCode);
-                                Log::debug('price-conversion' . endTime($start_time));
+                                // Log::debug('price-conversion' . endTime($start_time));
                                 foreach ($packetPrice as $key2 => $price) {
                                     $asin_data[$key][$key2] = $price;
                                 }
@@ -267,9 +267,9 @@ class ExportPriceViaVolumetricWeight
             $this->writer = Writer::createFromPath(Storage::path($this->export_file_path . $this->fileNameOffset . '.csv'), "w");
             $this->writer->insertOne($csv_header);
         }
-        $start_time = startTime();
+        // $start_time = startTime();
         $this->writer->insertAll($records);
-        Log::debug('data-into-csv' . endTime($start_time));
+        // Log::debug('data-into-csv' . endTime($start_time));
 
         $remender = $this->record_per_csv / $this->limit;
         if ($remender == $this->count) {
