@@ -56,8 +56,8 @@ class User extends Authenticatable
         'deleted_at',
     ];
 
-    public function company()
+    public function companys()
     {
-        return $this->belongsTo(CompanyMaster::class);
+        return $this->belongsToMany(CompanyMaster::class,'user_companys','user_id','company_id');
     }
 }
