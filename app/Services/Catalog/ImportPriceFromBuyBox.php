@@ -147,7 +147,7 @@ class ImportPriceFromBuyBox
 
                     if ($BuyBoxWinner == 1) {
 
-                        $BBlistingPrice = $listingAmount[$key1];
+                        $BBlistingPrice = $listingAmount[$key1] ?? 0;
 
                         $asinDetails = [
                             'asin'                      => $asin,
