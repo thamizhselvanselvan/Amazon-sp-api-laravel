@@ -30,7 +30,7 @@
         <x-adminlte-button label="Bin" theme="primary" icon="fas fa-trash" />
     </a> -->
     </h2>
-    <table class="table table-bordered yajra-datatable table-sm">
+    <table class="table table-bordered yajra-datatable table-sm" style="width:100%">
         <thead class='table-primary'>
             <tr>
                 <th>ID</th>   
@@ -59,6 +59,10 @@
         serverSide: true,
 
         ajax: "{{ url('/v2/master/store/credentials') }}",
+        scrollY:        true,
+        scrollX:        true,
+        scrollCollapse: true,
+        autowidth :false,
         columns: [{
                 data: 'id',
                 name: 'id',
@@ -91,7 +95,18 @@
                 orderable: false,
                 searchable: false
             },
-        ]
+        ],
+        columnDefs: [
+            { "width":"50px" , "targets": 0},
+            { "width":"100px" , "targets": 1},
+            { "width":"100px" , "targets": 2},
+            { "width":"150px" , "targets":3},
+            { "width":"50px" , "targets": 4},
+            { "width":"50px" , "targets": 5},
+            { "width":"120px" , "targets": 6}
+           
+        ],
+        fixedColumns: true
     });
 
     $(document).on('click', ".delete", function(e) {

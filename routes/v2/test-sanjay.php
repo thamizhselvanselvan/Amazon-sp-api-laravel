@@ -7,12 +7,13 @@ use App\Models\order\OrderItemDetails;
 
 Route::get('test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
 
-Route::get('ta', function () {
+Route::get('sanju/test/images', function () {
 
 
     $data = ('[{"marketplaceId":"ATVPDKIKX0DER","images":[{"variant":"MAIN","link":"https:\/\/m.media-amazon.com\/images\/I\/61MDJPrqerL.jpg","height":1328,"width":1351},{"variant":"MAIN","link":"https:\/\/m.media-amazon.com\/images\/I\/41qMNss2AWL.jpg","height":491,"width":500},{"variant":"MAIN","link":"https:\/\/m.media-amazon.com\/images\/I\/41qMNss2AWL._SL75_.jpg","height":74,"width":75},{"variant":"PT01","link":"https:\/\/m.media-amazon.com\/images\/I\/51zJ-EspMHL.jpg","height":1392,"width":1550},{"variant":"PT01","link":"https:\/\/m.media-amazon.com\/images\/I\/31zkHA+YvfL.jpg","height":449,"width":500},{"variant":"PT01","link":"https:\/\/m.media-amazon.com\/images\/I\/31zkHA+YvfL._SL75_.jpg","height":67,"width":75}]}]');
     $imagedata = json_decode($data, true);
-
+po($imagedata);
+exit;
     if (isset($imagedata[0]['images'])) {
 
         foreach ($imagedata[0]['images'] as $counter => $image_data_new) {
@@ -26,6 +27,8 @@ Route::get('ta', function () {
                     ($img1["Images${counter}"] = $image_data_new['link']);
                 } else if ($counter == 7) {
                     ($img1["Images${counter}"] = $image_data_new['link']);
+                } else if ($counter == 10) {
+                    ($img1["Images${counter}"] = $image_data_new['link']);
                 }
             }
         }
@@ -35,7 +38,5 @@ Route::get('ta', function () {
         }
     }
 
-
-po($img1);
-
+    po($img1);
 });
