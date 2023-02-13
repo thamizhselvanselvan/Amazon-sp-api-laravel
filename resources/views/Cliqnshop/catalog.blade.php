@@ -20,12 +20,12 @@
     <div style="margin-top: 1.0rem;">
         <div class="col d-flex">
 
-            <h2 class="ml-2">
+            <!-- <h2 class="ml-2">
                 <x-adminlte-button label="Cliqnshop Catalog Export" theme="primary" class="btn-sm" icon="fas fa-file-export" id="exportcliqnshopCatalog" />
             </h2>
             <h2 class="ml-2">
                 <x-adminlte-button label="Download Cliqnshop Catalog" theme="primary" class="btn-sm" icon="fas fa-download" id="catalogcliqnshopdownload" data-toggle="modal" data-target="#downloacliqdModal" />
-            </h2>
+            </h2> -->
             <h2 class="ml-2">
                 <x-adminlte-button label="Upload New ASIN" theme="info" class="btn-sm" icon="fas fa-upload" id="new_asin" data-toggle="modal" data-target="#cliqnshop_new_asin_modal" />
             </h2>

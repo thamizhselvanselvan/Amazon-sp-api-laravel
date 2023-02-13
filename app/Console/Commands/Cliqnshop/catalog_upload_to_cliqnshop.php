@@ -42,7 +42,7 @@ class catalog_upload_to_cliqnshop extends Command
     {
         $site_id = $this->argument('site_id');
         $file_path = $this->argument('path');
-   
+
 
         $csv_data =  CSV_Reader($file_path);
 
@@ -84,26 +84,52 @@ class catalog_upload_to_cliqnshop extends Command
                 "Images9" => '',
                 "Images10" => '',
             ];
-            
-            $imagedata = json_decode($data['images'], true);
 
+            $imagedata = json_decode($data['images'], true);
+            //old image logic
+            // if (isset($imagedata[0]['images'])) {
+
+            //     foreach ($imagedata[0]['images'] as $counter => $image_data_new) {
+            //         $counter++;
+            //         if (array_key_exists("link", $image_data_new)) {
+
+            //             if ($img1["Images${counter}"] = $image_data_new['height'] == 75) {
+
+            //                 $img1["Images${counter}"] = '';
+            //             } else  if ($img1["Images${counter}"] = $image_data_new['height'] == 500) {
+            //                 $img1["Images${counter}"] = $image_data_new['link'];
+            //             }
+            //         } else {
+            //             $img1["Images${counter}"] = '';
+            //         }
+            //         if ($counter == 10) {
+            //             break;
+            //         }
+            //     }
+            // } else {
+            //     for ($i = 1; $i <= 5; $i++) {
+            //         $img1["Images${i}"] = '';
+            //     }
+            // }
+            // $image[$data['asin']] = $img1;
             if (isset($imagedata[0]['images'])) {
 
                 foreach ($imagedata[0]['images'] as $counter => $image_data_new) {
                     $counter++;
+
                     if (array_key_exists("link", $image_data_new)) {
-
-                        if ($img1["Images${counter}"] = $image_data_new['height'] == 75) {
-
-                            $img1["Images${counter}"] = '';
-                        } else  if ($img1["Images${counter}"] = $image_data_new['height'] == 500) {
-                            $img1["Images${counter}"] = $image_data_new['link'];
-                        }
-                    } else {
                         $img1["Images${counter}"] = '';
-                    }
-                    if ($counter == 10) {
-                        break;
+                        if ($counter == 1) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        } else if ($counter == 4) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        } else if ($counter == 7) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        } else if ($counter == 10) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        } else if ($counter == 13) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        }
                     }
                 }
             } else {
@@ -111,8 +137,8 @@ class catalog_upload_to_cliqnshop extends Command
                     $img1["Images${i}"] = '';
                 }
             }
-            $image[$data['asin']] = $img1;
 
+            $image[$data['asin']] = ($img1);
             $long_description = '';
             $short_description = '';
 
@@ -129,7 +155,7 @@ class catalog_upload_to_cliqnshop extends Command
                     }
                 }
             }
-          
+
             $asin =  $data['asin'];
             $item_name = $data['item_name'];
             $item_url = str_replace(' ', '-', $data['item_name']);
@@ -204,7 +230,7 @@ class catalog_upload_to_cliqnshop extends Command
 
             //     $category_code = $category[$asin];
             // }
-            
+
             $keyword = '';
             $insert_service = new CliqnshopCataloginsert();
             $insert_service->insertdata_cliqnshop(
@@ -227,6 +253,5 @@ class catalog_upload_to_cliqnshop extends Command
                 $long_description
             );
         }
-
     }
 }
