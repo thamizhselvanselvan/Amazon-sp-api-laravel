@@ -71,27 +71,6 @@ class NewCatalog
         foreach ($records as $record) {
 
             $asin[] = $record['asin'];
-            // $country_code = $record['source'];
-            // $country_code1 = $country_code;
-            // $seller_id = $record['seller_id'];
-            // $auth_id = $record['id'];
-
-            // $asins[] = $asin;
-            // $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
-            // $token = $aws_token[0];
-
-            // $country_code = strtolower($country_code);
-            // $catalog_table = 'catalognew' . $country_code . 's';
-
-            // $aws_id = NULL;
-
-            // if ($count == 9) {
-
-            //     $queue_data[] = $this->FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id);
-            //     $count = 0;
-            //     $asins = [];
-            // }
-            // $count++;
         }
         $queue_data[] = $this->FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id);
 
