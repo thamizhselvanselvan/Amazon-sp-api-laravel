@@ -208,7 +208,7 @@ class ExportPriceViaVolumetricWeight
 
                                 $start_time = startTime();
                                 $packetPrice = $this->priceConversion($actual_weight_pound, $us_price, $countryCode);
-                                Log::debug('price-conversion', endTime($start_time));
+                                Log::debug('price-conversion' . endTime($start_time));
                                 foreach ($packetPrice as $key2 => $price) {
                                     $asin_data[$key][$key2] = $price;
                                 }
