@@ -52,11 +52,11 @@ class app360_price_import_in extends Command
         $stores = [6, 8, 10, 27];
 
         foreach ($stores as $store_id) {
-           
+
             $datas = Products_in::select('asin')
                 ->where('cyclic', 0)
                 ->where("store_id", $store_id)
-                ->limit(5)
+                ->limit(500)
                 ->get()->toArray();
 
             Products_in::where('store_id', $store_id)->whereIn('asin', $datas)->update(['cyclic' => 1]);
@@ -92,8 +92,6 @@ class app360_price_import_in extends Command
             'pricing_ins.bb_winner_price',
             'pricing_ins.bb_winner_id',
             'pricing_ins.is_any_our_seller_won_bb',
-            'cyclic' => 1
-
         ];
 
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'asin_destination_');
@@ -104,7 +102,6 @@ class app360_price_import_in extends Command
             ->whereIn("asin_destination_uss.asin", $result_asins)
             //->whereBetween("pricing_ins.updated_at", [$start_date, $end_date])
             ->get();
-
         $insert_data_in = [];
         $asins = [];
 
