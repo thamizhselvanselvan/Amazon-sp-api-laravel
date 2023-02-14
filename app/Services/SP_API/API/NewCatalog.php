@@ -368,6 +368,19 @@ class NewCatalog
                                     $queue_data[$key]['weight_unit'] = $value3->unit;
                                 }
                             }
+                        } else if (array_key_exists('item', (array)$value[0])) {
+                            foreach ($value[0]->item as $key3 => $value3) {
+
+                                $queue_data[$key][$key3] = $value3->value;
+                                if ($key3 == 'height' || $key3 == 'width' || $key3 == 'length') {
+
+                                    $queue_data[$key]['unit'] = $value3->unit;
+                                }
+                                if ($key3 == 'weight') {
+
+                                    $queue_data[$key]['weight_unit'] = $value3->unit;
+                                }
+                            }
                         }
                     }
                 }
