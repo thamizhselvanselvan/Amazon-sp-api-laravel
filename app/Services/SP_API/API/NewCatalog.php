@@ -62,36 +62,22 @@ class NewCatalog
         ];
 
         $aws_id = NULL;
-        $country_code = strtolower($records[0]['source']);
-        $seller_id = $records[0]['seller_id'];
-        $auth_id = $records[0]['id'];
-        $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
-        $token = $aws_token[0];
+        $country_code = '';
+        $seller_id = '';
+        $auth_id = '';
+        $token = '';
+        if (isset($records[0])) {
+
+            $country_code = strtolower($records[0]['source']);
+            $seller_id = $records[0]['seller_id'];
+            $auth_id = $records[0]['id'];
+            $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
+            $token = $aws_token[0];
+        }
 
         foreach ($records as $record) {
 
             $asin[] = $record['asin'];
-            // $country_code = $record['source'];
-            // $country_code1 = $country_code;
-            // $seller_id = $record['seller_id'];
-            // $auth_id = $record['id'];
-
-            // $asins[] = $asin;
-            // $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
-            // $token = $aws_token[0];
-
-            // $country_code = strtolower($country_code);
-            // $catalog_table = 'catalognew' . $country_code . 's';
-
-            // $aws_id = NULL;
-
-            // if ($count == 9) {
-
-            //     $queue_data[] = $this->FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id);
-            //     $count = 0;
-            //     $asins = [];
-            // }
-            // $count++;
         }
         $queue_data[] = $this->FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id);
 
@@ -371,6 +357,19 @@ class NewCatalog
                         if (array_key_exists('package', (array)$value[0])) {
 
                             foreach ($value[0]->package as $key3 => $value3) {
+
+                                $queue_data[$key][$key3] = $value3->value;
+                                if ($key3 == 'height' || $key3 == 'width' || $key3 == 'length') {
+
+                                    $queue_data[$key]['unit'] = $value3->unit;
+                                }
+                                if ($key3 == 'weight') {
+
+                                    $queue_data[$key]['weight_unit'] = $value3->unit;
+                                }
+                            }
+                        } else if (array_key_exists('item', (array)$value[0])) {
+                            foreach ($value[0]->item as $key3 => $value3) {
 
                                 $queue_data[$key][$key3] = $value3->value;
                                 if ($key3 == 'height' || $key3 == 'width' || $key3 == 'length') {
