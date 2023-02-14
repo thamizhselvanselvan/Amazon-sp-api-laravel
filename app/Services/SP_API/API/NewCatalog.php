@@ -62,11 +62,18 @@ class NewCatalog
         ];
 
         $aws_id = NULL;
-        $country_code = strtolower($records[0]['source']);
-        $seller_id = $records[0]['seller_id'];
-        $auth_id = $records[0]['id'];
-        $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
-        $token = $aws_token[0];
+        $country_code = '';
+        $seller_id = '';
+        $auth_id = '';
+        $token = '';
+        if (isset($records[0])) {
+
+            $country_code = strtolower($records[0]['source']);
+            $seller_id = $records[0]['seller_id'];
+            $auth_id = $records[0]['id'];
+            $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
+            $token = $aws_token[0];
+        }
 
         foreach ($records as $record) {
 
