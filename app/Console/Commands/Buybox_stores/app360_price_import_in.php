@@ -49,34 +49,36 @@ class app360_price_import_in extends Command
     public function handle()
     {
 
-        $stores = [6, 8, 10, 27];
+        // $stores = [6, 8, 10, 27];
 
-        foreach ($stores as $store_id) {
+        // foreach ($stores as $store_id) {
 
-            $datas = Products_in::select('asin')
-                ->where('cyclic', 0)
-                ->where("store_id", $store_id)
-                ->limit(500)
-                ->get()->toArray();
+        //     $datas = Products_in::select('asin')
+        //         ->where('cyclic', 0)
+        //         ->where("store_id", $store_id)
+        //         ->limit(500)
+        //         ->get()->toArray();
 
-            Products_in::where('store_id', $store_id)->whereIn('asin', $datas)->update(['cyclic' => 1]);
-            if (count($datas) <= 0) {
+        //     Products_in::where('store_id', $store_id)->whereIn('asin', $datas)->update(['cyclic' => 1]);
+        //     if (count($datas) <= 0) {
 
-                Products_in::where('cyclic', 1)->update(['cyclic' => 0]);
+        //         Products_in::where('cyclic', 1)->update(['cyclic' => 0]);
 
-                return $this->handle();
-            } else {
-                $this->pricingin($datas, $store_id);
-            }
-        }
+        //         return $this->handle();
+        //     } else {
+        //         $this->pricingin($datas, $store_id);
+        //     }
+        // }
+
+        $this->pricingin();
 
         return true;
     }
 
-    public function pricingin($result_asins, $store_id)
+    public function pricingin() //$result_asins, $store_id
     {
 
-        $start_date = Carbon::now()->subMinutes(20);
+        $start_date = Carbon::now()->subMinutes(10);
         $end_date = Carbon::now()->subMinutes(5);
 
         $select_query = [
@@ -99,11 +101,16 @@ class app360_price_import_in extends Command
         $data = $table_name->select($select_query)
             ->join('pricing_ins', 'asin_destination_uss.asin', '=', 'pricing_ins.asin')
             ->join('pricing_uss', 'asin_destination_uss.asin', '=', 'pricing_uss.asin')
-            ->whereIn("asin_destination_uss.asin", $result_asins)
-            //->whereBetween("pricing_ins.updated_at", [$start_date, $end_date])
-            ->get();
+            // ->whereIn("asin_destination_uss.asin", $result_asins)
+            ->whereBetween("pricing_ins.updated_at", [$start_date, $end_date])
+            ->get()->toArray();
+
         $insert_data_in = [];
         $asins = [];
+
+        $total = 2000;
+        $tagger = 0;
+        $counter = 1;
 
         foreach ($data as $value) {
 
@@ -113,7 +120,7 @@ class app360_price_import_in extends Command
             $price_calculate = $this->calculate($value['usa_to_in_b2b']);
 
             $insert_data_in[] = [
-                'store_id' => $store_id,
+                // 'store_id' => $store_id,
                 'asin' => $value['asin'],
                 'priority' => $value['priority'],
                 'availability' => $value['available'],
@@ -131,28 +138,40 @@ class app360_price_import_in extends Command
                 'cyclic' => 1
             ];
 
-            $asins[] = $value['asin'];
+            $asins[$tagger][] = $value['asin'];
+        
+            if($counter == $total) {
+                $tagger++;
+                $counter = 1;
+            }
+
+            $counter++;
         }
 
         $this->product_upsert($insert_data_in);
 
-        if (count($asins) > 0) {
-
-            Products_in::where('store_id', $store_id)->whereIn('asin', $asins)->update(['cyclic' => 1]);
-        }
+        //if (count($asins) > 0) {
+            //where('store_id', $store_id)->
+            //Products_in::whereIn('asin', $asins)->update(['cyclic' => 1]);
+       // }
     }
 
-    public function product_upsert($data)
-    {
+    public function product_upsert($datas)
+    {   
 
-        Products_in::upsert(
-            $data,
-            ['asin_store_id_unique'],
-            [
-                'app_360_price', 'bb_price', 'priority', 'availability', 'base_price', 'ceil_price', 'cyclic',
-                'lowest_seller_id', 'lowest_seller_price', 'highest_seller_id', 'highest_seller_price', 'bb_winner_id', 'bb_winner_price', 'is_bb_own',
-            ]
-        );
+        foreach($datas as $data) {
+
+            Products_in::upsert(
+                $data,
+                ['asin_store_id_unique'],
+                [
+                    'app_360_price', 'bb_price', 'priority', 'availability', 'base_price', 'ceil_price', 'cyclic',
+                    'lowest_seller_id', 'lowest_seller_price', 'highest_seller_id', 'highest_seller_price', 'bb_winner_id', 'bb_winner_price', 'is_bb_own',
+                ]
+            );
+
+        }
+        
     }
 
     public function calculate($price)
