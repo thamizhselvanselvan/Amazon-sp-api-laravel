@@ -314,8 +314,8 @@
                         searchable: false
                     },
                     {
-                        data: 'destination_bb_price',
-                        name: 'destination_bb_price',
+                        data: 'bb_winner_price',
+                        name: 'bb_winner_price',
                         orderable: false,
                         searchable: false
                     },

@@ -82,7 +82,7 @@ class app360_price_import_in extends Command
         $end_date = Carbon::now()->subMinutes(5);
 
         $select_query = [
-            'products_ins.store_id',
+         //   'buybox_stores.products_ins.store_id',
             'asin_destination_uss.priority',
             'pricing_ins.in_price',
             'pricing_uss.usa_to_in_b2b',
@@ -102,11 +102,7 @@ class app360_price_import_in extends Command
         $data = $table_name->select($select_query)
             ->join('pricing_ins', 'asin_destination_uss.asin', '=', 'pricing_ins.asin')
             ->join('pricing_uss', 'asin_destination_uss.asin', '=', 'pricing_uss.asin')
-            ->join("products_ins", "products_ins.asin", "=", "pricing_ins.asin")
-            
-            // ->whereIn("asin_destination_uss.asin", $result_asins)
-
-
+           // ->join("buybox_stores.products_ins", "buybox_stores.products_ins.asin", "=", "pricing_ins.asin")
             ->whereBetween("pricing_ins.updated_at", [$start_date, $end_date])
             ->get()->toArray();
 
@@ -125,7 +121,6 @@ class app360_price_import_in extends Command
             $price_calculate = $this->calculate($value['usa_to_in_b2b']);
 
             $insert_data_in[$tagger][] = [
-                'store_id' => $value['store_id'],
                 'asin' => $value['asin'],
                 'priority' => $value['priority'],
                 'availability' => $value['available'],
@@ -154,11 +149,21 @@ class app360_price_import_in extends Command
         }
 
 
-        // $datas = Products_in::select('asin')
-        //         ->where('cyclic', 0)
-        //         ->where("store_id", $store_id)
+        // foreach($asins as $asin) {
+
+        //     $datas = Products_in::select('store_id')
+        //         ->whereIn('asin', $asin)
         //         ->limit(500)
         //         ->get()->toArray();
+
+        //     foreach($datas as $data) {
+
+
+
+        //     }
+
+
+        // }
 
         $this->product_upsert($insert_data_in);
 
@@ -174,20 +179,20 @@ class app360_price_import_in extends Command
         foreach($datas as $data) {
 
 
-            // foreach($data as $dat) {
+            foreach($data as $dat) {
 
-            //     Products_in::where("asin", $dat['asin'])->update($dat);
+                Products_in::where("asin", $dat['asin'])->update($dat);
 
-            // }
+            }
 
-            Products_in::upsert(
-                $data,
-                ['asin_store_id_unique'],
-                [
-                    'app_360_price', 'bb_price', 'priority', 'availability', 'base_price', 'ceil_price', 'cyclic',
-                    'lowest_seller_id', 'lowest_seller_price', 'highest_seller_id', 'highest_seller_price', 'bb_winner_id', 'bb_winner_price', 'is_bb_own',
-                ]
-            );
+            // Products_in::upsert(
+            //     $data,
+            //     ['asin_store_id_unique'],
+            //     [
+            //         'app_360_price', 'bb_price', 'priority', 'availability', 'base_price', 'ceil_price', 'cyclic',
+            //         'lowest_seller_id', 'lowest_seller_price', 'highest_seller_id', 'highest_seller_price', 'bb_winner_id', 'bb_winner_price', 'is_bb_own',
+            //     ]
+            // );
 
         }
         
