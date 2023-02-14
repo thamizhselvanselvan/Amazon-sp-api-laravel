@@ -41,7 +41,7 @@ class AutoExportP1 extends Command
     {
         $countrys = ['IN', 'US', 'AE'];
 
-        $user_id = Auth::user()->id;
+        $user_id = 124;
         $priority = 1;
         foreach ($countrys as $country) {
 
