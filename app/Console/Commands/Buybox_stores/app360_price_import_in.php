@@ -82,6 +82,7 @@ class app360_price_import_in extends Command
         $end_date = Carbon::now()->subMinutes(5);
 
         $select_query = [
+            'products_ins.store_id',
             'asin_destination_uss.priority',
             'pricing_ins.in_price',
             'pricing_uss.usa_to_in_b2b',
@@ -101,7 +102,11 @@ class app360_price_import_in extends Command
         $data = $table_name->select($select_query)
             ->join('pricing_ins', 'asin_destination_uss.asin', '=', 'pricing_ins.asin')
             ->join('pricing_uss', 'asin_destination_uss.asin', '=', 'pricing_uss.asin')
+            ->join("products_ins", "products_ins.asin", "=", "pricing_ins.asin")
+            
             // ->whereIn("asin_destination_uss.asin", $result_asins)
+
+
             ->whereBetween("pricing_ins.updated_at", [$start_date, $end_date])
             ->get()->toArray();
 
@@ -119,8 +124,8 @@ class app360_price_import_in extends Command
 
             $price_calculate = $this->calculate($value['usa_to_in_b2b']);
 
-            $insert_data_in[] = [
-                // 'store_id' => $store_id,
+            $insert_data_in[$tagger][] = [
+                'store_id' => $value['store_id'],
                 'asin' => $value['asin'],
                 'priority' => $value['priority'],
                 'availability' => $value['available'],
@@ -148,6 +153,13 @@ class app360_price_import_in extends Command
             $counter++;
         }
 
+
+        // $datas = Products_in::select('asin')
+        //         ->where('cyclic', 0)
+        //         ->where("store_id", $store_id)
+        //         ->limit(500)
+        //         ->get()->toArray();
+
         $this->product_upsert($insert_data_in);
 
         //if (count($asins) > 0) {
@@ -160,6 +172,13 @@ class app360_price_import_in extends Command
     {   
 
         foreach($datas as $data) {
+
+
+            // foreach($data as $dat) {
+
+            //     Products_in::where("asin", $dat['asin'])->update($dat);
+
+            // }
 
             Products_in::upsert(
                 $data,

@@ -151,7 +151,7 @@ class Amazon_price_push_in extends Command
             if (!empty($highest_seller_price) && !$this->any_of_our_own_store_won_bb(store_id: $store_id, bb_winner_id: $bb_winner_id)) {
 
                 //$push_price = addPercentage($product->store_price, $this->increase_by_price);
-                $push_price = $this->calculate(price: $highest_seller_price, type: 'decrease');
+                $push_price = $this->calculate($highest_seller_price, 'decrease');
 
                 if ($highest_seller_price < $push_price && $push_price < $ceil_price) {
 
@@ -249,7 +249,7 @@ class Amazon_price_push_in extends Command
         if (!empty($bb_winner_id) && !$this->any_of_our_own_store_won_bb(store_id: $store_id, bb_winner_id: $bb_winner_id) && $bb_winner_price > $store_price) {
 
             //$push_price = removePercentage($product->bb_winner_price, $this->increase_by_price);
-            $push_price = $this->calculate(price: $bb_winner_price, type: 'decrease');
+            $push_price = $this->calculate($bb_winner_price, 'decrease');
 
             if ($push_price > $base_price && $push_price < $ceil_price) {
 
@@ -277,7 +277,9 @@ class Amazon_price_push_in extends Command
         if (!empty($bb_winner_id) && !$this->any_of_our_own_store_won_bb(store_id: $store_id, bb_winner_id: $bb_winner_id) && $bb_winner_price < $store_price) {
 
             //$push_price = removePercentage($bb_winner_price, $this->increase_by_price);
-            $push_price = $this->calculate(price: $bb_winner_price, type: 'decrease');
+            $push_price = $this->calculate($bb_winner_price, 'decrease');
+
+            $this->info("Price reduce by 5 BB winner Price $bb_winner_price - Store Pirce $store_price - Push Price $push_price Rules applied to $id_rules_applied");
 
             if ($push_price > $base_price && $push_price < $ceil_price) {
 
@@ -310,7 +312,7 @@ class Amazon_price_push_in extends Command
         return $product->store_price;
     }
 
-    public function calculate(string|int|float $price, string $type = 'increase')
+    public function calculate($price, $type = 'increase')
     {
 
         if ($this->price_calculate_type == "percent") {
