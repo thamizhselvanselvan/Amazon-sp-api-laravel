@@ -114,6 +114,7 @@ class ImportPriceFromBuyBox
             $BBlistingPrice = '';
             $pricing_in = [];
             $pricing_us = [];
+            $pricing_ae = [];
             // Log::notice($country_code_lr . '=>' . count($BBRecords));
             $count1 = 0;
             foreach ($BBRecords as $BBRecord) {
@@ -294,7 +295,7 @@ class ImportPriceFromBuyBox
                             'price_updated_at'
                         ]);
                         $count1 = 0;
-                        $asinDetails = [];
+                        $pricing_ae = [];
                     }
                 }
                 $count1++;

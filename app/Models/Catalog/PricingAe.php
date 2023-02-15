@@ -11,7 +11,6 @@ class PricingAe extends Model
     protected $connection = 'catalog';
     protected $fillable = [
         'asin',
-        'status',
         'available',
         'is_sold_by_amazon',
         'weight',
