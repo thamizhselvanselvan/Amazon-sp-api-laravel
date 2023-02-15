@@ -357,7 +357,9 @@
                     },
                     {
                         data: 'destination_bb_seller',
-                        name: 'destination_bb_seller'
+                        name: 'destination_bb_seller',
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: 'highest_seller_name',
