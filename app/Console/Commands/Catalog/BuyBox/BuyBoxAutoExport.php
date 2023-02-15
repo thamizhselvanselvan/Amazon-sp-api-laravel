@@ -13,7 +13,7 @@ class BuyBoxAutoExport extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:buybox_auto_export_p1';
+    protected $signature = 'mosh:buybox-auto-export-p1';
 
     /**
      * The console command description.
