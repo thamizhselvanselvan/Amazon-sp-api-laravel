@@ -7,7 +7,7 @@ use App\Models\Product;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use App\Models\Buybox_stores\Products_ae;
-use App\Models\Buybox_stores\Product_Push_ae;
+use App\Models\Buybox_stores\Product_push_ae;
 
 class AmazonPricePushAe extends Command
 {
@@ -78,7 +78,7 @@ class AmazonPricePushAe extends Command
 
                 echo "selected $product->asin, $push_price \n";
 
-                Product_Push_ae::create([
+                Product_push_ae::create([
                     'asin' => $product->asin,
                     'store_id' =>  $product->store_id,
                     'product_sku' => $product->product_sku,
