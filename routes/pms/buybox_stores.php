@@ -32,6 +32,9 @@ Route::get('stores/listing/price/update/{id}', 'Buybox_stores\BuyBoxStoreControl
 
 Route::get('stores/price/updated', 'Buybox_stores\BuyBoxStoreController@updatepricelisting')->name('buybox.store.listing.updated');
 
+Route::get('stores/price/file/get', 'Buybox_stores\BuyBoxStoreController@fileget')->name('buybox.store.file.get');
+Route::get('stores/price/file/download/{index}', 'Buybox_stores\BuyBoxStoreController@filedownload')->name('buybox.store.file.download');
+
 Route::get("amazo", function() {
 
     $id = 0;
