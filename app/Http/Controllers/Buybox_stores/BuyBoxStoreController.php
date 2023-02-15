@@ -125,18 +125,18 @@ class BuyBoxStoreController extends Controller
         $files = Storage::files('public/product_push');
         $new_files = [];
 
-        foreach($files as $file) {
-            $new_files[] = '/storage/product_push/'.basename($file);
+        foreach ($files as $file) {
+            $new_files[] = '/storage/product_push/' . basename($file);
         }
 
         if ($request->ajax()) {
 
             $select_query = [
-                'id', 
-                'asin', 
-                'product_sku', 
-                'push_price', 
-                'current_store_price', 
+                'id',
+                'asin',
+                'product_sku',
+                'push_price',
+                'current_store_price',
                 'bb_winner_price',
                 'bb_winner_id',
                 'base_price', 
@@ -172,7 +172,7 @@ class BuyBoxStoreController extends Controller
                 ->editColumn('highest_seller_name', function($query) use($request_store_id) {
 
                     //$seller_name = (Seller_id_name::where('seller_store_id', $query->highest_seller_id)->first())->seller_name ?? "";
-                    $seller_name = Cache::get($query->highest_seller_id, function () use($query) {
+                    $seller_name = Cache::get($query->highest_seller_id, function () use ($query) {
                         return Seller_id_name::where('seller_store_id', $query->highest_seller_id)->first();
                     });
 
@@ -196,7 +196,7 @@ class BuyBoxStoreController extends Controller
                 })
                 ->editColumn('lowest_seller_name', function($query) use($request_store_id) {
 
-                    $seller_name = Cache::get($query->lowest_seller_id, function () use($query) {
+                    $seller_name = Cache::get($query->lowest_seller_id, function () use ($query) {
                         return Seller_id_name::where('seller_store_id', $query->lowest_seller_id)->first();
                     });
 
@@ -246,22 +246,22 @@ class BuyBoxStoreController extends Controller
 
                   //  return (isset($bb_winner) && $bb_winner != "") ? $this->amazon_links($bb_winner) : "None" ;
                 })
-                ->editColumn('asin', function($query) {
+                ->editColumn('asin', function ($query) {
 
-                    return "<a target='_blank' href='https://amazon.com/dp/".$query->asin."'>".$query->asin."</a>";
+                    return "<a target='_blank' href='https://amazon.com/dp/" . $query->asin . "'>" . $query->asin . "</a>";
                 })
-                ->editColumn('product_sku', function($query) {
+                ->editColumn('product_sku', function ($query) {
 
-                    return "<a target='_blank' href='https://amazon.in/dp/".$query->asin."'>".$query->product_sku."</a>";
+                    return "<a target='_blank' href='https://amazon.in/dp/" . $query->asin . "'>" . $query->product_sku . "</a>";
                 })
-                ->editColumn('current_store_price', function($query) {
+                ->editColumn('current_store_price', function ($query) {
 
-                    $applied_rules = '<div class="pop_over position-relative"> '.$query->current_store_price.' ' . $this->pop_over_data($query->applied_rules) . '</div>';
+                    $applied_rules = '<div class="pop_over position-relative"> ' . $query->current_store_price . ' ' . $this->pop_over_data($query->applied_rules) . '</div>';
 
                     return $applied_rules;
                 })
                 // ->addColumn('action', function($query) {
-                    
+
                 //     return "<button class='price_process btn btn-sm btn-primary'
                 //               asin='{$query->asin}' productsku=='{$query->product_sku}' pushprice='{$query->push_price}' storeid={$query->store_id} data-id={$query->id} 
                 //               base_price={$query->base_price}
@@ -274,26 +274,24 @@ class BuyBoxStoreController extends Controller
         return view('buybox_stores.listing', compact('stores', 'url', 'request_store_id', 'new_files'));
     }
 
-    public function pop_over_data($applied_rules) {
+    public function pop_over_data($applied_rules)
+    {
         $html = '<span class="d-block"> No Rules Applied </span>';
-        if($applied_rules) {
+        if ($applied_rules) {
 
             $applied_rules = json_decode($applied_rules, true);
 
-            if(count($applied_rules) > 0) {
+            if (count($applied_rules) > 0) {
 
                 $html = '<ul class="m-0 p-0 pl-3">';
-                foreach($applied_rules as $applied_rule) {
-                    
-                    $html .= '<li class="mt-1">'. $applied_rule .'</li>';
+                foreach ($applied_rules as $applied_rule) {
+
+                    $html .= '<li class="mt-1">' . $applied_rule . '</li>';
                 }
 
                 $html .= '</ul>';
-
             }
-
-            
-        } 
+        }
         //comment
 
         return '<div class="pop_over_data position-absolute shadow border d-none">' . $html . '</div>';
@@ -316,7 +314,7 @@ class BuyBoxStoreController extends Controller
         }
 
         if ($request->ajax()) {
-       
+
             $data = Product_Push_in::query()
                 ->select('id', 'asin', 'product_sku', 'current_availability_status', 'push_availability_status')
                 ->when($request_store_id, function ($query) use ($request_store_id) {
@@ -326,7 +324,7 @@ class BuyBoxStoreController extends Controller
                 ->orderBy('id', 'DESC');
 
             return DataTables::of($data)
-                ->addColumn('action', function() {
+                ->addColumn('action', function () {
                     return '<button class="price_process">Process</button>';
                 })
                 ->rawColumns(['action'])
@@ -378,19 +376,19 @@ class BuyBoxStoreController extends Controller
         //jobDispatchFunc("Amazon_Feed\AmazonFeedPriceAvailabilityPush", $price_update);
         $price_update = (new AmazonFeedProcess)->feedSubmit($feedLists, $store_id, $id, false);
 
-        if($price_update) {
+        if ($price_update) {
             return ["success" => true];
         }
 
         return ["failed" => true];
     }
 
-    public function updateprice(Request $request) {
+    public function updateprice(Request $request)
+    {
         //command to execute
         // commandExecFunc('');
 
         echo $request->id;
-
     }
 
     public function updatepricelisting(Request $request)
@@ -404,34 +402,35 @@ class BuyBoxStoreController extends Controller
         //         ->addIndexColumn()
         //         ->make(true);
         // }
-         return view('buybox_stores.update_listing');
+        return view('buybox_stores.update_listing');
     }
 
-    public function store_data_export(Request $request) {
-        
+    public function store_data_export(Request $request)
+    {
 
-        if(!$request->has("store_id")) {
+
+        if (!$request->has("store_id")) {
             return "error";
         }
-        
+
         $store_id = $request->store_id;
 
         commandExecFunc("mosh:bb:product_push:export $store_id");
-
         return 'success';
     }
 
-    public function list_all_the_export() {
+    public function list_all_the_export()
+    {
 
         // Get all CSV files in the directory
         $files = Storage::files('product_push');
 
-        if(count($files) > 0) {
+        if (count($files) > 0) {
             return response()->json(['error' => "No Files are there to show"]);
         }
 
         // Set the file retention period to 30 days
-        $fileRetentionPeriod = 30;
+        $fileRetentionPeriod = 3;
 
         // Iterate through each file and delete older files
         foreach ($files as $file) {
@@ -444,5 +443,28 @@ class BuyBoxStoreController extends Controller
         }
 
         return response()->json($files);
+    }
+
+    public function fileget(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $storefiles = [];
+            $folder = $request->path;
+            $path = (Storage::path($folder));
+            $files = scandir($path);
+
+            foreach ($files as $key => $file) {
+                if ($key > 1) {
+                    $storefiles[$file] = date("F d Y H:i:s.", filemtime($path . '/' . $file));
+                }
+            }
+            return response()->json($storefiles);
+        }
+    }
+
+    public function filedownload($index)
+    {
+        return Storage::download('public/product_push/' . $index);
     }
 }
