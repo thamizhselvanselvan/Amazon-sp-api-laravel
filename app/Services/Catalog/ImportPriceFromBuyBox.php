@@ -3,6 +3,7 @@
 namespace App\Services\Catalog;
 
 use Carbon\Carbon;
+use App\Models\Catalog\PricingAe;
 use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingUs;
 use Illuminate\Support\Facades\DB;
@@ -204,7 +205,7 @@ class ImportPriceFromBuyBox
 
                     $pricing_us[] = [...$asinDetails, ...$price_us_source];
                     if ($count1 == 1000) {
-                        PricingUs::upsert($pricing_us, 'unique_asin',  [
+                        PricingUs::upsert($pricing_us, ['unique_asin'],  [
                             'asin',
                             'available',
                             'is_sold_by_amazon',
@@ -246,7 +247,7 @@ class ImportPriceFromBuyBox
                     ];
                     $pricing_in[] = [...$asinDetails, ...$destination_price];
                     if ($count1 == 1000) {
-                        PricingIn::upsert($pricing_in, 'asin_unique', [
+                        PricingIn::upsert($pricing_in, ['asin_unique'], [
                             'asin',
                             'available',
                             'is_sold_by_amazon',
@@ -268,6 +269,32 @@ class ImportPriceFromBuyBox
                         ]);
                         $count1 = 0;
                         $pricing_in = [];
+                    }
+                } else if ($country_code_lr == 'ae') {
+
+                    $destination_weight = ['weight' => $packet_weight];
+                    $pricing_ae[] = [...$asinDetails, ...$destination_weight];
+                    if ($count1 == 1000) {
+
+                        PricingAe::upsert($pricing_ae, ['unique_asin'],  [
+                            'asin',
+                            'available',
+                            'is_sold_by_amazon',
+                            'weight',
+                            'volumetric_weight_pounds',
+                            'volumetric_weight_kg',
+                            'ae_price',
+                            'next_highest_seller_price',
+                            'next_highest_seller_id',
+                            'next_lowest_seller_price',
+                            'next_lowest_seller_id',
+                            'bb_winner_price',
+                            'bb_winner_id',
+                            'is_any_our_seller_won_bb',
+                            'price_updated_at'
+                        ]);
+                        $count1 = 0;
+                        $asinDetails = [];
                     }
                 }
                 $count1++;
@@ -308,6 +335,25 @@ class ImportPriceFromBuyBox
                     'ind_to_uae',
                     'ind_to_sg',
                     'ind_to_sa',
+                    'next_highest_seller_price',
+                    'next_highest_seller_id',
+                    'next_lowest_seller_price',
+                    'next_lowest_seller_id',
+                    'bb_winner_price',
+                    'bb_winner_id',
+                    'is_any_our_seller_won_bb',
+                    'price_updated_at'
+                ]);
+            } else if ($country_code_lr == 'ae') {
+
+                PricingAe::upsert($pricing_ae, ['unique_asin'],  [
+                    'asin',
+                    'available',
+                    'is_sold_by_amazon',
+                    'weight',
+                    'volumetric_weight_pounds',
+                    'volumetric_weight_kg',
+                    'ae_price',
                     'next_highest_seller_price',
                     'next_highest_seller_id',
                     'next_lowest_seller_price',
