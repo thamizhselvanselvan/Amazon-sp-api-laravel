@@ -375,11 +375,11 @@
                         orderable: false,
                         searchable: false
                     }
-
-                    if (response.hasOwnProperty("failed")) {
-                        alert("price updated failed");
-                    }
-                }
+                ]
+                    // if (response.hasOwnProperty("failed")) {
+                    //     alert("price updated failed");
+                    // }
+               // }
             });
         });
 
