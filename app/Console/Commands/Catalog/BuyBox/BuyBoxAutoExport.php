@@ -2,18 +2,18 @@
 
 namespace App\Console\Commands\Catalog\Buybox;
 
+use Carbon\Carbon;
 use App\Models\FileManagement;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Auth;
 
-class AutoExportP1 extends Command
+class BuyBoxAutoExport extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'mosh:buybox_catalog_auto_export_p1';
+    protected $signature = 'mosh:buybox-auto-export-p1';
 
     /**
      * The console command description.
@@ -39,21 +39,36 @@ class AutoExportP1 extends Command
      */
     public function handle()
     {
-        $countrys = ['IN', 'US', 'AE'];
+        $today = Carbon::today()->toDateTimeString();
+        $now = Carbon::now()->toDateTimeString();
 
         $user_id = 124;
-        $priority = 1;
-        foreach ($countrys as $country) {
+        $countryCode = ['1' => 'IN', '2' => 'US',  '3' => 'AE'];
+        $key = 1;
+        $file_info = [];
+
+        QueryAgain:
+        $data = FileManagement::where("module", "BUYBOX_EXPORT_$countryCode[$key]_1")
+            ->whereBetween('created_at', [$today, $now])
+            ->count();
+        if ($data == '0') {
 
             $file_info = [
                 "user_id"        => $user_id,
                 "type"           => "BUYBOX_EXPORT",
-                "module"         => "BUYBOX_EXPORT_${country}_${priority}",
+                "module"         => "BUYBOX_EXPORT_$countryCode[$key]_1",
                 "command_name"   => "mosh:buybox-export-asin"
             ];
-
             FileManagement::create($file_info);
             fileManagement();
+        } else {
+
+            $key++;
+
+            if ($key > 3) {
+                exit;
+            }
+            goto QueryAgain;
         }
     }
 }
