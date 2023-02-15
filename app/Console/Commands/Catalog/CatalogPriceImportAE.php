@@ -5,6 +5,7 @@ namespace App\Console\Commands\Catalog;
 use Illuminate\Console\Command;
 use App\Models\ProcessManagement;
 use App\Services\Catalog\BuyBoxPriceImport;
+use App\Services\Catalog\ImportPriceFromBuyBox;
 
 class CatalogPriceImportAE extends Command
 {
@@ -58,8 +59,11 @@ class CatalogPriceImportAE extends Command
         $process_management_id = ProcessManagement::create($process_manage)->toArray();
         $pm_id = $process_management_id['id'];
 
-        $buy_box_price = new BuyBoxPriceImport();
-        $buy_box_price->fetchPriceFromBB($country_code, $seller_id, $limit);
+        $buy_box_price = new ImportPriceFromBuyBox();
+        $buy_box_price->GetPriceFromBuyBox($country_code);
+
+        // $buy_box_price = new BuyBoxPriceImport();
+        // $buy_box_price->fetchPriceFromBB($country_code, $seller_id, $limit);
 
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
