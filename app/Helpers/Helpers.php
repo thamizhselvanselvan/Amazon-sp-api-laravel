@@ -1205,7 +1205,7 @@ if (!function_exists('CSV_Write')) {
             $CSV_Writer->insertOne($columnsHeader);
 
             if ($records) {
-                Log::emergency('Writig Here ');
+                // Log::emergency('Writig Here ');
                 $CSV_Writer->insertAll($records);
             }
         }
