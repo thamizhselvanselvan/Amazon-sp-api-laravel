@@ -220,9 +220,9 @@ class ExportPriceViaVolumetricWeight
             } catch (Exception $e) {
             }
         }
-        $start_time = startTime();
+        // $start_time = startTime();
         $this->createCsv($headers, $asin_data);
-        Log::debug('csv-import' . endTime($start_time));
+        // Log::debug('csv-import' . endTime($start_time));
         $asin_data = [];
         return true;
     }
