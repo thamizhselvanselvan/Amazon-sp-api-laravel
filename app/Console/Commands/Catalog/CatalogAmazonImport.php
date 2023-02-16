@@ -55,10 +55,7 @@ class CatalogAmazonImport extends Command
 
         //Process Management end
 
-        // $sources = ['ae', 'sa'];
-        // $limit_array = ['sa' => 200, 'ae' => 200];
         $sources = ['in', 'us'];
-
         foreach ($sources as $source) {
 
             $limit = getSystemSettingsValue(strtolower($source) . '_catalog_limit', 1000);
@@ -75,7 +72,6 @@ class CatalogAmazonImport extends Command
             $catalog_table_name = 'catalognew' . $source . 's';
             $current_data = date('H:i:s');
 
-            // $catalog_class = new NewCatalog();
             $asins = [];
 
             if ($current_data >= '01:00:00' && $current_data <= '01:05:00') {
@@ -88,30 +84,24 @@ class CatalogAmazonImport extends Command
                 //     WHERE cat.seller_id IS NULL ");
             } else {
 
-                $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id
-                    FROM $asin_table_name as source
-                    LEFT JOIN $catalog_table_name as cat
-                    ON cat.asin = source.asin
-                    WHERE cat.asin IS NULL
-                    AND source.status = '0'
-                    LIMIT $limit
-                    ");
-
-                // asin_destination_uss
-                // $asin_table_name = 'asin_destination_uss';
                 // $asins = DB::connection('catalog')->select("SELECT source.asin, source.user_id
                 //     FROM $asin_table_name as source
                 //     LEFT JOIN $catalog_table_name as cat
                 //     ON cat.asin = source.asin
                 //     WHERE cat.asin IS NULL
-                //     And source.priority = '3'
-                //     And source.status = '0'
+                //     AND source.status = '0'
                 //     LIMIT $limit
                 //     ");
+
+                $asins = DB::connection('catalog')->select("SELECT asin, user_id
+                FROM $asin_table_name
+                WHERE status='0'
+                ORDER BY id DESC
+                LIMIT $limit
+                ");
             }
 
             $country_code_up = strtoupper($source);
-
             $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code_up)->get()->toArray();
 
             if ($country_code_up == 'IN') {
@@ -120,13 +110,18 @@ class CatalogAmazonImport extends Command
 
             if (count($asins) > 0) {
 
+                $model = 'Asin_source';
+                $table_name = "asin_source_";
+                $source_mode = table_model_create($source, $model, $table_name);
+
                 foreach ($asins as $details) {
                     $seller_id  =  $details->user_id;
                     $asin = $details->asin;
+
                     $asin_upsert_source[] = [
                         'asin' => $asin,
                         'user_id' => $seller_id,
-                        'status' => '1'
+                        'status' => '2'
                     ];
 
                     $aws_id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
@@ -134,9 +129,10 @@ class CatalogAmazonImport extends Command
                     if ($count == 10) {
 
                         jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
-                        // $catalog_class->Catalog($asin_source);
+                        $source_mode->upsert($asin_upsert_source, ['user_asin_unique'], ['status']);
                         $auth_count++;
                         $asin_source = [];
+                        $asin_upsert_source = [];
                         $count = 0;
                     }
 
@@ -155,13 +151,10 @@ class CatalogAmazonImport extends Command
                     }
                 }
 
-                // $catalog_class->Catalog($asin_source);
                 jobDispatchFunc($class, $asin_source, $queue_name, $queue_delay);
-
-                $model = 'Asin_source';
-                $table_name = "asin_source_";
-                $source_mode = table_model_create($source, $model, $table_name);
                 $source_mode->upsert($asin_upsert_source, ['user_asin_unique'], ['status']);
+                $asin_upsert_source = [];
+                $asin_source = [];
             } else {
 
                 // DB::connection('catalog')->update("UPDATE ${asin_table_name} as source

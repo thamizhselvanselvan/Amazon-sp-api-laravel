@@ -159,13 +159,13 @@ class FeedOrderDetailsApp360
         return true;
     }
 
-    public function  getFeedStatus($feed_id, $seller_id)
+    public function  getFeedStatus($feed_id, $seller_id, $country_code = 'IN')
     {
-        $country_code = 'IN';
 
-        $config = $this->config($seller_id, $country_code, $token = NULL);
+        $config = $this->config($seller_id, $country_code);
         $apiInstance = new FeedsApi($config);
-        $result = ($apiInstance->getFeed($feed_id));
+
+        $result = $apiInstance->getFeed($feed_id);
 
         $result = json_decode(json_encode($result));
 
@@ -179,6 +179,70 @@ class FeedOrderDetailsApp360
             return $doc_result->url;
         } else {
             return false;
+        }
+    }
+
+    public function  getFeedsStatus($seller_id, $country_code = 'IN')
+    {
+
+        $config = $this->config($seller_id, $country_code);
+        $apiInstance = new FeedsApi($config);
+
+        $result = $apiInstance->getFeeds([
+            [
+                "feed_id" => "50900019394",
+                "feed_type" => "POST_PRODUCT_PRICING_DATA"
+            ]
+        ]);
+
+        $result = json_decode(json_encode($result));
+
+        if (isset($result->resultFeedDocumentId)) {
+            $feed_doc_id = $result->resultFeedDocumentId;
+
+            $doc_result = $apiInstance->getFeedDocument($feed_doc_id);
+
+            $doc_result = json_decode(json_encode($doc_result));
+
+            return $doc_result->url;
+        } else {
+            return false;
+        }
+    }
+
+
+    public function get($feed_id, $seller_id, $country_code = 'IN') {
+
+        $config = $this->config($seller_id, $country_code);
+
+        $apiInstance = new FeedsApi($config);
+        //$feed_id = 'feed_id_example'; // string | The identifier for the feed. This identifier is unique only in combination with a seller ID.
+
+        try {
+            $result = $apiInstance->getFeed($feed_id);
+            print_r($result);
+        } catch (Exception $e) {
+            echo 'Exception when calling FeedsV20210630Api->getFeed: ', $e->getMessage(), PHP_EOL;
+        }
+    }
+
+    public function getLists($feed_id, $seller_id, $country_code = 'IN') {
+
+        $config = $this->config($seller_id, $country_code);
+
+
+        $apiInstance = new FeedsApi($config);
+        //$feed_id = 'feed_id_example'; // string | The identifier for the feed. This identifier is unique only in combination with a seller ID.
+        $feed_types = ["POST_PRODUCT_PRICING_DATA"];
+        $marketplace_ids = ["A21TJRUUN4KGV"];
+
+        try {
+            $result = $apiInstance->getFeeds($feed_types);
+            echo "<pre>";
+            print_r($result);
+            echo "</pre>";
+        } catch (Exception $e) {
+            echo 'Exception when calling FeedsV20210630Api->getFeed: ', $e->getMessage(), PHP_EOL;
         }
     }
 }

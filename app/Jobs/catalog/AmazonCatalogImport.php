@@ -38,22 +38,8 @@ class AmazonCatalogImport implements ShouldQueue
      */
     public function handle()
     {
-        $api_type = 'new';
-
-        if ($api_type == 'new') {
-
-            //new catalog api
-
-            $catalog_asin = $this->payload;
-            $catalog = new NewCatalog();
-            $catalog->Catalog($catalog_asin, $seller_id = NULL);
-        }
-        //  else {
-
-        //     $asin_source = $this->payload;
-        //     $type = 4;
-        //     $catalog =  new Catalog();
-        //     $catalog->index($asin_source, $seller_id = NULL, $type);
-        // }
+        $catalog_asin = $this->payload;
+        $catalog = new NewCatalog();
+        $catalog->Catalog($catalog_asin, $seller_id = NULL);
     }
 }

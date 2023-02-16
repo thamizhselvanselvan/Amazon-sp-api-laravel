@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use App\Services\SP_API\API\Order\Order;
 use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\order\OrderSellerCredentials;
+use App\Services\SP_API\API\Order\OrderUsingRedBean;
 
 class SellerOrdersImport extends Command
 {
@@ -59,17 +60,28 @@ class SellerOrdersImport extends Command
         $process_management_id = ProcessManagement::create($process_manage)->toArray();
         $pm_id = $process_management_id['id'];
 
-        $aws_data = OrderSellerCredentials::where('dump_order', 1)->get();
+        $aws_data = OrderSellerCredentials::where('dump_order', 1)
+            ->where('cred_status', 1)
+            ->get();
+
+        $check = getSystemSettingsValue('order_redbean', '1');
+
+        if ($check == 0) {
+            $order = new Order();
+        } else {
+            $order = new OrderUsingRedBean();
+        }
 
         foreach ($aws_data as $aws_value) {
 
             $awsCountryCode = $aws_value['country_code']; //Destination
             $source = $aws_value['source'];
             $seller_id = $aws_value['seller_id'];
+            $store_name = $aws_value['store_name'];
+
             $auth_code = NULL;
             $amazon_order_id = NULL;
-            $order = new Order();
-            $order->SelectedSellerOrder($seller_id, $awsCountryCode, $source, $auth_code, $amazon_order_id);
+            $order->SelectedSellerOrder($seller_id, $awsCountryCode, $source, $auth_code, $amazon_order_id, $store_name);
         }
 
         $command_end_time = now();

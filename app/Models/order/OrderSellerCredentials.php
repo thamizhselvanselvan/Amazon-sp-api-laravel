@@ -19,9 +19,12 @@ class OrderSellerCredentials extends Model
         'dump_order',
         'get_order_item',
         'enable_shipntrack',
+        'buybox_stores',
         'courier_partner',
         'zoho',
         'source',
-        'destination'
+        'destination',
+        'push_price_type',
+        'push_price_value'
     ];
 }

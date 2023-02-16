@@ -27,12 +27,11 @@ class DropColumnsFromInwardShipmentDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::connection('inventory')->create('shipment_inward_details', function (Blueprint $table) {
+        Schema::connection('inventory')->table('shipment_inward_details', function (Blueprint $table) {
 
             $table->string('out_quantity')->nullable();
             $table->string('balance_quantity')->nullable();
             $table->string('bin')->nullable();
-            $table->timestamps();
         });
     }
 }

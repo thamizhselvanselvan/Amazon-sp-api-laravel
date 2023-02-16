@@ -19,7 +19,7 @@ class asin_import_to_cliqnshop extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:export_catalog_imported_asin';
+    protected $signature = 'mosh:export_catalog_imported_asin {path}';
 
     /**
      * The console command description.
@@ -46,21 +46,13 @@ class asin_import_to_cliqnshop extends Command
     public function handle()
     {
 
-        // $filename = storage_path('Cliqnshop\asin_import\cliqnshop_asin.csv');
-        // $file = fopen($filename, "r");
-        // $all_data = array();
-        $csv_data =  CSV_Reader('Cliqnshop/asin_import/cliqnshop_asin.csv');
+        $file_path = $this->argument('path');
+        $csv_data =  CSV_Reader($file_path);
 
         foreach ($csv_data as $data) {
             $asin[] = ($data['ASIN']);
-            $category[] = ($data['Category']);
+           
         }
-        // while (($data = fgetcsv($file, 200, ",")) !== FALSE) {
-        //     $asin[] = ($data[0]);
-        //     $category[] = ($data[1]);
-        //     $source[] = ($data[2]);
-        // }
-        // unset($asin[0]);
 
         $headers = [
             'catalognewuss.asin',

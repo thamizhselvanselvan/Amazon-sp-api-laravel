@@ -50,6 +50,7 @@ class Handler extends ExceptionHandler
                 File: $getFile
                 Line: $getLine";
                 Log::channel('slack_360')->error($slackMessage);
+                //Log::error($slackMessage);
             }
         });
     }

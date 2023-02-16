@@ -10,12 +10,14 @@ use App\Models\FileManagement;
 use PhpParser\Node\Expr\Eval_;
 use App\Models\Catalog\Catalog;
 use App\Models\Admin\Ratemaster;
+use App\Models\CommandScheduler;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
@@ -24,7 +26,7 @@ use App\Models\ShipNTrack\SMSA\SmsaTrackings;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
 use App\Models\ShipNTrack\Bombino\BombinoTracking;
 use App\Models\ShipNTrack\Bombino\BombinoTrackingDetails;
-
+use Faker\Core\Number;
 
 if (!function_exists('ddp')) {
     function ddp($value)
@@ -39,7 +41,7 @@ if (!function_exists('addPercentage')) {
 
     function addPercentage($originalAmount, $percentageChange)
     {
-        return $originalAmount + ($percentageChange / 100) * $originalAmount;
+        return (float)$originalAmount + ($percentageChange / 100) * (float)$originalAmount;
     }
 }
 
@@ -49,6 +51,22 @@ if (!function_exists('removePercentage')) {
         return $originalAmount - ($percentageChange / 100) * $originalAmount;
     }
 }
+
+if (!function_exists('addPercentage_product_push')) {
+
+    function addPercentage_product_push($originalAmount, $percentageChange)
+    {
+        return (float)$originalAmount + ($percentageChange / 100) * (float)$originalAmount;
+    }
+}
+
+if (!function_exists('removePercentage_product_push')) {
+    function removePercentage_product_push($originalAmount, $percentageChange)
+    {
+        return (float)$originalAmount - ($percentageChange / 100) * (float)$originalAmount;
+    }
+}
+
 
 if (!function_exists('getPercentageChange')) {
 
@@ -620,6 +638,26 @@ if (!function_exists('poundToKg')) {
         return $weight_kg;
     }
 }
+
+if (!function_exists('VolumetricIntoKG')) {
+    function VolumetricIntoKG($dimension)
+    {
+        $divisor = getSystemSettingsValue('volumetric_divisor_for_pricing', 6000);
+        $cm = $dimension * 16.388;  // convert inch to centimeters.
+        $volumetricOfKg = $cm / $divisor; // volumetric in kg.
+        return $volumetricOfKg;
+    }
+}
+
+if (!function_exists('VolumetricIntoPounds')) {
+    function VolumetricIntoPounds($dimension)
+    {
+        $divisor = getSystemSettingsValue('volumetric_divisor_for_pricing', 6000);
+        $volumetricOfPounds = $dimension / $divisor;
+        return $volumetricOfPounds;
+    }
+}
+
 if (!function_exists('getWeight')) {
 
     function getWeight($dimensions)
@@ -993,8 +1031,10 @@ if (!function_exists('fileManagement')) {
             ->toArray();
 
         $ignore = [
+            'ASIN_BUYBOX_',
             'ASIN_DESTINATION_',
             'ASIN_SOURCE_',
+            'BUYBOX_EXPORT_',
             'CATALOG_PRICE_EXPORT_',
             'CATALOG_EXPORT_',
             'ORDER_',
@@ -1021,7 +1061,7 @@ if (!function_exists('fileManagement')) {
 
             $destination = str_replace(',', '_', $destination);
 
-            commandExecFunc("${command_name} --columns=fm_id=${fm_id},store_id=${store_id},user_id=${user_id},destination=${destination},priority=${priority},path=${path},header=${header}");
+            commandExecFunc("{$command_name} --columns=fm_id={$fm_id},store_id={$store_id},user_id={$user_id},destination={$destination},priority={$priority},path={$path},header={$header}");
 
             $file_management_update->update();
         }
@@ -1166,7 +1206,7 @@ if (!function_exists('CSV_Write')) {
 
             if ($records) {
                 Log::emergency('Writig Here ');
-                $CSV_Writer->insertaLL($records);
+                $CSV_Writer->insertAll($records);
             }
         }
 
@@ -1198,5 +1238,66 @@ if (!function_exists('ProcessManagementUpdate')) {
         $process_management_update->status = '1';
         $process_management_update->command_end_time = $command_end_time;
         $process_management_update->update();
+    }
+}
+
+if (!function_exists('CacheForCommandScheduler')) {
+    function CacheForCommandScheduler()
+    {
+        cache()->rememberForever('Schedule_command', function () {
+            return CommandScheduler::where('status', '1')->get();
+        });
+    }
+}
+
+if (!function_exists('aws_merchant_ids')) {
+    function aws_merchant_ids()
+    {
+        if (Cache::has("aws_merchant_ids")) {
+            return Cache::get("aws_merchant_ids");
+        }
+
+        $get_datas = [];
+        $aws_merchant_ids = Aws_credential::select('seller_id', 'merchant_id')->where("merchant_id", "!=", "Patch")->get()->toArray();
+
+        foreach ($aws_merchant_ids as $aws_merchant_id) {
+            $get_datas[$aws_merchant_id['seller_id']] = $aws_merchant_id['merchant_id'];
+        }
+
+        Cache::set("aws_merchant_ids", $get_datas);
+
+        return $aws_merchant_ids;
+    }
+}
+
+if (!function_exists('ZipFileConverter')) {
+    function ZipFileConverter($zipPath, $totalFile, $filePath): void
+    {
+        $zip = new ZipArchive;
+        $file_path = Storage::path($zipPath);
+        if (!Storage::exists($zipPath)) {
+            Storage::put($zipPath, '');
+        }
+        if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
+            foreach ($totalFile as $value) {
+
+                $path = Storage::path($filePath . "/" . $value);
+                $relativeNameInZipFile = basename($path);
+                $zip->addFile($path, $relativeNameInZipFile);
+            }
+            $zip->close();
+        }
+    }
+}
+
+if (!function_exists('DeleteFileFromFolder')) {
+    function DeleteFileFromFolder($folderName, $countryCode, $priority)
+    {
+        $files = glob(Storage::path('excel/downloads/' . $folderName . '/' . $countryCode . '/' . $priority . '/*'));
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
     }
 }

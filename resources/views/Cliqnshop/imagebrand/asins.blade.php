@@ -43,7 +43,7 @@
     <div class="row">
         <div class="col-3">
             <div class="form-group">
-                <x-adminlte-select name="image" label="Select Country" name="country">
+                <x-adminlte-select name="image" label="Select Country" name="country" id="source">
                     <option value=''>Select Country</option>
                     @foreach ($countrys as $country)
                     <option value="{{ $country->siteid }}">{{$country->code }}</option>
@@ -59,7 +59,7 @@
             <div class="form-group">
                 <label>Enter ASIN:</label>
                 <div class="autocomplete" style="width:400px;">
-                    <x-adminlte-textarea name="upload_asin" rows="5" placeholder="Add Asins here. MAX-20.." name="top_asin" type=" text" autocomplete="off" class="form-control" />
+                    <x-adminlte-textarea name="upload_asin" rows="5" placeholder="Add Asins here. MAX-20.." name="top_asin" type=" text" autocomplete="off" class="form-control" id="asin_fill" />
                 </div>
             </div>
         </div>
@@ -73,10 +73,41 @@
 </form>
 @stop
 
-
 @section('js')
 <script type="text/javascript">
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $('#source').change(function() {
 
+        let cid = $('#source').val();
+        if (cid == '') {
+            return false;
+        }
 
+        $.ajax({
+            method: 'get',
+            url: "{{route('cliqnshop.brand')}}",
+            data: {
+                'country': cid,
+                "_token": "{{ csrf_token() }}",
+            },
+            'dataType': 'json',
+            success: function(response) {
+
+                console.log(response);
+                $("#asin_fill").empty();
+                let asins = (response['data']);
+
+                $("#asin_fill").append(asins);
+                console.log(asins);
+            },
+            error: function(response) {
+
+            }
+        });
+    });
 </script>
 @stop

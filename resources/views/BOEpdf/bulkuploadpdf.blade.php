@@ -9,13 +9,7 @@
     <h1 class="m-0 text-dark text-center ">Bulk BOE Upload</h1>
   </div>
 </div>
-<!-- <div class="row">
-  <div class="col-6">
-    <a href="/BOE/index" class="btn btn-primary">
-      <i class="fas fa-long-arrow-alt-left"></i> Back
-    </a>
-  </div>
-</div> -->
+
 
 @stop
 
@@ -37,7 +31,13 @@
 </div>
 
 <div class="row">
-  <div class="col"></div>
+  <div class="col">
+
+    <div class="lists">
+
+    </div>
+
+  </div>
   <div class="col-8">
 
     @if(session()->has('success'))
@@ -106,7 +106,7 @@
           formData.append('files', elm[count]);
         } else {
           let file_extension = elm['name'].split('.').pop();
-          alert("File extension ." + file_extension +" not supported " );
+          alert("File extension ." + file_extension + " not supported ");
         }
         ++count;
       });
@@ -121,10 +121,30 @@
         dataType: 'json',
         success: (data) => {
           this.reset();
-          alert('Files has been uploaded');
           $("#upload_pdf").removeAttr('disabled');
           $("body").css("cursor", "default");
-          window.location.href = 'index';
+
+          console.log(data);
+
+          if (data.hasOwnProperty("error")) {
+            alert('We are unabel to process some BOE, please check below list');
+            let lists = $(".lists");
+            let html_array = "<h4 class='font-weight-bold'> Failed BOE</h4>";
+
+            $.each(data.error, function(index, value) {
+
+              html_array += "<li>" + value + "</li>";
+
+            });
+
+            lists.html(html_array);
+
+          } else {
+            alert('All Files has been uploaded');
+            window.location.href = 'index';
+
+          }
+
         },
         // error: function(data) {
         //     alert(data.responseJSON.errors.files[0]);

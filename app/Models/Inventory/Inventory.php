@@ -16,6 +16,7 @@ class Inventory extends Model
         'warehouse_id',
         'item_name',
         'source_id',
+        'ss_id',
         'tag',
         'asin',
         'out_quantity',
@@ -47,5 +48,9 @@ class Inventory extends Model
     public function shelves()
     {
         return $this->hasOne(Shelve::class, 'shelve_id', 'bin');
+    }
+    public function tags()
+    {
+        return $this->hasOne(Tag::class, 'id', 'tag');
     }
 }

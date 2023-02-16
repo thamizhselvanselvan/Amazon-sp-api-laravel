@@ -18,6 +18,7 @@ class Aws_credential extends Model
         'merchant_id',
         'auth_code',
         'verified',
+        'priority'
     ];
 
     public function mws_region()

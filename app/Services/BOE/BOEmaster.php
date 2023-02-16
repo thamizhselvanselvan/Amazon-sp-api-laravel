@@ -38,7 +38,7 @@ class BOEmaster
                     if ($date_Boe == '2018') {
                         $get2018 = new BOEPdefreader2018;
                         $get2018->BOEPDFReaderold($content_txt, $storage_path, $company_id, $user_id);
-                    } else  if ($date_Boe == '2022') {
+                    } else  if ($date_Boe == '2022' || $date_Boe == '2023') {
                         $get2022 = new BOEPdfReader;
                         $get2022->BOEPDFReader($content_txt, $storage_path, $company_id, $user_id);
                     } else  if ($date_Boe == '2019') {
@@ -49,8 +49,10 @@ class BOEmaster
                     break 1;
                 }
             }
+            return true;
         } else {
-            slack_notification('app360', 'Invalid BOE', 'Invalid Boe');
+            Log::alert('Invalid Boe File');
+            // slack_notification('app360', 'BOE', 'Invalid BOE Found');
             return false;
         }
     }

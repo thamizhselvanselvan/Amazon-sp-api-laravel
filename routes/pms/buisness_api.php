@@ -1,19 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
-use App\Services\AWS_Business_API\AWS_POC\Orders;
-use App\Http\Controllers\PMSPHPUnitTestController;
-use PhpOffice\PhpSpreadsheet\Calculation\TextData\Search;
-use App\Http\Controllers\BuisnessAPI\ProductsRequestController;
-use App\Services\AWS_Business_API\Details_dump\product_details;
-use App\Services\AWS_Business_API\AWS_POC\Search_Product_Request;
 
-use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
-
-
-Route::get('product/details', 'BuisnessAPI\SearchProductRequestController@searchproductRequest');
+Route::get('product/details/search', 'BuisnessAPI\SearchProductRequestController@searchproductRequest');
 Route::resource('business/search/products', 'BuisnessAPI\SearchProductRequestController');
 
 Route::get('buisness/product/details', 'BuisnessAPI\ProductsRequestController@productRequestasin');
@@ -76,7 +66,17 @@ Route::post('cliqnshop/catalog/csv/import', 'Catalog\CliqnshopCatalogController@
 Route::get('catalog/cliqnshop/new_asin', 'Catalog\CliqnshopCatalogController@uploaded_export_download')->name('uploaded.asin.catalog.export.cliqnshop');
 Route::get('uploaded/catalog/cliqnshop/download/{index}', 'Catalog\CliqnshopCatalogController@Download_uploaded_asin_catalog')->name('uploaded.asin.catalog.export.cliqnshop.download');
 Route::get('cliqnshop/db/upload', 'Catalog\CliqnshopCatalogController@insertCliqnshop')->name('cliqnshop.catalog.db.upload');
+Route::get('cliqnshop/category-poc', 'Catalog\CategoryController@index')->name('cliqnshop.category-poc');
+Route::post('cliqnshop/category-export', 'Catalog\CategoryController@export')->name('cliqnshop.category-export');
 
+
+Route::get('cliqnshop/category-download', function () {
+    $exportFilePath = 'test/Categories.csv';
+    if (!Storage::exists($exportFilePath)) {
+        Storage::put($exportFilePath, '');
+    }
+    return Storage::download($exportFilePath);
+});
 // Route::get('product/test', function () {
 //   // $data[] = $key;
 //   $searchKey = 'iPhone';

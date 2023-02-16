@@ -83,6 +83,7 @@ Route::post('catalog/asin-destination/search-delete', 'Catalog\AsinDestinationCo
 Route::get('catalog/exchange-rate', 'Catalog\CatalogExchangeManagementController@index');
 Route::post('catalog/update/exchange-rate', 'Catalog\CatalogExchangeManagementController@CatalogUpdate')->name('catalog.update.exchange.rate');
 Route::get('catalog/record/auto-load', 'Catalog\CatalogExchangeManagementController@CatalogRecordAutoload')->name('catalog.record.auto.load');
+Route::get('catalog/buybox/prie/recalculate', 'Catalog\CatalogExchangeManagementController@CatalogBuyBoxPriceRecalculate')->name('catalog.buybox.price.recalculate');
 
 Route::get('catalog/index', 'Catalog\CliqnshopCatalogController@index')->name('cliqnshop.catalog.index');
 Route::get('catalog/cliqnshop/export', 'Catalog\CliqnshopCatalogController@catalogexport')->name('catalog.export.cliqnshop');
@@ -94,3 +95,16 @@ Route::get('catalog/source/file/monitor', 'Catalog\AsinSourceController@SourceFi
 Route::get('catalog/price/file/monitor', 'Catalog\CatalogProductController@FileManagementMonitor')->name('catalog.export.file.management.monitor');
 
 Route::match(['get', 'post'], 'catalog/export/all-price', 'Catalog\CatalogProductController@ExportAllPrice')->name('catalog.export.all-price');
+
+Route::get('catalog/buybox/import', 'Catalog\BuyBoxImportExportController@index')->name('catalog.buybox.import.home');
+Route::match(['get', 'post'], 'catalog/buybox/upload', 'Catalog\BuyBoxImportExportController@BuyBoxUploadFile')->name('catalog.buybox.upload.file');
+Route::get('catalog/buybox/file/monitor', 'Catalog\BuyBoxImportExportController@BuyBoxFileManagementMonitor')->name('buybox.file.management.monitor');
+
+Route::get('catalog/buybox/export', 'Catalog\BuyBoxImportExportController@ExportIndex')->name('catalog.buybox.export.home');
+Route::get('catalog/buybox/download/export/template', 'Catalog\BuyBoxImportExportController@DownloadBuyBoxTemplate')->name('catalog.buybox.download.export.template');
+Route::match(['get', 'post'], 'catalog/buybox/export/csv', 'Catalog\BuyBoxImportExportController@ExportBuyBox')->name('catalog.buybox.export.csv');
+Route::get('catalog/buybox/download/file', 'Catalog\BuyBoxImportExportController@GetBuyBoxFile')->name('catalog.buybox.file.download');
+Route::get('catalog/buybox/download/zip/{folder}/{countryCode}/{priority}', 'Catalog\BuyBoxImportExportController@DownloadBuyBoxFile');
+
+Route::get('catalog/buybox/count', 'Catalog\BuyBoxImportExportController@BuyBoxSellerTableCount')->name('catalog.buybox.count');
+Route::post('catalog/buybox/truncate', 'Catalog\BuyBoxImportExportController@BuyBoxTruncate')->name('catalog.buybox.truncate');

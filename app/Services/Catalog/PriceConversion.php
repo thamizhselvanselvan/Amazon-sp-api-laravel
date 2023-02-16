@@ -101,7 +101,7 @@ class PriceConversion
 
         if ($weight < 0.5) {
 
-            $weight = 0.5;
+            $weight = 1;
         }
 
         $duty_rate = $this->exchange_rate_data[6]['duty_rate'] / 100;
@@ -158,7 +158,7 @@ class PriceConversion
 
     public function INDToSA($weight, $bb_price)
     {
-        $weight = (float)$weight;
+        $weight = ceil((float)$weight);
         $bb_price = (float)$bb_price;
 
         $rate_array  = $this->rate_master_in_sa;
@@ -193,7 +193,7 @@ class PriceConversion
 
     public function INDToSG($weight, $bb_price)
     {
-        $weight = (float)$weight;
+        $weight = ceil((float)$weight);
         $bb_price = (float)$bb_price;
 
         $rate_array  = $this->rate_master_in_sg;
@@ -228,7 +228,7 @@ class PriceConversion
 
     public function INDToUAE($weight, $bb_price)
     {
-        $weight = (float)$weight;
+        $weight = ceil((float)$weight);
         $bb_price = (float)$bb_price;
 
         $rate_array = $this->rate_master_in_ae;

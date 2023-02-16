@@ -20,6 +20,7 @@ Route::get('admin/{id}/remove', 'Admin\AdminManagementController@delete');
 Route::get('admin/bin', 'Admin\AdminManagementController@bin')->name('admin.bin');
 Route::get('admin/role-restore/{id}', 'Admin\AdminManagementController@restore');
 
+
 Route::get('admin/catalog_user', 'Admin\CatalogManagementController@index')->name('admin.catalog_user');
 Route::get('admin/catalog/{id}/password_reset', 'Admin\CatalogManagementController@password_reset_view');
 Route::post('admin/catalog/{id}/password_reset_save', 'Admin\CatalogManagementController@password_reset_save')->name('catalog.password_reset_save');
@@ -32,7 +33,8 @@ Route::delete('admin/catalog/{id}/user_delete', 'Admin\CatalogManagementControll
 
 Route::get('admin/stores', 'Admin\AdminManagementController@selectStore')->name('admin.store');
 Route::post('admin/update-store', 'Admin\AdminManagementController@updateStore');
-
+Route::match(['get', 'post'], 'admin/stores/update', 'Admin\AdminManagementController@UpdatePushPriceColumn')->name('admin.store.update.push.price.column');
+Route::get('admin/stores/edit/{id}', 'Admin\AdminManagementController@EditPushPriceColumn')->name('admin.store.edit.push.price.column');
 
 Route::get('admin/system-setting', 'SystemSetting\SystemSettingController@index')->name('system.setting.home');
 Route::post('admin/system-setting/add', 'SystemSetting\SystemSettingController@AddSystemSetting')->name('add.system.setting');
@@ -50,3 +52,8 @@ Route::get('admin/job-management', 'Admin\JobsManagementController@index')->name
 Route::get('admin/job-management/exception', 'Admin\JobsManagementController@exceptiondetails')->name('jobs.management.exception');
 
 Route::get('admin/process-management', 'Admin\ProcessManagementController@index')->name('process.management.index');
+
+
+Route::get('admin/creds/manage/{id}', 'Admin\AdminManagementController@credentialmanage')->name('creds.manage');
+Route::get('admin/creds/manage', 'Admin\AdminManagementController@credentialmanage')->name('creds.manage.id');
+Route::get('admin/creds/save', 'Admin\AdminManagementController@credentialprioritysave')->name('save.creds.priority');
