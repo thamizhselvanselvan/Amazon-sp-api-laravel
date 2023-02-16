@@ -291,19 +291,95 @@
                     base_price: base_price,
                     "_token": "{{ csrf_token() }}",
                 },
-                dataType: 'json',
-                success: function(response) {
-                    self.prop("disabled", false);
-                    console.log(response);
-
-                    if (response.hasOwnProperty("success")) {
-                        alert("price updated successfully done");
+                columns: [{
+                        data: 'id',
+                        name: 'id',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'asin',
+                        name: 'asin',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'product_sku',
+                        name: 'product_sku',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'current_store_price',
+                        name: 'current_store_price',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'bb_winner_price',
+                        name: 'bb_winner_price',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'app_360_price',
+                        name: 'app_360_price',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'base_price',
+                        name: 'base_price',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'ceil_price',
+                        name: 'ceil_price',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'highest_seller_price',
+                        name: 'highest_seller_price',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'lowest_seller_price',
+                        name: 'lowest_seller_price',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'push_price',
+                        name: 'push_price',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'destination_bb_seller',
+                        name: 'destination_bb_seller',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'highest_seller_name',
+                        name: 'highest_seller_name',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'lowest_seller_name',
+                        name: 'lowest_seller_name',
+                        orderable: false,
+                        searchable: false
                     }
-
-                    if (response.hasOwnProperty("failed")) {
-                        alert("price updated failed");
-                    }
-                }
+                ]
+                    // if (response.hasOwnProperty("failed")) {
+                    //     alert("price updated failed");
+                    // }
+               // }
             });
         });
 
@@ -420,6 +496,7 @@
             ]
         });
 
+        
     });
 </script>
 @stop

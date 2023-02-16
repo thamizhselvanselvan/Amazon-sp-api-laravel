@@ -69,6 +69,11 @@ class Product_push_export_by_stores extends Command
         $csv_collections = [];
         $asins = [];
 
+        $counter = 1;
+        $total = 2000;
+        $tagger = 0;
+
+
         foreach ($product_push_datas as $product_push_data) {
 
             $csv_collections[] = [
@@ -89,15 +94,28 @@ class Product_push_export_by_stores extends Command
                 "i_have_bb" => $this->i_have_bb($store_lists, $store_id, $product_push_data->bb_winner_id),
                 "is_bb" => $this->any_of_our_seller_own_bb($store_lists, $product_push_data->bb_winner_id),
             ];
-            $asins[$store_id][]  = $product_push_data->asin;
+            $asins[$tagger][$store_id][]  = $product_push_data->asin;
+
+
+            if($total == $counter) {
+                $tagger++;
+                $counter = 1;
+            }
+
+            $counter++;
         }
 
-        foreach ($asins as $store_id => $asin) {
+        foreach ($asins as $tagger => $values) {
 
-            DB::connection("buybox_stores")->table($table_name)
-                ->where('store_id', $store_id)
-                ->whereIn('asin', $asin)
-                ->update(["push_status" => 1]);
+           foreach($values as $store_id => $asin) {
+
+                DB::connection("buybox_stores")->table($table_name)
+                    ->where('store_id', $store_id)
+                    ->whereIn('asin', $asin)
+                    ->update(["push_status" => 1]);
+
+           }
+                
         }
 
         $file_time = now()->format('Y-m-d-H-i-s');

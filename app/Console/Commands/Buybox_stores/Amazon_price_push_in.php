@@ -14,7 +14,7 @@ class Amazon_price_push_in extends Command
 {
     private $increase_by_price = 5;
     private $decrease_by_price = 5;
-    private $increase_by_excel_price = 10;
+    private $increase_by_excel_price = 5;
     private $rules_applied = [];
     private $price_calculate_type = 'fixed';
     private $our_merchant_ids = [];

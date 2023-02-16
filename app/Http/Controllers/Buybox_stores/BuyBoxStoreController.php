@@ -14,12 +14,16 @@ use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Buybox_stores\Product_Push;
 use App\Models\Buybox_stores\Product_Push_in;
+use App\Models\Buybox_stores\Product_push_ae;
 use App\Models\Buybox_stores\Seller_id_name;
 use App\Models\order\OrderSellerCredentials;
 use App\Services\AmazonFeedApiServices\AmazonFeedProcess;
+use App\Services\SP_API\Config\ConfigTrait;
 
 class BuyBoxStoreController extends Controller
-{
+{   
+    use ConfigTrait;
+
     public function index()
     {
         $stores = ['7', '8', '9', '10', '12', '20', '27'];
@@ -107,7 +111,7 @@ class BuyBoxStoreController extends Controller
 
         $stores = OrderSellerCredentials::select('store_name', 'seller_id')
             ->where('buybox_stores', 1)
-            ->whereIn("seller_id", [6, 8, 10, 27])
+            ->whereIn("seller_id", [6, 7, 8, 9, 10, 27, 29, 35, 44])
             ->distinct()
             ->get();
 
@@ -135,64 +139,112 @@ class BuyBoxStoreController extends Controller
                 'current_store_price',
                 'bb_winner_price',
                 'bb_winner_id',
-                'base_price',
-                'ceil_price',
-                'app_360_price',
-                'destination_bb_price',
+                'base_price', 
+                'ceil_price', 
+                'app_360_price', 
                 'highest_seller_price',
                 'highest_seller_id',
                 'lowest_seller_price',
                 'lowest_seller_id',
                 'applied_rules'
             ];
+       
+            if(in_array($request_store_id, [13,14,5,6,8,16,17,10,21,23,24,26,27,28,30,31,33,36,39])) {
 
-            $data = Product_Push_in::query()
-                ->select($select_query)
-                ->when($request_store_id, function ($query) use ($request_store_id) {
-                    return $query->where('store_id', $request_store_id);
-                })
-                ->where('push_status', 0)
-                ->where('availability', 1)
-                ->orderBy('id', 'DESC');
+                $data = Product_Push_in::query()
+                    ->select($select_query)
+                    ->where('store_id', $request_store_id)
+                    ->where('push_status', 0)
+                    ->where('availability', 1)
+                    ->orderBy('id', 'DESC');
+            } else {
+
+                $data = Product_push_ae::query()
+                    ->select($select_query)
+                    ->where('store_id', $request_store_id)
+                    ->where('push_status', 0)
+                    ->where('availability', 1)
+                    ->orderBy('id', 'DESC');
+
+            }
 
             return DataTables::of($data)
-                ->editColumn('highest_seller_name', function ($query) {
+                ->editColumn('highest_seller_name', function($query) use($request_store_id) {
 
                     //$seller_name = (Seller_id_name::where('seller_store_id', $query->highest_seller_id)->first())->seller_name ?? "";
                     $seller_name = Cache::get($query->highest_seller_id, function () use ($query) {
                         return Seller_id_name::where('seller_store_id', $query->highest_seller_id)->first();
                     });
 
-                    $seller_name = $seller_name->seller_name ?? "";
+                    if(isset($seller_name->seller_name) && strlen($seller_name->seller_name) > 0) {
+                        return $seller_name->seller_name;
+                    }
 
-                    $highest_seller = (isset($seller_name)) ? $seller_name : $query->highest_seller_id;
+                    if(isset($query->bb_winner_id) && strlen($query->bb_winner_id) > 0) {
+                        
+                        return $this->amazon_links($request_store_id, $query->bb_winner_id);
+                        
+                    }
 
-                    return (isset($highest_seller) && $highest_seller != "") ? $highest_seller : "None";
+                    return "None";
+
+                    // $seller_name = $seller_name->seller_name ?? "";
+
+                    // $highest_seller = (isset($seller_name)) ? $seller_name : $query->highest_seller_id ;
+
+                    // return (isset($highest_seller) && $highest_seller != "") ? $highest_seller : "None" ;
                 })
-                ->editColumn('lowest_seller_name', function ($query) {
+                ->editColumn('lowest_seller_name', function($query) use($request_store_id) {
 
                     $seller_name = Cache::get($query->lowest_seller_id, function () use ($query) {
                         return Seller_id_name::where('seller_store_id', $query->lowest_seller_id)->first();
                     });
 
-                    $seller_name = $seller_name->seller_name ?? "";
+                    if(isset($seller_name->seller_name) && strlen($seller_name->seller_name) > 0) {
+                        return $seller_name->seller_name;
+                    }
 
-                    $lowest_seller = (isset($seller_name)) ? $seller_name : $query->lowest_seller_id;
+                    if(isset($query->bb_winner_id) && strlen($query->bb_winner_id) > 0) {
 
-                    return (isset($lowest_seller) && $lowest_seller != "") ? $lowest_seller : "None";
+                        return $this->amazon_links($request_store_id, $query->bb_winner_id);
+                        
+                    }
+
+                    return "None";
+
+                    // $seller_name = $seller_name->seller_name ?? "";
+
+                    // $lowest_seller = (isset($seller_name)) ? $seller_name : $query->lowest_seller_id ;
+
+                    // return (isset($lowest_seller) && $lowest_seller != "") ? $lowest_seller : "None" ;
                 })
-                ->editColumn('destination_bb_seller', function ($query) {
+                ->editColumn('destination_bb_seller', function($query) use($request_store_id) {
 
-                    //$seller_name = (Seller_id_name::where('seller_store_id', $query->bb_winner_id)->first())->seller_name ?? "";
-                    $seller_name = Cache::get($query->bb_winner_id, function () use ($query) {
+                    $seller_name = Cache::get($query->bb_winner_id, function () use($query) {
                         return Seller_id_name::where('seller_store_id', $query->bb_winner_id)->first();
                     });
 
-                    $seller_name = $seller_name->seller_name ?? "";
+                    if(isset($seller_name->seller_name) && strlen($seller_name->seller_name) > 0) {
+                        return $seller_name->seller_name;
+                    }
 
-                    $bb_winner = (isset($seller_name)) ? $seller_name : $query->bb_winner_id;
+                    if(isset($query->bb_winner_id) && strlen($query->bb_winner_id) > 0) {
 
-                    return (isset($bb_winner) && $bb_winner != "") ? $bb_winner : "None";
+                        return $this->amazon_links($request_store_id, $query->bb_winner_id);
+                        
+                    }
+
+                    return "None";
+
+                    //$seller_name = $seller_name->seller_name ?? "";
+
+                   // Log::debug("$seller_name ===== $query->bb_winner_id");
+
+                    //$bb_winner = (isset($seller_name) && strlen($seller_name) > 0) ? $seller_name : $query->bb_winner_id;
+
+                  //  Log::notice((isset($bb_winner) && $bb_winner != "") ? $bb_winner : "None");
+
+                  //  return (isset($bb_winner) && $bb_winner != "") ? $this->amazon_links($bb_winner) : "None" ;
                 })
                 ->editColumn('asin', function ($query) {
 
@@ -280,6 +332,19 @@ class BuyBoxStoreController extends Controller
         }
 
         return view('buybox_stores.availability', compact('stores', 'url', 'request_store_id'));
+    }
+
+    public function amazon_links($store_id, $merchant_id) {
+
+        if(in_array($store_id, [13,14,5,6,8,16,17,10,21,23,24,26,27,28,30,31,33,36,39])) {
+            return "<a href='https://amazon.in/sp?seller=".$merchant_id."'>$merchant_id</a>";
+        }
+
+        if(in_array($store_id, [15,7,18,9,29,32,35,38,44])) {
+            return "<a href='https://amazon.ae/sp?seller=".$merchant_id."'>$merchant_id</a>";
+        }
+
+        return $merchant_id;
     }
 
     public function push_price_update(Request $request)
