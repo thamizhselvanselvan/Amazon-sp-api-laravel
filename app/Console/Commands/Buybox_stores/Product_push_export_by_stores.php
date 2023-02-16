@@ -78,8 +78,13 @@ class Product_push_export_by_stores extends Command
         foreach ($product_push_datas as $product_push_data) {
 
 
-            $lowest_seller_name = Seller_id_name::where('seller_store_id', $product_push_data->lowest_seller_id)->first();
-            Log::warning($lowest_seller_name);
+            $lowest_seller_data = Seller_id_name::where('seller_store_id', $product_push_data->lowest_seller_id)->first();
+            $l_s_name = $product_push_data->lowest_seller_id;
+            if (isset($lowest_seller_data->seller_name)) {
+                $l_s_name = $lowest_seller_data->seller_name;
+            }
+
+            Log::warning($l_s_name);
 
 
             $csv_collections[] = [
@@ -91,7 +96,7 @@ class Product_push_export_by_stores extends Command
                 "push_price" => $product_push_data->push_price,
                 "base_price" => $product_push_data->base_price,
                 "ceil_price" => $product_push_data->ceil_price,
-                "lsi" => $lowest_seller_name,
+                "lsi" => $l_s_name,
                 "lsp" => $product_push_data->lowest_seller_price,
                 "hsi" => $product_push_data->highest_seller_id,
                 "hsp" => $product_push_data->highest_seller_price,
