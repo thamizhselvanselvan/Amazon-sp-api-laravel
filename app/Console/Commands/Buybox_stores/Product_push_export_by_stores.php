@@ -59,8 +59,8 @@ class Product_push_export_by_stores extends Command
 
         $headers = [
             "ASIN", "SKU", "Availability", "Excel Price", "Store Price", "Push Price",
-            "Base Price", "Ceil Price", "Lowest Seller ID", "Lowest Seller Price",
-            "Highest Seller ID", "Highest Seller Price", "BB ID", "BB Price", "i have BB", "Any of our seller own BB"
+            "Base Price", "Ceil Price", "Lowest Seller", "Lowest Seller Price",
+            "Highest Seller ", "Highest Seller Price", "BB", "BB Price", "i have BB", "Any of our seller own BB"
         ];
 
         $product_push_datas = DB::connection("buybox_stores")->table($table_name)
@@ -77,15 +77,9 @@ class Product_push_export_by_stores extends Command
 
         foreach ($product_push_datas as $product_push_data) {
 
-
-            $lowest_seller_data = Seller_id_name::where('seller_store_id', $product_push_data->lowest_seller_id)->first();
-            $l_s_name = $product_push_data->lowest_seller_id;
-            if (isset($lowest_seller_data->seller_name)) {
-                $l_s_name = $lowest_seller_data->seller_name;
-            }
-
-            Log::warning($l_s_name);
-
+            $lowest_seller_name = $this->getsellername($product_push_data->lowest_seller_id);
+            $highest_seller_name = $this->getsellername($product_push_data->highest_seller_id);
+            $bb_winner_name = $this->getsellername($product_push_data->bb_winner_id);
 
             $csv_collections[] = [
                 "asin" => $product_push_data->asin,
@@ -96,11 +90,11 @@ class Product_push_export_by_stores extends Command
                 "push_price" => $product_push_data->push_price,
                 "base_price" => $product_push_data->base_price,
                 "ceil_price" => $product_push_data->ceil_price,
-                "lsi" => $l_s_name,
+                "lsi" => $lowest_seller_name,
                 "lsp" => $product_push_data->lowest_seller_price,
-                "hsi" => $product_push_data->highest_seller_id,
+                "hsi" => $highest_seller_name,
                 "hsp" => $product_push_data->highest_seller_price,
-                "bbi" => $product_push_data->bb_winner_id,
+                "bbi" => $bb_winner_name,
                 "bbp" => $product_push_data->bb_winner_price,
                 "i_have_bb" => $this->i_have_bb($store_lists, $store_id, $product_push_data->bb_winner_id),
                 "is_bb" => $this->any_of_our_seller_own_bb($store_lists, $product_push_data->bb_winner_id),
@@ -147,5 +141,18 @@ class Product_push_export_by_stores extends Command
         }
 
         return false;
+    }
+    public function getsellername($seller_id)
+    {
+
+        $seller_data = Seller_id_name::where('seller_store_id', $seller_id)->first();
+
+        $seller_name = $seller_id;
+        if ($seller_id == '0') {
+            $seller_name = '';
+        } elseif (isset($seller_data->seller_name)) {
+            $seller_name = $seller_data->seller_name;
+        }
+        return $seller_name;
     }
 }
