@@ -77,6 +77,10 @@ Route::get('cliqnshop/category-download', function () {
     }
     return Storage::download($exportFilePath);
 });
+
+Route::get('cliqnshop/footercontent', 'Cliqnshop\FooterController@index')->name('cliqnshop.footercontent');
+Route::post('cliqnshop/footercontent', 'Cliqnshop\FooterController@store')->name('cliqnshop.footercontent.store');
+
 // Route::get('product/test', function () {
 //   // $data[] = $key;
 //   $searchKey = 'iPhone';
