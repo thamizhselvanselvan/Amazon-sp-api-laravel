@@ -353,16 +353,22 @@
                         searchable: false
                     },
                     {
-                        data: 'destination_bb_seller',
-                        name: 'destination_bb_seller',
+                        data: 'bb_winner_id',
+                        name: 'bb_winner_id',
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: 'highest_seller_name',
                         name: 'highest_seller_name',
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: 'lowest_seller_name',
                         name: 'lowest_seller_name',
+                        orderable: false,
+                        searchable: false
                     }
                 ]
                     // if (response.hasOwnProperty("failed")) {
@@ -401,15 +407,11 @@
                 },
                 {
                     data: 'asin',
-                    name: 'asin',
-                    orderable: false,
-                    searchable: false
+                    name: 'asin'
                 },
                 {
                     data: 'product_sku',
-                    name: 'product_sku',
-                    orderable: false,
-                    searchable: false
+                    name: 'product_sku'
                 },
                 {
                     data: 'current_store_price',
@@ -460,8 +462,8 @@
                     searchable: false
                 },
                 {
-                    data: 'destination_bb_seller',
-                    name: 'destination_bb_seller'
+                    data: 'bb_winner_id',
+                    name: 'bb_winner_id'
                 },
                 {
                     data: 'highest_seller_name',
