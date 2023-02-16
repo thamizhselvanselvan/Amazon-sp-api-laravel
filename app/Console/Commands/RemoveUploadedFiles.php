@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use Carbon\Carbon;
 use App\Models\BOE;
-use Carbon\CarbonPeriod;
 use Illuminate\Console\Command;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
@@ -78,26 +77,18 @@ class RemoveUploadedFiles extends Command
             });
         }
         // Remove all 2 days ago file form Asin destination, Asin source and invoiceCSV folder start.
-        // $back_file_date1 = Carbon::now()->subDays(60)->toDateString();
-        // $back_file_date2 = Carbon::now()->subDays(3)->toDateString();
-        $date = Carbon::now()->subDays(65);
-        $date1 = Carbon::now()->subDays(30);
-        $periods = CarbonPeriod::create($date, $date1);
+        $back_file_date = Carbon::now()->subDays(30)->toDateString();
         $Asin_source_destination_files = ['AsinDestination', 'AsinSource', 'invoiceCSV'];
-
-
         foreach ($Asin_source_destination_files as $Asin_source_destination_file) {
+
             $files = Storage::allFiles("${Asin_source_destination_file}");
             foreach ($files as $file_name) {
 
                 $FileTime = date("F d Y H:i:s.", filemtime(Storage::path("${file_name}")));
                 $current_file_date = Carbon::parse($FileTime)->toDateString();
-                foreach ($periods as $period) {
-                    $back_file_date = $period->toDateString();
 
-                    if ($back_file_date == $current_file_date) {
-                        unlink(Storage::path($file_name));
-                    }
+                if ($back_file_date == $current_file_date) {
+                    unlink(Storage::path($file_name));
                 }
             }
         }
