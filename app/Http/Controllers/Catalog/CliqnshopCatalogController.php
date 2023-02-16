@@ -80,30 +80,19 @@ class CliqnshopCatalogController extends Controller
         if (!Storage::exists($path)) {
             return false;
         } else {
-            $user_id = Auth::user()->id;
-            $header = ["path" => "${path}" , "site_id"=>"${site_id}"];
-            $file_info = [
-                'user_id' => $user_id,
-                'type' => 'Import',
-                'module' => "Cliqnshop_insert",
-                'file_path' => $path,
-                'command_name' => "mosh:catalog_insert_cliqnshop",
-                "header"        => "${path}_${site_id}"
-            ];
-
-            FileManagement::create($file_info);
-            // fileManagement();
-
+            // $user_id = Auth::user()->id;
+            // $header = ["path" => "${path}" , "site_id"=>"${site_id}"];
             // $file_info = [
             //     'user_id' => $user_id,
             //     'type' => 'Import',
-            //     'module' => "Cliqnshop_export",
+            //     'module' => "Cliqnshop_insert",
             //     'file_path' => $path,
-            //     'command_name' => "mosh:export_catalog_imported_asin ${path}",
+            //     'command_name' => "mosh:catalog_insert_cliqnshop",
+            //     "header"        => "${path}_${site_id}"
             // ];
 
             // FileManagement::create($file_info);
-            // fileManagement();
+          
 
 
             commandExecFunc("mosh:catalog_insert_cliqnshop ${path} ${site_id}");
