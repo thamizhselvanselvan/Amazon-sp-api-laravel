@@ -9,8 +9,8 @@ use App\Models\Buybox_stores\Products_in;
 
 class app360_price_import_ae extends Command
 {
-    private $base_percentage =20;
-    private $ceil_percentage =30;
+    private $base_percentage = 20;
+    private $ceil_percentage = 30;
     private $price_calculate_type = "percent";
     /**
      * The name and signature of the console command.
@@ -127,10 +127,12 @@ class app360_price_import_ae extends Command
     {
         if ($this->price_calculate_type == "percent") {
 
-            $ceil_price  = addPercentage($price, $this->base_percentage);
-            $base_price  = removePercentage($price, $this->ceil_percentage);
+            $base_price  = removePercentage($price, $this->base_percentage);
+            $ceil_price  = addPercentage($price, $this->ceil_percentage);
+
             return ['ceil_price' => $ceil_price, 'base_price' => $base_price];
         }
+        
         $ceil_price = $price + $this->ceil_percentage;
         $base_price = $price - $this->base_percentage;
 
