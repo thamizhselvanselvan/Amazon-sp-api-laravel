@@ -294,20 +294,15 @@
                 columns: [{
                         data: 'id',
                         name: 'id',
-                        orderable: false,
-                        searchable: false
                     },
                     {
                         data: 'asin',
                         name: 'asin',
-                        orderable: false,
-                        searchable: false
                     },
                     {
                         data: 'product_sku',
                         name: 'product_sku',
-                        orderable: false,
-                        searchable: false
+                     
                     },
                     {
                         data: 'current_store_price',
@@ -360,20 +355,14 @@
                     {
                         data: 'destination_bb_seller',
                         name: 'destination_bb_seller',
-                        orderable: false,
-                        searchable: false
                     },
                     {
                         data: 'highest_seller_name',
                         name: 'highest_seller_name',
-                        orderable: false,
-                        searchable: false
                     },
                     {
                         data: 'lowest_seller_name',
                         name: 'lowest_seller_name',
-                        orderable: false,
-                        searchable: false
                     }
                 ]
                     // if (response.hasOwnProperty("failed")) {
