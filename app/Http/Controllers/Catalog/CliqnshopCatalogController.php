@@ -90,6 +90,7 @@ class CliqnshopCatalogController extends Controller
                 'command_name' => "mosh:catalog_insert_cliqnshop",
                 'command_start_time' => now(),
                 'command_end_time' => now(),
+                'status' => '1'
             ];
 
             FileManagement::create($file_info);
