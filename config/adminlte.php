@@ -12,7 +12,7 @@ return [
     | For detailed instructions you can look the title section here:
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Basic-Configuration
     |
-    */
+     */
 
     'title' => 'Catalog Manager',
     'title_prefix' => '',
@@ -28,7 +28,7 @@ return [
     | For detailed instructions you can look the favicon section here:
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Basic-Configuration
     |
-    */
+     */
 
     'use_ico_only' => false,
     'use_full_favicon' => false,
@@ -43,7 +43,7 @@ return [
     | For detailed instructions you can look the logo section here:
     |
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Basic-Configuration
-    */
+     */
 
     'logo' => '<b>M C M</b>',
     'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
@@ -62,7 +62,7 @@ return [
     | For detailed instructions you can look the user menu section here:
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Basic-Configuration
     |
-    */
+     */
 
     'usermenu_enabled' => true,
     'usermenu_header' => false,
@@ -81,7 +81,7 @@ return [
     | For detailed instructions you can look the layout section here:
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Layout-and-Styling-Configuration
     |
-    */
+     */
 
     'layout_topnav' => true,
     'layout_boxed' => null,
@@ -100,7 +100,7 @@ return [
     | For detailed instructions you can look the auth classes section here:
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Layout-and-Styling-Configuration
     |
-    */
+     */
 
     'classes_auth_card' => 'card-outline card-primary',
     'classes_auth_header' => '',
@@ -119,7 +119,7 @@ return [
     | For detailed instructions you can look the admin panel classes here:
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Layout-and-Styling-Configuration
     |
-    */
+     */
 
     'classes_body' => '',
     'classes_brand' => '',
@@ -143,7 +143,7 @@ return [
     | For detailed instructions you can look the sidebar section here:
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Layout-and-Styling-Configuration
     |
-    */
+     */
 
     'sidebar_mini' => 'lg',
     'sidebar_collapse' => false,
@@ -165,7 +165,7 @@ return [
     | For detailed instructions you can look the right sidebar section here:
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Layout-and-Styling-Configuration
     |
-    */
+     */
 
     'right_sidebar' => false,
     'right_sidebar_icon' => 'fas fa-cogs',
@@ -185,7 +185,7 @@ return [
     | For detailed instructions you can look the urls section here:
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Basic-Configuration
     |
-    */
+     */
 
     'use_route_url' => false,
     'dashboard_url' => 'home',
@@ -206,7 +206,7 @@ return [
     | For detailed instructions you can look the laravel mix section here:
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Other-Configuration
     |
-    */
+     */
 
     'enabled_laravel_mix' => false,
     'laravel_mix_css_path' => 'css/app.css',
@@ -222,7 +222,7 @@ return [
     | For detailed instructions you can look here:
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Menu-Configuration
     |
-    */
+     */
 
     'menu' => [
         // Navbar items:
@@ -241,7 +241,7 @@ return [
             'text' => 'Dashboard',
             'route' => 'login',
             'title' => 'Dashboard',
-            'can' => ['Admin']
+            'can' => ['Admin'],
 
         ],
         [
@@ -251,13 +251,13 @@ return [
         ],
         [
             'text' => 'Master',
-            'can' => ['Admin','Account'],
+            'can' => ['Admin', 'Account'],
             'submenu' => [
                 [
                     'text' => 'Roles',
                     'url' => 'admin/rolespermissions',
                     'icon' => 'far fa fa-file-text-o',
-                    'can' => ['Admin']
+                    'can' => ['Admin'],
                 ],
                 [
                     'text' => 'Users',
@@ -318,33 +318,33 @@ return [
                             'text' => 'Region Master ',
                             'url' => 'admin/mws_regions',
                             'icon' => 'far fa fa-map-marker',
-                            'can' => ['Admin']
+                            'can' => ['Admin'],
                         ],
                         [
                             'text' => 'Credentials Master',
                             'url' => 'admin/credentials',
                             'icon' => 'far fa-id-card',
-                            'can' => ['Admin']
+                            'can' => ['Admin'],
                         ],
                         [
                             'text' => 'Currency Master',
                             'url' => 'admin/currencys',
                             'icon' => 'far fa fa-money',
-                            'can' => ['Admin']
+                            'can' => ['Admin'],
                         ],
                         [
                             'text' => 'Credentials Management',
                             'url' => 'admin/creds/manage',
                             'icon' => 'far fa-id-card',
-                            'can' => ['Admin']
+                            'can' => ['Admin'],
                         ],
-                    ]
+                    ],
                 ],
                 [
                     'text' => 'System',
-                    'can' => ['Admin','Account'],
+                    'can' => ['Admin', 'Account'],
                     'icon' => 'far fa fa-desktop',
-                    'submenu' =>[
+                    'submenu' => [
                         [
                             'text' => 'Setting',
                             'url' => 'admin/system-setting',
@@ -369,16 +369,16 @@ return [
                             'can' => ['Admin'],
                             'icon' => 'fa fa-tasks',
                         ],
-        
+
                         [
                             'text' => 'Scheduler Management',
                             'url' => 'admin/scheduler/management',
                             'can' => ['Admin'],
                             'icon' => 'fa fa-calendar',
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
-                
+
             ],
         ],
 
@@ -421,7 +421,7 @@ return [
                             'url' => 'v2/master/users',
                             'can' => ['Admin'],
                             'icon' => 'far fa-fw fa-user',
-                           
+
                         ],
 
                         [
@@ -432,9 +432,9 @@ return [
                             'submenu' => [
                                 [
                                     'text' => 'Currency',
-                                    'url'   => 'v2/master/store/currency',
-                                    'icon'  => 'far fa fa-money',
-                                    'can'   => ['Admin'],
+                                    'url' => 'v2/master/store/currency',
+                                    'icon' => 'far fa fa-money',
+                                    'can' => ['Admin'],
                                 ],
                                 [
                                     'text' => 'Regions',
@@ -452,7 +452,6 @@ return [
                             ],
 
                         ],
-
 
                         [
                             'text' => 'Geo',
@@ -481,7 +480,7 @@ return [
                             ],
 
                         ],
-                    ]
+                    ],
 
                 ],
             ],
@@ -495,7 +494,7 @@ return [
                     'text' => 'Dashboard',
                     'url' => 'catalog/dashboard',
                     'icon' => 'fa fa-dashboard',
-                    'can' => ['Admin', 'Catalog']
+                    'can' => ['Admin', 'Catalog'],
                 ],
 
                 [
@@ -507,14 +506,14 @@ return [
                             'text' => 'Asin Source',
                             'url' => 'catalog/asin-source',
                             'icon' => 'far fa fa-sitemap',
-                            'can' => ['Admin', 'Catalog']
+                            'can' => ['Admin', 'Catalog'],
                         ],
 
                         [
                             'text' => 'Asin Destination',
                             'url' => 'catalog/asin-destination',
                             'icon' => 'far fa fa-globe',
-                            'can' => ['Admin', 'Catalog']
+                            'can' => ['Admin', 'Catalog'],
                         ],
                     ],
                 ],
@@ -526,7 +525,7 @@ return [
                 'icon' => 'far fa-fw fa-file',
                 'can' =>  ['Admin']
                 ],
-                */
+                 */
 
                 [
 
@@ -538,14 +537,14 @@ return [
                             'text' => 'Only Price Export',
                             'url' => 'catalog/product',
                             'icon' => 'far fa fa-tag',
-                            'can' => ['Admin', 'Catalog']
+                            'can' => ['Admin', 'Catalog'],
                         ],
 
                         [
                             'text' => 'Price Export With Catalog Details',
                             'url' => 'catalog/export-with-price',
                             'icon' => 'far fa fa-tags',
-                            'can' => ['Admin', 'Catalog']
+                            'can' => ['Admin', 'Catalog'],
                         ],
                     ],
                 ],
@@ -563,7 +562,7 @@ return [
                 'icon' => 'far fa-fw fa-file',
                 'can' =>  ['Admin', 'Catalog'],
                 ],
-                */
+                 */
 
                 /*
                 [
@@ -572,34 +571,34 @@ return [
                 'icon' => 'far fa-fw fa-file',
                 'can' =>  ['Admin']
                 ],
-                */
+                 */
 
                 [
 
                     'text' => 'Catalog Exchange Rate',
                     'url' => 'catalog/exchange-rate',
                     'icon' => 'far fa fa-exchange',
-                    'can' => ['Admin']
+                    'can' => ['Admin'],
                 ],
 
                 [
 
                     'text' => 'Buy-Box Operation',
                     'icon' => 'far fa fa-archive',
-                    'can' =>  ['Admin', 'Catalog'],
+                    'can' => ['Admin', 'Catalog'],
                     'submenu' => [
                         [
-                            'text'  => 'Buy-Box Import',
-                            'url'  => 'catalog/buybox/import',
+                            'text' => 'Buy-Box Import',
+                            'url' => 'catalog/buybox/import',
                             'icon' => 'far fa fa-cloud-download',
-                            'can' =>  ['Admin', 'Catalog']
+                            'can' => ['Admin', 'Catalog'],
                         ],
 
                         [
-                            'text'  => 'Buy-Box Export',
-                            'url'  => 'catalog/buybox/export',
+                            'text' => 'Buy-Box Export',
+                            'url' => 'catalog/buybox/export',
                             'icon' => 'far fa fa-external-link',
-                            'can' =>  ['Admin', 'Catalog']
+                            'can' => ['Admin', 'Catalog'],
                         ],
                     ],
                 ],
@@ -613,7 +612,7 @@ return [
                             'text' => 'Latency Update',
                             'url' => 'buybox/stores',
                             'icon' => 'far fa fa-clock-o',
-                            'can' => ['Admin']
+                            'can' => ['Admin'],
                         ],
                     ],
                 ],
@@ -622,7 +621,7 @@ return [
 
         [
             'text' => 'Orders',
-            'can' => ['Admin', 'Catalog','Inventory', 'BOE', 'KYC'],
+            'can' => ['Admin', 'Catalog', 'Inventory', 'BOE', 'KYC'],
             'submenu' => [
                 [
                     'text' => 'Dashboard',
@@ -695,14 +694,14 @@ return [
 
         [
             'text' => 'Operations',
-            'can' => ['Admin','Inventory', 'BOE', 'KYC','B2CShip'],
+            'can' => ['Admin', 'Inventory', 'BOE', 'KYC', 'B2CShip'],
             'submenu' => [
                 [
                     'text' => 'Inventory',
                     'can' => ['Admin', 'Inventory'],
                     'icon' => 'far fa fa-list-alt',
                     'submenu' => [
-        
+
                         [
                             'text' => 'Master',
                             'icon' => 'far fa fa-cog',
@@ -715,7 +714,7 @@ return [
                                     'can' => ['Admin', 'Inventory'],
                                 ],
                                 [
-        
+
                                     'text' => 'Rack',
                                     'icon' => 'far fa fa-table',
                                     'can' => ['Admin', 'Inventory'],
@@ -724,50 +723,49 @@ return [
                                             'text' => 'Racks',
                                             'url' => 'inventory/racks',
                                             'icon' => 'far fa fa-cubes',
-                                            'can' => ['Admin', 'Inventory']
+                                            'can' => ['Admin', 'Inventory'],
                                         ],
                                         [
                                             'text' => 'Shelves',
                                             'url' => 'inventory/shelves',
                                             'icon' => 'far fa fa-archive',
-                                            'can' => ['Admin', 'Inventory']
-        
+                                            'can' => ['Admin', 'Inventory'],
+
                                         ],
                                         [
                                             'text' => 'Bins',
                                             'url' => 'inventory/bins',
                                             'icon' => 'far fa fa-cube',
-                                            'can' => ['Admin', 'Inventory']
-        
+                                            'can' => ['Admin', 'Inventory'],
+
                                         ],
-        
+
                                     ],
                                 ],
                                 [
                                     'text' => 'Tags',
                                     'icon' => 'far fa fa-tag',
                                     'url' => 'inventory/tags',
-                                    'can' => ['Admin', 'Inventory']
-        
+                                    'can' => ['Admin', 'Inventory'],
+
                                 ],
                                 [
                                     'text' => 'Dispose',
                                     'icon' => 'far fa fa-ban',
                                     'url' => 'inventory/features',
-                                    'can' => ['Admin', 'Inventory']
-        
+                                    'can' => ['Admin', 'Inventory'],
+
                                 ],
                             ],
                         ],
-        
+
                         [
                             'text' => 'Vendor (Source & Desitinaion)',
                             'url' => 'inventory/vendors',
                             'icon' => 'far fa fa-sitemap',
                             'can' => ['Admin', 'Inventory'],
                         ],
-        
-        
+
                         [
                             'text' => 'Stock Master',
                             'url' => 'inventory/stocks',
@@ -780,14 +778,14 @@ return [
                                     'icon' => 'far fa fa-check-square-o',
                                     'can' => ['Admin', 'Inventory'],
                                 ],
-        
+
                                 [
                                     'text' => 'Inward ',
                                     'icon' => 'far fa fa-plus-square-o',
                                     'url' => 'inventory/shipments',
                                     'can' => ['Admin', 'Inventory'],
                                 ],
-        
+
                                 [
                                     'text' => 'Outward ',
                                     'icon' => 'far fa fa-minus-square-o',
@@ -805,19 +803,19 @@ return [
                                     'text' => 'Daily',
                                     'url' => 'inventory/reports/daily',
                                     'icon' => 'far fa fa-calendar',
-                                    'can' => ['Admin', 'Inventory']
+                                    'can' => ['Admin', 'Inventory'],
                                 ],
                                 [
                                     'text' => 'Weekly',
                                     'url' => 'inventory/reports/weekly',
                                     'icon' => 'far fa fa-calendar',
-                                    'can' => ['Admin', 'Inventory']
+                                    'can' => ['Admin', 'Inventory'],
                                 ],
                                 [
                                     'text' => 'Monthly',
                                     'url' => 'inventory/reports/monthly',
                                     'icon' => 'far fa fa-calendar-o',
-                                    'can' => ['Admin', 'Inventory']
+                                    'can' => ['Admin', 'Inventory'],
                                 ],
                             ],
                         ],
@@ -830,23 +828,23 @@ return [
                                     'text' => 'Option',
                                     'url' => 'inventory/features',
                                     'icon' => 'far fa fa-th-large',
-                                    'can' => ['Admin', 'Inventory']
+                                    'can' => ['Admin', 'Inventory'],
                                 ],
                                 [
                                     'text' => 'Email',
                                     'url' => 'inventory/features',
                                     'icon' => 'far fa fa-envelope-o',
-                                    'can' => ['Admin', 'Inventory']
+                                    'can' => ['Admin', 'Inventory'],
                                 ],
                                 [
                                     'text' => 'Config',
                                     'url' => 'inventory/features',
                                     'icon' => 'far fa fa-cogs',
-                                    'can' => ['Admin', 'Inventory']
+                                    'can' => ['Admin', 'Inventory'],
                                 ],
                             ],
                         ],
-        
+
                     ],
                 ],
                 [
@@ -897,13 +895,13 @@ return [
                             'text' => 'Dashboard',
                             'icon' => 'far fa fa-bar-chart',
                             'can' => ['Admin', 'B2CShip'],
-                            'url' => 'b2cship/dashboard'
+                            'url' => 'b2cship/dashboard',
                         ],
                         [
                             'text' => 'Monitor',
                             'icon' => 'far fa fa-search',
                             'can' => ['Admin', 'B2CShip'],
-                            'url' => 'b2cship/monitor'
+                            'url' => 'b2cship/monitor',
                         ],
                         [
                             'text' => 'Details',
@@ -914,16 +912,16 @@ return [
                                     'text' => 'Ship Tracking Status',
                                     'icon' => 'far fa fa-map-marker',
                                     'can' => ['Admin', 'B2CShip'],
-                                    'url' => 'b2cship/tracking_status/details'
+                                    'url' => 'b2cship/tracking_status/details',
                                 ],
                                 [
                                     'text' => 'Micro Status Missing',
                                     'url' => 'b2cship/micro_status_missing_report',
                                     'can' => ['Admin', 'B2CShip'],
                                     'icon' => 'far far fa fa-envelope-o',
-                                ]
-                            ]
-        
+                                ],
+                            ],
+
                         ],
                         [
                             'text' => 'Report',
@@ -935,9 +933,9 @@ return [
                                     'url' => 'b2cship/kyc',
                                     'can' => ['Admin', 'B2CShip'],
                                     'icon' => 'far fa fa-calendar',
-        
+
                                 ],
-        
+
                                 [
                                     'text' => 'Booking Status',
                                     'url' => 'b2cship/booking',
@@ -950,7 +948,7 @@ return [
                                     'can' => ['Admin', 'B2CShip'],
                                     'icon' => 'far fa fa-paper-plane',
                                 ],
-                            ]
+                            ],
                         ],
                         [
                             'text' => 'Bombino',
@@ -962,14 +960,14 @@ return [
                                     'url' => 'bombion/packet-activities',
                                     'can' => ['Admin', 'B2CShip'],
                                     'icon' => 'far fa fa-cube ',
-        
-                                ]
-                            ]
+
+                                ],
+                            ],
                         ],
-        
+
                     ],
                 ],
-            ]
+            ],
 
         ],
 
@@ -1012,7 +1010,7 @@ return [
                             'text' => 'Price listing',
                             'url' => 'stores/listing/price',
                             'can' => ['Admin'],
-                            'icon' => 'fa fa-list'
+                            'icon' => 'fa fa-list',
                         ],
                         // [
                         //     'text' => 'Availability',
@@ -1024,11 +1022,11 @@ return [
                             'text' => 'Price Updated',
                             'url' => 'stores/price/updated',
                             'can' => ['Admin'],
-                            'icon' => 'fa fa-refresh'
+                            'icon' => 'fa fa-refresh',
                         ],
                     ],
                 ],
-            ]
+            ],
         ],
 
         [
@@ -1039,7 +1037,7 @@ return [
                     'text' => 'Courier Partner',
                     'url' => 'shipntrack/courier',
                     'icon' => 'far fa fa-archive',
-                    'can' => ['Admin']
+                    'can' => ['Admin'],
                 ],
                 [
                     'text' => 'Tracking',
@@ -1051,13 +1049,13 @@ return [
                             'text' => 'SMSA Tracking',
                             'url' => 'shipntrack/smsa',
                             'can' => ['Admin'],
-                            'icon' => 'far fa fa-barcode'
+                            'icon' => 'far fa fa-barcode',
                         ],
                         [
                             'text' => 'Bombino Tracking',
                             'url' => 'shipntrack/bombino',
                             'can' => ['Admin'],
-                            'icon' => 'far fa fa-plane'
+                            'icon' => 'far fa fa-plane',
                         ],
                     ],
                 ],
@@ -1079,19 +1077,19 @@ return [
                             'text' => 'Tracking Event Master',
                             'url' => 'shipntrack/event-master',
                             'can' => ['Admin'],
-                            'icon' => 'far fa fa-cog'
+                            'icon' => 'far fa fa-cog',
                         ],
                         [
                             'text' => 'Tracking Event Mapping',
                             'url' => 'shipntrack/event-mapping',
                             'can' => ['Admin'],
-                            'icon' => 'far fa fa-map-marker'
+                            'icon' => 'far fa fa-map-marker',
                         ],
                         [
                             'text' => 'Stop Tracking',
                             'url' => 'shipntrack/stopTracking',
                             'can' => ['Admin'],
-                            'icon' => 'far fa fa-ban'
+                            'icon' => 'far fa fa-ban',
                         ],
                         [
                             // 'text'  =>  'Tracking Listing',
@@ -1100,9 +1098,8 @@ return [
                         ],
                     ],
                 ],
-            ]
+            ],
         ],
-
 
         [
             'text' => 'Cliqnshop',
@@ -1203,6 +1200,12 @@ return [
 
                     ],
                 ],
+                [
+                    'text' => 'Footer Section',
+                    'url' => 'cliqnshop/footercontent',
+                    'can' => ['Admin', 'Cliqnshop'],
+                    'icon' => 'fas fa-chalkboard',
+                ],
             ],
         ],
 
@@ -1242,7 +1245,7 @@ return [
                             'can' => ['Admin', 'POC'],
                             'icon' => 'far fa fa-wrench',
 
-                        ]
+                        ],
                     ],
                 ],
 
@@ -1265,7 +1268,7 @@ return [
                         //     'icon' => 'far fa-fw fa-file',
 
                         // ]
-                    ]
+                    ],
 
                 ],
                 [
@@ -1313,7 +1316,7 @@ return [
     | For detailed instructions you can look the menu filters section here:
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Menu-Configuration
     |
-    */
+     */
 
     'filters' => [
         JeroenNoten\LaravelAdminLte\Menu\Filters\GateFilter::class,
@@ -1335,7 +1338,7 @@ return [
     | For detailed instructions you can look the plugins section here:
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Plugins-Configuration
     |
-    */
+     */
 
     'plugins' => [
         'Datatables' => [
@@ -1421,7 +1424,7 @@ return [
     | For detailed instructions you can look the iframe mode section here:
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/IFrame-Mode-Configuration
     |
-    */
+     */
 
     'iframe' => [
         'default_tab' => [
@@ -1453,7 +1456,7 @@ return [
     | For detailed instructions you can look the livewire here:
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Other-Configuration
     |
-    */
+     */
 
     'livewire' => false,
 ];
