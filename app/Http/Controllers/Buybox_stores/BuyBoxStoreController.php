@@ -216,7 +216,7 @@ class BuyBoxStoreController extends Controller
 
                     // return (isset($lowest_seller) && $lowest_seller != "") ? $lowest_seller : "None" ;
                 })
-                ->editColumn('destination_bb_seller', function ($query) use ($request_store_id) {
+                ->editColumn('bb_winner_id', function ($query) use ($request_store_id) {
 
                     $seller_name = Cache::get($query->bb_winner_id, function () use ($query) {
                         return Seller_id_name::where('seller_store_id', $query->bb_winner_id)->first();
@@ -268,7 +268,7 @@ class BuyBoxStoreController extends Controller
                 //               base_price={$query->base_price}
                 //             >Process</button>";
                 // })
-                ->rawColumns(['action', 'asin', 'product_sku', 'highest_seller_name', 'lowest_seller_name', 'destination_bb_seller', 'current_store_price'])
+                ->rawColumns(['action', 'asin', 'product_sku', 'highest_seller_name', 'lowest_seller_name', 'bb_winner_id', 'current_store_price'])
                 ->make(true);
         }
 
