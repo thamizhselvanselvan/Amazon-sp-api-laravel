@@ -85,7 +85,7 @@ class app360_price_import_ae extends Command
                 'asin' => $value['asin'],
                 // 'priority' => $value['priority'],
                 'availability' => $value['available'],
-                'bb_price' => ceil($value['ae_price']),
+                'bb_price' => ceil((float)$value['ae_price']),
                 'app_360_price' => ceil($value['usa_to_uae']),
                 'base_price' => ceil($price_calculate['base_price']),
                 'ceil_price' => ceil($price_calculate['ceil_price']),
