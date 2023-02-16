@@ -6,6 +6,7 @@ use App\Models\Aws_credential;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\Buybox_stores\Seller_id_name;
 
 class Product_push_export_by_stores extends Command
 {
@@ -76,6 +77,11 @@ class Product_push_export_by_stores extends Command
 
         foreach ($product_push_datas as $product_push_data) {
 
+
+            $lowest_seller_name = Seller_id_name::where('seller_store_id', $product_push_data->lowest_seller_id)->first();
+            Log::warning($lowest_seller_name);
+
+
             $csv_collections[] = [
                 "asin" => $product_push_data->asin,
                 "sku" => $product_push_data->product_sku,
@@ -85,7 +91,7 @@ class Product_push_export_by_stores extends Command
                 "push_price" => $product_push_data->push_price,
                 "base_price" => $product_push_data->base_price,
                 "ceil_price" => $product_push_data->ceil_price,
-                "lsi" => $product_push_data->lowest_seller_id,
+                "lsi" => $lowest_seller_name,
                 "lsp" => $product_push_data->lowest_seller_price,
                 "hsi" => $product_push_data->highest_seller_id,
                 "hsp" => $product_push_data->highest_seller_price,
@@ -97,7 +103,7 @@ class Product_push_export_by_stores extends Command
             $asins[$tagger][$store_id][]  = $product_push_data->asin;
 
 
-            if($total == $counter) {
+            if ($total == $counter) {
                 $tagger++;
                 $counter = 1;
             }
@@ -107,15 +113,13 @@ class Product_push_export_by_stores extends Command
 
         foreach ($asins as $tagger => $values) {
 
-           foreach($values as $store_id => $asin) {
+            foreach ($values as $store_id => $asin) {
 
                 DB::connection("buybox_stores")->table($table_name)
                     ->where('store_id', $store_id)
                     ->whereIn('asin', $asin)
                     ->update(["push_status" => 1]);
-
-           }
-                
+            }
         }
 
         $file_time = now()->format('Y-m-d-H-i-s');
