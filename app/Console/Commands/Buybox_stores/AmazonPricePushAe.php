@@ -227,8 +227,8 @@ class AmazonPricePushAe extends Command
 
                 $our_own_seller = $this->any_of_our_own_store_won_bb(store_id: $store_id, bb_winner_id: $bb_winner_id);
 
-                Log::notice("OUR OWN SELLER");
-                Log::notice($our_own_seller);
+                // Log::notice("OUR OWN SELLER");
+                // Log::notice($our_own_seller);
 
                 $this->rules_applied[$id_rules_applied] = [
                     "We have lost the BB",
