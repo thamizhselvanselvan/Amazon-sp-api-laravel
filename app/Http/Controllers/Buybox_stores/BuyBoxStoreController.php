@@ -469,4 +469,19 @@ class BuyBoxStoreController extends Controller
     {
         return Storage::download('public/product_push/' . $index);
     }
+
+
+    public function requestregion(Request $request)
+    {
+        if ($request->ajax()) {
+            $country_code = $request->region;
+
+            $data =   OrderSellerCredentials::query()
+                ->where(['country_code' => $country_code, 'buybox_stores' => 1])
+                ->select('store_name', 'seller_id')
+                ->get();
+
+            return response()->json($data);
+        }
+    }
 }
