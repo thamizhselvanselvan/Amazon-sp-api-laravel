@@ -1050,7 +1050,7 @@ if (!function_exists('fileManagement')) {
             $module = explode('_', str_replace($ignore, '', $file_data['module']));
             $path = $file_data['file_path'];
             $command_name = $file_data['command_name'];
-            $header = isset($file_data['header']) ? json_decode($file_data['header'])->data : '';
+            $header = isset($file_data['header']) ? json_decode($file_data['header'])->data ?? '' : '';
             $destination = isset($module[0]) ? $module[0] : '';
             $priority = isset($module[1]) ? $module[1] : '';
 
@@ -1205,7 +1205,7 @@ if (!function_exists('CSV_Write')) {
             $CSV_Writer->insertOne($columnsHeader);
 
             if ($records) {
-                Log::emergency('Writig Here ');
+                // Log::emergency('Writig Here ');
                 $CSV_Writer->insertAll($records);
             }
         }

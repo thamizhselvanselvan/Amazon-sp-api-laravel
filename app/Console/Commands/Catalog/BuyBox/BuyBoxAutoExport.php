@@ -42,7 +42,7 @@ class BuyBoxAutoExport extends Command
         $today = Carbon::today()->toDateTimeString();
         $now = Carbon::now()->toDateTimeString();
 
-        $user_id = 124;
+        $user_id = 'T1';
         $countryCode = ['1' => 'IN', '2' => 'US',  '3' => 'AE'];
         $key = 1;
         $file_info = [];

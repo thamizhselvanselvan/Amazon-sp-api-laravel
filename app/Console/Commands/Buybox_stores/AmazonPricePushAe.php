@@ -2,36 +2,34 @@
 
 namespace App\Console\Commands\Buybox_stores;
 
+use Carbon\Carbon;
+use App\Models\Product;
 use Illuminate\Console\Command;
-use App\Models\Aws_credential;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
-use App\Models\Buybox_stores\Products_in;
-use Illuminate\Support\Facades\Cache;
-use App\Models\Buybox_stores\Product_Push_in;
+use App\Models\Buybox_stores\Products_ae;
+use App\Models\Buybox_stores\Product_push_ae;
 
-class Amazon_price_push_in extends Command
+class AmazonPricePushAe extends Command
 {
-    private $increase_by_price = 5;
-    private $decrease_by_price = 5;
+    private $increase_by_price = 1;
+    private $decrease_by_price = 1;
     private $increase_by_excel_price = 5;
     private $rules_applied = [];
     private $price_calculate_type = 'fixed';
     private $our_merchant_ids = [];
-
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'mosh:price_push_in';
+    protected $signature = 'mosh:price_push_ae';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Product Price Push';
+    protected $description = 'Command description';
 
     /**
      * Create a new command instance.
@@ -55,7 +53,7 @@ class Amazon_price_push_in extends Command
         $start_date = Carbon::now()->subMinutes(30);
         $end_date = Carbon::now()->subMinutes(1);
 
-        $products = Products_in::query()
+        $products = Products_ae::query()
             ->whereBetween("updated_at", [$start_date, $end_date])
             ->where("cyclic", 1)
             ->where("cyclic_push", 0)
@@ -64,16 +62,14 @@ class Amazon_price_push_in extends Command
 
         if ($products->count() <= 0) {
 
-            Products_in::query()->update(['cyclic_push' => 0]);
+            Products_ae::query()->update(['cyclic_push' => 0]);
             return false;
         }
         $data_to_insert = [];
         $asins = [];
         foreach ($products as $product) {
 
-
             $id_rules_applied = $product->asin . "_" . $product->store_id;
-
             $push_price = $this->push_price_logic($product, $id_rules_applied);
 
             $asins[] = $product->asin;
@@ -82,7 +78,7 @@ class Amazon_price_push_in extends Command
 
                 echo "selected $product->asin, $push_price \n";
 
-                Product_Push_in::insert([
+                Product_push_ae::create([
                     'asin' => $product->asin,
                     'store_id' =>  $product->store_id,
                     'product_sku' => $product->product_sku,
@@ -100,10 +96,9 @@ class Amazon_price_push_in extends Command
                     'highest_seller_price' => $product->highest_seller_price,
                     'bb_winner_id' => $product->bb_winner_id,
                     'bb_winner_price' => $product->bb_winner_price,
-                    'is_bb_won' => $product->is_bb_won,
-                    'applied_rules' => json_encode($this->rules_applied[$id_rules_applied]) ?? "No Rules Applied",
-                    'created_at' => now(),
-                    'updated_at' => now()
+                    'is_bb_won' => $product->is_bb_won ?? 0,
+                    'applied_rules' => json_encode($this->rules_applied[$id_rules_applied]) ?? "No Rules Applied"
+
                 ]);
             } else {
                 echo $push_price . ' - ' . $product->store_price . " - " . $product->ceil_price . "\n";
@@ -112,7 +107,7 @@ class Amazon_price_push_in extends Command
             }
         }
 
-        Products_in::whereIn('asin', $asins)->where("store_id", $product->store_id)->update(['cyclic_push' => 1]);
+        Products_ae::whereIn('asin', $asins)->where("store_id", $product->store_id)->update(['cyclic_push' => 1]);
     }
 
     public function push_price_logic($product, $id_rules_applied)
@@ -232,8 +227,8 @@ class Amazon_price_push_in extends Command
 
                 $our_own_seller = $this->any_of_our_own_store_won_bb(store_id: $store_id, bb_winner_id: $bb_winner_id);
 
-                // Log::notice("OUR OWN SELLER");
-                // Log::notice($our_own_seller);
+                Log::notice("OUR OWN SELLER");
+                Log::notice($our_own_seller);
 
                 $this->rules_applied[$id_rules_applied] = [
                     "We have lost the BB",
@@ -352,62 +347,7 @@ class Amazon_price_push_in extends Command
     }
 
     public function i_have_bb(string $store_id, string $bb_winner_id): bool
-    {   
-        return  $this->our_merchant_ids[$store_id] == $bb_winner_id;
-    }
-
-    public function push_price_logic_old($data): array
     {
-
-        $push_price = 0;
-        $store_id = $data->store_id;
-        $asin = $data->asin;
-        $product_sku = $data->product_sku;
-        $latency = $data->latency;
-        $availability = $data->availability;
-        $winner = $data->bb_winner_price;
-        $bb_won = $data->is_bb_won;
-        $nxt_highest_seller = $data->highest_seller_price;
-        $nxt_lowest_seller = $data->lowest_seller_price;
-        $base_price = $data->base_price;
-        $store_price = $data->store_price;
-
-        if (isset($data->ceil_price)) {
-            $push_price = $data->ceil_price;
-        } else if ($availability == 0) {
-            $push_price = 0;
-        }
-
-        //if our store won bb
-        if ($bb_won === 1 && $nxt_lowest_seller != 0 && $nxt_highest_seller != 0) {
-            $diffrence = $nxt_highest_seller - $winner;
-            $push_price =  $winner + $diffrence - 1;
-
-            if ($push_price > $data->ceil_price) {
-                $push_price = $winner;
-                //bb won but price > others(no changes keeyp Stay)
-            } else if ($winner > $nxt_highest_seller) {
-                $push_price = $winner;
-            }
-            //bb lost (decrese our price(winner price - 1))
-        } else if ($bb_won === '0') {
-            // $push_price = $winner - 1;
-            if ($push_price > $data->ceil_price) {
-
-                $push_price = $data->ceil_price;
-            } else if ($winner === '0') {
-                $push_price = $data->ceil_price;
-            } else if ($data->ceil_price == null) {
-                $push_price = 0;
-            }
-            //no competitors we won BB
-        } else if ($nxt_highest_seller == '0' && $nxt_lowest_seller == '0' && $bb_won === '1') {
-            $push_price = $data->ceil_price;
-            //bb lost but no competitors, increase to ceil
-        } else if ($nxt_highest_seller == '0' && $nxt_lowest_seller == '0' && $bb_won === '0') {
-            $push_price = $data->ceil_price;
-        }
-
-        return [];
+        return  $this->our_merchant_ids[$store_id] == $bb_winner_id;
     }
 }
