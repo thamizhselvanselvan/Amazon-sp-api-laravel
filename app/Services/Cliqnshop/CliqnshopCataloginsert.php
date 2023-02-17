@@ -77,7 +77,7 @@ class CliqnshopCataloginsert
             'code' => $sku_genrator->generateSKU('CNS', $asin), 
             'asin' => $asin, //ASIN
             'label' => $item_name,
-            'url' => mb_strtolower(str_replace(array('&', '<', '>', ';',' ',','), '-', $string_original)),
+            'url' => mb_strtolower(str_replace(array('&', '<', '>', ';',' ',','), '_', $item_name_replaced)),
             'config' => '[]',
             // 'start' => NULL,
             // 'end' => NULL,
