@@ -49,27 +49,27 @@ class ImportPriceFromBuyBox
             //                 ");
 
             $BuyBoxRecords = DB::connection('buybox')
-                ->select("SELECT 'asin', 'available', 
-                            'is_sold_by_amazon',
-                            'is_any_our_seller_own_bb', 
-                            'next_highest_seller_price',
-                            'next_highest_seller_id',
-                            'next_lowest_seller_price',
-                            'next_lowest_seller_id',
-                            'bb_winner_price',
-                            'bb_winner_id',
-                            'updated_at' ,
-                                'buybox_landedprice_amount',
-                                'lowestprice_landedprice_amount',
-                                'lowestprice_listingprice_amount'
-                                FROM $product_lp  
-                                WHERE updated_at BETWEEN $start AND $end 
-                                GROUP BY asin
+                ->select("SELECT asin, available, 
+                            is_sold_by_amazon,
+                            is_any_our_seller_own_bb, 
+                            next_highest_seller_price,
+                            next_highest_seller_id,
+                            next_lowest_seller_price,
+                            next_lowest_seller_id,
+                            bb_winner_price,
+                            bb_winner_id,
+                            updated_at ,
+                            buybox_landedprice_amount,
+                            lowestprice_landedprice_amount,
+                            lowestprice_listingprice_amount
+                            FROM $product_lp  
+                            WHERE updated_at BETWEEN $start AND $end
                             ");
             $count = 0;
             $asins = [];
             $Records = [];
             $catalogRecords = [];
+            Log::debug($BuyBoxRecords);
             // Log::notice($country_code_lr . '=>' . count($BuyBoxRecords));
             $catalogTable = table_model_create(country_code: $country_code_lr, model: 'Catalog', table_name: 'catalognew');
             foreach ($BuyBoxRecords as $BuyBoxRecord) {
