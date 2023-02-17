@@ -49,24 +49,22 @@ class ImportPriceFromBuyBox
             //                 ");
 
             $BuyBoxRecords = DB::connection('buybox')
-                ->select("SELECT PPO.asin, LP.available, 
-                            LP.is_sold_by_amazon,
-                            LP.is_any_our_seller_own_bb, 
-                            LP.next_highest_seller_price,
-                            LP.next_highest_seller_id,
-                            LP.next_lowest_seller_price,
-                            LP.next_lowest_seller_id,
-                            LP.bb_winner_price,
-                            LP.bb_winner_id,
-                            LP.updated_at as updated_at,
-                                PPO.buybox_landedprice_amount,
-                                PPO.lowestprice_landedprice_amount,
-                                PPO.lowestprice_listingprice_amount
-                                FROM $product_seller_details as PPO
-                                JOIN $product_lp as LP 
-                                ON PPO.asin = LP.asin
-                                WHERE LP.updated_at BETWEEN $start AND $end 
-                                GROUP BY PPO.asin
+                ->select("SELECT 'asin', 'available', 
+                            'is_sold_by_amazon',
+                            'is_any_our_seller_own_bb', 
+                            'next_highest_seller_price',
+                            'next_highest_seller_id',
+                            'next_lowest_seller_price',
+                            'next_lowest_seller_id',
+                            'bb_winner_price',
+                            'bb_winner_id',
+                            'updated_at' ,
+                                'buybox_landedprice_amount',
+                                'lowestprice_landedprice_amount',
+                                'lowestprice_listingprice_amount'
+                                FROM $product_lp  
+                                WHERE updated_at BETWEEN $start AND $end 
+                                GROUP BY asin
                             ");
             $count = 0;
             $asins = [];
