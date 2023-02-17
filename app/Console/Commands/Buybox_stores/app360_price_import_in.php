@@ -49,27 +49,6 @@ class app360_price_import_in extends Command
     public function handle()
     {
 
-        // $stores = [6, 8, 10, 27];
-
-        // foreach ($stores as $store_id) {
-
-        //     $datas = Products_in::select('asin')
-        //         ->where('cyclic', 0)
-        //         ->where("store_id", $store_id)
-        //         ->limit(500)
-        //         ->get()->toArray();
-
-        //     Products_in::where('store_id', $store_id)->whereIn('asin', $datas)->update(['cyclic' => 1]);
-        //     if (count($datas) <= 0) {
-
-        //         Products_in::where('cyclic', 1)->update(['cyclic' => 0]);
-
-        //         return $this->handle();
-        //     } else {
-        //         $this->pricingin($datas, $store_id);
-        //     }
-        // }
-
         $this->pricingin();
 
         return true;
@@ -201,8 +180,8 @@ class app360_price_import_in extends Command
 
         if ($this->price_calculate_type == "percent") {
 
-            $ceil_price  = addPercentage($price, $this->base_percentage);
-            $base_price  = removePercentage($price, $this->ceil_percentage);
+            $base_price  = removePercentage($price, $this->base_percentage);
+            $ceil_price  = addPercentage($price, $this->ceil_percentage);
 
             return ['ceil_price' => $ceil_price, 'base_price' => $base_price];
         }
