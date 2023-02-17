@@ -54,19 +54,20 @@ Route::get('export', function () {
 
 Route::get('test', function () {
 
-    $buybox_landedprice_amount = '';
-    $lowestprice_landedprice_amount = '';
-    $lowestprice_listingprice_amount = '';
-
-    $price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : ($lowestprice_listingprice_amount != '' ? $lowestprice_listingprice_amount : 0));
-    // $price = ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : $lowestprice_listingprice_amount)?:0;
-    po($price);
-    exit;
-    $date = Carbon::now()->subDays(105);
-    $date1 = Carbon::now()->subDays(30);
-    $periods = CarbonPeriod::create($date, $date1);
-    foreach ($periods as $period) {
-        $date = $period->toDateString();
-        po($date);
+    $id = [];
+    $previous_date = Carbon::now()->subDays(30)->toDateTimeString();
+    $file_management_ids = FileManagement::where('created_at', '<', $previous_date)->get()->toArray();
+    foreach ($file_management_ids as $file_management_id) {
+        $id[] = $file_management_id['id'];
     }
+    FileManagement::whereIn('id', $id)->delete();
+    po($previous_date);
+    po($id);
+    exit;
+    $date = Carbon::now()->addDays(105);
+    $date1 = Carbon::now();
+    if ($date <= $date1) {
+        echo 'working';
+    }
+    po($date);
 });
