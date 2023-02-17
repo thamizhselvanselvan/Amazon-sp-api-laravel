@@ -28,6 +28,26 @@ class ImportPriceFromBuyBox
             $product_seller_details = "bb_product_aa_custom_p${priority}_${country_code_lr}_seller_details";
             $product_lp = "bb_product_aa_custom_p${priority}_${country_code_lr}_offers";
 
+            // $BuyBoxRecords = DB::connection('buybox')
+            //     ->select("SELECT PPO.asin, LP.available, 
+            //                 LP.is_sold_by_amazon,
+            //                 LP.is_any_our_seller_own_bb, 
+            //                 LP.next_highest_seller_price,
+            //                 LP.next_highest_seller_id,
+            //                 LP.next_lowest_seller_price,
+            //                 LP.next_lowest_seller_id,
+            //                 LP.bb_winner_price,
+            //                 LP.bb_winner_id,
+            //                 LP.updated_at as updated_at,
+            //                     GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
+            //                     group_concat(PPO.listingprice_amount) as listingprice_amount
+            //                     FROM $product_seller_details as PPO
+            //                     JOIN $product_lp as LP 
+            //                     ON PPO.asin = LP.asin
+            //                     WHERE LP.updated_at BETWEEN $start AND $end 
+            //                     GROUP BY PPO.asin
+            //                 ");
+
             $BuyBoxRecords = DB::connection('buybox')
                 ->select("SELECT PPO.asin, LP.available, 
                             LP.is_sold_by_amazon,
@@ -39,8 +59,9 @@ class ImportPriceFromBuyBox
                             LP.bb_winner_price,
                             LP.bb_winner_id,
                             LP.updated_at as updated_at,
-                                GROUP_CONCAT(PPO.is_buybox_winner) as is_buybox_winner,
-                                group_concat(PPO.listingprice_amount) as listingprice_amount
+                                PPO.buybox_landedprice_amount,
+                                PPO.lowestprice_landedprice_amount,
+                                PPO.lowestprice_listingprice_amount
                                 FROM $product_seller_details as PPO
                                 JOIN $product_lp as LP 
                                 ON PPO.asin = LP.asin
@@ -111,7 +132,7 @@ class ImportPriceFromBuyBox
                 }
             }
             // Log::notice($catalogWeight);
-            $BBlistingPrice = '';
+            $buybox_landed_price = '';
             $pricing_in = [];
             $pricing_us = [];
             $pricing_ae = [];
@@ -138,60 +159,64 @@ class ImportPriceFromBuyBox
                 $bb_winner_id = $BBRecord->bb_winner_id;
                 $updated_at = $BBRecord->updated_at;
 
-                $isBuyBoxWinner = explode(',', $BBRecord->is_buybox_winner);
-                $listingAmount = explode(',', $BBRecord->listingprice_amount);
+                // $isBuyBoxWinner = explode(',', $BBRecord->is_buybox_winner);
+                // $listingAmount = explode(',', $BBRecord->listingprice_amount);
+
+                $buybox_landedprice_amount = $BBRecord->buybox_landedprice_amount;
+                $lowestprice_landedprice_amount = $BBRecord->lowestprice_landedprice_amount;
+                $lowestprice_listingprice_amount = $BBRecord->lowestprice_listingprice_amount;
 
                 $volumetricPounds = VolumetricIntoPounds($dimension);
                 $volumetricKg = VolumetricIntoKG($dimension);
 
-                foreach ($isBuyBoxWinner as $key1 => $BuyBoxWinner) {
-                    $price = $country_code_lr . '_price';
+                // foreach ($isBuyBoxWinner as $key1 => $BuyBoxWinner) {
+                $price = $country_code_lr . '_price';
 
-                    if ($BuyBoxWinner == 1) {
+                // if ($BuyBoxWinner == 1) {
 
-                        $BBlistingPrice = $listingAmount[$key1] ?? 0;
+                $buybox_landed_price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : ($lowestprice_listingprice_amount != '' ? $lowestprice_listingprice_amount : 0));
 
-                        $asinDetails = [
-                            'asin'                      => $asin,
-                            'available'                 => $available,
-                            'is_sold_by_amazon'         => $is_sold_by_amazon,
-                            $price                      => $BBlistingPrice,
-                            'next_highest_seller_price' => $next_highest_seller_price,
-                            'next_highest_seller_id'    => $next_highest_seller_id,
-                            'next_lowest_seller_price'  => $next_lowest_seller_price,
-                            'next_lowest_seller_id'     => $next_lowest_seller_id,
-                            'bb_winner_price'           => $bb_winner_price,
-                            'bb_winner_id'              => $bb_winner_id,
-                            'is_any_our_seller_won_bb'  => $is_our_seller_bb_winner,
-                            'price_updated_at'          => $updated_at,
-                        ];
+                $asinDetails = [
+                    'asin'                      => $asin,
+                    'available'                 => $available,
+                    'is_sold_by_amazon'         => $is_sold_by_amazon,
+                    $price                      => $buybox_landed_price,
+                    'next_highest_seller_price' => $next_highest_seller_price,
+                    'next_highest_seller_id'    => $next_highest_seller_id,
+                    'next_lowest_seller_price'  => $next_lowest_seller_price,
+                    'next_lowest_seller_id'     => $next_lowest_seller_id,
+                    'bb_winner_price'           => $bb_winner_price,
+                    'bb_winner_id'              => $bb_winner_id,
+                    'is_any_our_seller_won_bb'  => $is_our_seller_bb_winner,
+                    'price_updated_at'          => $updated_at,
+                ];
 
-                        break 1;
-                    } else {
-                        $BBlistingPrice = min($listingAmount);
+                // break 1;
+                // } else {
+                //     $BBlistingPrice = min($listingAmount);
 
-                        $asinDetails = [
-                            'asin'                      => $asin,
-                            'available'                 => $available,
-                            'is_sold_by_amazon'         => $is_sold_by_amazon,
-                            $price                      => $BBlistingPrice,
-                            'next_highest_seller_price' => $next_highest_seller_price,
-                            'next_highest_seller_id'    => $next_highest_seller_id,
-                            'next_lowest_seller_price'  => $next_lowest_seller_price,
-                            'next_lowest_seller_id'     => $next_lowest_seller_id,
-                            'bb_winner_price'           => $bb_winner_price,
-                            'bb_winner_id'              => $bb_winner_id,
-                            'is_any_our_seller_won_bb'  => $is_our_seller_bb_winner,
-                            'price_updated_at'          => $updated_at,
-                        ];
-                    }
-                }
+                //     $asinDetails = [
+                //         'asin'                      => $asin,
+                //         'available'                 => $available,
+                //         'is_sold_by_amazon'         => $is_sold_by_amazon,
+                //         $price                      => $BBlistingPrice,
+                //         'next_highest_seller_price' => $next_highest_seller_price,
+                //         'next_highest_seller_id'    => $next_highest_seller_id,
+                //         'next_lowest_seller_price'  => $next_lowest_seller_price,
+                //         'next_lowest_seller_id'     => $next_lowest_seller_id,
+                //         'bb_winner_price'           => $bb_winner_price,
+                //         'bb_winner_id'              => $bb_winner_id,
+                //         'is_any_our_seller_won_bb'  => $is_our_seller_bb_winner,
+                //         'price_updated_at'          => $updated_at,
+                //     ];
+                // }
+                // }
                 if ($country_code_lr == 'us') {
                     $vol_packet_weight = $volumetricPounds > $packet_weight ? $volumetricPounds : $packet_weight;
-                    $price_in_b2c = $price_convert->USAToINDB2C($vol_packet_weight, $BBlistingPrice);
-                    $price_in_b2b = $price_convert->USAToINDB2B($vol_packet_weight, $BBlistingPrice);
-                    $price_ae = $price_convert->USATOUAE($vol_packet_weight, $BBlistingPrice);
-                    $price_sg =  $price_convert->USATOSG($vol_packet_weight, $BBlistingPrice);
+                    $price_in_b2c = $price_convert->USAToINDB2C($vol_packet_weight, $buybox_landed_price);
+                    $price_in_b2b = $price_convert->USAToINDB2B($vol_packet_weight, $buybox_landed_price);
+                    $price_ae = $price_convert->USATOUAE($vol_packet_weight, $buybox_landed_price);
+                    $price_sg =  $price_convert->USATOSG($vol_packet_weight, $buybox_landed_price);
 
 
                     $price_us_source = [
@@ -234,9 +259,9 @@ class ImportPriceFromBuyBox
 
                     $packet_weight_kg = poundToKg($packet_weight);
                     $vol_packet_weight_kg = $volumetricKg > $packet_weight_kg ? $volumetricKg : $packet_weight_kg;
-                    $price_saudi = $price_convert->INDToSA($vol_packet_weight_kg, $BBlistingPrice);
-                    $price_singapore = $price_convert->INDToSG($vol_packet_weight_kg, $BBlistingPrice);
-                    $price_uae = $price_convert->INDToUAE($vol_packet_weight_kg, $BBlistingPrice);
+                    $price_saudi = $price_convert->INDToSA($vol_packet_weight_kg, $buybox_landed_price);
+                    $price_singapore = $price_convert->INDToSG($vol_packet_weight_kg, $buybox_landed_price);
+                    $price_uae = $price_convert->INDToUAE($vol_packet_weight_kg, $buybox_landed_price);
 
                     $destination_price = [
                         'ind_to_uae' => $price_uae,

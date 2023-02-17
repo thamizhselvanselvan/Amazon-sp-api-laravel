@@ -53,6 +53,15 @@ Route::get('export', function () {
 });
 
 Route::get('test', function () {
+
+    $buybox_landedprice_amount = '';
+    $lowestprice_landedprice_amount = '';
+    $lowestprice_listingprice_amount = '';
+
+    $price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : ($lowestprice_listingprice_amount != '' ? $lowestprice_listingprice_amount : 0));
+    // $price = ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : $lowestprice_listingprice_amount)?:0;
+    po($price);
+    exit;
     $date = Carbon::now()->subDays(105);
     $date1 = Carbon::now()->subDays(30);
     $periods = CarbonPeriod::create($date, $date1);
