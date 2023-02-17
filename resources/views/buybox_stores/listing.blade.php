@@ -51,32 +51,41 @@
 <div class="row">
     <div style="margin-top: 0.4rem;">
         <h3 class="m-0 text-dark font-weight-bold">
+            Select Region: &nbsp;
+        </h3>
+    </div>
+    <div class="col-1.5 region">
+        <div style="margin-top: -1.2rem;" class="">
+            <x-adminlte-select name="region_select" id="region_select" label="">
+                <option value="">Select Region</option>
+                <option value="IN">IN</option>
+                <option value="AE">AE</option>
+                <option value="SA">SA</option>
+            </x-adminlte-select>
+        </div>
+    </div>
+
+    &nbsp; &nbsp; &nbsp;
+    <div style="margin-top: 0.4rem;">
+        <h3 class="m-0 text-dark font-weight-bold select_store d-none">
             Select Store: &nbsp;
         </h3>
-
     </div>
+    <div class="col-1.5 region d-none">
+        <div style="margin-top: -1.2rem;">
+            <x-adminlte-select name="store_select" id="store_select" label="">
+                <option value="">Select Store</option>
 
-    <div style="margin-top: -1.2rem;">
-
-        <x-adminlte-select name="store_select" id="store_select" label="">
-            <option value="">Select Store</option>
-            @foreach ($stores as $store)
-            <option value="{{ $store->seller_id }}" {{ $request_store_id == $store->seller_id ? 'selected' : '' }}>
-                {{ $store->store_name }}
-            </option>
-            @endforeach
-        </x-adminlte-select>
-
+            </x-adminlte-select>
+        </div>
     </div>
-
-    <div class="col-3">
+    <div class="col text-right buttons d-none">
         <h2>
             {{-- <x-adminlte-button type="button" label="Update" theme="primary" icon="fas fa-refresh" id="update_price" /> --}}
-            <x-adminlte-button type="button" label="Export CSV" theme="primary" icon="fas fa-upload" id="store_data_export" />
+            <x-adminlte-button type="button" label="Export CSV" theme="primary" icon="fas fa-file-export" id="store_data_export" />
             <x-adminlte-button type="button" label="Show Exported CSV" theme="success" icon="fas fa-eye " id="show_exported_csv" />
         </h2>
     </div>
-
 </div>
 
 <div class="modal fade" id="show_exported_csv_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -154,6 +163,41 @@
 <script type="text/javascript">
     $(function() {
 
+        $('#region_select').on('change', function() {
+            let region = $(this).val();
+            if (region != '') {
+                $('.region').removeClass("d-none")
+                $('.select_store').removeClass("d-none")
+            }
+
+            $.ajax({
+                url: "/stores/region/fetch",
+                method: "GET",
+                data: {
+                    "region": region,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
+                    $('#store_select').empty();
+                    let store_data = '<option >Select Store</option>';
+                    $.each(response, function(i, response) {
+                        store_data += "<option value='" + response.seller_id + "'>" + response.store_name + "</option>";
+                    });
+                    $('#store_select').append(store_data);
+                },
+                error: function(response) {
+                    console.log(response);
+                },
+            });
+        });
+
+
+        $('#store_select').on('change', function() {
+
+            $('.table').DataTable().ajax.reload();
+            $('.buttons').removeClass("d-none")
+        });
+
         $(document).ready(function() {
 
             if ($('#store_select').val() == '') {
@@ -192,13 +236,17 @@
 
         $("#store_data_export").on("click", function() {
             let self = $(this);
-            let store_id = $('#store_select').val();
 
+            let store_id = $('#store_select').val();
+            
             if (store_id == '') {
-                alert("please select a store please");
+                alert("please select a store");
+                return false;
+            } else if (store_id == 'Select Store') {
+                alert("please select a store ");
                 return false;
             }
-
+            
             self.prop('disabled', true);
 
             $.ajax({
@@ -212,7 +260,7 @@
                     self.prop("disabled", false);
 
                     if (response == "success") {
-                        alert("Exporting the data...");
+                        alert("Exporting the data ...");
                     }
 
                     if (response == "error") {
@@ -236,7 +284,7 @@
 
                     if (response == '') {
                         $('.show_exported_csv_modal_body').empty();
-                        $('.show_exported_csv_modal_body').append('File Downloading..');
+                        $('.show_exported_csv_modal_body').append('File Downloading or No File Found..');
                         return false;
                     } else {
                         $('.show_exported_csv_modal_body').empty();
@@ -259,11 +307,11 @@
                 },
             });
         });
-        $('#store_select').on('change', function() {
+        // $('#store_select').on('change', function() {
 
-            let p = $(this).val();
-            window.location = "/stores/listing/price/" + $(this).val();
-        });
+        //     let p = $(this).val();
+        //     window.location = "/stores/listing/price/" + $(this).val();
+        // });
 
         $('.price_process').on('click', function() {
             let self = $(this);
@@ -302,7 +350,7 @@
                     {
                         data: 'product_sku',
                         name: 'product_sku',
-                     
+
                     },
                     {
                         data: 'current_store_price',
@@ -371,10 +419,10 @@
                         searchable: false
                     }
                 ]
-                    // if (response.hasOwnProperty("failed")) {
-                    //     alert("price updated failed");
-                    // }
-               // }
+                // if (response.hasOwnProperty("failed")) {
+                //     alert("price updated failed");
+                // }
+                // }
             });
         });
 
@@ -487,7 +535,7 @@
             ]
         });
 
-        
+
     });
 </script>
 @stop

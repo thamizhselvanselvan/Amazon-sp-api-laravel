@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Buybox_stores\Products_ae;
 use App\Models\Buybox_stores\Product_push_ae;
 
-class AmazonPricePushAe extends Command
+class Amazon_price_push_ae extends Command
 {
     private $increase_by_price = 1;
     private $decrease_by_price = 1;
@@ -74,7 +74,7 @@ class AmazonPricePushAe extends Command
 
             $asins[] = $product->asin;
             // if Push is not equal to existing store price then don't push it
-            if (isset($push_price) && $push_price != $product->store_price) {
+            if (isset($push_price) && $push_price != $product->store_price && !str_contains(strtolower($product->product_sku), 'fba')) {
 
                 echo "selected $product->asin, $push_price \n";
 
