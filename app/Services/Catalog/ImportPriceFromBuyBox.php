@@ -60,7 +60,7 @@ class ImportPriceFromBuyBox
                             LP.bb_winner_id,
                             LP.updated_at as updated_at,
                                 PPO.buybox_landedprice_amount,
-                                PPO.lowestprice_landedprice_amount
+                                PPO.lowestprice_landedprice_amount,
                                 PPO.lowestprice_listingprice_amount
                                 FROM $product_seller_details as PPO
                                 JOIN $product_lp as LP 
