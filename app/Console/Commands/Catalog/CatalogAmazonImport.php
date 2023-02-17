@@ -55,7 +55,7 @@ class CatalogAmazonImport extends Command
 
         //Process Management end
 
-        $sources = ['in', 'us'];
+        $sources = ['in', 'us', 'ae'];
         foreach ($sources as $source) {
 
             $limit = getSystemSettingsValue(strtolower($source) . '_catalog_limit', 1000);
@@ -106,6 +106,8 @@ class CatalogAmazonImport extends Command
 
             if ($country_code_up == 'IN') {
                 $queue_name = 'catalog_IN';
+            } else if ($country_code_up == 'AE') {
+                $queue_name = 'default';
             }
 
             if (count($asins) > 0) {

@@ -49,27 +49,6 @@ class app360_price_import_in extends Command
     public function handle()
     {
 
-        // $stores = [6, 8, 10, 27];
-
-        // foreach ($stores as $store_id) {
-
-        //     $datas = Products_in::select('asin')
-        //         ->where('cyclic', 0)
-        //         ->where("store_id", $store_id)
-        //         ->limit(500)
-        //         ->get()->toArray();
-
-        //     Products_in::where('store_id', $store_id)->whereIn('asin', $datas)->update(['cyclic' => 1]);
-        //     if (count($datas) <= 0) {
-
-        //         Products_in::where('cyclic', 1)->update(['cyclic' => 0]);
-
-        //         return $this->handle();
-        //     } else {
-        //         $this->pricingin($datas, $store_id);
-        //     }
-        // }
-
         $this->pricingin();
 
         return true;
@@ -82,7 +61,7 @@ class app360_price_import_in extends Command
         $end_date = Carbon::now()->subMinutes(5);
 
         $select_query = [
-         //   'buybox_stores.products_ins.store_id',
+            //   'buybox_stores.products_ins.store_id',
             'asin_destination_uss.priority',
             'pricing_ins.in_price',
             'pricing_uss.usa_to_in_b2b',
@@ -102,7 +81,7 @@ class app360_price_import_in extends Command
         $data = $table_name->select($select_query)
             ->join('pricing_ins', 'asin_destination_uss.asin', '=', 'pricing_ins.asin')
             ->join('pricing_uss', 'asin_destination_uss.asin', '=', 'pricing_uss.asin')
-           // ->join("buybox_stores.products_ins", "buybox_stores.products_ins.asin", "=", "pricing_ins.asin")
+            // ->join("buybox_stores.products_ins", "buybox_stores.products_ins.asin", "=", "pricing_ins.asin")
             ->whereBetween("pricing_ins.updated_at", [$start_date, $end_date])
             ->get()->toArray();
 
@@ -139,8 +118,8 @@ class app360_price_import_in extends Command
             ];
 
             $asins[$tagger][] = $value['asin'];
-        
-            if($counter == $total) {
+
+            if ($counter == $total) {
                 $tagger++;
                 $counter = 1;
             }
@@ -168,21 +147,20 @@ class app360_price_import_in extends Command
         $this->product_upsert($insert_data_in);
 
         //if (count($asins) > 0) {
-            //where('store_id', $store_id)->
-            //Products_in::whereIn('asin', $asins)->update(['cyclic' => 1]);
-       // }
+        //where('store_id', $store_id)->
+        //Products_in::whereIn('asin', $asins)->update(['cyclic' => 1]);
+        // }
     }
 
     public function product_upsert($datas)
-    {   
+    {
 
-        foreach($datas as $data) {
+        foreach ($datas as $data) {
 
 
-            foreach($data as $dat) {
+            foreach ($data as $dat) {
 
                 Products_in::where("asin", $dat['asin'])->update($dat);
-
             }
 
             // Products_in::upsert(
@@ -195,7 +173,6 @@ class app360_price_import_in extends Command
             // );
 
         }
-        
     }
 
     public function calculate($price)
@@ -203,8 +180,8 @@ class app360_price_import_in extends Command
 
         if ($this->price_calculate_type == "percent") {
 
-            $ceil_price  = addPercentage($price, $this->base_percentage);
-            $base_price  = removePercentage($price, $this->ceil_percentage);
+            $base_price  = removePercentage($price, $this->base_percentage);
+            $ceil_price  = addPercentage($price, $this->ceil_percentage);
 
             return ['ceil_price' => $ceil_price, 'base_price' => $base_price];
         }

@@ -14,12 +14,16 @@ use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Buybox_stores\Product_Push;
 use App\Models\Buybox_stores\Product_Push_in;
+use App\Models\Buybox_stores\Product_push_ae;
 use App\Models\Buybox_stores\Seller_id_name;
 use App\Models\order\OrderSellerCredentials;
 use App\Services\AmazonFeedApiServices\AmazonFeedProcess;
+use App\Services\SP_API\Config\ConfigTrait;
 
 class BuyBoxStoreController extends Controller
 {
+    use ConfigTrait;
+
     public function index()
     {
         $stores = ['7', '8', '9', '10', '12', '20', '27'];
@@ -107,7 +111,7 @@ class BuyBoxStoreController extends Controller
 
         $stores = OrderSellerCredentials::select('store_name', 'seller_id')
             ->where('buybox_stores', 1)
-            ->whereIn("seller_id", [6, 8, 10, 27])
+            ->whereIn("seller_id", [6, 7, 8, 9, 10, 27, 29, 35, 44])
             ->distinct()
             ->get();
 
@@ -121,127 +125,174 @@ class BuyBoxStoreController extends Controller
         $files = Storage::files('public/product_push');
         $new_files = [];
 
-        foreach($files as $file) {
-            $new_files[] = '/storage/product_push/'.basename($file);
+        foreach ($files as $file) {
+            $new_files[] = '/storage/product_push/' . basename($file);
         }
 
         if ($request->ajax()) {
 
             $select_query = [
-                'id', 
-                'asin', 
-                'product_sku', 
-                'push_price', 
-                'current_store_price', 
+                'id',
+                'store_id',
+                'asin',
+                'product_sku',
+                'push_price',
+                'current_store_price',
                 'bb_winner_price',
                 'bb_winner_id',
-                'base_price', 
-                'ceil_price', 
-                'app_360_price', 
-                'destination_bb_price', 
+                'base_price',
+                'ceil_price',
+                'app_360_price',
                 'highest_seller_price',
                 'highest_seller_id',
                 'lowest_seller_price',
                 'lowest_seller_id',
                 'applied_rules'
             ];
-       
-            $data = Product_Push_in::query()
-                ->select($select_query)
-                ->when($request_store_id, function ($query) use ($request_store_id) {
-                    return $query->where('store_id', $request_store_id);
-                })
-                ->where('push_status', 0)
-                ->where('availability', 1)
-                ->orderBy('id', 'DESC');
+
+            if (in_array($request_store_id, [13, 14, 5, 6, 8, 16, 17, 10, 21, 23, 24, 26, 27, 28, 30, 31, 33, 36, 39])) {
+
+                $data = Product_Push_in::query()
+                    ->select($select_query)
+                    ->where('store_id', $request_store_id)
+                    ->where('push_status', 0)
+                    ->where('availability', 1)
+                    ->orderBy('id', 'DESC');
+            } else {
+
+                $data = Product_push_ae::query()
+                    ->select($select_query)
+                    ->where('store_id', $request_store_id)
+                    ->where('push_status', 0)
+                    ->where('availability', 1)
+                    ->orderBy('id', 'DESC');
+            }
 
             return DataTables::of($data)
-                ->editColumn('highest_seller_name', function($query) {
+                ->editColumn('highest_seller_name', function ($query) use ($request_store_id) {
 
                     //$seller_name = (Seller_id_name::where('seller_store_id', $query->highest_seller_id)->first())->seller_name ?? "";
-                    $seller_name = Cache::get($query->highest_seller_id, function () use($query) {
+                    $seller_name = Cache::get($query->highest_seller_id, function () use ($query) {
                         return Seller_id_name::where('seller_store_id', $query->highest_seller_id)->first();
                     });
 
-                    $seller_name = $seller_name->seller_name ?? "";
+                    if (isset($seller_name->seller_name) && strlen($seller_name->seller_name) > 0) {
+                        return $seller_name->seller_name;
+                    }
 
-                    $highest_seller = (isset($seller_name)) ? $seller_name : $query->highest_seller_id ;
+                    if (isset($query->bb_winner_id) && strlen($query->bb_winner_id) > 0) {
 
-                    return (isset($highest_seller) && $highest_seller != "") ? $highest_seller : "None" ;
+                        return $this->amazon_links($request_store_id, $query->bb_winner_id);
+                    }
+
+                    return "None";
+
+                    // $seller_name = $seller_name->seller_name ?? "";
+
+                    // $highest_seller = (isset($seller_name)) ? $seller_name : $query->highest_seller_id ;
+
+                    // return (isset($highest_seller) && $highest_seller != "") ? $highest_seller : "None" ;
                 })
-                ->editColumn('lowest_seller_name', function($query) {
+                ->editColumn('lowest_seller_name', function ($query) use ($request_store_id) {
 
-                    $seller_name = Cache::get($query->lowest_seller_id, function () use($query) {
+                    $seller_name = Cache::get($query->lowest_seller_id, function () use ($query) {
                         return Seller_id_name::where('seller_store_id', $query->lowest_seller_id)->first();
                     });
 
-                    $seller_name = $seller_name->seller_name ?? "";
+                    if (isset($seller_name->seller_name) && strlen($seller_name->seller_name) > 0) {
+                        return $seller_name->seller_name;
+                    }
 
-                    $lowest_seller = (isset($seller_name)) ? $seller_name : $query->lowest_seller_id ;
+                    if (isset($query->bb_winner_id) && strlen($query->bb_winner_id) > 0) {
 
-                    return (isset($lowest_seller) && $lowest_seller != "") ? $lowest_seller : "None" ;
+                        return $this->amazon_links($request_store_id, $query->bb_winner_id);
+                    }
+
+                    return "None";
+
+                    // $seller_name = $seller_name->seller_name ?? "";
+
+                    // $lowest_seller = (isset($seller_name)) ? $seller_name : $query->lowest_seller_id ;
+
+                    // return (isset($lowest_seller) && $lowest_seller != "") ? $lowest_seller : "None" ;
                 })
-                ->editColumn('destination_bb_seller', function($query) {
+                ->editColumn('bb_winner_id', function ($query) use ($request_store_id) {
 
-                    //$seller_name = (Seller_id_name::where('seller_store_id', $query->bb_winner_id)->first())->seller_name ?? "";
-                    $seller_name = Cache::get($query->bb_winner_id, function () use($query) {
+                    $seller_name = Cache::get($query->bb_winner_id, function () use ($query) {
                         return Seller_id_name::where('seller_store_id', $query->bb_winner_id)->first();
                     });
 
-                    $seller_name = $seller_name->seller_name ?? "";
+                    if (isset($seller_name->seller_name) && strlen($seller_name->seller_name) > 0) {
+                        return $seller_name->seller_name;
+                    }
 
-                    $bb_winner = (isset($seller_name)) ? $seller_name : $query->bb_winner_id;
+                    if (isset($query->bb_winner_id) && strlen($query->bb_winner_id) > 0) {
 
-                    return (isset($bb_winner) && $bb_winner != "") ? $bb_winner : "None" ;
+                        return $this->amazon_links($request_store_id, $query->bb_winner_id);
+                    }
+
+                    return "None";
+
+                    //$seller_name = $seller_name->seller_name ?? "";
+
+                    // Log::debug("$seller_name ===== $query->bb_winner_id");
+
+                    //$bb_winner = (isset($seller_name) && strlen($seller_name) > 0) ? $seller_name : $query->bb_winner_id;
+
+                    //  Log::notice((isset($bb_winner) && $bb_winner != "") ? $bb_winner : "None");
+
+                    //  return (isset($bb_winner) && $bb_winner != "") ? $this->amazon_links($bb_winner) : "None" ;
                 })
-                ->editColumn('asin', function($query) {
+                ->editColumn('asin', function ($query) {
 
-                    return "<a target='_blank' href='https://amazon.com/dp/".$query->asin."'>".$query->asin."</a>";
+                    return "<a target='_blank' href='https://amazon.com/dp/" . $query->asin . "'>" . $query->asin . "</a>";
                 })
-                ->editColumn('product_sku', function($query) {
+                ->editColumn('product_sku', function ($query) {
 
-                    return "<a target='_blank' href='https://amazon.in/dp/".$query->asin."'>".$query->product_sku."</a>";
+                    $seller_id = $query->store_id;
+                    $data = Aws_credential::with(['mws_region'])->where('seller_id', $seller_id)->get()->toArray();
+                    $region_code = strtolower($data[0]['mws_region']['region_code']);
+
+                    return "<a target='_blank' href='https://amazon." . $region_code . "/dp/" . $query->asin . "'>" . $query->product_sku . "</a>";
                 })
-                ->editColumn('current_store_price', function($query) {
+                ->editColumn('current_store_price', function ($query) {
 
-                    $applied_rules = '<div class="pop_over position-relative"> '.$query->current_store_price.' ' . $this->pop_over_data($query->applied_rules) . '</div>';
+                    $applied_rules = '<div class="pop_over position-relative"> ' . $query->current_store_price . ' ' . $this->pop_over_data($query->applied_rules) . '</div>';
 
                     return $applied_rules;
                 })
                 // ->addColumn('action', function($query) {
-                    
+
                 //     return "<button class='price_process btn btn-sm btn-primary'
                 //               asin='{$query->asin}' productsku=='{$query->product_sku}' pushprice='{$query->push_price}' storeid={$query->store_id} data-id={$query->id} 
                 //               base_price={$query->base_price}
                 //             >Process</button>";
                 // })
-                ->rawColumns(['action', 'asin', 'product_sku', 'highest_seller_name', 'lowest_seller_name', 'destination_bb_seller', 'current_store_price'])
+                ->rawColumns(['action', 'asin', 'product_sku', 'highest_seller_name', 'lowest_seller_name', 'bb_winner_id', 'current_store_price'])
                 ->make(true);
         }
 
         return view('buybox_stores.listing', compact('stores', 'url', 'request_store_id', 'new_files'));
     }
 
-    public function pop_over_data($applied_rules) {
+    public function pop_over_data($applied_rules)
+    {
         $html = '<span class="d-block"> No Rules Applied </span>';
-        if($applied_rules) {
+        if ($applied_rules) {
 
             $applied_rules = json_decode($applied_rules, true);
 
-            if(count($applied_rules) > 0) {
+            if (count($applied_rules) > 0) {
 
                 $html = '<ul class="m-0 p-0 pl-3">';
-                foreach($applied_rules as $applied_rule) {
-                    
-                    $html .= '<li class="mt-1">'. $applied_rule .'</li>';
+                foreach ($applied_rules as $applied_rule) {
+
+                    $html .= '<li class="mt-1">' . $applied_rule . '</li>';
                 }
 
                 $html .= '</ul>';
-
             }
-
-            
-        } 
+        }
         //comment
 
         return '<div class="pop_over_data position-absolute shadow border d-none">' . $html . '</div>';
@@ -264,7 +315,7 @@ class BuyBoxStoreController extends Controller
         }
 
         if ($request->ajax()) {
-       
+
             $data = Product_Push_in::query()
                 ->select('id', 'asin', 'product_sku', 'current_availability_status', 'push_availability_status')
                 ->when($request_store_id, function ($query) use ($request_store_id) {
@@ -274,7 +325,7 @@ class BuyBoxStoreController extends Controller
                 ->orderBy('id', 'DESC');
 
             return DataTables::of($data)
-                ->addColumn('action', function() {
+                ->addColumn('action', function () {
                     return '<button class="price_process">Process</button>';
                 })
                 ->rawColumns(['action'])
@@ -282,6 +333,20 @@ class BuyBoxStoreController extends Controller
         }
 
         return view('buybox_stores.availability', compact('stores', 'url', 'request_store_id'));
+    }
+
+    public function amazon_links($store_id, $merchant_id)
+    {
+
+        if (in_array($store_id, [13, 14, 5, 6, 8, 16, 17, 10, 21, 23, 24, 26, 27, 28, 30, 31, 33, 36, 39])) {
+            return "<a href='https://amazon.in/sp?seller=" . $merchant_id . "'>$merchant_id</a>";
+        }
+
+        if (in_array($store_id, [15, 7, 18, 9, 29, 32, 35, 38, 44])) {
+            return "<a href='https://amazon.ae/sp?seller=" . $merchant_id . "'>$merchant_id</a>";
+        }
+
+        return $merchant_id;
     }
 
     public function push_price_update(Request $request)
@@ -313,19 +378,19 @@ class BuyBoxStoreController extends Controller
         //jobDispatchFunc("Amazon_Feed\AmazonFeedPriceAvailabilityPush", $price_update);
         $price_update = (new AmazonFeedProcess)->feedSubmit($feedLists, $store_id, $id, false);
 
-        if($price_update) {
+        if ($price_update) {
             return ["success" => true];
         }
 
         return ["failed" => true];
     }
 
-    public function updateprice(Request $request) {
+    public function updateprice(Request $request)
+    {
         //command to execute
         // commandExecFunc('');
 
         echo $request->id;
-
     }
 
     public function updatepricelisting(Request $request)
@@ -339,34 +404,35 @@ class BuyBoxStoreController extends Controller
         //         ->addIndexColumn()
         //         ->make(true);
         // }
-         return view('buybox_stores.update_listing');
+        return view('buybox_stores.update_listing');
     }
 
-    public function store_data_export(Request $request) {
-        
+    public function store_data_export(Request $request)
+    {
 
-        if(!$request->has("store_id")) {
+
+        if (!$request->has("store_id")) {
             return "error";
         }
-        
+
         $store_id = $request->store_id;
 
         commandExecFunc("mosh:bb:product_push:export $store_id");
-
         return 'success';
     }
 
-    public function list_all_the_export() {
+    public function list_all_the_export()
+    {
 
         // Get all CSV files in the directory
         $files = Storage::files('product_push');
 
-        if(count($files) > 0) {
+        if (count($files) > 0) {
             return response()->json(['error' => "No Files are there to show"]);
         }
 
         // Set the file retention period to 30 days
-        $fileRetentionPeriod = 30;
+        $fileRetentionPeriod = 3;
 
         // Iterate through each file and delete older files
         foreach ($files as $file) {
@@ -379,5 +445,43 @@ class BuyBoxStoreController extends Controller
         }
 
         return response()->json($files);
+    }
+
+    public function fileget(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $storefiles = [];
+            $folder = $request->path;
+            $path = (Storage::path($folder));
+            $files = scandir($path);
+
+            foreach ($files as $key => $file) {
+                if ($key > 1) {
+                    $storefiles[$file] = date("F d Y H:i:s.", filemtime($path . '/' . $file));
+                }
+            }
+            return response()->json($storefiles);
+        }
+    }
+
+    public function filedownload($index)
+    {
+        return Storage::download('public/product_push/' . $index);
+    }
+
+
+    public function requestregion(Request $request)
+    {
+        if ($request->ajax()) {
+            $country_code = $request->region;
+
+            $data =   OrderSellerCredentials::query()
+                ->where(['country_code' => $country_code, 'buybox_stores' => 1])
+                ->select('store_name', 'seller_id')
+                ->get();
+
+            return response()->json($data);
+        }
     }
 }
