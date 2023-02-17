@@ -54,16 +54,6 @@ Route::get('export', function () {
 
 Route::get('test', function () {
 
-    $id = [];
-    $previous_date = Carbon::now()->subDays(30)->toDateTimeString();
-    $file_management_ids = FileManagement::where('created_at', '<', $previous_date)->get()->toArray();
-    foreach ($file_management_ids as $file_management_id) {
-        $id[] = $file_management_id['id'];
-    }
-    FileManagement::whereIn('id', $id)->delete();
-    po($previous_date);
-    po($id);
-    exit;
     $date = Carbon::now()->addDays(105);
     $date1 = Carbon::now();
     if ($date <= $date1) {
