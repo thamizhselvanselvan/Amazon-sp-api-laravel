@@ -42,7 +42,7 @@ class Search_Product
         foreach ($getProducts->products as $key => $getProduct) {
             if (preg_match("(" . $ignore_key_for_cliqnshop . ")", $getProduct->title) !== 1 && preg_match("(" . $ignore_key_for_cliqnshop . ")", $getProduct->productDescription) !== 1) {
 
-                if ($count2 <= 9) {
+                if ($count2 <= 20) {
                     // $productTitle[] = $getProduct->title;
                     $ProductPriceRequest = new ProductsRequest();
                     $productPrice = $ProductPriceRequest->getASINpr($getProduct->asin);
@@ -55,7 +55,7 @@ class Search_Product
                     }
                 }
 
-                if ($count == 9) {
+                if ($count == 20) {
 
                     $catalog_for_cliqnshop = new NewCatalog();
                     $catalogs = $catalog_for_cliqnshop->FetchDataFromCatalog($product_asin, $country_code, $seller_id, $token, $aws_id);
@@ -89,12 +89,12 @@ class Search_Product
                 if ($key2 == 'images') {
                     $catalog_images = json_decode($catalog);
                     foreach ($catalog_images[0]->images as $key3 => $images) {
-                        if ($key3 <= 9 && $images->height >= 1000 && $images->height <= 2000) {
+                        if ($key3 <= 20 && $images->height >= 1000 && $images->height <= 2000) {
                             $catalog_for_cliqnshop[$key1]['images'][$catalog_data['asin']]['image' . $key3 + 1] = $images->link;
                         }
                     }
                 }
-                $generic_keywords = '';
+                $generic_keywords = [];
                 // if ($key2 == 'generic_keyword') {
                 //     $generic_keywords = json_decode($catalog);
                 // }
