@@ -94,11 +94,11 @@ class Search_Product
                         }
                     }
                 }
-                $generic_keyword = '';
-                if ($key2 == 'generic_keyword') {
-                    $generic_keywords = json_decode($catalog);
-                }
-                Log::debug(json_encode($generic_keywords));
+                $generic_keywords = '';
+                // if ($key2 == 'generic_keyword') {
+                //     $generic_keywords = json_decode($catalog);
+                // }
+                // Log::debug(json_encode($generic_keywords));
                 $catalog_for_cliqnshop[$key1]['asin']       = $catalog_data['asin'];
                 $catalog_for_cliqnshop[$key1]['itemName']   = isset($catalog_data['itemName']) ? $catalog_data['itemName'] : '';
                 $catalog_for_cliqnshop[$key1]['brand']      = isset($catalog_data['brand']) ? $catalog_data['brand'] : '';
