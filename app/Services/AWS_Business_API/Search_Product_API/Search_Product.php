@@ -94,6 +94,11 @@ class Search_Product
                         }
                     }
                 }
+                $generic_keyword = '';
+                if ($key2 == 'generic_keyword') {
+                    $generic_keywords = json_decode($catalog);
+                }
+                Log::debug(json_encode($generic_keywords));
                 $catalog_for_cliqnshop[$key1]['asin']       = $catalog_data['asin'];
                 $catalog_for_cliqnshop[$key1]['itemName']   = isset($catalog_data['itemName']) ? $catalog_data['itemName'] : '';
                 $catalog_for_cliqnshop[$key1]['brand']      = isset($catalog_data['brand']) ? $catalog_data['brand'] : '';
@@ -130,7 +135,7 @@ class Search_Product
                 $short_description  = $cliqnshop_catalog['short_description'] ?? '';
                 $long_description   = $cliqnshop_catalog['long_description'] ?? '';
                 $cliqnshop = new CliqnshopCataloginsert();
-                $cliqnshop->insertdata_cliqnshop($siteId, $category, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image_array, $searchKey,  $short_description,  $long_description);
+                $cliqnshop->insertdata_cliqnshop($siteId, $category, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image_array, $searchKey,  $short_description,  $long_description, $generic_keywords);
             }
         }
     }

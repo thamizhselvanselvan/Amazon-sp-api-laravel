@@ -70,6 +70,10 @@ class catalog_upload_to_cliqnshop extends Command
             ->join('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
             ->whereIn('catalognewuss.asin', $asin)
             ->get()->toArray();
+
+        $generic_keywords = [];
+
+
         foreach ($result as $data) {
 
             $img1 = [
@@ -157,6 +161,7 @@ class catalog_upload_to_cliqnshop extends Command
             }
 
             $asin =  $data['asin'];
+         
             $item_name = $data['item_name'];
             $item_url = str_replace(' ', '-', $data['item_name']);
             $url = (strtolower($item_url));
@@ -223,7 +228,29 @@ class catalog_upload_to_cliqnshop extends Command
                     $width_value  = round($dim[0]['item']['width']['value'], 3);
                 }
             }
+            //genric Keywords
+          
+             $gener_key = [];
 
+            if (isset($data['attributes'])) {
+
+                $genric_key = json_decode($data['attributes'], true);
+                
+                if (isset($genric_key['generic_keyword']) && !empty($genric_key['generic_keyword'])) {
+
+                    $generic_array = $genric_key['generic_keyword'];
+
+                    foreach ($generic_array as $key => $val) {
+
+                        $gener_key[] = explode(",", $val['value']);
+                        
+                    }
+
+                    $generic_keywords = $gener_key;
+                }
+            }
+            
+    
             // if ($category[$asin] == '') {
             //     $category_code = 'demo-new';
             // } else {
@@ -250,8 +277,15 @@ class catalog_upload_to_cliqnshop extends Command
                 $image,
                 $keyword,
                 $short_description,
-                $long_description
+                $long_description,
+                $generic_keywords
             );
         }
+
+        // po($generic_keywords);
+
+        
     }
+
+
 }

@@ -10,9 +10,10 @@ use App\Services\Cliqnshop\SKU_Generator;
 
 class CliqnshopCataloginsert
 {
-    public function insertdata_cliqnshop($site_id, $category, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image, $keyword,  $short_description,  $long_description)
+    public function insertdata_cliqnshop($site_id, $category, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image, $keyword,  $short_description,  $long_description, $generic_keywords)
     {
         Log::alert($asin . '  ' . $category);
+        exit;
         $display_code = '1';
         if ($Price_US_IN == '0' || $Price_US_IN == '' || $image == '') {
             $display_code = '0';
@@ -69,15 +70,15 @@ class CliqnshopCataloginsert
         $currency_code = $currency['0']->currencyid;
 
         $date_time = Carbon::now();
-        $sku_genrator = New SKU_Generator();
+        $sku_genrator = new SKU_Generator();
         $product_data = [
             'siteid' => $site_id,
             // 'dataset' => '',
             'type' => 'default',
-            'code' => $sku_genrator->generateSKU('CNS', $asin), 
+            'code' => $sku_genrator->generateSKU('CNS', $asin),
             'asin' => $asin, //ASIN
             'label' => $item_name,
-            'url' => mb_strtolower(str_replace(array('&', '<', '>', ';',' ',','), '_', $item_name_replaced)),
+            'url' => mb_strtolower(str_replace(array('&', '<', '>', ';', ' ', ','), '_', $item_name_replaced)),
             'config' => '[]',
             // 'start' => NULL,
             // 'end' => NULL,
@@ -124,6 +125,73 @@ class CliqnshopCataloginsert
                 ->pluck('id')->ToArray();
             $get_brand_id = $get_brand[0];
         }
+
+        //generic Keyword
+        if (isset($generic_keywords)) {
+
+            $gen_keyword_get_id = [];
+            $gen_keyword = [];
+            foreach ($generic_keywords as $values) {
+
+                foreach ($values as $val) {
+
+                    if ($val) {
+
+                        $gen_keyword = [
+                            'siteid' => $site_id,
+                            'keyword' => $val,
+                            'status' => 1,
+                            'mtime' => $date_time,
+                            'ctime' => $date_time,
+                            'editor' => 'App360',
+                        ];
+
+                        DB::connection('cliqnshop')->table('mshop_keyword')->upsert($gen_keyword, ['unq_mskey_sid_keyword'], ['keyword', 'status', 'mtime', 'ctime']);
+                        $gen_keyword_get_id = DB::connection('cliqnshop')->table('mshop_keyword')->where('siteid', $gen_keyword['siteid'])
+                            ->where('keyword', $gen_keyword['keyword'])
+                            ->pluck('id')->ToArray();
+                    }
+
+
+                    $genric_key_attribute = [
+                        'siteid' => $site_id,
+                        'parentid' => $get_product_id,
+                        'key' => 'keyword|default|' . $gen_keyword_get_id['0'],
+                        'type' => 'default',
+                        'domain' => 'keyword',
+                        'refid' => $gen_keyword_get_id['0'],
+                        // 'start' => NULL,
+                        // 'end' => NULL,
+                        'config' => '[]',
+                        // 'pos' => 0,
+                        // 'status' => 1,
+                        'mtime' => $date_time,
+                        'ctime' => $date_time,
+                        'editor' => 'App360',
+                    ];
+
+                    DB::connection('cliqnshop')->table('mshop_product_list')->upsert(
+                        $genric_key_attribute,
+                        ['unq_msproli_pid_dm_ty_rid_sid'],
+                        ['siteid', 'parentid', 'key', 'refid', 'type', 'domain', 'refid', 'config', 'mtime', 'ctime', 'editor']
+                    );
+
+
+                    $index_generic_key = [
+                        'prodid' => $get_product_id,
+                        'siteid' => $site_id,
+                        'keyid' => $gen_keyword_get_id['0'],
+                        'mtime' => $date_time,
+                    ];
+                    DB::connection('cliqnshop')->table('mshop_index_keyword')->upsert(
+                        $index_generic_key,
+                        ['unq_msindkey_pid_kid_sid'],
+                        ['keyid', 'mtime']
+                    );
+                }
+            }
+        }
+
 
         //color (mshop_attribute)
         $get_attribute_id = '';
@@ -338,7 +406,7 @@ class CliqnshopCataloginsert
 
         // category id Pluck(based on receved Category From CSV or Product search)        
         $catogory_data = DB::connection('cliqnshop')->table('mshop_catalog')->where('code', $category)->where('siteid', $site_id)->pluck('id')->ToArray();
-        $catogory_id = '';
+        $catogory_id = 'demo-new';
         if (isset($catogory_data['0'])) {
             $catogory_id = $catogory_data['0'];
         }
@@ -400,7 +468,8 @@ class CliqnshopCataloginsert
             );
         }
 
-        //domain_attribute(asin) insert to mshop_product_list
+        //mshop product_list  for Generic Keyword here removed to top
+
         if (!empty($attribute['label'])) {
             $domain_attribute = [
                 'siteid' => $site_id,
@@ -575,7 +644,7 @@ class CliqnshopCataloginsert
 
         //index (asin) to mshop_index_attribute
 
-        if (!empty($attribute['label']) ) {
+        if (!empty($attribute['label'])) {
 
             $index_attribute = [
                 'prodid' => $get_product_id,
@@ -612,6 +681,10 @@ class CliqnshopCataloginsert
                 ['prodid', 'siteid', 'artid', 'attrid', 'listtype', 'type', 'code', 'mtime']
             );
         }
+
+        // //mshop index for generic keyword  here replaced to top
+
+
 
         //index (width) to mshop_index_attribute
         if (!empty($width_attribute)) {
