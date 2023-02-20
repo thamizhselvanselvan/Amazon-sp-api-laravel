@@ -38,7 +38,8 @@
             processing: true,
             serverSide: true,
             ajax: "{{ route('process.management.index') }}",
-            pageLength: 50,
+            pageLength: 100,
+            bLengthChange: false,
             columns: [{
                     data: 'id',
                     name: 'id',
@@ -58,8 +59,8 @@
                 {
                     data: 'command_name',
                     name: 'command_name',
-                    orderable: false,
-                    searchable: false,
+                    // orderable: false,
+                    // searchable: false,
                 },
                 {
                     data: 'command_start_time',
