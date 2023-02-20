@@ -62,7 +62,7 @@ class TestController extends Controller
       case 'US':
       case 'us':
         //us Token
-        $token = "Atzr|IwEBIJRFy0Xkal83r_y4S7sGsIafj2TGvwfQc_rppZlk9UzT6EuqEn9SaHmQfNbmEhOtk8Z6Dynk43x15TpyS3c2GuybzctGToAmjwGxiWXCwo2M3eQvOWfVdicOaF1wkivMAVH8lO8Qt3LtvCNjk5yiRsY5zPTJpShWRqiZ570lpcVb8D1HghZRQCaluoGkuVNOKZquXBF4KSwLur6duoDrUw5ybAIECAMclRbNtUulG9X2T902Wg6dKBSKq_3R-cNbOQ2Ld3-iSguanUI5SsSJOjdVJRpzuTkcWL2GcdFCSlp6NHnRV-2NLCcvZi3ZLtkonIg";
+        $token = "Atzr|IwEBILPcGgwzaEhguZhYhbzfSY700dEmu8kFh8ZinfGqeCC-8aZjzDkj7z53HgfMZ8cJTkk4_7K41_xtEKo_BgWgXPPpRc0KW3rIpTT-Apoz1oOwcE6srNpQRRhGY2KXFJPbBswDWCswKHRcNLFgc3nqcqUqW-p3wu28LcKvdM7CePva8105hvZzr9Csw2pYml141SaVnsxUcdSP8996M0mhwekb_Dtl9kct-6R7TxSFtfsu5NrpxUw58pqyrVKVt1nOWCT6YHLMPdNAye6OF2M6nP2praD1X4gapufEmZypS-OheBCAwXonOqZpz9O4w2DEXyE";
         $marketplace = 'ATVPDKIKX0DER'; // string | A marketplace identifier. Specifies the marketplace for which prices are returned.
         $endpoint = Endpoint::NA;
         break;
