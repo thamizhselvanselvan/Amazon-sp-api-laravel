@@ -19,14 +19,12 @@ class AmazonFeedProcess
 {
     use ConfigTrait;
 
-    public function feedSubmit($feedLists, $seller_id, $product_push_id, $availability)
+    public function feedSubmit($feedLists, $seller_id, $product_push_id)
     {
 
         $aws = '';
-        $aws_key = '';
 
         $aws = Aws_credential::where('seller_id', $seller_id)->where('verified', 1)->with(['mws_region'])->first();
-        $aws_key = $aws->id;
         $merchant_id = $aws->merchant_id;
         $mws_region = $aws->mws_region;
         $country_code = $mws_region->region_code;
@@ -40,19 +38,11 @@ class AmazonFeedProcess
            return false;
         }
 
-        return $productFeed;  
-
         $feedId = $productFeed;
-
-        // if(!array_key_exists("feedId", $feedId)) {
-
-        //     return false;
-        // }
-
-              
         
-        //Product_Push::where("id", $product_push_id)->update(['feedback_price_id' => $feedId['feedId']]);
-        //event(new ProductImportCompleted($seller_id, "Your price push has submitted successfully"));m
+        Product_Push::where("id", $product_push_id)->update(['feedback_price_id' => $feedId['feedId']]);
+
+        return true;
     }
 
     public function process($feedLists, $merchant_id, $aws_key, $country_code, $currency_code, $marketplace_ids) {
@@ -95,7 +85,7 @@ class AmazonFeedProcess
             <MessageType>Price</MessageType>';
 
         foreach($feedLists as $key => $feedList) {
-            //MaximumRetailPrice
+
             $xml_lists .= '
             <Message>
                 <MessageID>'. $key + 1 .'</MessageID>

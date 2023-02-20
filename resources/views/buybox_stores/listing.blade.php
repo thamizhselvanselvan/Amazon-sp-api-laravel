@@ -147,7 +147,7 @@
                     <th title="Current BB Seller Name/ID">BB Seller</th>
                     <th title="Next Highest Seller Name/ID">Highest Name</th>
                     <th title="Next Lowest Seller Name/ID">Lowest Name</th>
-                    {{-- <th>Action</th> --}}
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -525,13 +525,13 @@
                     orderable: false,
                     searchable: false
                 }
-                //,
-                // {
-                //    data: 'action',
-                //    name: 'action',
-                //     orderable: false,
-                //     searchable: false
-                // }
+                ,
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
+                }
             ]
         });
 
