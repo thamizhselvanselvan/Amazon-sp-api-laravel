@@ -49,6 +49,120 @@
 </div>
 
 <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"><b>Credentials Management</b></h5>
+                <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="fasle">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body " style="font-size:15px">
+
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">
+                            Country Credentials Priority
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">
+                            Horizon Credentials Priority
+                        </button>
+                    </li>
+                </ul>
+
+
+                <!-- Country Credentials Priority Tab -->
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                        <div id="warning" class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <strong> Country Wise </strong> Credentials Priority
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" style="font-size:15px">
+                            <form action="{{ route('save.creds.priority') }}">
+                                <h5>Select Priority</h5>
+                                <input type="hidden" class="temp" name="sell_id" value="">
+                                <div class="row border">
+                                    <div class="col-2">
+                                        <label for="P1">P1</label>
+                                        <input type="radio" class="priority" name="priority" value="1">
+                                    </div>
+                                    <div class="col-2">
+                                        <label for="P1">P2</label>
+                                        <input type="radio" class="priority" name="priority" value="2">
+                                    </div>
+                                    <div class="col-2">
+                                        <label for="P3">P3</label>
+                                        <input type="radio" class="priority" name="priority" value="3">
+                                    </div>
+                                    <div class="col-2 usap4 d-none">
+                                        <label for="P4">P4</label>
+                                        <input type="radio" class="priority" name="priority" value="4">
+                                    </div>
+                                </div>
+
+                                <div class="col-12 float-left mt-2">
+                                    <x-adminlte-button label="Update" theme="success" class="btn btn-sm " icon="fas fa-save  " type="submit" id="catalog_export" />
+                                    <button type="button" class="btn-sm btn btn-danger" data-dismiss="modal"><i class='fas fa-window-close'></i> Close</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Country Credentials Priority Tab End -->
+
+
+                    <!--Horizon Credentials Priority Tab -->
+                    <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                        <div id="warning" class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <strong> Horizon </strong> Credentials Priority
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" style="font-size:15px">
+
+
+                            <form action="{{ route('save.horizon.priority') }}">
+                                <h5>Select Priority</h5>
+                                <input type="hidden" class="temp" name="sell_id" value="">
+                                <div class="row border">
+                                    <div class="col-2">
+                                        <label for="P1">P1</label>
+                                        <input type="radio" class="priority" name="priority" value="1">
+                                    </div>
+                                    <div class="col-2">
+                                        <label for="P1">P2</label>
+                                        <input type="radio" class="priority" name="priority" value="2">
+                                    </div>
+                                    <div class="col-2">
+                                        <label for="P3">P3</label>
+                                        <input type="radio" class="priority" name="priority" value="3">
+                                    </div>
+                                    <div class="col-2 usap4 d-none">
+                                        <label for="P4">P4</label>
+                                        <input type="radio" class="priority" name="priority" value="4">
+                                    </div>
+                                </div>
+
+                                <div class="col-12 float-left mt-2">
+                                    <x-adminlte-button label="Update" theme="success" class="btn btn-sm " icon="fas fa-save  " type="submit" id="catalog_export" />
+                                    <button type="button" class="btn-sm btn btn-danger" data-dismiss="modal"><i class='fas fa-window-close'></i> Close</button>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
 
         <div class="modal-content">
@@ -88,10 +202,8 @@
                 </form>
             </div>
         </div>
-
-
     </div>
-</div>
+</div> -->
 <table class="table table-bordered yajra-datatable table-striped " id="creds_table">
     <thead>
         <tr class="table-info">
@@ -100,6 +212,8 @@
             <th>Merchant ID</th>
             <th>Credentials In use</th>
             <th>priority</th>
+            <th>horizon_priority</th>
+            <th>credential_priority</th>
             <th>Update</th>
         </tr>
     </thead>
@@ -150,6 +264,18 @@
             {
                 data: 'credential_use',
                 name: 'credential_use',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'country_priority',
+                name: 'country_priority',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'horizon_priority',
+                name: 'horizon_priority',
                 orderable: false,
                 searchable: false
             },

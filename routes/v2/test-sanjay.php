@@ -45,11 +45,11 @@ Route::get('sanju/test/images', function () {
 
 Route::get('test/cs', function () {
     $asin = [
-      'B0721C6JC3',
-'B071H1VQCY',
-'B071GZPPQ4',
-'B071GYSJ1F',
-'B071GYSJ1F',
+      'TB0721C6JC3',
+'TB071H1VQCY',
+'TB071GZPPQ4',
+'TB071GYSJ1F',
+'TB071GYSJ1F',
 	
     ];
     $headers = [
