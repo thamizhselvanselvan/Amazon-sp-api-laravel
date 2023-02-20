@@ -261,13 +261,13 @@ class BuyBoxStoreController extends Controller
 
                     return $applied_rules;
                 })
-                // ->addColumn('action', function($query) {
+                ->addColumn('action', function($query) {
 
-                //     return "<button class='price_process btn btn-sm btn-primary'
-                //               asin='{$query->asin}' productsku=='{$query->product_sku}' pushprice='{$query->push_price}' storeid={$query->store_id} data-id={$query->id} 
-                //               base_price={$query->base_price}
-                //             >Process</button>";
-                // })
+                    return "<button class='price_process btn btn-sm btn-primary'
+                              asin='{$query->asin}' productsku=='{$query->product_sku}' pushprice='{$query->push_price}' storeid={$query->store_id} data-id={$query->id} 
+                              base_price={$query->base_price} ceil_price={$query->ceil_price}
+                            >Process</button>";
+                })
                 ->rawColumns(['action', 'asin', 'product_sku', 'highest_seller_name', 'lowest_seller_name', 'bb_winner_id', 'current_store_price'])
                 ->make(true);
         }
@@ -357,26 +357,17 @@ class BuyBoxStoreController extends Controller
         $push_price = $request->pushprice;
         $store_id = $request->storeid;
         $base_price = $request->base_price;
+        $ceil_price = $request->ceil_price;
 
         $feedLists[] = [
             "push_price" => $push_price,
             "product_sku" => $product_sku,
             "base_price" => $base_price,
+            "ceil_price" => $ceil_price,
         ];
 
-        // $price_update = [
-        //     "id" => $id,
-        //     "seller_id" => $store_id,
-        //     "feedLists" => [
-        //         "push_price" => $push_price,
-        //         "product_sku" => $product_sku,
-        //         "base_price" => $base_price,
-        //     ],
-        //     "availability" => 1
-        // ];
-
         //jobDispatchFunc("Amazon_Feed\AmazonFeedPriceAvailabilityPush", $price_update);
-        $price_update = (new AmazonFeedProcess)->feedSubmit($feedLists, $store_id, $id, false);
+        $price_update = (new AmazonFeedProcess)->feedSubmit($feedLists, $store_id, $id);
 
         if ($price_update) {
             return ["success" => true];

@@ -74,7 +74,7 @@ class Amazon_price_push_ae extends Command
 
             $asins[] = $product->asin;
             // if Push is not equal to existing store price then don't push it
-            if (isset($push_price) && $push_price != $product->store_price && !str_contains(strtolower($product->product_sku), 'fba')) {
+            if (isset($push_price) && $push_price != $product->store_price) {
 
                 echo "selected $product->asin, $push_price \n";
 
