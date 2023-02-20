@@ -81,6 +81,12 @@ Route::get('cliqnshop/category-download', function () {
 Route::get('cliqnshop/footercontent', 'Cliqnshop\FooterController@index')->name('cliqnshop.footercontent');
 Route::post('cliqnshop/footercontent', 'Cliqnshop\FooterController@store')->name('cliqnshop.footercontent.store');
 
+Route::get('cliqnshop/staticpagecontent', 'Cliqnshop\FooterController@staticpagecontent')->name('cliqnshop.footercontent.staticpagecontent');
+Route::post('cliqnshop/staticpagecontent', 'Cliqnshop\FooterController@store')->name('cliqnshop.footercontent.store');
+Route::post('cliqnshop/getstaticpagecontent', 'Cliqnshop\FooterController@getStaticPageContent')->name('cliqnshop.footercontent.getStaticPageContent');
+
+
+
 // Route::get('product/test', function () {
 //   // $data[] = $key;
 //   $searchKey = 'iPhone';

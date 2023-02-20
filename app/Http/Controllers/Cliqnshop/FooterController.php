@@ -30,4 +30,48 @@ class FooterController extends Controller
             );
         return back()->with('success', $data['section'] . ' has been Changed for ' . $data['site'] . ' Site');
     }
+
+    public function staticpagecontent()
+    {
+        return view('Cliqnshop.footer.staticpagecontent');
+    }
+
+    
+
+    public function getStaticPageContent(Request $request)
+    {      
+
+        $inputs= [
+            'site' => 'required',
+            'section' => 'required',
+        ];        
+
+        if($request->validate( $inputs))
+        {
+            $content_data = DB::connection('cliqnshop')->table('cns_footer_contents')->select('content')
+            ->where("content_name",  $request->section)
+            ->where("site_name", $request->site)
+            ->first();   
+            
+            
+            if ($content_data)
+            {
+                 return response()->json(array('content'=> $content_data->content), 200);
+               
+            }
+            else
+            {
+                // \Illuminate\Support\Facades\Log::alert(' empty');
+                return response()->json(array('content'=>'','error'=> 'no data found'), 200);
+            }
+        }
+        else
+        {
+            \Illuminate\Support\Facades\Log::alert('validation failed');
+
+            return response()->json(array('error'=> 'validation error'), 404);
+        }
+        
+    }
+
 }
