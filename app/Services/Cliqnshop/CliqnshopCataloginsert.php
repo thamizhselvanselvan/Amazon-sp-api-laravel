@@ -12,8 +12,8 @@ class CliqnshopCataloginsert
 {
     public function insertdata_cliqnshop($site_id, $category, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image, $keyword,  $short_description,  $long_description, $generic_keywords)
     {
-        Log::alert($asin . '  ' . $category);
-       
+        Log::alert($asin . ' - ' . $category);
+      
         $display_code = '1';
         if ($Price_US_IN == '0' || $Price_US_IN == '' || $image == '') {
             $display_code = '0';
@@ -134,24 +134,20 @@ class CliqnshopCataloginsert
             foreach ($generic_keywords as $values) {
 
                 foreach ($values as $val) {
+                    Log::info('Keyword'.' ' . $val);
+                    $gen_keyword = [
+                        'siteid' => $site_id,
+                        'keyword' => $val,
+                        'status' => 1,
+                        'mtime' => $date_time,
+                        'ctime' => $date_time,
+                        'editor' => 'App360',
+                    ];
 
-                    if ($val) {
-
-                        $gen_keyword = [
-                            'siteid' => $site_id,
-                            'keyword' => $val,
-                            'status' => 1,
-                            'mtime' => $date_time,
-                            'ctime' => $date_time,
-                            'editor' => 'App360',
-                        ];
-
-                        DB::connection('cliqnshop')->table('mshop_keyword')->upsert($gen_keyword, ['unq_mskey_sid_keyword'], ['keyword', 'status', 'mtime', 'ctime']);
-                        $gen_keyword_get_id = DB::connection('cliqnshop')->table('mshop_keyword')->where('siteid', $gen_keyword['siteid'])
-                            ->where('keyword', $gen_keyword['keyword'])
-                            ->pluck('id')->ToArray();
-                    }
-
+                    DB::connection('cliqnshop')->table('mshop_keyword')->upsert($gen_keyword, ['unq_mskey_sid_keyword'], ['keyword', 'status', 'mtime', 'ctime']);
+                    $gen_keyword_get_id = DB::connection('cliqnshop')->table('mshop_keyword')->where('siteid', $gen_keyword['siteid'])
+                        ->where('keyword', $gen_keyword['keyword'])
+                        ->pluck('id')->ToArray();
 
                     $genric_key_attribute = [
                         'siteid' => $site_id,
@@ -191,7 +187,6 @@ class CliqnshopCataloginsert
                 }
             }
         }
-
 
         //color (mshop_attribute)
         $get_attribute_id = '';

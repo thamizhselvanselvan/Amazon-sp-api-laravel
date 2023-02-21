@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
 
 Route::get('product/details/search', 'BuisnessAPI\SearchProductRequestController@searchproductRequest');
 Route::resource('business/search/products', 'BuisnessAPI\SearchProductRequestController');
@@ -81,12 +82,12 @@ Route::get('cliqnshop/category-download', function () {
 Route::get('cliqnshop/footercontent', 'Cliqnshop\FooterController@index')->name('cliqnshop.footercontent');
 Route::post('cliqnshop/footercontent', 'Cliqnshop\FooterController@store')->name('cliqnshop.footercontent.store');
 
-// Route::get('product/test', function () {
-//   // $data[] = $key;
-//   $searchKey = 'iPhone';
-//   $siteId = '4.';
-//   $source = 'uae';
-//   $ApiCall = new Search_Product();
-//   $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
-//   po($result);
-// });
+Route::get('product/test/cns', function () {
+  // $data[] = $key;
+  $searchKey = 'water_bottle';
+  $siteId = '1.';
+  $source = 'in';
+  $ApiCall = new Search_Product();
+  $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
+
+});
