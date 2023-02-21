@@ -1,15 +1,15 @@
 <?php
 
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use App\Services\Zoho\ZohoApi;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Models\order\OrderItemDetails;
 
 Route::get('test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
 
 Route::get('sanju/test/images', function () {
-
-
     $data = ('[{"marketplaceId":"ATVPDKIKX0DER","images":[{"variant":"MAIN","link":"https:\/\/m.media-amazon.com\/images\/I\/71OWSOnk+zL.jpg","height":1000,"width":1000},{"variant":"MAIN","link":"https:\/\/m.media-amazon.com\/images\/I\/61Wpkl8oVDL.jpg","height":500,"width":500},{"variant":"MAIN","link":"https:\/\/m.media-amazon.com\/images\/I\/61Wpkl8oVDL._SL75_.jpg","height":75,"width":75},{"variant":"PT01","link":"https:\/\/m.media-amazon.com\/images\/I\/71--NVjLvhL.jpg","height":1000,"width":1000},{"variant":"PT01","link":"https:\/\/m.media-amazon.com\/images\/I\/61XF+tw0r0L.jpg","height":500,"width":500},{"variant":"PT01","link":"https:\/\/m.media-amazon.com\/images\/I\/61XF+tw0r0L._SL75_.jpg","height":75,"width":75},{"variant":"PT02","link":"https:\/\/m.media-amazon.com\/images\/I\/715M80emuTL.jpg","height":1000,"width":1000},{"variant":"PT02","link":"https:\/\/m.media-amazon.com\/images\/I\/616EHH0o7YL.jpg","height":500,"width":500},{"variant":"PT02","link":"https:\/\/m.media-amazon.com\/images\/I\/616EHH0o7YL._SL75_.jpg","height":75,"width":75}]}]');
     $imagedata = json_decode($data, true);
     po($imagedata);
@@ -42,15 +42,15 @@ Route::get('sanju/test/images', function () {
 
     po($img1);
 });
-
-Route::get('test/cs', function () {
+//eneric Keywords fetch
+Route::get('sanju/test/cs', function () {
     $asin = [
-      'TB0721C6JC3',
-'TB071H1VQCY',
-'TB071GZPPQ4',
-'TB071GYSJ1F',
-'TB071GYSJ1F',
-	
+        'TB0721C6JC3',
+        'TB071H1VQCY',
+        'TB071GZPPQ4',
+        'TB071GYSJ1F',
+        'TB071GYSJ1F',
+
     ];
     $headers = [
         'catalognewuss.asin',
@@ -75,21 +75,69 @@ Route::get('test/cs', function () {
     foreach ($result as $data) {
 
         if (isset($data['attributes'])) {
-        $genric_key = json_decode($data['attributes'], true);
+            $genric_key = json_decode($data['attributes'], true);
 
-        
+
             if (isset($genric_key['generic_keyword']) && !empty($genric_key['generic_keyword'])) {
 
-                $generic_array= $genric_key['generic_keyword'];
+                $generic_array = $genric_key['generic_keyword'];
 
                 foreach ($generic_array as $key => $val) {
 
-                    $generic_keywords[$data['asin']][]= $val['value'];
-                
-                    
+                    $generic_keywords[$data['asin']][] = $val['value'];
                 }
             }
         }
     }
     po($generic_keywords);
+});
+
+Route::get('sanju/zazil/tracking', function () {
+
+    $awb = "Z6430506";
+    $requestUrl = "https://app.shipsy.in/api/customer/integration/consignment/track?reference_number=$awb";
+    $api_key = 'a80517c76ae63a0dc191df8484b24d';
+
+
+    //with HTTP 
+
+   
+    $response = Http::withHeaders([
+        'api-key' => $api_key,
+    ])->get($requestUrl);
+
+
+    if ($response->successful()) {
+        $data = $response->json();
+        po($data);
+    } else {
+        po('error');
+    }
+
+
+
+
+    //with curl
+    // $curl = curl_init();
+    // $headersFS = array(
+    //     'api-key:' . $api_key,
+    // );
+    // curl_setopt($curl, CURLOPT_URL, $requestUrl . '');
+    // curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    // curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
+    // curl_setopt($curl, CURLOPT_HTTPHEADER, $headersFS);
+    // curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+    // curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+
+
+    // $server_APIoutput = curl_exec($curl);
+    // $JsonResponse = json_decode($server_APIoutput);
+
+    // po($JsonResponse);
+
+    // if (curl_errno($curl)) {
+    //     echo 'Error:' . curl_error($curl);
+    // }
+
+    // curl_close($curl);
 });
