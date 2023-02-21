@@ -42,3 +42,54 @@ Route::get('sanju/test/images', function () {
 
     po($img1);
 });
+
+Route::get('test/cs', function () {
+    $asin = [
+      'TB0721C6JC3',
+'TB071H1VQCY',
+'TB071GZPPQ4',
+'TB071GYSJ1F',
+'TB071GYSJ1F',
+	
+    ];
+    $headers = [
+        'catalognewuss.asin',
+        'catalognewuss.brand',
+        'catalognewuss.images',
+        'catalognewuss.item_name',
+        'catalognewuss.browse_classification',
+        'catalognewuss.dimensions',
+        'catalognewuss.attributes',
+        'catalognewuss.color',
+        'pricing_uss.usa_to_in_b2c',
+        'pricing_uss.us_price',
+        'pricing_uss.usa_to_uae',
+
+    ];
+    $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
+    $result = $table_name->select($headers)
+        ->join('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
+        ->whereIn('catalognewuss.asin', $asin)
+        ->get()->toArray();
+
+    foreach ($result as $data) {
+
+        if (isset($data['attributes'])) {
+        $genric_key = json_decode($data['attributes'], true);
+
+        
+            if (isset($genric_key['generic_keyword']) && !empty($genric_key['generic_keyword'])) {
+
+                $generic_array= $genric_key['generic_keyword'];
+
+                foreach ($generic_array as $key => $val) {
+
+                    $generic_keywords[$data['asin']][]= $val['value'];
+                
+                    
+                }
+            }
+        }
+    }
+    po($generic_keywords);
+});

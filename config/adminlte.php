@@ -1206,6 +1206,12 @@ return [
                     'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fas fa-chalkboard',
                 ],
+                [
+                    'text' => 'Static-Pages-Content',
+                    'url' => 'cliqnshop/staticpagecontent',
+                    'can' => ['Admin', 'Cliqnshop'],
+                    'icon' => 'fas fa-file-word-o',
+                ],
             ],
         ],
 

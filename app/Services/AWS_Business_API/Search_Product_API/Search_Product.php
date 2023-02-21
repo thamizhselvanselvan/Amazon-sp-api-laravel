@@ -28,6 +28,7 @@ class Search_Product
 
         $aws_id = NULL;
         $seller_id = NULL;
+        $ignore_key_for_cliqnshop = '';
         $country_code = 'US';
         if ($source == 'in') {
             $price_conversion_method = 'USAToINDB2C';
@@ -37,12 +38,12 @@ class Search_Product
             $ignore_key_for_cliqnshop =  ucwords(str_replace(',', '|', getSystemSettingsValue('ignore_item_for_cliqnshop_in_uae', 'Walkie,Talkies,Radio')), '|');
         }
         $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->toArray();
-        $token = $mws_regions[0]['aws_verified'][0]['auth_code'];
-        Log::notice($ignore_key_for_cliqnshop);
+        $token = $mws_regions[0]['aws_verified'][1]['auth_code'];
+
         foreach ($getProducts->products as $key => $getProduct) {
             if (preg_match("(" . $ignore_key_for_cliqnshop . ")", $getProduct->title) !== 1 && preg_match("(" . $ignore_key_for_cliqnshop . ")", $getProduct->productDescription) !== 1) {
 
-                if ($count2 <= 9) {
+                if ($count2 <= 10) {
                     // $productTitle[] = $getProduct->title;
                     $ProductPriceRequest = new ProductsRequest();
                     $productPrice = $ProductPriceRequest->getASINpr($getProduct->asin);
@@ -55,11 +56,12 @@ class Search_Product
                     }
                 }
 
-                if ($count == 9) {
+                if ($count == 10) {
 
                     $catalog_for_cliqnshop = new NewCatalog();
                     $catalogs = $catalog_for_cliqnshop->FetchDataFromCatalog($product_asin, $country_code, $seller_id, $token, $aws_id);
                     // $count = 0;
+
                 }
                 $count++;
                 $count2++;
@@ -67,8 +69,10 @@ class Search_Product
         }
 
         $catalog_for_cliqnshop = [];
+
         foreach ($catalogs as $key1 => $catalog_data) {
             foreach ($catalog_data as $key2 => $catalog) {
+
                 if ($key2 == 'attributes') {
                     $attributes = json_decode($catalog);
                     if (array_key_exists('bullet_point', (array)$attributes)) {
@@ -79,7 +83,17 @@ class Search_Product
                             $catalog_for_cliqnshop[$key1]['long_description'] = $long_desc;
                         }
                     }
+
+                    if (array_key_exists('generic_keyword', (array)$attributes)) {
+                        $catalog_for_cliqnshop[$key1]['generic_keyword'] = isset($attributes->generic_keyword[0]->value) ? $attributes->generic_keyword[0]->value : '';
+                        $gener_key = [];
+                        foreach ($attributes->generic_keyword as $generic) {
+                            $gener_key[] = explode(",", $generic->value);
+                            $catalog_for_cliqnshop[$key1]['generic_keywords'] = $gener_key;
+                        }
+                    }
                 }
+
                 if ($key2 == 'browseClassification') {
                     $classifications = json_decode($catalog);
                     if (array_key_exists('classificationId', (array)$classifications)) {
@@ -89,11 +103,12 @@ class Search_Product
                 if ($key2 == 'images') {
                     $catalog_images = json_decode($catalog);
                     foreach ($catalog_images[0]->images as $key3 => $images) {
-                        if ($key3 <= 9 && $images->height >= 1000 && $images->height <= 2000) {
+                        if ($key3 <= 10 && $images->height >= 1000 && $images->height <= 2000) {
                             $catalog_for_cliqnshop[$key1]['images'][$catalog_data['asin']]['image' . $key3 + 1] = $images->link;
                         }
                     }
                 }
+
                 $catalog_for_cliqnshop[$key1]['asin']       = $catalog_data['asin'];
                 $catalog_for_cliqnshop[$key1]['itemName']   = isset($catalog_data['itemName']) ? $catalog_data['itemName'] : '';
                 $catalog_for_cliqnshop[$key1]['brand']      = isset($catalog_data['brand']) ? $catalog_data['brand'] : '';
@@ -110,10 +125,9 @@ class Search_Product
                 }
             }
         }
-
         foreach ($catalog_for_cliqnshop as $cliqnshop_catalog) {
 
-            if (isset($cliqnshop_catalog['price'])) {
+            if (isset($cliqnshop_catalog['price']) && isset($cliqnshop_catalog['images'])) {
                 $category           = $cliqnshop_catalog['category_code'] ?? 'demo-new';
                 $asin               = $cliqnshop_catalog['asin'];
                 $item_name          = $cliqnshop_catalog['itemName'];
@@ -129,8 +143,10 @@ class Search_Product
                 $image_array        = $cliqnshop_catalog['images'];
                 $short_description  = $cliqnshop_catalog['short_description'] ?? '';
                 $long_description   = $cliqnshop_catalog['long_description'] ?? '';
+                $generic_keywords   = $cliqnshop_catalog['generic_keywords'] ?? '';
+
                 $cliqnshop = new CliqnshopCataloginsert();
-                $cliqnshop->insertdata_cliqnshop($siteId, $category, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image_array, $searchKey,  $short_description,  $long_description);
+                $cliqnshop->insertdata_cliqnshop($siteId, $category, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image_array, $searchKey,  $short_description,  $long_description, $generic_keywords);
             }
         }
     }

@@ -582,7 +582,7 @@ class AdminManagementController extends Controller
 
         if ($request->ajax()) {
             $data = Aws_credential::query()
-                ->select('id', 'store_name', 'merchant_id', 'credential_use', 'mws_region_id', 'priority')
+                ->select('id', 'store_name', 'merchant_id', 'credential_use', 'mws_region_id', 'country_priority', 'horizon_priority', 'credential_priority')
                 ->when($request->region, function ($query, $id) use ($request) {
                     return $query->where('mws_region_id', $id);
                 })
@@ -595,7 +595,7 @@ class AdminManagementController extends Controller
                     return $actionBtn;
                 })
                 ->addColumn('Creds_priority', function ($row) {
-                    $value = $row->priority;
+                    $value = $row->credential_priority;
                     if ($value == '1') {
                         $data = 'P1';
                     } else if ($value == '2') {
@@ -620,11 +620,25 @@ class AdminManagementController extends Controller
 
     public function credentialprioritysave(Request $request)
     {
+
+        $store_id = $request->sell_id;
+        $priority = $request->priority;
+        Log::info($request->all());
+        $data = Aws_credential::with(['mws_region'])->where('id', $store_id)->get()->toArray();
+
+        $region_code = $data['0']['mws_region']['region_code'];
+        Log::alert($region_code);
+        Aws_credential::where('id', $store_id)->update(['country_priority' => $region_code, 'credential_priority' => $priority]);
+
+        return redirect()->intended('/admin/creds/manage')->with('success', 'Country Priority has been updated successfully');
+    }
+    public function horizonprioritysave(Request $request)
+    {
         Log::alert($request->all());
         $store_id = $request->sell_id;
         $priority = $request->priority;
-        Aws_credential::where('id', $store_id)->update(['priority' => $priority]);
+        Aws_credential::where('id', $store_id)->update(['horizon_priority' => $priority]);
 
-        return redirect()->intended('/admin/creds/manage')->with('success', 'Credentials has been updated successfully');
+        return redirect()->intended('/admin/creds/manage')->with('success', 'Horizon Priority has been updated successfully');
     }
 }
