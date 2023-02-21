@@ -6,6 +6,7 @@ use in;
 use Illuminate\Http\Request;
 use App\Models\Aws_credential;
 use Illuminate\Support\Facades\DB;
+use function Clue\StreamFilter\fun;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\Buybox_stores\Product;
@@ -13,12 +14,15 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Buybox_stores\Product_Push;
-use App\Models\Buybox_stores\Product_Push_in;
-use App\Models\Buybox_stores\Product_push_ae;
+use App\Services\SP_API\Config\ConfigTrait;
 use App\Models\Buybox_stores\Seller_id_name;
 use App\Models\order\OrderSellerCredentials;
+use App\Models\Buybox_stores\Product_push_ae;
+use App\Models\Buybox_stores\Product_Push_in;
 use App\Services\AmazonFeedApiServices\AmazonFeedProcess;
-use App\Services\SP_API\Config\ConfigTrait;
+
+use JeroenNoten\LaravelAdminLte\View\Components\Form\Input;
+use App\Services\AmazonFeedApiServices\AmazonFeedProcessAvailability;
 
 class BuyBoxStoreController extends Controller
 {
@@ -230,7 +234,6 @@ class BuyBoxStoreController extends Controller
 
                         return $this->amazon_links($request_store_id, $query->bb_winner_id);
                     }
-
                     return "None";
 
                     //$seller_name = $seller_name->seller_name ?? "";
@@ -261,7 +264,7 @@ class BuyBoxStoreController extends Controller
 
                     return $applied_rules;
                 })
-                ->addColumn('action', function($query) {
+                ->addColumn('action', function ($query) {
 
                     return "<button class='price_process btn btn-sm btn-primary'
                               asin='{$query->asin}' productsku=='{$query->product_sku}' pushprice='{$query->push_price}' storeid={$query->store_id} data-id={$query->id} 
@@ -301,7 +304,6 @@ class BuyBoxStoreController extends Controller
 
     public function availability(Request $request)
     {
-
         $stores = OrderSellerCredentials::select('store_name', 'seller_id')
             ->where('buybox_stores', 1)
             ->distinct()
@@ -316,23 +318,97 @@ class BuyBoxStoreController extends Controller
 
         if ($request->ajax()) {
 
-            $data = Product_Push_in::query()
-                ->select('id', 'asin', 'product_sku', 'current_availability_status', 'push_availability_status')
-                ->when($request_store_id, function ($query) use ($request_store_id) {
-                    return $query->where('store_id', $request_store_id);
-                })
-                ->where('push_status', 0)
-                ->orderBy('id', 'DESC');
+            if (in_array($request_store_id, [13, 14, 5, 6, 8, 16, 17, 10, 21, 23, 24, 26, 27, 28, 30, 31, 33, 36, 39])) {
+
+                $data = Product_Push_in::query()
+                    ->select('id', 'store_id', 'asin', 'product_sku', 'base_price', 'ceil_price', 'push_price', 'availability')
+                    ->where('store_id', $request_store_id)
+                    ->where('push_status', 0)
+                    ->orderBy('id', 'DESC');
+            } else {
+
+                $data = Product_push_ae::query()
+                    ->select('id', 'store_id', 'asin', 'product_sku', 'base_price', 'ceil_price', 'push_price', 'availability')
+                    ->where('store_id', $request_store_id)
+                    ->where('push_status', 0)
+                    ->orderBy('id', 'DESC');
+            }
+
+            // $data = Product_Push_in::query()
+            //     ->select('id', 'asin', 'product_sku', 'availability')
+            //     ->when($request_store_id, function ($query) use ($request_store_id) {
+            //         return $query->where('store_id', $request_store_id);
+            //     })
+            //     ->where('push_status', 0)
+            //     ->orderBy('id', 'DESC');
 
             return DataTables::of($data)
-                ->addColumn('action', function () {
-                    return '<button class="price_process">Process</button>';
+                ->editColumn('asin', function ($query) {
+                    return "<a target='_blank' href='https://amazon.com/dp/" . $query->asin . "'>" . $query->asin . "</a>";
                 })
-                ->rawColumns(['action'])
+                ->editColumn('product_sku', function ($query) {
+
+                    $seller_id = $query->store_id;
+                    $data = Aws_credential::with(['mws_region'])->where('seller_id', $seller_id)->get()->toArray();
+                    $region_code = strtolower($data[0]['mws_region']['region_code']);
+
+                    return "<a target='_blank' href='https://amazon." . $region_code . "/dp/" . $query->asin . "'>" . $query->product_sku . "</a>";
+                })
+                ->addColumn('availability', function ($query) {
+                    if ($query->availability == '1') {
+
+                        $action = "<input type='checkbox' id='price_availability' name='availability' value='$query->availability' data-id='$query->id' checked />";
+                    } else {
+                        $action = "<input type='checkbox' id='price_availability' name='availability' value='$query->availability' data-id='$query->id' />";
+                    }
+                    return $action;
+                })
+
+                ->addColumn('action', function ($query) {
+
+                    $action = "<a href='javascript:void(0)' id='update_availability' class='edit btn btn-info btn-sm ml-2' data-seller_id='$query->store_id' data-product_id='$query->id' data-base_price='$query->base_price' data-ceil_price='$query->ceil_price'  data-push_price='$query->push_price' data-product_sku='$query->product_sku' data-availability='$query->availability' >
+                    Update Availability
+                </a>";
+                    return $action;
+                })
+                ->rawColumns(['asin', 'product_sku', 'availability', 'action'])
                 ->make(true);
         }
 
         return view('buybox_stores.availability', compact('stores', 'url', 'request_store_id'));
+    }
+
+    public function PricePushAvailability(Request $request)
+    {
+        // po($request->region);
+        // po($request->id);
+        // po($request->seller_id);
+        // po($request->availability);
+        // po($request->ceil_price);
+        // po($request->base_price);
+        // po($request->push_price);
+        // po($request->product_sku);
+
+        $feedLists[] = [
+            'product_sku' => $request->product_sku,
+            'available' => $request->availability
+        ];
+        $seller_id = $request->seller_id;
+        po($feedLists);
+
+        $regionCode = strtolower($request->region);
+        $product_push_id = $request->id;
+        $availability = $request->availability;
+
+        if ($regionCode == 'in') {
+
+            Product_Push_in::query()->where('id', $product_push_id)->update(['availability' => $availability]);
+        } elseif ($regionCode == 'ae') {
+
+            Product_Push_ae::query()->where('id', $product_push_id)->update(['availability' => $availability]);
+        }
+        $PushAvailability = new AmazonFeedProcessAvailability();
+        $PushAvailability->availabilitySubmit($feedLists, $seller_id, $product_push_id);
     }
 
     public function amazon_links($store_id, $merchant_id)
