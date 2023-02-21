@@ -174,7 +174,7 @@ class ImportPriceFromBuyBox
 
                 // foreach ($isBuyBoxWinner as $key1 => $BuyBoxWinner) {
                 $price = $country_code_lr . '_price';
-                $buybox_price = '';
+                $buybox_price = 0;
                 // if ($BuyBoxWinner == 1) {
                 if ($country_code_lr == 'us') {
 
