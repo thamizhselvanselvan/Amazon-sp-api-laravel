@@ -26,7 +26,7 @@ Auth::routes();
 Route::get('login', 'Admin\HomeController@dashboard')->name('login');
 Route::get('home', 'Admin\HomeController@dashboard')->name('home');
 
-// include_route_files(__DIR__ . '/pms/');
+include_route_files(__DIR__ . '/v2/');
 Route::get('testing', function () {
     $asins = DB::connection('catalog')->select("SELECT asin, user_id
     FROM asin_source_uss

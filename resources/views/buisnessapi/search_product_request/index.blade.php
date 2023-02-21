@@ -83,10 +83,12 @@
 
     $(".product_search").on("click", function() {
         let asin = $('#asin').val();
-        let key = $('#Keyword').val();
+        let key_word = $('#Keyword').val();
         let type = '';
         let length = asin.length;
 
+
+        key = key_word.replace(' ', '_');
 
         if (type == key) {
             if (asin.length < 10 || asin.length > 10) {
@@ -102,7 +104,7 @@
                 'key': key,
             }
         }
-       
+
 
         $.ajax({
             method: 'GET',

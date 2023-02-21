@@ -249,7 +249,7 @@ class Amazon_price_push_in extends Command
         if (!empty($bb_winner_id) && !$this->any_of_our_own_store_won_bb(store_id: $store_id, bb_winner_id: $bb_winner_id) && $bb_winner_price > $store_price) {
 
             //$push_price = removePercentage($product->bb_winner_price, $this->increase_by_price);
-            $push_price = $this->calculate($bb_winner_price, 'decrease');
+            $push_price = $this->calculate($bb_winner_price, 'increase');
 
             if ($push_price > $base_price && $push_price < $ceil_price) {
 
@@ -257,7 +257,7 @@ class Amazon_price_push_in extends Command
                     "We have lost the BB",
                     "BB has been won by ($bb_winner_id) seller",
                     "BB winner price is greater than our store price",
-                    "So we have increased our price by $this->decrease_by_price than BB winner but not more than ceil price or below base price"
+                    "So we have increased our price by $this->increase_by_price than BB winner but not more than ceil price or below base price"
                 ];
 
                 return $push_price;

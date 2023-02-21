@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Buybox_stores\Products_ae;
 use App\Models\Buybox_stores\Product_push_ae;
 
-class AmazonPricePushAe extends Command
+class Amazon_price_push_ae extends Command
 {
     private $increase_by_price = 1;
     private $decrease_by_price = 1;
@@ -227,8 +227,8 @@ class AmazonPricePushAe extends Command
 
                 $our_own_seller = $this->any_of_our_own_store_won_bb(store_id: $store_id, bb_winner_id: $bb_winner_id);
 
-                Log::notice("OUR OWN SELLER");
-                Log::notice($our_own_seller);
+                // Log::notice("OUR OWN SELLER");
+                // Log::notice($our_own_seller);
 
                 $this->rules_applied[$id_rules_applied] = [
                     "We have lost the BB",
@@ -244,7 +244,7 @@ class AmazonPricePushAe extends Command
         if (!empty($bb_winner_id) && !$this->any_of_our_own_store_won_bb(store_id: $store_id, bb_winner_id: $bb_winner_id) && $bb_winner_price > $store_price) {
 
             //$push_price = removePercentage($product->bb_winner_price, $this->increase_by_price);
-            $push_price = $this->calculate($bb_winner_price, 'decrease');
+            $push_price = $this->calculate($bb_winner_price, 'increase');
 
             if ($push_price > $base_price && $push_price < $ceil_price) {
 
@@ -252,7 +252,7 @@ class AmazonPricePushAe extends Command
                     "We have lost the BB",
                     "BB has been won by ($bb_winner_id) seller",
                     "BB winner price is greater than our store price",
-                    "So we have increased our price by $this->decrease_by_price than BB winner but not more than ceil price or below base price"
+                    "So we have increased our price by $this->increase_by_price than BB winner but not more than ceil price or below base price"
                 ];
 
                 return $push_price;
