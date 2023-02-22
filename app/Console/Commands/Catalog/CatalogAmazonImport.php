@@ -96,7 +96,7 @@ class CatalogAmazonImport extends Command
                 $asins = DB::connection('catalog')->select("SELECT asin, user_id
                 FROM $asin_table_name
                 WHERE status='0'
-                ORDER BY id ASC
+                ORDER BY id DESC
                 LIMIT $limit
                 ");
             }
