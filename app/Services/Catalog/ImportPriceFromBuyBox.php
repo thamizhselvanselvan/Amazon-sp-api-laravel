@@ -51,6 +51,8 @@ class ImportPriceFromBuyBox
             $BuyBoxRecords = DB::connection('buybox')
                 ->select("SELECT asin, available, 
                             is_sold_by_amazon,
+                            lowestprice_condition,
+                            buybox_condition,
                             is_any_our_seller_own_bb, 
                             next_highest_seller_price,
                             next_highest_seller_id,
@@ -59,6 +61,7 @@ class ImportPriceFromBuyBox
                             bb_winner_price,
                             bb_winner_id,
                             updated_at ,
+                            buybox_listingprice_amount,
                             buybox_landedprice_amount,
                             lowestprice_landedprice_amount,
                             lowestprice_listingprice_amount
@@ -130,7 +133,7 @@ class ImportPriceFromBuyBox
                 }
             }
             // Log::notice($catalogWeight);
-            $buybox_landed_price = '';
+            // $buybox_landed_price = '';
             $pricing_in = [];
             $pricing_us = [];
             $pricing_ae = [];
@@ -159,7 +162,9 @@ class ImportPriceFromBuyBox
 
                 // $isBuyBoxWinner = explode(',', $BBRecord->is_buybox_winner);
                 // $listingAmount = explode(',', $BBRecord->listingprice_amount);
-
+                $lowestprice_condition = $BBRecord->lowestprice_condition;
+                $buybox_condition = $BBRecord->buybox_condition;
+                $buybox_listingprice_amount = $BBRecord->buybox_listingprice_amount;
                 $buybox_landedprice_amount = $BBRecord->buybox_landedprice_amount;
                 $lowestprice_landedprice_amount = $BBRecord->lowestprice_landedprice_amount;
                 $lowestprice_listingprice_amount = $BBRecord->lowestprice_listingprice_amount;
@@ -169,18 +174,45 @@ class ImportPriceFromBuyBox
 
                 // foreach ($isBuyBoxWinner as $key1 => $BuyBoxWinner) {
                 $price = $country_code_lr . '_price';
-
+                $buybox_price = '';
                 // if ($BuyBoxWinner == 1) {
+                if ($country_code_lr == 'us') {
 
-                $buybox_landed_price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : ($lowestprice_listingprice_amount != '' ? $lowestprice_listingprice_amount : 0));
-                if ($buybox_landed_price != 0) {
+                    if ($bb_winner_price != '') {
 
+                        $buybox_price = $bb_winner_price;
+                    } else {
+
+                        if ($buybox_condition == 'new') {
+                            $buybox_price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($buybox_listingprice_amount != '' ? $buybox_listingprice_amount : 0);
+                        }
+                    }
+                } elseif ($country_code_lr == 'in') {
+
+                    if ($buybox_condition == 'new') {
+
+                        $buybox_price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : ($lowestprice_listingprice_amount != '' ? $lowestprice_listingprice_amount : 0));
+                    } elseif ($lowestprice_condition == 'new') {
+
+                        $buybox_price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : ($lowestprice_listingprice_amount != '' ? $lowestprice_listingprice_amount : 0));
+                    }
+                } elseif ($country_code_lr == 'ae') {
+
+                    if ($buybox_condition == 'new') {
+
+                        $buybox_price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : ($lowestprice_listingprice_amount != '' ? $lowestprice_listingprice_amount : 0));
+                    } elseif ($lowestprice_condition == 'new') {
+
+                        $buybox_price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : ($lowestprice_listingprice_amount != '' ? $lowestprice_listingprice_amount : 0));
+                    }
+                }
+                if ($buybox_price != 0) {
 
                     $asinDetails = [
                         'asin'                      => $asin,
                         'available'                 => $available,
                         'is_sold_by_amazon'         => $is_sold_by_amazon,
-                        $price                      => $buybox_landed_price,
+                        $price                      => $buybox_price,
                         'next_highest_seller_price' => $next_highest_seller_price,
                         'next_highest_seller_id'    => $next_highest_seller_id,
                         'next_lowest_seller_price'  => $next_lowest_seller_price,
@@ -213,10 +245,10 @@ class ImportPriceFromBuyBox
                     // }
                     if ($country_code_lr == 'us') {
                         $vol_packet_weight = $volumetricPounds > $packet_weight ? $volumetricPounds : $packet_weight;
-                        $price_in_b2c = $price_convert->USAToINDB2C($vol_packet_weight, $buybox_landed_price);
-                        $price_in_b2b = $price_convert->USAToINDB2B($vol_packet_weight, $buybox_landed_price);
-                        $price_ae = $price_convert->USATOUAE($vol_packet_weight, $buybox_landed_price);
-                        $price_sg =  $price_convert->USATOSG($vol_packet_weight, $buybox_landed_price);
+                        $price_in_b2c = $price_convert->USAToINDB2C($vol_packet_weight, $buybox_price);
+                        $price_in_b2b = $price_convert->USAToINDB2B($vol_packet_weight, $buybox_price);
+                        $price_ae = $price_convert->USATOUAE($vol_packet_weight, $buybox_price);
+                        $price_sg =  $price_convert->USATOSG($vol_packet_weight, $buybox_price);
 
 
                         $price_us_source = [
@@ -259,9 +291,9 @@ class ImportPriceFromBuyBox
 
                         $packet_weight_kg = poundToKg($packet_weight);
                         $vol_packet_weight_kg = $volumetricKg > $packet_weight_kg ? $volumetricKg : $packet_weight_kg;
-                        $price_saudi = $price_convert->INDToSA($vol_packet_weight_kg, $buybox_landed_price);
-                        $price_singapore = $price_convert->INDToSG($vol_packet_weight_kg, $buybox_landed_price);
-                        $price_uae = $price_convert->INDToUAE($vol_packet_weight_kg, $buybox_landed_price);
+                        $price_saudi = $price_convert->INDToSA($vol_packet_weight_kg, $buybox_price);
+                        $price_singapore = $price_convert->INDToSG($vol_packet_weight_kg, $buybox_price);
+                        $price_uae = $price_convert->INDToUAE($vol_packet_weight_kg, $buybox_price);
 
                         $destination_price = [
                             'ind_to_uae' => $price_uae,
