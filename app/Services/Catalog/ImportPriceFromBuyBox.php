@@ -174,7 +174,7 @@ class ImportPriceFromBuyBox
 
                 // foreach ($isBuyBoxWinner as $key1 => $BuyBoxWinner) {
                 $price = $country_code_lr . '_price';
-                $buybox_price = '';
+                $buybox_price = 0;
                 // if ($BuyBoxWinner == 1) {
                 if ($country_code_lr == 'us') {
 
@@ -192,7 +192,7 @@ class ImportPriceFromBuyBox
                     if ($buybox_condition == 'new') {
 
                         $buybox_price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : ($lowestprice_listingprice_amount != '' ? $lowestprice_listingprice_amount : 0));
-                    } elseif ($lowestprice_condition == 'new') {
+                    } elseif ($buybox_condition != 'new' && $lowestprice_condition == 'new') {
 
                         $buybox_price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : ($lowestprice_listingprice_amount != '' ? $lowestprice_listingprice_amount : 0));
                     }
@@ -201,7 +201,7 @@ class ImportPriceFromBuyBox
                     if ($buybox_condition == 'new') {
 
                         $buybox_price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : ($lowestprice_listingprice_amount != '' ? $lowestprice_listingprice_amount : 0));
-                    } elseif ($lowestprice_condition == 'new') {
+                    } elseif ($buybox_condition != 'new' && $lowestprice_condition == 'new') {
 
                         $buybox_price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : ($lowestprice_listingprice_amount != '' ? $lowestprice_listingprice_amount : 0));
                     }
