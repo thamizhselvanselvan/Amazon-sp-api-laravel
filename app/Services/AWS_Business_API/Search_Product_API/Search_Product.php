@@ -88,7 +88,8 @@ class Search_Product
                         $catalog_for_cliqnshop[$key1]['generic_keyword'] = isset($attributes->generic_keyword[0]->value) ? $attributes->generic_keyword[0]->value : '';
                         $gener_key = [];
                         foreach ($attributes->generic_keyword as $generic) {
-                            $gener_key[] = explode(",", $generic->value);
+                            // $gener_key[] = explode(",", $generic->value);
+                            $gener_key[] = preg_split("/[,;]/",$generic->value);
                             $catalog_for_cliqnshop[$key1]['generic_keywords'] = $gener_key;
                         }
                     }

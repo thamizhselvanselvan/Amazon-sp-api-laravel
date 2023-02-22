@@ -347,7 +347,8 @@ class CliqnshopCatalogController extends Controller
 
                     foreach ($generic_array as $key => $val) {
 
-                        $gener_key[] = explode(",", $val['value']);
+                        // $gener_key[] = explode(",", $val['value']);
+                        $gener_key[] = preg_split("/[,;]/", $val['value']);
                     }
 
                     $generic_keywords = $gener_key;
