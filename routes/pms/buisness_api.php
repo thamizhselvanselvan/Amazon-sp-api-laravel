@@ -64,6 +64,12 @@ Route::post('cliqnshop/promo/store', 'Cliqnshop\ImageBrandController@promostore'
 
 Route::get('cliqnshop/catalog/csv', 'Catalog\CliqnshopCatalogController@asinCsvDownload')->name('cliqnshop.catalog.csv.templete');
 Route::post('cliqnshop/catalog/csv/import', 'Catalog\CliqnshopCatalogController@cliqnshopImport')->name('cliqnshop.catalog.csv.import');
+Route::post('cliqnshop/catalog/textarea/import', 'Catalog\CliqnshopCatalogController@cliqnshoptextarea')->name('cliqnshop.catalog.textarea.import');
+
+
+
+
+
 Route::get('catalog/cliqnshop/new_asin', 'Catalog\CliqnshopCatalogController@uploaded_export_download')->name('uploaded.asin.catalog.export.cliqnshop');
 Route::get('uploaded/catalog/cliqnshop/download/{index}', 'Catalog\CliqnshopCatalogController@Download_uploaded_asin_catalog')->name('uploaded.asin.catalog.export.cliqnshop.download');
 Route::get('cliqnshop/db/upload', 'Catalog\CliqnshopCatalogController@insertCliqnshop')->name('cliqnshop.catalog.db.upload');
