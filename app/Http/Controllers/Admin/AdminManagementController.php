@@ -623,18 +623,18 @@ class AdminManagementController extends Controller
 
         $store_id = $request->sell_id;
         $priority = $request->priority;
-        Log::info($request->all());
+       
         $data = Aws_credential::with(['mws_region'])->where('id', $store_id)->get()->toArray();
 
         $region_code = $data['0']['mws_region']['region_code'];
-        Log::alert($region_code);
+        
         Aws_credential::where('id', $store_id)->update(['country_priority' => $region_code, 'credential_priority' => $priority]);
 
         return redirect()->intended('/admin/creds/manage')->with('success', 'Country Priority has been updated successfully');
     }
     public function horizonprioritysave(Request $request)
     {
-        Log::alert($request->all());
+      
         $store_id = $request->sell_id;
         $priority = $request->priority;
         Aws_credential::where('id', $store_id)->update(['horizon_priority' => $priority]);
