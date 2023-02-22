@@ -110,7 +110,8 @@
         @for ($i = 1; $i <= $quant[$key]; $i++) <div class="item pt-2">
             <span>{{ $val['asin'] }} </span>
             <span><img class="bar_inv" src="data:image/png;base64,{!! $bar_code[$key] !!}" /></span>
-            <span style="font-size: 14px;">{{substr_replace($val['item_name'],'',45)}}</span>
+            <span style="font-size: 14px;">{{substr_replace($val['item_name'],'',37)}}</span>
+            <span style="font-size: 14px;">id = {{($val['id'])}}</span>
 
     </div>
 
