@@ -1201,7 +1201,7 @@ return [
                     ],
                 ],
                 [
-                    'text' => 'Footer Section',
+                    'text' => 'Site Information',
                     'url' => 'cliqnshop/footercontent',
                     'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fas fa-chalkboard',
