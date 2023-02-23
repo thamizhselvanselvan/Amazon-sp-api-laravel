@@ -230,12 +230,12 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
 
         $response = Http::withoutVerifying()->withHeaders([
             'Authorization' => 'Zoho-oauthtoken ' . $token,
-        ])->get('https://www.zohoapis.com/crm/bulk/v2/read/1929333000105130037');
+        ])->get('https://www.zohoapis.com/crm/bulk/v2/read/1929333000107167065/result');
 
 
+        Storage::put('zohocsv/1929333000107167065.zip', $response);
         po($response->json());
         exit;
-        Storage::put('zohocsv/1929333000104841066.zip', $response);
 
         echo 'success';
     });
