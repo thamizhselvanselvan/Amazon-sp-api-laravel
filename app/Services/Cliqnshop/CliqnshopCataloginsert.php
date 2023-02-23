@@ -71,14 +71,15 @@ class CliqnshopCataloginsert
 
         $date_time = Carbon::now();
         $sku_genrator = new SKU_Generator();
+        $item_name_trimmed = substr($item_name, 0, 500);
         $product_data = [
             'siteid' => $site_id,
             // 'dataset' => '',
             'type' => 'default',
             'code' => $sku_genrator->generateSKU('CNS', $asin),
             'asin' => $asin, //ASIN
-            'label' => $item_name,
-            'url' => mb_strtolower(str_replace(array('&', '<', '>', ';', ' ', ','), '_', $item_name_replaced)),
+            'label' => $item_name_trimmed,
+            'url' => mb_strtolower(str_replace(array('&', '<', '>', ';', ' ', ','), '_', $item_name_trimmed)),
             'config' => '[]',
             // 'start' => NULL,
             // 'end' => NULL,
@@ -134,7 +135,7 @@ class CliqnshopCataloginsert
             foreach ($generic_keywords as $values) {
 
                 foreach ($values as $val) {
-                  
+
                     $gen_keyword = [
                         'siteid' => $site_id,
                         'keyword' => substr($val, 0, 200),
@@ -438,7 +439,7 @@ class CliqnshopCataloginsert
 
         //domain_supplier(brand) insert to mshop_product_list
         $domain_supplier = [];
-        if (count($brand_insert) > 0 && isset($get_brand_id)) {
+        if (count($brand_insert) > 0 && ($get_brand_id) != '') {
             $domain_supplier = [
                 'siteid' => $site_id,
                 'parentid' => $get_product_id,

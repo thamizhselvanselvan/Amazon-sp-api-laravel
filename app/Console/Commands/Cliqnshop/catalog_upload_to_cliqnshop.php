@@ -205,7 +205,7 @@ class catalog_upload_to_cliqnshop extends Command
                 $label =  ucfirst($color_label);
                 $color_key = str_replace(' ', '', substr(strtolower($label), 0, 10));
             }
-            Log::notice($color_key);
+          
             //dimensions Fetch
             $length_unit = '';
             $length_value = '';
