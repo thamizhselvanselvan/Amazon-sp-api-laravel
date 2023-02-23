@@ -198,7 +198,7 @@ class CliqnshopCataloginsert
                 'key' => "product|color|" . $color_key,
                 'type' => 'color',
                 'domain' => 'product',
-                'code' => $label,
+                'code' => $color_key,
                 'label' => $label,
                 // 'pos' => 0,
                 // 'status' => 1,

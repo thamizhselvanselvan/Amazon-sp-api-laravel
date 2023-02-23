@@ -73,6 +73,7 @@ class InventoryCsvImport
         $total_item_count = 0;
         $source_id = [];
         $data = [];
+        $err = [];
         $multi_source_id = [];
         $warehouse_id = '';
         $currency_code = '';
@@ -123,8 +124,8 @@ class InventoryCsvImport
                 // }
             } catch (Exception $e) {
 
-                Log::info($e);
-                //throw error for exception case
+                Log::debug(($e));
+                $err[] = $data['asin'];
             }
         }
 
@@ -133,10 +134,17 @@ class InventoryCsvImport
             $multi_source_id = (json_encode(array_unique($multi_source_id)));
             $this->InventroyShipmentInwardDataInsert($warehouse_id, $currency_code, $total_item_count, $multi_source_id);
         } catch (Exception $e) {
-            Log::info($e);
+            Log::debug(($e));
+
+            $err[] = $data['asin'];
         }
 
-        return true;
+        if (count($err) > 0) {
+            return $err;
+        } else {
+            Log::warning("no rr");
+            return true;
+        }
     }
 
     public function generateShipmentId()

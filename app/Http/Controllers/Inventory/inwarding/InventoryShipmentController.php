@@ -301,7 +301,7 @@ class InventoryShipmentController extends Controller
             $inventory_id =  Shipment_Inward_Details::where(['asin' => $asin1, "ship_id" => $ship_id, "source_id" =>  $request->source[$key1]])->select('id')->get()->first();
             // foreach ($request->asin as $key1 => $asin1) {
 
-         
+
             Inventory::create([
                 "inventory_id" => $inventory_id->id,
                 "warehouse_id" => $request->warehouse,
@@ -439,8 +439,16 @@ class InventoryShipmentController extends Controller
 
         Storage::put($path, $file);
 
-        (new InventoryCsvImport())->index($path);
+        $data =  (new InventoryCsvImport())->index($path);
+        Log::notice(count($data));
+        $asin_error = json_encode($data);
+        if (count($data) > 0) {
+            Log::debug("Errors ASIN In Inventory CSV" . $asin_error);
+            // return redirect('inventory/shipments')->with('warning', "unable to process Following ASIN Please Check CSV$ccc");
+            return redirect('inventory/shipments')->with('success', 'File has been uploaded successfully');
+        } else {
 
-        return redirect('inventory/shipments')->with('success', 'File has been uploaded successfully');
+            return redirect('inventory/shipments')->with('success', 'File has been uploaded successfully');
+        }
     }
 }
