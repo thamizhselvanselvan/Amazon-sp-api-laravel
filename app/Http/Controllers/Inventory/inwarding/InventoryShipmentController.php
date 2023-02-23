@@ -297,11 +297,13 @@ class InventoryShipmentController extends Controller
                 "quantity" => $request->quantity[$key1],
                 "inwarded_at" => now()
             ]);
-        }
+            // }
+            $inventory_id =  Shipment_Inward_Details::where(['asin' => $asin1, "ship_id" => $ship_id, "source_id" =>  $request->source[$key1]])->select('id')->get()->first();
+            // foreach ($request->asin as $key1 => $asin1) {
 
-        foreach ($request->asin as $key1 => $asin1) {
-
+         
             Inventory::create([
+                "inventory_id" => $inventory_id->id,
                 "warehouse_id" => $request->warehouse,
                 "source_id" =>  $request->source[$key1],
                 "ship_id" => $ship_id,

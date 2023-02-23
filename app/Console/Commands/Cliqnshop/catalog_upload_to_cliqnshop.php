@@ -161,7 +161,7 @@ class catalog_upload_to_cliqnshop extends Command
             }
 
             $asin =  $data['asin'];
-         
+
             $item_name = $data['item_name'];
             $item_url = str_replace(' ', '-', $data['item_name']);
             $url = (strtolower($item_url));
@@ -229,28 +229,28 @@ class catalog_upload_to_cliqnshop extends Command
                 }
             }
             //genric Keywords
-          
-             $gener_key = [];
+
+            $gener_key = [];
 
             if (isset($data['attributes'])) {
 
                 $genric_key = json_decode($data['attributes'], true);
-                
+
                 if (isset($genric_key['generic_keyword']) && !empty($genric_key['generic_keyword'])) {
 
                     $generic_array = $genric_key['generic_keyword'];
 
                     foreach ($generic_array as $key => $val) {
 
-                        $gener_key[] = explode(",", $val['value']);
-                        
+                        // $gener_key[] = explode(",", $val['value']);
+                        $gener_key[] = preg_split("/[,;]/", $val['value']);
                     }
 
                     $generic_keywords = $gener_key;
                 }
             }
-            
-    
+
+
             // if ($category[$asin] == '') {
             //     $category_code = 'demo-new';
             // } else {
@@ -284,8 +284,6 @@ class catalog_upload_to_cliqnshop extends Command
 
         // po($generic_keywords);
 
-        
+
     }
-
-
 }
