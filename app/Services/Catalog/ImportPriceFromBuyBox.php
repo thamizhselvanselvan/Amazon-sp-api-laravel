@@ -73,7 +73,7 @@ class ImportPriceFromBuyBox
             $Records = [];
             $catalogRecords = [];
 
-            // Log::notice($country_code_lr . '=>' . count($BuyBoxRecords));
+            Log::notice($country_code_lr . '=>' . count($BuyBoxRecords));
             $catalogTable = table_model_create(country_code: $country_code_lr, model: 'Catalog', table_name: 'catalognew');
             foreach ($BuyBoxRecords as $BuyBoxRecord) {
 
@@ -137,7 +137,7 @@ class ImportPriceFromBuyBox
             $pricing_in = [];
             $pricing_us = [];
             $pricing_ae = [];
-            // Log::notice($country_code_lr . '=>' . count($BBRecords));
+            Log::notice($country_code_lr . '=>' . count($BBRecords));
             $count1 = 0;
             foreach ($BBRecords as $BBRecord) {
 
@@ -244,28 +244,40 @@ class ImportPriceFromBuyBox
                 // }
                 // }
                 if ($country_code_lr == 'us') {
-                    if ($buybox_price !== 0) {
+                    if ($buybox_price != 0) {
 
                         $vol_packet_weight = $volumetricPounds > $packet_weight ? $volumetricPounds : $packet_weight;
                         $price_in_b2c = $price_convert->USAToINDB2C($vol_packet_weight, $buybox_price);
                         $price_in_b2b = $price_convert->USAToINDB2B($vol_packet_weight, $buybox_price);
                         $price_ae = $price_convert->USATOUAE($vol_packet_weight, $buybox_price);
                         $price_sg =  $price_convert->USATOSG($vol_packet_weight, $buybox_price);
+
+                        $price_us_source = [
+                            'usa_to_in_b2c' => $price_in_b2c ?? 0,
+                            'usa_to_in_b2b' => $price_in_b2b ?? 0,
+                            'usa_to_uae' => $price_ae ?? 0,
+                            'usa_to_sg' => $price_sg ?? 0,
+                            'weight' => $packet_weight ?? 0,
+                            'volumetric_weight_pounds' => $volumetricPounds ?? 0,
+                            'volumetric_weight_kg' => $volumetricKg ?? 0
+                        ];
+                    } else {
+                        $price_us_source = [
+                            'usa_to_in_b2c' =>  0,
+                            'usa_to_in_b2b' =>  0,
+                            'usa_to_uae' =>  0,
+                            'usa_to_sg' =>  0,
+                            'weight' =>  0,
+                            'volumetric_weight_pounds' =>  0,
+                            'volumetric_weight_kg' =>  0
+                        ];
                     }
 
 
-                    $price_us_source = [
-                        'usa_to_in_b2c' => $price_in_b2c ?? 0,
-                        'usa_to_in_b2b' => $price_in_b2b ?? 0,
-                        'usa_to_uae' => $price_ae ?? 0,
-                        'usa_to_sg' => $price_sg ?? 0,
-                        'weight' => $packet_weight ?? 0,
-                        'volumetric_weight_pounds' => $volumetricPounds ?? 0,
-                        'volumetric_weight_kg' => $volumetricKg ?? 0
-                    ];
 
                     $pricing_us[] = [...$asinDetails, ...$price_us_source];
                     if ($count1 == 1000) {
+                        Log::warning($country_code_lr . '=>' . count($pricing_us));
                         PricingUs::upsert($pricing_us, ['unique_asin'],  [
                             'asin',
                             'available',
@@ -298,16 +310,26 @@ class ImportPriceFromBuyBox
                         $price_saudi = $price_convert->INDToSA($vol_packet_weight_kg, $buybox_price);
                         $price_singapore = $price_convert->INDToSG($vol_packet_weight_kg, $buybox_price);
                         $price_uae = $price_convert->INDToUAE($vol_packet_weight_kg, $buybox_price);
+
+                        $destination_price = [
+                            'ind_to_uae' => $price_uae ?? 0,
+                            'ind_to_sg' => $price_singapore ?? 0,
+                            'ind_to_sa' => $price_saudi ?? 0,
+                            'weight' => $packet_weight_kg ?? 0,
+                            'volumetric_weight_pounds' => $volumetricPounds ?? 0,
+                            'volumetric_weight_kg' => $volumetricKg ?? 0
+                        ];
+                    } else {
+                        $destination_price = [
+                            'ind_to_uae' =>  0,
+                            'ind_to_sg' =>  0,
+                            'ind_to_sa' =>  0,
+                            'weight' =>  0,
+                            'volumetric_weight_pounds' =>  0,
+                            'volumetric_weight_kg' =>  0
+                        ];
                     }
 
-                    $destination_price = [
-                        'ind_to_uae' => $price_uae ?? 0,
-                        'ind_to_sg' => $price_singapore ?? 0,
-                        'ind_to_sa' => $price_saudi ?? 0,
-                        'weight' => $packet_weight_kg ?? 0,
-                        'volumetric_weight_pounds' => $volumetricPounds ?? 0,
-                        'volumetric_weight_kg' => $volumetricKg ?? 0
-                    ];
                     $pricing_in[] = [...$asinDetails, ...$destination_price];
                     if ($count1 == 1000) {
                         PricingIn::upsert($pricing_in, ['asin_unique'], [
@@ -364,7 +386,7 @@ class ImportPriceFromBuyBox
                 // }
             }
             if ($country_code_lr == 'us') {
-
+                Log::warning($country_code_lr . '=>' . count($pricing_us));
                 PricingUs::upsert($pricing_us, 'unique_asin',  [
                     'asin',
                     'available',
