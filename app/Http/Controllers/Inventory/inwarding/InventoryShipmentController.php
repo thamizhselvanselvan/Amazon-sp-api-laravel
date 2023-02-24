@@ -115,7 +115,14 @@ class InventoryShipmentController extends Controller
         foreach ($view as $key => $bar) {
 
             $bar_code = $generator->getBarcode($bar->ship_id, $generator::TYPE_CODE_93);
-            $warehouse_name = $bar->warehouses->name;
+            if ($bar->warehouses == '') {
+                $warehouse_name = 'Not Found In Warehouse Master Invalid Warehouse Uploaded';
+                Log::notice('Invalid Warehouse Found');
+            } else {
+
+                $warehouse_name = $bar->warehouses->name;
+            }
+
             $vendor_name[] = $bar->vendors->name;
             $currency_id = $bar->currency;
         }
@@ -125,7 +132,6 @@ class InventoryShipmentController extends Controller
         foreach ($currency as $key => $cur) {
             $currency_array[$cur->id] = $cur->name;
         }
-
         return view('inventory.inward.shipment.view', compact('view', 'currency_array', 'bar_code', 'id', 'warehouse_name', 'vendor_name', 'currency_id'));
     }
     public function createView(Request $request)
@@ -440,12 +446,11 @@ class InventoryShipmentController extends Controller
         Storage::put($path, $file);
 
         $data =  (new InventoryCsvImport())->index($path);
-        
+
         if (($data) != 1) {
             $asin_error = implode(", ", $data);
             Log::emergency("Errors ASIN In Inventory CSV" . $asin_error . '-' . $path);
             return redirect('inventory/shipments')->with('warning', "unable to process Following ASIN Please Check CSV data $asin_error ");
-            
         } else {
             return redirect('inventory/shipments')->with('success', 'File has been uploaded successfully');
         }
