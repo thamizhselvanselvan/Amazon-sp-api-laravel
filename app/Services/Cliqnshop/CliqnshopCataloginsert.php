@@ -136,10 +136,10 @@ class CliqnshopCataloginsert
             foreach ($generic_keywords as $values) {
 
                 foreach ($values as $val) {
-
+                    $trim_keyword = substr($val, 0, 200);
                     $gen_keyword = [
                         'siteid' => $site_id,
-                        'keyword' => substr($val, 0, 200),
+                        'keyword' => str_replace("\xc2\xa0", " ", $trim_keyword),
                         'status' => 1,
                         'mtime' => $date_time,
                         'ctime' => $date_time,
