@@ -55,7 +55,7 @@ class BuyBoxImportAsin extends Command
                 $destination = str_replace('_', ',', $des);
             }
         }
-        Log::alert($destination);
+        // Log::alert($destination);
         $file_management_id = $final_data['fm_id'];
         $user_id = $final_data['user_id'];
         $path = $final_data['path'];
@@ -79,7 +79,7 @@ class BuyBoxImportAsin extends Command
             $delay = 0;
             $count = 0;
             $asin_chunk_count = count($asin_chunk) - 1;
-            log::notice($asin_chunk);
+            // log::notice($asin_chunk);
             foreach ($asin_chunk as $value) {
                 $chunk_data = [
                     'ASIN'      => $value,

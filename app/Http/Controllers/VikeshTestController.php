@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use ZipArchive;
 
 class VikeshTestController extends Controller
 {
@@ -86,5 +87,24 @@ class VikeshTestController extends Controller
         ])->get($this->url . "/" . $zoho_id . "/result");
 
         Storage::put("zohocsv/$zoho_id.zip", $Response);
+        if ($this->ExtractZipFile("zohocsv/$zoho_id.zip")) {
+            $this->csvReader("zohocsv/$zoho_id.csv");
+        }
+    }
+
+    public function csvReader($csv_path)
+    {
+    }
+
+    public function ExtractZipFile($path)
+    {
+        $zip = new ZipArchive;
+        if ($zip->open(Storage::path($path)) === TRUE) {
+            $zip->extractTo(Storage::path('zohocsv'));
+            $zip->close();
+            return true;
+        } else {
+            echo 'File not found';
+        }
     }
 }

@@ -73,7 +73,7 @@ class ImportPriceFromBuyBox
             $Records = [];
             $catalogRecords = [];
 
-            Log::notice($country_code_lr . '=>' . count($BuyBoxRecords));
+            // Log::notice($country_code_lr . '=>' . count($BuyBoxRecords));
             $catalogTable = table_model_create(country_code: $country_code_lr, model: 'Catalog', table_name: 'catalognew');
             foreach ($BuyBoxRecords as $BuyBoxRecord) {
 
@@ -137,7 +137,7 @@ class ImportPriceFromBuyBox
             $pricing_in = [];
             $pricing_us = [];
             $pricing_ae = [];
-            Log::notice($country_code_lr . '=>' . count($BBRecords));
+            // Log::notice($country_code_lr . '=>' . count($BBRecords));
             $count1 = 0;
             foreach ($BBRecords as $BBRecord) {
 
@@ -277,7 +277,7 @@ class ImportPriceFromBuyBox
 
                     $pricing_us[] = [...$asinDetails, ...$price_us_source];
                     if ($count1 == 1000) {
-                        Log::warning($country_code_lr . '=>' . count($pricing_us));
+                        // Log::warning($country_code_lr . '=>' . count($pricing_us));
                         PricingUs::upsert($pricing_us, ['unique_asin'],  [
                             'asin',
                             'available',
@@ -386,7 +386,7 @@ class ImportPriceFromBuyBox
                 // }
             }
             if ($country_code_lr == 'us') {
-                Log::warning($country_code_lr . '=>' . count($pricing_us));
+                // Log::warning($country_code_lr . '=>' . count($pricing_us));
                 PricingUs::upsert($pricing_us, 'unique_asin',  [
                     'asin',
                     'available',
