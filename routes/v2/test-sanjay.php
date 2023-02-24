@@ -141,3 +141,8 @@ Route::get('sanju/zazil/tracking', function () {
 
     // curl_close($curl);
 });
+Route::get('str',function()
+{
+    $title = 'You can use something similar to the below:You can use something similar to the below:You can use something similar to the below:You can use something similar to the below:You can use something similar to the below:You can use something similar to the below:You can use something similar to the below:You can use something similar to the below:You can use something similar to the below:You can use something similar to the below:';
+    echo substr($title, 0, 200);
+});

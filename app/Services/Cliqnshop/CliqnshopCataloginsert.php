@@ -13,7 +13,7 @@ class CliqnshopCataloginsert
     public function insertdata_cliqnshop($site_id, $category, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image, $keyword,  $short_description,  $long_description, $generic_keywords)
     {
         Log::alert($asin . ' - ' . $category);
-      
+
         $display_code = '1';
         if ($Price_US_IN == '0' || $Price_US_IN == '' || $image == '') {
             $display_code = '0';
@@ -71,14 +71,16 @@ class CliqnshopCataloginsert
 
         $date_time = Carbon::now();
         $sku_genrator = new SKU_Generator();
+        $item_name_trimmed = substr($item_name, 0, 500);
+        $item_url_trimmed = substr($item_name_replaced, 0, 500);
         $product_data = [
             'siteid' => $site_id,
             // 'dataset' => '',
             'type' => 'default',
             'code' => $sku_genrator->generateSKU('CNS', $asin),
             'asin' => $asin, //ASIN
-            'label' => $item_name,
-            'url' => mb_strtolower(str_replace(array('&', '<', '>', ';', ' ', ','), '_', $item_name_replaced)),
+            'label' => $item_name_trimmed,
+            'url' => mb_strtolower(str_replace(array('&', '<', '>', ';', ' ', ',','’','-'), '_', $item_url_trimmed)),
             'config' => '[]',
             // 'start' => NULL,
             // 'end' => NULL,
@@ -134,10 +136,10 @@ class CliqnshopCataloginsert
             foreach ($generic_keywords as $values) {
 
                 foreach ($values as $val) {
-                    Log::info('Keyword'.' ' . $val);
+                    $trim_keyword = substr($val, 0, 500);
                     $gen_keyword = [
                         'siteid' => $site_id,
-                        'keyword' => $val,
+                        'keyword' => str_replace("\xc2\xa0", " ", $trim_keyword),
                         'status' => 1,
                         'mtime' => $date_time,
                         'ctime' => $date_time,
@@ -198,7 +200,7 @@ class CliqnshopCataloginsert
                 'key' => "product|color|" . $color_key,
                 'type' => 'color',
                 'domain' => 'product',
-                'code' => $label,
+                'code' => $color_key,
                 'label' => $label,
                 // 'pos' => 0,
                 // 'status' => 1,
@@ -438,7 +440,7 @@ class CliqnshopCataloginsert
 
         //domain_supplier(brand) insert to mshop_product_list
         $domain_supplier = [];
-        if (count($brand_insert) > 0 && isset($get_brand_id)) {
+        if (count($brand_insert) > 0 && ($get_brand_id) != '') {
             $domain_supplier = [
                 'siteid' => $site_id,
                 'parentid' => $get_product_id,
@@ -567,7 +569,7 @@ class CliqnshopCataloginsert
             DB::connection('cliqnshop')->table('mshop_product_list')->upsert(
                 $domain_price,
                 ['unq_msproli_pid_dm_ty_rid_sid'],
-                ['siteid', 'parentid', 'key', 'refid', 'type', 'domain', 'config', 'mtime','editor']
+                ['siteid', 'parentid', 'key', 'refid', 'type', 'domain', 'config', 'mtime', 'editor']
             );
         }
         //domain_attribute(short Description) insert to mshop_product_list
