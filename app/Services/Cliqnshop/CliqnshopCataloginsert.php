@@ -69,10 +69,7 @@ class CliqnshopCataloginsert
         $currency = DB::connection('cliqnshop')->table('mshop_locale')->select('currencyid')->where('siteid', $site_id)->where('status', '1')->get();
         $currency_code = $currency['0']->currencyid;
 
-        $date = Carbon::now();
-
-        $date_time =  Carbon::instance($date);
-        Log::info($date_time);
+        $date_time = Carbon::now('Asia/Kolkata');
 
         $sku_genrator = new SKU_Generator();
         $item_name_trimmed = substr($item_name, 0, 500);
