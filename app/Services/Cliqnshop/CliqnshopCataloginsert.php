@@ -136,7 +136,7 @@ class CliqnshopCataloginsert
             foreach ($generic_keywords as $values) {
 
                 foreach ($values as $val) {
-                    $trim_keyword = substr($val, 0, 200);
+                    $trim_keyword = substr($val, 0, 500);
                     $gen_keyword = [
                         'siteid' => $site_id,
                         'keyword' => str_replace("\xc2\xa0", " ", $trim_keyword),
