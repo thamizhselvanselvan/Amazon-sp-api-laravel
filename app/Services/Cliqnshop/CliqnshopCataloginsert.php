@@ -70,6 +70,8 @@ class CliqnshopCataloginsert
         $currency_code = $currency['0']->currencyid;
 
         $date_time = Carbon::now();
+        Log::info($date_time);
+
         $sku_genrator = new SKU_Generator();
         $item_name_trimmed = substr($item_name, 0, 500);
         $item_url_trimmed = substr($item_name_replaced, 0, 500);
@@ -80,7 +82,7 @@ class CliqnshopCataloginsert
             'code' => $sku_genrator->generateSKU('CNS', $asin),
             'asin' => $asin, //ASIN
             'label' => $item_name_trimmed,
-            'url' => mb_strtolower(str_replace(array('&', '<', '>', ';', ' ', ',','’','-'), '_', $item_url_trimmed)),
+            'url' => mb_strtolower(str_replace(array('&', '<', '>', ';', ' ', ',', '’', '-'), '_', $item_url_trimmed)),
             'config' => '[]',
             // 'start' => NULL,
             // 'end' => NULL,
@@ -121,7 +123,7 @@ class CliqnshopCataloginsert
                 'editor' => 'App360',
             ];
 
-            DB::connection('cliqnshop')->table('mshop_supplier')->upsert($brand_insert, ['unq_mssup_code_sid'], ['siteid', 'code', 'label', 'mtime', 'ctime', 'editor']);
+            DB::connection('cliqnshop')->table('mshop_supplier')->upsert($brand_insert, ['unq_mssup_code_sid'], ['siteid', 'code', 'label', 'mtime', 'editor']);
 
             $get_brand = DB::connection('cliqnshop')->table('mshop_supplier')->where('siteid', $brand_insert['siteid'])->where('code', $brand_insert['code'])
                 ->pluck('id')->ToArray();
