@@ -72,6 +72,7 @@ class CliqnshopCataloginsert
         $date_time = Carbon::now();
         $sku_genrator = new SKU_Generator();
         $item_name_trimmed = substr($item_name, 0, 500);
+        $item_url_trimmed = substr($item_name_replaced, 0, 500);
         $product_data = [
             'siteid' => $site_id,
             // 'dataset' => '',
@@ -79,7 +80,7 @@ class CliqnshopCataloginsert
             'code' => $sku_genrator->generateSKU('CNS', $asin),
             'asin' => $asin, //ASIN
             'label' => $item_name_trimmed,
-            'url' => mb_strtolower(str_replace(array('&', '<', '>', ';', ' ', ','), '_', $item_name_trimmed)),
+            'url' => mb_strtolower(str_replace(array('&', '<', '>', ';', ' ', ',','’','-'), '_', $item_url_trimmed)),
             'config' => '[]',
             // 'start' => NULL,
             // 'end' => NULL,
