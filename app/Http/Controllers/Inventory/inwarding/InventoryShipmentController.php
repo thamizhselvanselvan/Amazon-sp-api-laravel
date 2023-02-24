@@ -117,7 +117,6 @@ class InventoryShipmentController extends Controller
             $bar_code = $generator->getBarcode($bar->ship_id, $generator::TYPE_CODE_93);
             if ($bar->warehouses == '') {
                 $warehouse_name = 'Not Found In Warehouse Master Invalid Warehouse Uploaded';
-                Log::notice('Invalid Warehouse Found');
             } else {
 
                 $warehouse_name = $bar->warehouses->name;

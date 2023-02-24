@@ -69,7 +69,9 @@ class CliqnshopCataloginsert
         $currency = DB::connection('cliqnshop')->table('mshop_locale')->select('currencyid')->where('siteid', $site_id)->where('status', '1')->get();
         $currency_code = $currency['0']->currencyid;
 
-        $date_time = Carbon::now();
+        $date = Carbon::now();
+
+        $date_time =  Carbon::instance($date);
         Log::info($date_time);
 
         $sku_genrator = new SKU_Generator();
@@ -115,7 +117,7 @@ class CliqnshopCataloginsert
             $brand_insert = [
                 'siteid' => $site_id,
                 'code' =>  $brand,
-                'label' =>  $brand_label,
+                'label' => substr($brand_label, 0, 29),
                 // 'status' => 1,
                 // 'pos' => 1,
                 'mtime' => $date_time,
@@ -203,7 +205,7 @@ class CliqnshopCataloginsert
                 'type' => 'color',
                 'domain' => 'product',
                 'code' => $color_key,
-                'label' => $label,
+                'label' => substr($label, 0, 31),
                 // 'pos' => 0,
                 // 'status' => 1,
                 'mtime' => $date_time,
