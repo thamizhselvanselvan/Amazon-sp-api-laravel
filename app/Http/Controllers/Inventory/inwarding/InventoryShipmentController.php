@@ -432,7 +432,7 @@ class InventoryShipmentController extends Controller
         $import_file_time = date('Y-m-d-H-i-s');
         $file = file_get_contents($request->inventory_csv);
 
-        $path = "Inventory_CSV/Inventory${import_file_time}.csv";
+        $path = "Inventory_CSV/Inventory{$import_file_time}.csv";
         if (!Storage::exists($path)) {
             Storage::put($path, '');
         }
@@ -440,14 +440,13 @@ class InventoryShipmentController extends Controller
         Storage::put($path, $file);
 
         $data =  (new InventoryCsvImport())->index($path);
-        Log::notice(count($data));
-        $asin_error = json_encode($data);
-        if (count($data) > 0) {
-            Log::debug("Errors ASIN In Inventory CSV" . $asin_error);
-            // return redirect('inventory/shipments')->with('warning', "unable to process Following ASIN Please Check CSV$ccc");
-            return redirect('inventory/shipments')->with('success', 'File has been uploaded successfully');
+        
+        if (($data) != 1) {
+            $asin_error = implode(", ", $data);
+            Log::emergency("Errors ASIN In Inventory CSV" . $asin_error . '-' . $path);
+            return redirect('inventory/shipments')->with('warning', "unable to process Following ASIN Please Check CSV data $asin_error ");
+            
         } else {
-
             return redirect('inventory/shipments')->with('success', 'File has been uploaded successfully');
         }
     }
