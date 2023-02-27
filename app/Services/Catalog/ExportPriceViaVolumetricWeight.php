@@ -173,14 +173,14 @@ class ExportPriceViaVolumetricWeight
                                 $actual_weight_kg = $poundToKg > $volKg ? $poundToKg : $volKg;
 
 
-                                $asin_data[$key]['AVAILABLE'] = $catalog_detail['available'];
+                                $in_price = $catalog_detail['in_price'] ?? 0;
+                                $asin_data[$key]['AVAILABLE'] = $in_price != 0 ? $catalog_detail['available'] : 0;
                                 $asin_data[$key]['LENGHT_CM'] = $length * 2.54;         //inch to cm
                                 $asin_data[$key]['WIDTH_CM']  = $width * 2.54;          //inch to cm
                                 $asin_data[$key]['HEIGHT_CM'] = $height * 2.54;         //inch to cm
                                 $asin_data[$key]['WEIGHT_KG'] = $poundToKg;
                                 $asin_data[$key]['VOL_KG']    = $volKg;
                                 $asin_data[$key]['ACTUAL_WEIGHT_KG'] = $actual_weight_kg;
-                                $in_price = $catalog_detail['in_price'] ?? 0;
                                 $asin_data[$key]['IN_PRICE'] = $in_price;
 
                                 $convertedPrice = $this->priceConversion($actual_weight_kg, $in_price, $countryCode);
@@ -196,14 +196,14 @@ class ExportPriceViaVolumetricWeight
                                 $volPound = VolumetricIntoPounds($packet_dimensions);
                                 $actual_weight_pound = $weight > $volPound ? $weight : $volPound;
 
-                                $asin_data[$key]['AVAILABLE'] = $catalog_detail['available'];
+                                $us_price = $catalog_detail['us_price'] ?? 0;
+                                $asin_data[$key]['AVAILABLE'] = $us_price != 0 ? $catalog_detail['available'] : 0;
                                 $asin_data[$key]['LENGTH_INCH'] = $length;
                                 $asin_data[$key]['WIDTH_INCH'] = $width;
                                 $asin_data[$key]['HEIGHT_INCH'] = $height;
                                 $asin_data[$key]['WEIGHT_POUND'] = $weight;
                                 $asin_data[$key]['VOL_POUND'] = $volPound;
                                 $asin_data[$key]['ACTUAL_VOL_POUND'] = $actual_weight_pound;
-                                $us_price = $catalog_detail['us_price'] ?? 0;
                                 $asin_data[$key]['US_PRICE'] = $us_price;
 
                                 // $start_time = startTime();
