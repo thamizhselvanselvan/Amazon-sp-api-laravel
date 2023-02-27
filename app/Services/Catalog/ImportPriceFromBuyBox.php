@@ -210,7 +210,7 @@ class ImportPriceFromBuyBox
 
                 $asinDetails = [
                     'asin'                      => $asin,
-                    'available'                 => $available,
+                    'available'                 => $buybox_price != 0 ? $available : 0,
                     'is_sold_by_amazon'         => $is_sold_by_amazon,
                     $price                      => $buybox_price,
                     'next_highest_seller_price' => $next_highest_seller_price,
