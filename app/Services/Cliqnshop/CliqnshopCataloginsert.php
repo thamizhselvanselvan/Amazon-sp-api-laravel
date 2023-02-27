@@ -404,7 +404,8 @@ class CliqnshopCataloginsert
 
         // category id Pluck(based on receved Category From CSV or Product search)        
         $catogory_data = DB::connection('cliqnshop')->table('mshop_catalog')->where('code', $category)->where('siteid', $site_id)->pluck('id')->ToArray();
-        $catogory_id = 'demo-new';
+        $catogory_id = DB::connection('cliqnshop')->table('mshop_catalog')->where('code', 'demo-new')->where('siteid', $site_id)->pluck('id')->ToArray();
+        $catogory_id = $catogory_id[0];
         if (isset($catogory_data['0'])) {
             $catogory_id = $catogory_data['0'];
         }
