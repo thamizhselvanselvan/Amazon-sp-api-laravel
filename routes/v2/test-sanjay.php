@@ -6,6 +6,7 @@ use App\Services\Zoho\ZohoApi;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Models\order\OrderItemDetails;
+use Illuminate\Support\Facades\Storage;
 
 Route::get('test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
 
@@ -98,24 +99,49 @@ Route::get('sanju/zazil/tracking', function () {
     $requestUrl = "https://app.shipsy.in/api/customer/integration/consignment/track?reference_number=$awb";
     $api_key = 'a80517c76ae63a0dc191df8484b24d';
 
-
-    //with HTTP 
-
-   
+    //with HTTP
     $response = Http::withHeaders([
         'api-key' => $api_key,
     ])->get($requestUrl);
 
-
+    $reference_number = '';
+    $status = '';
     if ($response->successful()) {
-        $data = $response->json();
-        po($data);
+        $datas = $response->json();
+        po($datas);
+        exit;
+
+
+        $reference_number = ($datas['reference_number']);
+        $status = ($datas['status']);
+        $events = ($datas['events']);
+        foreach ($events as $key => $event) {
+
+            $type['type'] = ($event['type']);
+            $hub_name['hub_name'] = ($event['hub_name']);
+            $customer_update['customer_update'] = ($event['customer_update']);
+            $failure_reason['failure_reason'] = ($event['failure_reason']);
+            $responce[] = [
+                'type' =>  $type['type'],
+                'hub_name' => $hub_name['hub_name'],
+                'customer_update' => $customer_update['customer_update'],
+                'failure_reason' => $failure_reason['failure_reason'],
+
+            ];
+        }
     } else {
-        po('error');
+        $responce[] = [
+            'respnse' => 'Invalid Refrence Number or No Details Found',
+
+        ];
     }
+    $data = [
+        'status' => $status,
+        'reference_number' => $reference_number,
+        'responce' => $responce,
 
-
-
+    ];
+    po($data);
 
     //with curl
     // $curl = curl_init();
@@ -141,8 +167,18 @@ Route::get('sanju/zazil/tracking', function () {
 
     // curl_close($curl);
 });
-Route::get('str',function()
-{
-    $title = 'You can use something similar to the below:You can use something similar to the below:You can use something similar to the below:You can use something similar to the below:You can use something similar to the below:You can use something similar to the below:You can use something similar to the below:You can use something similar to the below:You can use something similar to the below:You can use something similar to the below:';
-    echo substr($title, 0, 200);
+Route::get('sanju/deletion/logic', function () {
+    $files = Storage::files('Cliqnshop\asin_import');
+    $tenDaysBefore = Carbon::now()->subDays(30);
+
+    foreach ($files as $file) {
+
+        $lastModified = Storage::lastModified($file);
+        $lastModifiedTime = Carbon::createFromTimestamp($lastModified);
+
+        if ($lastModifiedTime->lt($tenDaysBefore)) {
+            Storage::delete($file);
+        }
+        po('deleted');
+    }
 });

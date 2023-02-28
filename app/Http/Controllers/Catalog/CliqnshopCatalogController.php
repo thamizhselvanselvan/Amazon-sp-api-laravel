@@ -336,7 +336,7 @@ class CliqnshopCatalogController extends Controller
             //genric Keywords
 
             $gener_key = [];
-
+            $generic_keywords = [];
             if (isset($data['attributes'])) {
 
                 $genric_key = json_decode($data['attributes'], true);
