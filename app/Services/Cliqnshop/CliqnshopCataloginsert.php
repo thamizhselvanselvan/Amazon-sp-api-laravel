@@ -110,11 +110,12 @@ class CliqnshopCataloginsert
             $brand_insert['label'] = '';
             $get_brand_id = '';
             if ($brand != '') {
-
+                $brand_replaced = (preg_replace('/[^A-Za-z0-9\-]/', ' ', $brand));
+                $brand_label_replaced = (preg_replace('/[^A-Za-z0-9\-]/', ' ', $brand_label));
                 $brand_insert = [
                     'siteid' => $site_id,
-                    'code' =>  $brand,
-                    'label' => substr($brand_label, 0, 29),
+                    'code' =>  substr(strtolower($brand_replaced), 0, 10),
+                    'label' => substr($brand_label_replaced, 0, 29),
                     // 'status' => 1,
                     // 'pos' => 1,
                     'mtime' => $date_time,
@@ -137,7 +138,8 @@ class CliqnshopCataloginsert
                 foreach ($generic_keywords as $values) {
 
                     foreach ($values as $val) {
-                        $trim_keyword = substr($val, 0, 500);
+                        $val_replaced = (preg_replace('/[^A-Za-z0-9\-]/', ' ', $val));
+                        $trim_keyword = substr($val_replaced, 0, 500);
                         $gen_keyword = [
                             'siteid' => $site_id,
                             'keyword' => str_replace("\xc2\xa0", " ", $trim_keyword),
@@ -196,13 +198,15 @@ class CliqnshopCataloginsert
             $attribute = [];
             $attribute['label'] = '';
             if ($color_key != '') {
+                $color_key_replaced = (preg_replace('/[^A-Za-z0-9\-]/', ' ', $color_key));
+                $label_replaced = (preg_replace('/[^A-Za-z0-9\-]/', ' ', $label));
                 $attribute = [
                     'siteid' => $site_id,
-                    'key' => "product|color|" . $color_key,
+                    'key' => "product|color|" . str_replace(' ', '', substr(strtolower($color_key_replaced), 0, 10)),
                     'type' => 'color',
                     'domain' => 'product',
-                    'code' => $color_key,
-                    'label' => substr($label, 0, 31),
+                    'code' => str_replace(' ', '', substr(strtolower($color_key_replaced), 0, 10)),
+                    'label' => substr($label_replaced, 0, 31),
                     // 'pos' => 0,
                     // 'status' => 1,
                     'mtime' => $date_time,
@@ -228,11 +232,11 @@ class CliqnshopCataloginsert
             if ($length_value != '') {
                 $length_attribute = [
                     'siteid' => $site_id,
-                    'key' => "product|length|" . $length_value,
+                    'key' => "product|length|" . round($length_value,2),
                     'type' => 'length',
                     'domain' => 'product',
-                    'code' => $length_value,
-                    'label' => $length_value . '  ' . $length_unit,
+                    'code' => round($length_value,2),
+                    'label' => round($length_value,2) . '  ' . $length_unit,
                     // 'pos' => 0,
                     // 'status' => 1,
                     'mtime' => $date_time,
@@ -262,11 +266,11 @@ class CliqnshopCataloginsert
 
                 $width_attribute = [
                     'siteid' => $site_id,
-                    'key' => "product|width|" . $width_value,
+                    'key' => "product|width|" . round($width_value,2),
                     'type' => 'width',
                     'domain' => 'product',
-                    'code' => $width_value,
-                    'label' => $width_value . '  ' . $width_unit,
+                    'code' => round($width_value,2),
+                    'label' => round($width_value,2) . '  ' . $width_unit,
                     // 'pos' => 0,
                     // 'status' => 1,
                     'mtime' => $date_time,
