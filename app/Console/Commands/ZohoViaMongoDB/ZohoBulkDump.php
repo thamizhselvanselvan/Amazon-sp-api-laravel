@@ -54,6 +54,10 @@ class ZohoBulkDump extends Command
         $status = $this->argument('zoho_state');
         $page = $this->argument('page');
         $more_records = $this->argument('more_records');
+        Log::debug('zoho_id =>' . $zoho_id);
+        Log::debug('status =>' . $status);
+        Log::debug('page =>' . $page);
+        Log::debug('more_records =>' . $more_records);
         if ($zoho_id) {
             // $response = $this->MonitorZohoRequest($zoho_id);
             // Log::alert($response);
@@ -123,7 +127,7 @@ class ZohoBulkDump extends Command
 
     public function DownloadZohoFile($zoho_id)
     {
-        echo 'download';
+        Log::debug('download');
         $Response = Http::withoutVerifying()->withHeaders([
             "Authorization" => "Zoho-oauthtoken " . $this->token
         ])->get($this->url . "/" . $zoho_id . "/result");
@@ -136,7 +140,7 @@ class ZohoBulkDump extends Command
 
     public function csvReader($csv_path)
     {
-        echo 'csv read';
+        Log::debug('csv_read');
         $csv_data =  Reader::createFromPath(Storage::path($csv_path), 'r');
         $csv_data->setDelimiter(',');
         $csv_data->setHeaderOffset(0);
@@ -146,13 +150,13 @@ class ZohoBulkDump extends Command
                 'updated_at' => Carbon::now()->toDateTimeString()
             ];
             $records = [...$data, ...$timestamp];
-            zoho::insert($records);
+            // zoho::insert($records);
         }
     }
 
     public function ExtractZipFile($path)
     {
-        echo 'extract file';
+        Log::debug('extract file');
         $zip = new ZipArchive;
         if ($zip->open(Storage::path($path)) === TRUE) {
             $zip->extractTo(Storage::path('zohocsv'));
