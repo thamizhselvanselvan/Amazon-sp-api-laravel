@@ -93,7 +93,7 @@ class ZohoBulkDump extends Command
     {
         $payload = [
             "callback" => [
-                "url" => "https://catalog-manager-mosh.com/api/zoho/webhook",
+                "url" => "https://app.360ecom.io/api/zoho/webhook",
                 "method" => "post"
             ],
             "query" => [
@@ -152,6 +152,7 @@ class ZohoBulkDump extends Command
             $records = [...$data, ...$timestamp];
             // zoho::insert($records);
         }
+        Log::debug($records);
     }
 
     public function ExtractZipFile($path)
