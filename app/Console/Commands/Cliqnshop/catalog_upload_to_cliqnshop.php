@@ -205,7 +205,7 @@ class catalog_upload_to_cliqnshop extends Command
                 $label =  ucfirst($color_label);
                 $color_key = str_replace(' ', '', substr(strtolower($label), 0, 10));
             }
-          
+
             //dimensions Fetch
             $length_unit = '';
             $length_value = '';
@@ -231,7 +231,7 @@ class catalog_upload_to_cliqnshop extends Command
             //genric Keywords
 
             $gener_key = [];
-
+            $generic_keywords = [];
             if (isset($data['attributes'])) {
 
                 $genric_key = json_decode($data['attributes'], true);
