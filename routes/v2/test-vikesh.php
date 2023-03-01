@@ -5,6 +5,8 @@ use Carbon\Carbon;
 use League\Csv\Reader;
 use League\Csv\Writer;
 use Carbon\CarbonPeriod;
+use App\Models\TestMongo;
+use App\Models\MongoDB\zoho;
 use App\Models\FileManagement;
 use App\Models\Catalog\catalogae;
 use App\Models\Catalog\catalogin;
@@ -66,22 +68,24 @@ Route::get('zoho/dump2', function () {
 });
 
 Route::get('zoho/dump3', function () {
-    $file = Storage::get('zohocsv/1929333000107209152.csv');
-    $host = config('database.connections.web.host');
-    $dbname = config('database.connections.catalog.database');
-    $port = config('database.connections.web.port');
-    $username = config('database.connections.web.username');
-    $password = config('database.connections.web.password');
 
-    R::setup("mysql:host=$host;dbname=$dbname;port=$port", $username, $password);
+    $timestamp = [
+        'created_at' => Carbon::now()->toDateTimeString(),
+        'updated_at' => Carbon::now()->toDateTimeString()
+    ];
 
-    // $data = CSV_Reader('zohocsv/1929333000107209152.csv');
-    $data = Reader::createFromPath(Storage::path('zohocsv/1929333000107209152.csv'), 'r');
-    $data->setDelimiter(',');
-    $data->setHeaderOffset(0);
+    po($timestamp);
+    TestMongo::insert($timestamp);
+    exit;
+
+    $data = CSV_Reader('zohocsv/1929333000107432808.csv');
+    // $data = Reader::createFromPath(Storage::path('zohocsv/1929333000107432808.csv'), 'r');
+    // $data->setDelimiter(',');
+    // $data->setHeaderOffset(0);
     // $headers = $data->fetchOne();
     // po($headers);
     // exit;
+
     $column1 = [
         'owner',
         'company',
@@ -258,34 +262,20 @@ Route::get('zoho/dump3', function () {
         'enrich_status_s'
     ];
     $ignore = [' ', '__', '_id'];
-    $zoho1 = R::dispense('zoho1');
-    $zoho2 = R::dispense('zoho2');
+    //$zoho1 = R::dispense('zoho1');
+    //  $zoho2 = R::dispense('zoho2');
+
+
+    //DB::connection('mongodb')->table('zoho')->insertOne(['name' => 'vikesh']);
     foreach ($data as  $record) {
+        $timestamp = [
+            'created_at' => Carbon::now()->toDateTimeString(),
+            'updated_at' => Carbon::now()->toDateTimeString()
+        ];
+        $record = [...$record, ...$timestamp];
         po($record);
-        foreach ($record as $key => $value) {
-            $headers = str_replace($ignore, '_', strtolower(trim($key)));
-
-            if (in_array($headers, $column1)) {
-                // po($value);
-                if ($headers == 'refund_date') {
-                    $zoho1->$headers = Carbon::parse($value)->toDateTimeString();
-                }
-                $zoho1->$headers = str_replace(' ', '', $value);
-            }
-            R::store($zoho1);
-
-            // if (in_array($headers, $columns2)) {
-            //     $zoho2->$headers = $value;
-            //     // po($zoho);
-            // }
-            // po($headers);
-            // po($zoho1);
-        }
-        // R::store($zoho2);
-
-        // exit;
+        TestMongo::insert($record);
     }
-    // po($data);
     exit;
     $zohoResponse =  json_decode(Storage::get('ZohoResponse/zoho-response2.txt', true));
     po($zohoResponse);
@@ -324,9 +314,16 @@ Route::get('export', function () {
 });
 
 Route::get('test', function () {
-    // po(Carbon::parse('2022-12-09')->toDateTimeString());
-    $date = Carbon::parse('2022-12-09')->toDateTimeString();
-    po($date);
+    $new_offer_lists = ['4', '3', '2', '3'];
+    $highest_amount = min($new_offer_lists);
+    po($highest_amount);
+    po($new_offer_lists);
+    $key = min(array_keys($new_offer_lists, min($new_offer_lists)));
+    po(($key));
+    // exit;
+
+
+
     exit;
     $date = Carbon::now()->addDays(105);
     $date1 = Carbon::now();

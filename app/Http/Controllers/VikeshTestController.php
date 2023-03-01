@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use ZipArchive;
+use App\Models\MongoDB\zoho;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
-use ZipArchive;
 
 class VikeshTestController extends Controller
 {
-    private $file_path = "ZohoResponse/zoho-response1.txt";
+    private $file_path = "ZohoResponse/zoho-response3.txt";
     private $url = "https://www.zohoapis.com/crm/bulk/v2/read";
     public $token;
     public function index()
@@ -94,6 +95,11 @@ class VikeshTestController extends Controller
 
     public function csvReader($csv_path)
     {
+        $csv_data = CSV_Reader($csv_path);
+        foreach ($csv_data as $data) {
+            po($data);
+            zoho::insert($data);
+        }
     }
 
     public function ExtractZipFile($path)
