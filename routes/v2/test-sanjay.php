@@ -3,10 +3,12 @@
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use App\Services\Zoho\ZohoApi;
+use App\Models\Inventory\Shipment;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Models\order\OrderItemDetails;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Inventory\Shipment_Inward_Details;
 
 Route::get('test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
 
@@ -43,8 +45,8 @@ Route::get('sanju/test/images', function () {
 
     po($img1);
 });
-//eneric Keywords fetch
-Route::get('sanju/test/cs', function () {
+//generic Keywords fetch
+Route::get('sanju/test/generic_key', function () {
     $asin = [
         'TB0721C6JC3',
         'TB071H1VQCY',
@@ -93,7 +95,8 @@ Route::get('sanju/test/cs', function () {
     po($generic_keywords);
 });
 
-Route::get('sanju/zazil/tracking', function () {
+//zajel POC
+Route::get('sanju/zajel/tracking', function () {
 
     $awb = "Z6430506";
     $requestUrl = "https://app.shipsy.in/api/customer/integration/consignment/track?reference_number=$awb";
@@ -167,16 +170,17 @@ Route::get('sanju/zazil/tracking', function () {
 
     // curl_close($curl);
 });
-Route::get('sanju/deletion/logic', function () {
+
+Route::get('sanju/cns/deletion/logic', function () {
     $files = Storage::files('Cliqnshop\asin_import');
-    $tenDaysBefore = Carbon::now()->subDays(30);
+    $DaysBefore = Carbon::now()->subDays(30);
 
     foreach ($files as $file) {
 
         $lastModified = Storage::lastModified($file);
         $lastModifiedTime = Carbon::createFromTimestamp($lastModified);
 
-        if ($lastModifiedTime->lt($tenDaysBefore)) {
+        if ($lastModifiedTime->lt($DaysBefore)) {
             Storage::delete($file);
         }
         po('deleted');
