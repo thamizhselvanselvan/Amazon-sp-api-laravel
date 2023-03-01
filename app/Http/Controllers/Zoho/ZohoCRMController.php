@@ -13,7 +13,7 @@ class ZohoCRMController extends Controller
         $zoho_id = $response['job_id'];
         $zoho_state = $request['state'];
         $page = $request['result']['page'];
-        $more_records = $request['result']['more_records'];
+        $more_records = $request['result']['more_records'] ?? 0;
 
         commandExecFunc("mosh:zoho-bulk-dump ${zoho_id} ${zoho_state} ${page} ${more_records}");
     }
