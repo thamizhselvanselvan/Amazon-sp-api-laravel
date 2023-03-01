@@ -94,23 +94,11 @@ class CliqnshopCatalogController extends Controller
             ];
 
             FileManagement::create($file_info);
-            // fileManagement();
-
-            // $file_info = [
-            //     'user_id' => $user_id,
-            //     'type' => 'Import',
-            //     'module' => "Cliqnshop_export",
-            //     'file_path' => $path,
-            //     'command_name' => "mosh:export_catalog_imported_asin ${path}",
-            // ];
-
-            // FileManagement::create($file_info);
-            // fileManagement();
-
+            
 
             commandExecFunc("mosh:catalog_insert_cliqnshop ${path} ${site_id}");
-            commandExecFunc("mosh:export_catalog_imported_asin ${path}");
-            // $this->insertCliqnshop($site_id);
+            // commandExecFunc("mosh:export_catalog_imported_asin ${path}");
+           
 
             return back()->with('success', 'Cliqnshop Catalog file has been uploaded successfully !');
         }
@@ -172,7 +160,6 @@ class CliqnshopCatalogController extends Controller
 
 
     public function cliqnshoptextarea(Request $request)
-
     {
 
         $asin = preg_split('/[\r\n| |:|,]/', $request->order_ids_text, -1, PREG_SPLIT_NO_EMPTY);

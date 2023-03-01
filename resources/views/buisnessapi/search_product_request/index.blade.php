@@ -71,10 +71,12 @@
 
     $("#asinwise").on('click', function(e) {
         $("#asin_search").show();
+        $('#Keyword').val('');
         $("#key_search").hide();
     });
     $("#keywise").on('click', function(e) {
         $("#key_search").show();
+        $('#asin').val('');
         $("#asin_search").hide();
     });
     $("#keywise,#asinwise").on('click', function(e) {
@@ -82,6 +84,10 @@
     });
 
     $(".product_search").on("click", function() {
+
+
+
+
         let asin = $('#asin').val();
         let key_word = $('#Keyword').val();
         let type = '';
@@ -91,6 +97,7 @@
         key = key_word.replace(' ', '_');
 
         if (type == key) {
+
             if (asin.length < 10 || asin.length > 10) {
 
                 alert("Invalid ASIN");
@@ -98,14 +105,15 @@
             }
             data = {
                 'asin': asin,
+
             }
         } else {
+
             data = {
                 'key': key,
             }
         }
-
-
+  
         $.ajax({
             method: 'GET',
             url: '/product/details/search',
