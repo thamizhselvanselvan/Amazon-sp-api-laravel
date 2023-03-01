@@ -152,7 +152,7 @@ class ZohoBulkDump extends Command
                 'created_at' => Carbon::now()->toDateTimeString(),
                 'updated_at' => Carbon::now()->toDateTimeString()
             ];
-            $records = [...$data, ...$timestamp];
+            $records[] = [...$data, ...$timestamp];
             if ($count == 1000) {
                 zoho::insert($records);
                 $count = 0;
