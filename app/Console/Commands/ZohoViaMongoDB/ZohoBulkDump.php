@@ -54,6 +54,8 @@ class ZohoBulkDump extends Command
         $status = $this->argument('zoho_state');
         $page = $this->argument('page');
         $more_records = $this->argument('more_records');
+
+
         Log::debug('zoho_id =>' . $zoho_id);
         Log::debug('status =>' . $status);
         Log::debug('page =>' . $page);
