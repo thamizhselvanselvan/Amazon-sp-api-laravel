@@ -69,6 +69,15 @@ Route::get('zoho/dump2', function () {
 
 Route::get('zoho/dump3', function () {
 
+    $timestamp = [
+        'created_at' => Carbon::now()->toDateTimeString(),
+        'updated_at' => Carbon::now()->toDateTimeString()
+    ];
+
+    po($timestamp);
+    TestMongo::insert($timestamp);
+    exit;
+
     $data = CSV_Reader('zohocsv/1929333000107432808.csv');
     // $data = Reader::createFromPath(Storage::path('zohocsv/1929333000107432808.csv'), 'r');
     // $data->setDelimiter(',');
@@ -265,7 +274,7 @@ Route::get('zoho/dump3', function () {
         ];
         $record = [...$record, ...$timestamp];
         po($record);
-        // zoho::insert($record);
+        TestMongo::insert($record);
     }
     exit;
     $zohoResponse =  json_decode(Storage::get('ZohoResponse/zoho-response2.txt', true));
@@ -305,9 +314,16 @@ Route::get('export', function () {
 });
 
 Route::get('test', function () {
-    // po(Carbon::parse('2022-12-09')->toDateTimeString());
-    $date = Carbon::parse('2022-12-09')->toDateTimeString();
-    po($date);
+    $new_offer_lists = ['4', '3', '2', '3'];
+    $highest_amount = min($new_offer_lists);
+    po($highest_amount);
+    po($new_offer_lists);
+    $key = min(array_keys($new_offer_lists, min($new_offer_lists)));
+    po(($key));
+    // exit;
+
+
+
     exit;
     $date = Carbon::now()->addDays(105);
     $date1 = Carbon::now();

@@ -47,7 +47,7 @@ class SubmitRequestToZohoApi extends Command
 
         $payload = [
             "callback" => [
-                "url" => "https://catalog-manager-mosh.com/api/zoho/webhook",
+                "url" => "https://app.360ecom.io/api/zoho/webhook",
                 "method" => "post"
             ],
             "query" => [

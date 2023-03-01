@@ -42,4 +42,4 @@ Route::match($method, 'test/zoho/webhook', 'TestController@zohoWebhookResponse')
 
 Route::match($method, 'product', 'Catalog\CliqnshopCatalogController@CliqnshopProductSearchRequest');
 
-Route::match($method, 'zoho/webhook', 'ZohoCRMController@ZohoWebhook');
+Route::match($method, 'zoho/webhook', 'Zoho\ZohoCRMController@ZohoWebhook');
