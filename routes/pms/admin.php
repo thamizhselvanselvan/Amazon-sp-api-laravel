@@ -57,3 +57,4 @@ Route::get('admin/process-management', 'Admin\ProcessManagementController@index'
 Route::get('admin/creds/manage/{id}', 'Admin\AdminManagementController@credentialmanage')->name('creds.manage');
 Route::get('admin/creds/manage', 'Admin\AdminManagementController@credentialmanage')->name('creds.manage.id');
 Route::get('admin/creds/save', 'Admin\AdminManagementController@credentialprioritysave')->name('save.creds.priority');
+Route::get('admin/horizon/save', 'Admin\AdminManagementController@horizonprioritysave')->name('save.horizon.priority');

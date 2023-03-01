@@ -15,6 +15,7 @@
         padding: 2;
         padding-left: 5px;
     }
+
 </style>
 @stop
 
@@ -39,6 +40,14 @@
                 <button type="button" class="close" data-dismiss="alert">×</button>
                 <strong>{{ $message }}</strong>
             </div>
+            @endif
+            @if($message = Session::get('warning'))
+     
+                <div class="alert alert-warning alert-block">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <strong class="er_asin">{{ $message }}</strong>
+                </div>
+         
             @endif
         </div>
         <h2 class="mb-4">

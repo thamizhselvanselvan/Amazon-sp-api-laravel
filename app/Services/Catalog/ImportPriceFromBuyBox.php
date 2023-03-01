@@ -51,6 +51,8 @@ class ImportPriceFromBuyBox
             $BuyBoxRecords = DB::connection('buybox')
                 ->select("SELECT asin, available, 
                             is_sold_by_amazon,
+                            lowestprice_condition,
+                            buybox_condition,
                             is_any_our_seller_own_bb, 
                             next_highest_seller_price,
                             next_highest_seller_id,
@@ -59,6 +61,7 @@ class ImportPriceFromBuyBox
                             bb_winner_price,
                             bb_winner_id,
                             updated_at ,
+                            buybox_listingprice_amount,
                             buybox_landedprice_amount,
                             lowestprice_landedprice_amount,
                             lowestprice_listingprice_amount
@@ -130,7 +133,7 @@ class ImportPriceFromBuyBox
                 }
             }
             // Log::notice($catalogWeight);
-            $buybox_landed_price = '';
+            // $buybox_landed_price = '';
             $pricing_in = [];
             $pricing_us = [];
             $pricing_ae = [];
@@ -159,7 +162,9 @@ class ImportPriceFromBuyBox
 
                 // $isBuyBoxWinner = explode(',', $BBRecord->is_buybox_winner);
                 // $listingAmount = explode(',', $BBRecord->listingprice_amount);
-
+                $lowestprice_condition = $BBRecord->lowestprice_condition;
+                $buybox_condition = $BBRecord->buybox_condition;
+                $buybox_listingprice_amount = $BBRecord->buybox_listingprice_amount;
                 $buybox_landedprice_amount = $BBRecord->buybox_landedprice_amount;
                 $lowestprice_landedprice_amount = $BBRecord->lowestprice_landedprice_amount;
                 $lowestprice_listingprice_amount = $BBRecord->lowestprice_listingprice_amount;
@@ -169,165 +174,219 @@ class ImportPriceFromBuyBox
 
                 // foreach ($isBuyBoxWinner as $key1 => $BuyBoxWinner) {
                 $price = $country_code_lr . '_price';
-
+                $buybox_price = 0;
                 // if ($BuyBoxWinner == 1) {
+                if ($country_code_lr == 'us') {
 
-                $buybox_landed_price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : ($lowestprice_listingprice_amount != '' ? $lowestprice_listingprice_amount : 0));
-                if ($buybox_landed_price != 0) {
+                    if ($bb_winner_price != '') {
 
+                        $buybox_price = $bb_winner_price;
+                    } else {
 
-                    $asinDetails = [
-                        'asin'                      => $asin,
-                        'available'                 => $available,
-                        'is_sold_by_amazon'         => $is_sold_by_amazon,
-                        $price                      => $buybox_landed_price,
-                        'next_highest_seller_price' => $next_highest_seller_price,
-                        'next_highest_seller_id'    => $next_highest_seller_id,
-                        'next_lowest_seller_price'  => $next_lowest_seller_price,
-                        'next_lowest_seller_id'     => $next_lowest_seller_id,
-                        'bb_winner_price'           => $bb_winner_price,
-                        'bb_winner_id'              => $bb_winner_id,
-                        'is_any_our_seller_won_bb'  => $is_our_seller_bb_winner,
-                        'price_updated_at'          => $updated_at,
-                    ];
+                        if ($buybox_condition == 'new') {
+                            $buybox_price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($buybox_listingprice_amount != '' ? $buybox_listingprice_amount : 0);
+                        }
+                    }
+                } elseif ($country_code_lr == 'in') {
 
-                    // break 1;
-                    // } else {
-                    //     $BBlistingPrice = min($listingAmount);
+                    if ($buybox_condition == 'new') {
 
-                    //     $asinDetails = [
-                    //         'asin'                      => $asin,
-                    //         'available'                 => $available,
-                    //         'is_sold_by_amazon'         => $is_sold_by_amazon,
-                    //         $price                      => $BBlistingPrice,
-                    //         'next_highest_seller_price' => $next_highest_seller_price,
-                    //         'next_highest_seller_id'    => $next_highest_seller_id,
-                    //         'next_lowest_seller_price'  => $next_lowest_seller_price,
-                    //         'next_lowest_seller_id'     => $next_lowest_seller_id,
-                    //         'bb_winner_price'           => $bb_winner_price,
-                    //         'bb_winner_id'              => $bb_winner_id,
-                    //         'is_any_our_seller_won_bb'  => $is_our_seller_bb_winner,
-                    //         'price_updated_at'          => $updated_at,
-                    //     ];
-                    // }
-                    // }
-                    if ($country_code_lr == 'us') {
+                        $buybox_price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : ($lowestprice_listingprice_amount != '' ? $lowestprice_listingprice_amount : 0));
+                    } elseif ($buybox_condition != 'new' && $lowestprice_condition == 'new') {
+
+                        $buybox_price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : ($lowestprice_listingprice_amount != '' ? $lowestprice_listingprice_amount : 0));
+                    }
+                } elseif ($country_code_lr == 'ae') {
+
+                    if ($buybox_condition == 'new') {
+
+                        $buybox_price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : ($lowestprice_listingprice_amount != '' ? $lowestprice_listingprice_amount : 0));
+                    } elseif ($buybox_condition != 'new' && $lowestprice_condition == 'new') {
+
+                        $buybox_price = $buybox_landedprice_amount != '' ? $buybox_landedprice_amount : ($lowestprice_landedprice_amount != '' ? $lowestprice_landedprice_amount : ($lowestprice_listingprice_amount != '' ? $lowestprice_listingprice_amount : 0));
+                    }
+                }
+                // if ($buybox_price != 0) {
+
+                $asinDetails = [
+                    'asin'                      => $asin,
+                    'available'                 => $buybox_price != 0 ? $available : 0,
+                    'is_sold_by_amazon'         => $is_sold_by_amazon,
+                    $price                      => $buybox_price,
+                    'next_highest_seller_price' => $next_highest_seller_price,
+                    'next_highest_seller_id'    => $next_highest_seller_id,
+                    'next_lowest_seller_price'  => $next_lowest_seller_price,
+                    'next_lowest_seller_id'     => $next_lowest_seller_id,
+                    'bb_winner_price'           => $bb_winner_price,
+                    'bb_winner_id'              => $bb_winner_id,
+                    'is_any_our_seller_won_bb'  => $is_our_seller_bb_winner,
+                    'price_updated_at'          => $updated_at,
+                ];
+
+                // break 1;
+                // } else {
+                //     $BBlistingPrice = min($listingAmount);
+
+                //     $asinDetails = [
+                //         'asin'                      => $asin,
+                //         'available'                 => $available,
+                //         'is_sold_by_amazon'         => $is_sold_by_amazon,
+                //         $price                      => $BBlistingPrice,
+                //         'next_highest_seller_price' => $next_highest_seller_price,
+                //         'next_highest_seller_id'    => $next_highest_seller_id,
+                //         'next_lowest_seller_price'  => $next_lowest_seller_price,
+                //         'next_lowest_seller_id'     => $next_lowest_seller_id,
+                //         'bb_winner_price'           => $bb_winner_price,
+                //         'bb_winner_id'              => $bb_winner_id,
+                //         'is_any_our_seller_won_bb'  => $is_our_seller_bb_winner,
+                //         'price_updated_at'          => $updated_at,
+                //     ];
+                // }
+                // }
+                if ($country_code_lr == 'us') {
+                    if ($buybox_price != 0) {
+
                         $vol_packet_weight = $volumetricPounds > $packet_weight ? $volumetricPounds : $packet_weight;
-                        $price_in_b2c = $price_convert->USAToINDB2C($vol_packet_weight, $buybox_landed_price);
-                        $price_in_b2b = $price_convert->USAToINDB2B($vol_packet_weight, $buybox_landed_price);
-                        $price_ae = $price_convert->USATOUAE($vol_packet_weight, $buybox_landed_price);
-                        $price_sg =  $price_convert->USATOSG($vol_packet_weight, $buybox_landed_price);
-
+                        $price_in_b2c = $price_convert->USAToINDB2C($vol_packet_weight, $buybox_price);
+                        $price_in_b2b = $price_convert->USAToINDB2B($vol_packet_weight, $buybox_price);
+                        $price_ae = $price_convert->USATOUAE($vol_packet_weight, $buybox_price);
+                        $price_sg =  $price_convert->USATOSG($vol_packet_weight, $buybox_price);
 
                         $price_us_source = [
-                            'usa_to_in_b2c' => $price_in_b2c,
-                            'usa_to_in_b2b' => $price_in_b2b,
-                            'usa_to_uae' => $price_ae,
-                            'usa_to_sg' => $price_sg,
-                            'weight' => $packet_weight,
-                            'volumetric_weight_pounds' => $volumetricPounds,
-                            'volumetric_weight_kg' => $volumetricKg
+                            'usa_to_in_b2c' => $price_in_b2c ?? 0,
+                            'usa_to_in_b2b' => $price_in_b2b ?? 0,
+                            'usa_to_uae' => $price_ae ?? 0,
+                            'usa_to_sg' => $price_sg ?? 0,
+                            'weight' => $packet_weight ?? 0,
+                            'volumetric_weight_pounds' => $volumetricPounds ?? 0,
+                            'volumetric_weight_kg' => $volumetricKg ?? 0
                         ];
+                    } else {
+                        $price_us_source = [
+                            'usa_to_in_b2c' =>  0,
+                            'usa_to_in_b2b' =>  0,
+                            'usa_to_uae' =>  0,
+                            'usa_to_sg' =>  0,
+                            'weight' =>  0,
+                            'volumetric_weight_pounds' =>  0,
+                            'volumetric_weight_kg' =>  0
+                        ];
+                    }
 
-                        $pricing_us[] = [...$asinDetails, ...$price_us_source];
-                        if ($count1 == 1000) {
-                            PricingUs::upsert($pricing_us, ['unique_asin'],  [
-                                'asin',
-                                'available',
-                                'is_sold_by_amazon',
-                                'weight',
-                                'volumetric_weight_pounds',
-                                'volumetric_weight_kg',
-                                'us_price',
-                                'usa_to_in_b2b',
-                                'usa_to_in_b2c',
-                                'usa_to_uae',
-                                'usa_to_sg',
-                                'next_highest_seller_price',
-                                'next_highest_seller_id',
-                                'next_lowest_seller_price',
-                                'next_lowest_seller_id',
-                                'bb_winner_price',
-                                'bb_winner_id',
-                                'is_any_our_seller_won_bb',
-                                'price_updated_at'
-                            ]);
-                            $count1 = 0;
-                            $pricing_us = [];
-                        }
-                    } elseif ($country_code_lr == 'in') {
+
+
+                    $pricing_us[] = [...$asinDetails, ...$price_us_source];
+                    if ($count1 == 1000) {
+                        // Log::warning($country_code_lr . '=>' . count($pricing_us));
+                        PricingUs::upsert($pricing_us, ['unique_asin'],  [
+                            'asin',
+                            'available',
+                            'is_sold_by_amazon',
+                            'weight',
+                            'volumetric_weight_pounds',
+                            'volumetric_weight_kg',
+                            'us_price',
+                            'usa_to_in_b2b',
+                            'usa_to_in_b2c',
+                            'usa_to_uae',
+                            'usa_to_sg',
+                            'next_highest_seller_price',
+                            'next_highest_seller_id',
+                            'next_lowest_seller_price',
+                            'next_lowest_seller_id',
+                            'bb_winner_price',
+                            'bb_winner_id',
+                            'is_any_our_seller_won_bb',
+                            'price_updated_at'
+                        ]);
+                        $count1 = 0;
+                        $pricing_us = [];
+                    }
+                } elseif ($country_code_lr == 'in') {
+                    if ($buybox_price != 0) {
 
                         $packet_weight_kg = poundToKg($packet_weight);
                         $vol_packet_weight_kg = $volumetricKg > $packet_weight_kg ? $volumetricKg : $packet_weight_kg;
-                        $price_saudi = $price_convert->INDToSA($vol_packet_weight_kg, $buybox_landed_price);
-                        $price_singapore = $price_convert->INDToSG($vol_packet_weight_kg, $buybox_landed_price);
-                        $price_uae = $price_convert->INDToUAE($vol_packet_weight_kg, $buybox_landed_price);
+                        $price_saudi = $price_convert->INDToSA($vol_packet_weight_kg, $buybox_price);
+                        $price_singapore = $price_convert->INDToSG($vol_packet_weight_kg, $buybox_price);
+                        $price_uae = $price_convert->INDToUAE($vol_packet_weight_kg, $buybox_price);
 
                         $destination_price = [
-                            'ind_to_uae' => $price_uae,
-                            'ind_to_sg' => $price_singapore,
-                            'ind_to_sa' => $price_saudi,
-                            'weight' => $packet_weight_kg,
-                            'volumetric_weight_pounds' => $volumetricPounds,
-                            'volumetric_weight_kg' => $volumetricKg
+                            'ind_to_uae' => $price_uae ?? 0,
+                            'ind_to_sg' => $price_singapore ?? 0,
+                            'ind_to_sa' => $price_saudi ?? 0,
+                            'weight' => $packet_weight_kg ?? 0,
+                            'volumetric_weight_pounds' => $volumetricPounds ?? 0,
+                            'volumetric_weight_kg' => $volumetricKg ?? 0
                         ];
-                        $pricing_in[] = [...$asinDetails, ...$destination_price];
-                        if ($count1 == 1000) {
-                            PricingIn::upsert($pricing_in, ['asin_unique'], [
-                                'asin',
-                                'available',
-                                'is_sold_by_amazon',
-                                'in_price',
-                                'weight',
-                                'volumetric_weight_pounds',
-                                'volumetric_weight_kg',
-                                'ind_to_uae',
-                                'ind_to_sg',
-                                'ind_to_sa',
-                                'next_highest_seller_price',
-                                'next_highest_seller_id',
-                                'next_lowest_seller_price',
-                                'next_lowest_seller_id',
-                                'bb_winner_price',
-                                'bb_winner_id',
-                                'is_any_our_seller_won_bb',
-                                'price_updated_at'
-                            ]);
-                            $count1 = 0;
-                            $pricing_in = [];
-                        }
-                    } else if ($country_code_lr == 'ae') {
-
-                        $destination_weight = ['weight' => $packet_weight];
-                        $pricing_ae[] = [...$asinDetails, ...$destination_weight];
-                        if ($count1 == 1000) {
-
-                            PricingAe::upsert($pricing_ae, ['unique_asin'],  [
-                                'asin',
-                                'available',
-                                'is_sold_by_amazon',
-                                'weight',
-                                'volumetric_weight_pounds',
-                                'volumetric_weight_kg',
-                                'ae_price',
-                                'next_highest_seller_price',
-                                'next_highest_seller_id',
-                                'next_lowest_seller_price',
-                                'next_lowest_seller_id',
-                                'bb_winner_price',
-                                'bb_winner_id',
-                                'is_any_our_seller_won_bb',
-                                'price_updated_at'
-                            ]);
-                            $count1 = 0;
-                            $pricing_ae = [];
-                        }
+                    } else {
+                        $destination_price = [
+                            'ind_to_uae' =>  0,
+                            'ind_to_sg' =>  0,
+                            'ind_to_sa' =>  0,
+                            'weight' =>  0,
+                            'volumetric_weight_pounds' =>  0,
+                            'volumetric_weight_kg' =>  0
+                        ];
                     }
-                    $count1++;
+
+                    $pricing_in[] = [...$asinDetails, ...$destination_price];
+                    if ($count1 == 1000) {
+                        PricingIn::upsert($pricing_in, ['asin_unique'], [
+                            'asin',
+                            'available',
+                            'is_sold_by_amazon',
+                            'in_price',
+                            'weight',
+                            'volumetric_weight_pounds',
+                            'volumetric_weight_kg',
+                            'ind_to_uae',
+                            'ind_to_sg',
+                            'ind_to_sa',
+                            'next_highest_seller_price',
+                            'next_highest_seller_id',
+                            'next_lowest_seller_price',
+                            'next_lowest_seller_id',
+                            'bb_winner_price',
+                            'bb_winner_id',
+                            'is_any_our_seller_won_bb',
+                            'price_updated_at'
+                        ]);
+                        $count1 = 0;
+                        $pricing_in = [];
+                    }
+                } else if ($country_code_lr == 'ae') {
+
+                    $destination_weight = ['weight' => $packet_weight];
+                    $pricing_ae[] = [...$asinDetails, ...$destination_weight];
+                    if ($count1 == 1000) {
+
+                        PricingAe::upsert($pricing_ae, ['unique_asin'],  [
+                            'asin',
+                            'available',
+                            'is_sold_by_amazon',
+                            'weight',
+                            'volumetric_weight_pounds',
+                            'volumetric_weight_kg',
+                            'ae_price',
+                            'next_highest_seller_price',
+                            'next_highest_seller_id',
+                            'next_lowest_seller_price',
+                            'next_lowest_seller_id',
+                            'bb_winner_price',
+                            'bb_winner_id',
+                            'is_any_our_seller_won_bb',
+                            'price_updated_at'
+                        ]);
+                        $count1 = 0;
+                        $pricing_ae = [];
+                    }
                 }
+                $count1++;
+                // }
             }
             if ($country_code_lr == 'us') {
-
+                // Log::warning($country_code_lr . '=>' . count($pricing_us));
                 PricingUs::upsert($pricing_us, 'unique_asin',  [
                     'asin',
                     'available',

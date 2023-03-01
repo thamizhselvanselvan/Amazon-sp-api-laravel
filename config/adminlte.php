@@ -1012,12 +1012,12 @@ return [
                             'can' => ['Admin'],
                             'icon' => 'fa fa-list',
                         ],
-                        // [
-                        //     'text' => 'Availability',
-                        //     'url' => 'stores/listing/availability',
-                        //     'can' => ['Admin'],
-                        //     'icon' => 'fa fa-list'
-                        // ],
+                        [
+                            'text' => 'Availability',
+                            'url' => 'stores/listing/availability',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-list'
+                        ],
                         [
                             'text' => 'Price Updated',
                             'url' => 'stores/price/updated',
@@ -1201,10 +1201,16 @@ return [
                     ],
                 ],
                 [
-                    'text' => 'Footer Section',
+                    'text' => 'Site Information',
                     'url' => 'cliqnshop/footercontent',
                     'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fas fa-chalkboard',
+                ],
+                [
+                    'text' => 'Static-Pages-Content',
+                    'url' => 'cliqnshop/staticpagecontent',
+                    'can' => ['Admin', 'Cliqnshop'],
+                    'icon' => 'fas fa-file-word-o',
                 ],
             ],
         ],
