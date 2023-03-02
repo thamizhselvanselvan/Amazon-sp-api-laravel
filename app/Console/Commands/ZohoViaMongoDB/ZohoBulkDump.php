@@ -54,6 +54,8 @@ class ZohoBulkDump extends Command
         $status = $this->argument('zoho_state');
         $page = $this->argument('page');
         $more_records = $this->argument('more_records');
+
+
         Log::debug('zoho_id =>' . $zoho_id);
         Log::debug('status =>' . $status);
         Log::debug('page =>' . $page);
@@ -144,14 +146,23 @@ class ZohoBulkDump extends Command
         $csv_data =  Reader::createFromPath(Storage::path($csv_path), 'r');
         $csv_data->setDelimiter(',');
         $csv_data->setHeaderOffset(0);
+
+        $records = [];
+        $count = 0;
         foreach ($csv_data as $data) {
             $timestamp = [
                 'created_at' => Carbon::now()->toDateTimeString(),
                 'updated_at' => Carbon::now()->toDateTimeString()
             ];
-            $records = [...$data, ...$timestamp];
-            // zoho::insert($records);
+            $records[] = [...$data, ...$timestamp];
+            if ($count == 1000) {
+                zoho::insert($records);
+                $count = 0;
+                $records = [];
+            }
+            $count++;
         }
+        zoho::insert($records);
         Log::debug($records);
     }
 
