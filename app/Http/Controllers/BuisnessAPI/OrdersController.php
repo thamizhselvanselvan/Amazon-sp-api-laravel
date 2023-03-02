@@ -126,7 +126,7 @@ class OrdersController extends Controller
     public function orderpending(Request $request)
     {
         $data = DB::connection('cliqnshop')->table('mshop_order')
-            ->where('mshop_order.statuspayment', '5,6')
+            ->whereIn('mshop_order.statuspayment', [5,6])
 
             ->join('mshop_order_base_product as oid', function ($query) {
                 $query->on('oid.baseid', '=', 'mshop_order.baseid')

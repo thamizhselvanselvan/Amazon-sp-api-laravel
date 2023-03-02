@@ -98,7 +98,7 @@
                 @if(isset($val->tags))
                 <td>{{$val->tags->name}}</td>
                 @else
-                <td>Not Selected</td>
+                <td>NA</td>
                 @endif
 
                 <td>{{$val['quantity']}}</td>
