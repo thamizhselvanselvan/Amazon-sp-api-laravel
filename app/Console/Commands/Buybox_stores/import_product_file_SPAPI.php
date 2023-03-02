@@ -51,20 +51,14 @@ class import_product_file_SPAPI extends Command
      */
     public function handle()
     {
-        // $stores_id  = [6, 7, 8, 9, 10, 11, 12, 20, 27, 44];
 
         $stores_id =  OrderSellerCredentials::query()->select('seller_id', 'country_code')->where('buybox_stores', 1)->get();
-
-        $stores_id = [1];
 
         foreach ($stores_id as $data) {
 
             try {
 
-                //$seller_id = $data['seller_id'];
-                $seller_id = 6;
-
-                Log::alert('store' .  ' ' . $seller_id);
+                $seller_id = $data['seller_id'];
 
                 $aws = Aws_credential::with(['mws_region'])->where('seller_id', $seller_id)->where('api_type', 1)->first();
 
@@ -91,7 +85,7 @@ class import_product_file_SPAPI extends Command
 
                         Storage::put('/aws-products/aws-store-files/products_' . $seller_id . '.txt', $httpResponse);
                     }
-                    exit;
+                    
                     $this->insertdb($seller_id, $country_code);
                 }
             } catch (Exception $e) {
