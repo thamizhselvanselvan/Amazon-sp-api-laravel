@@ -186,7 +186,7 @@ class OrdersController extends Controller
 
         $ApiCall = new ProductsRequest();
         $data = $ApiCall->getASINpr($asin);
-        
+
         $offers_data = $data->includedDataTypes->OFFERS;
         $rasin = $data->asin;
         $ritem_name = $data->title;
@@ -335,10 +335,13 @@ class OrdersController extends Controller
                 'responce_code'
             ]);
 
-            $data = DB::connection('cliqnshop')->table('mshop_order_base_product')->where('prodcode', $asin)->update([
-                'sent_xml' => $xml,
-                'status' => '1',
-            ]);
+            $data =   DB::connection('cliqnshop')->table('mshop_order_base_product')
+                ->where('mp.asin', $asin)
+                ->join('mshop_product as mp', 'mshop_order_base_product.prodcode', '=', 'mp.code')
+                ->update([
+                'mshop_order_base_product.sent_xml' => $xml,
+                'mshop_order_base_product.status' => '1',
+                ]);
             return $data;
         }
     }
