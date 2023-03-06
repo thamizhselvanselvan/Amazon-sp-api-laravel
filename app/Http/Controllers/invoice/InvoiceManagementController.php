@@ -405,6 +405,8 @@ class InvoiceManagementController extends Controller
             ->select(
                 "SELECT 
              invoice_no,
+             bill_to_add,
+             ship_to_add,
             GROUP_CONCAT(DISTINCT invoice_date) as invoice_date,
             GROUP_CONCAT(DISTINCT mode) as mode,
             GROUP_CONCAT(DISTINCT channel) as channel,
@@ -414,9 +416,7 @@ class InvoiceManagementController extends Controller
             GROUP_CONCAT(DISTINCT store_name) as store_name,
             GROUP_CONCAT(DISTINCT store_add) as store_add,
             GROUP_CONCAT(DISTINCT bill_to_name) as bill_to_name,
-            GROUP_CONCAT(DISTINCT bill_to_add) as bill_to_add,
             GROUP_CONCAT(DISTINCT ship_to_name) as ship_to_name,
-            GROUP_CONCAT(DISTINCT ship_to_add) as ship_to_add,
             GROUP_CONCAT(sku SEPARATOR '-invoice-') as sku,
             GROUP_CONCAT(item_description SEPARATOR '-invoice-') as item_description,
             GROUP_CONCAT(hsn_code SEPARATOR '-invoice-') as hsn_code,
@@ -433,9 +433,10 @@ class InvoiceManagementController extends Controller
             GROUP_CONCAT(charged_weight SEPARATOR '-invoice-') as charged_weight,
             GROUP_CONCAT(client_code SEPARATOR '-invoice-') as clientcode
              from ${prefix}invoices where invoice_no IN ($invoice_no)
-             group by invoice_no"
+             group by invoice_no,bill_to_add,ship_to_add "
             );
-
+        // GROUP_CONCAT(DISTINCT bill_to_add) as bill_to_add,
+        // GROUP_CONCAT(DISTINCT ship_to_add) as ship_to_add,
         $item_details = [
             'item_description' => NULL,
             'hsn_code' => NULL,
