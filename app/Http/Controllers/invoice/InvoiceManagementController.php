@@ -433,7 +433,7 @@ class InvoiceManagementController extends Controller
             GROUP_CONCAT(charged_weight SEPARATOR '-invoice-') as charged_weight,
             GROUP_CONCAT(client_code SEPARATOR '-invoice-') as clientcode
              from ${prefix}invoices where invoice_no IN ($invoice_no)
-             group by invoice_no, "
+             group by invoice_no"
             );
 
         $item_details = [
