@@ -147,23 +147,14 @@ class ZohoBulkDump extends Command
         $csv_data->setDelimiter(',');
         $csv_data->setHeaderOffset(0);
 
-        $records = [];
-        $count = 0;
         foreach ($csv_data as $data) {
-            $timestamp = [
-                'created_at' => Carbon::now()->toDateTimeString(),
-                'updated_at' => Carbon::now()->toDateTimeString()
+            $unique_field = [
+                'ASIN' => $data['ASIN'],
+                'Alternate_Order_No' => $data['Alternate_Order_No']
             ];
-            $records[] = [...$data, ...$timestamp];
-            if ($count == 1000) {
-                zoho::insert($records);
-                $count = 0;
-                $records = [];
-            }
-            $count++;
+            zoho::where('Alternate_Order_No_1_ASIN_1', $unique_field)->update($data, ['upsert' => true]);
         }
-        zoho::insert($records);
-        Log::debug($records);
+        Log::debug($data);
     }
 
     public function ExtractZipFile($path)
