@@ -102,23 +102,23 @@ class ExportPriceViaVolumetricWeight
 
 
             if ($this->countryCode == 'US') {
-                // $start_time = startTime();
+                $start_time = startTime();
 
-                $pricing_details = PricingUs::join("catalognewuss", "catalognewuss.asin", "pricing_uss.asin")
-                    ->select(["catalognewuss.dimensions", "pricing_uss.asin", "pricing_uss.available", "pricing_uss.us_price", "pricing_uss.updated_at"])
+                $pricing_details = PricingUs::join("cataloguss", "cataloguss.asin", "pricing_uss.asin")
+                    ->select(["cataloguss.length", "cataloguss.width", "cataloguss.height", "cataloguss.weight", "pricing_uss.asin", "pricing_uss.available", "pricing_uss.us_price", "pricing_uss.updated_at"])
                     ->whereIn('pricing_uss.asin', $where_asin)
                     ->get()
                     ->toArray();
 
-                // Log::debug("query" . endTime($start_time));
+                Log::debug("query" . endTime($start_time));
 
-                // $start_time = startTime();
+                $start_time = startTime();
                 $this->dataFormatting($pricing_details, $this->countryCode, $headers_us);
-                // Log::debug('data-formatting' . endTime($start_time));
+                Log::debug('data-formatting' . endTime($start_time));
             } elseif ($this->countryCode == 'IN') {
 
-                $pricing_details = PricingIn::join("catalognewins", "catalognewins.asin", "pricing_ins.asin")
-                    ->select(["catalognewins.dimensions", "pricing_ins.asin", "pricing_ins.available", "pricing_ins.in_price", "pricing_ins.updated_at"])
+                $pricing_details = PricingIn::join("catalogins", "catalogins.asin", "pricing_ins.asin")
+                    ->select(["catalogins.length", "catalogins.width", "catalogins.height", "catalogins.weight", "pricing_ins.asin", "pricing_ins.available", "pricing_ins.in_price", "pricing_ins.updated_at"])
                     ->whereIn('pricing_ins.asin', $where_asin)
                     ->get()
                     ->toArray();
@@ -150,79 +150,84 @@ class ExportPriceViaVolumetricWeight
             $length = 0;
             $width = 0;
             $packet_dimensions = 0;
-            $dimension = (array) json_decode($catalog_detail['dimensions'], true);
+            // $dimension = (array) json_decode($catalog_detail['dimensions'], true);
 
             try {
 
-                if (array_key_exists('package', $dimension[0]) && gettype($dimension[0]) == 'array') {
-                    if (isset($dimension[0]['package']['weight']['value']) || isset($dimension[0]['package']['height']['value']) || isset($dimension[0]['package']['length']['value']) || isset($dimension[0]['package']['width']['value'])) {
+                // if (array_key_exists('package', $dimension[0]) && gettype($dimension[0]) == 'array') {
+                //     if (isset($dimension[0]['package']['weight']['value']) || isset($dimension[0]['package']['height']['value']) || isset($dimension[0]['package']['length']['value']) || isset($dimension[0]['package']['width']['value'])) {
 
-                        $weight = $dimension[0]['package']['weight']['value'] ?? 0;
-                        $length = $dimension[0]['package']['length']['value'] ?? 0;
-                        $width = $dimension[0]['package']['width']['value'] ?? 0;
-                        $height = $dimension[0]['package']['height']['value'] ?? 0;
+                // $weight = $dimension[0]['package']['weight']['value'] ?? 0;
+                // $length = $dimension[0]['package']['length']['value'] ?? 0;
+                // $width = $dimension[0]['package']['width']['value'] ?? 0;
+                // $height = $dimension[0]['package']['height']['value'] ?? 0;
 
-                        $asin_data[$key]['ASIN'] = $catalog_detail['asin'];
-                        $packet_dimensions = $height * $length * $width;
+                $weight = $catalog_detail['weight'];
+                $length = $catalog_detail['length'];
+                $width  = $catalog_detail['width'];
+                $height = $catalog_detail['height'];
 
-                        if ($countryCode == 'IN') {
-                            if (isset($catalog_detail['in_price']) && gettype($catalog_detail) == "array") {
+                $asin_data[$key]['ASIN'] = $catalog_detail['asin'];
+                $packet_dimensions = $height * $length * $width;
 
-                                $poundToKg = poundToKg($weight);
-                                $volKg = VolumetricIntoKG($packet_dimensions);
-                                $actual_weight_kg = $poundToKg > $volKg ? $poundToKg : $volKg;
+                if ($countryCode == 'IN') {
+                    if (isset($catalog_detail['in_price']) && gettype($catalog_detail) == "array") {
+
+                        $poundToKg = poundToKg($weight);
+                        $volKg = VolumetricIntoKG($packet_dimensions);
+                        $actual_weight_kg = $poundToKg > $volKg ? $poundToKg : $volKg;
 
 
-                                $in_price = $catalog_detail['in_price'] ?? 0;
-                                $asin_data[$key]['AVAILABLE'] = $in_price != 0 ? $catalog_detail['available'] : 0;
-                                $asin_data[$key]['LENGHT_CM'] = $length * 2.54;         //inch to cm
-                                $asin_data[$key]['WIDTH_CM']  = $width * 2.54;          //inch to cm
-                                $asin_data[$key]['HEIGHT_CM'] = $height * 2.54;         //inch to cm
-                                $asin_data[$key]['WEIGHT_KG'] = $poundToKg;
-                                $asin_data[$key]['VOL_KG']    = $volKg;
-                                $asin_data[$key]['ACTUAL_WEIGHT_KG'] = $actual_weight_kg;
-                                $asin_data[$key]['IN_PRICE'] = $in_price;
+                        $in_price = $catalog_detail['in_price'] ?? 0;
+                        $asin_data[$key]['AVAILABLE'] = $in_price != 0 ? $catalog_detail['available'] : 0;
+                        $asin_data[$key]['LENGHT_CM'] = $length * 2.54;         //inch to cm
+                        $asin_data[$key]['WIDTH_CM']  = $width * 2.54;          //inch to cm
+                        $asin_data[$key]['HEIGHT_CM'] = $height * 2.54;         //inch to cm
+                        $asin_data[$key]['WEIGHT_KG'] = $poundToKg;
+                        $asin_data[$key]['VOL_KG']    = $volKg;
+                        $asin_data[$key]['ACTUAL_WEIGHT_KG'] = $actual_weight_kg;
+                        $asin_data[$key]['IN_PRICE'] = $in_price;
 
-                                $convertedPrice = $this->priceConversion($actual_weight_kg, $in_price, $countryCode);
-                                foreach ($convertedPrice as $key2 => $price) {
-                                    $asin_data[$key][$key2] = $price;
-                                }
-                                $asin_data[$key]['UPDATED_AT'] = date("Y-m-d H:i:s", strtotime($catalog_detail['updated_at']));
-                            }
-                        } elseif ($countryCode == 'US') {
-
-                            if (isset($catalog_detail['us_price']) && gettype($catalog_detail) == "array") {
-
-                                $volPound = VolumetricIntoPounds($packet_dimensions);
-                                $actual_weight_pound = $weight > $volPound ? $weight : $volPound;
-
-                                $us_price = $catalog_detail['us_price'] ?? 0;
-                                $asin_data[$key]['AVAILABLE'] = $us_price != 0 ? $catalog_detail['available'] : 0;
-                                $asin_data[$key]['LENGTH_INCH'] = $length;
-                                $asin_data[$key]['WIDTH_INCH'] = $width;
-                                $asin_data[$key]['HEIGHT_INCH'] = $height;
-                                $asin_data[$key]['WEIGHT_POUND'] = $weight;
-                                $asin_data[$key]['VOL_POUND'] = $volPound;
-                                $asin_data[$key]['ACTUAL_VOL_POUND'] = $actual_weight_pound;
-                                $asin_data[$key]['US_PRICE'] = $us_price;
-
-                                // $start_time = startTime();
-                                $packetPrice = $this->priceConversion($actual_weight_pound, $us_price, $countryCode);
-                                // Log::debug('price-conversion' . endTime($start_time));
-                                foreach ($packetPrice as $key2 => $price) {
-                                    $asin_data[$key][$key2] = $price;
-                                }
-                                $asin_data[$key]['UPDATED_AT'] = date("Y-m-d H:i:s", strtotime($catalog_detail['updated_at']));
-                            }
+                        $convertedPrice = $this->priceConversion($actual_weight_kg, $in_price, $countryCode);
+                        foreach ($convertedPrice as $key2 => $price) {
+                            $asin_data[$key][$key2] = $price;
                         }
+                        $asin_data[$key]['UPDATED_AT'] = date("Y-m-d H:i:s", strtotime($catalog_detail['updated_at']));
+                    }
+                } elseif ($countryCode == 'US') {
+
+                    if (isset($catalog_detail['us_price']) && gettype($catalog_detail) == "array") {
+
+                        $volPound = VolumetricIntoPounds($packet_dimensions);
+                        $actual_weight_pound = $weight > $volPound ? $weight : $volPound;
+
+                        $us_price = $catalog_detail['us_price'] ?? 0;
+                        $asin_data[$key]['AVAILABLE'] = $us_price != 0 ? $catalog_detail['available'] : 0;
+                        $asin_data[$key]['LENGTH_INCH'] = $length;
+                        $asin_data[$key]['WIDTH_INCH'] = $width;
+                        $asin_data[$key]['HEIGHT_INCH'] = $height;
+                        $asin_data[$key]['WEIGHT_POUND'] = $weight;
+                        $asin_data[$key]['VOL_POUND'] = $volPound;
+                        $asin_data[$key]['ACTUAL_VOL_POUND'] = $actual_weight_pound;
+                        $asin_data[$key]['US_PRICE'] = $us_price;
+
+                        $start_time = startTime();
+                        $packetPrice = $this->priceConversion($actual_weight_pound, $us_price, $countryCode);
+                        Log::debug('price-conversion' . endTime($start_time));
+                        foreach ($packetPrice as $key2 => $price) {
+                            $asin_data[$key][$key2] = $price;
+                        }
+                        $asin_data[$key]['UPDATED_AT'] = date("Y-m-d H:i:s", strtotime($catalog_detail['updated_at']));
                     }
                 }
+                //     }
+                // }
             } catch (Exception $e) {
             }
         }
-        // $start_time = startTime();
+        $start_time = startTime();
         $this->createCsv($headers, $asin_data);
-        // Log::debug('csv-import' . endTime($start_time));
+        Log::debug('csv-import' . endTime($start_time));
         $asin_data = [];
         return true;
     }
