@@ -69,213 +69,49 @@ Route::get('zoho/dump2', function () {
 
 Route::get('zoho/dump3', function () {
 
-    $timestamp = [
-        'created_at' => Carbon::now()->toDateTimeString(),
-        'updated_at' => Carbon::now()->toDateTimeString()
-    ];
+    // $timestamp = [
+    //     'first_name' => 'vikesh1',
+    //     'last_name' => 'kumar1'
+    // ];
 
-    po($timestamp);
-    TestMongo::insert($timestamp);
-    exit;
-
-    $data = CSV_Reader('zohocsv/1929333000107432808.csv');
-    // $data = Reader::createFromPath(Storage::path('zohocsv/1929333000107432808.csv'), 'r');
-    // $data->setDelimiter(',');
-    // $data->setHeaderOffset(0);
-    // $headers = $data->fetchOne();
-    // po($headers);
+    // $records = TestMongo::get()->toArray();
+    // po($records);
     // exit;
 
-    $column1 = [
-        'owner',
-        'company',
-        'first_name',
-        'last_name',
-        'designation',
-        'email',
-        'phone',
-        'fax',
-        'mobile',
-        'website',
-        'lead_source',
-        'lead_status',
-        'industry',
-        'no_of_employees',
-        'annual_revenue',
-        'rating',
-        'campaign_source',
-        'created_by',
-        'modified_by',
-        'created_time',
-        'modified_time',
-        'full_name',
-        'street',
-        'city',
-        'state',
-        'zip_code',
-        'country',
-        'description',
-        'skype_id',
-        'email_opt_out',
-        'salutation',
-        'secondary_email',
-        'currency',
-        'exchange_rate',
-        'last_activity_time',
-        'twitter',
-        'layout',
-        'order_number',
-        'follow_up_status',
-        'address',
-        'product_code',
-        'us_shipper',
-        'product_cost',
-        'quantity',
-        'weight_in_lbs',
-        'procurement_url',
-        'nature',
-        'product_category',
-        'product_link',
-        'asin',
-        'sku',
-        'purchased_by',
-        'procurement_weight',
-        'us_tracking_number',
-        // 'bombino_shipping_weight_lbs',
-        'india_shipping_weight_gr',
-        'us_shipping_date',
-        'purchase_date',
-        'service_charges',
-        'seller_commission',
-        'payment_reference_number',
-        'local_shipping',
-        'payment_date',
-        'paid_by',
-        'amount_paid_by_customer',
-        'vat',
-        'refund',
-        // 'refund_date',
-        'adjustment_against_order',
-        // 'refund_amount',
-        'alternate_order_no',
-        'order_creation_date',
-        'delivered_to_customer',
-        'us_edd',
-        'bombino_shipment_id',
-        'bombino_shipping_date',
-        'purchase_reference_number',
-        'seller_name',
-        'card_used',
-        'procured_from',
-        'us_courier_name',
-        'india_courier_name',
-        'inventory_allocation_id',
-        'india_tracking_number',
-        'india_shipping_date',
-        'width',
-        'shipping_weight_in_grms',
-        'bredth',
-        'length',
-        'us_edd1',
-        'reverse_pickup_token_id',
-        'marketplace_s_tax',
-        'sabs_invoice_id',
-        'gift_card_in',
-        'cc_in',
-        'formula_2',
-        'exchange',
-        'product_cost_inr',
-        'international_shipping_inr',
-        'duty_taxes_inr'
-    ];
-    $columns2 = [
-        'owner',
-        'alternate_order_no',
-        'fulfilment_channel',
-        'payment_reference_number1',
-        'item_type',
-        'score',
-        'positive_score',
-        'negative_score',
-        'positive_touch_point_score',
-        'touch_point_score',
-        'negative_touch_point_score',
-        'h_code',
-        'tag',
-        'refunded_by_us_seller',
-        'record_image',
-        'gstn',
-        'customer_type1',
-        'last_action',
-        'last_sent_time',
-        'last_action_time',
-        'user_modified_time',
-        'system_related_activity_time',
-        'user_related_activity_time',
-        'system_modified_time',
-        'commission_on_can_ref',
-        'refund_reference_number',
-        'cc_charge_date',
-        'cc_reference_number',
-        'converted_date_time',
-        'record_approval_status',
-        'is_record_duplicate',
-        'rto_rma_date',
-        'first_visited_time',
-        'visitor_score',
-        'referrer',
-        'average_time_spent_minutes',
-        'last_visited_time',
-        'first_visited_url',
-        'number_of_chats',
-        'days_visited',
-        'lead_conversion_time',
-        'international_shipment_id',
-        'inventory_followup_status',
-        'inventory_status',
-        'us_seller_refund_date',
-        'unsubscribed_mode',
-        'unsubscribed_time',
-        'converted_account',
-        'converted_contact',
-        'converted_deal',
-        'territories',
-        't_claim_amount',
-        't_claim_status',
-        't_claim_follow_up_status',
-        't_claim_date',
-        'step_down_inverter',
-        'step_down_inventory_id',
-        'international_courier_name',
-        'india_courier_name1',
-        'india_shipping_date1',
-        'india_tracking_number1',
-        'tcs_amount',
-        'change_log_time_s',
-        'mp_remitted_amount',
-        'gst',
-        'converted_s',
-        'converted',
-        'us_refund_source',
-        'locked_s',
-        'last_enriched_time_s',
-        'enrich_status_s'
-    ];
-    $ignore = [' ', '__', '_id'];
-    //$zoho1 = R::dispense('zoho1');
-    //  $zoho2 = R::dispense('zoho2');
+    $data = CSV_Reader('zohocsv/1929333000107582112.csv');
+    $count = 0;
+    $result = [];
+    $asin = [];
+    $order_no = [];
 
-
-    //DB::connection('mongodb')->table('zoho')->insertOne(['name' => 'vikesh']);
     foreach ($data as  $record) {
-        $timestamp = [
-            'created_at' => Carbon::now()->toDateTimeString(),
-            'updated_at' => Carbon::now()->toDateTimeString()
+
+        $result[] = $record;
+        $asin[] = $record['ASIN'];
+        $order_no[] = $record['Alternate_Order_No'];
+        $unique[] = [
+            'ASIN' => $record['ASIN'],
+            'Alternate_Order_No' => $record['Alternate_Order_No']
         ];
-        $record = [...$record, ...$timestamp];
-        po($record);
-        TestMongo::insert($record);
+        // TestMongo::where('ASIN', $record['ASIN'])->where('Alternate_Order_No', $record['Alternate_Order_No'])->update($record, ['upsert' => true]);
+        // po($asin);
+        // DB::connection('mongodb')->collection('zoho')->updateMany('ASIN', ['$in' => $record['ASIN']], ['$set', $record], ['upsert' => true]);
+        TestMongo::where('Alternate_Order_No_1_ASIN_1', $unique)->update($record, ['upsert' => true]);
+        po($result);
+        // if ($count == 10) {
+
+        //     // TestMongo::insert($result);
+        //     // TestMongo::where('ASIN', $asin)->where('Alternate_Order_No', $order_no)->update($result, ['upsert' => true]);
+        //     $count = 0;
+        //     $result = [];
+        //     // exit;
+        // }
+        // $count++;
     }
+    // TestMongo::insert($result);
+    // TestMongo::whereIn('ASIN', $asin)->whereIn('Alternate_Order_No', $order_no)->update($result, ['upsert' => true]);
+    // po($asin);
+    po($order_no);
     exit;
     $zohoResponse =  json_decode(Storage::get('ZohoResponse/zoho-response2.txt', true));
     po($zohoResponse);
