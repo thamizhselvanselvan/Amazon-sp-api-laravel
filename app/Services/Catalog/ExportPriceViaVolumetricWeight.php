@@ -23,7 +23,7 @@ class ExportPriceViaVolumetricWeight
     private $fileNameOffset = 0;
     private $totalFile = [];
     private $writer;
-    private $limit = 5000;
+    private $limit = 10000;
     private $record_per_csv = 1000000;
     private $price_convert;
 
@@ -69,7 +69,7 @@ class ExportPriceViaVolumetricWeight
             'INDTOSA',
             'UPDATED_AT'
         ];
-        $query_limit = 5000;
+        $query_limit = 10000;
 
 
 
@@ -102,7 +102,7 @@ class ExportPriceViaVolumetricWeight
 
 
             if ($this->countryCode == 'US') {
-                $start_time = startTime();
+                // $start_time = startTime();
 
                 $pricing_details = PricingUs::join("cataloguss", "cataloguss.asin", "pricing_uss.asin")
                     ->select(["cataloguss.length", "cataloguss.width", "cataloguss.height", "cataloguss.weight", "pricing_uss.asin", "pricing_uss.available", "pricing_uss.us_price", "pricing_uss.updated_at"])
@@ -110,11 +110,11 @@ class ExportPriceViaVolumetricWeight
                     ->get()
                     ->toArray();
 
-                Log::debug("query" . endTime($start_time));
+                // Log::debug("query" . endTime($start_time));
 
-                $start_time = startTime();
+                // $start_time = startTime();
                 $this->dataFormatting($pricing_details, $this->countryCode, $headers_us);
-                Log::debug('data-formatting' . endTime($start_time));
+                // Log::debug('data-formatting' . endTime($start_time));
             } elseif ($this->countryCode == 'IN') {
 
                 $pricing_details = PricingIn::join("catalogins", "catalogins.asin", "pricing_ins.asin")
@@ -211,9 +211,9 @@ class ExportPriceViaVolumetricWeight
                         $asin_data[$key]['ACTUAL_VOL_POUND'] = $actual_weight_pound;
                         $asin_data[$key]['US_PRICE'] = $us_price;
 
-                        $start_time = startTime();
+                        // $start_time = startTime();
                         $packetPrice = $this->priceConversion($actual_weight_pound, $us_price, $countryCode);
-                        Log::debug('price-conversion' . endTime($start_time));
+                        // Log::debug('price-conversion' . endTime($start_time));
                         foreach ($packetPrice as $key2 => $price) {
                             $asin_data[$key][$key2] = $price;
                         }
@@ -225,9 +225,9 @@ class ExportPriceViaVolumetricWeight
             } catch (Exception $e) {
             }
         }
-        $start_time = startTime();
+        // $start_time = startTime();
         $this->createCsv($headers, $asin_data);
-        Log::debug('csv-import' . endTime($start_time));
+        // Log::debug('csv-import' . endTime($start_time));
         $asin_data = [];
         return true;
     }
