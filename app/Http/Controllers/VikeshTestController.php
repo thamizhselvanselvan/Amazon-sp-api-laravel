@@ -6,6 +6,7 @@ use ZipArchive;
 use App\Models\MongoDB\zoho;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\TestMongo;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
@@ -96,10 +97,25 @@ class VikeshTestController extends Controller
     public function csvReader($csv_path)
     {
         $csv_data = CSV_Reader($csv_path);
+        $count = 0;
+        $records = [];
+        $asin = [];
+        $order_no = [];
         foreach ($csv_data as $data) {
-            po($data);
-            zoho::insert($data);
+            $records[] = $data;
+            $asin[] = $data['ASIN'];
+            $order_no = $data['Alternate_Order_No'];
+            // po($data);
+            zoho::where('ASIN', $data['ASIN'])->where('Alternate_Order_No', $data['Alternate_Order_No'])->update($data, ['upsert' => true]);
+            if ($count == 100) {
+
+                // TestMongo::whereIn('ASIN', $asin)->whereIn('Alternate_Order_No', $order_no)->update($records, ['upsert' => true]);
+                $count = 0;
+                $records = [];
+            }
+            $count++;
         }
+        TestMongo::whereIn('ASIN', $asin)->where('Alternate_Order_No', $order_no)->update($records, ['upsert' => true]);
     }
 
     public function ExtractZipFile($path)
