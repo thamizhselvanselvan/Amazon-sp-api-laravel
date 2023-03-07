@@ -43,7 +43,7 @@ class AmazonCatalogImport implements ShouldQueue
         $catalog = new NewCatalog();
         $catalog->Catalog($catalog_asin, $seller_id = NULL);
 
-        $mongodb = new MongodbCatalog();
+        $mongodb = new MongodbCatalog();    //Object of calss(or Instance)
         $mongodb->index($catalog_asin, $seller_id = NULL);
     }
 }
