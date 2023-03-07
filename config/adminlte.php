@@ -1212,6 +1212,19 @@ return [
                     'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fas fa-file-word-o',
                 ],
+                [
+                    'text' => 'Keyword',
+                    'can' => ['Admin', 'Cliqnshop'],
+                    'icon' => 'fa fa-google-wallet',
+                    'submenu' => [
+                                    [
+                                        'text' => 'Search Log',
+                                        'url' => 'cliqnshop/keyword/log',
+                                        'can' => ['Admin', 'Cliqnshop'],
+                                        'icon' => 'fa fa-cloud-download',
+                                    ],
+                                ]
+                ],
             ],
         ],
 
