@@ -49,28 +49,28 @@ class DBbackupController extends Controller
 
 
         foreach ($web_table as $key => $data) {
-            $dat_web['web'][] = $data->Tables_in_mosh_360web;
+            $dat_web['web'][] = $data->Tables_in_stage_360web;
         }
         foreach ($inventory_table as $key => $inv_data) {
-            $data_inv['inventory'][] = $inv_data->Tables_in_mosh_inventory;
+            $data_inv['inventory'][] = $inv_data->Tables_in_stage_inventory;
         }
         foreach ($order_table as $key => $ord_data) {
-            $data_ord['order'][] = $ord_data->Tables_in_mosh_orders;
+            $data_ord['order'][] = $ord_data->Tables_in_stage_orders;
         }
         foreach ($seller_table as $key => $sell_data) {
-            $data_seller['seller'][] = $sell_data->Tables_in_mosh_seller;
+            $data_seller['seller'][] = $sell_data->Tables_in_stage_seller;
         }
         foreach ($shipntracking_table as $key => $ship_data) {
-            $data_ship['shipntrack'][] = $ship_data->Tables_in_mosh_shipntrack;
+            $data_ship['shipntrack'][] = $ship_data->Tables_in_stage_shipntrack;
         }
         foreach ($business_table as $key => $buis_data) {
-            $data_busi['business'][] = $buis_data->Tables_in_mosh_business;
+            $data_busi['business'][] = $buis_data->Tables_in_stage_business;
         }
         foreach ($oms_table as $key => $oms_data) {
-            $data_oms['oms'][] = $oms_data->Tables_in_mosh_oms;
+            $data_oms['oms'][] = $oms_data->Tables_in_stage_oms;
         }
         foreach ($catalog_table as $key => $cat_data) {
-            $data_cat['catalog'][] = $cat_data->Tables_in_mosh_catalog;
+            $data_cat['catalog'][] = $cat_data->Tables_in_stage_catalog;
         }
         $table_data = [
             $dat_web,
