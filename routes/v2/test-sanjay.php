@@ -2,11 +2,16 @@
 
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use App\Models\Admin\Backup;
 use App\Services\Zoho\ZohoApi;
+use PhpParser\Node\Stmt\Foreach_;
 use App\Models\Inventory\Shipment;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Models\order\OrderItemDetails;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Inventory\Shipment_Inward_Details;
 
@@ -185,4 +190,106 @@ Route::get('sanju/cns/deletion/logic', function () {
         }
         po('deleted');
     }
+});
+
+Route::get('sanju/db/backup', function () {
+
+    $databaseName = Config::get('database.connections');
+
+    $ignoreArray = [
+        'order_no_prefix',
+        'buybox',
+        'bbstores',
+        'aws',
+        'b2cship',
+        'mongodb',
+        'cliqnshop',
+        'buybox_stores',
+    ];
+
+    foreach ($databaseName as $key => $table) {
+        $connections[] = $key;
+
+        $final_connection = array_filter($connections, function ($item) use ($ignoreArray) {
+            return (!in_array($item, $ignoreArray));
+        });
+    }
+
+    foreach ($final_connection as $key => $value) {
+
+        $db_tables[$value] = Schema::connection($value)->getAllTables();
+    }
+    $web_table = (array) $db_tables['web'];
+    $inventory_table = (array)$db_tables['inventory'];
+    $order_table = (array) $db_tables['order'];
+    $seller_table = (array) $db_tables['seller'];
+    $shipntracking_table = (array) $db_tables['shipntracking'];
+    $business_table = (array)$db_tables['business'];
+    $oms_table = (array)$db_tables['oms'];
+    $catalog_table = (array)$db_tables['catalog'];
+
+    $datas = [
+        'web_table' => ($db_tables['web']),
+        'inventory_table' => ($db_tables['inventory']),
+        'order_table' => $db_tables['order'],
+        'seller_table' => $db_tables['seller'],
+        'shipntracking_table' => $db_tables['shipntracking'],
+        'business_table' => $db_tables['business'],
+        'oms_table' => $db_tables['oms'],
+
+    ];
+
+
+    foreach ($web_table as $key => $data) {
+        $dat_web['web'][] = $data->Tables_in_mosh_360web;
+    }
+    foreach ($inventory_table as $key => $inv_data) {
+        $data_inv['inventory_table'][] = $inv_data->Tables_in_mosh_inventory;
+    }
+    foreach ($order_table as $key => $ord_data) {
+        $data_ord['order_table'][] = $ord_data->Tables_in_mosh_orders;
+    }
+    foreach ($seller_table as $key => $sell_data) {
+        $data_seller['seller_table'][] = $sell_data->Tables_in_mosh_seller;
+    }
+    foreach ($shipntracking_table as $key => $ship_data) {
+        $data_ship['shipntracking_table'][] = $ship_data->Tables_in_mosh_shipntrack;
+    }
+    foreach ($business_table as $key => $buis_data) {
+        $data_busi['business_table'][] = $buis_data->Tables_in_mosh_business;
+    }
+    foreach ($oms_table as $key => $oms_data) {
+        $data_oms['oms_table'][] = $oms_data->Tables_in_mosh_oms;
+    }
+    // foreach ($catalog_table as $key => $cat_data) {
+    //     $data_cat['catalog_table'][] = $cat_data->Tables_in_mosh_catalog;
+    // }
+    foreach ($catalog_table as $key => $cat_data) {
+        $data_cat['catalog_table'][] = $cat_data->Tables_in_mosh_catalog;
+    }
+    po($data_cat);
+    $table_data = [
+        'web' => $dat_web,
+        'inventory' => $data_inv,
+        'order' => $data_ord,
+        'seller' => $data_seller,
+        'shipntrack' => $data_ship,
+        'business' => $data_busi,
+        'oms' => $data_oms,
+        'catalog' => $data_cat,
+    ];
+    // po($table_data);
+    $mergedArray = array_merge($dat_web, $data_inv, $data_ord, $data_seller, $data_ship, $data_busi, $data_oms, $data_cat);
+    po($mergedArray);
+});
+
+Route::get('fd', function () {
+    $datas =  Backup::select('table_name')->where(['connection' => 'inventory', 'status' => 1])->get();
+    foreach ($datas as $data) {
+        $tt = ($data->table_name);
+        po($tt);
+    }
+
+    // $dd = (array_values($tt));
+    // po($dd);
 });

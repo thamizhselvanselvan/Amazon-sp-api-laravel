@@ -376,6 +376,12 @@ return [
                             'can' => ['Admin'],
                             'icon' => 'fa fa-calendar',
                         ],
+                        [
+                            'text' => 'DB back-up Management',
+                            'url' => 'admin/backup/management',
+                            'can' => ['Admin'],
+                            'icon' => 'fas fa-hdd',
+                        ],
                     ],
                 ],
 
