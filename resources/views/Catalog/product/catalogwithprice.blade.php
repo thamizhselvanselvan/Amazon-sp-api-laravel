@@ -628,10 +628,20 @@
                             $.each(data, function(key, data) {
 
                                 files += "<li class=' ml-4'>";
-                                files += "<a href='/catalog/with-price/download/csv/" +
-                                    index + "/" + key +
-                                    "' class='p-0 m-0'>" + '&nbsp;' +
-                                    key + "</a> ";
+                                if (key != 'Priority') {
+
+                                    files +=
+                                        "<a href='/catalog/with-price/download/csv/" +
+                                        index + "/" + key +
+                                        "' class='p-0 m-0'>" + '&nbsp;' +
+                                        key + "</a> ";
+                                } else {
+                                    files +=
+                                        "<a href='/catalog/with-price/download/csv/" +
+                                        index + "/" + key +
+                                        "' class='p-0 m-0'>All </a> ";
+                                }
+
                                 files += data;
                                 files += "</li>";
                             });

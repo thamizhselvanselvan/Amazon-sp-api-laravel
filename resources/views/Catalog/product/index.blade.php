@@ -553,10 +553,20 @@
                                 "</b>";
                             $.each(data, function(key, data) {
                                 files += "<li class=' ml-4'>";
-                                files += "<a href='/catalog/download/price/" + index +
-                                    '/' +
-                                    key +
-                                    "' class='p-0 m-0'> Priority" + key + "</a> ";
+                                if (key != 'All') {
+
+                                    files += "<a href='/catalog/download/price/" +
+                                        index +
+                                        '/' +
+                                        key +
+                                        "' class='p-0 m-0'> Priority" + key + "</a> ";
+                                } else {
+                                    files += "<a href='/catalog/download/price/" +
+                                        index +
+                                        '/' +
+                                        key +
+                                        "' class='p-0 m-0'>" + key + "</a> ";
+                                }
                                 files += data;
                                 files += "</li>";
                             });
