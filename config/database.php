@@ -95,7 +95,7 @@ return [
             ]) : [],
           
             'dump' => [
-                'dump_binary_path' =>  '/usr/bin/',
+                'dump_binary_path' => env('MYSQL_DUMP_BINARY_PATH', '/usr/bin/'),
                 'excludeTables' => [
                     // 'in_catalogs',
                     // 'in_states',
