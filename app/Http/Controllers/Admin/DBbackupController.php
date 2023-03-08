@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Admin\Backup;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Config;
@@ -47,7 +48,7 @@ class DBbackupController extends Controller
         $oms_table = (array)$db_tables['oms'];
         $catalog_table = (array)$db_tables['catalog'];
 
-        if (app()->environment() === 'Production') {
+        if  (App::environment(['Production', 'production'])) {
             foreach ($web_table as $key => $data) {
                 $dat_web['web'][] = $data->Tables_in_prod_360web;
             }
@@ -72,8 +73,7 @@ class DBbackupController extends Controller
             foreach ($catalog_table as $key => $cat_data) {
                 $data_cat['catalog'][] = $cat_data->Tables_in_prod_catalog;
             }
-        } else if (app()->environment() === 'staging') {
-
+        } else if (App::environment(['Staging', 'staging']))  {
 
             foreach ($web_table as $key => $data) {
                 $dat_web['web'][] = $data->Tables_in_stage_360web;
