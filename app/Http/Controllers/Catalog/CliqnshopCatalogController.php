@@ -94,11 +94,11 @@ class CliqnshopCatalogController extends Controller
             ];
 
             FileManagement::create($file_info);
-            
+
 
             commandExecFunc("mosh:catalog_insert_cliqnshop ${path} ${site_id}");
             // commandExecFunc("mosh:export_catalog_imported_asin ${path}");
-           
+
 
             return back()->with('success', 'Cliqnshop Catalog file has been uploaded successfully !');
         }
@@ -213,19 +213,20 @@ class CliqnshopCatalogController extends Controller
 
                 foreach ($imagedata[0]['images'] as $counter => $image_data_new) {
                     $counter++;
+
                     if (array_key_exists("link", $image_data_new)) {
-
-                        if ($img1["Images${counter}"] = $image_data_new['height'] == 75) {
-
-                            $img1["Images${counter}"] = '';
-                        } else  if ($img1["Images${counter}"] = $image_data_new['height'] == 500) {
-                            $img1["Images${counter}"] = $image_data_new['link'];
-                        }
-                    } else {
                         $img1["Images${counter}"] = '';
-                    }
-                    if ($counter == 10) {
-                        break;
+                        if ($counter == 1) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        } else if ($counter == 4) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        } else if ($counter == 7) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        } else if ($counter == 10) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        } else if ($counter == 13) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        }
                     }
                 }
             } else {
