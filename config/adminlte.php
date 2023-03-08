@@ -376,6 +376,12 @@ return [
                             'can' => ['Admin'],
                             'icon' => 'fa fa-calendar',
                         ],
+                        [
+                            'text' => 'DB back-up Management',
+                            'url' => 'admin/backup/management',
+                            'can' => ['Admin'],
+                            'icon' => 'fas fa-hdd',
+                        ],
                     ],
                 ],
 
@@ -1211,6 +1217,19 @@ return [
                     'url' => 'cliqnshop/staticpagecontent',
                     'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fas fa-file-word-o',
+                ],
+                [
+                    'text' => 'Keyword',
+                    'can' => ['Admin', 'Cliqnshop'],
+                    'icon' => 'fa fa-google-wallet',
+                    'submenu' => [
+                                    [
+                                        'text' => 'Search Log',
+                                        'url' => 'cliqnshop/keyword/log',
+                                        'can' => ['Admin', 'Cliqnshop'],
+                                        'icon' => 'fa fa-cloud-download',
+                                    ],
+                                ]
                 ],
             ],
         ],
