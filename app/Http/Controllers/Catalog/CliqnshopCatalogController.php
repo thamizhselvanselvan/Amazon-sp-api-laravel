@@ -133,8 +133,8 @@ class CliqnshopCatalogController extends Controller
 
         $searchKey = $search_data['search'];
         $searchKey = str_replace(' ', '%20', $searchKey);
-        $siteId = $search_data['siteId'];
-        $source = $search_data['source'];
+        // $siteId = $search_data['siteId'];
+        // $source = $search_data['source'];
 
         //Process Management start
         // $process_manage = [
@@ -154,7 +154,7 @@ class CliqnshopCatalogController extends Controller
         // $command_end_time = now();
         // ProcessManagementUpdate($pm_id, $command_end_time);
 
-        commandExecFunc("mosh:cliqnshop-product-search ${searchKey} ${siteId} ${source}");
+        commandExecFunc("mosh:cliqnshop-product-search ${searchKey}");
         return response()->json('successfully');
     }
 
