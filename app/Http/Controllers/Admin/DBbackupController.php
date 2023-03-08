@@ -48,58 +48,9 @@ class DBbackupController extends Controller
         $oms_table = (array)$db_tables['oms'];
         $catalog_table = (array)$db_tables['catalog'];
 
-        if  (App::environment(['Production', 'production'])) {
-            foreach ($web_table as $key => $data) {
-                $dat_web['web'][] = $data->Tables_in_prod_360web;
-            }
-            foreach ($inventory_table as $key => $inv_data) {
-                $data_inv['inventory'][] = $inv_data->Tables_in_prod_inventory;
-            }
-            foreach ($order_table as $key => $ord_data) {
-                $data_ord['order'][] = $ord_data->Tables_in_prod_orders;
-            }
-            foreach ($seller_table as $key => $sell_data) {
-                $data_seller['seller'][] = $sell_data->Tables_in_prod_seller;
-            }
-            foreach ($shipntracking_table as $key => $ship_data) {
-                $data_ship['shipntrack'][] = $ship_data->Tables_in_prod_shipntrack;
-            }
-            foreach ($business_table as $key => $buis_data) {
-                $data_busi['business'][] = $buis_data->Tables_in_prod_business_catalog;
-            }
-            foreach ($oms_table as $key => $oms_data) {
-                $data_oms['oms'][] = $oms_data->Tables_in_prod_oms;
-            }
-            foreach ($catalog_table as $key => $cat_data) {
-                $data_cat['catalog'][] = $cat_data->Tables_in_prod_catalog;
-            }
-        } else if (App::environment(['Staging', 'staging']))  {
 
-            foreach ($web_table as $key => $data) {
-                $dat_web['web'][] = $data->Tables_in_stage_360web;
-            }
-            foreach ($inventory_table as $key => $inv_data) {
-                $data_inv['inventory'][] = $inv_data->Tables_in_stage_inventory;
-            }
-            foreach ($order_table as $key => $ord_data) {
-                $data_ord['order'][] = $ord_data->Tables_in_stage_orders;
-            }
-            foreach ($seller_table as $key => $sell_data) {
-                $data_seller['seller'][] = $sell_data->Tables_in_stage_seller;
-            }
-            foreach ($shipntracking_table as $key => $ship_data) {
-                $data_ship['shipntrack'][] = $ship_data->Tables_in_stage_shipntrack;
-            }
-            foreach ($business_table as $key => $buis_data) {
-                $data_busi['business'][] = $buis_data->Tables_in_stage_business_catalog;
-            }
-            foreach ($oms_table as $key => $oms_data) {
-                $data_oms['oms'][] = $oms_data->Tables_in_stage_oms;
-            }
-            foreach ($catalog_table as $key => $cat_data) {
-                $data_cat['catalog'][] = $cat_data->Tables_in_stage_catalog;
-            }
-        } else  if (app()->environment() === 'local') {
+        if (app()->environment() === 'local') {
+            Log::Alert('local');
             foreach ($web_table as $key => $data) {
                 $dat_web['web'][] = $data->Tables_in_mosh_360web;
             }
@@ -125,6 +76,64 @@ class DBbackupController extends Controller
                 $data_cat['catalog'][] = $cat_data->Tables_in_mosh_catalog;
             }
         }
+
+        if (app()->environment() === 'staging') {
+            Log::Alert('staging');
+            foreach ($web_table as $key => $data) {
+                $dat_web['web'][] = $data->Tables_in_stage_360web;
+            }
+            foreach ($inventory_table as $key => $inv_data) {
+                $data_inv['inventory'][] = $inv_data->Tables_in_stage_inventory;
+            }
+            foreach ($order_table as $key => $ord_data) {
+                $data_ord['order'][] = $ord_data->Tables_in_stage_orders;
+            }
+            foreach ($seller_table as $key => $sell_data) {
+                $data_seller['seller'][] = $sell_data->Tables_in_stage_seller;
+            }
+            foreach ($shipntracking_table as $key => $ship_data) {
+                $data_ship['shipntrack'][] = $ship_data->Tables_in_stage_shipntrack;
+            }
+            foreach ($business_table as $key => $buis_data) {
+                $data_busi['business'][] = $buis_data->Tables_in_stage_business_catalog;
+            }
+            foreach ($oms_table as $key => $oms_data) {
+                $data_oms['oms'][] = $oms_data->Tables_in_stage_oms;
+            }
+            foreach ($catalog_table as $key => $cat_data) {
+                $data_cat['catalog'][] = $cat_data->Tables_in_stage_catalog;
+            }
+        }
+
+        if (app()->environment() === 'production') {
+
+            Log::Alert('Production');
+            foreach ($web_table as $key => $data) {
+                $dat_web['web'][] = $data->Tables_in_prod_360web;
+            }
+            foreach ($inventory_table as $key => $inv_data) {
+                $data_inv['inventory'][] = $inv_data->Tables_in_prod_inventory;
+            }
+            foreach ($order_table as $key => $ord_data) {
+                $data_ord['order'][] = $ord_data->Tables_in_prod_orders;
+            }
+            foreach ($seller_table as $key => $sell_data) {
+                $data_seller['seller'][] = $sell_data->Tables_in_prod_seller;
+            }
+            foreach ($shipntracking_table as $key => $ship_data) {
+                $data_ship['shipntrack'][] = $ship_data->Tables_in_prod_shipntrack;
+            }
+            foreach ($business_table as $key => $buis_data) {
+                $data_busi['business'][] = $buis_data->Tables_in_prod_business_catalog;
+            }
+            foreach ($oms_table as $key => $oms_data) {
+                $data_oms['oms'][] = $oms_data->Tables_in_prod_oms;
+            }
+            foreach ($catalog_table as $key => $cat_data) {
+                $data_cat['catalog'][] = $cat_data->Tables_in_prod_catalog;
+            }
+        }
+
 
         $table_data = [
             $dat_web,
