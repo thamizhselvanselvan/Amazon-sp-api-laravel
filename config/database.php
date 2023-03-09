@@ -124,13 +124,6 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-            'dump' => [
-                'dump_binary_path' => env('MYSQL_DUMP_BINARY_PATH', '/usr/bin/'),
-                'excludeTables' => [
-                    
-                ],
-                'useSingleTransaction' => true,
-            ],
         ],
 
         'order' => [
@@ -151,13 +144,6 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-            'dump' => [
-                'dump_binary_path' => env('MYSQL_DUMP_BINARY_PATH', '/usr/bin/'),
-                'excludeTables' => [
-                    
-                ],
-                'useSingleTransaction' => true,
-            ],
         ],
 
         'order_no_prefix' => [
@@ -198,14 +184,6 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-            'dump' => [
-                'dump_binary_path' => env('MYSQL_DUMP_BINARY_PATH', '/usr/bin/'),
-                'excludeTables' => [
-
-                 
-                ],
-                'useSingleTransaction' => true,
-            ],
         ],
 
         'buybox' => [
@@ -288,13 +266,6 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-            'dump' => [
-                'dump_binary_path' => env('MYSQL_DUMP_BINARY_PATH', '/usr/bin/'),
-                'excludeTables' => [
-                   
-                ],
-                'useSingleTransaction' => true,
-            ],
         ],
 
         'business' => [
@@ -315,13 +286,6 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-            'dump' => [
-                'dump_binary_path' => env('MYSQL_DUMP_BINARY_PATH', '/usr/bin/'),
-                'excludeTables' => [
-                   
-                ],
-                'useSingleTransaction' => true,
-            ],
         ],
 
         'mongodb' => [
@@ -394,13 +358,6 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-            'dump' => [
-                'dump_binary_path' => env('MYSQL_DUMP_BINARY_PATH', '/usr/bin/'),
-                'excludeTables' => [
-                   
-                ],
-                'useSingleTransaction' => true,
-            ],
         ],
 
     ],
