@@ -283,13 +283,23 @@ Route::get('sanju/db/backup', function () {
     po($mergedArray);
 });
 
-Route::get('fd', function () {
-    $datas =  Backup::select('table_name')->where(['connection' => 'inventory', 'status' => 1])->get();
-    foreach ($datas as $data) {
-        $tt = ($data->table_name);
-        po($tt);
-    }
+Route::get('config/test', function () {
+    $datas =  Backup::where("status", 1)->get(["connection", "table_name"])->groupBy("connection");
 
-    // $dd = (array_values($tt));
-    // po($dd);
+    // $config = config('database.connections.inventory.dump.excludeTables');
+    // dd($config);
+
+
+    foreach ($datas as $connection => $table_names) {
+
+        $table_names = collect($table_names)->pluck("table_name");
+
+        // Config()->set(
+        //     "database.connections.{$connection}.dump.excludeTables",
+        //     $table_names
+        // );
+
+        $value = Config::get("database.connections.{$connection}.dump.excludeTables");
+        po($value);
+    }
 });
