@@ -31,7 +31,7 @@ class CatalogDashboardService
             $delist_asin_count = [];
             $source = strtolower($source);
             $destination_table = "asin_destination_${source}s";
-            $catalog_table = "catalognew${source}s";
+            $catalog_table = "catalog${source}s";
             $catalog_price = "pricing_${source}s";
 
             $Total_catalogs = DB::connection('catalog')
