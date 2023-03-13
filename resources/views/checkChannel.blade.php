@@ -13,11 +13,11 @@
 @section('js')
 <script src="{{ asset('js/app.js') }}"></script>
 <script>
-let p_channel = window.Echo.private("testing-channel");
+// let p_channel = window.Echo.private("testing-channel");
 
-p_channel.listen('checkEvent', function(p_data) {
-    // console.log('success');
-    console.log(p_data.catalog);
-})
+// p_channel.listen('checkEvent', function(p_data) {
+//     // console.log('success');
+//     console.log(p_data.catalog);
+// })
 </script>
 @stop

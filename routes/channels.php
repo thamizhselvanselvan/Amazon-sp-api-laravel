@@ -27,3 +27,7 @@ Broadcast::channel('testing-channel', function($user)
 {
     return true;
 });
+
+Broadcast::channel('channel', function ($user) {
+    return true;
+});

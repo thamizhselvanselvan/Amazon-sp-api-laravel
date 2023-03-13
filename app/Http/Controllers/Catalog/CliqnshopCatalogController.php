@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Catalog;
 
 use Carbon\Carbon;
 use League\Csv\Writer;
+use App\Events\EventManager;
 use Illuminate\Http\Request;
 use App\Models\FileManagement;
 use App\Models\Inventory\Dispose;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use RealRashid\SweetAlert\Facades\Alert;
 use App\Services\Cliqnshop\CliqnshopCataloginsert;
 use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
 
@@ -22,6 +24,10 @@ class CliqnshopCatalogController extends Controller
 
     public function index()
     {
+
+        // $val = event(new EventManager('Catalog View'));
+        // Alert::success('opens', 'Welcome');
+        
         $countrys = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
         return view('Cliqnshop.catalog', compact('countrys'));
     }
