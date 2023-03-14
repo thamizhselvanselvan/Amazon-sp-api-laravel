@@ -15,12 +15,12 @@
         }
     </style>
 @stop
-@section('title', 'Cliqnshop Ban Keywords')
+@section('title', 'Cliqnshop Banned Keywords')
 
 
 @section('content_header')
     <div class="row">
-        <h3>Cliqnshop Ban Keywords</h3>
+        <h3>Banned Keywords</h3>
     </div>
 
 @stop
