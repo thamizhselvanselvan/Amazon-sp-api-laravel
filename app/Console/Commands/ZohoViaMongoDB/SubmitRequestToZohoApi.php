@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\ZohoViaMongoDB;
 
+use App\Models\MongoDB\zoho;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -42,7 +43,9 @@ class SubmitRequestToZohoApi extends Command
      */
     public function handle()
     {
-        $page = 1;
+        $records = zoho::count();
+        $page = $records == 0 ? 1 : 4;
+
         $this->token = json_decode(Storage::get("zoho/access_token.txt"), true)["access_token"];
 
         $payload = [
