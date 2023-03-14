@@ -49,3 +49,8 @@ Route::post('shipntrack/stopTrackingUpadate', 'shipntrack\Tracking\TrackingContr
 // Route::get('shipntrack/trackingList/search', 'shipntrack\TrackingList\TrackingListController@SearchByAwbNo');
 
 Route::match($method, 'shipntrack/courier', 'shipntrack\Courier\CourierPartnerController@index')->name('snt.courier.index');
+Route::match($method, 'shipntrack/courier/create', 'shipntrack\Courier\CourierPartnerController@create')->name('courier.partners.create');
+Route::match($method, 'shipntrack/courier/store', 'shipntrack\Courier\CourierPartnerController@store')->name('courier.partners.store');
+Route::match($method, 'shipntrack/courier/remove/{id}', 'shipntrack\Courier\CourierPartnerController@destroy')->name('courier.partners.delete');
+Route::match($method, 'shipntrack/courier/partner/{id}/edit', 'shipntrack\Courier\CourierPartnerController@edit')->name('courier.partners.edit');
+Route::match($method, 'shipntrack/courier/partner/update/{id}', 'shipntrack\Courier\CourierPartnerController@update')->name('courier.partners.update');
