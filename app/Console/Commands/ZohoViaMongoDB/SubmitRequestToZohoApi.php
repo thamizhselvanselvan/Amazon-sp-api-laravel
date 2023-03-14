@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands\ZohoViaMongoDB;
 
+use App\Models\MongoDB\zoho;
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
@@ -42,7 +44,21 @@ class SubmitRequestToZohoApi extends Command
      */
     public function handle()
     {
-        $page = 1;
+        // Process Management begin
+
+        $process_manage = [
+            'module'             => 'Zoho Dump',
+            'description'        => 'Dump data into App360 database from zoho database',
+            'command_name'       => 'mosh:submit-request-to-zoho',
+            'command_start_time' => now(),
+        ];
+        ProcessManagement::create($process_manage)->toArray();
+
+        // Process Management end
+
+        $records = zoho::count();
+        $page = $records == 0 ? 1 : 4;
+
         $this->token = json_decode(Storage::get("zoho/access_token.txt"), true)["access_token"];
 
         $payload = [
