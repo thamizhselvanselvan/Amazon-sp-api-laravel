@@ -5,6 +5,7 @@ namespace App\Services\SP_API\API;
 use Exception;
 use App\Models\Aws_credential;
 use App\Services\Config\ConfigTrait;
+use App\Models\Catalog\MongoCatalogae;
 use App\Models\Catalog\MongoCatalogin;
 use App\Models\Catalog\MongoCatalogus;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
@@ -48,6 +49,8 @@ class MongodbCatalog
                     MongoCatalogin::where('asin', $data['asin'])->update($data, ['upsert' => true]);
                 } elseif ($country_code == 'US') {
                     MongoCatalogus::where('asin', $data['asin'])->update($data, ['upsert' => true]);
+                } elseif ($country_code == 'AE') {
+                    MongoCatalogae::where('asin', $data['asin'])->update($data, ['upsert' => true]);
                 }
             }
             // $source_mode = table_model_create(country_code: strtolower($country_code), model: 'Asin_source', table_name: 'asin_source_');
