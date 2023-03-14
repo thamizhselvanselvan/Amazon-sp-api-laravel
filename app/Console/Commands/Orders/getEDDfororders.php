@@ -121,7 +121,7 @@ class getEDDfororders extends Command
                                 $value = Carbon::parse($latest_delivery_date)->format('Y-m-d');
 
                                 $zoh =    $zoho->updateLead($lead_id, ["US_EDD" => $value]);
-                                Log::notice($zoh);
+                            
                                 Order::where('amazon_order_identifier', $order_id)->update(['latest_delivery_date' => $latest_delivery_date]);
                             } else {
                                 Log::info("Not A valid Key For EDD(zoho) " . ' ' . $order_id);

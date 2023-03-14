@@ -29,7 +29,7 @@ class FileManagementController extends Controller
                 })
                 ->addColumn('user_name', function ($file_management) {
                     $user_name = User::where('id', $file_management['user_id'])->get('name')->toArray();
-                    $user = $user_name[0]['name'];
+                    $user = $user_name[0]['name'] ?? 'Auto';
                     return $user;
                 })
                 ->addColumn('type', function ($file_management) {

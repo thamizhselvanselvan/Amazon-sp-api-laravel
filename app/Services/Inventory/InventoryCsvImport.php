@@ -73,6 +73,7 @@ class InventoryCsvImport
         $total_item_count = 0;
         $source_id = [];
         $data = [];
+        $err = [];
         $multi_source_id = [];
         $warehouse_id = '';
         $currency_code = '';
@@ -94,37 +95,36 @@ class InventoryCsvImport
                 // $bin_id = $value['Bin ID'];
                 $tag = $value['Tag'];
 
-                // if (isset($rack_shelve_details[$warehouse_name][$rack_id][$shelves_id]) && isset($source_array[$source])) {
+            //    if (isset($rack_shelve_details[$warehouse_name][$rack_id][$shelves_id])&& isset($warehouse_array[$warehouse_name]) && isset($source_array[$source])) {
+                  $data['inward_date'] = $inward_date;
+                  $data['asin'] = $asin;
+                  $data['item_name'] = $item_name;
+                  $data['qty'] = $qty;
+                  $data['pro_price'] = $pro_price;
+                  $data['sales_price'] = $sales_price;
+                  $data['currency'] = $currency;
+                  $data['warehouse_id'] = array_search($warehouse_name, $warehouse_array);
+                  $data['source'] = $source_array[$source];
+                  $data['source_id'] = $ss_id;
+                  $data['rack_id'] = $rack_id;
+                  $data['shelves_id'] = $shelves_id;
+                  $data['tag'] = array_key_exists($tag, $tag_array) ? $tag_array[$tag] : '';
+                  $source_id[] = $source_array[$source];
 
-                $data['inward_date'] = $inward_date;
-                $data['asin'] = $asin;
-                $data['item_name'] = $item_name;
-                $data['qty'] = $qty;
-                $data['pro_price'] = $pro_price;
-                $data['sales_price'] = $sales_price;
-                $data['currency'] = $currency;
-                $data['warehouse_id'] = array_search($warehouse_name, $warehouse_array);
-                $data['source'] = $source_array[$source];
-                $data['source_id'] = $ss_id;
-                $data['rack_id'] = $rack_id;
-                $data['shelves_id'] = $shelves_id;
-                $data['tag'] = array_key_exists($tag, $tag_array) ? $tag_array[$tag] : '';
-                $source_id[] = $source_array[$source];
+                  $multi_source_id[] = $source;
 
-                $multi_source_id[] = $source;
-
-                $this->InventoryDataInsert($data);
-                $total_item_count++;
-                $warehouse_id = $data['warehouse_id'];
-                $currency_code = $currency;
-                // } else {
-
-                //     //Send notification for invalid entries
-                // }
+                  $this->InventoryDataInsert($data);
+                  $total_item_count++;
+                  $warehouse_id = $data['warehouse_id'];
+                  $currency_code = $currency;
+               /*  } else {
+                    Log::alert('no name for' . $asin);
+                   
+                    //Send notification for invalid entries
+                 } */
             } catch (Exception $e) {
-
-                Log::info($e);
-                //throw error for exception case
+                $err[] = $asin;
+                Log::debug(($e));
             }
         }
 
@@ -133,10 +133,16 @@ class InventoryCsvImport
             $multi_source_id = (json_encode(array_unique($multi_source_id)));
             $this->InventroyShipmentInwardDataInsert($warehouse_id, $currency_code, $total_item_count, $multi_source_id);
         } catch (Exception $e) {
-            Log::info($e);
+            Log::debug(('INV Multi Source'.$e));
+
+            $err[] = $asin;
         }
 
-        return true;
+        if (count($err) > 0) {
+            return $err;
+        } else {
+            return true;
+        }
     }
 
     public function generateShipmentId()

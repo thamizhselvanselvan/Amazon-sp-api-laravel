@@ -14,7 +14,7 @@ class CliqnshopProductSearchRequest extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:cliqnshop-product-search {searchKey} {siteId} {source}';
+    protected $signature = 'mosh:cliqnshop-product-search {searchKey}';
 
     /**
      * The console command description.
@@ -41,25 +41,25 @@ class CliqnshopProductSearchRequest extends Command
     public function handle()
     {
         //Process Management start
-        $process_manage = [
-            'module'             => 'Cliqnshop Product Search',
-            'description'        => 'Search product from cliqnshop',
-            'command_name'       => 'mosh:cliqnshop-product-search',
-            'command_start_time' => now(),
-        ];
+        // $process_manage = [
+        //     'module'             => 'Cliqnshop Product Search',
+        //     'description'        => 'Search product from cliqnshop',
+        //     'command_name'       => 'mosh:cliqnshop-product-search',
+        //     'command_start_time' => now(),
+        // ];
 
-        $process_management_id = ProcessManagement::create($process_manage)->toArray();
-        $pm_id = $process_management_id['id'];
+        // $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        // $pm_id = $process_management_id['id'];
 
         $searchKey = $this->argument('searchKey');
-        $siteId = $this->argument('siteId');
-        $source = $this->argument('source');
+        // $siteId = $this->argument('siteId');
+        // $source = $this->argument('source');
 
         $ApiCall = new Search_Product();
-        $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
+        $result = $ApiCall->SearchProductByKey($searchKey);
 
         date_default_timezone_set('Asia/Kolkata');
-        $command_end_time = now();
-        ProcessManagementUpdate($pm_id, $command_end_time);
+        // $command_end_time = now();
+        // ProcessManagementUpdate($pm_id, $command_end_time);
     }
 }

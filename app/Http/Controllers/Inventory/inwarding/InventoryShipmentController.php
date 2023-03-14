@@ -115,7 +115,13 @@ class InventoryShipmentController extends Controller
         foreach ($view as $key => $bar) {
 
             $bar_code = $generator->getBarcode($bar->ship_id, $generator::TYPE_CODE_93);
-            $warehouse_name = $bar->warehouses->name;
+            if ($bar->warehouses == '') {
+                $warehouse_name = 'Not Found In Warehouse Master Invalid Warehouse Uploaded';
+            } else {
+
+                $warehouse_name = $bar->warehouses->name;
+            }
+
             $vendor_name[] = $bar->vendors->name;
             $currency_id = $bar->currency;
         }
@@ -125,7 +131,6 @@ class InventoryShipmentController extends Controller
         foreach ($currency as $key => $cur) {
             $currency_array[$cur->id] = $cur->name;
         }
-
         return view('inventory.inward.shipment.view', compact('view', 'currency_array', 'bar_code', 'id', 'warehouse_name', 'vendor_name', 'currency_id'));
     }
     public function createView(Request $request)
@@ -297,11 +302,13 @@ class InventoryShipmentController extends Controller
                 "quantity" => $request->quantity[$key1],
                 "inwarded_at" => now()
             ]);
-        }
+            // }
+            $inventory_id =  Shipment_Inward_Details::where(['asin' => $asin1, "ship_id" => $ship_id, "source_id" =>  $request->source[$key1]])->select('id')->get()->first();
+            // foreach ($request->asin as $key1 => $asin1) {
 
-        foreach ($request->asin as $key1 => $asin1) {
 
             Inventory::create([
+                "inventory_id" => $inventory_id->id,
                 "warehouse_id" => $request->warehouse,
                 "source_id" =>  $request->source[$key1],
                 "ship_id" => $ship_id,
@@ -430,15 +437,21 @@ class InventoryShipmentController extends Controller
         $import_file_time = date('Y-m-d-H-i-s');
         $file = file_get_contents($request->inventory_csv);
 
-        $path = "Inventory_CSV/Inventory${import_file_time}.csv";
+        $path = "Inventory_CSV/Inventory{$import_file_time}.csv";
         if (!Storage::exists($path)) {
             Storage::put($path, '');
         }
 
         Storage::put($path, $file);
 
-        (new InventoryCsvImport())->index($path);
+        $data =  (new InventoryCsvImport())->index($path);
 
-        return redirect('inventory/shipments')->with('success', 'File has been uploaded successfully');
+        if (($data) != 1) {
+            $asin_error = implode(", ", $data);
+            Log::emergency("Errors ASIN In Inventory CSV" . $asin_error . '-' . $path);
+            return redirect('inventory/shipments')->with('warning', "unable to process Following ASIN Please Check CSV data $asin_error ");
+        } else {
+            return redirect('inventory/shipments')->with('success', 'File has been uploaded successfully');
+        }
     }
 }

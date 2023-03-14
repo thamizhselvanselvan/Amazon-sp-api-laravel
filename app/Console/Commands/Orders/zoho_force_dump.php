@@ -93,7 +93,7 @@ class zoho_force_dump extends Command
 
                 $this->OrderDataFormating($result_data, $country_code, $seller_id, 'US');
             } catch (Exception $e) {
-                Log::alert('Order Details Not Found for ' . $order_id);
+                Log::alert('Order Details Not Found for '. $order_id .'-' . 'store_id - ' . $seller_id );
             }
         }
 
@@ -203,6 +203,5 @@ class zoho_force_dump extends Command
                 );
             }
         }
-      
     }
 }

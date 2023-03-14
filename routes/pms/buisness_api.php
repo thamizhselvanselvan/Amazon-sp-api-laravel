@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
 
 Route::get('product/details/search', 'BuisnessAPI\SearchProductRequestController@searchproductRequest');
 Route::resource('business/search/products', 'BuisnessAPI\SearchProductRequestController');
@@ -63,6 +64,12 @@ Route::post('cliqnshop/promo/store', 'Cliqnshop\ImageBrandController@promostore'
 
 Route::get('cliqnshop/catalog/csv', 'Catalog\CliqnshopCatalogController@asinCsvDownload')->name('cliqnshop.catalog.csv.templete');
 Route::post('cliqnshop/catalog/csv/import', 'Catalog\CliqnshopCatalogController@cliqnshopImport')->name('cliqnshop.catalog.csv.import');
+Route::post('cliqnshop/catalog/textarea/import', 'Catalog\CliqnshopCatalogController@cliqnshoptextarea')->name('cliqnshop.catalog.textarea.import');
+
+
+
+
+
 Route::get('catalog/cliqnshop/new_asin', 'Catalog\CliqnshopCatalogController@uploaded_export_download')->name('uploaded.asin.catalog.export.cliqnshop');
 Route::get('uploaded/catalog/cliqnshop/download/{index}', 'Catalog\CliqnshopCatalogController@Download_uploaded_asin_catalog')->name('uploaded.asin.catalog.export.cliqnshop.download');
 Route::get('cliqnshop/db/upload', 'Catalog\CliqnshopCatalogController@insertCliqnshop')->name('cliqnshop.catalog.db.upload');
@@ -77,6 +84,20 @@ Route::get('cliqnshop/category-download', function () {
     }
     return Storage::download($exportFilePath);
 });
+
+Route::get('cliqnshop/footercontent', 'Cliqnshop\FooterController@index')->name('cliqnshop.footercontent');
+Route::post('cliqnshop/footercontent', 'Cliqnshop\FooterController@store')->name('cliqnshop.footercontent.store');
+
+
+Route::get('cliqnshop/staticpagecontent', 'Cliqnshop\FooterController@staticpagecontent')->name('cliqnshop.footercontent.staticpagecontent');
+Route::post('cliqnshop/staticpagecontent', 'Cliqnshop\FooterController@store')->name('cliqnshop.footercontent.store');
+Route::post('cliqnshop/getstaticpagecontent', 'Cliqnshop\FooterController@getStaticPageContent')->name('cliqnshop.footercontent.getStaticPageContent');
+
+
+
+Route::get('cliqnshop/keyword/log', 'Cliqnshop\CliqnshopKeywordController@keyword_search_log_index')->name('cliqnshop.keyword.log');
+Route::post('cliqnshop/keyword/log/delete', 'Cliqnshop\CliqnshopKeywordController@keyword_search_log_remove')->name('cliqnshop.keyword.log.delete');
+
 // Route::get('product/test', function () {
 //   // $data[] = $key;
 //   $searchKey = 'iPhone';
@@ -86,3 +107,4 @@ Route::get('cliqnshop/category-download', function () {
 //   $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
 //   po($result);
 // });
+
