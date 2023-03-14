@@ -148,11 +148,8 @@ class ZohoBulkDump extends Command
         $csv_data->setHeaderOffset(0);
 
         foreach ($csv_data as $data) {
-            $unique_field = [
-                'ASIN' => $data['ASIN'],
-                'Alternate_Order_No' => $data['Alternate_Order_No']
-            ];
-            zoho::where('Alternate_Order_No_1_ASIN_1', $unique_field)->update($data, ['upsert' => true]);
+
+            zoho::where('Alternate_Order_No', $data['Alternate_Order_No'])->where('ASIN', $data['ASIN'])->update($data, ['upsert' => true]);
         }
         Log::debug($data);
     }

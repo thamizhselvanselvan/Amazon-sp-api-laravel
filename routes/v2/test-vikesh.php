@@ -74,9 +74,10 @@ Route::get('zoho/dump3', function () {
     //     'last_name' => 'kumar1'
     // ];
 
-    // $records = TestMongo::get()->toArray();
-    // po($records);
-    // exit;
+    $records = zoho::select(['ASIN', 'Alternate_Order_No', 'updated_at'])->orderBy('updated_at', 'DESC')->limit(100)->get()->toArray();
+
+    po(($records));
+    exit;
 
     $data = CSV_Reader('zohocsv/1929333000107582112.csv');
     $count = 0;

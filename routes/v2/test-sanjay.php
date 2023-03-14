@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use App\Events\EventManager;
 use App\Models\Admin\Backup;
 use App\Services\Zoho\ZohoApi;
 use PhpParser\Node\Stmt\Foreach_;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Inventory\Shipment_Inward_Details;
+use App\Http\Controllers\Inventory\StockController;
 
 Route::get('test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
 
@@ -283,13 +285,26 @@ Route::get('sanju/db/backup', function () {
     po($mergedArray);
 });
 
-Route::get('fd', function () {
-    $datas =  Backup::select('table_name')->where(['connection' => 'inventory', 'status' => 1])->get();
-    foreach ($datas as $data) {
-        $tt = ($data->table_name);
-        po($tt);
-    }
+Route::get('config/test', function () {
+    $datas =  Backup::where("status", 1)->get(["connection", "table_name"])->groupBy("connection");
 
-    // $dd = (array_values($tt));
-    // po($dd);
+    // $config = config('database.connections.inventory.dump.excludeTables');
+    // dd($config);
+
+
+    foreach ($datas as $connection => $table_names) {
+
+        $table_names = collect($table_names)->pluck("table_name");
+
+        // Config()->set(
+        //     "database.connections.{$connection}.dump.excludeTables",
+        //     $table_names
+        // );
+
+        $value = Config::get("database.connections.{$connection}.dump.excludeTables");
+        po($value);
+    }
+});
+Route::get('event',function(){
+    event(new EventManager('hello world'));
 });
