@@ -34,15 +34,17 @@ class Search_Product
             $aws_id = null;
             $seller_id = null;
             $country_code = 'US';
+            $ignore_key = [];
             
-
             if ($source[0] == 'in') {
+                $ignore_key = DB::connection('cliqnshop')->table('cns_ban_keywords')->where('site_id', $siteId)->pluck('keyword')->toArray() ? $ignore_key : ['Revolver','Gun','Pistol'] ;
                 $price_conversion_method = 'USAToINDB2C';
-                $ignore_key_for_cliqnshop = ucwords(str_replace(',', '|', getSystemSettingsValue('ignore_item_for_cliqnshop_in_india', 'Revolver,Gun,Pistol')), '|');
+                $ignore_key_for_cliqnshop = ucwords(str_replace(',', '|', implode(',',$ignore_key)), '|');
             }
             if ($source[0] == 'uae') {
+                $ignore_key = DB::connection('cliqnshop')->table('cns_ban_keywords')->where('site_id', $siteId)->pluck('keyword')->toArray() ? $ignore_key : ['Walkie','Talkies','Radio'] ;
                 $price_conversion_method = 'USATOUAE';
-                $ignore_key_for_cliqnshop = ucwords(str_replace(',', '|', getSystemSettingsValue('ignore_item_for_cliqnshop_in_uae', 'Walkie,Talkies,Radio')), '|');
+                $ignore_key_for_cliqnshop = ucwords(str_replace(',', '|', implode(',',$ignore_key)), '|');
             }
 
             $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->toArray();

@@ -1229,6 +1229,12 @@ return [
                                         'can' => ['Admin', 'Cliqnshop'],
                                         'icon' => 'fa fa-cloud-download',
                                     ],
+                                    [
+                                        'text' => 'Banned Keywords',
+                                        'url' => 'cliqnshop/keyword/ban',
+                                        'can' => ['Admin', 'Cliqnshop'],
+                                        'icon' => 'fa fa-ban',
+                                    ],
                                 ]
                 ],
             ],
