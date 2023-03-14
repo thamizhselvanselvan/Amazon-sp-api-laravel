@@ -18,6 +18,7 @@ use App\Models\Catalog\Catalog_in;
 use App\Models\Catalog\Catalog_us;
 use Illuminate\Support\Facades\DB;
 use App\Models\Catalog\Asin_source;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
@@ -69,14 +70,17 @@ Route::get('zoho/dump2', function () {
 
 Route::get('zoho/dump3', function () {
 
-    // $timestamp = [
-    //     'first_name' => 'vikesh1',
-    //     'last_name' => 'kumar1'
-    // ];
+    $processManagementID = ProcessManagement::where('module', 'Zoho Dump')
+        ->where('command_name', 'mosh:submit-request-to-zoho')
+        ->where('command_end_time', '0000-00-00 00:00:00')
+        ->get('id')
+        ->first();
 
-    // $records = zoho::select(['ASIN', 'Alternate_Order_No', 'updated_at'])->limit(100)->get()->toArray();
-    $records = zoho::count();
-    po($records == 0 ? 1 : 4);
+    po($processManagementID['id']);
+    exit;
+
+    $records = zoho::select(['ASIN', 'Alternate_Order_No', 'updated_at', 'Created_Time'])->limit(1000)->orderBy('Created_Time', 'DESC')->get()->toArray();
+
     if (!empty($records)) {
 
         po(($records));
