@@ -99,7 +99,8 @@ class CsvAsinImport
         $count = 0;
         $source = $records['source'];
         $fm_id = $records['fm_id'];
-        $priority = isset($records['priority']) ? $records['priority'] : '';
+
+        $priority = isset($records['tablePriority']) ? $records['tablePriority'] : '';
 
         if (isset($records['Last_queue'])) {
             $command_end_time = $records['Last_queue']->toDateTimeString();
@@ -109,7 +110,8 @@ class CsvAsinImport
         $source_lists = buyboxCountrycode();
         $product_lowest_price = [];
         $product = [];
-        foreach ($records['ASIN'] as $asin) {
+
+        foreach ($records['ASIN'] as $key => $asin) {
 
             $product[] = [
                 'seller_id' => $source_lists[$source],
@@ -124,22 +126,23 @@ class CsvAsinImport
                 'cyclic' => 0,
                 'delist' => 0,
                 'available' => 0,
-                'priority'  => $priority,
+                'priority'  => $records['priority'][$key],
                 'import_type' => 'Seller'
             ];
 
             if ($count == 1000) {
 
-                if ($records['module'] == "destination") {
-                    $push_to_bb = new PushAsin();
-                    $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $source, priority: $priority);
-                    $product = [];
-                    $product_lowest_price = [];
-                }
+                // if ($records['module'] == "destination") {
+                $push_to_bb = new PushAsin();
+                $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $source, priority: $priority);
+                $product = [];
+                $product_lowest_price = [];
+                // }
                 $count = 0;
             }
             $count++;
         }
+
         $push_to_bb = new PushAsin();
         $push_to_bb->PushAsinToBBTable(product: $product, product_lowest_price: $product_lowest_price, country_code: $source, priority: $priority);
         $product = [];

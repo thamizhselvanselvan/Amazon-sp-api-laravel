@@ -376,6 +376,12 @@ return [
                             'can' => ['Admin'],
                             'icon' => 'fa fa-calendar',
                         ],
+                        [
+                            'text' => 'DB back-up Management',
+                            'url' => 'admin/backup/management',
+                            'can' => ['Admin'],
+                            'icon' => 'fas fa-hdd',
+                        ],
                     ],
                 ],
 
@@ -1222,6 +1228,12 @@ return [
                                         'url' => 'cliqnshop/keyword/log',
                                         'can' => ['Admin', 'Cliqnshop'],
                                         'icon' => 'fa fa-cloud-download',
+                                    ],
+                                    [
+                                        'text' => 'Banned Keywords',
+                                        'url' => 'cliqnshop/keyword/ban',
+                                        'can' => ['Admin', 'Cliqnshop'],
+                                        'icon' => 'fa fa-ban',
                                     ],
                                 ]
                 ],

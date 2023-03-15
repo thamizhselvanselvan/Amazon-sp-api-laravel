@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Catalog;
 
 use Carbon\Carbon;
 use League\Csv\Writer;
+use App\Events\EventManager;
 use Illuminate\Http\Request;
 use App\Models\FileManagement;
 use App\Models\Inventory\Dispose;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use RealRashid\SweetAlert\Facades\Alert;
 use App\Services\Cliqnshop\CliqnshopCataloginsert;
 use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
 
@@ -22,6 +24,10 @@ class CliqnshopCatalogController extends Controller
 
     public function index()
     {
+
+        // $val = event(new EventManager('Catalog View'));
+        // Alert::success('opens', 'Welcome');
+
         $countrys = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
         return view('Cliqnshop.catalog', compact('countrys'));
     }
@@ -94,11 +100,11 @@ class CliqnshopCatalogController extends Controller
             ];
 
             FileManagement::create($file_info);
-            
+
 
             commandExecFunc("mosh:catalog_insert_cliqnshop ${path} ${site_id}");
             // commandExecFunc("mosh:export_catalog_imported_asin ${path}");
-           
+
 
             return back()->with('success', 'Cliqnshop Catalog file has been uploaded successfully !');
         }
@@ -133,8 +139,8 @@ class CliqnshopCatalogController extends Controller
 
         $searchKey = $search_data['search'];
         $searchKey = str_replace(' ', '%20', $searchKey);
-        $siteId = $search_data['siteId'];
-        $source = $search_data['source'];
+        // $siteId = $search_data['siteId'];
+        // $source = $search_data['source'];
 
         //Process Management start
         // $process_manage = [
@@ -154,7 +160,7 @@ class CliqnshopCatalogController extends Controller
         // $command_end_time = now();
         // ProcessManagementUpdate($pm_id, $command_end_time);
 
-        commandExecFunc("mosh:cliqnshop-product-search ${searchKey} ${siteId} ${source}");
+        commandExecFunc("mosh:cliqnshop-product-search ${searchKey}");
         return response()->json('successfully');
     }
 
@@ -213,19 +219,20 @@ class CliqnshopCatalogController extends Controller
 
                 foreach ($imagedata[0]['images'] as $counter => $image_data_new) {
                     $counter++;
+
                     if (array_key_exists("link", $image_data_new)) {
-
-                        if ($img1["Images${counter}"] = $image_data_new['height'] == 75) {
-
-                            $img1["Images${counter}"] = '';
-                        } else  if ($img1["Images${counter}"] = $image_data_new['height'] == 500) {
-                            $img1["Images${counter}"] = $image_data_new['link'];
-                        }
-                    } else {
                         $img1["Images${counter}"] = '';
-                    }
-                    if ($counter == 10) {
-                        break;
+                        if ($counter == 1) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        } else if ($counter == 4) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        } else if ($counter == 7) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        } else if ($counter == 10) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        } else if ($counter == 13) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        }
                     }
                 }
             } else {
@@ -367,5 +374,13 @@ class CliqnshopCatalogController extends Controller
         }
 
         return back()->with('success', 'uploading please wait... !');
+    }
+
+    public function progress()
+    {
+        Log::alert('ok');
+        // commandExecFunc('mosh:test_progress');
+        // return 'ok';
+        return response()->json(['success' => 'You have successfully upload file.']);
     }
 }

@@ -31,10 +31,17 @@ window.Pusher = require("pusher-js");
 //     forceTLS: true,
 // });
 
+// window.Echo = new Echo({
+//     broadcaster: "pusher",
+//     key: "085a15900448b1291189",
+//     cluster: "ap2",
+//     forceTLS: true,
+//     encrypted: true,
+// });
+
 window.Echo = new Echo({
     broadcaster: "pusher",
-    key: "085a15900448b1291189",
-    cluster: "ap2",
-    forceTLS: true,
-    encrypted: true,
+    key: process.env.MIX_PUSHER_APP_KEY,
+    cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+    forceTLS: true
 });

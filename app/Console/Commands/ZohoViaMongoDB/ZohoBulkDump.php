@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use League\Csv\Reader;
 use App\Models\MongoDB\zoho;
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -147,23 +148,22 @@ class ZohoBulkDump extends Command
         $csv_data->setDelimiter(',');
         $csv_data->setHeaderOffset(0);
 
-        $records = [];
-        $count = 0;
         foreach ($csv_data as $data) {
-            $timestamp = [
-                'created_at' => Carbon::now()->toDateTimeString(),
-                'updated_at' => Carbon::now()->toDateTimeString()
-            ];
-            $records[] = [...$data, ...$timestamp];
-            if ($count == 1000) {
-                zoho::insert($records);
-                $count = 0;
-                $records = [];
-            }
-            $count++;
+
+            zoho::where('Alternate_Order_No', $data['Alternate_Order_No'])->where('ASIN', $data['ASIN'])->update($data, ['upsert' => true]);
         }
-        zoho::insert($records);
-        Log::debug($records);
+
+        $processManagementID = ProcessManagement::where('module', 'Zoho Dump')
+            ->where('command_name', 'mosh:submit-request-to-zoho')
+            ->where('command_end_time', '0000-00-00 00:00:00')
+            ->get('id')
+            ->first();
+
+        $pm_id = $processManagementID['id'];
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
+
+        Log::debug($data);
     }
 
     public function ExtractZipFile($path)

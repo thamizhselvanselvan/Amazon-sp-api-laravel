@@ -291,18 +291,19 @@
                         let files = '';
                         $.each(response, function(index, response) {
                             let data = response;
+                            files += "<ul class='pl-0 ml-0 mb-0'><b> BuyBox " + index + "</b>";
                             $.each(data, function(key, data) {
 
-                                files += "<li class=' ml-0'>";
+                                files += "<li class=' ml-4'>";
                                 files +=
                                     "<a href='/catalog/buybox/download/zip/BuyBox/" +
                                     index + "/" + key +
-                                    "' class='p-0 m-0'> BuyBox " + index + '&nbsp;' +
-                                    'P' + key + "</a> ";
+                                    "' class='p-0 m-0'> Priority" + key +
+                                    "</a> ";
                                 files += data;
                                 files += "</li>";
                             });
-
+                            files += "</ul>";
                         });
                         $('.BuyBoxFiles').html(files);
                     }
@@ -329,18 +330,19 @@
                         let files = '';
                         $.each(response, function(index, response) {
                             let data = response;
+                            files += "<ul class='pl-0 ml-0 mb-0'> <b>BuyBox " + index + "</b>";
                             $.each(data, function(key, data) {
 
-                                files += "<li class=' ml-0'>";
+                                files += "<li class=' ml-4'>";
                                 files +=
                                     "<a href='/catalog/buybox/download/zip/BuyBoxOfUploadedFile/" +
                                     index + "/" + key +
-                                    "' class='p-0 m-0'> BuyBox " + index + '&nbsp;' +
-                                    'P' + key + "</a> ";
+                                    "' class='p-0 m-0'>Priority" + key +
+                                    "</a> ";
                                 files += data;
                                 files += "</li>";
                             });
-
+                            files += "</ul>";
                         });
                         $('.BuyBoxUploadedFiles').html(files);
                     }
