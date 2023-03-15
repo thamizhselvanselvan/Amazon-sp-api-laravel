@@ -63,13 +63,13 @@ return [
             'dump' => [
                 'dump_binary_path' => env('MYSQL_DUMP_BINARY_PATH', '/usr/bin/'),
                 'excludeTables' => [
-                    // 'sp_asin_masters',
-                    // 'sp_failed_jobs',
-                    // 'sp_jobs',
-                    // 'sp_model_has_permissions',
-                    // 'sp_other_catalog_asins',
-                    // 'sp_rate_masters',
-                    // 'sp_universal_textiles',
+                    'sp_asin_masters',
+                    'sp_failed_jobs',
+                    'sp_jobs',
+                    'sp_model_has_permissions',
+                    'sp_other_catalog_asins',
+                    'sp_rate_masters',
+                    'sp_universal_textiles',
                 ],
                 'useSingleTransaction' => true,
             ],
@@ -97,10 +97,10 @@ return [
             'dump' => [
                 'dump_binary_path' => env('MYSQL_DUMP_BINARY_PATH', '/usr/bin/'),
                 'excludeTables' => [
-                    // 'in_catalogs',
-                    // 'in_states',
-                    // 'in_countries',
-                    // 'in_cities',
+                    'in_catalogs',
+                    'in_states',
+                    'in_countries',
+                    'in_cities',
                 ],
                 'useSingleTransaction' => true,
             ],
@@ -124,13 +124,6 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-            'dump' => [
-                'dump_binary_path' => env('MYSQL_DUMP_BINARY_PATH', '/usr/bin/'),
-                'excludeTables' => [
-                    
-                ],
-                'useSingleTransaction' => true,
-            ],
         ],
 
         'order' => [
@@ -151,13 +144,6 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-            'dump' => [
-                'dump_binary_path' => env('MYSQL_DUMP_BINARY_PATH', '/usr/bin/'),
-                'excludeTables' => [
-                    
-                ],
-                'useSingleTransaction' => true,
-            ],
         ],
 
         'order_no_prefix' => [
@@ -198,14 +184,6 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-            'dump' => [
-                'dump_binary_path' => env('MYSQL_DUMP_BINARY_PATH', '/usr/bin/'),
-                'excludeTables' => [
-
-                 
-                ],
-                'useSingleTransaction' => true,
-            ],
         ],
 
         'buybox' => [
@@ -288,13 +266,6 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-            'dump' => [
-                'dump_binary_path' => env('MYSQL_DUMP_BINARY_PATH', '/usr/bin/'),
-                'excludeTables' => [
-                   
-                ],
-                'useSingleTransaction' => true,
-            ],
         ],
 
         'business' => [
@@ -315,13 +286,6 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-            'dump' => [
-                'dump_binary_path' => env('MYSQL_DUMP_BINARY_PATH', '/usr/bin/'),
-                'excludeTables' => [
-                   
-                ],
-                'useSingleTransaction' => true,
-            ],
         ],
 
         'mongodb' => [
@@ -394,13 +358,6 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-            'dump' => [
-                'dump_binary_path' => env('MYSQL_DUMP_BINARY_PATH', '/usr/bin/'),
-                'excludeTables' => [
-                   
-                ],
-                'useSingleTransaction' => true,
-            ],
         ],
 
     ],

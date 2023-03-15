@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use League\Csv\Reader;
 use App\Models\MongoDB\zoho;
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -148,12 +149,20 @@ class ZohoBulkDump extends Command
         $csv_data->setHeaderOffset(0);
 
         foreach ($csv_data as $data) {
-            $unique_field = [
-                'ASIN' => $data['ASIN'],
-                'Alternate_Order_No' => $data['Alternate_Order_No']
-            ];
-            zoho::where('Alternate_Order_No_1_ASIN_1', $unique_field)->update($data, ['upsert' => true]);
+
+            zoho::where('Alternate_Order_No', $data['Alternate_Order_No'])->where('ASIN', $data['ASIN'])->update($data, ['upsert' => true]);
         }
+
+        $processManagementID = ProcessManagement::where('module', 'Zoho Dump')
+            ->where('command_name', 'mosh:submit-request-to-zoho')
+            ->where('command_end_time', '0000-00-00 00:00:00')
+            ->get('id')
+            ->first();
+
+        $pm_id = $processManagementID['id'];
+        $command_end_time = now();
+        ProcessManagementUpdate($pm_id, $command_end_time);
+
         Log::debug($data);
     }
 

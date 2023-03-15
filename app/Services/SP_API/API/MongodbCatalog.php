@@ -5,6 +5,7 @@ namespace App\Services\SP_API\API;
 use Exception;
 use App\Models\Aws_credential;
 use App\Services\Config\ConfigTrait;
+use App\Models\Catalog\MongoCatalogae;
 use App\Models\Catalog\MongoCatalogin;
 use App\Models\Catalog\MongoCatalogus;
 use SellingPartnerApi\Api\CatalogItemsV20220401Api;
@@ -36,22 +37,16 @@ class MongodbCatalog
         }
         $queue_data[] = $this->FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id);
         if (isset($queue_data[0])) {
-            foreach ($queue_data[0] as $key =>  $data) {
-
-                // $asinSourceUpdate[$key] = [
-                //     'asin' => $data['asin'],
-                //     'user_id' => $data['seller_id'],
-                //     'status' => '1'
-                // ];
+            foreach ($queue_data[0] as $data) {
 
                 if ($country_code == 'IN') {
                     MongoCatalogin::where('asin', $data['asin'])->update($data, ['upsert' => true]);
                 } elseif ($country_code == 'US') {
                     MongoCatalogus::where('asin', $data['asin'])->update($data, ['upsert' => true]);
+                } elseif ($country_code == 'AE') {
+                    MongoCatalogae::where('asin', $data['asin'])->update($data, ['upsert' => true]);
                 }
             }
-            // $source_mode = table_model_create(country_code: strtolower($country_code), model: 'Asin_source', table_name: 'asin_source_');
-            // $source_mode->upsert($asinSourceUpdate, ['user_asin_unique'], ['asin', 'user_id', 'status']);
         }
     }
 
