@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
-<head>
 
+<head>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     {{-- Base Meta Tags --}}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -51,10 +52,11 @@
 
     {{-- Custom Stylesheets (post AdminLTE) --}}
     @yield('adminlte_css')
-
     {{-- Favicon --}}
+    <link rel="shortcut icon" href="{{ asset('image/logo.ico') }}" />
     @if(config('adminlte.use_ico_only'))
-    <link rel="shortcut icon" href="{{ asset('favicons/favicon.ico') }}" />
+    <!-- <link rel="shortcut icon" href="{{ asset('favicons/favicon.ico') }}" /> -->
+
     @elseif(config('adminlte.use_full_favicon'))
     <link rel="shortcut icon" href="{{ asset('favicons/favicon.ico') }}" />
     <link rel="apple-touch-icon" sizes="57x57" href="{{ asset('favicons/apple-icon-57x57.png') }}">
@@ -74,7 +76,6 @@
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="{{ asset('favicon/ms-icon-144x144.png') }}">
     @endif
-
 </head>
 
 <body class="@yield('classes_body')" @yield('body_data')>
@@ -113,6 +114,7 @@
     @endif
 
 
+
     {{-- Livewire Script --}}
     @if(config('adminlte.livewire'))
     @if(app()->version() >= 7)
@@ -125,6 +127,17 @@
     {{-- Custom Scripts --}}
     @yield('adminlte_js')
 
+    @include('sweetalert::alert')
+    <script>
+        $(document).ready(function() {
+
+            var channel = Echo.channel('channel');
+            channel.listen('.event', function(data) {
+            swal("App 360 Says!", data.message);
+            });
+
+        });
+    </script>
 </body>
 
 </html>
