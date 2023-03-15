@@ -98,6 +98,9 @@ Route::post('cliqnshop/getstaticpagecontent', 'Cliqnshop\FooterController@getSta
 Route::get('cliqnshop/keyword/log', 'Cliqnshop\CliqnshopKeywordController@keyword_search_log_index')->name('cliqnshop.keyword.log');
 Route::post('cliqnshop/keyword/log/delete', 'Cliqnshop\CliqnshopKeywordController@keyword_search_log_remove')->name('cliqnshop.keyword.log.delete');
 
+Route::get('cliqnshop/category', 'Cliqnshop\CliqnshopCategoryController@mshop_category_lister')->name('cliqnshop.category');
+Route::post('cliqnshop/category/storebancategory', 'Cliqnshop\CliqnshopCategoryController@storebancategory')->name('cliqnshop.category.storebancategory');
+
 // Route::get('product/test', function () {
 //   // $data[] = $key;
 //   $searchKey = 'iPhone';
