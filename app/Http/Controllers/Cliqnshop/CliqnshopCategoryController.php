@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\Facades\DataTables;
 
 
@@ -14,15 +15,40 @@ class CliqnshopCategoryController extends Controller
     public function mshop_category_lister(Request $request)
     {
 
-    
-        $data = DB::connection('cliqnshop')->table('mshop_catalog') 
-        ->select('mshop_catalog.*', 'cns_ban_category.category_code','cns_ban_category.created_at')
-        ->leftjoin('cns_ban_category','cns_ban_category.category_code','=','mshop_catalog.code')
-        ->orderBy('ctime','desc')          
-        ->get();
+        // filtering the data when the method has get requests  --start
+        $query = DB::connection('cliqnshop')->table('mshop_catalog');
+        $query->select('mshop_catalog.*', 'cns_ban_category.category_code','cns_ban_category.created_at');       
+        
 
-        // dd($data);
-         
+        $query->leftJoin('cns_ban_category', function($join) {
+            $join->on('mshop_catalog.code', '=', 'cns_ban_category.category_code')
+                 ->on('mshop_catalog.siteid', '=', 'cns_ban_category.site_id');
+        });
+
+        if ($request->exists('site_id') && !empty($request->site_id)) 
+        {
+            $query->where('mshop_catalog.siteid', $request->site_id);
+        }       
+        if ($request->exists('banned_status') && !empty($request->banned_status )  ) 
+        {
+            if($request->banned_status == "banned")
+            {
+                $query->whereNotNull('cns_ban_category.category_code');
+            }                
+            elseif ($request->banned_status == "allowed")
+            {
+               
+                $query->whereNotIn('mshop_catalog.code', function ($query) {
+                    $query->select('category_code')->from('cns_ban_category')->whereNotNull('category_code');
+                });
+            } 
+        }
+
+        $query->orderBy('ctime','desc');
+        $data = $query->get();
+        // filtering the data when the method has get requests  --end
+
+        
         if ($request->ajax()) {
             return Datatables::of($data)
                 ->addIndexColumn()
@@ -64,7 +90,10 @@ class CliqnshopCategoryController extends Controller
                 ->make(true);
         }
 
-        return view('Cliqnshop.category.mshop_category_lister');
+
+        $sites = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
+
+        return view('Cliqnshop.category.mshop_category_lister',compact('sites') );
     }
 
     public function storebancategory(Request $request)

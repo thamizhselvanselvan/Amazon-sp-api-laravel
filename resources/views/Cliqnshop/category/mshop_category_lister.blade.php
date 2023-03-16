@@ -56,7 +56,8 @@
         </div>
     @endif
 
-    <div class="card card-info collapsed-card">
+    {{-- collapse filter card start --}}
+    <div class="card card-info collapsed-card" id="filter-card">
         <div class="card-header">
             <h3 class="card-title">Filter :)</h3>
             <div class="card-tools">
@@ -69,24 +70,37 @@
             </div>
         </div>
 
-        <div class="card-body" style="display: none;">
+        <div class="card-body" >
             <div class="row">
                 <div class="col-12">
                     <div>
-                        <form class="form-inline" id="form-log-delete" method="post"
-                            action="{{ route('cliqnshop.keyword.log.delete') }}">
-                            @csrf
+                        <form class="form-inline" id="form-log-delete" method="get"
+                            action="{{ route('cliqnshop.category') }}">
+                            
                             <div class="form-group">
-            
-                                <select class="form-control form-control-sm" id="select-timeline" name="select_timeline">
-                                    <option>Select the Country</option>
-                                    <option value="">country 1</option>
-                                    <option value="">country 2</option>
-            
-                                </select>
+
+                                <x-adminlte-select name="site_id" id="filterSites" class="form-control form-control-sm">
+                                    <option value='' selected>Select the Site to filter</option>
+                                    @foreach ($sites as $site)
+                                        @if ($site->code == 'in')
+                                            {{ $site->code = 'India' }}
+                                        @elseif ($site->code == 'uae')
+                                            {{ $site->code = 'UAE' }}
+                                        @endif
+                                        <option value="{{ $site->siteid }}">{{ $site->code }}</option>
+                                    @endforeach
+                                </x-adminlte-select>                                
+
+                                <x-adminlte-select name="banned_status" id="bannedStates" class="form-control form-control-sm ml-2">
+                                    <option value='' selected>Select the Status to filter</option>                                    
+                                    <option value="banned">Banned</option>
+                                    <option value="allowed">Allowed</option>                                    
+                                </x-adminlte-select>
+
                             </div>
-            
+                           
                             <button type="submit" id="clear_log" class="btn btn-warning mx-2 btn-sm">Apply</button>
+                            <a class="btn btn-default  btn-sm" href="{{route('cliqnshop.category')}}">Reset</a>
                         </form>
                     </div> 
 
@@ -96,10 +110,11 @@
 
         </div>
 
-        <div class="card-footer" style="display: none;">
+        <div class="card-footer" >
             Heyy !~
         </div>
     </div>
+    {{-- collapse filter card -end --}}
 
     
 
@@ -127,6 +142,51 @@
 
 @section('js')
     <script type="text/javascript">
+
+        const filter = {
+            site_id : new URLSearchParams(window.location.search).get('site_id'),
+            banned_status : new URLSearchParams(window.location.search).get('banned_status'),
+        }
+
+        let url = `category?`;        
+        let hasFilter = false;
+
+        if(!!filter.site_id)
+        {
+            hasFilter = true;
+            url += `site_id=${filter.site_id}`  ;
+
+            var filterSites = document.getElementById('filterSites'), filterSite, i;
+            for (i = 0; i < filterSites.length; i++) {
+                filterSite = filterSites[i];
+                if (filterSite.value == filter.site_id)
+                {
+                    filterSite.setAttribute('selected', true);
+                }
+            }
+
+        }
+        if (!!filter.banned_status) 
+        {
+            hasFilter = true;
+            url += `&banned_status=${filter.banned_status}`  ;
+
+            var bannedStates = document.getElementById('bannedStates'), bannedState, i;
+            for (i = 0; i < bannedStates.length; i++) {
+                bannedState = bannedStates[i];
+                if (bannedState.value == filter.banned_status)
+                {
+                    bannedState.setAttribute('selected', true);
+                }
+            }
+        }
+
+        if(hasFilter)
+        {
+            $('#filter-card').removeClass("collapsed-card");
+        }
+        
+
         $.extend($.fn.dataTable.defaults, {
             pageLength: 50,
         });
@@ -136,7 +196,7 @@
             var table = $('.data-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('cliqnshop.category') }}",
+                ajax: `${url}`,
 
                 columns: [{
                         data: 'DT_RowIndex',
