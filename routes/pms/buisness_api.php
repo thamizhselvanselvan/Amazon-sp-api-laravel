@@ -103,6 +103,9 @@ Route::post('cliqnshop/keyword/ban', 'Cliqnshop\CliqnshopKeywordController@store
 Route::post('cliqnshop/keyword/ban/edit/{id}', 'Cliqnshop\CliqnshopKeywordController@update_keyword')->name('cliqnshop.keyword.ban.update');
 Route::post('cliqnshop/keyword/ban/delete/{id}', 'Cliqnshop\CliqnshopKeywordController@delete_keyword')->name('cliqnshop.keyword.ban.delete');
 
+Route::get('cliqnshop/category', 'Cliqnshop\CliqnshopCategoryController@mshop_category_lister')->name('cliqnshop.category');
+Route::post('cliqnshop/category/storebancategory', 'Cliqnshop\CliqnshopCategoryController@storebancategory')->name('cliqnshop.category.storebancategory');
+
 // Route::get('product/test', function () {
 //   // $data[] = $key;
 //   $searchKey = 'iPhone';
