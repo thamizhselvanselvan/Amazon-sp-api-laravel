@@ -27,7 +27,7 @@ class CliqnshopCategoryController extends Controller
         }
         else
         {
-            $query->leftJoin('cns_ban_category', function($join) {
+            $query->leftjoin('cns_ban_category', function($join) {
                 $join->on('mshop_catalog.code', '=', 'cns_ban_category.category_code')
                      ->on('mshop_catalog.siteid', '=', 'cns_ban_category.site_id');
             });
