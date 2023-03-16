@@ -27,7 +27,7 @@ class CliqnshopCatalogController extends Controller
 
         // $val = event(new EventManager('Catalog View'));
         // Alert::success('opens', 'Welcome');
-        
+
         $countrys = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
         return view('Cliqnshop.catalog', compact('countrys'));
     }
@@ -374,5 +374,13 @@ class CliqnshopCatalogController extends Controller
         }
 
         return back()->with('success', 'uploading please wait... !');
+    }
+
+    public function progress()
+    {
+        Log::alert('ok');
+        // commandExecFunc('mosh:test_progress');
+        // return 'ok';
+        return response()->json(['success' => 'You have successfully upload file.']);
     }
 }

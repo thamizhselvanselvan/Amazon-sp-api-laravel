@@ -97,6 +97,14 @@ Route::post('cliqnshop/getstaticpagecontent', 'Cliqnshop\FooterController@getSta
 
 Route::get('cliqnshop/keyword/log', 'Cliqnshop\CliqnshopKeywordController@keyword_search_log_index')->name('cliqnshop.keyword.log');
 Route::post('cliqnshop/keyword/log/delete', 'Cliqnshop\CliqnshopKeywordController@keyword_search_log_remove')->name('cliqnshop.keyword.log.delete');
+Route::get('cliqnshop/keyword/ban', 'Cliqnshop\CliqnshopKeywordController@ban_keywords_index')->name('cliqnshop.keyword.ban');
+Route::get('cliqnshop/keyword/ban/{site_id}', 'Cliqnshop\CliqnshopKeywordController@ban_keywords_index')->name('cliqnshop.keyword.ban');
+Route::post('cliqnshop/keyword/ban', 'Cliqnshop\CliqnshopKeywordController@store_ban_keywords')->name('cliqnshop.keyword.ban');
+Route::post('cliqnshop/keyword/ban/edit/{id}', 'Cliqnshop\CliqnshopKeywordController@update_keyword')->name('cliqnshop.keyword.ban.update');
+Route::post('cliqnshop/keyword/ban/delete/{id}', 'Cliqnshop\CliqnshopKeywordController@delete_keyword')->name('cliqnshop.keyword.ban.delete');
+
+Route::get('cliqnshop/category', 'Cliqnshop\CliqnshopCategoryController@mshop_category_lister')->name('cliqnshop.category');
+Route::post('cliqnshop/category/storebancategory', 'Cliqnshop\CliqnshopCategoryController@storebancategory')->name('cliqnshop.category.storebancategory');
 
 // Route::get('product/test', function () {
 //   // $data[] = $key;

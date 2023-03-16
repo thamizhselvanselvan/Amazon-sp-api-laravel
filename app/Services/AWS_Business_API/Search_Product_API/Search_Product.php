@@ -34,15 +34,29 @@ class Search_Product
             $aws_id = null;
             $seller_id = null;
             $country_code = 'US';
+            $ignore_key = [];
+            
 
 
             if ($source[0] == 'in') {
+                $ignore_key = DB::connection('cliqnshop')->table('cns_ban_keywords')->where('site_id', $siteId)->pluck('keyword')->toArray();
+                if ($ignore_key == [])
+                {
+                    $ignore_key = ['Gun','Revolver','Pistol'];
+                }
                 $price_conversion_method = 'USAToINDB2C';
-                $ignore_key_for_cliqnshop = ucwords(str_replace(',', '|', getSystemSettingsValue('ignore_item_for_cliqnshop_in_india', 'Revolver,Gun,Pistol')), '|');
+                $ignore_key_for_cliqnshop = ucwords(str_replace(',', '|', implode(',',$ignore_key)), '|');
             }
+           
+
             if ($source[0] == 'uae') {
+                $ignore_key = DB::connection('cliqnshop')->table('cns_ban_keywords')->where('site_id', $siteId)->pluck('keyword')->toArray();
+                if ($ignore_key == [])
+                {
+                    $ignore_key = ['Radio','Walkie','Talkies'];
+                }
                 $price_conversion_method = 'USATOUAE';
-                $ignore_key_for_cliqnshop = ucwords(str_replace(',', '|', getSystemSettingsValue('ignore_item_for_cliqnshop_in_uae', 'Walkie,Talkies,Radio')), '|');
+                $ignore_key_for_cliqnshop = ucwords(str_replace(',', '|', implode(',',$ignore_key)), '|');
             }
 
             $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->toArray();
@@ -165,8 +179,8 @@ class Search_Product
                 }
             }
             foreach ($catalog_for_cliqnshop as $cliqnshop_catalog) {
-
-                if (isset($cliqnshop_catalog['price']) && isset($cliqnshop_catalog['images'])) {
+                 $ignore_cat = DB::connection('cliqnshop')->table('cns_ban_category')->where('site_id',$siteId)->pluck('category_code')->toArray();
+                if (isset($cliqnshop_catalog['price']) && isset($cliqnshop_catalog['images']) && !in_array($cliqnshop_catalog['category_code'],$ignore_cat,true)) {
                     $category = $cliqnshop_catalog['category_code'] ?? 'demo-new';
                     $asin = $cliqnshop_catalog['asin'];
                     $item_name = $cliqnshop_catalog['itemName'];
