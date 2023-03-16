@@ -14,21 +14,30 @@ class CliqnshopCategoryController extends Controller
 {
     public function mshop_category_lister(Request $request)
     {
-
+   
         // filtering the data when the method has get requests  --start
         $query = DB::connection('cliqnshop')->table('mshop_catalog');
         $query->select('mshop_catalog.*', 'cns_ban_category.category_code','cns_ban_category.created_at');       
         
 
-        $query->leftJoin('cns_ban_category', function($join) {
-            $join->on('mshop_catalog.code', '=', 'cns_ban_category.category_code')
-                 ->on('mshop_catalog.siteid', '=', 'cns_ban_category.site_id');
-        });
+        if((!$request->exists('site_id')) && empty($request->site_id))
+        {
+            $query->leftjoin('cns_ban_category','cns_ban_category.category_code','=','mshop_catalog.code');
+            $query->whereNotIn('mshop_catalog.siteid',[0]);
+        }        
+        else
+        {
+            $query->leftJoin('cns_ban_category', function($join) {
+                $join->on('mshop_catalog.code', '=', 'cns_ban_category.category_code')
+                     ->on('mshop_catalog.siteid', '=', 'cns_ban_category.site_id');
+            });
+        }        
 
         if ($request->exists('site_id') && !empty($request->site_id)) 
         {
             $query->where('mshop_catalog.siteid', $request->site_id);
         }       
+        
         if ($request->exists('banned_status') && !empty($request->banned_status )  ) 
         {
             if($request->banned_status == "banned")
@@ -45,12 +54,12 @@ class CliqnshopCategoryController extends Controller
         }
 
         $query->orderBy('ctime','desc');
-        $data = $query->get();
+        //$data = $query->get();
         // filtering the data when the method has get requests  --end
 
         
         if ($request->ajax()) {
-            return Datatables::of($data)
+            return Datatables::of($query)
                 ->addIndexColumn()
 
 
