@@ -22,12 +22,12 @@ class CliqnshopCategoryController extends Controller
 
         if((!$request->exists('site_id')) && empty($request->site_id))
         {
-            $query->leftjoin('cns_ban_category','cns_ban_category.category_code','=','mshop_catalog.code');
+            $query->leftJoin('cns_ban_category','cns_ban_category.category_code','=','mshop_catalog.code');
             $query->whereNotIn('mshop_catalog.siteid',[0]);
         }
         else
         {
-            $query->leftjoin('cns_ban_category', function($join) {
+            $query->leftJoin('cns_ban_category', function($join) {
                 $join->on('mshop_catalog.code', '=', 'cns_ban_category.category_code')
                      ->on('mshop_catalog.siteid', '=', 'cns_ban_category.site_id');
             });
