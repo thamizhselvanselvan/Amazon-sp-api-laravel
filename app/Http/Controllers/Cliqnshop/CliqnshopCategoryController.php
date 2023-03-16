@@ -45,7 +45,10 @@ class CliqnshopCategoryController extends Controller
         }
 
         $query->orderBy('ctime','desc');
-        $data = $query->get(false);
+        if($request!==null)
+        {
+        $data = $query->get();
+        }
         // filtering the data when the method has get requests  --end
 
         
