@@ -20,10 +20,19 @@ class CliqnshopCategoryController extends Controller
         $query->select('mshop_catalog.*', 'cns_ban_category.category_code','cns_ban_category.created_at');       
         
 
-        $query->leftJoin('cns_ban_category', function($join) {
-            $join->on('mshop_catalog.code', '=', 'cns_ban_category.category_code')
-                 ->on('mshop_catalog.siteid', '=', 'cns_ban_category.site_id');
-        });
+        if(empty($request->all()))
+        {
+            $query->leftJoin('cns_ban_category', function($join) {
+                $join->on('mshop_catalog.code', '=', 'cns_ban_category.category_code');
+            });
+        }
+        else
+        {
+            $query->leftJoin('cns_ban_category', function($join) {
+                $join->on('mshop_catalog.code', '=', 'cns_ban_category.category_code')
+                     ->on('mshop_catalog.siteid', '=', 'cns_ban_category.site_id');
+            });
+        }
 
         if ($request->exists('site_id') && !empty($request->site_id)) 
         {
