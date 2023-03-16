@@ -22,17 +22,16 @@ class CliqnshopCategoryController extends Controller
 
         if((!$request->exists('site_id')) && empty($request->site_id))
         {
-            $query->leftjoin('cns_ban_category','cns_ban_category.category_code','=','mshop_catalog.code');
+            $query->leftJoin('cns_ban_category','cns_ban_category.category_code','=','mshop_catalog.code');
             $query->whereNotIn('mshop_catalog.siteid',[0]);
-        }        
+        }
         else
         {
             $query->leftJoin('cns_ban_category', function($join) {
                 $join->on('mshop_catalog.code', '=', 'cns_ban_category.category_code')
                      ->on('mshop_catalog.siteid', '=', 'cns_ban_category.site_id');
             });
-        }        
-
+        }
         if ($request->exists('site_id') && !empty($request->site_id)) 
         {
             $query->where('mshop_catalog.siteid', $request->site_id);
@@ -53,13 +52,14 @@ class CliqnshopCategoryController extends Controller
             } 
         }
 
-        $query->orderBy('ctime','desc');
-        //$data = $query->get();
+        
         // filtering the data when the method has get requests  --end
 
         
         if ($request->ajax()) {
-            return Datatables::of($query)
+            $query->orderBy('ctime','desc');
+            $data = $query->get();
+            return Datatables::of($data)
                 ->addIndexColumn()
 
 
