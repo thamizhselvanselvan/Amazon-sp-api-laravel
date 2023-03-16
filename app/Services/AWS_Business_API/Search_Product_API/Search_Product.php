@@ -40,11 +40,21 @@ class Search_Product
 
             if ($source[0] == 'in') {
                 $ignore_key = DB::connection('cliqnshop')->table('cns_ban_keywords')->where('site_id', $siteId)->pluck('keyword')->toArray();
+                if ($ignore_key == [])
+                {
+                    $ignore_key = ['Gun','Revolver','Pistol'];
+                }
                 $price_conversion_method = 'USAToINDB2C';
                 $ignore_key_for_cliqnshop = ucwords(str_replace(',', '|', implode(',',$ignore_key)), '|');
             }
+           
+
             if ($source[0] == 'uae') {
                 $ignore_key = DB::connection('cliqnshop')->table('cns_ban_keywords')->where('site_id', $siteId)->pluck('keyword')->toArray();
+                if ($ignore_key == [])
+                {
+                    $ignore_key = ['Radio','Walkie','Talkies'];
+                }
                 $price_conversion_method = 'USATOUAE';
                 $ignore_key_for_cliqnshop = ucwords(str_replace(',', '|', implode(',',$ignore_key)), '|');
             }
