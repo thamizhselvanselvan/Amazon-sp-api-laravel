@@ -179,8 +179,8 @@ class Search_Product
                 }
             }
             foreach ($catalog_for_cliqnshop as $cliqnshop_catalog) {
-
-                if (isset($cliqnshop_catalog['price']) && isset($cliqnshop_catalog['images'])) {
+                 $ignore_cat = DB::connection('cliqnshop')->table('cns_ban_category')->where('site_id',$siteId)->pluck('category_code')->toArray();
+                if (isset($cliqnshop_catalog['price']) && isset($cliqnshop_catalog['images']) && !in_array($cliqnshop_catalog['category_code'],$ignore_cat,true)) {
                     $category = $cliqnshop_catalog['category_code'] ?? 'demo-new';
                     $asin = $cliqnshop_catalog['asin'];
                     $item_name = $cliqnshop_catalog['itemName'];
