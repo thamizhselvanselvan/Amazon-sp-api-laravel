@@ -15,12 +15,12 @@
         }
     </style>
 @stop
-@section('title', 'Cliqnshop Banned Keywords')
+@section('title', 'Cliqnshop Banned Brands')
 
 
 @section('content_header')
     <div class="row">
-        <h3>Banned Keywords</h3>
+        <h3>Banned Brands</h3>
     </div>
 
 @stop
@@ -37,14 +37,14 @@
     <div class="row">
         <div class="col">
             <h6 class="mb-4">
-                <x-adminlte-button class="ml-2" label="Add Keyword" theme="primary" icon="fas fa-plus" data-toggle="modal"
+                <x-adminlte-button class="ml-2" label="Add Brand" theme="primary" icon="fas fa-plus" data-toggle="modal"
                     data-target="#exampleModal" />
                 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Add New Keyword</h5>
+                                <h5 class="modal-title" id="exampleModalLabel">Add New Brand</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -66,9 +66,9 @@
                                         {{-- <span class="text-danger" id="siteErrorMsg"></span> --}}
                                     </div>
                                     <div class="form-group">
-                                        <label for="Keyword" class="col-form-label">Keyword:</label>
+                                        <label for="brand" class="col-form-label">Brand:</label>
                                         <div class="w-50">
-                                            <x-adminlte-input name="keyword" id="keyword"></x-adminlte-input>
+                                            <x-adminlte-input name="brand" id="brand"></x-adminlte-input>
                                             {{-- <span class="text-danger" id="keywordErrorMsg"></span> --}}
                                         </div>
                                     </div>
@@ -93,7 +93,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Update Keyword</h5>
+                            <h5 class="modal-title">Update Brand</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -115,9 +115,9 @@
                                     {{-- <span class="text-danger" id="siteErrorMsg"></span> --}}
                                 </div>
                                 <div class="form-group">
-                                    <label for="Keyword" class="col-form-label">Keyword:</label>
+                                    <label for="brand" class="col-form-label">Brand:</label>
                                     <div class="w-50">
-                                        <x-adminlte-input name="keyword" id="editkeyword"></x-adminlte-input>
+                                        <x-adminlte-input name="brand" id="editbrand"></x-adminlte-input>
                                         {{-- <span class="text-danger" id="keywordErrorMsg"></span> --}}
                                     </div>
                                 </div>
@@ -152,7 +152,7 @@
                 <thead>
                     <tr class="table-info">
                         <th>ID</th>
-                        <th>Keyword</th>
+                        <th>Brand</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -183,8 +183,8 @@
                         name: 'id'
                     },
                     {
-                        data: 'keyword',
-                        name: 'keyword'
+                        data: 'brand',
+                        name: 'brand'
                     },
                     {
                         data: 'action',
@@ -200,7 +200,7 @@
             }
             let id = $(this).attr('value');
             $.ajax({
-                url: "/cliqnshop/keyword/ban/delete/"+id,
+                url: "/cliqnshop/brand/ban/delete/"+id,
                 type: "POST",
                 data: {
                     "_token": "{{ csrf_token() }}",
@@ -211,7 +211,7 @@
                     console.log(response);
                     if (response == 'Successfully') {
                         window.location.href =
-                            '/cliqnshop/keyword/ban?success=Keyword Deleted Successfully';
+                            '/cliqnshop/brand/ban?success=brand Deleted Successfully';
                     }
                 },
         });
@@ -222,8 +222,8 @@
              let id = $(this).attr('value');
             let site_id = $(this).attr("data-siteid");
             // let site_name = $(this).attr("data-site_name");
-            let keyword = $(this).attr("data-keyword");
-            $("#editkeyword").val(keyword);
+            let brand = $(this).attr("data-brand");
+            $("#editbrand").val(brand);
 
             var trends = document.getElementById('editsite'), trend, i;
             for (i = 0; i < trends.length; i++) {
@@ -233,25 +233,26 @@
                     trend.setAttribute('selected', true);
                 }
             }
+
             $('#SubmitForm_edit').on('submit', function(e) {
             e.preventDefault();
             let site = $('#editsite').val();
-            let keyword = $('#editkeyword').val();
+            let brand = $('#editbrand').val();
             $.ajax({
-                url: "/cliqnshop/keyword/ban/edit/"+id,
+                url: "/cliqnshop/brand/ban/edit/"+id,
                 type: "POST",
                 data: {
                     "_token": "{{ csrf_token() }}",
                     id: id,
                     site: site,
-                    keyword: keyword,
+                    brand: brand,
                 },
                 success: function(response) {
                     $('#successMsg').show();
                     console.log(response);
                     if (response == 'Successfully') {
                         window.location.href =
-                            '/cliqnshop/keyword/ban?success=Keyword Updated Successfully';
+                            '/cliqnshop/brand/ban?success=brand Updated Successfully';
                     }
                 },
                 error: function(response) {
@@ -260,8 +261,8 @@
                         alert(response.responseJSON.errors.site);
                     }
                     // $('#keywordErrorMsg').text(response.responseJSON.errors.keyword);
-                    if (typeof response.responseJSON.errors.keyword !== 'undefined') {
-                        alert(response.responseJSON.errors.keyword);
+                    if (typeof response.responseJSON.errors.brand !== 'undefined') {
+                        alert(response.responseJSON.errors.brand);
                     }
                 },
             });
@@ -275,26 +276,26 @@
 
         $('#site_id').change(function() {
             let site_id = $('#site_id').val();
-            window.location = "/cliqnshop/keyword/ban/" + site_id
+            window.location = "/cliqnshop/brand/ban/" + site_id
         });
         $('#SubmitForm').on('submit', function(e) {
             e.preventDefault();
             let site = $('#site').val();
-            let keyword = $('#keyword').val();
+            let brand = $('#brand').val();
             $.ajax({
-                url: "/cliqnshop/keyword/ban",
+                url: "/cliqnshop/brand/ban",
                 type: "POST",
                 data: {
                     "_token": "{{ csrf_token() }}",
                     site: site,
-                    keyword: keyword,
+                    brand: brand,
                 },
                 success: function(response) {
                     $('#successMsg').show();
                     console.log(response);
                     if (response == 'Successfully') {
                         window.location.href =
-                            '/cliqnshop/keyword/ban?success=Keyword Added Successfully';
+                            '/cliqnshop/brand/ban?success=Keyword Added Successfully';
                     }
                 },
                 error: function(response) {
@@ -303,8 +304,8 @@
                         alert(response.responseJSON.errors.site);
                     }
                     // $('#keywordErrorMsg').text(response.responseJSON.errors.keyword);
-                    if (typeof response.responseJSON.errors.keyword !== 'undefined') {
-                        alert(response.responseJSON.errors.keyword);
+                    if (typeof response.responseJSON.errors.brand !== 'undefined') {
+                        alert(response.responseJSON.errors.brand);
                     }
                 },
             });
