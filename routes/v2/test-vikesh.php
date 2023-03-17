@@ -2,11 +2,13 @@
 
 use RedBeanPHP\R;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use League\Csv\Reader;
 use League\Csv\Writer;
 use Carbon\CarbonPeriod;
 use App\Models\TestMongo;
 use App\Models\MongoDB\zoho;
+use GuzzleHttp\Psr7\Request;
 use App\Models\FileManagement;
 use App\Models\Catalog\catalogae;
 use App\Models\Catalog\catalogin;
@@ -14,17 +16,177 @@ use App\Models\Catalog\catalogsa;
 use App\Models\Catalog\catalogus;
 use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingUs;
+use App\Models\ProcessManagement;
 use App\Models\Catalog\Catalog_in;
 use App\Models\Catalog\Catalog_us;
 use Illuminate\Support\Facades\DB;
 use App\Models\Catalog\Asin_source;
-use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Catalog\PriceConversion;
+use App\Models\ShipNTrack\SMSA\SmsaTrackings;
+use App\Models\ShipNTrack\Aramex\AramexTracking;
+use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 use JeroenNoten\LaravelAdminLte\View\Components\Tool\Modal;
+
+Route::get('test/shipntrack/data', function () {
+
+
+    $records = IntoAE::with(['CourierPartner1', 'CourierPartner2'])
+        ->orWhere('forwarder_1_flag', 0)
+        ->orWhere('forwarder_2_flag', 0)
+        ->get()
+        ->toArray();
+
+    po($records);
+    exit;
+    $records = IntoAE::with(['CourierPartner1', 'CourierPartner2'])
+        ->where('awb_number', '1000000000')
+        ->get()
+        ->toArray();
+    foreach ($records as $record) {
+        if ($record['forwarder_1_flag'] == 0) {
+            po($record['forwarder_1_awb']);
+            po($record['courier_partner1']['key1']);
+            po($record['courier_partner1']['key2']);
+        }
+        po($record);
+    }
+});
+
+Route::get('test/shipntrack/aramex', function () {
+
+    $url = "https://ws.aramex.net/ShippingAPI.V2/Tracking/Service_1_0.svc/json/TrackShipments";
+    $payload =
+        [
+            "ClientInfo" => [
+                "UserName" => "mp@moshecom.com",
+                "Password" => "A#mazon170",
+                "Version" => "v1.0",
+                "AccountNumber" => "60531487",
+                "AccountPin" => "654654",
+                "AccountEntity" => "BOM",
+                "AccountCountryCode" => "IN",
+                "Source" => 24
+            ],
+            "GetLastTrackingUpdateOnly" => false,
+            "Shipments" => [
+                "35124727234"
+            ]
+        ];
+
+    $response = Http::withoutVerifying()->withHeaders([
+        "Content-Type" => "application/json"
+    ])->post($url, $payload);
+
+    $aramex_records = [];
+    $aramex_data = isset(json_decode($response, true)['TrackingResults'][0]['Value']) ? json_decode($response, true)['TrackingResults'][0]['Value'] : [];
+    foreach ($aramex_data as $key1 => $aramex_value) {
+        foreach ($aramex_value as $key2 => $value) {
+
+            $aramex_records[$key1]['account_id'] = '1';
+            $key2 = ($key2 == 'WaybillNumber')     ? 'awbno'              : $key2;
+            $key2 = ($key2 == 'UpdateCode')        ? 'update_code'        : $key2;
+            $key2 = ($key2 == 'UpdateDescription') ? 'update_description' : $key2;
+            $key2 = ($key2 == 'UpdateDateTime')    ? 'update_date_time'   : $key2;
+            $key2 = ($key2 == 'UpdateLocation')    ? 'update_location'    : $key2;
+            $key2 = ($key2 == 'Comments')          ? 'comment'            : $key2;
+            $key2 = ($key2 == 'ProblemCode')       ? 'problem_code'       : $key2;
+            $key2 = ($key2 == 'GrossWeight')       ? 'gross_weight'       : $key2;
+            $key2 = ($key2 == 'ChargeableWeight')  ? 'chargeable_weight'  : $key2;
+            $key2 = ($key2 == 'WeightUnit')        ? 'weight_unit'        : $key2;
+
+            if ($key2 == 'update_date_time') {
+                po($value);
+                preg_match('/(\d{10})(\d{3})([\+\-]\d{4})/', $value, $matches);
+                $dt = DateTime::createFromFormat("U.u.O", vsprintf('%2$s.%3$s.%4$s', $matches));
+                $dt->setTimeZone(new DateTimeZone('Asia/Dubai'));
+                $date = $dt->format('Y-m-d H:i:s');
+
+                $aramex_records[$key1][$key2] = $date;
+            } else {
+
+                $aramex_records[$key1][$key2] = $value;
+            }
+        }
+    }
+    po($aramex_records);
+    AramexTracking::upsert($aramex_records, ['awbno_update_timestamp_description_unique'], [
+        'account_id',
+        'awbno',
+        'update_code',
+        'update_description',
+        'update_date_time',
+        'update_location',
+        'comment',
+        'gross_weight',
+        'chargeable_weight',
+        'weight_unit',
+        'problem_code'
+    ]);
+});
+
+Route::get('test/shipntrack/smsa', function () {
+
+    $client = new Client();
+    $headers = [
+        'Content-Type' => 'text/xml'
+    ];
+    $body = '<?xml version=\'1.0\' encoding=\'utf-8\'?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <getTracking xmlns="http://track.smsaexpress.com/secom/">
+      <awbNo>290409700110</awbNo>
+      <passkey>Mah@8537</passkey>
+    </getTracking>
+  </soap:Body>
+</soap:Envelope>';
+    $request = new Request('POST', 'http://track.smsaexpress.com/SeCom/SMSAwebService.asmx', $headers, $body);
+    $response1 = $client->sendAsync($request)->wait();
+    $plainXML = mungXML(trim($response1->getBody()));
+    $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+
+    $smsa_data = $arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram']['NewDataSet']['Tracking'];
+
+    $smsa_records = [];
+    if (isset($smsa_data[0])) {
+
+        foreach ($smsa_data as $smsa_value) {
+            $smsa_records[] = [
+                'account_id' => 'smsaUSA',
+                'awbno' => $smsa_value['awbNo'] ?? $smsa_data['awbNo'],
+                'date' => date('Y-m-d H:i:s', strtotime($smsa_value['Date'] ?? $smsa_data['Date'])),
+                'activity' => $smsa_value['Activity'] ?? $smsa_data['Activity'],
+                'details' => $smsa_value['Details'] ?? $smsa_data['Details'],
+                'location' => $smsa_value['Location'] ?? $smsa_data['Location']
+            ];
+        }
+    } else {
+        $smsa_records[] = [
+            'account_id' => 'smsaUSA',
+            'awbno' =>  $smsa_data['awbNo'],
+            'date' => date('Y-m-d H:i:s', strtotime($smsa_data['Date'])),
+            'activity' =>  $smsa_data['Activity'],
+            'details' =>  $smsa_data['Details'],
+            'location' =>  $smsa_data['Location']
+        ];
+    }
+
+    po($smsa_records);
+
+    SmsaTrackings::upsert($smsa_records, ['awbno_date_activity_unique'], [
+        'account_id',
+        'awbno',
+        'date',
+        'activity',
+        'details',
+        'location',
+    ]);
+});
+
+
 
 Route::get('zoho/index', 'VikeshTestController@index');
 Route::get('zoho/test', 'VikeshTestController@ReadZohoTextFile');

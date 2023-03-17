@@ -10,6 +10,7 @@ class AramexTracking extends Model
     use HasFactory;
     protected $connection = 'shipntracking';
     protected $fillable = [
+        'account_id',
         'awbno',
         'update_code',
         'update_description',
