@@ -68,6 +68,7 @@
             <x-adminlte-select name="mode" label="Select Tracking Mode:" id="mode" vlaue="{{old('mode')}}">
                 <option value="">Select Mode</option>
                 <option value="IN_AE">IN to UAE</option>
+                <option value="IN_KSA">IN to KSA</option>
                 <option value="USA_AE">USA to UAE</option>
                 <option value="USA_KSA">USA to KSA</option>
             </x-adminlte-select>
