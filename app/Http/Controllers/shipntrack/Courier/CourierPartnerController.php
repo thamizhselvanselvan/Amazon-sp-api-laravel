@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\ShipNTrack\Courier\CourierPartner;
 
+use function Clue\StreamFilter\fun;
+
 class CourierPartnerController extends Controller
 {
     // public function index(Request $request)
@@ -52,6 +54,22 @@ class CourierPartnerController extends Controller
         if ($request->ajax()) {
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->editColumn('type',function($row)
+                {
+                    if($row->type == 1)
+                    {
+                        return 'International';
+                    }
+                    elseif($row->type == 2)
+                    {
+                        return 'Domestic';
+                    }
+                    elseif($row->type == 3)
+                    {
+                        return 'International/Domestic';
+                    }
+                    return $row->type;
+                })
                 ->addColumn('action', function ($row) {
 
                     $actionBtn = '<div class="d-flex"><a href="/shipntrack/courier/partner/' . $row->id . '/edit" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> Edit</a>';
@@ -70,24 +88,27 @@ class CourierPartnerController extends Controller
 
     public function store(Request $request)
     {
+     
         $request->validate([
 
             'name' => 'required|min:3|max:100',
             'status' => 'required|in:0,1',
             'source' => 'required|in:IN,USA,AE,KSA',
             'destination' => 'required|in:IN,USA,AE,KSA',
-            'type' =>   'required|in:Domestic,International',
+            'type' =>   'required|in:2,1,3',
             'code' =>   'required',
+            'time_zone' =>   'required',
 
         ]);
-
+        $code = strtolower($request->code);
         CourierPartner::create([
             'name' => $request->name,
             'source' => $request->source,
             'destination' => $request->destination,
             'active' => $request->status,
             'type' => $request->type,
-            'courier_code' => $request->code,
+            'courier_code' => $code,
+            'time_zone' => $request->time_zone,
             'key1' => $request->key1,
             'key2' => $request->key2,
             'key3' => $request->key3,
@@ -113,18 +134,20 @@ class CourierPartnerController extends Controller
             'status' => 'required|in:0,1',
             'source' => 'required|in:IN,USA,AE,KSA',
             'destination' => 'required|in:IN,USA,AE,KSA',
-            'type' =>   'required|in:Domestic,International',
+            'type' =>   'required|in:3,1,2',
             'code' =>   'required',
+            'time_zone' =>   'required',
 
         ]);
-
+        $code = strtolower($request->code);
         CourierPartner::where('id', $id)->update([
             'name' => $request->name,
             'source' => $request->source,
             'destination' => $request->destination,
             'active' => $request->status,
             'type' => $request->type,
-            'courier_code' => $request->code,
+            'courier_code' => $code,
+            'time_zone' => $request->time_zone,
             'key1' => $request->key1,
             'key2' => $request->key2,
             'key3' => $request->key3,

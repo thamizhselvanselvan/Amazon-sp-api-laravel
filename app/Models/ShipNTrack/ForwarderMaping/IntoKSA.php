@@ -1,25 +1,32 @@
 <?php
 
-namespace App\Models\ShipNTrack\Packet;
+namespace App\Models\ShipNTrack\ForwarderMaping;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PacketForwarder extends Model
+class IntoKSA extends Model
 {
     use HasFactory;
+    
     protected $connection = 'shipntracking';
+    protected $table = 'process_india_to_ksa';
     protected $fillable = [
         'reference_id',
-        'awb_no',
+        'consignor',
+        'consignee',
         'forwarder_1',
         'forwarder_1_awb',
+        'forwarder_1_flag',
         'forwarder_2',
         'forwarder_2_awb',
+        'forwarder_2_flag',
         'forwarder_3',
         'forwarder_3_awb',
+        'forwarder_3_flag',
         'forwarder_4',
         'forwarder_4_awb',
+        'forwarder_4_flag',
         'status'
     ];
 }
