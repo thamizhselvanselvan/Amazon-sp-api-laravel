@@ -39,10 +39,14 @@ class CliqnshopCategoryController extends Controller
                 $q->whereNotNull('cns_ban_category.category_code');
             });
 
-            $query->when($request->has("banned_status") && $request->banned_status == "allowed", function($q) {
+            $query->when($request->has("banned_status") && $request->banned_status == "allowed", function($q) use($request) {
 
-                $q->whereNotIn('mshop_catalog.code', function ($query) {
-                    $query->select('category_code')->from('cns_ban_category')->whereNotNull('category_code');
+                $q->whereNotIn('mshop_catalog.code', function ($query) use($request){
+                    $query->select('category_code')->from('cns_ban_category')->whereNotNull('category_code');                    
+                        $query->when($request->site_id || $request->banned_status, function($q) use($request) {
+                            $q->where('site_id', $request->site_id);
+                        });
+                    
                 });
             });
 
