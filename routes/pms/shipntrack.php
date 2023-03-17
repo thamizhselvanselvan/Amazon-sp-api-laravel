@@ -19,6 +19,11 @@ Route::get('shipntrack/forwarder/upload', 'shipntrack\Forwarder\ForwarderPacketM
 Route::post('shipntrack/forwarder/save', 'shipntrack\Forwarder\ForwarderPacketMappingController@save')->name('shipntrack.forwarder.save');
 Route::match($method,'shipntrack/forwarder/search', 'shipntrack\Forwarder\ForwarderPacketMappingController@singlesearch')->name('shipntrack.forwarder.search');
 Route::post('shipntrack/forwarder/update', 'shipntrack\Forwarder\ForwarderPacketMappingController@forwarderupdate')->name('shipntrack.forwarder.update');
+//new 1
+Route::post('shipntrack/forwarder/store/forwarder', 'shipntrack\Forwarder\ForwarderPacketMappingController@store_farwarder')->name('shipntrack.forwarder.store.forwarder');
+Route::get('shipntrack/forwarder/select/view', 'shipntrack\Forwarder\ForwarderPacketMappingController@courierget')->name('shipntrack.forwarder.select.view');
+
+
 
 Route::get('shipntrack/missing/find', 'shipntrack\Forwarder\ForwarderPacketMappingController@missingexpview')->name('shipntrack.missing.find');
 Route::get('shipntrack/missing/export', 'shipntrack\Forwarder\ForwarderPacketMappingController@missexport')->name('shipntrack.missing.export');
@@ -49,3 +54,8 @@ Route::post('shipntrack/stopTrackingUpadate', 'shipntrack\Tracking\TrackingContr
 // Route::get('shipntrack/trackingList/search', 'shipntrack\TrackingList\TrackingListController@SearchByAwbNo');
 
 Route::match($method, 'shipntrack/courier', 'shipntrack\Courier\CourierPartnerController@index')->name('snt.courier.index');
+Route::match($method, 'shipntrack/courier/create', 'shipntrack\Courier\CourierPartnerController@create')->name('courier.partners.create');
+Route::match($method, 'shipntrack/courier/store', 'shipntrack\Courier\CourierPartnerController@store')->name('courier.partners.store');
+Route::match($method, 'shipntrack/courier/remove/{id}', 'shipntrack\Courier\CourierPartnerController@destroy')->name('courier.partners.delete');
+Route::match($method, 'shipntrack/courier/partner/{id}/edit', 'shipntrack\Courier\CourierPartnerController@edit')->name('courier.partners.edit');
+Route::match($method, 'shipntrack/courier/partner/update/{id}', 'shipntrack\Courier\CourierPartnerController@update')->name('courier.partners.update');

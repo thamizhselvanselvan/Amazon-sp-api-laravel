@@ -18,11 +18,11 @@ class Search_Product
         $productSearchApi = new Search_Product_Request();
         $getProducts = $productSearchApi->getASIN($searchKey, 'key');
 
-        
+
         $siteIds = DB::connection('cliqnshop')->table('mshop_locale_site')->pluck('siteid');
         foreach ($siteIds as $siteId) {
             $source = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid', $siteId)->pluck('code')->toArray();
-            
+
             $count = 0;
             $count2 = 0;
             $catalogs = [];
@@ -30,29 +30,43 @@ class Search_Product
             $productPrice1 = [];
             $productTitle = [];
             $ignore_key_for_cliqnshop = '';
-            
+
             $aws_id = null;
             $seller_id = null;
             $country_code = 'US';
+            $ignore_key = [];
             
 
+
             if ($source[0] == 'in') {
+                $ignore_key = DB::connection('cliqnshop')->table('cns_ban_keywords')->where('site_id', $siteId)->pluck('keyword')->toArray();
+                if ($ignore_key == [])
+                {
+                    $ignore_key = ['Gun','Revolver','Pistol'];
+                }
                 $price_conversion_method = 'USAToINDB2C';
-                $ignore_key_for_cliqnshop = ucwords(str_replace(',', '|', getSystemSettingsValue('ignore_item_for_cliqnshop_in_india', 'Revolver,Gun,Pistol')), '|');
+                $ignore_key_for_cliqnshop = ucwords(str_replace(',', '|', implode(',',$ignore_key)), '|');
             }
+           
+
             if ($source[0] == 'uae') {
+                $ignore_key = DB::connection('cliqnshop')->table('cns_ban_keywords')->where('site_id', $siteId)->pluck('keyword')->toArray();
+                if ($ignore_key == [])
+                {
+                    $ignore_key = ['Radio','Walkie','Talkies'];
+                }
                 $price_conversion_method = 'USATOUAE';
-                $ignore_key_for_cliqnshop = ucwords(str_replace(',', '|', getSystemSettingsValue('ignore_item_for_cliqnshop_in_uae', 'Walkie,Talkies,Radio')), '|');
+                $ignore_key_for_cliqnshop = ucwords(str_replace(',', '|', implode(',',$ignore_key)), '|');
             }
 
             $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->toArray();
             $token = $mws_regions[0]['aws_verified'][1]['auth_code'];
             foreach ($getProducts->products as $key => $getProduct) {
 
-                
+
                 if (preg_match("(" . $ignore_key_for_cliqnshop . ")", $getProduct->title) !== 1 && preg_match("(" . $ignore_key_for_cliqnshop . ")", $getProduct->productDescription) !== 1) {
-                    
-                    
+
+
                     if ($count2 <= 10) {
                         // $productTitle[] = $getProduct->title;
                         $ProductPriceRequest = new ProductsRequest();
@@ -114,9 +128,37 @@ class Search_Product
                     if ($key2 == 'images') {
                         $catalog_images = json_decode($catalog);
                         foreach ($catalog_images[0]->images as $key3 => $images) {
-                            if ($key3 <= 10 && $images->height >= 1000 && $images->height <= 2000) {
-                                $catalog_for_cliqnshop[$key1]['images'][$catalog_data['asin']]['image' . $key3 + 1] = $images->link;
+
+                            if (isset($catalog_images[0]->images)) {
+                                foreach ($catalog_images[0]->images as  $counter => $image_data_new) {
+                                    $counter++;
+
+                                    if (isset($image_data_new->link)) {
+
+                                        $img1["Images${counter}"] = '';
+                                        if ($counter == 1) {
+                                            ($img1["Images${counter}"] = $image_data_new->link);
+                                        } else if ($counter == 4) {
+                                            ($img1["Images${counter}"] = $image_data_new->link);
+                                        } else if ($counter == 7) {
+                                            ($img1["Images${counter}"] = $image_data_new->link);
+                                        } else if ($counter == 10) {
+                                            ($img1["Images${counter}"] = $image_data_new->link);
+                                        } else if ($counter == 13) {
+                                            ($img1["Images${counter}"] = $image_data_new->link);
+                                        } else if ($counter == 16) {
+                                            ($img1["Images${counter}"] = $image_data_new->link);
+                                        } else if ($counter == 19) {
+                                            ($img1["Images${counter}"] = $image_data_new->link);
+                                        }
+                                    }
+                                    $catalog_for_cliqnshop[$key1]['images'][$catalog_data['asin']] = $img1;
+                                }
                             }
+
+                            // if ($key3 <= 10 && $images->height >= 1000 && $images->height <= 2000) {
+                            //     $catalog_for_cliqnshop[$key1]['images'][$catalog_data['asin']]['image' . $key3 + 1] = $images->link;
+                            // }
                         }
                     }
 
@@ -137,8 +179,8 @@ class Search_Product
                 }
             }
             foreach ($catalog_for_cliqnshop as $cliqnshop_catalog) {
-
-                if (isset($cliqnshop_catalog['price']) && isset($cliqnshop_catalog['images'])) {
+                 $ignore_cat = DB::connection('cliqnshop')->table('cns_ban_category')->where('site_id',$siteId)->pluck('category_code')->toArray();
+                if (isset($cliqnshop_catalog['price']) && isset($cliqnshop_catalog['images']) && !in_array($cliqnshop_catalog['category_code'],$ignore_cat,true)) {
                     $category = $cliqnshop_catalog['category_code'] ?? 'demo-new';
                     $asin = $cliqnshop_catalog['asin'];
                     $item_name = $cliqnshop_catalog['itemName'];
@@ -160,7 +202,6 @@ class Search_Product
                     $cliqnshop->insertdata_cliqnshop($siteId, $category, $asin, $item_name, $brand, $brand_label, $color_key, $label, $length_unit, $length_value, $width_unit, $width_value, $Price_US_IN, $image_array, $searchKey, $short_description, $long_description, $generic_keywords);
                 }
             }
-
         }
     }
 }

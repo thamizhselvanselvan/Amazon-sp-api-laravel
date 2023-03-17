@@ -1,10 +1,33 @@
 @extends('adminlte::page')
 
-@section('title', 'Courier Partner')
+@section('title', 'Courier Partners')
+
+@section('css')
+
+<link rel="stylesheet" href="/css/styles.css">
+<style>
+    .table td {
+        padding: 0;
+        padding-left: 5px;
+    }
+
+    .table th {
+        padding: 2;
+        padding-left: 5px;
+    }
+</style>
+@stop
 
 @section('content_header')
 <div class="row">
-    <h1 class="m-0 text-dark col">Courier Partner</h1>
+    <div class="col-5">
+        <h2 class="">
+            <a href="{{ Route('courier.partners.create') }}">
+                <x-adminlte-button label="Add Courier Partner" theme="primary" icon="fas fa-plus" />
+            </a>
+        </h2>
+    </div>
+    <h1 class="m-0 text-dark col">Courier Partner's</h1>
 </div>
 @stop
 
@@ -32,7 +55,7 @@
         </div>
     </div>
 </div>
-<div class="pl-2">
+<!-- <div class="pl-2">
     <form action="{{route('snt.courier.index')}}" class="ml-4 mt-1 mr-4" method='post'>
         @csrf
         <div class="row">
@@ -55,16 +78,26 @@
             </div>
         </div>
     </form>
-</div>
+</div> -->
 
 <div class="pl-2 pt-1">
     <table class="table table-bordered yajra-datatable table-striped table-sm ">
-        <thead class="bg-info">
+        <thead class="table-info">
             <tr>
-                <th>courier Name</th>
-                <th>Source - Destination</th>
+                <th>ID</th>
+                <th>Courier Name</th>
+                <th>Source</th>
+                <th>Destination</th>
                 <th>Code</th>
-                <th>Active</th>
+                <th>Status</th>
+                <th>Type</th>
+                <th>Time Zone</th>
+                <th>Key1</th>
+                <th>Key2</th>
+                <th>Key3</th>
+                <th>Key4</th>
+                <th>Key5</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -76,22 +109,35 @@
 @section('js')
 <script type="text/javascript">
     $(function() {
-
+        $.extend($.fn.dataTable.defaults, {
+            pageLength: 100,
+        });
 
         let yajra_table = $('.yajra-datatable').DataTable({
             processing: true,
             serverSide: true,
+            lengthChange: false,
+            bFilter: false,
             ajax: {
                 url: "{{route('snt.courier.index') }}",
                 data: {},
             },
             columns: [{
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                }, {
                     data: 'name',
                     name: 'name',
                 },
                 {
-                    data: 'source_destination',
-                    name: 'source_destination',
+                    data: 'source',
+                    name: 'source',
+                },
+                {
+                    data: 'destination',
+                    name: 'destination',
                 },
                 {
                     data: 'courier_code',
@@ -101,8 +147,74 @@
                     data: 'active',
                     name: 'active',
                 },
+
+                {
+                    data: 'type',
+                    name: 'type',
+                },
+                {
+                    data: 'time_zone',
+                    name: 'time_zone',
+                },
+                {
+                    data: 'key1',
+                    name: 'key1',
+                },
+                {
+                    data: 'key2',
+                    name: 'key2',
+                },
+                {
+                    data: 'key3',
+                    name: 'key3',
+                },
+                {
+                    data: 'key4',
+                    name: 'key4',
+                },
+                {
+                    data: 'key5',
+                    name: 'key5',
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                },
             ],
+        });
+
+
+        $(document).on('click', ".delete", function(e) {
+            e.preventDefault();
+            let bool = confirm('Are you sure you want to delete?');
+
+            if (!bool) {
+                return false;
+            }
+            let self = $(this);
+            let id = self.attr('data-id');
+
+            self.prop('disable', true);
+
+            $.ajax({
+                method: 'get',
+                url: '/shipntrack/courier/remove/' + id,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "_method": 'DELETE'
+                },
+                response: 'json',
+                success: function(response) {
+                    alert('Delete success');
+                    location.reload()
+                },
+                error: function(response) {
+
+                    console.log(response)
+                }
+            });
         });
     });
 </script>
+
 @stop

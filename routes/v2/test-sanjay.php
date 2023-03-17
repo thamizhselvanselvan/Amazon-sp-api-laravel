@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use App\Events\EventManager;
 use App\Models\Admin\Backup;
 use App\Services\Zoho\ZohoApi;
 use PhpParser\Node\Stmt\Foreach_;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Inventory\Shipment_Inward_Details;
+use App\Http\Controllers\Inventory\StockController;
 
 Route::get('test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
 
@@ -302,4 +304,7 @@ Route::get('config/test', function () {
         $value = Config::get("database.connections.{$connection}.dump.excludeTables");
         po($value);
     }
+});
+Route::get('event',function(){
+    event(new EventManager('hello world'));
 });

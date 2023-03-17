@@ -260,6 +260,26 @@
 </div>
 
 @stop
+<!-- <script src="https://js.pusher.com/7.2/pusher.min.js"></script> -->
+<script>
+    // Enable pusher logging - don't include this in production
+    // Pusher.logToConsole = true;
+
+    // var pusher = new Pusher('ea37c18af4de51c2ea0a', {
+    //     cluster: 'ap2'
+    // });
+
+    
+
+
+    // var channel = pusher.subscribe('channel');
+    // channel.bind('.event', function(data) {
+    //     alert(JSON.stringify(data));
+    // });
+</script>
+
+
+
 
 @section('js')
 <script type="text/javascript">
