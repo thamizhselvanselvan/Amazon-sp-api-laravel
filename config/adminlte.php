@@ -1060,7 +1060,7 @@ return [
                         ],
                         [
                             'text' => 'Courier Status Master',
-                            'url' => 'shipntrack/status',
+                            'url' => 'shipntrack/status/manager',
                             'can' => ['Admin'],
                             'icon' => 'far fa fa-cog',
                         ],

@@ -180,7 +180,12 @@ class Search_Product
             }
             foreach ($catalog_for_cliqnshop as $cliqnshop_catalog) {
                  $ignore_cat = DB::connection('cliqnshop')->table('cns_ban_category')->where('site_id',$siteId)->pluck('category_code')->toArray();
-                if (isset($cliqnshop_catalog['price']) && isset($cliqnshop_catalog['images']) && !in_array($cliqnshop_catalog['category_code'],$ignore_cat,true)) {
+
+                 $ignore_brand = DB::connection('cliqnshop')->table('cns_ban_brand')->where('site_id',$siteId)->pluck('brand')->toArray();
+                 
+                 $ignore_brand_for_cliqnshop = ucwords(str_replace(',', '|', implode(',',$ignore_brand)), '|');
+                 
+                if (isset($cliqnshop_catalog['price']) && isset($cliqnshop_catalog['images']) && !in_array($cliqnshop_catalog['category_code'],$ignore_cat,true) && preg_match("(" . strtolower($ignore_brand_for_cliqnshop) . ")", strtolower($cliqnshop_catalog['brand'])) !== 1) {
                     $category = $cliqnshop_catalog['category_code'] ?? 'demo-new';
                     $asin = $cliqnshop_catalog['asin'];
                     $item_name = $cliqnshop_catalog['itemName'];
