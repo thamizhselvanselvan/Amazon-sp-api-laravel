@@ -357,7 +357,8 @@ class BuyBoxStoreController extends Controller
 
                 ->addColumn('action', function ($query) {
 
-                    $action = "<a href='javascript:void(0)' id='update_availability' class='edit btn btn-info btn-sm ml-2' data-seller_id='$query->store_id' data-product_id='$query->id' data-base_price='$query->base_price' data-ceil_price='$query->ceil_price'  data-push_price='$query->push_price' data-product_sku='$query->product_sku' data-availability='$query->availability' >
+                    $action = "<a href='javascript:void(0)' id='update_availability' class='edit btn btn-info btn-sm ml-2' "; 
+                    $action .= " data-seller_id='$query->store_id' data-product_id='$query->id' data-product_sku='$query->product_sku' data-asin='$query->asin' data-current_availability='$query->current_availability' data-availability='$query->availability' >
                     Update Availability
                 </a>";
                     return $action;
@@ -371,35 +372,29 @@ class BuyBoxStoreController extends Controller
 
     public function PricePushAvailability(Request $request)
     {
-        // po($request->region);
-        // po($request->id);
-        // po($request->seller_id);
-        // po($request->availability);
-        // po($request->ceil_price);
-        // po($request->base_price);
-        // po($request->push_price);
-        // po($request->product_sku);
 
-        $feedLists[] = [
-            'product_sku' => $request->product_sku,
-            'available' => $request->availability
-        ];
         $seller_id = $request->seller_id;
-        po($feedLists);
-
         $regionCode = strtolower($request->region);
         $product_push_id = $request->id;
         $availability = $request->availability;
 
-        if ($regionCode == 'in') {
+        $feedLists[] = [
+            'product_sku' => $request->product_sku,
+            'available' => $availability
+        ];
 
-            Product_Push_in::query()->where('id', $product_push_id)->update(['availability' => $availability]);
-        } elseif ($regionCode == 'ae') {
+        // if ($regionCode == 'in') {
 
-            Product_Push_ae::query()->where('id', $product_push_id)->update(['availability' => $availability]);
-        }
+        //     Product_Push_in::query()->where('id', $product_push_id)->update(['availability' => $availability]);
+        // } elseif ($regionCode == 'ae') {
+
+        //     Product_Push_ae::query()->where('id', $product_push_id)->update(['availability' => $availability]);
+        // }
+
         $PushAvailability = new AmazonFeedProcessAvailability();
-        $PushAvailability->availabilitySubmit($feedLists, $seller_id, $product_push_id);
+        $data = $PushAvailability->availabilitySubmit($feedLists, $seller_id, $product_push_id, $regionCode);
+            
+        return response()->json(['data' => $data]);
     }
 
     public function amazon_links($store_id, $merchant_id)
