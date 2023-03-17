@@ -97,6 +97,7 @@ Route::post('cliqnshop/getstaticpagecontent', 'Cliqnshop\FooterController@getSta
 
 Route::get('cliqnshop/keyword/log', 'Cliqnshop\CliqnshopKeywordController@keyword_search_log_index')->name('cliqnshop.keyword.log');
 Route::post('cliqnshop/keyword/log/delete', 'Cliqnshop\CliqnshopKeywordController@keyword_search_log_remove')->name('cliqnshop.keyword.log.delete');
+
 Route::get('cliqnshop/keyword/ban', 'Cliqnshop\CliqnshopKeywordController@ban_keywords_index')->name('cliqnshop.keyword.ban');
 Route::get('cliqnshop/keyword/ban/{site_id}', 'Cliqnshop\CliqnshopKeywordController@ban_keywords_index')->name('cliqnshop.keyword.ban');
 Route::post('cliqnshop/keyword/ban', 'Cliqnshop\CliqnshopKeywordController@store_ban_keywords')->name('cliqnshop.keyword.ban');
@@ -105,6 +106,13 @@ Route::post('cliqnshop/keyword/ban/delete/{id}', 'Cliqnshop\CliqnshopKeywordCont
 
 Route::get('cliqnshop/category', 'Cliqnshop\CliqnshopCategoryController@mshop_category_lister')->name('cliqnshop.category');
 Route::post('cliqnshop/category/storebancategory', 'Cliqnshop\CliqnshopCategoryController@storebancategory')->name('cliqnshop.category.storebancategory');
+
+Route::get('cliqnshop/brand/ban', 'Cliqnshop\CliqnshopBrandController@ban_Brands_index')->name('cliqnshop.brand.ban');
+Route::get('cliqnshop/brand/ban/{site_id}', 'Cliqnshop\CliqnshopBrandController@ban_Brands_index')->name('cliqnshop.brand.ban');
+Route::post('cliqnshop/brand/ban', 'Cliqnshop\CliqnshopBrandController@store_ban_Brands')->name('cliqnshop.brand.ban');
+Route::post('cliqnshop/brand/ban/edit/{id}', 'Cliqnshop\CliqnshopBrandController@update_Brand')->name('cliqnshop.brand.ban.update');
+Route::post('cliqnshop/brand/ban/delete/{id}', 'Cliqnshop\CliqnshopBrandController@delete_Brand')->name('cliqnshop.brand.ban.delete');
+
 
 // Route::get('product/test', function () {
 //   // $data[] = $key;

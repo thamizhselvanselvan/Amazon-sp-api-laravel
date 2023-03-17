@@ -34,7 +34,7 @@
 </div>
 
 <div class="row">
-    <div class="col"></div>
+    <div class="col-3"></div>
     <div class="col-6">
 
         @if (session()->has('success'))
@@ -58,7 +58,7 @@
                 </div>
 
                 <div class="col-6">
-                    <x-adminlte-select name="status" label="Select status:" id="status">
+                    <x-adminlte-select name="status" label="Select status:" id="status" value="{{ old('status') }}">
                         <option value="">Select Status</option>
                         <option value="1">Active</option>
                         <option value="0">Inactive</option>
@@ -90,15 +90,30 @@
                 <div class="col-6">
                     <x-adminlte-select name="type" label="Select type:" id="type">
                         <option value="">Select type</option>
-                        <option value="Domestic">Domestic</option>
-                        <option value="International">International</option>
+                        <option value="1">International</option>
+                        <option value="2">Domestic</option>
+                        <option value="3">Both</option>
                     </x-adminlte-select>
                 </div>
                 <div class="col-6">
                     <x-adminlte-input label="Courier code" name="code" type="text" placeholder="code" value="{{ old('code') }}" />
                 </div>
             </div>
-            <div class="row justify-content-left">
+            <div class="row justify-content-center">
+                <div class="col-6">
+                    <!-- <x-adminlte-input label="Time Zone" name="time_zone" type="text" placeholder="time zone" value="{{ old('time_zone') }}" /> -->
+                    <x-adminlte-select name="time_zone" label="Select Time Zone:" id="time_zone" value="{{ old('time_zone') }}">
+                        <option value="">Select Time Zone</option>
+                        <option value="Asia/Kolkata"> Asia/Kolkata</option>
+                        <option value="Asia/Dubai">Asia/Dubai</option>
+                        <option value="Asia/Dubai">Asia/Dubai</option>
+                        <option value="Asia/Kuwait">Asia/Kuwait</option>
+                        <option value="Asia/Riyadh">Asia/Riyadh</option>
+                        <option value="Asia/Qatar"> Asia/Qatar</option>
+                        <option value="Asia/Bahrain">Asia/Bahrain </option>
+
+                    </x-adminlte-select>
+                </div>
                 <div class="col-6">
                     <x-adminlte-input label="key1" name="key1" type="text" placeholder="key1" value="{{ old('key1') }}" />
                 </div>
@@ -118,14 +133,12 @@
                 <div class="col-6">
                     <x-adminlte-input label="key5" name="key5" type="text" placeholder="key5" value="{{ old('key5') }}" />
                 </div>
-                <div class="text-center">
-                    <div style="margin-top: 2.0rem;">
-                        <x-adminlte-button label=" Submit" theme="primary" icon="fas fa-save" type="submit" />
-                    </div>
-                </div>
+            </div>
+            <div class="row justify-content-center">
+                <x-adminlte-button label=" Submit" theme="primary" icon="fas fa-save" type="submit" />
             </div>
         </form>
     </div>
-    <div class="col"></div>
+
 </div>
 @stop

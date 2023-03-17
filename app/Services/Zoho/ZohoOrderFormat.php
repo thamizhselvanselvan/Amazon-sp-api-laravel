@@ -122,6 +122,13 @@ class ZohoOrderFormat
             "destination" => "India"
         ],
 
+        "Amazon.ae-Al Hayba" => [
+            "IN" => "Al Hayba Store",
+            "sku" => "AH_",
+            "source" => "India",
+            "destination" => "UAE"
+        ],
+
         /*
         "Amazon.ae-Nitrous" => [
             "IN" => "WIP",
