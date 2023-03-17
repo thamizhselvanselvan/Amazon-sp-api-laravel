@@ -28,7 +28,7 @@
 
 @section('content')
 <div class="row">
-    <div class="col"></div>
+    <div class="col-3"></div>
     <div class="col-6">
 
         @if (session()->has('success'))
@@ -94,9 +94,23 @@
 
                 <div class="col-6">
                     <x-adminlte-select name="type" label="Select type:" id="type">
-                        <option value="{{$data->type ?? ''? $data->type : ''}}">{{$data->type ?? ''? $data->type : 'Select type'}} </option>
-                        <option value="Domestic">Domestic</option>
-                        <option value="International">International</option>
+                        <!-- <option value="{{$data->type ?? ''? $data->type : ''}}">{{$data->type ?? ''? $data->type : 'Select type'}} </option>
+                        <option value="1">Domestic</option>
+                        <option value="2">International</option>
+                        <option value="3">Both</option> -->
+                        @if($data->type == '1')
+                        <option value="1" selected>International</option>
+                        <option value="2">Domestic</option>
+                        <option value="3">Both</option>
+                        @elseif($data->type == '2')
+                        <option value="1">International</option>
+                        <option value="2" selected>Domestic</option>
+                        <option value="3">Both</option>
+                        @else
+                        <option value="1">International</option>
+                        <option value="2">Domestic</option>
+                        <option value="3" selected>Both</option>
+                        @endif
                     </x-adminlte-select>
                 </div>
                 <div class="col-6">
@@ -104,6 +118,20 @@
                 </div>
             </div>
             <div class="row justify-content-left">
+                <div class="col-6">
+                    <!-- <x-adminlte-input label="Time Zone" name="time_zone" type="text" placeholder="time_zone" value="{{ $data->time_zone }}" /> -->
+                    <x-adminlte-select name="time_zone" label="Select Time Zone:" id="time_zone">
+                        <option value="{{$data->time_zone ?? ''? $data->time_zone : ''}}">{{$data->time_zone ?? ''? $data->time_zone : 'Select TimeZone'}} </option>
+                        <option value="Asia/Kolkata"> Asia/Kolkata</option>
+                        <option value="Asia/Dubai">Asia/Dubai</option>
+                        <option value="Asia/Dubai">Asia/Dubai</option>
+                        <option value="Asia/Kuwait">Asia/Kuwait</option>
+                        <option value="Asia/Riyadh">Asia/Riyadh</option>
+                        <option value="Asia/Qatar"> Asia/Qatar</option>
+                        <option value="Asia/Bahrain">Asia/Bahrain </option>
+
+                    </x-adminlte-select>
+                </div>
                 <div class="col-6">
                     <x-adminlte-input label="key1" name="key1" type="text" placeholder="key1" value="{{ $data->key1 }}" />
                 </div>
@@ -123,15 +151,14 @@
                 <div class="col-6">
                     <x-adminlte-input label="key5" name="key5" type="text" placeholder="key5" value="{{ $data->key5 }}" />
                 </div>
-                <div class="text-center">
-                    <div style="margin-top: 2.0rem;">
-                        <x-adminlte-button label=" Submit" theme="primary" icon="fas fa-save" type="submit" />
-                    </div>
-                </div>
+            </div>
+            <div class="text-center">
+                <x-adminlte-button label=" Submit" theme="primary" icon="fas fa-save" type="submit" />
             </div>
         </form>
     </div>
-    <div class="col"></div>
+</div>
+<div class="col"></div>
 </div>
 
 @stop
