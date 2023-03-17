@@ -23,8 +23,9 @@ class CreateBbstoresAvailabilityTable extends Migration
                 $table->string('product_sku', 50);
                 $table->tinyInteger('current_availability')->comment("0 = inactive, 1 = active");
                 $table->tinyInteger('push_availability')->comment("0 = inactive, 1 = active");
-                $table->string('feedback_id', 100);
-                $table->text('feedback_response');
+                $table->text('push_availability_reason')->nullable();
+                $table->string('feedback_id', 100)->nullable();
+                $table->text('feedback_response')->nullable();
                 $table->tinyInteger('feedback_status')->default(0)->comment("0 = Not Processed, 5 = Processing, 1 = Successfull");
                 $table->tinyInteger('push_status')->default(0)->comment('0 = not processed, 1 = pushed');
                 $table->tinyInteger('export_status')->default(0)->comment("0 = Not exported, 1 = Exported");

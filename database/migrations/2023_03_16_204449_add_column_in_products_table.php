@@ -19,7 +19,10 @@ class AddColumnInProductsTable extends Migration
         foreach($this->table_names as $table_name) {
 
             Schema::table($table_name, function (Blueprint $table) {
-                $table->tinyInteger("current_availability")->default(0)->comment("Current Store Availability - 0 = Unprocessed, 1 = active, 2 = Inactive");
+                $table->tinyInteger("cyclic_availability")->default(0)->comment("0 = not processed, 1 = processed, 5 = Processing")->after("bb_cyclic");
+                $table->tinyInteger("current_availability")->default(0)->comment("Current Store Availability - 1 = active, 0 = Inactive")->after("priority");
+
+                $table->index('cyclic_availability', 'cyclic_availability_index');
             });
 
         }
