@@ -20,6 +20,8 @@ use App\Models\order\OrderSellerCredentials;
 use App\Models\Buybox_stores\Product_push_ae;
 use App\Models\Buybox_stores\Product_Push_in;
 use App\Services\AmazonFeedApiServices\AmazonFeedProcess;
+use App\Models\Buybox_stores\Product_availability_ae;
+use App\Models\Buybox_stores\Product_availability_in;
 
 use JeroenNoten\LaravelAdminLte\View\Components\Form\Input;
 use App\Services\AmazonFeedApiServices\AmazonFeedProcessAvailability;
@@ -321,10 +323,10 @@ class BuyBoxStoreController extends Controller
 
             if (in_array($request_store_id, [13, 14, 5, 6, 8, 16, 17, 10, 21, 23, 24, 26, 27, 28, 30, 31, 33, 36, 39])) {
 
-                $data = Product_Push_in::query();
+                $data = Product_availability_in::query();
             } else {
 
-                $data = Product_push_ae::query();
+                $data = Product_availability_ae::query();
             }
 
             $data->select('id', 'store_id', 'asin', 'product_sku', 'availability', 'current_availability')
