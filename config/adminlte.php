@@ -1040,9 +1040,41 @@ return [
             'can' => ['Admin'],
             'submenu' => [
                 [
-                    'text' => 'Courier Partner',
-                    'url' => 'shipntrack/courier',
-                    'icon' => 'far fa fa-archive',
+                    'text' => 'Courier Master',
+                    'icon' => 'far  fa fa-cogs',
+                    'can' => ['Admin'],
+
+                    'submenu' =>
+                    [
+                        [
+                            'text' => 'Courier Partner',
+                            'url' => 'shipntrack/courier',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa fa-archive',
+                        ],
+                        [
+                            'text' => 'Booking Master',
+                            'url' => 'shipntrack/booking',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa fa-plane',
+                        ],
+                        [
+                            'text' => 'Courier Status Master',
+                            'url' => 'shipntrack/status',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa fa-cog',
+                        ],
+                    ],
+
+
+
+
+                ],
+
+                [
+                    'text' => 'Forwarder Mapping',
+                    'url' => 'shipntrack/forwarder',
+                    'icon' => 'far fa fa-map-marker',
                     'can' => ['Admin'],
                 ],
                 [
@@ -1066,12 +1098,6 @@ return [
                     ],
                 ],
 
-                [
-                    'text' => 'Forwarder Mapping',
-                    'url' => 'shipntrack/forwarder',
-                    'icon' => 'far fa fa-map-marker',
-                    'can' => ['Admin'],
-                ],
 
                 [
                     'text' => 'Tracking Event',
@@ -1223,19 +1249,19 @@ return [
                     'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fa fa-google-wallet',
                     'submenu' => [
-                                    [
-                                        'text' => 'Search Log',
-                                        'url' => 'cliqnshop/keyword/log',
-                                        'can' => ['Admin', 'Cliqnshop'],
-                                        'icon' => 'fa fa-cloud-download',
-                                    ],
-                                    [
-                                        'text' => 'Banned Keywords',
-                                        'url' => 'cliqnshop/keyword/ban',
-                                        'can' => ['Admin', 'Cliqnshop'],
-                                        'icon' => 'fa fa-ban',
-                                    ],
-                                ]
+                        [
+                            'text' => 'Search Log',
+                            'url' => 'cliqnshop/keyword/log',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-cloud-download',
+                        ],
+                        [
+                            'text' => 'Banned Keywords',
+                            'url' => 'cliqnshop/keyword/ban',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-ban',
+                        ],
+                    ]
                 ],
             ],
         ],

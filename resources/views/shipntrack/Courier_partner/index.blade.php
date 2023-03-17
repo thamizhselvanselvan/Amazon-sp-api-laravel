@@ -2,6 +2,22 @@
 
 @section('title', 'Courier Partners')
 
+@section('css')
+
+<link rel="stylesheet" href="/css/styles.css">
+<style>
+    .table td {
+        padding: 0;
+        padding-left: 5px;
+    }
+
+    .table th {
+        padding: 2;
+        padding-left: 5px;
+    }
+</style>
+@stop
+
 @section('content_header')
 <div class="row">
     <div class="col-5">
@@ -69,17 +85,18 @@
         <thead class="table-info">
             <tr>
                 <th>ID</th>
-                <th>courier Name</th>
+                <th>Courier Name</th>
                 <th>Source</th>
                 <th>Destination</th>
                 <th>Code</th>
                 <th>Status</th>
-                <th>type</th>
-                <th>key1</th>
-                <th>key2</th>
-                <th>key3</th>
-                <th>key4</th>
-                <th>key5</th>
+                <th>Type</th>
+                <th>Time Zone</th>
+                <th>Key1</th>
+                <th>Key2</th>
+                <th>Key3</th>
+                <th>Key4</th>
+                <th>Key5</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -130,9 +147,14 @@
                     data: 'active',
                     name: 'active',
                 },
+
                 {
                     data: 'type',
                     name: 'type',
+                },
+                {
+                    data: 'time_zone',
+                    name: 'time_zone',
                 },
                 {
                     data: 'key1',
