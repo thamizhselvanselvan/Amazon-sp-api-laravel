@@ -52,6 +52,7 @@ class CliqnshopCategoryController extends Controller
             } 
         }
 
+        dd($query->get());
         
         // filtering the data when the method has get requests  --end
 

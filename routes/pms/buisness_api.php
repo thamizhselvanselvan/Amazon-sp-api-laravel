@@ -107,9 +107,6 @@ Route::post('cliqnshop/keyword/ban/delete/{id}', 'Cliqnshop\CliqnshopKeywordCont
 Route::get('cliqnshop/category', 'Cliqnshop\CliqnshopCategoryController@mshop_category_lister')->name('cliqnshop.category');
 Route::post('cliqnshop/category/storebancategory', 'Cliqnshop\CliqnshopCategoryController@storebancategory')->name('cliqnshop.category.storebancategory');
 
-
-// Route::get('cliqnshop/brand', 'Cliqnshop\CliqnshopBrandController@ban_brand_index')->name('cliqnshop.brand');
-
 Route::get('cliqnshop/brand/ban', 'Cliqnshop\CliqnshopBrandController@ban_Brands_index')->name('cliqnshop.brand.ban');
 Route::get('cliqnshop/brand/ban/{site_id}', 'Cliqnshop\CliqnshopBrandController@ban_Brands_index')->name('cliqnshop.brand.ban');
 Route::post('cliqnshop/brand/ban', 'Cliqnshop\CliqnshopBrandController@store_ban_Brands')->name('cliqnshop.brand.ban');
