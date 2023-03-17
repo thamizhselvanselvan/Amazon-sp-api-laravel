@@ -14,72 +14,56 @@ class CliqnshopCategoryController extends Controller
 {
     public function mshop_category_lister(Request $request)
     {
-   
-        // filtering the data when the method has get requests  --start
-        $query = DB::connection('cliqnshop')->table('mshop_catalog');
-        $query->select('mshop_catalog.*', 'cns_ban_category.category_code','cns_ban_category.created_at');       
-        
-
-        if((!$request->exists('site_id')) && empty($request->site_id))
-        {
-            $query->leftJoin('cns_ban_category','cns_ban_category.category_code','=','mshop_catalog.code');
-            $query->whereNotIn('mshop_catalog.siteid',[0]);
-        }
-        else
-        {
-            $query->leftJoin('cns_ban_category', function($join) {
-                $join->on('mshop_catalog.code', '=', 'cns_ban_category.category_code')
-                     ->on('mshop_catalog.siteid', '=', 'cns_ban_category.site_id');
-            });
-        }
-        if ($request->exists('site_id') && !empty($request->site_id)) 
-        {
-            $query->where('mshop_catalog.siteid', $request->site_id);
-        }       
-        
-        if ($request->exists('banned_status') && !empty($request->banned_status )  ) 
-        {
-            if($request->banned_status == "banned")
-            {
-                $query->whereNotNull('cns_ban_category.category_code');
-            }                
-            elseif ($request->banned_status == "allowed")
-            {
-               
-                $query->whereNotIn('mshop_catalog.code', function ($query) {
-                    $query->select('category_code')->from('cns_ban_category')->whereNotNull('category_code');
-                });
-            } 
-        }
-
-        dd($query->get());
+      //  dd($query->get());
         
         // filtering the data when the method has get requests  --end
         // deploy to check
         
         if ($request->ajax()) {
-            $query->orderBy('ctime','desc');
-            $data = $query->get();
-            return Datatables::of($data)
+
+            // filtering the data when the method has get requests  --start
+            $query = DB::connection('cliqnshop')->table('mshop_catalog')->orderBy('ctime','desc');
+
+            $query->select('mshop_catalog.*', 'cns_ban_category.category_code','cns_ban_category.created_at');       
+
+            $query->leftJoin('cns_ban_category', function($join) {
+                $join->on('mshop_catalog.code', '=', 'cns_ban_category.category_code')
+                    ->on('mshop_catalog.siteid', '=', 'cns_ban_category.site_id');
+            });
+
+            $query->when($request->site_id, function($q) use($request) {
+                $q->where('mshop_catalog.siteid', $request->site_id);
+            });
+
+            $query->when($request->has("banned_status") && $request->banned_status == "banned", function($q) {
+                $q->whereNotNull('cns_ban_category.category_code');
+            });
+
+            $query->when($request->has("banned_status") && $request->banned_status == "allowed", function($q) use($request) {
+
+                $q->whereNotIn('mshop_catalog.code', function ($query) use($request){
+                    $query->select('category_code')->from('cns_ban_category')->whereNotNull('category_code');                    
+                        $query->when($request->site_id || $request->banned_status, function($q) use($request) {
+                            $q->where('site_id', $request->site_id);
+                        });
+                    
+                });
+            });
+
+            return Datatables::of($query)
                 ->addIndexColumn()
-
-
                 ->editColumn('ctime', function ($data) {
                    return $diw=  \Carbon\Carbon::parse($data->ctime)->diffForHumans();
                    
                 })
-
-               
                 ->editColumn('created_at', function ($data) {
                     if(!is_null($data->created_at))
                         return $diw=  \Carbon\Carbon::parse($data->created_at)->diffForHumans();
                     else
                         return '-';                    
                  })
-
                 ->addColumn('action', function ($data) {
                     $id = $data->id;
-            
 
                     $isChecked = !is_null($data->category_code) ?'checked':'';
                     return  "<div class='form-group'>
@@ -94,9 +78,6 @@ class CliqnshopCategoryController extends Controller
                     // return  "<input  data-status=0 class='actionSwitch' value=".$data->code." data-siteid=".$data->siteid."  name='actionSwitch' id='actionSwitch' type= 'checkbox'>";
 
                 }) 
-                
-
-                
                 ->make(true);
         }
 

@@ -197,10 +197,12 @@
                 processing: true,
                 serverSide: true,
                 ajax: `${url}`,
-
-                columns: [{
+                columns: [
+                    {
                         data: 'DT_RowIndex',
-                        name: 'DT_RowIndex'
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
                     },
 
                     // {
@@ -209,27 +211,37 @@
                     // },
                     {
                         data: 'code',
-                        name: 'code'
+                        name: 'mshop_catalog.code',   
+                     
                     },
                     {
                         data: 'label',
-                        name: 'label'
+                        name: 'mshop_catalog.label',
+                        
                     },
                     {
                         data: 'siteid',
-                        name: 'siteid'
+                        name: 'siteid',
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: 'ctime',
-                        name: 'ctime'
+                        name: 'ctime',
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: 'created_at',
-                        name: 'created_at'
+                        name: 'created_at',
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: 'action',
-                        name: 'action'
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
                     }
 
 
