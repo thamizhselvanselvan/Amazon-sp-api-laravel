@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\ShipNTrack\Courier\CourierPartner;
 use App\Models\ShipNtrack\ForwarderMaping\IntoAE;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
+use App\Models\ShipNtrack\ForwarderMaping\USAtoAE;
+use App\Models\ShipNtrack\ForwarderMaping\USAtoKSA;
 
 class ForwarderPacketMappingController extends Controller
 {
@@ -242,21 +244,14 @@ class ForwarderPacketMappingController extends Controller
             'consignee' => 'required',
         ]);
 
-      
+
         $receved_mode =   explode('_', $request->mode);
         $source = $receved_mode[0];
         $destination = $receved_mode[1];
-        $model = '';
-        if ($request->mode == 'IN_AE') {
-            $model = 'IntoAE';
-        } else if ($request->mode == 'USA_AE') {
-            $model = 'USAtoAE';
-        } else if ($request->mode == 'USA_KSA') {
-            $model = 'USAtoKSA';
-        }
 
-        $namespace = 'App\\Models\\ShipNtrack\\ForwarderMaping\\' . $model;
 
+        // $namespace = 'App\\Models\\ShipNtrack\\ForwarderMaping\\' . $model;
+        // $product_model = new $namespace;
 
         $tracking_data = [
             'reference_id' => $request->refrence,
@@ -276,21 +271,58 @@ class ForwarderPacketMappingController extends Controller
             'forwarder_4_flag' => 0,
             'status' => 0
         ];
-        $namespace::upsert(
-            $tracking_data,
-            'reference_id_unique',
-            [
-                'forwarder_1',
-                'forwarder_1_awb',
-                'forwarder_2',
-                'forwarder_2_awb',
-                'forwarder_3',
-                'forwarder_3_awb',
-                'forwarder_4',
-                'forwarder_4_awb',
 
-            ]
-        );
+        $model = '';
+        if ($request->mode == 'IN_AE') {
+            IntoAE::upsert(
+                $tracking_data,
+                'reference_id_unique',
+                [
+                    'forwarder_1',
+                    'forwarder_1_awb',
+                    'forwarder_2',
+                    'forwarder_2_awb',
+                    'forwarder_3',
+                    'forwarder_3_awb',
+                    'forwarder_4',
+                    'forwarder_4_awb',
+
+                ]
+            );
+        } else if ($request->mode == 'USA_AE') {
+            USAtoAE::upsert(
+                $tracking_data,
+                'reference_id_unique',
+                [
+                    'forwarder_1',
+                    'forwarder_1_awb',
+                    'forwarder_2',
+                    'forwarder_2_awb',
+                    'forwarder_3',
+                    'forwarder_3_awb',
+                    'forwarder_4',
+                    'forwarder_4_awb',
+
+                ]
+            );
+        } else if ($request->mode == 'USA_KSA') {
+            USAtoKSA::upsert(
+                $tracking_data,
+                'reference_id_unique',
+                [
+                    'forwarder_1',
+                    'forwarder_1_awb',
+                    'forwarder_2',
+                    'forwarder_2_awb',
+                    'forwarder_3',
+                    'forwarder_3_awb',
+                    'forwarder_4',
+                    'forwarder_4_awb',
+
+                ]
+            );
+        }
+
         return redirect()->intended('/shipntrack/forwarder/')->with("success", "Tracking Details Uploaded Successfully");
     }
 

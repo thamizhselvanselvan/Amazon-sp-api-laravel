@@ -1138,7 +1138,7 @@ return [
             'can' => ['Admin', 'Cliqnshop'],
             'submenu' => [
                 [
-                    'text' => 'Catalog',                    
+                    'text' => 'Catalog',
                     'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fa fa-yelp',
                     'submenu' => [
@@ -1154,37 +1154,34 @@ return [
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-google-wallet',
                             'submenu' => [
-                                            [
-                                                'text' => 'Search Log',
-                                                'url' => 'cliqnshop/keyword/log',
-                                                'can' => ['Admin', 'Cliqnshop'],
-                                                'icon' => 'fa fa-cloud-download',
-                                            ],
-                                            [
-                                                'text' => 'Banned Keywords',
-                                                'url' => 'cliqnshop/keyword/ban',
-                                                'can' => ['Admin', 'Cliqnshop'],
-                                                'icon' => 'fa fa-ban',
-                                            ],
-                                        ]
+                                [
+                                    'text' => 'Search Log',
+                                    'url' => 'cliqnshop/keyword/log',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-cloud-download',
+                                ],
+                                [
+                                    'text' => 'Banned Keywords',
+                                    'url' => 'cliqnshop/keyword/ban',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-ban',
+                                ],
+                            ]
                         ],
                         [
                             'text' => 'Category',
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-list-ul',
                             'submenu' => [
-                                            [
-                                                'text' => 'Ban/unban',
-                                                'url' => 'cliqnshop/category',
-                                                'can' => ['Admin', 'Cliqnshop'],
-                                                'icon' => 'fa fa-cloud-download',
-                                            ],
-                                        ]
+                                [
+                                    'text' => 'Ban/unban',
+                                    'url' => 'cliqnshop/category',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-cloud-download',
+                                ],
+                            ]
                         ]
 
-
-
-                        
 
                     ]
                 ],
@@ -1193,52 +1190,52 @@ return [
                     'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fa fa-users',
                     'submenu' => [
-                                        [
-                                            'text' => 'Orders Details',
-                                            'can' => ['Admin', 'Cliqnshop'],
-                                            'icon' => 'fa fa-shopping-cart',
-                                            'submenu' => [
-                                                [
-                                                    'text' => 'Orders Pending',
-                                                    'url' => 'business/orders/details',
-                                                    'can' => ['Admin', 'Cliqnshop'],
-                                                    'icon' => 'fa fa-clock-o',
-                                                ],
-                                                [
-                                                    'text' => 'Orders Booked',
-                                                    'url' => 'business/booked/details',
-                                                    'can' => ['Admin', 'Cliqnshop'],
-                                                    'icon' => 'fa fa-check',
-                                                ],
-                                                [
-                                                    'text' => 'Orders Confirmation',
-                                                    'url' => 'business/orders/confirm',
-                                                    'can' => ['Admin', 'Cliqnshop'],
-                                                    'icon' => 'fa fa-check-circle-o',
-                                                ],
-                                                [
-                                                    'text' => 'Shipment Notification',
-                                                    'url' => 'business/ship/confirmation',
-                                                    'can' => ['Admin', 'Cliqnshop'],
-                                                    'icon' => 'fa fa-bell',
-                                                ],
-                                            ],
-                        
-                                        ],
-                                        [
-                                            'text' => 'KYC Details',
-                                            'url' => 'cliqnshop/kyc',
-                                            'can' => ['Admin', 'Cliqnshop'],
-                                            'icon' => 'fa fa-file',
-                                        ],
-                                        [
-                                            'text' => 'Contact List',
-                                            'url' => 'cliqnshop/contact',
-                                            'can' => ['Admin', 'Cliqnshop'],
-                                            'icon' => 'fa fa-link',
-                                        ],
-                    
-                        ]
+                        [
+                            'text' => 'Orders Details',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-shopping-cart',
+                            'submenu' => [
+                                [
+                                    'text' => 'Orders Pending',
+                                    'url' => 'business/orders/details',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-clock-o',
+                                ],
+                                [
+                                    'text' => 'Orders Booked',
+                                    'url' => 'business/booked/details',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-check',
+                                ],
+                                [
+                                    'text' => 'Orders Confirmation',
+                                    'url' => 'business/orders/confirm',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-check-circle-o',
+                                ],
+                                [
+                                    'text' => 'Shipment Notification',
+                                    'url' => 'business/ship/confirmation',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-bell',
+                                ],
+                            ],
+
+                        ],
+                        [
+                            'text' => 'KYC Details',
+                            'url' => 'cliqnshop/kyc',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-file',
+                        ],
+                        [
+                            'text' => 'Contact List',
+                            'url' => 'cliqnshop/contact',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-link',
+                        ],
+
+                    ]
                 ],
                 [
                     'text' => 'Home Section',
@@ -1296,7 +1293,7 @@ return [
                     'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fas fa-file-word-o',
                 ],
-                
+
             ],
         ],
 
