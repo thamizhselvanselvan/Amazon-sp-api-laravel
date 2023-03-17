@@ -33,7 +33,7 @@ class CreateBbstoresAvailabilityTable extends Migration
 
                 $table->index('asin', 'asin_index');
                 $table->index('product_sku', 'product_sku_index');
-                $table->index('store_id_sku', 'store_id_index');
+                $table->index('store_id', 'store_id_index');
                 $table->index('push_status', 'push_status_index');
                 $table->index('export_status', 'export_status_index');
                 $table->index('updated_at', 'updated_at_index');
