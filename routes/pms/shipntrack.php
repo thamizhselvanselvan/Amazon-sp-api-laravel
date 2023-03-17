@@ -24,7 +24,6 @@ Route::post('shipntrack/forwarder/store/forwarder', 'shipntrack\Forwarder\Forwar
 Route::get('shipntrack/forwarder/select/view', 'shipntrack\Forwarder\ForwarderPacketMappingController@courierget')->name('shipntrack.forwarder.select.view');
 
 
-
 Route::get('shipntrack/missing/find', 'shipntrack\Forwarder\ForwarderPacketMappingController@missingexpview')->name('shipntrack.missing.find');
 Route::get('shipntrack/missing/export', 'shipntrack\Forwarder\ForwarderPacketMappingController@missexport')->name('shipntrack.missing.export');
 Route::get('shipntrack/missing/download', 'shipntrack\Forwarder\ForwarderPacketMappingController@downexp')->name('shipntrack.missing.download');
@@ -59,3 +58,10 @@ Route::match($method, 'shipntrack/courier/store', 'shipntrack\Courier\CourierPar
 Route::match($method, 'shipntrack/courier/remove/{id}', 'shipntrack\Courier\CourierPartnerController@destroy')->name('courier.partners.delete');
 Route::match($method, 'shipntrack/courier/partner/{id}/edit', 'shipntrack\Courier\CourierPartnerController@edit')->name('courier.partners.edit');
 Route::match($method, 'shipntrack/courier/partner/update/{id}', 'shipntrack\Courier\CourierPartnerController@update')->name('courier.partners.update');
+
+
+Route::get('shipntrack/booking', 'shipntrack\BookingMasterController@index')->name('snt.booking.index');
+Route::post('shipntrack/booking/store', 'shipntrack\BookingMasterController@bookingsave')->name('snt.booking.store');
+Route::get('shipntrack/booking/{id}/edit', 'shipntrack\BookingMasterController@bookingedit')->name('snt.booking.edit');
+Route::post('shipntrack/booking/save/edit', 'shipntrack\BookingMasterController@bookingformedit')->name('snt.booking.update');
+Route::get('shipntrack/booking/{id}/remove', 'shipntrack\BookingMasterController@bookingremove')->name('snt.booking.remove');
