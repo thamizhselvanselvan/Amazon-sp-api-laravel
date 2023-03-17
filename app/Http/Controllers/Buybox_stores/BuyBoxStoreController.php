@@ -329,7 +329,7 @@ class BuyBoxStoreController extends Controller
                 $data = Product_availability_ae::query();
             }
 
-            $data->select('id', 'store_id', 'asin', 'product_sku', 'availability', 'current_availability')
+            $data->select('id', 'store_id', 'asin', 'product_sku', 'push_availability', 'current_availability')
             ->where('store_id', $request_store_id)
             ->where('push_status', 0)
             ->orderBy('id', 'DESC');
@@ -360,7 +360,7 @@ class BuyBoxStoreController extends Controller
                 ->addColumn('action', function ($query) {
 
                     $action = "<a href='javascript:void(0)' id='update_availability' class='edit btn btn-info btn-sm ml-2' "; 
-                    $action .= " data-seller_id='$query->store_id' data-product_id='$query->id' data-product_sku='$query->product_sku' data-asin='$query->asin' data-current_availability='$query->current_availability' data-availability='$query->availability' >
+                    $action .= " data-seller_id='$query->store_id' data-product_id='$query->id' data-product_sku='$query->product_sku' data-asin='$query->asin' data-current_availability='$query->current_availability' data-availability='$query->push_availability' >
                     Update Availability
                 </a>";
                     return $action;

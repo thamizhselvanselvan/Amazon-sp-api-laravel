@@ -170,8 +170,8 @@
                         searchable: false
                     },
                     {
-                        data: 'availability',
-                        name: 'availability',
+                        data: 'push_availability',
+                        name: 'push_availability',
                         orderable: false,
                         searchable: false
                     },
