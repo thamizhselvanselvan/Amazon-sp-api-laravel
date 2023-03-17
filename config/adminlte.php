@@ -1173,12 +1173,26 @@ return [
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-list-ul',
                             'submenu' => [
-                                [
-                                    'text' => 'Ban/unban',
-                                    'url' => 'cliqnshop/category',
-                                    'can' => ['Admin', 'Cliqnshop'],
-                                    'icon' => 'fa fa-cloud-download',
-                                ],
+                                            [
+                                                'text' => 'Banned Categories',
+                                                'url' => 'cliqnshop/category',
+                                                'can' => ['Admin', 'Cliqnshop'],
+                                                'icon' => 'fa fa-ban',
+                                            ],
+                                        ]
+                        ],
+                        [
+                            'text' => 'brand',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-list-ul',
+                            'submenu' => [
+                                            [
+                                                'text' => 'Banned Brands',
+                                                'url' => 'cliqnshop/brand/ban',
+                                                'can' => ['Admin', 'Cliqnshop'],
+                                                'icon' => 'fa fa-ban',
+                                            ],
+                               
                             ]
                         ]
 
