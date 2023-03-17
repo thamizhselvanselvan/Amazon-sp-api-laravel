@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\ShipNtrack\ForwarderMaping;
+namespace App\Models\ShipNTrack\ForwarderMaping;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,8 +12,6 @@ class IntoAE extends Model
     protected $table = 'process_india_to_uae';
     protected $fillable = [
         'reference_id',
-        'source',
-        'destination',
         'consignor',
         'consignee',
         'forwarder_1',

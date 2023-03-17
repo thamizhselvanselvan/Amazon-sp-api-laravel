@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Models\ShipNTrack\Courier\CourierPartner;
-use App\Models\ShipNtrack\ForwarderMaping\IntoAE;
+use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
-use App\Models\ShipNtrack\ForwarderMaping\USAtoAE;
-use App\Models\ShipNtrack\ForwarderMaping\USAtoKSA;
+use App\Models\ShipNTrack\ForwarderMaping\USAtoAE;
+use App\Models\ShipNTrack\ForwarderMaping\USAtoKSA;
 
 class ForwarderPacketMappingController extends Controller
 {
