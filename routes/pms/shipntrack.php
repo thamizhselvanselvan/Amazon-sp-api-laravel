@@ -65,3 +65,7 @@ Route::post('shipntrack/booking/store', 'shipntrack\BookingMasterController@book
 Route::get('shipntrack/booking/{id}/edit', 'shipntrack\BookingMasterController@bookingedit')->name('snt.booking.edit');
 Route::post('shipntrack/booking/save/edit', 'shipntrack\BookingMasterController@bookingformedit')->name('snt.booking.update');
 Route::get('shipntrack/booking/{id}/remove', 'shipntrack\BookingMasterController@bookingremove')->name('snt.booking.remove');
+
+
+Route::get('shipntrack/status/manager', 'shipntrack\Courier\CourierStatusManagementController@index')->name('status.master.index');
+Route::get('shipntrack/status/store', 'shipntrack\Courier\CourierStatusManagementController@storestatus')->name('shipntrack.courier.status.store');
