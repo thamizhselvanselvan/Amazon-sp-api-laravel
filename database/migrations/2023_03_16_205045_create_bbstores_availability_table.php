@@ -16,7 +16,7 @@ class CreateBbstoresAvailabilityTable extends Migration
     {
         foreach($this->table_names as $table_name) {
 
-            Schema::create($table_name, function (Blueprint $table) {
+            Schema::connection('buybox_stores')->create($table_name, function (Blueprint $table) {
                 $table->id();
                 $table->string('store_id', 5);
                 $table->string('asin', 50);

@@ -18,7 +18,7 @@ class AddColumnInProductsTable extends Migration
      
         foreach($this->table_names as $table_name) {
 
-            Schema::table($table_name, function (Blueprint $table) {
+            Schema::connection('buybox_stores')->table($table_name, function (Blueprint $table) {
                 $table->tinyInteger("cyclic_availability")->default(0)->comment("0 = not processed, 1 = processed, 5 = Processing")->after("bb_cyclic");
                 $table->tinyInteger("current_availability")->default(0)->comment("Current Store Availability - 1 = active, 0 = Inactive")->after("priority");
 
