@@ -82,10 +82,8 @@
                         <th>ID</th>
                         <th>ASIN</th>
                         <th>Product SKU</th>
-                        <th>Base Price</th>
-                        <th>Ceil Price</th>
-                        <th>Push Price</th>
-                        <th>Availability</th>
+                        <th>Current Availability</th>
+                        <th>Push Availability</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -166,20 +164,8 @@
                         name: 'product_sku'
                     },
                     {
-                        data: 'base_price',
-                        name: 'base_price',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'ceil_price',
-                        name: 'ceil_price',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'push_price',
-                        name: 'push_price',
+                        data: 'current_availability',
+                        name: 'current_availability',
                         orderable: false,
                         searchable: false
                     },

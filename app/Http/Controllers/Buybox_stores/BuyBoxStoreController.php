@@ -306,6 +306,7 @@ class BuyBoxStoreController extends Controller
     {
         $stores = OrderSellerCredentials::select('store_name', 'seller_id')
             ->where('buybox_stores', 1)
+            ->where('seller_id', 6)
             ->distinct()
             ->get();
 
@@ -320,27 +321,16 @@ class BuyBoxStoreController extends Controller
 
             if (in_array($request_store_id, [13, 14, 5, 6, 8, 16, 17, 10, 21, 23, 24, 26, 27, 28, 30, 31, 33, 36, 39])) {
 
-                $data = Product_Push_in::query()
-                    ->select('id', 'store_id', 'asin', 'product_sku', 'base_price', 'ceil_price', 'push_price', 'availability')
-                    ->where('store_id', $request_store_id)
-                    ->where('push_status', 0)
-                    ->orderBy('id', 'DESC');
+                $data = Product_Push_in::query();
             } else {
 
-                $data = Product_push_ae::query()
-                    ->select('id', 'store_id', 'asin', 'product_sku', 'base_price', 'ceil_price', 'push_price', 'availability')
-                    ->where('store_id', $request_store_id)
-                    ->where('push_status', 0)
-                    ->orderBy('id', 'DESC');
+                $data = Product_push_ae::query();
             }
 
-            // $data = Product_Push_in::query()
-            //     ->select('id', 'asin', 'product_sku', 'availability')
-            //     ->when($request_store_id, function ($query) use ($request_store_id) {
-            //         return $query->where('store_id', $request_store_id);
-            //     })
-            //     ->where('push_status', 0)
-            //     ->orderBy('id', 'DESC');
+            $data->select('id', 'store_id', 'asin', 'product_sku', 'availability', 'current_availability')
+            ->where('store_id', $request_store_id)
+            ->where('push_status', 0)
+            ->orderBy('id', 'DESC');
 
             return DataTables::of($data)
                 ->editColumn('asin', function ($query) {
@@ -354,15 +344,16 @@ class BuyBoxStoreController extends Controller
 
                     return "<a target='_blank' href='https://amazon." . $region_code . "/dp/" . $query->asin . "'>" . $query->product_sku . "</a>";
                 })
-                ->addColumn('availability', function ($query) {
-                    if ($query->availability == '1') {
+                // ->addColumn('availability', function ($query) {
 
-                        $action = "<input type='checkbox' id='price_availability' name='availability' value='$query->availability' data-id='$query->id' checked />";
-                    } else {
-                        $action = "<input type='checkbox' id='price_availability' name='availability' value='$query->availability' data-id='$query->id' />";
-                    }
-                    return $action;
-                })
+                //     if ($query->availability == '1') {
+
+                //         $action = "<input type='checkbox' id='price_availability' name='availability' value='$query->availability' data-id='$query->id' checked />";
+                //     } else {
+                //         $action = "<input type='checkbox' id='price_availability' name='availability' value='$query->availability' data-id='$query->id' />";
+                //     }
+                //     return $action;
+                // })
 
                 ->addColumn('action', function ($query) {
 
