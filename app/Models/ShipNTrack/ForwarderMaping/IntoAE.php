@@ -12,6 +12,7 @@ class IntoAE extends Model
     protected $connection = 'shipntracking';
     protected $table = 'process_india_to_uae';
     protected $fillable = [
+        'awb_number',
         'reference_id',
         'consignor',
         'consignee',

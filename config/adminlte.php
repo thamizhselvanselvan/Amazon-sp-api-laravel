@@ -1080,22 +1080,23 @@ return [
                 [
                     'text' => 'Tracking',
                     'can' => ['Admin'],
+                    'url' => 'shipntrack/courier/tracking',
                     'icon' => 'far fa fa-bar-chart',
-                    'submenu' =>
-                    [
-                        [
-                            'text' => 'SMSA Tracking',
-                            'url' => 'shipntrack/smsa',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa fa-barcode',
-                        ],
-                        [
-                            'text' => 'Bombino Tracking',
-                            'url' => 'shipntrack/bombino',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa fa-plane',
-                        ],
-                    ],
+                    // 'submenu' =>
+                    // [
+                    //     [
+                    //         'text' => 'SMSA Tracking',
+                    //         'url' => 'shipntrack/smsa',
+                    //         'can' => ['Admin'],
+                    //         'icon' => 'far fa fa-barcode',
+                    //     ],
+                    //     [
+                    //         'text' => 'Bombino Tracking',
+                    //         'url' => 'shipntrack/bombino',
+                    //         'can' => ['Admin'],
+                    //         'icon' => 'far fa fa-plane',
+                    //     ],
+                    // ],
                 ],
 
 
@@ -1173,26 +1174,26 @@ return [
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-list-ul',
                             'submenu' => [
-                                            [
-                                                'text' => 'Banned Categories',
-                                                'url' => 'cliqnshop/category',
-                                                'can' => ['Admin', 'Cliqnshop'],
-                                                'icon' => 'fa fa-ban',
-                                            ],
-                                        ]
+                                [
+                                    'text' => 'Banned Categories',
+                                    'url' => 'cliqnshop/category',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-ban',
+                                ],
+                            ]
                         ],
                         [
                             'text' => 'brand',
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-list-ul',
                             'submenu' => [
-                                            [
-                                                'text' => 'Banned Brands',
-                                                'url' => 'cliqnshop/brand/ban',
-                                                'can' => ['Admin', 'Cliqnshop'],
-                                                'icon' => 'fa fa-ban',
-                                            ],
-                               
+                                [
+                                    'text' => 'Banned Brands',
+                                    'url' => 'cliqnshop/brand/ban',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-ban',
+                                ],
+
                             ]
                         ]
 

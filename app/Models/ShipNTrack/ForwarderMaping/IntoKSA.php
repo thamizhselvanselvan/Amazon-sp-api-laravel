@@ -2,16 +2,18 @@
 
 namespace App\Models\ShipNTrack\ForwarderMaping;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ShipNTrack\Courier\CourierPartner;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class IntoKSA extends Model
 {
     use HasFactory;
-    
+
     protected $connection = 'shipntracking';
     protected $table = 'process_india_to_ksa';
     protected $fillable = [
+        'awb_number',
         'reference_id',
         'consignor',
         'consignee',
@@ -29,4 +31,24 @@ class IntoKSA extends Model
         'forwarder_4_flag',
         'status'
     ];
+
+    public function CourierPartner1()
+    {
+        return $this->hasOne(CourierPartner::class, 'id', 'forwarder_1');
+    }
+
+    public function CourierPartner2()
+    {
+        return $this->hasOne(CourierPartner::class, 'id', 'forwarder_2');
+    }
+
+    public function CourierPartner3()
+    {
+        return $this->hasOne(CourierPartner::class, 'id', 'forwarder_2');
+    }
+
+    public function CourierPartner4()
+    {
+        return $this->hasOne(CourierPartner::class, 'id', 'forwarder_2');
+    }
 }

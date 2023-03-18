@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Services\Catalog\PriceConversion;
 use App\Models\ShipNTrack\SMSA\SmsaTrackings;
 use App\Models\ShipNTrack\Aramex\AramexTracking;
+use App\Models\ShipNTrack\Aramex\AramexTrackings;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 use JeroenNoten\LaravelAdminLte\View\Components\Tool\Modal;
 
@@ -113,7 +114,7 @@ Route::get('test/shipntrack/aramex', function () {
         }
     }
     po($aramex_records);
-    AramexTracking::upsert($aramex_records, ['awbno_update_timestamp_description_unique'], [
+    AramexTrackings::upsert($aramex_records, ['awbno_update_timestamp_description_unique'], [
         'account_id',
         'awbno',
         'update_code',
@@ -138,8 +139,8 @@ Route::get('test/shipntrack/smsa', function () {
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
     <getTracking xmlns="http://track.smsaexpress.com/secom/">
-      <awbNo>290409700110</awbNo>
-      <passkey>Mah@8537</passkey>
+      <awbNo>290409474163</awbNo>
+      <passkey>BeL@3845</passkey>
     </getTracking>
   </soap:Body>
 </soap:Envelope>';

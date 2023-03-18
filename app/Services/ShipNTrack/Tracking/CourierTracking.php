@@ -6,9 +6,10 @@ use DateTime;
 use DateTimeZone;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use App\Models\ShipNTrack\SMSA\SmsaTrackings;
-use App\Models\ShipNTrack\Aramex\AramexTracking;
+use App\Models\ShipNTrack\Aramex\AramexTrackings;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 
 class CourierTracking
@@ -79,7 +80,7 @@ class CourierTracking
             }
         }
 
-        AramexTracking::upsert($aramex_records, ['awbno_update_timestamp_description_unique'], [
+        AramexTrackings::upsert($aramex_records, ['awbno_update_timestamp_description_unique'], [
             'account_id',
             'awbno',
             'update_code',
@@ -101,20 +102,20 @@ class CourierTracking
             'Content-Type' => 'text/xml'
         ];
         $body = '<?xml version=\'1.0\' encoding=\'utf-8\'?>
-<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <getTracking xmlns="http://track.smsaexpress.com/secom/">
-      <awbNo>' . $awbNo . '</awbNo>
-      <passkey>' . $passKey . '</passkey>
-    </getTracking>
-  </soap:Body>
-</soap:Envelope>';
+                <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                <soap:Body>
+                    <getTracking xmlns="http://track.smsaexpress.com/secom/">
+                    <awbNo>' . $awbNo . '</awbNo>
+                    <passkey>' . $passKey . '</passkey>
+                    </getTracking>
+                </soap:Body>
+                </soap:Envelope>';
         $request = new Request('POST', 'http://track.smsaexpress.com/SeCom/SMSAwebService.asmx', $headers, $body);
 
         $response1 = $client->sendAsync($request)->wait();
         $plainXML = mungXML(trim($response1->getBody()));
         $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-
+        Log::debug($arrayResult);
         $smsa_data = $arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram']['NewDataSet']['Tracking'];
 
         $smsa_records = [];
@@ -132,7 +133,7 @@ class CourierTracking
             }
         } else {
             $smsa_records[] = [
-                'account_id' => 'smsaUSA',
+                'account_id' => $accoundId,
                 'awbno' =>  $smsa_data['awbNo'],
                 'date' => date('Y-m-d H:i:s', strtotime($smsa_data['Date'])),
                 'activity' =>  $smsa_data['Activity'],

@@ -5,7 +5,7 @@ namespace App\Models\ShipNTrack\Aramex;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AramexTracking extends Model
+class AramexTrackings extends Model
 {
     use HasFactory;
     protected $connection = 'shipntracking';
