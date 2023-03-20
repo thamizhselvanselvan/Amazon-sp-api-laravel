@@ -13,7 +13,7 @@ use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 use App\Models\ShipNTrack\ForwarderMaping\IntoKSA;
 use App\Services\ShipNTrack\Tracking\CourierTracking;
 
-class CouriersTracking implements ShouldQueue
+class CouriersTrackingJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     private $payload;
@@ -35,15 +35,14 @@ class CouriersTracking implements ShouldQueue
     public function handle()
     {
         $record = $this->payload;
-        Log::alert($record);
+
         $AramexTracking = new CourierTracking();
         $courierCodeName = ['ss' => 'Smsa', 'am' => 'Aramex', 'bom' => 'Bombino', 'ss_ksa' => 'Smsa'];
 
         $records = [];
         $awb_no = $record['awbNo'];
         $destination = strtolower($record['destination']);
-        Log::alert($awb_no);
-        Log::alert($destination);
+
         if ($destination == 'ae') {
 
             $records = IntoAE::with(['CourierPartner1', 'CourierPartner2'])
@@ -67,12 +66,7 @@ class CouriersTracking implements ShouldQueue
                 $passKey = $record['courier_partner1']['key2'];
                 $awb_no = $record['forwarder_1_awb'];
 
-                // po($courierCode);
-                // po($userName);
-                // po($passKey);
-                // po($awb_no);
                 $methodName = $courierCodeName[$courierCode] . "API";
-                // po($methodName);
                 $AramexTracking->$methodName($userName, $passKey, $awb_no, $accoundId);
             }
             if ($record['forwarder_2_flag'] == 0 && $record['forwarder_2_awb'] != '') {
@@ -83,15 +77,9 @@ class CouriersTracking implements ShouldQueue
                 $passKey = $record['courier_partner2']['key2'];
                 $awb_no = $record['forwarder_2_awb'];
 
-                // po($courierCode);
-                // po($userName);
-                // po($passKey);
-                // po($awb_no);
-                // po($methodName);
                 $methodName = $courierCodeName[$courierCode] . "API";
                 $AramexTracking->$methodName($userName, $passKey, $awb_no, $accoundId);
             }
-            // po($record);
         }
     }
 }

@@ -40,7 +40,7 @@ class CourierTrackingCommand extends Command
      */
     public function handle()
     {
-        $class = "ShipNTrack\Tracking\CouriersTracking";
+        $class = "ShipNTrack\Tracking\CouriersTrackingJob";
         $queue_name = "tracking";
         $destinations = ['ae', 'ksa'];
         foreach ($destinations as $destination) {
@@ -59,16 +59,12 @@ class CourierTrackingCommand extends Command
                     ->get()
                     ->toArray();
             }
-            Log::notice($records);
 
             if (count($records) > 0) {
 
                 foreach ($records as $record) {
                     if ($record['forwarder_1_flag'] == 0) {
 
-                        po($record['awb_number']);
-                        // $awb_no = $record['awb_number'];
-                        // $destination = $record['courier_partner1']['destination'];
                         $data = [
                             'awbNo' => $record['awb_number'],
                             'destination' => $record['courier_partner1']['destination']
@@ -76,9 +72,11 @@ class CourierTrackingCommand extends Command
                         jobDispatchFunc($class, $data, $queue_name);
                     } elseif ($record['forwarder_2_flag'] == 0) {
 
-                        po($record['awb_number']);
-                        $awb_no = $record['awb_number'];
-                        jobDispatchFunc($class, $awb_no, $queue_name);
+                        $data = [
+                            'awbNo' => $record['awb_number'],
+                            'destination' => $record['courier_partner1']['destination']
+                        ];
+                        jobDispatchFunc($class, $data, $queue_name);
                     }
                 }
             }

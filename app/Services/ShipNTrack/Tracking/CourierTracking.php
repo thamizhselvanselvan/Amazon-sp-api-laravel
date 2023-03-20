@@ -115,7 +115,7 @@ class CourierTracking
         $response1 = $client->sendAsync($request)->wait();
         $plainXML = mungXML(trim($response1->getBody()));
         $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-        Log::debug($arrayResult);
+
         $smsa_data = $arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram']['NewDataSet']['Tracking'];
 
         $smsa_records = [];
