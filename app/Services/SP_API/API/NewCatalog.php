@@ -80,7 +80,7 @@ class NewCatalog
 
             $asin[] = $record['asin'] ?? '';
         }
-        Log::warning(count($asin));
+
         if (count($asin) != 0) {
 
             $queue_data[] = $this->FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id);
