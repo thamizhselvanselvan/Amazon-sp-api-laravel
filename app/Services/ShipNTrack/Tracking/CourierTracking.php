@@ -6,14 +6,15 @@ use DateTime;
 use DateTimeZone;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use App\Models\ShipNTrack\SMSA\SmsaTrackings;
-use App\Models\ShipNTrack\Aramex\AramexTracking;
+use App\Models\ShipNTrack\Aramex\AramexTrackings;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 
 class CourierTracking
 {
-    public function AramexAPI($username, $passkey, $awbNo, $accoundId)
+    public function AramexAPI($username, $passkey, $awbNo, $accoundId, $process_management_id)
     {
         $url = "https://ws.aramex.net/ShippingAPI.V2/Tracking/Service_1_0.svc/json/TrackShipments";
         $payload =
@@ -39,6 +40,9 @@ class CourierTracking
         ])->post($url, $payload);
 
         $this->AramexDataFormatting($response, $accoundId);
+
+        $command_end_time = now();
+        ProcessManagementUpdate($process_management_id, $command_end_time);
     }
 
     public function AramexDataFormatting($response, $accoundId)
@@ -79,7 +83,7 @@ class CourierTracking
             }
         }
 
-        AramexTracking::upsert($aramex_records, ['awbno_update_timestamp_description_unique'], [
+        AramexTrackings::upsert($aramex_records, ['awbno_update_timestamp_description_unique'], [
             'account_id',
             'awbno',
             'update_code',
@@ -94,21 +98,21 @@ class CourierTracking
         ]);
     }
 
-    public function smsaAPI($username, $passKey, $awbNo, $accoundId)
+    public function smsaAPI($username, $passKey, $awbNo, $accoundId, $process_management_id)
     {
         $client = new Client();
         $headers = [
             'Content-Type' => 'text/xml'
         ];
         $body = '<?xml version=\'1.0\' encoding=\'utf-8\'?>
-<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <getTracking xmlns="http://track.smsaexpress.com/secom/">
-      <awbNo>' . $awbNo . '</awbNo>
-      <passkey>' . $passKey . '</passkey>
-    </getTracking>
-  </soap:Body>
-</soap:Envelope>';
+                <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                <soap:Body>
+                    <getTracking xmlns="http://track.smsaexpress.com/secom/">
+                    <awbNo>' . $awbNo . '</awbNo>
+                    <passkey>' . $passKey . '</passkey>
+                    </getTracking>
+                </soap:Body>
+                </soap:Envelope>';
         $request = new Request('POST', 'http://track.smsaexpress.com/SeCom/SMSAwebService.asmx', $headers, $body);
 
         $response1 = $client->sendAsync($request)->wait();
@@ -132,7 +136,7 @@ class CourierTracking
             }
         } else {
             $smsa_records[] = [
-                'account_id' => 'smsaUSA',
+                'account_id' => $accoundId,
                 'awbno' =>  $smsa_data['awbNo'],
                 'date' => date('Y-m-d H:i:s', strtotime($smsa_data['Date'])),
                 'activity' =>  $smsa_data['Activity'],
@@ -149,5 +153,8 @@ class CourierTracking
             'details',
             'location',
         ]);
+
+        $command_end_time = now();
+        ProcessManagementUpdate($process_management_id, $command_end_time);
     }
 }
