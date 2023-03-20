@@ -15,7 +15,10 @@ class CourierStatusManagementController extends Controller
     {
         $data =  StatusManagement::query()->with(['courierpartner'])->get();
 
+
+
         if ($request->ajax()) {
+            $store_order_item[] = 0;
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->editColumn('courier_partner_id', function ($row) {
@@ -24,16 +27,21 @@ class CourierStatusManagementController extends Controller
                 })
                 ->addColumn('booking_master_id', function ($row) {
                     $datas = Booking::select('id', 'name')->get();
+                    $data_stat =   StatusManagement::select('booking_master_id')->get();
+                    $html = '<select class="w-50" id="select_status" href="javascript:void(0)" name"select">Select Status';
 
-                    $html = '<select class="w-50" id="select" href="javascript:void(0)" name"select">Select Status';
-                    $html .= "<option value='->id'>Select Status</option>";
+                    $html .= "<option value=null-$row->id selected>Select Status</option>";
                     foreach ($datas as $data) {
-                        $html .=  "<option value='$data->id'>$data->name</option>";
+                        $html .=  "<option value='$data->id-$row->id'>$data->name</option>";
                     }
                     return $html;
                 })
-                ->addColumn('action', function ($row) {
-                    $actionBtn = "<input type='checkbox' href='javascript:void(0)'  id='stat_stop' name='stats_store' value='$row->id'>";
+                ->addColumn('action', function ($row) use ($store_order_item) {
+                    if (array_key_exists($row['stop_tracking'], $store_order_item)) {
+                        $actionBtn = "<input type='checkbox'  href='javascript:void(0)'  id='stat_stop' name='stats_store' value='$row->id'>";
+                    } else {
+                        $actionBtn = "<input type='checkbox' checked href='javascript:void(0)'  id='stat_stop' name='stats_store' value='$row->id'>";
+                    }
                     return $actionBtn;
                 })
                 ->rawColumns(['action', 'booking_master_id'])
@@ -44,10 +52,38 @@ class CourierStatusManagementController extends Controller
 
     public function storestatus(Request $request)
     {
-        $receved_array = $request->status;
+        //stop Tracking
+        StatusManagement::query()->update(['stop_tracking' => '0']);
+        $receved_stop = $request->stop_enable;
+        $datas =   explode('-', $receved_stop);
+        foreach ($datas as $key => $data) {
 
-        foreach ($receved_array as $key => $data) {
-            StatusManagement::where('id', $key)->update(['booking_master_id' => $data, 'stop_tracking' => '1']);
+            StatusManagement::where('id', $data)->update(['stop_tracking' => '1']);
+        }
+
+        //update Status
+        $receved_status = $request->status;
+        $status_datas =   explode('|', $receved_status);
+        foreach ($status_datas as $key => $status) {
+            if ($key == 0) {
+                continue;
+            } else {
+
+                $status_val =   explode('-', $status);
+
+                if (isset($status_val['0']) && isset($status_val['1'])) {
+
+                    $stat = ($status_val['0']);
+                    if ($stat == 'null') {
+                        $stat = null;
+                    }
+
+                    $id = ($status_val['1']);
+                    StatusManagement::where('id', $id)->update(['booking_master_id' => $stat]);
+                } else {
+                    return response()->json('error');
+                }
+            }
         }
         return response()->json('success');
     }

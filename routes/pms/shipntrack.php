@@ -23,6 +23,7 @@ Route::post('shipntrack/forwarder/update', 'shipntrack\Forwarder\ForwarderPacket
 Route::post('shipntrack/forwarder/store/forwarder', 'shipntrack\Forwarder\ForwarderPacketMappingController@store_farwarder')->name('shipntrack.forwarder.store.forwarder');
 Route::get('shipntrack/forwarder/select/view', 'shipntrack\Forwarder\ForwarderPacketMappingController@courierget')->name('shipntrack.forwarder.select.view');
 
+Route::get('shipntrack/forwarder/mapped/details', 'shipntrack\Forwarder\ForwarderPacketMappingController@listing')->name('shipntrack.forwarder.mapped.details');
 
 Route::get('shipntrack/missing/find', 'shipntrack\Forwarder\ForwarderPacketMappingController@missingexpview')->name('shipntrack.missing.find');
 Route::get('shipntrack/missing/export', 'shipntrack\Forwarder\ForwarderPacketMappingController@missexport')->name('shipntrack.missing.export');

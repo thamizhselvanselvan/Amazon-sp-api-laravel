@@ -670,13 +670,13 @@ return [
 
                 ],
                 [
-                    'text' => 'Zoho Price Missing',
+                    'text' => 'Orders Price Missing',
                     'can' => ['Admin', 'Catalog'],
                     'icon' => 'fa fa-minus-circle',
                     'submenu' =>
                     [
                         [
-                            'text' => 'Price Missing',
+                            'text' => 'Zoho Price Missing',
                             'url' => "orders/missing/price",
                             'can' => ['Admin', 'Catalog'],
                             'icon' => 'fa fa-minus-circle',
@@ -692,6 +692,12 @@ return [
                             'url' => "orders/missing/force/dump/view",
                             'can' => ['Admin', 'Catalog'],
                             'icon' => 'fa fa-plus-circle',
+                        ],
+                        [
+                            'text' => 'US Price Missing',
+                            'url' => "orders/usprice/missing",
+                            'can' => ['Admin', 'Catalog'],
+                            'icon' => 'fa fa-minus-circle',
                         ],
                     ],
                 ],
@@ -1065,17 +1071,28 @@ return [
                             'icon' => 'far fa fa-cog',
                         ],
                     ],
-
-
-
-
                 ],
-
                 [
-                    'text' => 'Forwarder Mapping',
-                    'url' => 'shipntrack/forwarder',
+                    'text' => 'Forwarder Master',
                     'icon' => 'far fa fa-map-marker',
                     'can' => ['Admin'],
+                    'submenu' =>
+                    [
+                        [
+                            'text' => 'Forwarder Mapping',
+                            'url' => 'shipntrack/forwarder',
+                            'icon' => 'far fa fa-map-marker',
+                            'can' => ['Admin'],
+                        ],
+                        [
+                            'text' => 'Forwarder Details',
+                            'url' => 'shipntrack/forwarder/mapped/details',
+                            'icon' => 'far fa fa-bar-chart',
+                            'can' => ['Admin'],
+                        ],
+                      
+                    ],
+
                 ],
                 [
                     'text' => 'Tracking',
