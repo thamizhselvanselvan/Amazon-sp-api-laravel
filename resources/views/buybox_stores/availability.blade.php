@@ -208,13 +208,16 @@
 
         $(document).on('click', '#update_availability', function() {
 
+            let self = $(this);
             let region = $('#region_select').val();
-            let product_id = $(this).data('product_id');
-            let seller_id = $(this).data('seller_id');
-            let asin = $(this).data('asin');
-            let product_sku = $(this).data('product_sku');
-            let current_availability = $(this).data('current_availability');
-            let availability = $(this).data('availability');
+            let product_id = self.data('product_id');
+            let seller_id = self.data('seller_id');
+            let asin = self.data('asin');
+            let product_sku = self.data('product_sku');
+            let current_availability = self.data('current_availability');
+            let availability = self.data('availability');
+
+            self.prop('disable', true);
 
             $.ajax({
                 method: "post",
@@ -229,11 +232,24 @@
                     "current_availability": current_availability,
                     "availability": availability
                 },
+                dataType: "json",
                 success: function(response) {
+                    self.prop('disable', false);
                     console.log(response);
 
+                    if(response.hasOwnProperty("success")) {
+                        alert("availability updated successfully");
+
+                    }
+
+                    if(response.hasOwnProperty("failed")) {
+                        alert("availability update failed");
+                    }
 
                 },
+                error: function() {
+                    self.prop('disable', false);
+                }
             });
 
         });
