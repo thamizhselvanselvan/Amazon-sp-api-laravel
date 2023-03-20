@@ -57,15 +57,20 @@ class CourierTrackingCommand extends Command
             $records = [];
             if ($destination == 'ae') {
 
-                $records = IntoAE::with(['CourierPartner1', 'CourierPartner2'])
+                $records = IntoAE::with(['CourierPartner1', 'CourierPartner2', 'CourierPartner3', 'CourierPartner4'])
                     ->orWhere('forwarder_1_flag', 0)
                     ->orWhere('forwarder_2_flag', 0)
+                    ->orWhere('forwarder_3_flag', 0)
+                    ->orWhere('forwarder_4_flag', 0)
                     ->get()
                     ->toArray();
-            } else {
-                $records = IntoKSA::with(['CourierPartner1', 'CourierPartner2'])
+            } else if ($destination == 'ksa') {
+
+                $records = IntoKSA::with(['CourierPartner1', 'CourierPartner2', 'CourierPartner3', 'CourierPartner4'])
                     ->orWhere('forwarder_1_flag', 0)
                     ->orWhere('forwarder_2_flag', 0)
+                    ->orWhere('forwarder_3_flag', 0)
+                    ->orWhere('forwarder_4_flag', 0)
                     ->get()
                     ->toArray();
             }
@@ -73,6 +78,7 @@ class CourierTrackingCommand extends Command
             if (count($records) > 0) {
 
                 foreach ($records as $record) {
+
                     if ($record['forwarder_1_flag'] == 0) {
 
                         $data = [
@@ -85,7 +91,21 @@ class CourierTrackingCommand extends Command
 
                         $data = [
                             'awbNo' => $record['awb_number'],
-                            'destination' => $record['courier_partner1']['destination'],
+                            'destination' => $record['courier_partner2']['destination'],
+                            'process_management_id' => $pm_id
+                        ];
+                        jobDispatchFunc($class, $data, $queue_name);
+                    } elseif ($record['forwarder_3_flag'] == 0) {
+                        $data = [
+                            'awbNo' => $record['awb_number'],
+                            'destination' => $record['courier_partner3']['destination'],
+                            'process_management_id' => $pm_id
+                        ];
+                        jobDispatchFunc($class, $data, $queue_name);
+                    } else if ($record['forwarder_4_flag'] == 0) {
+                        $data = [
+                            'awbNo' => $record['awb_number'],
+                            'destination' => $record['courier_partner4']['destination'],
                             'process_management_id' => $pm_id
                         ];
                         jobDispatchFunc($class, $data, $queue_name);

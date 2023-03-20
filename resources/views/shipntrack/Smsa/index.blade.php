@@ -49,8 +49,10 @@
             <thead>
                 <tr>
                     <th>AWB No.</th>
-                    <th>forwarder1 AWB No.</th>
-                    <th>forwarder2 AWB No.</th>
+                    <th>Forwarder1 AWB No.</th>
+                    <th>Forwarder2 AWB No.</th>
+                    <th>Forwarder3 AWB No.</th>
+                    <th>Forwarder4 AWB No.</th>
                     <th>Date</th>
                     <th>Action</th>
                 </tr>
@@ -100,6 +102,18 @@
                         {
                             data: 'forwarder2_awb',
                             name: 'forwarder2_awb',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'forwarder3_awb',
+                            name: 'forwarder3_awb',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'forwarder4_awb',
+                            name: 'forwarder4_awb',
                             orderable: false,
                             searchable: false
                         },

@@ -23,12 +23,12 @@ class SmsaExperessController extends Controller
             $data = [];
             if ($request->sourceDestination == 'ind_to_uae') {
 
-                $data = IntoAE::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'created_at')
+                $data = IntoAE::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
                     ->orderBy('awb_number', 'DESC')
                     ->get()
                     ->toArray();
             } elseif ($request->sourceDestination == 'ind_to_ksa') {
-                $data = IntoKSA::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'created_at')
+                $data = IntoKSA::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
                     ->orderBy('awb_number', 'DESC')
                     ->get()
                     ->toArray();
@@ -42,6 +42,14 @@ class SmsaExperessController extends Controller
                     $forwarder2 = $data['forwarder_2_awb'] ?? 'NA';
                     return $forwarder2;
                 })
+                ->editColumn('forwarder3_awb', function ($data) {
+                    $forwarder2 = $data['forwarder_3_awb'] ?? 'NA';
+                    return $forwarder2;
+                })
+                ->editColumn('forwarder4_awb', function ($data) {
+                    $forwarder2 = $data['forwarder_4_awb'] ?? 'NA';
+                    return $forwarder2;
+                })
                 ->editColumn('created_date', function ($data) {
                     $created_date = Carbon::parse($data['created_at']);
                     return $created_date;
@@ -50,7 +58,7 @@ class SmsaExperessController extends Controller
                     $action = "<a href='/shipntrack/courier/moredetails/" . $request->sourceDestination . "/" . $data['awb_number'] . "' class='' target='_blank'>More Details</a>";
                     return $action;
                 })
-                ->rawColumns(['forwarder1_awb', 'forwarder2_awb', 'created_date', 'action'])
+                ->rawColumns(['forwarder1_awb', 'forwarder2_awb', 'forwarder3_awb', 'forwarder4_awb', 'created_date', 'action'])
                 ->make(true);
         }
         return view('shipntrack.Smsa.index');
@@ -58,19 +66,19 @@ class SmsaExperessController extends Controller
 
     public function PacketMoreDetails($sourceDestination, $awbNo)
     {
-        $colunmName = ["ss" => "date", "am" => "update_date_time", "ss_ksa" => "date"];
-        $courierFilePath =  ["ss" => "SMSA", "am" => "Aramex", "bom" => "Bombino", "ss_ksa" => "SMSA"];
-        $courierModelName =  ["ss" => "SmsaTrackings", "am" => "AramexTrackings", "bom" => "BombinoTrackings", "ss_ksa" => "SmsaTrackings"];
-        $courierTableName =  ["ss" => "smsa_trackings", "am" => "aramex_trackings", "bom" => "bombino_trackings", "ss_ksa" => "smsa_trackings"];
+        $colunmName = ["ss_ae" => "date", "am_ae" => "update_date_time", "ss_ksa" => "date", "am_ksa" => "update_date_time"];
+        $courierFilePath =  ["ss_ae" => "SMSA", "am_ae" => "Aramex", "bom" => "Bombino", "ss_ksa" => "SMSA", "am_ksa" => "Aramex"];
+        $courierModelName =  ["ss_ae" => "SmsaTrackings", "am_ae" => "AramexTrackings", "bom" => "BombinoTrackings", "ss_ksa" => "SmsaTrackings", "am_ksa" => "AramexTrackings"];
+        $courierTableName =  ["ss_ae" => "ae_smsa_trackings", "am_ae" => "ae_aramex_trackings", "bom" => "bombino_trackings", "ss_ksa" => "ksa_smsa_trackings", "am_ksa" => "ksa_aramex_trackings"];
         $selectColumns = [
-            'ss' => [
+            'ss_ae' => [
                 'awbno',
                 'date',
                 'activity',
                 'details',
                 'location',
             ],
-            'am' => [
+            'am_ae' => [
                 'awbno',
                 'update_code',
                 'update_description',
@@ -88,18 +96,29 @@ class SmsaExperessController extends Controller
                 'activity',
                 'details',
                 'location',
-            ]
+            ],
+            'am_ksa' => [
+                'awbno',
+                'update_code',
+                'update_description',
+                'update_date_time',
+                'update_location',
+                'comment',
+                'gross_weight',
+                'chargeable_weight',
+                'weight_unit',
+            ],
         ];
         $result = [];
         if ($sourceDestination == 'ind_to_uae') {
 
-            $result = IntoAE::with(['courierPartner1', 'courierPartner2'])
+            $result = IntoAE::with(['courierPartner1', 'courierPartner2', 'courierPartner3', 'courierPartner4'])
                 ->where('awb_number', $awbNo)
                 ->get()
                 ->toArray();
         } elseif ($sourceDestination == 'ind_to_ksa') {
 
-            $result = IntoKSA::with(['courierPartner1', 'courierPartner2'])
+            $result = IntoKSA::with(['courierPartner1', 'courierPartner2', 'courierPartner3', 'courierPartner4'])
                 ->where('awb_number', $awbNo)
                 ->get()
                 ->toArray();
@@ -139,6 +158,40 @@ class SmsaExperessController extends Controller
                 ->get()
                 ->toArray();
         }
+        $records3 = [];
+        if (isset($result[0]['forwarder_3_awb'])) {
+
+            $forwarder3_awb = $result[0]['forwarder_3_awb'];
+            $forwarder3_courierCode = $result[0]['courier_partner3']['courier_code'];
+
+            $path = $courierFilePath[$forwarder3_courierCode];
+            $modelName = $courierModelName[$forwarder3_courierCode];
+            $tableName = $courierTableName[$forwarder3_courierCode];
+
+            $table = table_model_change(model_path: $path, model_name: $modelName, table_name: $tableName);
+            $records3 = $table->select($selectColumns[$forwarder3_courierCode])
+                ->where('awbno', $forwarder3_awb)
+                ->orderBy($colunmName[$forwarder3_courierCode], 'DESC')
+                ->get()
+                ->toArray();
+        }
+        $records4 = [];
+        if (isset($result[0]['forwarder_4_awb'])) {
+
+            $forwarder4_awb = $result[0]['forwarder_4_awb'];
+            $forwarder4_courierCode = $result[0]['courier_partner4']['courier_code'];
+
+            $path = $courierFilePath[$forwarder4_courierCode];
+            $modelName = $courierModelName[$forwarder4_courierCode];
+            $tableName = $courierTableName[$forwarder4_courierCode];
+
+            $table = table_model_change(model_path: $path, model_name: $modelName, table_name: $tableName);
+            $records4 = $table->select($selectColumns[$forwarder4_courierCode])
+                ->where('awbno', $forwarder2_awb)
+                ->orderBy($colunmName[$forwarder4_courierCode], 'DESC')
+                ->get()
+                ->toArray();
+        }
 
         $data1 = [];
         $data2 = [];
@@ -150,7 +203,7 @@ class SmsaExperessController extends Controller
             $data2 = $records2;
         }
 
-        return view('shipntrack.Smsa.packetDetails', compact('data1', 'data2'));
+        return view('shipntrack.Smsa.packetDetails', compact('data1', 'data2', 'records3', 'records4'));
     }
     public function uploadAwb()
     {
