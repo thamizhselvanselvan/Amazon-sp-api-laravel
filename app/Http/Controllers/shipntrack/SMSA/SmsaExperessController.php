@@ -19,7 +19,7 @@ class SmsaExperessController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            // po($request->sourceDestination);
+
             $data = [];
             if ($request->sourceDestination == 'ind_to_uae') {
 

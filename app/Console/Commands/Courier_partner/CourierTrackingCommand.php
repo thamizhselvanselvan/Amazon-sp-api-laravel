@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Courier_partner;
 
 use Illuminate\Console\Command;
+use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 use App\Models\ShipNTrack\ForwarderMaping\IntoKSA;
@@ -21,7 +22,7 @@ class CourierTrackingCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Coureir partner tracking command';
 
     /**
      * Create a new command instance.
@@ -40,7 +41,16 @@ class CourierTrackingCommand extends Command
      */
     public function handle()
     {
-        $class = "ShipNTrack\Tracking\CouriersTracking";
+        $process_manage = [
+            'module'             => 'ShipnTrack',
+            'description'        => 'Coureir Partner Tracking',
+            'command_name'       => 'mosh:courier-tracking',
+            'command_start_time' => now(),
+        ];
+        $process_management_id = ProcessManagement::create($process_manage)->toArray();
+        $pm_id = $process_management_id['id'];
+
+        $class = "ShipNTrack\Tracking\CouriersTrackingJob";
         $queue_name = "tracking";
         $destinations = ['ae', 'ksa'];
         foreach ($destinations as $destination) {
@@ -59,26 +69,26 @@ class CourierTrackingCommand extends Command
                     ->get()
                     ->toArray();
             }
-            Log::notice($records);
 
             if (count($records) > 0) {
 
                 foreach ($records as $record) {
                     if ($record['forwarder_1_flag'] == 0) {
 
-                        po($record['awb_number']);
-                        // $awb_no = $record['awb_number'];
-                        // $destination = $record['courier_partner1']['destination'];
                         $data = [
                             'awbNo' => $record['awb_number'],
-                            'destination' => $record['courier_partner1']['destination']
+                            'destination' => $record['courier_partner1']['destination'],
+                            'process_management_id' => $pm_id
                         ];
                         jobDispatchFunc($class, $data, $queue_name);
                     } elseif ($record['forwarder_2_flag'] == 0) {
 
-                        po($record['awb_number']);
-                        $awb_no = $record['awb_number'];
-                        jobDispatchFunc($class, $awb_no, $queue_name);
+                        $data = [
+                            'awbNo' => $record['awb_number'],
+                            'destination' => $record['courier_partner1']['destination'],
+                            'process_management_id' => $pm_id
+                        ];
+                        jobDispatchFunc($class, $data, $queue_name);
                     }
                 }
             }
