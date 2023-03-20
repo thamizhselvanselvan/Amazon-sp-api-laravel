@@ -61,6 +61,7 @@ class NewCatalog
             'salesRanks',
         ];
 
+        $asin = [];
         $aws_id = NULL;
         $country_code = '';
         $seller_id = '';
@@ -77,8 +78,9 @@ class NewCatalog
 
         foreach ($records as $record) {
 
-            $asin[] = $record['asin'];
+            $asin[] = $record['asin'] ?? '';
         }
+        Log::warning(count($asin));
         if (count($asin) != 0) {
 
             $queue_data[] = $this->FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id);

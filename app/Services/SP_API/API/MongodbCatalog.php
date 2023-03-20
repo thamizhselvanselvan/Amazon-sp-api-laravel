@@ -17,6 +17,7 @@ class MongodbCatalog
     public function index($records, $seller_id = NULL)
     {
         $queue_data = [];
+        $asin = [];
         $aws_id = NULL;
         $country_code = '';
         $seller_id = '';
@@ -33,7 +34,7 @@ class MongodbCatalog
 
         foreach ($records as $record) {
 
-            $asin[] = $record['asin'];
+            $asin[] = $record['asin'] ?? '';
         }
         if (count($asin) != 0) {
 
