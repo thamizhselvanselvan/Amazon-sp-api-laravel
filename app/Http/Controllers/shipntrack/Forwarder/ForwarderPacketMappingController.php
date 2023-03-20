@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
 use App\Models\ShipNTrack\Courier\CourierPartner;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
@@ -322,8 +324,7 @@ class ForwarderPacketMappingController extends Controller
 
                 ]
             );
-        } else if($request->mode == 'IN_KSA')
-        {
+        } else if ($request->mode == 'IN_KSA') {
             IntoKSA::upsert(
                 $tracking_data,
                 'reference_id_unique',
@@ -352,5 +353,25 @@ class ForwarderPacketMappingController extends Controller
         $partners_lists = CourierPartner::where(['source' => $source, 'destination' => $destination])->select('id', 'name')->get();
 
         return response()->json($partners_lists);
+    }
+    public function listing(Request $request)
+    {
+
+        if ($request->ajax()) {
+            $mode = $request->mode;
+           
+            $data = IntoAE::query()->get();
+               if ($mode == 'IN_KSA') {
+                $data = IntoKSA::query()->get();
+            } else  if ($mode == 'USA_AE') {
+                $data = USAtoAE::query()->get();
+            } else  if ($mode == 'USA_KSA') {
+                $data = USAtoKSA::query()->get();
+            }
+
+            return DataTables::of($data)
+                ->make(true);
+        }
+        return view('shipntrack.Forwarder.listing');
     }
 }
