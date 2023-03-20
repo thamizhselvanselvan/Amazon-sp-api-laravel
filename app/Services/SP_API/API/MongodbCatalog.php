@@ -35,7 +35,11 @@ class MongodbCatalog
 
             $asin[] = $record['asin'];
         }
-        $queue_data[] = $this->FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id);
+        if (count($asin) != 0) {
+
+            $queue_data[] = $this->FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id);
+        }
+
         if (isset($queue_data[0])) {
             foreach ($queue_data[0] as $data) {
 

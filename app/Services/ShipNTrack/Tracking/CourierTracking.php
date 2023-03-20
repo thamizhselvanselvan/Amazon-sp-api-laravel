@@ -14,7 +14,7 @@ use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 
 class CourierTracking
 {
-    public function AramexAPI($username, $passkey, $awbNo, $accoundId)
+    public function AramexAPI($username, $passkey, $awbNo, $accoundId, $process_management_id)
     {
         $url = "https://ws.aramex.net/ShippingAPI.V2/Tracking/Service_1_0.svc/json/TrackShipments";
         $payload =
@@ -40,6 +40,9 @@ class CourierTracking
         ])->post($url, $payload);
 
         $this->AramexDataFormatting($response, $accoundId);
+
+        $command_end_time = now();
+        ProcessManagementUpdate($process_management_id, $command_end_time);
     }
 
     public function AramexDataFormatting($response, $accoundId)
@@ -95,7 +98,7 @@ class CourierTracking
         ]);
     }
 
-    public function smsaAPI($username, $passKey, $awbNo, $accoundId)
+    public function smsaAPI($username, $passKey, $awbNo, $accoundId, $process_management_id)
     {
         $client = new Client();
         $headers = [
@@ -150,5 +153,8 @@ class CourierTracking
             'details',
             'location',
         ]);
+
+        $command_end_time = now();
+        ProcessManagementUpdate($process_management_id, $command_end_time);
     }
 }

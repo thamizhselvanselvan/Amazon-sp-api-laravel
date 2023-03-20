@@ -42,6 +42,7 @@ class CouriersTrackingJob implements ShouldQueue
         $records = [];
         $awb_no = $record['awbNo'];
         $destination = strtolower($record['destination']);
+        $process_management_id = $record['process_management_id'];
 
         if ($destination == 'ae') {
 
@@ -67,7 +68,7 @@ class CouriersTrackingJob implements ShouldQueue
                 $awb_no = $record['forwarder_1_awb'];
 
                 $methodName = $courierCodeName[$courierCode] . "API";
-                $AramexTracking->$methodName($userName, $passKey, $awb_no, $accoundId);
+                $AramexTracking->$methodName($userName, $passKey, $awb_no, $accoundId, $process_management_id);
             }
             if ($record['forwarder_2_flag'] == 0 && $record['forwarder_2_awb'] != '') {
 
@@ -78,7 +79,7 @@ class CouriersTrackingJob implements ShouldQueue
                 $awb_no = $record['forwarder_2_awb'];
 
                 $methodName = $courierCodeName[$courierCode] . "API";
-                $AramexTracking->$methodName($userName, $passKey, $awb_no, $accoundId);
+                $AramexTracking->$methodName($userName, $passKey, $awb_no, $accoundId, $process_management_id);
             }
         }
     }
