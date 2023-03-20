@@ -375,6 +375,7 @@ class BuyBoxStoreController extends Controller
     public function PricePushAvailability(Request $request)
     {
 
+        $asin = $request->asin;
         $seller_id = $request->seller_id;
         $regionCode = strtolower($request->region);
         $product_push_id = $request->id;
@@ -385,18 +386,10 @@ class BuyBoxStoreController extends Controller
             'available' => $availability
         ];
 
-        // if ($regionCode == 'in') {
-
-        //     Product_Push_in::query()->where('id', $product_push_id)->update(['availability' => $availability]);
-        // } elseif ($regionCode == 'ae') {
-
-        //     Product_Push_ae::query()->where('id', $product_push_id)->update(['availability' => $availability]);
-        // }
-
         $PushAvailability = new AmazonFeedProcessAvailability();
-        $data = $PushAvailability->availabilitySubmit($feedLists, $seller_id, $product_push_id, $regionCode);
+        $data = $PushAvailability->availabilitySubmit($feedLists, $seller_id, $product_push_id, $regionCode, $asin, $availability);
             
-        return response()->json(['data' => $data]);
+        return response()->json($data);
     }
 
     public function amazon_links($store_id, $merchant_id)
