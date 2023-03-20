@@ -46,7 +46,7 @@
         </div>
         </h2>
 
-        <table class="table table-bordered yajra-datatable table-striped">
+        <table class="table table-bordered yajra-datatable table-striped" id="report_table">
             <thead>
                 <tr class="table-info">
                     <th>ID</th>
@@ -105,22 +105,57 @@
             var book_stats = [];
             let obj = {};
 
-            $('input[type=checkbox]:checked').each(function() {
-                let self = $(this);
-                let selectOption = [];
-                // selectOption = $(self.parent().prev().children("select")).children("option:selected").text();
-                checkboxValues.push(self.val());
-                let booking_status = $(self.parent().prev().children("select")).children("option:selected").val();
-                book_stats.push(booking_status);
 
-                obj[self.val()] = booking_status;
+            let stop_enable_count = 0;
+            let stop_enable = '';
+            $('input[type=checkbox]:checked').each(function() {
+                if (stop_enable_count == 0) {
+                    stop_enable += $(this).val();
+                } else {
+                    stop_enable += '-' + $(this).val();
+                }
+                stop_enable_count++;
             });
+
+
+            let self = $(this);
+            let table = $("#report_table tbody tr");
+            let data = '';
+            table.each(function(index, elm) {
+
+                let cnt = 0;
+                let td = $(this).find('td');
+
+                data += '|' + ('status[]', $(td[3]).find('select').val());
+
+            });
+
+
+            // let self = $(this);
+            // let selectOption = [];
+            // selectOption = $(self.children("select")).children("option:selected").text();
+
+            // let booking_status = $(self.children("select")).children("option:selected").val();
+            // book_stats.push(booking_status);
+
+            // obj[self.val()] = booking_status;
+            // $('input[type=checkbox]:checked').each(function() {
+            //     let self = $(this);
+            //     let selectOption = [];
+            //     // selectOption = $(self.parent().prev().children("select")).children("option:selected").text();
+            //     checkboxValues.push(self.val());
+            //     let booking_status = $(self.parent().prev().children("select")).children("option:selected").val();
+            //     book_stats.push(booking_status);
+
+            //     obj[self.val()] = booking_status;
+            // });
 
             $.ajax({
                 url: "{{route('shipntrack.courier.status.store')}}",
                 method: "get",
                 data: {
-                    "status": obj,
+                    "status": data,
+                    "stop_enable": stop_enable,
                     "_token": "{{ csrf_token() }}",
                 },
                 success: function(response) {
@@ -130,6 +165,28 @@
                     alert('error');
                 }
             });
+
+
+
+            // $.ajax({
+            //     method: 'get',
+            //     url: "{{route('shipntrack.courier.status.store')}}",
+            //     data: data,
+            //     processData: false,
+            //     contentType: false,
+            //     response: 'json',
+            //     success: function(response) {
+
+
+            //     },
+            //     error: function(response) {
+
+            //     }
+            // });
+
+
+
+
         });
     });
 </script>
