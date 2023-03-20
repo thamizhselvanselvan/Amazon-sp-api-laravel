@@ -2,15 +2,16 @@
 
 namespace App\Services\Courier_Booking;
 
+use Exception;
 use Carbon\Carbon;
 use App\Jobs\B2C\B2CBooking;
-use App\Models\Catalog\PricingUs;
-use App\Models\order\OrderUpdateDetail;
 use App\Services\BB\PushAsin;
-use Exception;
+use App\Models\Catalog\PricingUs;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use App\Models\order\US_Price_Missing;
+use App\Models\order\OrderUpdateDetail;
 
 
 class B2cshipBookingServices
@@ -173,7 +174,7 @@ class B2cshipBookingServices
                         'booking_status' => '5'
                     ]
                 );
-
+                US_Price_Missing::insert(['asin' => $asin, 'amazon_order_id' => $amazon_order_id, 'order_item_id' => $order_item_id, 'status' => 0]);
                 $this->missingASINDetails($asin);
                 slack_notification('app360', 'B2cship Booking', $slackMessage);
                 return false;

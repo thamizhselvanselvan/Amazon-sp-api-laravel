@@ -670,13 +670,13 @@ return [
 
                 ],
                 [
-                    'text' => 'Zoho Price Missing',
+                    'text' => 'Orders Price Missing',
                     'can' => ['Admin', 'Catalog'],
                     'icon' => 'fa fa-minus-circle',
                     'submenu' =>
                     [
                         [
-                            'text' => 'Price Missing',
+                            'text' => 'Zoho Price Missing',
                             'url' => "orders/missing/price",
                             'can' => ['Admin', 'Catalog'],
                             'icon' => 'fa fa-minus-circle',
@@ -692,6 +692,12 @@ return [
                             'url' => "orders/missing/force/dump/view",
                             'can' => ['Admin', 'Catalog'],
                             'icon' => 'fa fa-plus-circle',
+                        ],
+                        [
+                            'text' => 'US Price Missing',
+                            'url' => "orders/usprice/missing",
+                            'can' => ['Admin', 'Catalog'],
+                            'icon' => 'fa fa-minus-circle',
                         ],
                     ],
                 ],
@@ -1060,42 +1066,54 @@ return [
                         ],
                         [
                             'text' => 'Courier Status Master',
-                            'url' => 'shipntrack/status',
+                            'url' => 'shipntrack/status/manager',
                             'can' => ['Admin'],
                             'icon' => 'far fa fa-cog',
                         ],
                     ],
-
-
-
-
                 ],
-
                 [
-                    'text' => 'Forwarder Mapping',
-                    'url' => 'shipntrack/forwarder',
+                    'text' => 'Forwarder Master',
                     'icon' => 'far fa fa-map-marker',
                     'can' => ['Admin'],
+                    'submenu' =>
+                    [
+                        [
+                            'text' => 'Forwarder Mapping',
+                            'url' => 'shipntrack/forwarder',
+                            'icon' => 'far fa fa-map-marker',
+                            'can' => ['Admin'],
+                        ],
+                        [
+                            'text' => 'Forwarder Details',
+                            'url' => 'shipntrack/forwarder/mapped/details',
+                            'icon' => 'far fa fa-bar-chart',
+                            'can' => ['Admin'],
+                        ],
+                      
+                    ],
+
                 ],
                 [
                     'text' => 'Tracking',
                     'can' => ['Admin'],
+                    'url' => 'shipntrack/courier/tracking',
                     'icon' => 'far fa fa-bar-chart',
-                    'submenu' =>
-                    [
-                        [
-                            'text' => 'SMSA Tracking',
-                            'url' => 'shipntrack/smsa',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa fa-barcode',
-                        ],
-                        [
-                            'text' => 'Bombino Tracking',
-                            'url' => 'shipntrack/bombino',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa fa-plane',
-                        ],
-                    ],
+                    // 'submenu' =>
+                    // [
+                    //     [
+                    //         'text' => 'SMSA Tracking',
+                    //         'url' => 'shipntrack/smsa',
+                    //         'can' => ['Admin'],
+                    //         'icon' => 'far fa fa-barcode',
+                    //     ],
+                    //     [
+                    //         'text' => 'Bombino Tracking',
+                    //         'url' => 'shipntrack/bombino',
+                    //         'can' => ['Admin'],
+                    //         'icon' => 'far fa fa-plane',
+                    //     ],
+                    // ],
                 ],
 
 
@@ -1173,26 +1191,26 @@ return [
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-list-ul',
                             'submenu' => [
-                                            [
-                                                'text' => 'Banned Categories',
-                                                'url' => 'cliqnshop/category',
-                                                'can' => ['Admin', 'Cliqnshop'],
-                                                'icon' => 'fa fa-ban',
-                                            ],
-                                        ]
+                                [
+                                    'text' => 'Banned Categories',
+                                    'url' => 'cliqnshop/category',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-ban',
+                                ],
+                            ]
                         ],
                         [
                             'text' => 'brand',
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-list-ul',
                             'submenu' => [
-                                            [
-                                                'text' => 'Banned Brands',
-                                                'url' => 'cliqnshop/brand/ban',
-                                                'can' => ['Admin', 'Cliqnshop'],
-                                                'icon' => 'fa fa-ban',
-                                            ],
-                               
+                                [
+                                    'text' => 'Banned Brands',
+                                    'url' => 'cliqnshop/brand/ban',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-ban',
+                                ],
+
                             ]
                         ]
 

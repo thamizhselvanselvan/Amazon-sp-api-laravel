@@ -82,10 +82,8 @@
                         <th>ID</th>
                         <th>ASIN</th>
                         <th>Product SKU</th>
-                        <th>Base Price</th>
-                        <th>Ceil Price</th>
-                        <th>Push Price</th>
-                        <th>Availability</th>
+                        <th>Current Availability</th>
+                        <th>Push Availability</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -166,26 +164,14 @@
                         name: 'product_sku'
                     },
                     {
-                        data: 'base_price',
-                        name: 'base_price',
+                        data: 'current_availability',
+                        name: 'current_availability',
                         orderable: false,
                         searchable: false
                     },
                     {
-                        data: 'ceil_price',
-                        name: 'ceil_price',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'push_price',
-                        name: 'push_price',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'availability',
-                        name: 'availability',
+                        data: 'push_availability',
+                        name: 'push_availability',
                         orderable: false,
                         searchable: false
                     },
@@ -200,12 +186,14 @@
 
         });
 
+        /*
         $(document).on('click', '#price_availability', function() {
 
             // let bool = confirm("Are you sure you wanna change the availability?");
             // if (!bool) {
             //     return false;
             // }
+
             var availability = $(this).val();
             if (availability == '1') {
                 availability = 0;
@@ -216,33 +204,34 @@
             $(this).parent().next().children("a").attr("data-availability", availability);
             console.log($(this).parent().next().children("a").attr("data-availability"));
 
-        });
+        }); */
 
         $(document).on('click', '#update_availability', function() {
 
-            let availability = $(this).parent().children("a").attr("data-availability");
-            let seller_id = $(this).data('seller_id');
-            let product_id = $(this).data('product_id');
-            let base_price = $(this).data('base_price');
-            let ceil_price = $(this).data('ceil_price');
-            let push_price = $(this).data('push_price');
-            let product_sku = $(this).data('product_sku');
             let region = $('#region_select').val();
+            let product_id = $(this).data('product_id');
+            let seller_id = $(this).data('seller_id');
+            let asin = $(this).data('asin');
+            let product_sku = $(this).data('product_sku');
+            let current_availability = $(this).data('current_availability');
+            let availability = $(this).data('availability');
+
             $.ajax({
                 method: "post",
                 url: "{{ route('buybox.store.price.push.availability') }}",
                 data: {
                     "_token": "{{ csrf_token() }}",
-                    "id": product_id,
                     "region": region,
-                    "availability": availability,
+                    "id": product_id,
                     "seller_id": seller_id,
-                    "base_price": base_price,
-                    "ceil_price": ceil_price,
-                    "push_price": push_price,
+                    "asin": asin,
                     "product_sku": product_sku,
+                    "current_availability": current_availability,
+                    "availability": availability
                 },
                 success: function(response) {
+                    console.log(response);
+
 
                 },
             });
