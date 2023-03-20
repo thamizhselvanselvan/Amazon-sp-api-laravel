@@ -6,9 +6,7 @@
     <div class="row">
         <h1 class="m-0 text-dark col"><b>Packet Details</b></h1>
         <h2 class="mb-4 text-right col">
-            <!-- <a href="">
-                                                                                                                                                                                                                                                                                                                                                                                                    <x-adminlte-button label="Add New SMSA AWB No." theme="primary" icon="fas fa-file-upload" class="btn-sm" />
-                                                                                                                                                                                                                                                                                                                                                                                                </a> -->
+
         </h2>
     </div>
 @stop
@@ -44,11 +42,13 @@
                     <th class="bg-info">{{ $key1 }}</th>
                 @endforeach
             @endif
+
             @if (isset($data2[0]))
                 @foreach ($data2[0] as $key2 => $record)
                     <th class="bg-info">{{ $key2 }}</th>
                 @endforeach
             @endif
+
             <tbody>
                 @foreach ($data1 as $key3 => $records)
                     <tr>
