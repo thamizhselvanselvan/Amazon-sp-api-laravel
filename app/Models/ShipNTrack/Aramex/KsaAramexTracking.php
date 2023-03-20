@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Models\ShipNTrack\Aramex;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class KsaAramexTracking extends Model
+{
+    use HasFactory;
+    protected $connection = 'shipntracking';
+    protected $table = 'ksa_aramex_trackings';
+    protected $fillable = [
+        'account_id',
+        'awbno',
+        'update_code',
+        'update_description',
+        'update_date_time',
+        'update_location',
+        'comment',
+        'gross_weight',
+        'chargeable_weight',
+        'weight_unit',
+        'problem_code',
+    ];
+}

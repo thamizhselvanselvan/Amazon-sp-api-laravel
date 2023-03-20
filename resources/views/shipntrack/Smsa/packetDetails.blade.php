@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'SMSA Packet Details')
+@section('title', 'Packet Details')
 
 @section('content_header')
     <div class="row">
@@ -49,6 +49,18 @@
                 @endforeach
             @endif
 
+            @if (isset($records3[0]))
+                @foreach ($records3[0] as $key2 => $record)
+                    <th class="bg-info">{{ $key2 }}</th>
+                @endforeach
+            @endif
+
+            @if (isset($records4[0]))
+                @foreach ($records4[0] as $key2 => $record)
+                    <th class="bg-info">{{ $key2 }}</th>
+                @endforeach
+            @endif
+
             <tbody>
                 @foreach ($data1 as $key3 => $records)
                     <tr>
@@ -58,6 +70,24 @@
 
                         @if (isset($data2[$key3]))
                             @foreach ($data2[$key3] as $data)
+                                <td>{{ $data ?? 'NA' }}</td>
+                            @endforeach
+                        @else
+                            @if (isset($data2[0]))
+                                @foreach ($data2[0] as $data)
+                                    <td>{{ '' }}</td>
+                                @endforeach
+                            @endif
+                        @endif
+
+                        @if (isset($records3[$key3]))
+                            @foreach ($records3[$key3] as $data)
+                                <td>{{ $data ?? 'NA' }}</td>
+                            @endforeach
+                        @endif
+
+                        @if (isset($records4[$key3]))
+                            @foreach ($records4[$key3] as $data)
                                 <td>{{ $data ?? 'NA' }}</td>
                             @endforeach
                         @endif

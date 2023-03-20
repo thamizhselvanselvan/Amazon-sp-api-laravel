@@ -74,7 +74,7 @@ Route::get('test/shipntrack/aramex', function () {
             ],
             "GetLastTrackingUpdateOnly" => false,
             "Shipments" => [
-                "35124727234"
+                "35124730631"
             ]
         ];
 
@@ -139,7 +139,7 @@ Route::get('test/shipntrack/smsa', function () {
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
     <getTracking xmlns="http://track.smsaexpress.com/secom/">
-      <awbNo>290409474163</awbNo>
+      <awbNo>290410158941</awbNo>
       <passkey>BeL@3845</passkey>
     </getTracking>
   </soap:Body>
@@ -148,7 +148,8 @@ Route::get('test/shipntrack/smsa', function () {
     $response1 = $client->sendAsync($request)->wait();
     $plainXML = mungXML(trim($response1->getBody()));
     $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-
+    // po($arrayResult);
+    // exit;
     $smsa_data = $arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram']['NewDataSet']['Tracking'];
 
     $smsa_records = [];
@@ -176,7 +177,7 @@ Route::get('test/shipntrack/smsa', function () {
     }
 
     po($smsa_records);
-
+    exit;
     SmsaTrackings::upsert($smsa_records, ['awbno_date_activity_unique'], [
         'account_id',
         'awbno',

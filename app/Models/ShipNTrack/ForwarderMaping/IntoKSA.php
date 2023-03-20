@@ -44,11 +44,11 @@ class IntoKSA extends Model
 
     public function CourierPartner3()
     {
-        return $this->hasOne(CourierPartner::class, 'id', 'forwarder_2');
+        return $this->hasOne(CourierPartner::class, 'id', 'forwarder_3');
     }
 
     public function CourierPartner4()
     {
-        return $this->hasOne(CourierPartner::class, 'id', 'forwarder_2');
+        return $this->hasOne(CourierPartner::class, 'id', 'forwarder_4');
     }
 }
