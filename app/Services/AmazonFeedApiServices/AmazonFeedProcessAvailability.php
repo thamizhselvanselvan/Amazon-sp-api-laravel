@@ -36,19 +36,19 @@ class AmazonFeedProcessAvailability
             return ['failed' => true];
         }
 
-        $available_query_model = '';
         $product_query_model = '';
+        $available_query_model = '';
 
         if(strtolower($regionCode) == "in") {
-            $available_query_model = Product_availability_in::query(); 
             $product_query_model = Product_Push_in::query(); 
-        } else if(strtolower($regionCode) == "in") {
-            $available_query_model = Product_availability_ae::query(); 
+            $available_query_model = Product_availability_in::query(); 
+        } else if(strtolower($regionCode) == "ae") {
             $product_query_model = Product_Push_ae::query(); 
+            $available_query_model = Product_availability_ae::query(); 
         }
 
-        $available_query_model->where("id", $product_push_id)->update(['feedback_id' => $productFeed['feedId'], "push_status" => 1]);
         $product_query_model->where("seller_id", $seller_id)->where("asin", $asin)->update(['availability' => $availability]);
+        $available_query_model->where("id", $product_push_id)->update(['feedback_id' => $productFeed['feedId'], "push_status" => 1]);
 
         return ['success' => true];
     }
