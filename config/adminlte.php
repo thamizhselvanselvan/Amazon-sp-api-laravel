@@ -670,13 +670,13 @@ return [
 
                 ],
                 [
-                    'text' => 'Zoho Price Missing',
+                    'text' => 'Orders Price Missing',
                     'can' => ['Admin', 'Catalog'],
                     'icon' => 'fa fa-minus-circle',
                     'submenu' =>
                     [
                         [
-                            'text' => 'Price Missing',
+                            'text' => 'Zoho Price Missing',
                             'url' => "orders/missing/price",
                             'can' => ['Admin', 'Catalog'],
                             'icon' => 'fa fa-minus-circle',
@@ -692,6 +692,12 @@ return [
                             'url' => "orders/missing/force/dump/view",
                             'can' => ['Admin', 'Catalog'],
                             'icon' => 'fa fa-plus-circle',
+                        ],
+                        [
+                            'text' => 'US Price Missing',
+                            'url' => "orders/usprice/missing",
+                            'can' => ['Admin', 'Catalog'],
+                            'icon' => 'fa fa-minus-circle',
                         ],
                     ],
                 ],
