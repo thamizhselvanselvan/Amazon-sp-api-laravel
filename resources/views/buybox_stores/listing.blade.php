@@ -238,7 +238,7 @@
             let self = $(this);
 
             let store_id = $('#store_select').val();
-            
+
             if (store_id == '') {
                 alert("please select a store");
                 return false;
@@ -246,7 +246,7 @@
                 alert("please select a store ");
                 return false;
             }
-            
+
             self.prop('disabled', true);
 
             $.ajax({
@@ -313,7 +313,8 @@
         //     window.location = "/stores/listing/price/" + $(this).val();
         // });
 
-        $('.price_process').on('click', function() {
+        // $('.price_process').on('click', function() {
+        $(document).on("click", ".price_process", function() {
             let self = $(this);
             let asin = self.attr("asin");
             let productsku = self.attr("productsku");
@@ -321,9 +322,11 @@
             let storeid = self.attr("storeid");
             let id = self.attr("data-id");
             let base_price = self.attr("base_price");
+            let ceil_price = self.attr("ceil_price");
+            let region = $('#region_select').val();
 
             alert("Work In Progress");
-            return false;
+            // return false;
 
             self.prop('disabled', true);
 
@@ -337,6 +340,9 @@
                     pushprice: pushprice,
                     storeid: storeid,
                     base_price: base_price,
+                    ceil_price: ceil_price,
+                    region: region,
+                    
                     "_token": "{{ csrf_token() }}",
                 },
                 columns: [{
@@ -524,8 +530,7 @@
                     name: 'lowest_seller_name',
                     orderable: false,
                     searchable: false
-                }
-                ,
+                },
                 {
                     data: 'action',
                     name: 'action',
