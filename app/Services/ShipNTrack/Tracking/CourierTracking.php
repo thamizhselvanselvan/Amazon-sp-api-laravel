@@ -8,20 +8,28 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
-use App\Models\ShipNTrack\SMSA\SmsaTrackings;
-use App\Models\ShipNTrack\Aramex\AramexTrackings;
-use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
+use App\Models\ShipNTrack\SMSA\AeSmsaTracking;
+use App\Models\ShipNTrack\SMSA\KsaSmsaTracking;
+use App\Models\ShipNTrack\Aramex\AeAramexTracking;
+use App\Models\ShipNTrack\Aramex\KsaAramexTracking;
 
 class CourierTracking
 {
-    public function AramexAPI($username, $passkey, $awbNo, $accoundId, $process_management_id)
+    public function AramexAPI($records)
     {
+        $username = $records['user_name'];
+        $passKey = $records['pass_key'];
+        $awbNo = $records['awb_no'];
+        $accoundId = $records['account_id'];
+        $destination = strtolower($records['destination']);
+        $process_management_id = $records['process_management'];
+
         $url = "https://ws.aramex.net/ShippingAPI.V2/Tracking/Service_1_0.svc/json/TrackShipments";
         $payload =
             [
                 "ClientInfo" => [
                     "UserName" => $username,
-                    "Password" => $passkey,
+                    "Password" => $passKey,
                     "Version" => "v1.0",
                     "AccountNumber" => "60531487",
                     "AccountPin" => "654654",
@@ -39,13 +47,13 @@ class CourierTracking
             "Content-Type" => "application/json"
         ])->post($url, $payload);
 
-        $this->AramexDataFormatting($response, $accoundId);
+        $this->AramexDataFormatting($response, $accoundId, $destination);
 
         $command_end_time = now();
         ProcessManagementUpdate($process_management_id, $command_end_time);
     }
 
-    public function AramexDataFormatting($response, $accoundId)
+    public function AramexDataFormatting($response, $accoundId, $destination)
     {
         $aramex_records = [];
         $aramex_data = isset(json_decode($response, true)['TrackingResults'][0]['Value']) ? json_decode($response, true)['TrackingResults'][0]['Value'] : [];
@@ -82,24 +90,50 @@ class CourierTracking
                 }
             }
         }
+        // Log::notice($aramex_records);
+        // Log::notice($destination);
+        if ($destination == 'ae') {
 
-        AramexTrackings::upsert($aramex_records, ['awbno_update_timestamp_description_unique'], [
-            'account_id',
-            'awbno',
-            'update_code',
-            'update_description',
-            'update_date_time',
-            'update_location',
-            'comment',
-            'gross_weight',
-            'chargeable_weight',
-            'weight_unit',
-            'problem_code'
-        ]);
+            AeAramexTracking::upsert($aramex_records, ['awbno_update_timestamp_description_unique'], [
+                'account_id',
+                'awbno',
+                'update_code',
+                'update_description',
+                'update_date_time',
+                'update_location',
+                'comment',
+                'gross_weight',
+                'chargeable_weight',
+                'weight_unit',
+                'problem_code'
+            ]);
+        } else if ($destination == 'ksa') {
+
+            KsaAramexTracking::upsert($aramex_records, ['awbno_update_timestamp_description_unique'], [
+                'account_id',
+                'awbno',
+                'update_code',
+                'update_description',
+                'update_date_time',
+                'update_location',
+                'comment',
+                'gross_weight',
+                'chargeable_weight',
+                'weight_unit',
+                'problem_code'
+            ]);
+        }
     }
 
-    public function smsaAPI($username, $passKey, $awbNo, $accoundId, $process_management_id)
+    public function SmsaAPI($records)
     {
+        // Log::debug($records);
+        $passKey = $records['pass_key'];
+        $awbNo = $records['awb_no'];
+        $accoundId = $records['account_id'];
+        $destination = strtolower($records['destination']);
+        $process_management_id = $records['process_management'];
+
         $client = new Client();
         $headers = [
             'Content-Type' => 'text/xml'
@@ -118,7 +152,7 @@ class CourierTracking
         $response1 = $client->sendAsync($request)->wait();
         $plainXML = mungXML(trim($response1->getBody()));
         $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-
+        // Log::debug($arrayResult);
         $smsa_data = $arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram']['NewDataSet']['Tracking'];
 
         $smsa_records = [];
@@ -127,11 +161,11 @@ class CourierTracking
             foreach ($smsa_data as $smsa_value) {
                 $smsa_records[] = [
                     'account_id' => $accoundId,
-                    'awbno' => $smsa_value['awbNo'] ?? $smsa_data['awbNo'],
-                    'date' => date('Y-m-d H:i:s', strtotime($smsa_value['Date'] ?? $smsa_data['Date'])),
-                    'activity' => $smsa_value['Activity'] ?? $smsa_data['Activity'],
-                    'details' => $smsa_value['Details'] ?? $smsa_data['Details'],
-                    'location' => $smsa_value['Location'] ?? $smsa_data['Location']
+                    'awbno' => $smsa_value['awbNo'],
+                    'date' => date('Y-m-d H:i:s', strtotime($smsa_value['Date'])),
+                    'activity' => $smsa_value['Activity'],
+                    'details' => $smsa_value['Details'],
+                    'location' => $smsa_value['Location']
                 ];
             }
         } else {
@@ -144,15 +178,29 @@ class CourierTracking
                 'location' =>  $smsa_data['Location']
             ];
         }
+        // Log::notice($smsa_records);
+        // Log::notice($destination);
+        if ($destination == 'ae') {
 
-        SmsaTrackings::upsert($smsa_records, ['awbno_date_activity_unique'], [
-            'account_id',
-            'awbno',
-            'date',
-            'activity',
-            'details',
-            'location',
-        ]);
+            AeSmsaTracking::upsert($smsa_records, ['awbno_date_activity_unique'], [
+                'account_id',
+                'awbno',
+                'date',
+                'activity',
+                'details',
+                'location',
+            ]);
+        } elseif ($destination == 'ksa') {
+
+            KsaSmsaTracking::upsert($smsa_records, ['awbno_date_activity_unique'], [
+                'account_id',
+                'awbno',
+                'date',
+                'activity',
+                'details',
+                'location',
+            ]);
+        }
 
         $command_end_time = now();
         ProcessManagementUpdate($process_management_id, $command_end_time);

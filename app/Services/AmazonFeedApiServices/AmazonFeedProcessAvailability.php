@@ -9,6 +9,10 @@ use SellingPartnerApi\FeedType;
 use Illuminate\Support\Facades\Log;
 use App\Models\Buybox_stores\Product_Push;
 use App\Services\SP_API\Config\ConfigTrait;
+use App\Models\Buybox_stores\Product_push_in;
+use App\Models\Buybox_stores\Product_push_ae;
+use App\Models\Buybox_stores\Product_availability_in;
+use App\Models\Buybox_stores\Product_availability_ae;
 use SellingPartnerApi\Api\FeedsV20210630Api as FeedsApi;
 use SellingPartnerApi\Model\FeedsV20210630\CreateFeedSpecification;
 use SellingPartnerApi\Model\FeedsV20210630\CreateFeedDocumentSpecification;
@@ -17,28 +21,39 @@ class AmazonFeedProcessAvailability
 {
     use ConfigTrait;
 
-    public function availabilitySubmit($feedLists, $seller_id, $product_push_id)
+    public function availabilitySubmit($feedLists, $seller_id, $product_push_id, $regionCode, $asin, $availability)
     {
         $aws = '';
         $aws = Aws_credential::where('seller_id', $seller_id)->where('verified', 1)->with(['mws_region'])->first();
         $merchant_id = $aws->merchant_id;
         $mws_region = $aws->mws_region;
         $country_code = $mws_region->region_code;
-        $currency_code = $mws_region->currency->code;
         $marketplace_id = $mws_region->marketplace_id;
 
-        $productFeed = $this->process($feedLists, $merchant_id, $seller_id, $country_code,  $currency_code, [$marketplace_id]);
+        $productFeed = $this->process($feedLists, $merchant_id, $seller_id, $country_code, [$marketplace_id]);
 
         if (!$productFeed) {
-            return false;
+            return ['failed' => true];
         }
 
-        $feedId = $productFeed;
-        Product_Push::where("id", $product_push_id)->update(['feedback_price_id' => $feedId['feedId']]);
+        $product_query_model = '';
+        $available_query_model = '';
 
-        return true;
+        if(strtolower($regionCode) == "in") {
+            $product_query_model = Product_Push_in::query(); 
+            $available_query_model = Product_availability_in::query(); 
+        } else if(strtolower($regionCode) == "ae") {
+            $product_query_model = Product_Push_ae::query(); 
+            $available_query_model = Product_availability_ae::query(); 
+        }
+
+        $product_query_model->where("seller_id", $seller_id)->where("asin", $asin)->update(['availability' => $availability]);
+        $available_query_model->where("id", $product_push_id)->update(['feedback_id' => $productFeed['feedId'], "push_status" => 1]);
+
+        return ['success' => true];
     }
-    public function process($feedLists, $merchant_id, $aws_key, $country_code, $currency_code, $marketplace_ids)
+
+    public function process($feedLists, $merchant_id, $aws_key, $country_code, $marketplace_ids)
     {
 
         $apiInstance = new FeedsApi($this->config($aws_key, $country_code));
@@ -49,7 +64,7 @@ class AmazonFeedProcessAvailability
             $feedDocumentInfo = $apiInstance->createFeedDocument($createFeedDocSpec);
 
             $docToUpload = new Document($feedDocumentInfo, $feedType);
-            $docToUpload->upload($this->xml_availability($feedLists, $merchant_id, $currency_code));
+            $docToUpload->upload($this->xml_availability($feedLists, $merchant_id));
 
             $body = new CreateFeedSpecification();
             $body->setFeedType($feedType['name']);
@@ -67,35 +82,40 @@ class AmazonFeedProcessAvailability
         }
     }
 
-    public function xml_availability($feedLists, $merchant_id, $currency_code)
+    public function xml_availability($feedLists, $merchant_id)
     {
 
         $messages = '';
         $counter = 1;
+
         foreach ($feedLists as $feedlist) {
+
             $latency = (isset($feedLists['latency'])) ? '<FulfillmentLatency >' . $feedLists['latency'] . '</FulfillmentLatency>' : '';
+
             $messages .= '
-            <Message>
-                <MessageID>' . $counter . '</MessageID>
-                <Inventory>
-                    <SKU>' . $feedlist['product_sku'] . '</SKU>
-                    <Available >' . $feedlist['available'] . ' </Available>
-                    ' . $latency . '
-                    <Quantity>25</Quantity>
-                </Inventory>
-            </Message>';
+                <Message>
+                    <MessageID>' . $counter . '</MessageID>
+                    <Inventory>
+                        <SKU>' . $feedlist['product_sku'] . '</SKU>
+                        <Available >' . $feedlist['available'] . ' </Available>
+                        ' . $latency . '
+                        <Quantity>25</Quantity>
+                    </Inventory>
+                </Message>';
+
             $counter++;
         }
+
         $feed = '<?xml version="1.0" encoding="utf-8"?>
-        <AmazonEnvelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd">
-            <Header>
-                <DocumentVersion>1.01</DocumentVersion>
-                <MerchantIdentifier>' . $merchant_id . '</MerchantIdentifier>
-            </Header>
-            <MessageType>Inventory</MessageType>
-            ' . $messages . '
-        </AmazonEnvelope>
-    ';
+            <AmazonEnvelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd">
+                <Header>
+                    <DocumentVersion>1.01</DocumentVersion>
+                    <MerchantIdentifier>' . $merchant_id . '</MerchantIdentifier>
+                </Header>
+                <MessageType>Inventory</MessageType>
+                ' . $messages . '
+            </AmazonEnvelope>';
+
         return $feed;
     }
 }
