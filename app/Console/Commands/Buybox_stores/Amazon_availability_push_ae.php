@@ -56,11 +56,8 @@ class Amazon_availability_push_ae extends Command
             return false;
         }
 
-        $product_ids = [];
-
         foreach ($products as $product) {
 
-            $product_ids[] = $product->id;
             $availability = $product->availability;
             $current_availability = $product->current_availability;
 
@@ -77,8 +74,8 @@ class Amazon_availability_push_ae extends Command
                 );
             }
 
+            Products_ae::query()->where("id", $product->id)->update(['cyclic_availability' => 1]);
         }
 
-        Products_ae::query()->whereIn("id", $product_ids)->update(['cyclic_availability' => 1]);
     }
 }
