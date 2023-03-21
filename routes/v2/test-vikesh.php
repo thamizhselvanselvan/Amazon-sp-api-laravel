@@ -32,6 +32,408 @@ use App\Models\ShipNTrack\Aramex\AramexTrackings;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 use JeroenNoten\LaravelAdminLte\View\Components\Tool\Modal;
 
+Route::get('test/mongo', function () {
+
+    $record = [];
+
+    $field_states = '$field_states';
+    $state = '$state';
+    $process_flow = '$process_flow';
+    $approval = '$approval';
+    $review_process = '$review_process';
+    $orchestration = '$orchestration';
+    $currency_symbol = '$currency_symbol';
+    $converted = '$converted';
+    $approved = '$approved';
+    $editable = '$editable';
+    $zia_owner_assignment = '$zia_owner_assignment';
+    $review = '$review';
+    $converted_detail = '$converted_detail';
+    $in_merge = '$in_merge';
+    $approval_state = '$approval_state';
+
+    $prod_array = [
+
+        "Address" => "",
+        "$field_states" => "",
+        "VAT" => "",
+        "India_Shipping_Weight_Gr" => "",
+        "$state" => "",
+        "$process_flow" => "",
+        "T_Claim_Follow_Up_Status" => "",
+        "Reverse_Pickup_Token_ID" => "",
+        "id" => "",
+        "Data_Source" => "",
+        "RTO_RMA_Date" => "",
+        "$approval" => "",
+
+        "Item_Type" => "",
+        "US_EDD1" => "",
+        "First_Visited_URL" => "",
+        "Created_Time" => "",
+        "Procurement_URL" => "",
+        "Exchange" => "",
+        "Refund" => "",
+        "Purchased_By" => "",
+        "Marketplace_S_Tax" => "",
+        "Local_Shipping" => "",
+        "Last_Visited_Time" => "",
+        "Created_By" => "",
+
+        "Bombino_Shipping_Date" => "",
+        "Customer_Type1" => "",
+        "Product_Category" => "",
+        "Refund_Date" => "",
+        "Refund_Reference_Number" => "",
+        "Description" => "",
+        "Card_Used" => "",
+        "Number_Of_Chats" => "",
+        "GSTN" => "",
+        "$review_process" => [
+            "approve" => "",
+            "reject" => "",
+            "resubmit" => ""
+        ],
+
+        "Average_Time_Spent_Minutes" => "",
+        "Salutation" => "",
+        "Lead_Status" => "",
+        "Full_Name" => "",
+        "Record_Image" => "",
+        "Inventory_Status" => "",
+        "Adjustment_Against_Order" => "",
+        "Product_Code" => "",
+        "Refund_Amount" => "",
+        "International_Shipping_INR" => "",
+        "Order_Number" => "",
+        "Seller_Commission" => "",
+        "Width" => "",
+        "Nature" => "",
+        "Amount_Paid_by_Customer" => "",
+        "Designation" => "",
+        "T_Claim_Status" => "",
+        "Payment_Reference_Number1" => "",
+        "Product_Cost_INR" => "",
+        "Mobile" => "",
+        "$orchestration" => "",
+        "US_Shipping_Date" => "",
+        "Fulfilment_Channel" => "",
+        "Product_Cost" => "",
+        "CC_Reference_Number" => "",
+        "Length" => "",
+        "Procured_From" => "",
+        "Lead_Source" => "",
+        "Tag" => "",
+
+        "Last_Enriched_Time__s" => "",
+        "Bombino_Shipment_ID" => "",
+        "Gift_Card_in" => "",
+        "US_Refund_Source" => "",
+        "Email" => "",
+        "$currency_symbol" => "",
+        "CC_Charge_Date" => "",
+        "Visitor_Score" => "",
+        "T_Claim_Date" => "",
+        "Purchase_Date" => "",
+        "Last_Activity_Time" => "",
+        "Payment_Date" => "",
+        "H_Code" => "",
+        "Unsubscribed_Mode" => "",
+        "Step_Down_Inverter" => "",
+        "US_Tracking_Number" => "",
+        "$converted" => "",
+        "Order_Creation_Date" => "",
+        "Zip_Code" => "",
+        "US_Shipper" => "",
+        "Refunded_by_US_Seller" => "",
+        "Service_Charges" => "",
+        "$approved" => "",
+        "MP_Remitted_Amount" => "",
+        "India_Tracking_Number" => "",
+        "Enrich_Status__s" => "",
+        "Days_Visited" => "",
+        "India_Shipping_Date" => "",
+        "Follow_up_Status" => "",
+        "Weight_in_LBS" => "",
+        "$editable" => "",
+        "City" => "",
+        "US_EDD" => "",
+        "US_Courier_Name" => "",
+        "CC_in" => "",
+        "US_Seller_Refund_Date" => "",
+        "T_Claim_Amount" => "",
+        "State" => "",
+        "Purchase_Reference_Number" => "",
+        "Procurement_Weight" => "",
+        "Product_Link" => "",
+        "$zia_owner_assignment" => "",
+        "Secondary_Email" => "",
+        "Bombino_Shipping_Weight_LBS" => "",
+        "Payment_Reference_Number" => "",
+        "Paid_By" => "",
+        "India_Courier_Name" => "",
+        "ASIN" => "",
+        "International_Shipment_ID" => "",
+        "Duty_Taxes_INR" => "",
+        "First_Name" => "",
+        "Delivered_to_Customer" => "",
+        "$review" => "",
+        "Commission_on_Can_Ref" => "",
+        "SABS_Invoice_ID" => "",
+        "Phone" => "",
+        "Bredth" => "",
+        "International_Courier_Name" => "",
+        "Modified_Time" => "",
+        "$converted_detail" => "",
+
+        "Unsubscribed_Time" => "",
+        "Quantity" => "",
+        "GST" => "",
+        "Inventory_Allocation_ID" => "",
+        "Seller_Name" => "",
+        "Shipping_Weight_in_Grms" => "",
+        "First_Visited_Time" => "",
+        "TCS_AMOUNT" => "",
+        "Last_Name" => "",
+        "$in_merge" => "",
+        "Step_Down_Inventory_ID" => "",
+        "Referrer" => "",
+        "Formula_2" => "",
+        "SKU" => "",
+        "$approval_state" => "",
+        "Alternate_Order_No" => "",
+        "Inventory_Followup_Status" => ""
+    ];
+
+    $var_key = [
+
+        "_id" => '$record["_id"]',
+        "ASIN" => '$record["ASIN"]',
+        "Alternate_Order_No" => '$record["Alternate_Order_No"]',
+        "$converted" => '$record["$converted"]',
+        "Address" => '$record["Address"]',
+        "Adjustment_Against_Order" => '$record["Adjustment_Against_Order"]',
+        "Amount_Paid_by_Customer" => '$record["Amount_Paid_by_Customer"]',
+        "Annual_Revenue" => '$record["Annual_Revenue"]',
+        "Average_Time_Spent_Minutes" => '$record["Average_Time_Spent_Minutes"]',
+        "Bombino_Shipment_ID" => '$record["Bombino_Shipment_ID"]',
+        "Bombino_Shipping_Date" => '$record["Bombino_Shipping_Date"]',
+        "Bombino_Shipping_Weight_LBS" => '$record["Bombino_Shipping_Weight_LBS"]',
+        "Bredth" => '$record["Bredth"]',
+        "CC_Charge_Date" => '$record["CC_Charge_Date"]',
+        "CC_Reference_Number" => '$record["CC_Reference_Number"]',
+        "CC_in" => '$record["CC_in"]',
+        "Campaign_Source" => '$record["Campaign_Source"]',
+        "Card_Used" => '$record["Card_Used"]',
+        "Change_Log_Time__s" => '$record["Change_Log_Time__s"]',
+        "City" => '$record["City"]',
+        "Commission_on_Can_Ref" => '$record["Commission_on_Can_Ref"]',
+        "Company" => '$record["Company"]',
+        "Converted_Account" => '$record["Converted_Account"]',
+        "Converted_Contact" => '$record["Converted_Contact"]',
+        "Converted_Date_Time" => '$record["Converted_Date_Time"]',
+        "Converted_Deal" => '$record["Converted_Deal"]',
+        "Converted__s" => '$record["Converted__s"]',
+        "Country" => '$record["Country"]',
+        "Created_By" => '$record["Created_By"]',
+        "Created_Time" => '$record["Created_Time"]',
+        "Currency" => '$record["Currency"]',
+        "Customer_Type1" => '$record["Customer_Type1"]',
+        "Days_Visited" => '$record["Days_Visited"]',
+        "Delivered_to_Customer" => '$record["Delivered_to_Customer"]',
+        "Description" => '$record["Description"]',
+        "Designation" => '$record["Designation"]',
+        "Duty_Taxes_INR" => '$record["Duty_Taxes_INR"]',
+        "Email" => '$record["Email"]',
+        "Email_Opt_Out" => '$record["Email_Opt_Out"]',
+        "Enrich_Status__s" => '$record["Enrich_Status__s"]',
+        "Exchange" => '$record["Exchange"]',
+        "Exchange_Rate" => '$record["Exchange_Rate"]',
+        "Fax" => '$record["Fax"]',
+        "First_Name" => '$record["First_Name"]',
+        "First_Visited_Time" => '$record["First_Visited_Time"]',
+        "First_Visited_URL" => '$record["First_Visited_URL"]',
+        "Follow_up_Status" => '$record["Follow_up_Status"]',
+        "Formula_2" => '$record["Formula_2"]',
+        "Fulfilment_Channel" => '$record["Fulfilment_Channel"]',
+        "Full_Name" => '$record["Full_Name"]',
+        "GST" => '$record["GST"]',
+        "GSTN" => '$record["GSTN"]',
+        "Gift_Card_in" => '$record["Gift_Card_in"]',
+        "H_Code" => '$record["H_Code"]',
+        "Id" => '$record["Id"]',
+        "India_Courier_Name" => '$record["India_Courier_Name"]',
+        "India_Courier_Name1" => '$record["India_Courier_Name1"]',
+        "India_Shipping_Date" => '$record["India_Shipping_Date"]',
+        "India_Shipping_Date1" => '$record["India_Shipping_Date1"]',
+        "India_Shipping_Weight_Gr" => '$record["India_Shipping_Weight_Gr"]',
+        "India_Tracking_Number" => '$record["India_Tracking_Number"]',
+        "India_Tracking_Number1" => '$record["India_Tracking_Number1"]',
+        "Industry" => '$record["Industry"]',
+        "International_Courier_Name" => '$record["International_Courier_Name"]',
+        "International_Shipment_ID" => '$record["International_Shipment_ID"]',
+        "International_Shipping_INR" => '$record["International_Shipping_INR"]',
+        "Inventory_Allocation_ID" => '$record["Inventory_Allocation_ID"]',
+        "Inventory_Followup_Status" => '$record["Inventory_Followup_Status"]',
+        "Inventory_Status" => '$record["Inventory_Status"]',
+        "Is_Record_Duplicate" => '$record["Is_Record_Duplicate"]',
+        "Item_Type" => '$record["Item_Type"]',
+        "LAST_ACTION" => '$record["LAST_ACTION"]',
+        "LAST_ACTION_TIME" => '$record["LAST_ACTION_TIME"]',
+        "LAST_SENT_TIME" => '$record["LAST_SENT_TIME"]',
+        "Last_Activity_Time" => '$record["Last_Activity_Time"]',
+        "Last_Enriched_Time__s" => '$record["Last_Enriched_Time__s"]',
+        "Last_Name" => '$record["Last_Name"]',
+        "Last_Visited_Time" => '$record["Last_Visited_Time"]',
+        "Layout" => '$record["Layout"]',
+        "Lead_Conversion_Time" => '$record["Lead_Conversion_Time"]',
+        "Lead_Source" => '$record["Lead_Source"]',
+        "Lead_Status" => '$record["Lead_Status"]',
+        "Length" => '$record["Length"]',
+        "Local_Shipping" => '$record["Local_Shipping"]',
+        "Locked__s" => '$record["Locked__s"]',
+        "MP_Remitted_Amount" => '$record["MP_Remitted_Amount"]',
+        "Marketplace_S_Tax" => '$record["Marketplace_S_Tax"]',
+        "Mobile" => '$record["Mobile"]',
+        "Modified_By" => '$record["Modified_By"]',
+        "Modified_Time" => '$record["Modified_Time"]',
+        "Nature" => '$record["Nature"]',
+        "Negative_Score" => '$record["Negative_Score"]',
+        "Negative_Touch_Point_Score" => '$record["Negative_Touch_Point_Score"]',
+        "No_of_Employees" => '$record["No_of_Employees"]',
+        "Number_Of_Chats" => '$record["Number_Of_Chats"]',
+        "Order_Creation_Date" => '$record["Order_Creation_Date"]',
+        "Order_Number" => '$record["Order_Number"]',
+        "Owner" => '$record["Owner"]',
+        "Paid_By" => '$record["Paid_By"]',
+        "Payment_Date" => '$record["Payment_Date"]',
+        "Payment_Reference_Number" => '$record["Payment_Reference_Number"]',
+        "Payment_Reference_Number1" => '$record["Payment_Reference_Number1"]',
+        "Phone" => '$record["Phone"]',
+        "Positive_Score" => '$record["Positive_Score"]',
+        "Positive_Touch_Point_Score" => '$record["Positive_Touch_Point_Score"]',
+        "Procured_From" => '$record["Procured_From"]',
+        "Procurement_URL" => '$record["Procurement_URL"]',
+        "Procurement_Weight" => '$record["Procurement_Weight"]',
+        "Product_Category" => '$record["Product_Category"]',
+        "Product_Code" => '$record["Product_Code"]',
+        "Product_Cost" => '$record["Product_Cost"]',
+        "Product_Cost_INR" => '$record["Product_Cost_INR"]',
+        "Product_Link" => '$record["Product_Link"]',
+        "Purchase_Date" => '$record["Purchase_Date"]',
+        "Purchase_Reference_Number" => '$record["Purchase_Reference_Number"]',
+        "Purchased_By" => '$record["Purchased_By"]',
+        "Quantity" => '$record["Quantity"]',
+        "RTO_RMA_Date" => '$record["RTO_RMA_Date"]',
+        "Rating" => '$record["Rating"]',
+        "Record_Approval_Status" => '$record["Record_Approval_Status"]',
+        "Record_Image" => '$record["Record_Image"]',
+        "Referrer" => '$record["Referrer"]',
+        "Refund" => '$record["Refund"]',
+        "Refund_Amount" => '$record["Refund_Amount"]',
+        "Refund_Date" => '$record["Refund_Date"]',
+        "Refund_Reference_Number" => '$record["Refund_Reference_Number"]',
+        "Refunded_by_US_Seller" => '$record["Refunded_by_US_Seller"]',
+        "Reverse_Pickup_Token_ID" => '$record["Reverse_Pickup_Token_ID"]',
+        "SABS_Invoice_ID" => '$record["SABS_Invoice_ID"]',
+        "SKU" => '$record["SKU"]',
+        "Salutation" => '$record["Salutation"]',
+        "Score" => '$record["Score"]',
+        "Secondary_Email" => '$record["Secondary_Email"]',
+        "Seller_Commission" => '$record["Seller_Commission"]',
+        "Seller_Name" => '$record["Seller_Name"]',
+        "Service_Charges" => '$record["Service_Charges"]',
+        "Shipping_Weight_in_Grms" => '$record["Shipping_Weight_in_Grms"]',
+        "Skype_ID" => '$record["Skype_ID"]',
+        "State" => '$record["State"]',
+        "Step_Down_Inventory_ID" => '$record["Step_Down_Inventory_ID"]',
+        "Step_Down_Inverter" => '$record["Step_Down_Inverter"]',
+        "Street" => '$record["Street"]',
+        "System_Modified_Time" => '$record["System_Modified_Time"]',
+        "System_Related_Activity_Time" => '$record["System_Related_Activity_Time"]',
+        "TCS_AMOUNT" => '$record["TCS_AMOUNT"]',
+        "T_Claim_Amount" => '$record["T_Claim_Amount"]',
+        "T_Claim_Date" => '$record["T_Claim_Date"]',
+        "T_Claim_Follow_Up_Status" => '$record["T_Claim_Follow_Up_Status"]',
+        "T_Claim_Status" => '$record["T_Claim_Status"]',
+        "Tag" => '$record["Tag"]',
+        "Territories" => '$record["Territories"]',
+        "Touch_Point_Score" => '$record["Touch_Point_Score"]',
+        "Twitter" => '$record["Twitter"]',
+        "US_Courier_Name" => '$record["US_Courier_Name"]',
+        "US_EDD" => '$record["US_EDD"]',
+        "US_EDD1" => '$record["US_EDD1"]',
+        "US_Refund_Source" => '$record["US_Refund_Source"]',
+        "US_Seller_Refund_Date" => '$record["US_Seller_Refund_Date"]',
+        "US_Shipper" => '$record["US_Shipper"]',
+        "US_Shipping_Date" => '$record["US_Shipping_Date"]',
+        "US_Tracking_Number" => '$record["US_Tracking_Number"]',
+        "Unsubscribed_Mode" => '$record["Unsubscribed_Mode"]',
+        "Unsubscribed_Time" => '$record["Unsubscribed_Time"]',
+        "User_Modified_Time" => '$record["User_Modified_Time"]',
+        "User_Related_Activity_Time" => '$record["User_Related_Activity_Time"]',
+        "VAT" => '$record["VAT"]',
+        "Visitor_Score" => '$record["Visitor_Score"]',
+        "Website" => '$record["Website"]',
+        "Weight_in_LBS" => '$record["Weight_in_LBS"]',
+        "Width" => '$record["Width"]',
+        "Zip_Code" => '$record["Zip_Code"]',
+        "updated_at" => '$record["updated_at"]'
+    ];
+
+    $var = [];
+
+    $new = [];
+
+    foreach ($var_key as $key => $prod) {
+
+        if (isset($prod_array[$key])) {
+
+            $var[$key] = $prod;
+        } else {
+            $new[$key] = $prod ?? "NOT FOUND";
+        }
+    }
+
+    echo "<pre>";
+    print_r($var);
+    print_r($new);
+
+    exit;
+
+
+
+    $Lead_Sources = [
+        'CKSHOP-Amazon.in',
+        'Amazon.in-Gotech',
+        'Gotech-Saudi',
+        'Gotech UAE',
+        'Amazon.in-MBM',
+        'Amazon.ae-MBM',
+        'Amazon.sa-MBM',
+        'Amazon.ae-Mahzuz',
+        'Amazon.sa-Mahzuz',
+        'Amazon.in-Nitrous',
+        'Flipkart-Cliqkart',
+        'Flipkart -Cliqkart',
+        'Flipkart-Gotech'
+    ];
+    $start_time = "2022-04-01 00:00:00";
+    $end_time = "2023-03-01 00:00:00";
+    // $zoho = zoho::limit(50)->orderBy('Created_Time', 'DESC')->get()->toArray();
+    // foreach ($Lead_Sources as $Lead_Source) {
+
+    $zoho = zoho::whereBetween('Created_Time', [$start_time, $end_time])->whereIn('Lead_Source', $Lead_Sources)->orderBy('Created_Time', 'DESC')->limit(1000)->get()->toArray();
+    // }
+    // po($zoho);
+    // exit;
+    foreach ($zoho as $data) {
+
+        // po($data['_id']['Lead_Source']);
+        po($data);
+    }
+});
+
 Route::get('test/shipntrack/data', function () {
 
 
