@@ -136,14 +136,14 @@ Route::get('test/shipntrack/smsa', function () {
         'Content-Type' => 'text/xml'
     ];
     $body = '<?xml version=\'1.0\' encoding=\'utf-8\'?>
-<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <getTracking xmlns="http://track.smsaexpress.com/secom/">
-      <awbNo>290410158941</awbNo>
-      <passkey>BeL@3845</passkey>
-    </getTracking>
-  </soap:Body>
-</soap:Envelope>';
+                <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                <soap:Body>
+                    <getTracking xmlns="http://track.smsaexpress.com/secom/">
+                    <awbNo>290410158941</awbNo>
+                    <passkey>BeL@3845</passkey>
+                    </getTracking>
+                </soap:Body>
+                </soap:Envelope>';
     $request = new Request('POST', 'http://track.smsaexpress.com/SeCom/SMSAwebService.asmx', $headers, $body);
     $response1 = $client->sendAsync($request)->wait();
     $plainXML = mungXML(trim($response1->getBody()));
@@ -291,6 +291,31 @@ Route::get('zoho/dump3', function () {
 });
 
 Route::get('export', function () {
+    $priority = 3;
+    $query_limit = 5000;
+    $us_destination  = table_model_create(country_code: 'in', model: 'Asin_destination', table_name: 'asin_destination_');
+    $asin = $us_destination->select('asin', 'priority')
+        ->when($priority != 'All', function ($query) use ($priority) {
+            return $query->where('priority', $priority);
+        })
+        ->where('export', 0)
+        ->orderBy('id', 'asc')
+        ->limit($query_limit)
+        ->get()
+        ->toArray();
+
+    $where_asin = [];
+    foreach ($asin as $value) {
+        $where_asin[] = $value['asin'];
+    }
+
+    $pricing_details = PricingIn::join("catalogins", "catalogins.asin", "pricing_ins.asin")
+        ->select(["catalogins.length", "catalogins.width", "catalogins.height", "catalogins.weight", "pricing_ins.asin", "pricing_ins.available", "pricing_ins.in_price", "pricing_ins.updated_at"])
+        ->whereIn('pricing_ins.asin', $where_asin)
+        ->get()
+        ->toArray();
+    po($pricing_details);
+    exit;
     $chunk = 1000;
     $total =  DB::connection('catalog')->select("SELECT cat.asin 
     FROM asin_source_ins as source 
