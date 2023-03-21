@@ -169,6 +169,7 @@ class Search_Product
                     $catalog_for_cliqnshop[$key1]['unit'] = isset($catalog_data['unit']) ? $catalog_data['unit'] : '';
                     $catalog_for_cliqnshop[$key1]['length'] = isset($catalog_data['length']) ? round($catalog_data['length'], 2) : '';
                     $catalog_for_cliqnshop[$key1]['width'] = isset($catalog_data['width']) ? round($catalog_data['width'], 2) : '';
+                    $catalog_for_cliqnshop[$key1]['height'] = isset($catalog_data['height']) ? round($catalog_data['height'], 2) : '';
                     // $catalog_for_cliqnshop[$key1]['weight']     = isset($catalog_data['weight']) ? $catalog_data['weight'] : '';
                     // $catalog_for_cliqnshop[$key1]['price_US']      = isset($productPrice1[$key1]) ? $productPrice1[$key1] : '';
                     if (isset($catalog_data['weight'])) {
@@ -184,8 +185,7 @@ class Search_Product
                  $ignore_brand = DB::connection('cliqnshop')->table('cns_ban_brand')->where('site_id',$siteId)->pluck('brand')->toArray();
                  
                  $ignore_brand_for_cliqnshop = ucwords(str_replace(',', '|', implode(',',$ignore_brand)), '|');
-                 
-                if (isset($cliqnshop_catalog['price']) && isset($cliqnshop_catalog['images']) && !in_array($cliqnshop_catalog['category_code'],$ignore_cat,true) && preg_match("(" . strtolower($ignore_brand_for_cliqnshop) . ")", strtolower($cliqnshop_catalog['brand'])) !== 1) {
+                if (isset($cliqnshop_catalog['price']) && $cliqnshop_catalog['height'] !== '' && $cliqnshop_catalog['height'] < 9.84252 && $cliqnshop_catalog['width'] !== '' && $cliqnshop_catalog['width'] < 9.84252 && $cliqnshop_catalog['length'] !== '' && $cliqnshop_catalog['length'] < 9.84252 && isset($cliqnshop_catalog['images']) && !in_array($cliqnshop_catalog['category_code'],$ignore_cat,true) && preg_match("(" . strtolower($ignore_brand_for_cliqnshop) . ")", strtolower($cliqnshop_catalog['brand'])) !== 1) {
                     $category = $cliqnshop_catalog['category_code'] ?? 'demo-new';
                     $asin = $cliqnshop_catalog['asin'];
                     $item_name = $cliqnshop_catalog['itemName'];
