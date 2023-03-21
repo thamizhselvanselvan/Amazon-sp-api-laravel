@@ -51,7 +51,6 @@ class import_product_file_SPAPI extends Command
      */
     public function handle()
     {
-        // $stores_id  = [6, 7, 8, 9, 10, 11, 12, 20, 27, 44];
 
         $stores_id =  OrderSellerCredentials::query()->select('seller_id', 'country_code')->where('buybox_stores', 1)->get();
 
@@ -60,13 +59,11 @@ class import_product_file_SPAPI extends Command
             try {
 
                 $seller_id = $data['seller_id'];
-                //$seller_id = $data;
-
-                Log::alert('store' .  ' ' . $seller_id);
 
                 $aws = Aws_credential::with(['mws_region'])->where('seller_id', $seller_id)->where('api_type', 1)->first();
 
                 $aws_key = $aws->id;
+                $seller_name = $aws->store_name;
                 $country_code = $aws->mws_region->region_code;
                 $marketplace_id = $aws->mws_region->marketplace_id;
                 $productreport = new product_import;
@@ -89,8 +86,8 @@ class import_product_file_SPAPI extends Command
 
                         Storage::put('/aws-products/aws-store-files/products_' . $seller_id . '.txt', $httpResponse);
                     }
-
-                    $this->insertdb($seller_id, $country_code);
+                    
+                    $this->insertdb($seller_id, $country_code, $seller_name);
                 }
             } catch (Exception $e) {
                 Log::notice('Store File Not Found' . ' ' . $seller_id);
@@ -99,7 +96,7 @@ class import_product_file_SPAPI extends Command
 
     }
 
-    public function insertdb($seller_id, $country_code): void
+    public function insertdb($seller_id, $country_code, $seller_name): void
     {
         $records = CSV_Reader("/aws-products/aws-store-files/products_" . $seller_id . ".txt", "\t");
 
@@ -108,11 +105,20 @@ class import_product_file_SPAPI extends Command
 
         foreach ($records as $record) {
 
+            if(!isset($record['status'])) {
+
+                $slackMessage = "Message: There is no Asin Status Column in Store $seller_name so Stopping import";
+                slack_notification('slack_monitor', 'Stores', $slackMessage);
+
+                break;
+            }
+
             $asin_lists[] = [
                 'store_id' => $seller_id,
                 'asin' => $record['asin1'],
                 'product_sku' => $record['seller-sku'],
                 'store_price' => $record['price'],
+                'current_availability' => $record['status'] == "Active" ? 1 : 0,
                 'cyclic' => 0
             ];
 
@@ -138,13 +144,13 @@ class import_product_file_SPAPI extends Command
         $country_code = strtoupper($country_code);
         if ($country_code == 'AE') {
 
-            return Products_ae::upsert($asin_lists, ['asin', 'store_id'], ['store_price', 'product_sku', 'cyclic']);
+            return Products_ae::upsert($asin_lists, ['asin', 'store_id'], ['store_price', 'product_sku', 'cyclic', 'current_availability']);
         } else if ($country_code == 'SA') {
 
-            return Products_sa::upsert($asin_lists, ['asin', 'store_id'], ['store_price', 'product_sku', 'cyclic']);
+            return Products_sa::upsert($asin_lists, ['asin', 'store_id'], ['store_price', 'product_sku', 'cyclic', 'current_availability']);
         } else if ($country_code == 'IN') {
 
-            return Products_in::upsert($asin_lists, ['asin', 'store_id'], ['store_price', 'product_sku', 'cyclic']);
+            return Products_in::upsert($asin_lists, ['asin', 'store_id'], ['store_price', 'product_sku', 'cyclic', 'current_availability']);
         } else {
 
             $slackMessage = "Message: Undefined Country Code,

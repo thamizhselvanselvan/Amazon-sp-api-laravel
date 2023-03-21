@@ -9,6 +9,7 @@ class Product_push_ae extends Model
 {
     use HasFactory;
     protected $connection = 'buybox_stores';
+    protected $table = 'products_push_aes';
 
 
     protected $fillable = [

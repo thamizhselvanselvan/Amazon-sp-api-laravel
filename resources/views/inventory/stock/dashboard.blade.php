@@ -72,6 +72,7 @@
     <thead>
         <tr class="table-info">
             <th>ID</th>
+            <th>Inventory ID</th>
             <th>Warehouse Name</th>
             <th>Shipment ID</th>
             <th id='asin'>ASIN</th>
@@ -92,7 +93,6 @@
 
 @section('js')
 <script type="text/javascript">
-
     $(document).ready(function() {
         if ($('#warehouse').val() == '') {
             $('#export').hide();
@@ -114,7 +114,7 @@
     let yajra_table = $('.yajra-datatable').DataTable({
         processing: true,
         serverSide: true,
-      
+
         ajax: {
             url: "{{ url($url) }}",
             type: 'get',
@@ -129,6 +129,11 @@
         columns: [{
                 data: 'id',
                 name: 'id'
+            },
+            {
+                data: 'inventory_id',
+                name: 'inventory_id',
+
             },
             {
                 data: 'w_name',

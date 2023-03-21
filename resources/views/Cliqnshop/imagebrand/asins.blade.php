@@ -59,7 +59,7 @@
             <div class="form-group">
                 <label>Enter ASIN:</label>
                 <div class="autocomplete" style="width:400px;">
-                    <x-adminlte-textarea name="upload_asin" rows="5" placeholder="Add Asins here. MAX-20.." name="top_asin" type=" text" autocomplete="off" class="form-control" id="asin_fill" />
+                    <x-adminlte-textarea name="upload_asin" rows="5" placeholder="Add Asins here. MAX-100.." name="top_asin" type=" text" autocomplete="off" class="form-control" id="asin_fill" />
                 </div>
             </div>
         </div>

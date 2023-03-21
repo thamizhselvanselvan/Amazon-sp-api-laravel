@@ -77,8 +77,8 @@ class RemoveUploadedFiles extends Command
             });
         }
         // Remove all 2 days ago file form Asin destination, Asin source and invoiceCSV folder start.
-        $back_file_date = Carbon::now()->subDays(2)->toDateString();
-        $Asin_source_destination_files = ['AsinDestination', 'AsinSource'];
+        $back_file_date = Carbon::now()->subDays(30)->toDateString();
+        $Asin_source_destination_files = ['AsinDestination', 'AsinSource', 'invoiceCSV'];
         foreach ($Asin_source_destination_files as $Asin_source_destination_file) {
 
             $files = Storage::allFiles("${Asin_source_destination_file}");

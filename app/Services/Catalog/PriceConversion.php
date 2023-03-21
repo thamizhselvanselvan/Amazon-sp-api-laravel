@@ -99,7 +99,7 @@ class PriceConversion
         $weight = (float)$weight;
         $bb_price = (float)$bb_price;
 
-        if ($weight < 0.5) {
+        if ($weight < 1) {
 
             $weight = 1;
         }

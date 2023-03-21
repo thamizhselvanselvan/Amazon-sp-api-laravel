@@ -508,16 +508,18 @@
                         let files = '';
                         $.each(response, function(index, response) {
                             let data = response;
+                            files += "<ul class='pl-0 ml-0 mb-0'><b>Catalog " + index + "</b>";
                             $.each(data, function(key, data) {
 
-                                files += "<li class='p-0 m-0'>";
+                                files += "<li class=' ml-4'>";
                                 files += "<a href='/catalog/download/csv-file/" +
                                     index + "/" + key +
-                                    "' class='p-0 m-0'> Catalog " + index + '&nbsp;' +
+                                    "' class='p-0 m-0'>" + '&nbsp;' +
                                     key + "</a> ";
                                 files += data;
                                 files += "</li>";
                             });
+                            files += "</ul>";
                             // let file_name = Object.keys(response)[0];
                             // let file_time = response[file_name];
                         });
@@ -547,17 +549,28 @@
                         let files = '';
                         $.each(result, function(index, result) {
                             let data = result;
+                            files += "<ul class='pl-0 ml-0 mb-0'><b>Catalog Price " + index +
+                                "</b>";
                             $.each(data, function(key, data) {
-                                files += "<li class='p-0 m-0'>";
-                                files += "<a href='/catalog/download/price/" + index +
-                                    '/' +
-                                    key +
-                                    "' class='p-0 m-0'> Catalog Price " + index +
-                                    '&nbsp;' +
-                                    key + "</a> ";
+                                files += "<li class=' ml-4'>";
+                                if (key != 'All') {
+
+                                    files += "<a href='/catalog/download/price/" +
+                                        index +
+                                        '/' +
+                                        key +
+                                        "' class='p-0 m-0'> Priority" + key + "</a> ";
+                                } else {
+                                    files += "<a href='/catalog/download/price/" +
+                                        index +
+                                        '/' +
+                                        key +
+                                        "' class='p-0 m-0'>" + key + "</a> ";
+                                }
                                 files += data;
                                 files += "</li>";
                             });
+                            files += "</ul>"
                         });
                         $('.catalogPricing').append(files);
                     }

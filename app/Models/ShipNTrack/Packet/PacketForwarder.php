@@ -10,11 +10,16 @@ class PacketForwarder extends Model
     use HasFactory;
     protected $connection = 'shipntracking';
     protected $fillable = [
-        'order_id',
+        'reference_id',
         'awb_no',
         'forwarder_1',
         'forwarder_1_awb',
         'forwarder_2',
-        'forwarder_2_awb'
+        'forwarder_2_awb',
+        'forwarder_3',
+        'forwarder_3_awb',
+        'forwarder_4',
+        'forwarder_4_awb',
+        'status'
     ];
 }

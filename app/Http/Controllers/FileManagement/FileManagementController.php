@@ -29,7 +29,7 @@ class FileManagementController extends Controller
                 })
                 ->addColumn('user_name', function ($file_management) {
                     $user_name = User::where('id', $file_management['user_id'])->get('name')->toArray();
-                    $user = $user_name[0]['name'];
+                    $user = $user_name[0]['name'] ?? 'Auto';
                     return $user;
                 })
                 ->addColumn('type', function ($file_management) {
@@ -38,8 +38,9 @@ class FileManagementController extends Controller
                     return $type;
                 })
                 ->addColumn('module', function ($file_management) {
-                    $module_replace = [',', '_US_1', '_US_2', '_US_3', '_IN_1', '_IN_2', '_IN_3', '_IN', '_US', '_EXPORT', 'US_1', 'US_2', 'US_3', 'US', '_5', '_6', '_7', '_9', '_10', '_11', '_13', '_14', '_15', '_18', '_20', '_21', '_22', '_27', '_29', '_35', '_42', '_44',];
-                    $module = str_replace($module_replace, '', $file_management['module']);
+                    // $module_replace = [',', '_US_1', '_US_2', '_US_3', '_IN_1', '_IN_2', '_IN_3', '_IN', '_US', '_EXPORT', 'US_1', 'US_2', 'US_3', 'US', '_5', '_6', '_7', '_9', '_10', '_11', '_13', '_14', '_15', '_18', '_20', '_21', '_22', '_27', '_29', '_35', '_42', '_44',];
+                    $module_replace = [',', '_', '-EXPORT-', '_5', '_6', '_7', '_9', '_10', '_11', '_13', '_14', '_15', '_18', '_20', '_21', '_22', '_27', '_29', '_35', '_42', '_44',];
+                    $module = str_replace($module_replace, '-', $file_management['module']);
                     return $module;
                 })
                 ->addColumn('start_time', function ($file_management) {

@@ -589,9 +589,9 @@ if (!function_exists('table_model_create')) {
 }
 
 if (!function_exists('table_model_change')) {
-    function table_model_change(string $model_path, string $table_name): object
+    function table_model_change(string $model_path, string $model_name, string $table_name): object
     {
-        $namespace = 'App\\Models\\ShipNTrack\\' . $model_path . $table_name;
+        $namespace = 'App\\Models\\ShipNTrack\\' . $model_path . '\\' . $model_name;
         $table_model = new $namespace;
 
         return $table_model->setTable($table_name);
@@ -864,40 +864,40 @@ if (!function_exists('bombino_tracking')) {
     }
 }
 
-if (!function_exists('forwarderTrackingEvent')) {
-    function forwarderTrackingEvent($key)
-    {
-        $array_tables = [
-            [
-                'Table_name' => 'BombinoTrackingDetails',
-                'Table_column' => 'exception',
-                'Model_path' => 'Bombino\\'
-            ],
-            [
-                'Table_name' => 'SmsaTrackings',
-                'Table_column' => 'activity',
-                'Model_path' => 'SMSA\\'
-            ],
-            [],
-            [
-                'Table_name' => 'AramexTracking',
-                'Table_column' => 'update_description',
-                'Model_path' => 'Aramex\\'
-            ],
-        ];
+// if (!function_exists('forwarderTrackingEvent')) {
+//     function forwarderTrackingEvent($key)
+//     {
+//         $array_tables = [
+//             [
+//                 'Table_name' => 'BombinoTrackingDetails',
+//                 'Table_column' => 'exception',
+//                 'Model_path' => 'Bombino\\'
+//             ],
+//             [
+//                 'Table_name' => 'SmsaTrackings',
+//                 'Table_column' => 'activity',
+//                 'Model_path' => 'SMSA\\'
+//             ],
+//             [],
+//             [
+//                 'Table_name' => 'AramexTracking',
+//                 'Table_column' => 'update_description',
+//                 'Model_path' => 'Aramex\\'
+//             ],
+//         ];
 
-        $table_name = $array_tables[$key]['Table_name'];
-        $table_column = $array_tables[$key]['Table_column'];
-        $model_path = $array_tables[$key]['Model_path'];
+//         $table_name = $array_tables[$key]['Table_name'];
+//         $table_column = $array_tables[$key]['Table_column'];
+//         $model_path = $array_tables[$key]['Model_path'];
 
-        $table_model = table_model_change(model_path: $model_path, table_name: $table_name);
+//         $table_model = table_model_change(model_path: $model_path, table_name: $table_name);
 
-        return [
-            $table_model,
-            $table_column
-        ];
-    }
-}
+//         return [
+//             $table_model,
+//             $table_column
+//         ];
+//     }
+// }
 
 if (!function_exists('getTrackingDetails')) {
     function getTrackingDetails($awb_no)
@@ -1050,7 +1050,7 @@ if (!function_exists('fileManagement')) {
             $module = explode('_', str_replace($ignore, '', $file_data['module']));
             $path = $file_data['file_path'];
             $command_name = $file_data['command_name'];
-            $header = isset($file_data['header']) ? json_decode($file_data['header'])->data : '';
+            $header = isset($file_data['header']) ? json_decode($file_data['header'])->data ?? '' : '';
             $destination = isset($module[0]) ? $module[0] : '';
             $priority = isset($module[1]) ? $module[1] : '';
 
@@ -1205,7 +1205,7 @@ if (!function_exists('CSV_Write')) {
             $CSV_Writer->insertOne($columnsHeader);
 
             if ($records) {
-                Log::emergency('Writig Here ');
+                // Log::emergency('Writig Here ');
                 $CSV_Writer->insertAll($records);
             }
         }

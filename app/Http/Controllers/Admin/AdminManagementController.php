@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Roles;
 use Illuminate\Http\Request;
 use App\Models\Aws_credential;
+use App\Models\Mws_region;
 use App\Models\Admin\BB\BB_User;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Company\CompanyMaster;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\order\OrderSellerCredentials;
+use App\Models\V2\Masters\Credential;
 
 class AdminManagementController extends Controller
 {
@@ -566,5 +568,77 @@ class AdminManagementController extends Controller
     {
         $records = OrderSellerCredentials::select('price_calculation_type', 'price_calculation_value')->where('id', $id)->get();
         return response()->json($records);
+    }
+
+    public function credentialmanage(Request $request, $id = null)
+    {
+        $data_mws =  Mws_region::query()->select('id', 'region', 'region_code')->distinct()->get();
+        $request_Region = $id;
+
+        $url = "/admin/creds/manage";
+        if (isset($request_Region)) {
+            $url = "/admin/creds/manage/" . $request_Region;
+        }
+
+        if ($request->ajax()) {
+            $data = Aws_credential::query()
+                ->select('id', 'store_name', 'merchant_id', 'credential_use', 'mws_region_id', 'country_priority', 'horizon_priority', 'credential_priority')
+                ->when($request->region, function ($query, $id) use ($request) {
+                    return $query->where('mws_region_id', $id);
+                })
+                ->get();
+
+            return DataTables::of($data)
+                ->addColumn('action', function ($row) {
+                    $val = $row->mws_region_id . '_' . $row->id;
+                    $actionBtn = "<div class='d-flex'><a href='javascript:void(0)' data-toggle='modal' data-target='.bd-example-modal-sm' value='$val' id='credentials' class='creds btn btn-success btn-sm'><i class='fas fa-save'></i> Update</a>";
+                    return $actionBtn;
+                })
+                ->addColumn('Creds_priority', function ($row) {
+                    $value = $row->credential_priority;
+                    if ($value == '1') {
+                        $data = 'P1';
+                    } else if ($value == '2') {
+                        $data = 'P2';
+                    } else if ($value == '3') {
+                        $data = 'P3';
+                    } else if ($value == '4') {
+                        $data = 'P4';
+                    } else if ($value == null) {
+                        $data = '';
+                    } else {
+                        $data = 'unknown ';
+                    }
+                    return $data;
+                })
+                ->rawColumns(['action', 'Creds_priority'])
+                ->escapeColumns([])
+                ->make(true);
+        }
+        return view('admin.adminManagement.creds_manage', compact('data_mws', 'request_Region', 'url'));
+    }
+
+    public function credentialprioritysave(Request $request)
+    {
+
+        $store_id = $request->sell_id;
+        $priority = $request->priority;
+       
+        $data = Aws_credential::with(['mws_region'])->where('id', $store_id)->get()->toArray();
+
+        $region_code = $data['0']['mws_region']['region_code'];
+        
+        Aws_credential::where('id', $store_id)->update(['country_priority' => $region_code, 'credential_priority' => $priority]);
+
+        return redirect()->intended('/admin/creds/manage')->with('success', 'Country Priority has been updated successfully');
+    }
+    public function horizonprioritysave(Request $request)
+    {
+      
+        $store_id = $request->sell_id;
+        $priority = $request->priority;
+        Aws_credential::where('id', $store_id)->update(['horizon_priority' => $priority]);
+
+        return redirect()->intended('/admin/creds/manage')->with('success', 'Horizon Priority has been updated successfully');
     }
 }

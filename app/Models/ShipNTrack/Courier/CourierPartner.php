@@ -11,8 +11,17 @@ class CourierPartner extends Model
     protected $connection = 'shipntracking';
     protected $fillable = [
         'name',
-        'source_destination',
+        'source',
+        'destination',
         'courier_code',
-        'active'
+        'courier_code',
+        'active',
+        'type',
+        'time_zone',
+        'key1',
+        'key2',
+        'key3',
+        'key4',
+        'key5'
     ];
 }

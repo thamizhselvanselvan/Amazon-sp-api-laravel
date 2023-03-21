@@ -8,14 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class SmsaTrackings extends Model
 {
     use HasFactory;
-    
+
     protected $connection = 'shipntracking';
     protected $fillable = [
+        'account_id',
         'awbno',
         'date',
         'activity',
         'details',
         'location',
     ];
-
 }

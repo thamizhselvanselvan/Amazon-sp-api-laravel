@@ -61,47 +61,36 @@ class NewCatalog
             'salesRanks',
         ];
 
-        Log::notice($records);
+        $asin = [];
         $aws_id = NULL;
-        $country_code = strtolower($records[0]['source']);
-        $seller_id = $records[0]['seller_id'];
-        $auth_id = $records[0]['id'];
-        $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
-        $token = $aws_token[0];
+        $country_code = '';
+        $seller_id = '';
+        $auth_id = '';
+        $token = '';
+        if (isset($records[0])) {
+
+            $country_code = strtolower($records[0]['source']);
+            $seller_id = $records[0]['seller_id'];
+            $auth_id = $records[0]['id'];
+            $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
+            $token = $aws_token[0];
+        }
 
         foreach ($records as $record) {
 
-            $asin[] = $record['asin'];
-            // $country_code = $record['source'];
-            // $country_code1 = $country_code;
-            // $seller_id = $record['seller_id'];
-            // $auth_id = $record['id'];
-
-            // $asins[] = $asin;
-            // $aws_token = Aws_credential::where('id', $auth_id)->get()->pluck('auth_code')->toArray();
-            // $token = $aws_token[0];
-
-            // $country_code = strtolower($country_code);
-            // $catalog_table = 'catalognew' . $country_code . 's';
-
-            // $aws_id = NULL;
-
-            // if ($count == 9) {
-
-            //     $queue_data[] = $this->FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id);
-            //     $count = 0;
-            //     $asins = [];
-            // }
-            // $count++;
+            $asin[] = $record['asin'] ?? '';
         }
-        $queue_data[] = $this->FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id);
+
+        if (count($asin) != 0) {
+
+            $queue_data[] = $this->FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id);
+        }
 
         $NewCatalogs = [];
         $country_code1 = $country_code;
         $asinSourceUpdate = [];
         $catalogTable = [];
         $classification = '';
-        Log::warning($queue_data);
         // foreach ($queue_data as $record) {
 
         if (isset($queue_data[0])) {
@@ -164,160 +153,155 @@ class NewCatalog
             $asinSourceUpdate = [];
             $catalogTable = [];
 
-            foreach ($NewCatalogs as  $NewCatalog) {
+            // foreach ($NewCatalogs as  $NewCatalog) {
 
-                if (strtolower($country_code1) == "us") {
+            //     if (strtolower($country_code1) == "us") {
 
-                    Catalog_us::upsert($NewCatalog, ['asin_unique'], [
-                        'seller_id',
-                        'source',
-                        'asin',
-                        'attributes',
-                        'height',
-                        'unit',
-                        'length',
-                        'weight',
-                        'weight_unit',
-                        'width',
-                        'images',
-                        'product_types',
-                        'marketplace',
-                        'brand',
-                        'browse_classification',
-                        'color',
-                        'item_classification',
-                        'item_name',
-                        'manufacturer',
-                        'model_number',
-                        'package_quantity',
-                        'part_number',
-                        'size',
-                        'website_display_group',
-                        'style',
-                        'dimensions',
-                        'identifiers',
-                        'relationships',
-                        'salesRanks',
-                    ]);
-                } else  if (strtolower($country_code1) == "in") {
+            //         Catalog_us::upsert($NewCatalog, ['asin_unique'], [
+            //             'seller_id',
+            //             'source',
+            //             'asin',
+            //             'attributes',
+            //             'height',
+            //             'unit',
+            //             'length',
+            //             'weight',
+            //             'weight_unit',
+            //             'width',
+            //             'images',
+            //             'product_types',
+            //             'marketplace',
+            //             'brand',
+            //             'browse_classification',
+            //             'color',
+            //             'item_classification',
+            //             'item_name',
+            //             'manufacturer',
+            //             'model_number',
+            //             'package_quantity',
+            //             'part_number',
+            //             'size',
+            //             'website_display_group',
+            //             'style',
+            //             'dimensions',
+            //             'identifiers',
+            //             'relationships',
+            //             'salesRanks',
+            //         ]);
+            //     } else  if (strtolower($country_code1) == "in") {
 
-                    Catalog_in::upsert(
-                        $NewCatalog,
-                        ['asin_unique'],
-                        [
-                            'asin',
-                            'seller_id',
-                            'source',
-                            'attributes',
-                            'height',
-                            'unit',
-                            'length',
-                            'weight',
-                            'weight_unit',
-                            'width',
-                            'images',
-                            'product_types',
-                            'marketplace',
-                            'brand',
-                            'browse_classification',
-                            'color',
-                            'item_classification',
-                            'item_name',
-                            'manufacturer',
-                            'model_number',
-                            'package_quantity',
-                            'part_number',
-                            'size',
-                            'website_display_group',
-                            'style',
-                            'dimensions',
-                            'identifiers',
-                            'relationships',
-                            'salesRanks',
-                        ]
-                    );
-                } else  if (strtolower($country_code1) == "ae") {
+            //         Catalog_in::upsert(
+            //             $NewCatalog,
+            //             ['asin_unique'],
+            //             [
+            //                 'asin',
+            //                 'seller_id',
+            //                 'source',
+            //                 'attributes',
+            //                 'height',
+            //                 'unit',
+            //                 'length',
+            //                 'weight',
+            //                 'weight_unit',
+            //                 'width',
+            //                 'images',
+            //                 'product_types',
+            //                 'marketplace',
+            //                 'brand',
+            //                 'browse_classification',
+            //                 'color',
+            //                 'item_classification',
+            //                 'item_name',
+            //                 'manufacturer',
+            //                 'model_number',
+            //                 'package_quantity',
+            //                 'part_number',
+            //                 'size',
+            //                 'website_display_group',
+            //                 'style',
+            //                 'dimensions',
+            //                 'identifiers',
+            //                 'relationships',
+            //                 'salesRanks',
+            //             ]
+            //         );
+            //     } else  if (strtolower($country_code1) == "ae") {
 
-                    Catalog_ae::upsert($NewCatalog, [
-                        'asin_unique'
-                    ], [
-                        'asin',
-                        'seller_id',
-                        'source',
-                        'attributes',
-                        'height',
-                        'unit',
-                        'length',
-                        'weight',
-                        'weight_unit',
-                        'width',
-                        'images',
-                        'product_types',
-                        'marketplace',
-                        'brand',
-                        'browse_classification',
-                        'color',
-                        'item_classification',
-                        'item_name',
-                        'manufacturer',
-                        'model_number',
-                        'package_quantity',
-                        'part_number',
-                        'size',
-                        'website_display_group',
-                        'style',
-                        'dimensions',
-                        'identifiers',
-                        'relationships',
-                        'salesRanks',
-                    ]);
-                } else  if (strtolower($country_code1) == "sa") {
+            //         Catalog_ae::upsert($NewCatalog, [
+            //             'asin_unique'
+            //         ], [
+            //             'asin',
+            //             'seller_id',
+            //             'source',
+            //             'attributes',
+            //             'height',
+            //             'unit',
+            //             'length',
+            //             'weight',
+            //             'weight_unit',
+            //             'width',
+            //             'images',
+            //             'product_types',
+            //             'marketplace',
+            //             'brand',
+            //             'browse_classification',
+            //             'color',
+            //             'item_classification',
+            //             'item_name',
+            //             'manufacturer',
+            //             'model_number',
+            //             'package_quantity',
+            //             'part_number',
+            //             'size',
+            //             'website_display_group',
+            //             'style',
+            //             'dimensions',
+            //             'identifiers',
+            //             'relationships',
+            //             'salesRanks',
+            //         ]);
+            //     } else  if (strtolower($country_code1) == "sa") {
 
-                    Catalog_sa::upsert($NewCatalog, [
-                        'asin_unique'
-                    ], [
-                        'asin',
-                        'seller_id',
-                        'source',
-                        'attributes',
-                        'height',
-                        'unit',
-                        'length',
-                        'weight',
-                        'weight_unit',
-                        'width',
-                        'images',
-                        'product_types',
-                        'marketplace',
-                        'brand',
-                        'browse_classification',
-                        'color',
-                        'item_classification',
-                        'item_name',
-                        'manufacturer',
-                        'model_number',
-                        'package_quantity',
-                        'part_number',
-                        'size',
-                        'website_display_group',
-                        'style',
-                        'dimensions',
-                        'identifiers',
-                        'relationships',
-                        'salesRanks',
-                    ]);
-                }
-            }
+            //         Catalog_sa::upsert($NewCatalog, [
+            //             'asin_unique'
+            //         ], [
+            //             'asin',
+            //             'seller_id',
+            //             'source',
+            //             'attributes',
+            //             'height',
+            //             'unit',
+            //             'length',
+            //             'weight',
+            //             'weight_unit',
+            //             'width',
+            //             'images',
+            //             'product_types',
+            //             'marketplace',
+            //             'brand',
+            //             'browse_classification',
+            //             'color',
+            //             'item_classification',
+            //             'item_name',
+            //             'manufacturer',
+            //             'model_number',
+            //             'package_quantity',
+            //             'part_number',
+            //             'size',
+            //             'website_display_group',
+            //             'style',
+            //             'dimensions',
+            //             'identifiers',
+            //             'relationships',
+            //             'salesRanks',
+            //         ]);
+            //     }
+            // }
         }
     }
 
     public function FetchDataFromCatalog($asins, $country_code, $seller_id, $token, $aws_id)
     {
-        log::alert($asins);
-        log::alert($country_code);
-        log::alert($seller_id);
-        log::alert($token);
-        log::alert($aws_id);
         $country_code = strtoupper($country_code);
         $config =   $this->config($aws_id, $country_code, $token);
         $apiInstance = new CatalogItemsV20220401Api($config);
@@ -378,6 +362,19 @@ class NewCatalog
                         if (array_key_exists('package', (array)$value[0])) {
 
                             foreach ($value[0]->package as $key3 => $value3) {
+
+                                $queue_data[$key][$key3] = $value3->value;
+                                if ($key3 == 'height' || $key3 == 'width' || $key3 == 'length') {
+
+                                    $queue_data[$key]['unit'] = $value3->unit;
+                                }
+                                if ($key3 == 'weight') {
+
+                                    $queue_data[$key]['weight_unit'] = $value3->unit;
+                                }
+                            }
+                        } else if (array_key_exists('item', (array)$value[0])) {
+                            foreach ($value[0]->item as $key3 => $value3) {
 
                                 $queue_data[$key][$key3] = $value3->value;
                                 if ($key3 == 'height' || $key3 == 'width' || $key3 == 'length') {

@@ -82,6 +82,7 @@
             <tr class="table-info">
                 <th>ASIN</th>
                 <th>Item Name</th>
+                <th>Inventory ID</th>
                 <th>Tag</th>
                 <th>Quantity</th>
                 <th>Price</th>
@@ -93,10 +94,11 @@
             <tr>
                 <td>{{$val['asin']}}</td>
                 <td>{{$val['item_name']}}</td>
+                <td>{{$val['id']}}</td>
                 @if(isset($val->tags))
                 <td>{{$val->tags->name}}</td>
                 @else
-                <td>Not Selected</td>
+                <td>NA</td>
                 @endif
 
                 <td>{{$val['quantity']}}</td>

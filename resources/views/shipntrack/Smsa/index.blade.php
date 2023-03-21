@@ -3,105 +3,134 @@
 @section('title', 'SMSA Tracking')
 
 @section('content_header')
-<div class="row">
-    <h1 class="m-0 text-dark col">SMSA Tracking</h1>
-    <h2 class="mb-4 text-right col">
-        <a href="{{Route('shipntrack.smsa.upload')}}">
-            <x-adminlte-button label="Add New SMSA AWB No." theme="primary" icon="fas fa-file-upload" class="btn-sm" />
-        </a>
-    </h2>
-</div>
+    <div class="row">
+        <h1 class="m-0 text-dark col">SMSA Tracking</h1>
+        <h2 class="mb-4 text-right col">
+            <a href="{{ Route('shipntrack.smsa.upload') }}">
+                <x-adminlte-button label="Add New SMSA AWB No." theme="primary" icon="fas fa-file-upload" class="btn-sm" />
+            </a>
+        </h2>
+    </div>
+    <div class="row">
+        <x-adminlte-select name="source_destination" id="sourceDestination">
+            <option>Select Option</option>
+            <option value="ind_to_uae">IND-TO-UAE</option>
+            <option value="ind_to_ksa">IND-TO-KSA</option>
+        </x-adminlte-select>
+    </div>
 @stop
 
 @section('content')
 
-<div class="row">
-    <div class="col">
+    <div class="row">
+        <div class="col">
 
-        <div class="alert_display">
-            @if ($message = Session::get('success'))
-            <div class="alert alert-success alert-block">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>{{ $message }}</strong>
+            <div class="alert_display">
+                @if ($message = Session::get('success'))
+                    <div class="alert alert-success alert-block">
+                        <button type="button" class="close" data-dismiss="alert">×</button>
+                        <strong>{{ $message }}</strong>
+                    </div>
+                @endif
             </div>
-            @endif
-        </div>
 
-        <div class="alert_display">
-            @if ($message = Session::get('error'))
-            <div class="alert alert-danger alert-block">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>{{ $message }}</strong>
+            <div class="alert_display">
+                @if ($message = Session::get('error'))
+                    <div class="alert alert-danger alert-block">
+                        <button type="button" class="close" data-dismiss="alert">×</button>
+                        <strong>{{ $message }}</strong>
+                    </div>
+                @endif
             </div>
-            @endif
         </div>
     </div>
-</div>
-<div class="pl-2">
-    <table class="table table-bordered yajra-datatable table-striped text-center" style="line-height:12px">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>AWB No.</th>
-                <th>Date</th>
-                <th>Activity</th>
-                <th>Status</th>
-                <th>Location</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-</div>
+    <div class="pl-2">
+        <table class="table table-bordered yajra-datatable table-striped text-center" style="line-height:12px">
+            <thead>
+                <tr>
+                    <th>AWB No.</th>
+                    <th>Forwarder1 AWB No.</th>
+                    <th>Forwarder2 AWB No.</th>
+                    <th>Forwarder3 AWB No.</th>
+                    <th>Forwarder4 AWB No.</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
 @stop
 
 @section('js')
-<script type="text/javascript">
-    $(function() {
+    <script type="text/javascript">
+        $('#sourceDestination').change(function() {
 
-        let yajra_table = $('.yajra-datatable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: "{{ url('/shipntrack/smsa') }}",
-            pageLength: 50,
-            columns: [{
-                    data: 'id',
-                    name: 'id',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'awbno',
-                    name: 'awbno'
-                },
-                {
-                    data: 'date',
-                    name: 'date'
-                },
-                {
-                    data: 'activity',
-                    name: 'activity'
-                },
-                {
-                    data: 'details',
-                    name: 'details'
-                },
-                {
-                    data: 'location',
-                    name: 'location',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                },
-            ]
+            let sourceDestination = $(this).val();
+            if (sourceDestination == 'NULL') {
+
+            } else {
+
+                let yajra_table = $('.yajra-datatable').DataTable({
+
+                    destroy: true,
+                    processing: true,
+                    serverSide: true,
+                    bLengthChange: false,
+                    ajax: {
+
+                        url: "{{ route('shipntrack.courier.tracking') }}",
+                        method: 'GET',
+                        data: function(d) {
+                            d.sourceDestination = sourceDestination;
+                        },
+                    },
+                    pageLength: 100,
+                    columns: [{
+                            data: 'awb_number',
+                            name: 'awb_number',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'forwarder1_awb',
+                            name: 'forwarder1_awb',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'forwarder2_awb',
+                            name: 'forwarder2_awb',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'forwarder3_awb',
+                            name: 'forwarder3_awb',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'forwarder4_awb',
+                            name: 'forwarder4_awb',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'created_date',
+                            name: 'created_date'
+                        },
+                        {
+                            data: 'action',
+                            name: 'action',
+                            orderable: false,
+                            searchable: false
+                        },
+                    ]
+                });
+            }
+
         });
-
-    });
-</script>
+    </script>
 @stop

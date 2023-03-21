@@ -532,22 +532,24 @@ class labelManagementController extends Controller
 
         $data = DB::select("SELECT
             DISTINCT
-             web.id, 
-             web.awb_no, 
-             web.forwarder,
-             web.order_no,
-             ord.purchase_date,
-             store.store_name, 
-             orderDetails.seller_sku, 
+            GROUP_CONCAT(DISTINCT web.id)as id, 
+            GROUP_CONCAT(DISTINCT web.awb_no)as awb_no, 
+            GROUP_CONCAT(DISTINCT web.forwarder)as forwarder,
+             orderDetails.amazon_order_identifier as order_no,
+             GROUP_CONCAT(DISTINCT ord.purchase_date)as purchase_date,
+             GROUP_CONCAT(DISTINCT store.store_name)as store_name, 
+             GROUP_CONCAT(DISTINCT orderDetails.seller_sku)as seller_sku, 
              orderDetails.shipping_address,
-             orderDetails.order_item_identifier
+             GROUP_CONCAT(DISTINCT orderDetails.order_item_identifier)as order_item_identifier
             from ${web}.${prefix}labels as web
             JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
             JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
             JOIN ${order}.order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
             WHERE $where_condition
+            group by orderDetails.amazon_order_identifier,orderDetails.shipping_address
             order by orderDetails.shipping_address
         ");
+        // po($data);
         return $data;
     }
 

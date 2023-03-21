@@ -103,10 +103,10 @@
             <div class="row">
                 <div class="col-6">
 
-                    <x-adminlte-select name="company" id="company" label="Company">
+                    <x-adminlte-select name="company[]" id="company[]" label="Company" multiple>
                         <option value=""> --Select-- </option>
                         @foreach ($companys as $company)
-                        <option value="{{ $company->id }}"{{ $company->id == $users->company_id ? 'selected' : ''}} > {{ $company->company_name }}</option>
+                        <option value="{{ $company->id }}"{{in_array($company->id,$userCompanys) ? 'selected' : ''}} > {{ $company->company_name }}</option>
                         @endforeach
                     </x-adminlte-select>
                 </div>

@@ -2,7 +2,10 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.1",
@@ -32,6 +35,7 @@
         "picqer/php-barcode-generator": "^2.2",
         "pragmarx/health": "^1.1",
         "pusher/pusher-php-server": "^7.0",
+        "realrashid/sweet-alert": "^6.0",
         "smalot/pdfparser": "^2.1",
         "spatie/browsershot": "^3.55",
         "spatie/flysystem-dropbox": "^1.0.0",
@@ -64,7 +68,6 @@
         "psr-4": {
             "Tests\\": "tests/"
         }
-
     },
     "scripts": {
         "post-autoload-dump": [

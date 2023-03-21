@@ -53,6 +53,7 @@
                     <th>ID</th>
                     <th>Name</th>
                     <th>Email </th>
+                    <th>Site</th>
                     <th>Subject </th>
                     <th>Message </th>
                     <th>Received On </th>
@@ -97,6 +98,10 @@
                 {
                     data: 'email',
                     name: 'email'
+                },
+                {
+                    data: 'site_name',
+                    name: 'site_name'
                 },
                 {
                     data: 'subject',

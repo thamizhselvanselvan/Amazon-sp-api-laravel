@@ -21,7 +21,7 @@ class CreateCatalogLogErrorTable extends Migration
             $table->string('source', 100)->nullable();
             $table->string('aws_key', 10)->nullable();
             $table->string('error_code', 25)->nullable();
-            $table->string('message', 1000)->nullable();
+            $table->text('message')->nullable();
             $table->timestamps();
         });
     }

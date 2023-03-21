@@ -108,3 +108,6 @@ Route::get('catalog/buybox/download/zip/{folder}/{countryCode}/{priority}', 'Cat
 
 Route::get('catalog/buybox/count', 'Catalog\BuyBoxImportExportController@BuyBoxSellerTableCount')->name('catalog.buybox.count');
 Route::post('catalog/buybox/truncate', 'Catalog\BuyBoxImportExportController@BuyBoxTruncate')->name('catalog.buybox.truncate');
+
+
+// Route::POST('catalog/test/progress', 'Catalog\CliqnshopCatalogController@progress')->name('test.progress');

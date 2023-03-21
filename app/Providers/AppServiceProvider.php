@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Admin\Backup;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\DB;
 
 class AppServiceProvider extends ServiceProvider
 {

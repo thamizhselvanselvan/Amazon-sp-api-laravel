@@ -6,6 +6,7 @@ use RedBeanPHP\R;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Log;
 use App\Services\SP_API\API\Catalog;
+use App\Services\SP_API\API\MongodbCatalog;
 use App\Services\SP_API\CatalogImport;
 use Illuminate\Queue\SerializesModels;
 use App\Services\SP_API\API\NewCatalog;
@@ -41,5 +42,8 @@ class AmazonCatalogImport implements ShouldQueue
         $catalog_asin = $this->payload;
         $catalog = new NewCatalog();
         $catalog->Catalog($catalog_asin, $seller_id = NULL);
+
+        $mongodb = new MongodbCatalog();    //Object of calss(or Instance)
+        $mongodb->index($catalog_asin, $seller_id = NULL);
     }
 }

@@ -126,7 +126,7 @@ class OrdersController extends Controller
     public function orderpending(Request $request)
     {
         $data = DB::connection('cliqnshop')->table('mshop_order')
-            ->where('mshop_order.statuspayment', '5,6')
+            ->whereIn('mshop_order.statuspayment', [5, 6])
 
             ->join('mshop_order_base_product as oid', function ($query) {
                 $query->on('oid.baseid', '=', 'mshop_order.baseid')
@@ -135,7 +135,7 @@ class OrdersController extends Controller
             ->join('mshop_product as pid', function ($query) {
                 $query->on('pid.id', '=', 'oid.prodid');
             })
-            ->select('oid.prodcode', 'oid.name', 'oid.quantity','oid.price')
+            ->select('oid.prodcode', 'oid.name', 'oid.quantity', 'oid.price', 'pid.asin')
             // ->orderBy('oid.mtime','desc')
             ->get();
 
@@ -144,13 +144,13 @@ class OrdersController extends Controller
                 ->addIndexColumn()
 
                 ->addColumn('action', function ($data) {
-                    $id = $data->prodcode;
+                    $id = $data->asin;
                     return  "<div class='d-flex'><a href='javascript:void(0)' id='offers1' value ='$id' class='edit btn btn-success btn-sm offers1'><i class='fas fa-check'></i> Book</a>";
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
-     
+
         return view('buisnessapi.orders.details');
     }
 
@@ -186,6 +186,7 @@ class OrdersController extends Controller
 
         $ApiCall = new ProductsRequest();
         $data = $ApiCall->getASINpr($asin);
+
         $offers_data = $data->includedDataTypes->OFFERS;
         $rasin = $data->asin;
         $ritem_name = $data->title;
@@ -334,10 +335,13 @@ class OrdersController extends Controller
                 'responce_code'
             ]);
 
-            $data = DB::connection('cliqnshop')->table('mshop_order_base_product')->where('prodcode', $asin)->update([
-                'sent_xml' => $xml,
-                'status' => '1',
-            ]);
+            $data =   DB::connection('cliqnshop')->table('mshop_order_base_product')
+                ->where('mp.asin', $asin)
+                ->join('mshop_product as mp', 'mshop_order_base_product.prodcode', '=', 'mp.code')
+                ->update([
+                'mshop_order_base_product.sent_xml' => $xml,
+                'mshop_order_base_product.status' => '1',
+                ]);
             return $data;
         }
     }

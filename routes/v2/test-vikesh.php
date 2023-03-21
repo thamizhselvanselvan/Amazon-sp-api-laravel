@@ -1,183 +1,368 @@
 <?php
 
+use RedBeanPHP\R;
+use Carbon\Carbon;
+use GuzzleHttp\Client;
+use League\Csv\Reader;
 use League\Csv\Writer;
+use Carbon\CarbonPeriod;
+use App\Models\TestMongo;
+use App\Models\MongoDB\zoho;
+use GuzzleHttp\Psr7\Request;
+use App\Models\FileManagement;
 use App\Models\Catalog\catalogae;
 use App\Models\Catalog\catalogin;
 use App\Models\Catalog\catalogsa;
 use App\Models\Catalog\catalogus;
 use App\Models\Catalog\PricingIn;
 use App\Models\Catalog\PricingUs;
+use App\Models\ProcessManagement;
 use App\Models\Catalog\Catalog_in;
 use App\Models\Catalog\Catalog_us;
+use Illuminate\Support\Facades\DB;
+use App\Models\Catalog\Asin_source;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Catalog\PriceConversion;
+use App\Models\ShipNTrack\SMSA\SmsaTrackings;
+use App\Models\ShipNTrack\Aramex\AramexTracking;
+use App\Models\ShipNTrack\Aramex\AramexTrackings;
+use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
+use JeroenNoten\LaravelAdminLte\View\Components\Tool\Modal;
 
-Route::get('volume', function () {
+Route::get('test/shipntrack/data', function () {
 
-    $source_mode = table_model_create(country_code: 'sa', model: 'Catalog', table_name: 'catalog');
-    po($source_mode->get());
-    exit;
-    $catalogTable = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
-    $catalogRecords = $catalogTable->select('asin', 'height', 'length', 'width', 'unit', 'weight')
+
+    $records = IntoAE::with(['CourierPartner1', 'CourierPartner2'])
+        ->orWhere('forwarder_1_flag', 0)
+        ->orWhere('forwarder_2_flag', 0)
         ->get()
         ->toArray();
 
-    // po($catalogRecords);
-    foreach ($catalogRecords as $catalogRecord) {
-        po($catalogRecord);
-        $dimension = $catalogRecord['height'] * $catalogRecord['length'] * $catalogRecord['width'];
-        $volumetricOfKg = VolumetricIntoKG($dimension);
-        $volumetricOfPounds = VolumetricIntoPounds($dimension);
-        po($volumetricOfKg);
-        po($volumetricOfPounds);
+    po($records);
+    exit;
+    $records = IntoAE::with(['CourierPartner1', 'CourierPartner2'])
+        ->where('awb_number', '1000000000')
+        ->get()
+        ->toArray();
+    foreach ($records as $record) {
+        if ($record['forwarder_1_flag'] == 0) {
+            po($record['forwarder_1_awb']);
+            po($record['courier_partner1']['key1']);
+            po($record['courier_partner1']['key2']);
+        }
+        po($record);
     }
 });
 
-Route::get('export', function () {
+Route::get('test/shipntrack/aramex', function () {
 
-    $headers = [
-        'asin',
-        'height',
-        'length',
-        'width',
-        'unit',
-        'weight',
+    $url = "https://ws.aramex.net/ShippingAPI.V2/Tracking/Service_1_0.svc/json/TrackShipments";
+    $payload =
+        [
+            "ClientInfo" => [
+                "UserName" => "mp@moshecom.com",
+                "Password" => "A#mazon170",
+                "Version" => "v1.0",
+                "AccountNumber" => "60531487",
+                "AccountPin" => "654654",
+                "AccountEntity" => "BOM",
+                "AccountCountryCode" => "IN",
+                "Source" => 24
+            ],
+            "GetLastTrackingUpdateOnly" => false,
+            "Shipments" => [
+                "35124730631"
+            ]
+        ];
+
+    $response = Http::withoutVerifying()->withHeaders([
+        "Content-Type" => "application/json"
+    ])->post($url, $payload);
+
+    $aramex_records = [];
+    $aramex_data = isset(json_decode($response, true)['TrackingResults'][0]['Value']) ? json_decode($response, true)['TrackingResults'][0]['Value'] : [];
+    foreach ($aramex_data as $key1 => $aramex_value) {
+        foreach ($aramex_value as $key2 => $value) {
+
+            $aramex_records[$key1]['account_id'] = '1';
+            $key2 = ($key2 == 'WaybillNumber')     ? 'awbno'              : $key2;
+            $key2 = ($key2 == 'UpdateCode')        ? 'update_code'        : $key2;
+            $key2 = ($key2 == 'UpdateDescription') ? 'update_description' : $key2;
+            $key2 = ($key2 == 'UpdateDateTime')    ? 'update_date_time'   : $key2;
+            $key2 = ($key2 == 'UpdateLocation')    ? 'update_location'    : $key2;
+            $key2 = ($key2 == 'Comments')          ? 'comment'            : $key2;
+            $key2 = ($key2 == 'ProblemCode')       ? 'problem_code'       : $key2;
+            $key2 = ($key2 == 'GrossWeight')       ? 'gross_weight'       : $key2;
+            $key2 = ($key2 == 'ChargeableWeight')  ? 'chargeable_weight'  : $key2;
+            $key2 = ($key2 == 'WeightUnit')        ? 'weight_unit'        : $key2;
+
+            if ($key2 == 'update_date_time') {
+                po($value);
+                preg_match('/(\d{10})(\d{3})([\+\-]\d{4})/', $value, $matches);
+                $dt = DateTime::createFromFormat("U.u.O", vsprintf('%2$s.%3$s.%4$s', $matches));
+                $dt->setTimeZone(new DateTimeZone('Asia/Dubai'));
+                $date = $dt->format('Y-m-d H:i:s');
+
+                $aramex_records[$key1][$key2] = $date;
+            } else {
+
+                $aramex_records[$key1][$key2] = $value;
+            }
+        }
+    }
+    po($aramex_records);
+    AramexTrackings::upsert($aramex_records, ['awbno_update_timestamp_description_unique'], [
+        'account_id',
+        'awbno',
+        'update_code',
+        'update_description',
+        'update_date_time',
+        'update_location',
+        'comment',
+        'gross_weight',
+        'chargeable_weight',
         'weight_unit',
-        'us_price',
-        'packet_USATOINB2C',
-        'packet_USATOINB2B',
-        'packet_USATOAE',
-        'packet_USATOSG',
-        'vol_weight_pounds',
-        'vol_pound_USATOINB2C',
-        'vol_pound_USATOINB2B',
-        'vol_pound_USATOAE',
-        'vol_pound_USATOSG',
-        'vol_weight_kg',
-        'vol_kg_USATOINB2C',
-        'vol_kg_USATOINB2B',
-        'vol_kg_USATOAE',
-        'vol_kg_USATOSG'
-    ];
-    $countryCode = 'IN';
-    $priority = 2;
+        'problem_code'
+    ]);
+});
 
-    $us_destination  = table_model_create(country_code: $countryCode, model: 'Asin_destination', table_name: 'asin_destination_');
-    $us_destination->select('asin', 'priority')
+Route::get('test/shipntrack/smsa', function () {
+
+    $client = new Client();
+    $headers = [
+        'Content-Type' => 'text/xml'
+    ];
+    $body = '<?xml version=\'1.0\' encoding=\'utf-8\'?>
+                <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                <soap:Body>
+                    <getTracking xmlns="http://track.smsaexpress.com/secom/">
+                    <awbNo>290410158941</awbNo>
+                    <passkey>BeL@3845</passkey>
+                    </getTracking>
+                </soap:Body>
+                </soap:Envelope>';
+    $request = new Request('POST', 'http://track.smsaexpress.com/SeCom/SMSAwebService.asmx', $headers, $body);
+    $response1 = $client->sendAsync($request)->wait();
+    $plainXML = mungXML(trim($response1->getBody()));
+    $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+    // po($arrayResult);
+    // exit;
+    $smsa_data = $arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram']['NewDataSet']['Tracking'];
+
+    $smsa_records = [];
+    if (isset($smsa_data[0])) {
+
+        foreach ($smsa_data as $smsa_value) {
+            $smsa_records[] = [
+                'account_id' => 'smsaUSA',
+                'awbno' => $smsa_value['awbNo'] ?? $smsa_data['awbNo'],
+                'date' => date('Y-m-d H:i:s', strtotime($smsa_value['Date'] ?? $smsa_data['Date'])),
+                'activity' => $smsa_value['Activity'] ?? $smsa_data['Activity'],
+                'details' => $smsa_value['Details'] ?? $smsa_data['Details'],
+                'location' => $smsa_value['Location'] ?? $smsa_data['Location']
+            ];
+        }
+    } else {
+        $smsa_records[] = [
+            'account_id' => 'smsaUSA',
+            'awbno' =>  $smsa_data['awbNo'],
+            'date' => date('Y-m-d H:i:s', strtotime($smsa_data['Date'])),
+            'activity' =>  $smsa_data['Activity'],
+            'details' =>  $smsa_data['Details'],
+            'location' =>  $smsa_data['Location']
+        ];
+    }
+
+    po($smsa_records);
+    exit;
+    SmsaTrackings::upsert($smsa_records, ['awbno_date_activity_unique'], [
+        'account_id',
+        'awbno',
+        'date',
+        'activity',
+        'details',
+        'location',
+    ]);
+});
+
+
+
+Route::get('zoho/index', 'VikeshTestController@index');
+Route::get('zoho/test', 'VikeshTestController@ReadZohoTextFile');
+
+Route::get('zoho/dump', function () {
+    $token = json_decode(Storage::get("zoho/access_token.txt"), true)["access_token"];
+
+    $payload = [
+        "query" => [
+            "module" => "Leads",
+            "page" => 1
+        ]
+    ];
+    $url = "https://www.zohoapis.com/crm/bulk/v2/read";
+
+    $headers = Http::withoutVerifying()->withHeaders([
+        "Authorization" => "Zoho-oauthtoken " . $token,
+        "Content-Type" => "application/json"
+    ])->post($url, $payload);
+
+    $response = $headers->json();
+    if (!Storage::exists('ZohoResponse/zoho-response1.txt')) {
+        Storage::put('ZohoResponse/zoho-response1.txt', json_encode($response));
+    }
+    po($response);
+});
+
+Route::get('zoho/dump2', function () {
+    $token = json_decode(Storage::get("zoho/access_token.txt"), true)["access_token"];
+    $url = "https://www.zohoapis.com/crm/bulk/v2/read";
+
+    $zohoResponse =  json_decode(Storage::get('ZohoResponse/zoho-response1.txt', true));
+    $requestId = $zohoResponse->data[0]->details->id;
+
+    $requestResponse = Http::withoutVerifying()->withHeaders([
+        "Authorization" => "Zoho-oauthtoken " . $token
+    ])->get($url . "/" . $requestId);
+
+    po($requestResponse->json());
+    Storage::put('ZohoResponse/zoho-response2.txt', json_encode($requestResponse->json()));
+    po($requestId);
+});
+
+Route::get('zoho/dump3', function () {
+
+    $processManagementID = ProcessManagement::where('module', 'Zoho Dump')
+        ->where('command_name', 'mosh:submit-request-to-zoho')
+        ->where('command_end_time', '0000-00-00 00:00:00')
+        ->get('id')
+        ->first();
+
+    po($processManagementID['id']);
+    exit;
+
+    $records = zoho::select(['ASIN', 'Alternate_Order_No', 'updated_at', 'Created_Time'])->limit(1000)->orderBy('Created_Time', 'DESC')->get()->toArray();
+
+    if (!empty($records)) {
+
+        po(($records));
+    }
+    exit;
+
+    $data = CSV_Reader('zohocsv/1929333000107582112.csv');
+    $count = 0;
+    $result = [];
+    $asin = [];
+    $order_no = [];
+
+    foreach ($data as  $record) {
+
+        $result[] = $record;
+        $asin[] = $record['ASIN'];
+        $order_no[] = $record['Alternate_Order_No'];
+        $unique[] = [
+            'ASIN' => $record['ASIN'],
+            'Alternate_Order_No' => $record['Alternate_Order_No']
+        ];
+        // TestMongo::where('ASIN', $record['ASIN'])->where('Alternate_Order_No', $record['Alternate_Order_No'])->update($record, ['upsert' => true]);
+        // po($asin);
+        // DB::connection('mongodb')->collection('zoho')->updateMany('ASIN', ['$in' => $record['ASIN']], ['$set', $record], ['upsert' => true]);
+        TestMongo::where('Alternate_Order_No_1_ASIN_1', $unique)->update($record, ['upsert' => true]);
+        po($result);
+        // if ($count == 10) {
+
+        //     // TestMongo::insert($result);
+        //     // TestMongo::where('ASIN', $asin)->where('Alternate_Order_No', $order_no)->update($result, ['upsert' => true]);
+        //     $count = 0;
+        //     $result = [];
+        //     // exit;
+        // }
+        // $count++;
+    }
+    // TestMongo::insert($result);
+    // TestMongo::whereIn('ASIN', $asin)->whereIn('Alternate_Order_No', $order_no)->update($result, ['upsert' => true]);
+    // po($asin);
+    po($order_no);
+    exit;
+    $zohoResponse =  json_decode(Storage::get('ZohoResponse/zoho-response2.txt', true));
+    po($zohoResponse);
+});
+
+Route::get('export', function () {
+    $priority = 3;
+    $query_limit = 5000;
+    $us_destination  = table_model_create(country_code: 'in', model: 'Asin_destination', table_name: 'asin_destination_');
+    $asin = $us_destination->select('asin', 'priority')
         ->when($priority != 'All', function ($query) use ($priority) {
             return $query->where('priority', $priority);
         })
-        ->where('export', '0')
-        ->chunk(100, function ($asin) use ($countryCode, $priority, $headers) {
-            $asin = $asin->toArray();
-            $where_asin = [];
-            $data = [];
+        ->where('export', 0)
+        ->orderBy('id', 'asc')
+        ->limit($query_limit)
+        ->get()
+        ->toArray();
 
-            foreach ($asin as $value) {
-                $where_asin[] = $value['asin'];
-            }
-            if ($countryCode == 'US') {
+    $where_asin = [];
+    foreach ($asin as $value) {
+        $where_asin[] = $value['asin'];
+    }
 
-                $pricing_details = PricingUs::with(['catalogUS'])->whereIn('asin', $where_asin)->get(['asin', 'us_price'])->toArray();
-                po($pricing_details);
-                exit;
-                $catalog_details = Catalog_us::whereIn('asin', $where_asin)->get(['asin', 'dimensions'])->toArray();
+    $pricing_details = PricingIn::join("catalogins", "catalogins.asin", "pricing_ins.asin")
+        ->select(["catalogins.length", "catalogins.width", "catalogins.height", "catalogins.weight", "pricing_ins.asin", "pricing_ins.available", "pricing_ins.in_price", "pricing_ins.updated_at"])
+        ->whereIn('pricing_ins.asin', $where_asin)
+        ->get()
+        ->toArray();
+    po($pricing_details);
+    exit;
+    $chunk = 1000;
+    $total =  DB::connection('catalog')->select("SELECT cat.asin 
+    FROM asin_source_ins as source 
+    RIGHT JOIN catalognewins as cat 
+    ON cat.asin=source.asin 
+    WHERE source.asin IS NULL
+   ");
 
-                foreach ($catalog_details as $key1 => $catalog) {
-                    $data[] = [...$catalog, ...$pricing_details[$key1] ?? ''];
-                }
-                // dataFormatting($data, $countryCode, $priority, $headers);
-            } elseif ($countryCode == 'IN') {
+    $loop = ceil(count($total) / $chunk);
+    for ($i = 0; $i < $loop; $i++) {
 
-                $pricing_details = PricingIn::join("catalognewins", "catalognewins.asin", "pricing_ins.asin")
-                    ->select(["catalognewins.dimensions", "pricing_ins.asin", "pricing_ins.in_price"])
-                    ->whereIn('pricing_ins.asin', $where_asin)
-                    ->get()
-                    ->toArray();
-                foreach ($pricing_details as $details) {
-                    $data[] = $details;
-                }
-                po($data);
-                exit;
-                // dataFormatting($data, $countryCode, $priority, $headers);
-            }
-        });
+        $data =  DB::connection('catalog')->select("SELECT cat.asin 
+        FROM asin_source_ins as source 
+        RIGHT JOIN catalognewins as cat 
+        ON cat.asin=source.asin 
+        WHERE source.asin IS NULL
+        LIMIT 1000");
+        $asin = [];
+        foreach ($data as $record) {
+            $asin[] = [
+                'asin' => $record->asin,
+                'user_id' => '13',
+                'status' => 0
+            ];
+        }
+        $table = table_model_create(country_code: 'in', model: 'Asin_source', table_name: 'asin_source_');
+        $table->upsert($asin, ['user_asin_unique'], ['asin', 'status']);
+        Log::warning('successfully' . $i);
+    }
 });
 
-// function dataFormatting($catalog_details, $countryCode, $priority, $headers)
-// {
-//     $asin_data = [];
-//     foreach ($catalog_details as $key1 => $catalog_detail) {
+Route::get('test', function () {
+    $new_offer_lists = ['4', '3', '2', '3'];
+    $highest_amount = min($new_offer_lists);
+    po($highest_amount);
+    po($new_offer_lists);
+    $key = min(array_keys($new_offer_lists, min($new_offer_lists)));
+    po(($key));
+    // exit;
 
-//         $dimension = json_decode($catalog_detail['dimensions'], true);
 
-//         if (array_key_exists('package', $dimension[0])) {
-//             if (isset($dimension[0]['package']['weight']['value']) || isset($dimension[0]['package']['height']['value']) || isset($dimension[0]['package']['length']['value']) || isset($dimension[0]['package']['width']['value'])) {
-//                 // po($dimension[0]['package']);
-//                 $weight = $dimension[0]['package']['weight']['value'] ?? 0;
-//                 $height = $dimension[0]['package']['height']['value'] ?? 0;
-//                 $length = $dimension[0]['package']['length']['value'] ?? 0;
-//                 $width = $dimension[0]['package']['width']['value'] ?? 0;
 
-//                 $asin_data[$key1]['height'] = $height;
-//                 $asin_data[$key1]['length'] = $length;
-//                 $asin_data[$key1]['width'] = $width;
-//                 $asin_data[$key1]['unit'] = ($dimension[0]['package']['width']['unit']) ?? 'inches';
-//                 $asin_data[$key1]['weight'] = $weight;
-//                 $asin_data[$key1]['weight_unit'] = ($dimension[0]['package']['weight']['unit']) ?? 'inches';
-//             }
-//             if ($countryCode == 'IN') {
-
-//                 $in_price = $catalog_detail['in_price'] ?? 0;
-//                 $asin_data[$key1]['price'] = $in_price;
-//                 $packetPrice = priceConversion($weight, $in_price, $countryCode, 'packet');
-//                 foreach ($packetPrice as $key2 => $price) {
-//                     $asin_data[$key1][$key2] = $price;
-//                 }
-//             } elseif ($countryCode == 'US') {
-
-//                 $us_price = $catalog_detail['us_price'] ?? 0;
-//                 $asin_data[$key1]['price'] = $us_price;
-//                 $packetPrice = priceConversion($weight, $us_price, $countryCode, 'packet');
-//                 foreach ($packetPrice as $key2 => $price) {
-//                     $asin_data[$key1][$key2] = $price;
-//                 }
-//             }
-//         }
-//     }
-//     po($asin_data);
-// }
-
-// function priceConversion($weight, $bbPrice, $countryCode, $type)
-// {
-//     $price_convert = new PriceConversion();
-//     // $pricing = [];
-//     if ($countryCode == 'US') {
-
-//         $price_in_b2c = $price_convert->USAToINDB2C($weight, $bbPrice) ?? 'NA';
-//         $price_in_b2b = $price_convert->USAToINDB2B($weight, $bbPrice) ?? 'NA';
-//         $price_ae = $price_convert->USATOUAE($weight, $bbPrice) ?? 'NA';
-//         $price_sg =  $price_convert->USATOSG($weight, $bbPrice) ?? 'NA';
-//         $pricing = [
-//             $type . '_USATOINB2C' => $price_in_b2c,
-//             $type . '_USATOINB2B' => $price_in_b2b,
-//             $type . '_USATOAE' => $price_ae,
-//             $type . '_USATOSG' => $price_sg
-//         ];
-//     } else if ($countryCode == 'IN') {
-
-//         $packet_weight_kg = poundToKg($weight);
-//         $price_uae = $price_convert->INDToUAE($packet_weight_kg, $bbPrice) ?? 'NA';
-//         $price_singapore = $price_convert->INDToSG($packet_weight_kg, $bbPrice) ?? 'NA';
-//         $price_saudi = $price_convert->INDToSA($packet_weight_kg, $bbPrice) ?? 'NA';
-//         $pricing = [
-//             $type . '_weight_kg' => $packet_weight_kg,
-//             $type . '_INDTOAE' => $price_uae,
-//             $type . '_INDTOSG' => $price_singapore,
-//             $type . '_INDTOSA' => $price_saudi
-//         ];
-//     }
-
-//     return $pricing;
-// }
+    exit;
+    $date = Carbon::now()->addDays(105);
+    $date1 = Carbon::now();
+    if ($date <= $date1) {
+        echo 'working';
+    }
+    po($date);
+});

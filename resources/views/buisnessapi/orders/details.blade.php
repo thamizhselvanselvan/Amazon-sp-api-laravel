@@ -95,8 +95,8 @@
                     searchable: false
                 },
                 {
-                    data: 'prodcode',
-                    name: 'prodcode'
+                    data: 'asin',
+                    name: 'asin'
                 },
                 {
                     data: 'name',
@@ -128,6 +128,7 @@
         let self = $(this);
         let asin = $(this).attr('value');
         let qty = self.parent().parent().prev().prev().text();
+       
         $.ajax({
             method: 'GET',
             url: '/business/offers_view/',
@@ -165,7 +166,7 @@
             let asin = $("input[name='asin']").val();
             let name = $("input[name='item_name']").val();
             let quantity = $("input[name='quantity']").val();
-
+           
             $.ajax({
                 method: 'get',
                 url: "/business/order/book/",

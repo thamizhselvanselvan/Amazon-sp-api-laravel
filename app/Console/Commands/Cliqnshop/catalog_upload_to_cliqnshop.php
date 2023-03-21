@@ -42,7 +42,7 @@ class catalog_upload_to_cliqnshop extends Command
     {
         $site_id = $this->argument('site_id');
         $file_path = $this->argument('path');
-   
+
 
         $csv_data =  CSV_Reader($file_path);
 
@@ -70,6 +70,10 @@ class catalog_upload_to_cliqnshop extends Command
             ->join('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
             ->whereIn('catalognewuss.asin', $asin)
             ->get()->toArray();
+
+        $generic_keywords = [];
+
+
         foreach ($result as $data) {
 
             $img1 = [
@@ -84,26 +88,52 @@ class catalog_upload_to_cliqnshop extends Command
                 "Images9" => '',
                 "Images10" => '',
             ];
-            
-            $imagedata = json_decode($data['images'], true);
 
+            $imagedata = json_decode($data['images'], true);
+            //old image logic
+            // if (isset($imagedata[0]['images'])) {
+
+            //     foreach ($imagedata[0]['images'] as $counter => $image_data_new) {
+            //         $counter++;
+            //         if (array_key_exists("link", $image_data_new)) {
+
+            //             if ($img1["Images${counter}"] = $image_data_new['height'] == 75) {
+
+            //                 $img1["Images${counter}"] = '';
+            //             } else  if ($img1["Images${counter}"] = $image_data_new['height'] == 500) {
+            //                 $img1["Images${counter}"] = $image_data_new['link'];
+            //             }
+            //         } else {
+            //             $img1["Images${counter}"] = '';
+            //         }
+            //         if ($counter == 10) {
+            //             break;
+            //         }
+            //     }
+            // } else {
+            //     for ($i = 1; $i <= 5; $i++) {
+            //         $img1["Images${i}"] = '';
+            //     }
+            // }
+            // $image[$data['asin']] = $img1;
             if (isset($imagedata[0]['images'])) {
 
                 foreach ($imagedata[0]['images'] as $counter => $image_data_new) {
                     $counter++;
+
                     if (array_key_exists("link", $image_data_new)) {
-
-                        if ($img1["Images${counter}"] = $image_data_new['height'] == 75) {
-
-                            $img1["Images${counter}"] = '';
-                        } else  if ($img1["Images${counter}"] = $image_data_new['height'] == 500) {
-                            $img1["Images${counter}"] = $image_data_new['link'];
-                        }
-                    } else {
                         $img1["Images${counter}"] = '';
-                    }
-                    if ($counter == 10) {
-                        break;
+                        if ($counter == 1) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        } else if ($counter == 4) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        } else if ($counter == 7) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        } else if ($counter == 10) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        } else if ($counter == 13) {
+                            ($img1["Images${counter}"] = $image_data_new['link']);
+                        }
                     }
                 }
             } else {
@@ -111,8 +141,8 @@ class catalog_upload_to_cliqnshop extends Command
                     $img1["Images${i}"] = '';
                 }
             }
-            $image[$data['asin']] = $img1;
 
+            $image[$data['asin']] = ($img1);
             $long_description = '';
             $short_description = '';
 
@@ -129,8 +159,9 @@ class catalog_upload_to_cliqnshop extends Command
                     }
                 }
             }
-          
+
             $asin =  $data['asin'];
+
             $item_name = $data['item_name'];
             $item_url = str_replace(' ', '-', $data['item_name']);
             $url = (strtolower($item_url));
@@ -172,7 +203,7 @@ class catalog_upload_to_cliqnshop extends Command
                 $color_code = str_replace(' ', '', $data['color']);
                 $color_label = $data['color'];
                 $label =  ucfirst($color_label);
-                $color_key = str_replace(' ', '', substr(strtolower($color_label), 0, 10));
+                $color_key = str_replace(' ', '', substr(strtolower($label), 0, 10));
             }
 
             //dimensions Fetch
@@ -197,6 +228,28 @@ class catalog_upload_to_cliqnshop extends Command
                     $width_value  = round($dim[0]['item']['width']['value'], 3);
                 }
             }
+            //genric Keywords
+
+            $gener_key = [];
+            $generic_keywords = [];
+            if (isset($data['attributes'])) {
+
+                $genric_key = json_decode($data['attributes'], true);
+
+                if (isset($genric_key['generic_keyword']) && !empty($genric_key['generic_keyword'])) {
+
+                    $generic_array = $genric_key['generic_keyword'];
+
+                    foreach ($generic_array as $key => $val) {
+
+                        // $gener_key[] = explode(",", $val['value']);
+                        $gener_key[] = preg_split("/[,;]/", $val['value']);
+                    }
+
+                    $generic_keywords = $gener_key;
+                }
+            }
+
 
             // if ($category[$asin] == '') {
             //     $category_code = 'demo-new';
@@ -204,7 +257,7 @@ class catalog_upload_to_cliqnshop extends Command
 
             //     $category_code = $category[$asin];
             // }
-            
+
             $keyword = '';
             $insert_service = new CliqnshopCataloginsert();
             $insert_service->insertdata_cliqnshop(
@@ -224,9 +277,13 @@ class catalog_upload_to_cliqnshop extends Command
                 $image,
                 $keyword,
                 $short_description,
-                $long_description
+                $long_description,
+                $generic_keywords
             );
         }
+
+        // po($generic_keywords);
+
 
     }
 }

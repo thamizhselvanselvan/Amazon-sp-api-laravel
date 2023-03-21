@@ -20,12 +20,12 @@
     <div style="margin-top: 1.0rem;">
         <div class="col d-flex">
 
-            <h2 class="ml-2">
+            <!-- <h2 class="ml-2">
                 <x-adminlte-button label="Cliqnshop Catalog Export" theme="primary" class="btn-sm" icon="fas fa-file-export" id="exportcliqnshopCatalog" />
             </h2>
             <h2 class="ml-2">
                 <x-adminlte-button label="Download Cliqnshop Catalog" theme="primary" class="btn-sm" icon="fas fa-download" id="catalogcliqnshopdownload" data-toggle="modal" data-target="#downloacliqdModal" />
-            </h2>
+            </h2> -->
             <h2 class="ml-2">
                 <x-adminlte-button label="Upload New ASIN" theme="info" class="btn-sm" icon="fas fa-upload" id="new_asin" data-toggle="modal" data-target="#cliqnshop_new_asin_modal" />
             </h2>
@@ -34,6 +34,7 @@
             </h2>
         </div>
 
+        <!--  download files from asin from all Download -->
         <div class="modal" id="downloacliqdModal">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -51,8 +52,7 @@
             </div>
         </div>
 
-
-
+        <!--  download files from asin Import -->
         <div class="modal" id="uploaded_asin_catalog">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -71,8 +71,117 @@
         </div>
 
 
-
         <div class="modal fade" id="cliqnshop_new_asin_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel"><b>Cliqnshp Catalog Operations</b></h5>
+                        <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="fasle">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body " style="font-size:15px">
+
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">
+                                    Import ASIN's From CSV
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">
+                                    Import From Text Area
+                                </button>
+                            </li>
+                        </ul>
+
+                        <!-- CSV Import Tab -->
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                                <div id="warning" class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    please download <strong>CSV Templete</strong> and upload the data in csv format only.
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <form class="row" id="multi-file-upload" method="POST" action="{{ route('cliqnshop.catalog.csv.import') }}" accept-charset="utf-8" enctype="multipart/form-data">
+                                        @csrf
+                                        <div class="col-12">
+                                            <x-adminlte-select name="image" label="Select Country" name="country">
+                                                <option value=''>Select Country</option>
+                                                @foreach ($countrys as $country)
+                                                <option value="{{ $country->siteid }}">{{$country->code }}</option>
+                                                @endforeach
+                                            </x-adminlte-select>
+                                        </div>
+                                        <div class="col-12">
+                                            <x-adminlte-input label="Choose CSV File" name="cliqnshop_csv" id="files" type="file" />
+                                        </div>
+                                        <div class="col">
+                                            <a href="{{ route('cliqnshop.catalog.csv.templete') }}">
+                                                <x-adminlte-button label="Download Template" theme="info" icon="fas fa-file-download" class="btn-sm ml-2" />
+                                                <x-adminlte-button label="Upload" theme="primary" class="add_ btn-sm" icon="fas fa-upload" type="submit" id="order_upload" />
+                                            </a>
+                                        </div>
+                                    </form>
+                                </div>
+
+                            </div>
+
+
+                            <!--Text area Tab -->
+                            <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                                <div id="warning" class="alert alert-warning alert-dismissible fade show" role="alert">
+
+                                    <strong> Text Area </strong> Tab (10 ASIn's Acceptet At a time)
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form action="{{ Route('cliqnshop.catalog.textarea.import') }}" method="POST" id="admin_user">
+                                    @csrf
+
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <x-adminlte-select name="image" label="Select Country" name="text_country">
+                                                <option value=''>Select Country</option>
+                                                @foreach ($countrys as $country)
+                                                <option value="{{ $country->siteid }}">{{$country->code }}</option>
+                                                @endforeach
+                                            </x-adminlte-select>
+                                        </div>
+                                        <div class="col-12" id="order_id">
+                                            <div class="form-group">
+                                                <label>Enter ASIN's:</label>
+                                                <div class="autocomplete" style="width:760;">
+                                                    <textarea name="order_ids_text" rows="5" placeholder="Add Enter ASIN's here..." id="" type=" text" autocomplete="off" class="form-control up_asin_sync"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3">
+                                            <x-adminlte-button label="Submit" theme="primary" icon="fas fa-file-upload" id="upload_sync" class="btn-sm upload_asin_btn" type="submit" />
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal"><i class="fas fa-window-close" aria-hidden="true"></i> Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- //old Modal for cliqnshop Catalog Import -->
+        <!-- <div class="modal fade" id="cliqnshop_new_asin_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -114,10 +223,19 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
 @stop
+
+
+
+
+
+
+
+
+
 
 @section('content')
 <div class="row">
@@ -142,6 +260,26 @@
 </div>
 
 @stop
+<!-- <script src="https://js.pusher.com/7.2/pusher.min.js"></script> -->
+<script>
+    // Enable pusher logging - don't include this in production
+    // Pusher.logToConsole = true;
+
+    // var pusher = new Pusher('ea37c18af4de51c2ea0a', {
+    //     cluster: 'ap2'
+    // });
+
+    
+
+
+    // var channel = pusher.subscribe('channel');
+    // channel.bind('.event', function(data) {
+    //     alert(JSON.stringify(data));
+    // });
+</script>
+
+
+
 
 @section('js')
 <script type="text/javascript">

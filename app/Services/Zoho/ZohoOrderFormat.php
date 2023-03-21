@@ -21,105 +21,112 @@ class ZohoOrderFormat
             "SA" => "Nit Shopp KSA",
             "sku" => "NT_",
             "source" => "India",
-            "desination" => "KSA"
+            "destination" => "KSA",
         ],
 
         "Gotech UAE" => [
             "AE" => "Nit Shopp UAE",
             "sku" => "NT_",
             "source" => "India",
-            "desination" => "UAE"
+            "destination" => "UAE"
         ],
 
         "Gotech USA" => [
             "US" => "Nit Shopp USA",
             "sku" => "NT_",
             "source" => "India",
-            "desination" => "USA"
+            "destination" => "USA"
         ],
 
         "Amazon.in-Pram" => [
             "IN" => "Infinitikart India",
             "sku" => "PR_",
             "source" => "USA",
-            "desination" => "India"
+            "destination" => "India"
         ],
 
         "Amazon.sa-Infinitikart" => [
             "SA" => "Infinitikart KSA",
             "sku" => "PR_",
             "source" => "India",
-            "desination" => "KSA"
+            "destination" => "KSA"
         ],
 
         "PRAM UAE" => [
             "AE" => "Infinitikart UAE",
             "sku" => "IFWH_",
             "source" => "USA",
-            "desination" => "UAE"
+            "destination" => "UAE"
         ],
 
         "Amazon.in-MBM" => [
             "IN" => "MBM India",
             "sku" => "MBM_",
             "source" => "USA",
-            "desination" => "India"
+            "destination" => "India"
         ],
 
         "MBM-SAUDI" => [
             "SA" => "MBM KSA",
             "sku" => "MBM_",
             "source" => "USA",
-            "desination" => "KSA"
+            "destination" => "KSA"
         ],
 
         "Amazon.ae-MBM" => [
             "AE" => "MBM UAE",
             "sku" => "MBM_",
             "source" => "USA",
-            "desination" => "UAE"
+            "destination" => "UAE"
         ],
 
         "Amazon.ae-New Media" => [
             "AE" => "New Media Store",
             "sku" => "NM_",
             "source" => "India",
-            "desination" => "UAE"
+            "destination" => "UAE"
         ],
 
         "Amazon.in-Nitrous" => [
             "IN" => "Nitrous Stores India",
             "sku" => "NS_",
             "source" => "USA",
-            "desination" => "India"
+            "destination" => "India"
         ],
 
         "Amazon.ae-Mahzuz" => [
             "AE" => "Mahzuz Stores UAE",
             "sku" => "MZ_",
             "source" => "USA",
-            "desination" => "UAE"
+            "destination" => "UAE"
         ],
 
         "Amazon.sa-Mahzuz" => [
             "SA" => "MahzuzStores KSA",
             "sku" => "MZ_",
             "source" => "USA",
-            "desination" => "KSA"
+            "destination" => "KSA"
         ],
 
         "CKSHOP-Amazon.in" => [
             "IN" => "STS Shop India",
             "sku" => "CK_",
             "source" => "USA",
-            "desination" => "India"
+            "destination" => "India"
         ],
 
         "Amazon.in-Gotech" => [
             "IN" => "M.A.Y. Store India (Nit)",
             "sku" => "NT_",
             "source" => "USA",
-            "desination" => "India"
+            "destination" => "India"
+        ],
+
+        "Amazon.ae-Al Hayba" => [
+            "IN" => "Al Hayba Store",
+            "sku" => "AH_",
+            "source" => "India",
+            "destination" => "UAE"
         ],
 
         /*
@@ -127,21 +134,21 @@ class ZohoOrderFormat
             "IN" => "WIP",
             "sku" => "NS_",
             "source" => "USA",
-            "desination" => "UAE"
+            "destination" => "UAE"
         ],
         
         "Amazon.sg-Gotech" => [
             "IN" => "WIP",
             "sku" => "NT_",
             "source" => "India",
-            "desination" => "SG"
+            "destination" => "SG"
         ],
     
         "Amazon.sg-Nitrous" => [
             "IN" => "WIP",
             "sku" => "NS_",
             "source" => "USA",
-            "desination" => "SG"
+            "destination" => "SG"
         ]
         */
     ];
@@ -212,7 +219,7 @@ class ZohoOrderFormat
         $prod_array["Designation"]        = preg_replace("/[^a-zA-Z0-9_ -\/]+/", "", substr($value->title, 0, 100));
         $prod_array["Product_Code"]       = $value->seller_sku;
         $prod_array["Product_Cost"]       = isset($item_price->Amount) ? $item_price->Amount : 0;
-        $prod_array["Procurement_URL"]    = $this->get_procurement_link($country_code, $value->asin);
+        $prod_array["Procurement_URL"]    = $this->get_procurement_link($prod_array["Lead_Source"], $country_code, $value->asin);
         $prod_array["Nature"]             = "Import";
         $prod_array["Product_Category"]   = $catalog_details['category'];
         $prod_array["Quantity"]           = "$value->quantity_ordered";
@@ -221,7 +228,7 @@ class ZohoOrderFormat
         ### Procurement Information ###
         ###############################
 
-        $prod_array["Product_Link"]              = $this->get_product_link($country_code, $value->asin);
+        $prod_array["Product_Link"]              = $this->get_product_link($prod_array["Lead_Source"], $country_code, $value->asin);
         $prod_array["US_EDD"]                    = Carbon::parse($value->latest_delivery_date)->format('Y-m-d');
 
         $prod_array["ASIN"]                      = $value->asin;
@@ -308,27 +315,59 @@ class ZohoOrderFormat
         return $mws_region_object->mws_region->region_code;
     }
 
-    public function get_procurement_link($country_code, $asin)
-    {
-        if ($country_code != 'AE') {
-            return 'http://www.amazon.in/gp/product/' . $asin;
+    public function get_procurement_link($Lead_Source, $country_code, $asin)
+    {   
+
+        if(isset($this->store_lists[$Lead_Source])) {
+
+            $lead_source = $this->store_lists[$Lead_Source];
+
+            if($lead_source['source'] == "USA") {
+                return "https://www.amazon.com/gp/product/". $asin;
+            }
+
+            if($lead_source['source'] == "India") {
+                return "https://www.amazon.in/gp/product/". $asin;
+            }
+
+            if($lead_source['source'] == "UAE") {
+                return "https://www.amazon.ae/gp/product/". $asin;
+            }
+
+            if($lead_source['source'] == "KSA") {
+                return "https://www.amazon.sa/gp/product/". $asin;
+            }
+
         }
 
         return 'http://www.amazon.com/gp/product/' . $asin;
     }
 
-    public function get_product_link($country_code, $asin)
-    {
-        if ($country_code == 'AE') {
+    public function get_product_link($Lead_Source, $country_code, $asin)
+    {   
+        if(isset($this->store_lists[$Lead_Source])) {
 
-            return 'http://www.amazon.ae/gp/product/' . $asin;
+            $lead_source = $this->store_lists[$Lead_Source];
+
+            if($lead_source['destination'] == "USA") {
+                return "https://www.amazon.com/gp/product/". $asin;
+            }
+
+            if($lead_source['destination'] == "India") {
+                return "https://www.amazon.in/gp/product/". $asin;
+            }
+
+            if($lead_source['destination'] == "UAE") {
+                return "https://www.amazon.ae/gp/product/". $asin;
+            }
+
+            if($lead_source['destination'] == "KSA") {
+                return "https://www.amazon.sa/gp/product/". $asin;
+            }
+
         }
 
-        if ($country_code == 'IN') {
-            return 'http://www.amazon.in/gp/product/' . $asin;
-        }
-
-        return 'http://www.amazon.in/gp/product/' . $asin;
+        return 'http://www.amazon.com/gp/product/' . $asin;
     }
 
     public function get_address($shipping_address, $country_code)

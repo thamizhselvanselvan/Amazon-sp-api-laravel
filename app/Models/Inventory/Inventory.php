@@ -12,6 +12,7 @@ class Inventory extends Model
     protected $table = "inventory";
 
     protected $fillable = [
+        'inventory_id',
         'ship_id',
         'warehouse_id',
         'item_name',
@@ -48,5 +49,9 @@ class Inventory extends Model
     public function shelves()
     {
         return $this->hasOne(Shelve::class, 'shelve_id', 'bin');
+    }
+    public function tags()
+    {
+        return $this->hasOne(Tag::class, 'id', 'tag');
     }
 }

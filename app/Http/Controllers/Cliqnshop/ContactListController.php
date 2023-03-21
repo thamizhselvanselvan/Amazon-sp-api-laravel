@@ -11,7 +11,7 @@ class ContactListController extends Controller
 {
     public function contactlist(Request $request)
     {
-        $data = DB::connection('cliqnshop')->table('cns_contacts')->get();
+        $data = DB::connection('cliqnshop')->table('cns_contacts')->orderBy('id','desc')->get();
 
         if ($request->ajax()) {
             return Datatables::of($data)

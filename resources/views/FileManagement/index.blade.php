@@ -38,7 +38,8 @@
             processing: true,
             serverSide: true,
             ajax: "{{ url('/admin/file-management') }}",
-            pageLength: 50,
+            pageLength: 100,
+            bLengthChange: false,
             columns: [{
                     data: 'id',
                     name: 'id',

@@ -40,7 +40,7 @@ class store_cat extends Command
             $nodeid = $data['Node ID'];
             $nodename = $data['Node Name'];
             $pid = $data['Browse Path ID'];
-            $tree = htmlspecialchars($data['Tree']);
+            $tree = $data['Tree'];
 
             if($cnt == $total) {
                 $cnt = 1;

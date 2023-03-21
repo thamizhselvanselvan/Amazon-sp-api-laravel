@@ -19,50 +19,33 @@ class AmazonFeedProcess
 {
     use ConfigTrait;
 
-    public function feedSubmit($feedLists, $seller_id, $product_push_id, $availability)
+    public function feedSubmit($feedLists, $seller_id, $product_push_id)
     {
 
         $aws = '';
-        $aws_key = '';
 
-        $aws = Aws_credential::where('seller_id', $seller_id)->where('api_type', 1)->with(['mws_region'])->first();
-        $aws_key = $aws->id;
+        $aws = Aws_credential::where('seller_id', $seller_id)->where('verified', 1)->with(['mws_region'])->first();
         $merchant_id = $aws->merchant_id;
         $mws_region = $aws->mws_region;
         $country_code = $mws_region->region_code;
         $currency_code = $mws_region->currency->code;
         $marketplace_id = $mws_region->marketplace_id;
 
-        $productFeed = $this->createFeedDocument($aws_key, $country_code, $feedLists, $merchant_id, $currency_code, [$marketplace_id], $availability);
-        // Log::critical($productFeed);
+        $productFeed = $this->process($feedLists, $merchant_id, $seller_id, $country_code,  $currency_code, [$marketplace_id]);
 
         if (!$productFeed) {
-
-            // event(new ProductImportCompleted($seller_id, "Your price push has failed check with admin"));
-           // throw new Exception('Feed submit showing error 1');
 
            return false;
         }
 
-        return $productFeed;  
-
         $feedId = $productFeed;
-
-        // if(!array_key_exists("feedId", $feedId)) {
-
-        //     return false;
-        // }
-
-              
         
-        //Product_Push::where("id", $product_push_id)->update(['feedback_price_id' => $feedId['feedId']]);
-        //event(new ProductImportCompleted($seller_id, "Your price push has submitted successfully"));
+        Product_Push::where("id", $product_push_id)->update(['feedback_price_id' => $feedId['feedId']]);
+
+        return true;
     }
 
-    public function createFeedDocument($aws_key, $country_code, $feedLists, $merchant_id, $currency_code, $marketplace_ids, $available = false)
-    {
-
-        
+    public function process($feedLists, $merchant_id, $aws_key, $country_code, $currency_code, $marketplace_ids) {
 
         $apiInstance = new FeedsApi($this->config($aws_key, $country_code));
         $feedType = FeedType::POST_PRODUCT_PRICING_DATA;
@@ -71,152 +54,53 @@ class AmazonFeedProcess
             $createFeedDocSpec  = new CreateFeedDocumentSpecification(['content_type' => $feedType['contentType']]);
             $feedDocumentInfo = $apiInstance->createFeedDocument($createFeedDocSpec);
 
-            //echo $feedDocumentInfo;
-
-            $feedDocumentId = $feedDocumentInfo->getFeedDocumentId();
-
-            $feedContents = $this->xml($feedLists, $merchant_id, $currency_code);
-
             $docToUpload = new Document($feedDocumentInfo, $feedType);
-            $docToUpload->upload($feedContents);
+            $docToUpload->upload($this->xml_build($feedLists, $merchant_id, $currency_code));
 
-            Log::notice("Document ID" ." - ". $feedDocumentId ." - ". json_encode($feedLists));
-
-            // $body = new CreateFeedSpecification(
-            //     [
-            //         'feed_type' => FeedType::POST_PRODUCT_PRICING_DATA['name'],
-            //         'marketplace_ids' => [$this->marketplace_id($country_code)],
-            //         'input_feed_document_id' => $feedDocumentInfo->getFeedDocumentId()
-            //     ]
-            // );
-    
-            // try {
-            //     $result = $apiInstance->createFeed($body);
-
-            //     Log::info($result);
-
-            //     return $result;
-            // } catch (Exception $e) {
-            //     Log::channel('slack')->error('Exception when calling FeedAPI->createFeed' . $e->getMessage());
-            // }
-
-
-            $FEED = $this->createFeed($apiInstance, $marketplace_ids, $feedDocumentId, $available);
-
-            Log::info(" FEED ID " . $FEED);
-                
-            return $FEED;
-
-            //return json_decode(json_encode($result), true);
-        } catch (Exception $e) {
-
-            echo "<pre>";
-            print_r($e->getMessage());
-            echo "</pre>";
-
-          //  echo 'Exception when calling FeedsApi->createFeedDocument: ', $e->getMessage(), PHP_EOL;
-        }
-    }
-
-
-    public function xml($feedLists, $merchant_id, $currency_code)
-    {
-
-        $messages = '';
-        $counter = 1;
-
-        foreach ($feedLists as $feedlist) {
-
-            $messages .= '
-                <Message>
-                    <MessageID>' . $counter . '</MessageID>
-                    <OperationType>Update</OperationType>
-                    <Price>
-                        <SKU>' . $feedlist['product_sku'] . '</SKU>
-                        <StandardPrice currency="INR">' . $feedlist['push_price'] . '</StandardPrice>
-                    </Price>
-                </Message>';
-
-            $counter++;
-        }
-        //xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd"
-        $feed = '<?xml version="1.0" encoding="utf-8"?>
-            <AmazonEnvelope >
-                <Header>
-                    <DocumentVersion>1.02</DocumentVersion>
-                    <MerchantIdentifier>' . $merchant_id . '</MerchantIdentifier>
-                </Header>
-                <MessageType>Price</MessageType>
-                ' . $messages . '
-            </AmazonEnvelope>';
-
-        return $feed;
-    }
-
-    public function createFeed($apiInstance, $marketplace_ids, $feedDocumentId)
-    {
-
-        //$apiInstance = new FeedsApi($this->config($aws_key, $country_code));
-        $body = new CreateFeedSpecification();
-        $body->setFeedType('POST_PRODUCT_PRICING_DATA');
-        $body->setMarketplaceIds($marketplace_ids);
-        $body->setInputFeedDocumentId($feedDocumentId);
-
-        try {
+            $body = new CreateFeedSpecification();
+            $body->setFeedType($feedType['name']);
+            $body->setMarketplaceIds($marketplace_ids);
+            $body->setInputFeedDocumentId($feedDocumentInfo->getFeedDocumentId());
+      
             $result = $apiInstance->createFeed($body);
 
             return $result->getFeedId();
+
+        } catch (Exception $e) {
+
+            Log::error($e->getMessage());
             
-            Log::notice($marketplace_ids);
-            Log::notice("Create Feed ID" ." - ". $feedDocumentId ." - ". json_encode($result));
-
-            return json_decode(json_encode($result), true);
-        } catch (Exception $e) {
-            echo 'Exception when calling FeedsApi->createFeed: ', $e->getMessage(), PHP_EOL;
+            return false;
         }
     }
 
+    public function xml_build($feedLists, $merchant_id, $currency_code) {
 
-    public function index($aws_key, $seller_id, $sku, $marketplace_ids, $country_code) {
-        
+        $xml_lists = '<?xml version="1.0" encoding="utf-8"?>
+        <AmazonEnvelope >
+            <Header>
+                <DocumentVersion>1.02</DocumentVersion>
+                <MerchantIdentifier>'. $merchant_id .'</MerchantIdentifier>
+            </Header>
+            <MessageType>Price</MessageType>';
 
-        $apiInstance = new ListingsV20210801Api($this->config($aws_key, $country_code));
-        $result = $apiInstance->getListingsItem($seller_id, $sku, $marketplace_ids, '', ['offers', 'fulfillmentAvailability']);
+        foreach($feedLists as $key => $feedList) {
 
-        echo "<pre>";
-        print_r($result);
-    }
-
-    public function product_update($aws_key, $seller_id, $sku, $marketplace_ids, $country_code) {
-
-        $apiInstance = new ListingsV20210801Api($this->config($aws_key, $country_code));
-        //$result = $apiInstance->getListingsItem($seller_id, $sku, $marketplace_ids, '', ['offers']);
-
-        // $body = new \SellingPartnerApi\Model\ListingsV20210801\ListingsItemPatchRequest();
-        // $body->setProductType("Product");
-        // $body->setProductType("Product");
-
-        $body = "
-        {
-            'productType': 'PRODUCT',
-            'requirements': 'LISTING_OFFER_ONLY',
-        }
-        ";
-
-        try {
-            $result = $apiInstance->patchListingsItem($seller_id, $sku, $marketplace_ids, $body);
-            print_r($result);
-        } catch (Exception $e) {
-            echo 'Exception when calling ListingsV20210801Api->patchListingsItem: ', $e->getMessage(), PHP_EOL;
+            $xml_lists .= '
+            <Message>
+                <MessageID>'. $key + 1 .'</MessageID>
+                <OperationType>Update</OperationType>
+                <Price>
+                    <SKU>'. $feedList['product_sku'] .'</SKU>
+                    <StandardPrice currency="' . $currency_code . '">'. $feedList['push_price'] .'</StandardPrice>
+                    <MinimumSellerAllowedPrice currency="' . $currency_code . '">'. $feedList['base_price'] .'</MinimumSellerAllowedPrice>
+                    <MaximumSellerAllowedPrice currency="' . $currency_code . '">'. $feedList['ceil_price'] .'</MaximumSellerAllowedPrice>
+                </Price>
+            </Message>
+            ';
         }
 
-        echo "<pre>";
-        print_r($result);
+        return $xml_lists ."</AmazonEnvelope>";
     }
 
-    public function test() {
-
-        //SellingPartnerApi::submitFeed();
-
-    }
 }
