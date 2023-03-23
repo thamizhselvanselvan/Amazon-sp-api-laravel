@@ -330,9 +330,9 @@ class BuyBoxStoreController extends Controller
             }
 
             $data->select('id', 'store_id', 'asin', 'product_sku', 'push_availability', 'current_availability')
-            ->where('store_id', $request_store_id)
-            ->where('push_status', 0)
-            ->orderBy('id', 'DESC');
+                ->where('store_id', $request_store_id)
+                ->where('push_status', 0)
+                ->orderBy('id', 'DESC');
 
             return DataTables::of($data)
                 ->editColumn('asin', function ($query) {
@@ -359,7 +359,7 @@ class BuyBoxStoreController extends Controller
 
                 ->addColumn('action', function ($query) {
 
-                    $action = "<a href='javascript:void(0)' id='update_availability' class='edit btn btn-info btn-sm ml-2' "; 
+                    $action = "<a href='javascript:void(0)' id='update_availability' class='edit btn btn-info btn-sm ml-2' ";
                     $action .= " data-seller_id='$query->store_id' data-product_id='$query->id' data-product_sku='$query->product_sku' data-asin='$query->asin' data-current_availability='$query->current_availability' data-availability='$query->push_availability' >
                     Update Availability
                 </a>";
@@ -388,7 +388,7 @@ class BuyBoxStoreController extends Controller
 
         $PushAvailability = new AmazonFeedProcessAvailability();
         $data = $PushAvailability->availabilitySubmit($feedLists, $seller_id, $product_push_id, $regionCode, $asin, $availability);
-            
+
         return response()->json($data);
     }
 
@@ -415,7 +415,8 @@ class BuyBoxStoreController extends Controller
         $store_id = $request->storeid;
         $base_price = $request->base_price;
         $ceil_price = $request->ceil_price;
-
+        $regionCode = strtolower($request->region);
+       
         $feedLists[] = [
             "push_price" => $push_price,
             "product_sku" => $product_sku,
@@ -423,8 +424,8 @@ class BuyBoxStoreController extends Controller
             "ceil_price" => $ceil_price,
         ];
 
-        //jobDispatchFunc("Amazon_Feed\AmazonFeedPriceAvailabilityPush", $price_update);
-        $price_update = (new AmazonFeedProcess)->feedSubmit($feedLists, $store_id, $id);
+        // jobDispatchFunc("Amazon_Feed\AmazonFeedPriceAvailabilityPush", $price_update);
+        $price_update = (new AmazonFeedProcess)->feedSubmit($feedLists, $regionCode, $store_id, $id);
 
         if ($price_update) {
             return ["success" => true];
