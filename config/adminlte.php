@@ -1090,7 +1090,7 @@ return [
                             'icon' => 'far fa fa-bar-chart',
                             'can' => ['Admin'],
                         ],
-                      
+
                     ],
 
                 ],
@@ -1099,24 +1099,10 @@ return [
                     'can' => ['Admin'],
                     'url' => 'shipntrack/courier/tracking',
                     'icon' => 'far fa fa-bar-chart',
-                    // 'submenu' =>
-                    // [
-                    //     [
-                    //         'text' => 'SMSA Tracking',
-                    //         'url' => 'shipntrack/smsa',
-                    //         'can' => ['Admin'],
-                    //         'icon' => 'far fa fa-barcode',
-                    //     ],
-                    //     [
-                    //         'text' => 'Bombino Tracking',
-                    //         'url' => 'shipntrack/bombino',
-                    //         'can' => ['Admin'],
-                    //         'icon' => 'far fa fa-plane',
-                    //     ],
-                    // ],
                 ],
 
 
+                /*
                 [
                     'text' => 'Tracking Event',
                     'can' => ['Admin'],
@@ -1148,6 +1134,7 @@ return [
                         ],
                     ],
                 ],
+                */
             ],
         ],
 
