@@ -56,14 +56,11 @@ class Amazon_availability_push_in extends Command
             return false;
         }   
 
-        $product_ids = [];
-
         foreach ($products as $product) {
-
-            $product_ids[] = $product->id;
+                        
             $availability = $product->availability;
             $current_availability = $product->current_availability;
-
+            
             if($current_availability != $availability) {
                 
                 Product_availability_in::insert(
@@ -73,12 +70,13 @@ class Amazon_availability_push_in extends Command
                         "product_sku" => $product->product_sku,
                         "current_availability" => $current_availability,
                         "push_availability" => $availability,
-                    ]
-                );
+                        ]
+                    );
             }
-
+                
+            Products_in::query()->where("id", $product->id)->update(['cyclic_availability' => 1]);
         }
 
-        Products_in::query()->whereIn("id", $product_ids)->update(['cyclic_availability' => 1]);
+        
     }
 }

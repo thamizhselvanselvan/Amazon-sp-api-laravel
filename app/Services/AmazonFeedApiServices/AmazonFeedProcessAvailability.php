@@ -47,7 +47,7 @@ class AmazonFeedProcessAvailability
             $available_query_model = Product_availability_ae::query(); 
         }
 
-        $product_query_model->where("seller_id", $seller_id)->where("asin", $asin)->update(['availability' => $availability]);
+        $product_query_model->where("store_id", $seller_id)->where("asin", $asin)->update(['availability' => $availability]);
         $available_query_model->where("id", $product_push_id)->update(['feedback_id' => $productFeed['feedId'], "push_status" => 1]);
 
         return ['success' => true];
