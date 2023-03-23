@@ -65,8 +65,14 @@ class Amazon_price_push_ae extends Command
             Products_ae::query()->update(['cyclic_push' => 0]);
             return false;
         }
+
         $data_to_insert = [];
         $asins = [];
+        $price_datas = [];
+        $cnt = 1;
+        $total = 700;
+        $tagger = 0;
+
         foreach ($products as $product) {
 
             $id_rules_applied = $product->asin . "_" . $product->store_id;
@@ -74,11 +80,11 @@ class Amazon_price_push_ae extends Command
 
             $asins[] = $product->asin;
             // if Push is not equal to existing store price then don't push it
-            if (isset($push_price) && $push_price != $product->store_price && $product->bb_price != 0) {
+            if (isset($push_price) && $push_price != $product->store_price && $product->bb_price != 0 && $product->current_availability == 1) {
 
                 echo "selected $product->asin, $push_price \n";
 
-                Product_push_ae::create([
+                $price_datas[$tagger][] = [
                     'asin' => $product->asin,
                     'store_id' =>  $product->store_id,
                     'product_sku' => $product->product_sku,
@@ -97,14 +103,27 @@ class Amazon_price_push_ae extends Command
                     'bb_winner_id' => $product->bb_winner_id,
                     'bb_winner_price' => $product->bb_winner_price,
                     'is_bb_won' => $product->is_bb_won ?? 0,
-                    'applied_rules' => json_encode($this->rules_applied[$id_rules_applied]) ?? "No Rules Applied"
+                    'applied_rules' => json_encode($this->rules_applied[$id_rules_applied]) ?? "No Rules Applied",
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
 
-                ]);
+                if($cnt == $total) {
+                    $tagger++;
+                    $cnt = 0;
+                }                
+
+                $cnt++;
             } else {
                 echo $push_price . ' - ' . $product->store_price . " - " . $product->ceil_price . "\n";
                 echo ('push_price is' . ' - ' . $push_price);
                 // Log::notice(" ASIN: $product->asin - STORE_ID: $product->store_id - PUSH_PRICE: $push_price - BASE_PRICE: $product->base_price, STORE_PRICE: $product->store_price, BB_PRICE: $product->bb_winner_price");
             }
+        }
+
+        foreach($price_datas as $price_data) {
+
+            Product_Push_ae::insert($price_data);
         }
 
         Products_ae::whereIn('asin', $asins)->where("store_id", $product->store_id)->update(['cyclic_push' => 1]);
