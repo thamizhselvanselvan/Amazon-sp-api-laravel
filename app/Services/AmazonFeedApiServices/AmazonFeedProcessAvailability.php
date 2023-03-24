@@ -48,7 +48,7 @@ class AmazonFeedProcessAvailability
         }
 
         $product_query_model->where("store_id", $seller_id)->where("asin", $asin)->update(['availability' => $availability]);
-        $available_query_model->where("id", $product_push_id)->update(['feedback_id' => $productFeed['feedId'], "push_status" => 1]);
+        $available_query_model->where("id", $product_push_id)->update(['feedback_id' => $productFeed, "push_status" => 1]);
 
         return ['success' => true];
     }
@@ -98,7 +98,6 @@ class AmazonFeedProcessAvailability
                     <Inventory>
                         <SKU>' . $feedlist['product_sku'] . '</SKU>
                         <Available >' . $feedlist['available'] . ' </Available>
-                        ' . $latency . '
                         <Quantity>25</Quantity>
                     </Inventory>
                 </Message>';
