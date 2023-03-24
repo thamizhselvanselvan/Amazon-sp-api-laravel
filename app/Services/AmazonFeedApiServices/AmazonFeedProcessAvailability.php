@@ -139,6 +139,7 @@ class AmazonFeedProcessAvailability
                     "path" => "/attributes/fulfillment_availability",
                     "value" => [
                         [
+                            "marketplace_id" => "A21TJRUUN4KGV",
                             "fulfillment_channel_code" => "DEFAULT",
                             "quantity" => 1
                         ]
