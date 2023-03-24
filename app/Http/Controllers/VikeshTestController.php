@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use ZipArchive;
+use Carbon\Carbon;
+use App\Models\TestMongo;
 use App\Models\MongoDB\zoho;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\TestMongo;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
 
 class VikeshTestController extends Controller
 {
@@ -128,5 +131,108 @@ class VikeshTestController extends Controller
         } else {
             echo 'File not found';
         }
+    }
+
+    public function bombinoAPI(Request $request)
+    {
+        $selectColumns = [
+            'smsa' => [
+                'awbno',
+                'date',
+                'activity',
+                'details',
+                'location',
+            ],
+            'am_ae' => [
+                'awbno',
+                'update_code',
+                'update_description',
+                'update_date_time',
+                'update_location',
+                'comment',
+                'gross_weight',
+                'chargeable_weight',
+                'weight_unit',
+            ],
+            'Bombino' => [
+                'awb_no',
+                'consignee',
+                'consignor',
+                'destination',
+                'status',
+                'origin',
+                'event_detail',
+                'action_date',
+                'action_time',
+                'event_code',
+                'location',
+            ],
+            'ss_ksa' => [
+                'awbno',
+                'date',
+                'activity',
+                'details',
+                'location',
+            ],
+            'am_ksa' => [
+                'awbno',
+                'update_code',
+                'update_description',
+                'update_date_time',
+                'update_location',
+                'comment',
+                'gross_weight',
+                'chargeable_weight',
+                'weight_unit',
+            ],
+        ];
+        $modelPath = ['smsa' => 'SMSA', 'Bombino' => 'Bombino'];
+        $modelName = ['smsa' => 'SmsaTrackings', 'Bombino' => 'BombinoTracking'];
+        $tableName = ['smsa' => 'smsa_trackings', 'Bombino' => 'bombino_trackings'];
+
+
+        $data = Trackingae::with(['CourierPartner1', 'CourierPartner2', 'CourierPartner3', 'CourierPartner4'])
+            ->where('awb_number', $request->awbNo)
+            ->get()
+            ->toArray();
+
+        $records1 = [];
+        $records2 = [];
+        foreach ($data as $key => $records) {
+            if ($records['forwarder_1_flag'] == 0 && $records['forwarder_1_awb'] != '') {
+
+                $forwarder1_awb = $records['forwarder_1_awb'];
+                $forwarder_name = $records['courier_partner1']['name'];
+                $table = table_model_change(model_path: $modelPath[$forwarder_name], model_name: $modelName[$forwarder_name], table_name: $tableName[$forwarder_name]);
+                $records1 = $table->select($selectColumns[$forwarder_name])
+                    ->where('awb_no', $forwarder1_awb)
+                    ->orderBy('action_date', 'DESC')
+                    ->get()
+                    ->toArray();
+            }
+            if ($records['forwarder_2_flag'] == 0 && $records['forwarder_2_awb'] != '') {
+
+                $forwarder2_awb = $records['forwarder_2_awb'];
+                $forwarder_name = $records['courier_partner2']['name'];
+                $table = table_model_change(model_path: $modelPath[$forwarder_name], model_name: $modelName[$forwarder_name], table_name: $tableName[$forwarder_name]);
+                $records2 = $table->select($selectColumns[$forwarder_name])
+                    ->where('awbno', $forwarder2_awb)
+                    ->orderBy('date', 'DESC')
+                    ->get()
+                    ->toArray();
+
+                foreach ($records2 as $key => $records) {
+                    $records2[$key] = [
+                        'event_detail' => $records['activity'],
+                        'action_date' => date('Y-m-d', strtotime($records['date'])),
+                        'action_time' => date('H:i:s', strtotime($records['date'])),
+                        'location' => $records['location']
+                    ];
+                }
+            }
+        }
+        $result = [...$records1, ...$records2];
+
+        return $result;
     }
 }

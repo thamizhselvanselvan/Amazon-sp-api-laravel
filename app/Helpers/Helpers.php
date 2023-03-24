@@ -1116,7 +1116,7 @@ if (!function_exists('fileManagementMonitoringNew')) {
 
             $user_name = User::where('id', $file_check['user_id'])->get('name')->toArray();
 
-            $user_name = $user_name[0]['name'];
+            $user_name = $user_name[0]['name'] ?? '';
             $created_at = date('d-m-Y h:i:s', strtotime($file_check['created_at']));
             $info = $file_check['info'];
 
