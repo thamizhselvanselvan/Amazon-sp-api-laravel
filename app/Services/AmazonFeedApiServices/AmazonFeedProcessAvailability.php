@@ -101,7 +101,7 @@ class AmazonFeedProcessAvailability
                         <SKU>' . $feedlist['product_sku'] . '</SKU>
                         <Available >' . $feedlist['available'] . ' </Available>
                         <Quantity>25</Quantity>
-                        FulfillmentLatency>10</FulfillmentLatency>
+                        <FulfillmentLatency>10</FulfillmentLatency>
                         <SwitchFulfillmentTo>MFN</SwitchFulfillmentTo>
                     </Inventory>
                 </Message>';
