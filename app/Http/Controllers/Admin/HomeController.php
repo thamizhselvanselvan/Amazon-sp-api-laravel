@@ -28,13 +28,13 @@ class HomeController extends Controller
     public function dashboard(Request $request)
     {
         $da = '';
-        $user = Auth::user();
-        if (isset($user->name)) {
-            Alert::success(
-                "Welcome  $user->name",
-                'To App 360'
-            );
-        }
+        // $user = Auth::user();
+        // if (isset($user->name)) {
+        //     Alert::success(
+        //         "Welcome  $user->name",
+        //         'To App 360'
+        //     );
+        // }
         return view('admin.dashboard', compact(('da')));
     }
     public function index()
