@@ -52,25 +52,28 @@ class DumpDataIntoZoho extends Command
 
         $Lead_Sources = [
             'CKSHOP-Amazon.in',
-            // 'Amazon.in-Gotech',
-            // 'Gotech-Saudi',
-            // 'Gotech UAE',
-            // 'Amazon.in-MBM',
-            // 'Amazon.ae-MBM',
-            // 'Amazon.sa-MBM',
-            // 'Amazon.ae-Mahzuz',
-            // 'Amazon.sa-Mahzuz',
-            // 'Amazon.in-Nitrous',
-            // 'Flipkart-Cliqkart',
-            // 'Flipkart -Cliqkart',
-            // 'Flipkart-Gotech'
+            'Amazon.in-Gotech',
+            'Gotech-Saudi',
+            'Gotech UAE',
+            'Amazon.in-MBM',
+            'Amazon.ae-MBM',
+            'Amazon.sa-MBM',
+            'Amazon.ae-Mahzuz',
+            'Amazon.sa-Mahzuz',
+            'Amazon.in-Nitrous',
+            'Flipkart-Cliqkart',
+            'Flipkart -Cliqkart',
+            'Flipkart-Gotech'
         ];
 
-        $start_time = "2022-04-01 00:00:00";
-        $end_time = "2023-03-01 00:00:00";
+        $query = startTime();
+
+        $start_time = "2023-03-01 00:00:00";
+        $end_time = "2023-03-31 00:00:00";
     
-        $mongoDB_data = zoho::whereBetween('Created_Time', [$start_time, $end_time])->whereIn('Lead_Source', $Lead_Sources)->orderBy('Created_Time', 'DESC')->limit(10)->get()->toArray();
-            
+        $mongoDB_data = zoho::whereBetween('Created_Time', [$start_time, $end_time])->whereIn('Lead_Source', $Lead_Sources)->orderBy('Created_Time', 'DESC')->get()->toArray();
+        
+        $this->info(" After Query Time " . endTime($query));
    
         foreach ($mongoDB_data as $record) {
 
@@ -208,6 +211,8 @@ class DumpDataIntoZoho extends Command
            
       
         }
+
+        $this->info(" After Inserting Time " . endTime($query));
         
 
     }
