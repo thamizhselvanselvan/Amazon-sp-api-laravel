@@ -31,8 +31,8 @@ Route::get('home', 'Admin\HomeController@dashboard')->name('home');
 include_route_files(__DIR__ . '/v2/');
 Route::get('testing', function () {
 
-    $test = (new FeedOrderDetailsApp360)->getFeedStatus(134721019440, 6);
-   // $test = (new FeedOrderDetailsApp360)->getLists(6);
+    $test = (new FeedOrderDetailsApp360)->getFeedStatus(134725019440, 6);
+    // $test = (new FeedOrderDetailsApp360)->getLists(6);
 
     // dd($test);
 

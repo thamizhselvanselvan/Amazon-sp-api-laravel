@@ -71,11 +71,19 @@ class DumpDataIntoZoho extends Command
         $start_time = "2023-03-01 00:00:00";
         $end_time = "2023-03-31 00:00:00";
     
-        $mongoDB_data = zoho::whereBetween('Created_Time', [$start_time, $end_time])->whereIn('Lead_Source', $Lead_Sources)->orderBy('Created_Time', 'DESC')->get()->toArray();
+        $mongoDB_data = zoho::whereBetween('Created_Time', [$start_time, $end_time])
+        ->whereIn('Lead_Source', $Lead_Sources)
+        ->where('nz', 0)
+        ->limit(25)
+        ->orderBy('Created_Time', 'DESC')->get()->toArray();
         
         $this->info(" After Query Time " . endTime($query));
-   
+        $this->info(" TOTAL COUNT " . count($mongoDB_data));
+
+        $cnt = 0;
+
         foreach ($mongoDB_data as $record) {
+
 
             $prod_array = [
                 "Alternate_Order_No" => $record["Alternate_Order_No"],
@@ -177,6 +185,8 @@ class DumpDataIntoZoho extends Command
                 "Description" => $record['Description']
             ];
 
+
+
             $zoho_search_order_exists = $zoho->search($record['Alternate_Order_No'], $record['Payment_Reference_Number1'], 1);
 
             if(!$zoho_search_order_exists) {
@@ -186,34 +196,47 @@ class DumpDataIntoZoho extends Command
                 $zoho_response = ($zoho_api_save) ? $zoho_api_save : null;
     
                 if (isset($zoho_response) && gettype($zoho_response) == "array" && array_key_exists('data', $zoho_response) && array_key_exists(0, $zoho_response['data']) && array_key_exists('code', $zoho_response['data'][0])) {
-    
-                    $string = "Inserted ". $prod_array['Alternate_Order_No'];
+
+                    $this->mongoUpdate($record["_id"]);
+
+                    $string = "Inserted ". $prod_array['Alternate_Order_No'] . " $cnt";
     
                     $this->info($string);
+
+                    
     
                 } else {
                     
-                    $this->error($record["Order_Number"] . " Order did not save");
+                    $this->error($record["Order_Number"] . " Order did not save " . " $cnt");
                     $this->error($zoho_response);
     
                 }
-        
+                
+
 
             } else  {
 
                 $zoho_api_update = $zoho->updateLead($zoho_search_order_exists['data'][0]['id'], $prod_array);
 
-                $string = "Updated  ". $prod_array['Alternate_Order_No'];
+                $this->mongoUpdate($record["_id"]);
+
+                $string = "Updated  ". $prod_array['Alternate_Order_No'] . " $cnt";
                 $this->info($string);
             }
 
 
-           
-      
+            $cnt++;
+            
         }
 
         $this->info(" After Inserting Time " . endTime($query));
+        $this->info(" TOTAL WOrked ON $cnt");
         
 
+    }
+
+    public function mongoUpdate($id) {
+
+        zoho::where('_id', $id)->update(["nz" => 1]);
     }
 }
