@@ -226,14 +226,15 @@ class FeedOrderDetailsApp360
         }
     }
 
-    public function getLists($feed_id, $seller_id, $country_code = 'IN') {
+    public function getLists($seller_id, $country_code = 'IN') {
 
         $config = $this->config($seller_id, $country_code);
 
 
         $apiInstance = new FeedsApi($config);
         //$feed_id = 'feed_id_example'; // string | The identifier for the feed. This identifier is unique only in combination with a seller ID.
-        $feed_types = ["POST_PRODUCT_PRICING_DATA"];
+        $feed_types = ["POST_INVENTORY_AVAILABILITY_DATA"];
+      //  $feed_types = ["POST_PRODUCT_PRICING_DATA"];
         $marketplace_ids = ["A21TJRUUN4KGV"];
 
         try {

@@ -77,10 +77,10 @@ class ZohoApi
         return false;
     }
 
-    public function search($amazon_order, $item_order)
+    public function search($amazon_order, $item_order, $new_zoho  = null)
     {
-
-        $search_criteria = "?criteria=((Alternate_Order_No:equals:$amazon_order)and(Payment_Reference_Number1:equals:$item_order))";
+        $payment_key = ($new_zoho) ? 'Payment_Reference_Number' : 'Payment_Reference_Number1';
+        $search_criteria = "?criteria=((Alternate_Order_No:equals:$amazon_order)and($payment_key:equals:$item_order))";
 
         $response = Http::withoutVerifying()
             ->withHeaders([
