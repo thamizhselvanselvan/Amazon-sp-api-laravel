@@ -40,7 +40,7 @@ class ZohoCustomSearch extends Command
      */
     public function handle()
     {
-        $zoho = new ZohoApi;
+        $zoho = new ZohoApi(new_zoho: false);
         $zohoOrder = new ZohoOrder;
 
         $cnt = 0;
