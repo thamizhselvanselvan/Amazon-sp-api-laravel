@@ -35,23 +35,39 @@ use JeroenNoten\LaravelAdminLte\View\Components\Tool\Modal;
 
 Route::get('test/mongo', function () {
 
-    $Lead_Sources = [
-        '406-9460146-4169167'
-    ];
-    $start_time = "2022-04-01 00:00:00";
-    $end_time = "2023-03-01 00:00:00";
-    // $zoho = zoho::limit(50)->orderBy('Created_Time', 'DESC')->get()->toArray();
-    // foreach ($Lead_Sources as $Lead_Source) {
-
-    $zoho = zoho::whereBetween('Created_Time', [$start_time, $end_time])->whereIn('Alternate_Order_No', $Lead_Sources)->get()->toArray();
-    // }
-    // po($zoho);
-    // exit;
-    foreach ($zoho as $data) {
-
-        // po($data['_id']['Lead_Source']);
-        po($data);
+    $data1 = zoho::where('Lead_Status', 'Duplicate Lead')
+        // ->limit(1)
+        ->get()
+        ->toArray();
+    $columns = [];
+    $result1 = [];
+    foreach ($data1 as  $data) {
+        foreach ($data as $key => $d) {
+            $columns[] = $key;
+            // po($key);
+        }
+        break;
     }
+    // exit;
+    foreach ($data1 as $key => $data) {
+
+        foreach ($data as $key1 => $result) {
+            $result1[$key][$key1] = $result;
+            // po($result);
+        }
+    }
+    po($columns);
+    // po($result1);
+    // exit;
+    CSV_Write('Desktop/zoho_duplicate.csv', $columns, $result1);
+    exit;
+    $data = zoho::select('ASIN', 'Alternate_Order_No', DB::raw('count(Alternate_Order_No) as cnt'))
+        ->groupBy('Alternate_Order_No')
+        ->orderBy('cnt', 'ASC')
+        ->limit(1000)
+        ->get()
+        ->toArray();
+    po($data);
 });
 
 Route::get('test/shipntrack/data', function () {
@@ -79,7 +95,7 @@ Route::get('test/shipntrack/data', function () {
     }
 });
 
-Route::get('test/shipntrack/aramex', function () {
+Route::get('test/shipntrack/aramex/{awbno}', function ($awbNo) {
 
     $url = "https://ws.aramex.net/ShippingAPI.V2/Tracking/Service_1_0.svc/json/TrackShipments";
     $payload =
@@ -96,7 +112,7 @@ Route::get('test/shipntrack/aramex', function () {
             ],
             "GetLastTrackingUpdateOnly" => false,
             "Shipments" => [
-                "35124730631"
+                "$awbNo"
             ]
         ];
 
@@ -122,7 +138,7 @@ Route::get('test/shipntrack/aramex', function () {
             $key2 = ($key2 == 'WeightUnit')        ? 'weight_unit'        : $key2;
 
             if ($key2 == 'update_date_time') {
-                po($value);
+                // po($value);
                 preg_match('/(\d{10})(\d{3})([\+\-]\d{4})/', $value, $matches);
                 $dt = DateTime::createFromFormat("U.u.O", vsprintf('%2$s.%3$s.%4$s', $matches));
                 $dt->setTimeZone(new DateTimeZone('Asia/Dubai'));
@@ -136,6 +152,7 @@ Route::get('test/shipntrack/aramex', function () {
         }
     }
     po($aramex_records);
+    exit;
     AramexTrackings::upsert($aramex_records, ['awbno_update_timestamp_description_unique'], [
         'account_id',
         'awbno',
@@ -151,7 +168,7 @@ Route::get('test/shipntrack/aramex', function () {
     ]);
 });
 
-Route::get('test/shipntrack/smsa', function () {
+Route::get('test/shipntrack/smsa/{awbno}', function ($awbNo) {
 
     $client = new Client();
     $headers = [
@@ -161,7 +178,7 @@ Route::get('test/shipntrack/smsa', function () {
                 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
                 <soap:Body>
                     <getTracking xmlns="http://track.smsaexpress.com/secom/">
-                    <awbNo>290405227280</awbNo>
+                    <awbNo>' . $awbNo . '</awbNo>
                     <passkey>Mah@8537</passkey>
                     </getTracking>
                 </soap:Body>
@@ -198,8 +215,8 @@ Route::get('test/shipntrack/smsa', function () {
         ];
     }
 
-    // po($smsa_records);
-    // exit;
+    po($smsa_records);
+    exit;
     SmsaTrackings::upsert($smsa_records, ['awbno_date_activity_unique'], [
         'account_id',
         'awbno',
@@ -210,11 +227,11 @@ Route::get('test/shipntrack/smsa', function () {
     ]);
 });
 
-Route::get('test/shipntrack/bombino', function () {
+Route::get('test/shipntrack/bombino/{awbno}', function ($awbNo) {
     $account_id = "58925";
     $user_id = "58925MBM";
     $password = "123";
-    $awbNo = "930703346";
+    $awbNo = $awbNo;
     $url = "http://api.bombinoexp.in/bombinoapi.svc/Tracking?";
 
     $response = Http::withoutVerifying()->withHeaders([
@@ -223,7 +240,7 @@ Route::get('test/shipntrack/bombino', function () {
 
     $bombino_records = json_decode($response, true);
     po(($bombino_records));
-
+    exit;
     $records = $bombino_records['Shipments'][0]['TrackPoints'];
     $Bombino_Data = [
 
@@ -249,22 +266,22 @@ Route::get('test/shipntrack/bombino', function () {
         ];
         $result[] = [...$Bombino_Data, ...$bombino_record];
     }
-    BombinoTracking::upsert($result, ['awbno_actionDate_eventDetail_unique'], [
-        'awb_no',
-        'consignee',
-        'consignor',
-        'destination',
-        'hawb_no',
-        'origin',
-        'ship_date',
-        'weight',
-        'action_date',
-        'action_time',
-        'event_code',
-        'event_detail',
-        'exception',
-        'location'
-    ]);
+    // BombinoTracking::upsert($result, ['awbno_actionDate_eventDetail_unique'], [
+    //     'awb_no',
+    //     'consignee',
+    //     'consignor',
+    //     'destination',
+    //     'hawb_no',
+    //     'origin',
+    //     'ship_date',
+    //     'weight',
+    //     'action_date',
+    //     'action_time',
+    //     'event_code',
+    //     'event_detail',
+    //     'exception',
+    //     'location'
+    // ]);
     po($result);
 });
 
