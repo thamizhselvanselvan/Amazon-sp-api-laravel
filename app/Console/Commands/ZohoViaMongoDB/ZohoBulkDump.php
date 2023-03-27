@@ -62,16 +62,13 @@ class ZohoBulkDump extends Command
         Log::debug('page =>' . $page);
         Log::debug('more_records =>' . $more_records);
         if ($zoho_id) {
-            // $response = $this->MonitorZohoRequest($zoho_id);
-            // Log::alert($response);
-            // $status = $response['data'][0]['state'];
 
             if ($status == "COMPLETED") {
+
                 $this->DownloadZohoFile($zoho_id);
-                // $more_records = $response['data'][0]['result']['more_records'];
 
                 if ($more_records == 1) {
-                    // $page = $response['data'][0]['result']['page'];
+
                     $this->MakeRequestIntoZoho($page + 1);
                 }
             }
@@ -94,6 +91,14 @@ class ZohoBulkDump extends Command
 
     public function MakeRequestIntoZoho($page = 1)
     {
+        $process_manage = [
+            'module'             => 'Zoho Dump',
+            'description'        => 'Dump data into App360 database from zoho database ' . $page,
+            'command_name'       => 'mosh:submit-request-to-zoho',
+            'command_start_time' => now(),
+        ];
+        ProcessManagement::create($process_manage)->toArray();
+
         $payload = [
             "callback" => [
                 "url" => "https://app.360ecom.io/api/zoho/webhook",
@@ -109,10 +114,6 @@ class ZohoBulkDump extends Command
             "Authorization" => "Zoho-oauthtoken " . $this->token,
             "Content-Type" => "application/json"
         ])->post($this->url, $payload);
-
-        // $response = $headers->json();
-        // Storage::put($this->file_path, json_encode($response));
-        // return $response;
     }
 
     // public function MonitorZohoRequest($zoho_id)
