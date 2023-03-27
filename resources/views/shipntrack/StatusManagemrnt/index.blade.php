@@ -81,12 +81,12 @@
                     searchable: false
                 },
                 {
-                    data: 'courier_partner_id',
-                    name: 'courier_partner_id'
+                    data: 'courier_id',
+                    name: 'courier_id'
                 },
                 {
-                    data: 'courier_partner_status',
-                    name: 'courier_partner_status'
+                    data: 'courier_status',
+                    name: 'courier_status'
                 },
                 {
                     data: 'booking_master_id',
@@ -160,6 +160,7 @@
                 },
                 success: function(response) {
                     alert('Courier Status Updated Successfully');
+                    window.location.reload();
                 },
                 error: function(result) {
                     alert('error');

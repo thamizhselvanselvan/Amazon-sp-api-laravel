@@ -1080,25 +1080,26 @@ return [
                     ],
                 ],
                 [
-                    'text' => 'Forwarder Master',
+                    'text' => 'Create New Shipment',
+                    'url' => 'shipntrack/forwarder',
                     'icon' => 'far fa fa-map-marker',
                     'can' => ['Admin'],
-                    'submenu' =>
-                    [
-                        [
-                            'text' => 'Forwarder Mapping',
-                            'url' => 'shipntrack/forwarder',
-                            'icon' => 'far fa fa-map-marker',
-                            'can' => ['Admin'],
-                        ],
-                        [
-                            'text' => 'Forwarder Details',
-                            'url' => 'shipntrack/forwarder/mapped/details',
-                            'icon' => 'far fa fa-bar-chart',
-                            'can' => ['Admin'],
-                        ],
+                    // 'submenu' =>
+                    // [
+                    //     [
+                    //         'text' => 'Forwarder Mapping',
+                    //         'url' => 'shipntrack/forwarder',
+                    //         'icon' => 'far fa fa-map-marker',
+                    //         'can' => ['Admin'],
+                    //     ],
+                    //     [
+                    //         'text' => 'Forwarder Details',
+                    //         'url' => 'shipntrack/forwarder/mapped/details',
+                    //         'icon' => 'far fa fa-bar-chart',
+                    //         'can' => ['Admin'],
+                    //     ],
 
-                    ],
+                    // ],
 
                 ],
                 [
