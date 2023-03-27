@@ -62,7 +62,7 @@ class DumpDataIntoZoho extends Command
 
         $query = startTime();
 
-        $start_time = "2023-03-01 00:00:00";
+        $start_time = "2022-04-01 00:00:00";
         $end_time = "2023-03-31 00:00:00";
     
         $mongoDB_data = zoho::whereBetween('Created_Time', [$start_time, $end_time])
