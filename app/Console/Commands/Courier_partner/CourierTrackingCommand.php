@@ -7,6 +7,7 @@ use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 use App\Models\ShipNTrack\ForwarderMaping\IntoKSA;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
 
 class CourierTrackingCommand extends Command
 {
@@ -57,23 +58,25 @@ class CourierTrackingCommand extends Command
             $records = [];
             if ($destination == 'ae') {
 
-                $records = IntoAE::with(['CourierPartner1', 'CourierPartner2', 'CourierPartner3', 'CourierPartner4'])
+                $records = Trackingae::with(['CourierPartner1', 'CourierPartner2', 'CourierPartner3', 'CourierPartner4'])
                     ->orWhere('forwarder_1_flag', 0)
                     ->orWhere('forwarder_2_flag', 0)
                     ->orWhere('forwarder_3_flag', 0)
                     ->orWhere('forwarder_4_flag', 0)
                     ->get()
                     ->toArray();
-            } else if ($destination == 'ksa') {
-
-                $records = IntoKSA::with(['CourierPartner1', 'CourierPartner2', 'CourierPartner3', 'CourierPartner4'])
-                    ->orWhere('forwarder_1_flag', 0)
-                    ->orWhere('forwarder_2_flag', 0)
-                    ->orWhere('forwarder_3_flag', 0)
-                    ->orWhere('forwarder_4_flag', 0)
-                    ->get()
-                    ->toArray();
+                po($records);
             }
+            // else if ($destination == 'ksa') {
+
+            //     $records = IntoKSA::with(['CourierPartner1', 'CourierPartner2', 'CourierPartner3', 'CourierPartner4'])
+            //         ->orWhere('forwarder_1_flag', 0)
+            //         ->orWhere('forwarder_2_flag', 0)
+            //         ->orWhere('forwarder_3_flag', 0)
+            //         ->orWhere('forwarder_4_flag', 0)
+            //         ->get()
+            //         ->toArray();
+            // }
 
             if (count($records) > 0) {
 

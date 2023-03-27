@@ -46,7 +46,7 @@ class ZohoCustomUpdate extends Command
         // print "Remove Exit & Change the command & run the command";
         // exit;
 
-        $zoho = new ZohoApi;
+        $zoho = new ZohoApi(new_zoho: false);
        // $zohoOrder = new ZohoOrder;
 
         $cnt = 0;

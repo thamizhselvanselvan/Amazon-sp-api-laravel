@@ -48,9 +48,26 @@
 
             <div class="row justify-content-center">
                 <div class="col-6">
-                    <x-adminlte-input label="Name" name="name" type="text" placeholder="Name" value="{{ $data->name }}" />
+                    <x-adminlte-input label="User Name" name="user_name" type="text" placeholder="user_name" value="{{ $data->user_name }}" />
                 </div>
+                <div class="col-6">
+                    <!-- <x-adminlte-input label="Courier Name" name="name" type="text" placeholder="Name" value="{{ old('name') }}" /> -->
 
+
+                    <x-adminlte-select label="Courier" name="courier_name" id="courier_name" type="text" value="{{ old('courier_name') }}">
+                        <option value="">Select Courier</option>
+                        @foreach ($couriers as $Courier)
+                        @if ($Courier->id == $selected_courier)
+                        <option value="{{ $Courier->id }}" selected> {{ $Courier->courier_name }}</option>
+                        @else
+                        <option value="{{ $Courier->id  }}">{{$Courier->courier_name }}</option>
+                        @endif
+                        <!-- <option value="{{$Courier->id}}">{{$Courier->courier_name}}</option> -->
+                        @endforeach
+
+                    </x-adminlte-select>
+
+                </div>
                 <div class="col-6">
                     <x-adminlte-select name="status" label="Select status:" id="status">
                         <!-- <option value="{{$data->status ?? ''? $data->status : ''}}">{{$data->status ?? ''? $data->status : 'Select status'}} </option> -->
@@ -113,9 +130,7 @@
                         @endif
                     </x-adminlte-select>
                 </div>
-                <div class="col-6">
-                    <x-adminlte-input label="Courier code" name="code" type="text" placeholder="code" value="{{ $data->courier_code }}" />
-                </div>
+
             </div>
             <div class="row justify-content-left">
                 <div class="col-6">
@@ -123,7 +138,6 @@
                     <x-adminlte-select name="time_zone" label="Select Time Zone:" id="time_zone">
                         <option value="{{$data->time_zone ?? ''? $data->time_zone : ''}}">{{$data->time_zone ?? ''? $data->time_zone : 'Select TimeZone'}} </option>
                         <option value="Asia/Kolkata"> Asia/Kolkata</option>
-                        <option value="Asia/Dubai">Asia/Dubai</option>
                         <option value="Asia/Dubai">Asia/Dubai</option>
                         <option value="Asia/Kuwait">Asia/Kuwait</option>
                         <option value="Asia/Riyadh">Asia/Riyadh</option>
@@ -133,23 +147,23 @@
                     </x-adminlte-select>
                 </div>
                 <div class="col-6">
+                    <x-adminlte-input label="user_id" name="user_id" type="text" placeholder="user_id" value="{{ $data->user_id }}" />
+                </div>
+
+                <div class="col-6">
+                    <x-adminlte-input label="password" name="password" type="text" placeholder="password" value="{{ $data->password }}" />
+                </div>
+
+                <div class="col-6">
+                    <x-adminlte-input label="account_id" name="account_id" type="text" placeholder="account_id" value="{{ $data->account_id }}" />
+                </div>
+
+                <div class="col-6">
                     <x-adminlte-input label="key1" name="key1" type="text" placeholder="key1" value="{{ $data->key1 }}" />
                 </div>
 
                 <div class="col-6">
                     <x-adminlte-input label="key2" name="key2" type="text" placeholder="key2" value="{{ $data->key2 }}" />
-                </div>
-
-                <div class="col-6">
-                    <x-adminlte-input label="key3" name="key3" type="text" placeholder="key3" value="{{ $data->key3 }}" />
-                </div>
-
-                <div class="col-6">
-                    <x-adminlte-input label="key4" name="key4" type="text" placeholder="key4" value="{{ $data->key4 }}" />
-                </div>
-
-                <div class="col-6">
-                    <x-adminlte-input label="key5" name="key5" type="text" placeholder="key5" value="{{ $data->key5 }}" />
                 </div>
             </div>
             <div class="text-center">

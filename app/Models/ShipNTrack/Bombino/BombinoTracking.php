@@ -10,21 +10,24 @@ class BombinoTracking extends Model
     use HasFactory;
     protected $connection = 'shipntracking';
     protected $fillable = [
-        'awbno',
+        'awb_no',
         'consignee',
+        'consignor',
         'destination',
-        'forwarding_no',
         'hawb_no',
         'origin',
         'ship_date',
-        'status',
         'weight',
+        'action_date',
+        'action_time',
+        'event_code',
+        'event_detail',
+        'exception',
+        'location'
     ];
 
     public function bombinoTrackingJoin()
     {
         return $this->hasMany(BombinoTrackingDetails::class, 'awbno', 'awbno');
     }
-
-    
 }

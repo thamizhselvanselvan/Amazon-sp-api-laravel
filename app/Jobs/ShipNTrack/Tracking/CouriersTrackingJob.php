@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 use App\Models\ShipNTrack\ForwarderMaping\IntoKSA;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
 use App\Services\ShipNTrack\Tracking\CourierTracking;
 
 class CouriersTrackingJob implements ShouldQueue
@@ -37,7 +38,7 @@ class CouriersTrackingJob implements ShouldQueue
         $record = $this->payload;
 
         $AramexTracking = new CourierTracking();
-        $courierCodeName = ['ss_ae' => 'Smsa', 'am_ae' => 'Aramex', 'bom' => 'Bombino', 'ss_ksa' => 'Smsa', 'am_ksa' => 'Aramex'];
+        $courierCodeName = ['smsa' => 'Smsa', 'Aramex' => 'Aramex', 'Bombino' => 'Bombino', 'ss_ksa' => 'Smsa', 'am_ksa' => 'Aramex'];
 
         $records = [];
         $awb_no = $record['awbNo'];
@@ -46,22 +47,23 @@ class CouriersTrackingJob implements ShouldQueue
 
         if ($destination == 'ae') {
 
-            $records = IntoAE::with(['CourierPartner1', 'CourierPartner2', 'CourierPartner3', 'CourierPartner4'])
+            $records = Trackingae::with(['CourierPartner1', 'CourierPartner2', 'CourierPartner3', 'CourierPartner4'])
                 ->where('awb_number', $awb_no)
                 ->get()
                 ->toArray();
-            // Log::alert($records);
-        } else if ($destination == 'ksa') {
-            $records = IntoKSA::with(['CourierPartner1', 'CourierPartner2', 'CourierPartner3', 'CourierPartner4'])
-                ->where('awb_number', $awb_no)
-                ->get()
-                ->toArray();
+            Log::notice($records);
         }
+        // else if ($destination == 'ksa') {
+        //     $records = IntoKSA::with(['CourierPartner1', 'CourierPartner2', 'CourierPartner3', 'CourierPartner4'])
+        //         ->where('awb_number', $awb_no)
+        //         ->get()
+        //         ->toArray();
+        // }
         foreach ($records as $record) {
 
             if ($record['forwarder_1_flag'] == 0 && $record['forwarder_1_awb'] != '') {
 
-                $courierCode = $record['courier_partner1']['courier_code'];
+                $courierCode = $record['courier_partner1']['name'];
 
                 $results = [
                     'process_management' => $process_management_id,
@@ -78,7 +80,7 @@ class CouriersTrackingJob implements ShouldQueue
             }
             if ($record['forwarder_2_flag'] == 0 && $record['forwarder_2_awb'] != '') {
 
-                $courierCode = $record['courier_partner2']['courier_code'];
+                $courierCode = $record['courier_partner2']['name'];
 
                 $results = [
                     'process_management' => $process_management_id,
@@ -96,7 +98,7 @@ class CouriersTrackingJob implements ShouldQueue
 
             if ($record['forwarder_3_flag'] == 0 && $record['forwarder_3_awb'] != '') {
 
-                $courierCode = $record['courier_partner3']['courier_code'];
+                $courierCode = $record['courier_partner3']['name'];
 
                 $results = [
                     'process_management' => $process_management_id,
@@ -114,7 +116,7 @@ class CouriersTrackingJob implements ShouldQueue
 
             if ($record['forwarder_4_flag'] == 0 && $record['forwarder_4_awb'] != '') {
 
-                $courierCode = $record['courier_partner4']['courier_code'];
+                $courierCode = $record['courier_partner4']['name'];
 
                 $results = [
                     'process_management' => $process_management_id,

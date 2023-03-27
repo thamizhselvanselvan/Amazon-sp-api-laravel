@@ -82,7 +82,7 @@ class OrderMissingDetailsController extends Controller
             return response()->json(['data' =>  'error']);
         }
         //zoho api update
-        $zoho = new ZohoApi;
+        $zoho = new ZohoApi(new_zoho: false);
         $zoho_lead_search = $zoho->search($order_id, $item_id);
 
         if (!isset($zoho_lead_search['data'][0]['id'])) {
