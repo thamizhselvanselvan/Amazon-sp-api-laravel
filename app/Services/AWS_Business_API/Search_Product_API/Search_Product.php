@@ -60,7 +60,7 @@ class Search_Product
             }
 
             $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->toArray();
-            $token = $mws_regions[0]['aws_verified'][2]['auth_code'];
+            $token = $mws_regions[0]['aws_verified'][1]['auth_code'];
             foreach ($getProducts->products as $key => $getProduct) {
 
 
