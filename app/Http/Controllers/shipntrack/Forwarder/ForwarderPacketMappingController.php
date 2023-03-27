@@ -17,6 +17,7 @@ use App\Models\ShipNTrack\Courier\CourierPartner;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
 use App\Models\ShipNTrack\ForwarderMaping\IntoKSA;
+use App\Model\ShipNTrack\ForwarderMaping\Trackingin;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
 use App\Models\ShipNTrack\ForwarderMaping\USAtoAE;
 use App\Models\ShipNTrack\ForwarderMaping\USAtoKSA;
@@ -26,10 +27,84 @@ class ForwarderPacketMappingController extends Controller
 
     public function index(Request $request)
     {
-        $partners_lists = CourierPartner::get();
-        $selected_forwarder_1 = '';
-        $selected_forwarder_2 = '';
-        return view('shipntrack.Forwarder.index', compact('partners_lists', 'selected_forwarder_1', 'selected_forwarder_2'));
+        $destinations = CourierPartner::select('destination')->groupBy('destination')->get()->toArray();
+
+        return view('shipntrack.Forwarder.index', compact('destinations'));
+    }
+
+    public function courierget(Request $request)
+    {
+        $destination =    $request->destination;
+        $partners_lists = CourierPartner::where(['destination' => $destination])->select('id', 'name')->get();
+
+        return response()->json($partners_lists);
+    }
+
+    public function store_farwarder(Request $request)
+    {
+        $request->validate([
+            'mode' => 'required',
+            'reference' => 'required',
+            'forwarder1' => 'required|not in:0',
+            'forwarder_1_awb' => 'required',
+            'consignor' => 'required',
+            'consignee' => 'required',
+        ]);
+
+        $tracking_data = [
+            'reference_id' => $request->reference,
+            'consignor' => $request->consignor,
+            'consignee' => $request->consignee,
+            'forwarder_1' => $request->forwarder1,
+            'forwarder_1_awb' => $request->forwarder_1_awb,
+            'forwarder_1_flag' => 0,
+            'forwarder_2' => $request->forwarder2,
+            'forwarder_2_awb' => $request->forwarder_2_awb,
+            'forwarder_2_flag' => 0,
+            'forwarder_3' => $request->forwarder3,
+            'forwarder_3_awb' => $request->forwarder_3_awb,
+            'forwarder_3_flag' => 0,
+            'forwarder_4' => $request->forwarder4,
+            'forwarder_4_awb' => $request->forwarder_4_awb,
+            'forwarder_4_flag' => 0,
+            'status' => 0
+        ];
+
+        if ($request->destination == 'AE') {
+            Trackingae::upsert(
+                $tracking_data,
+                'reference_id_unique',
+                [
+                    'forwarder_1',
+                    'forwarder_1_awb',
+                    'forwarder_2',
+                    'forwarder_2_awb',
+                    'forwarder_3',
+                    'forwarder_3_awb',
+                    'forwarder_4',
+                    'forwarder_4_awb',
+
+                ]
+            );
+        } elseif ($request->destination == 'IN') {
+            Trackingin::upsert(
+                $tracking_data,
+                'reference_id_unique',
+                [
+                    'forwarder_1',
+                    'forwarder_1_awb',
+                    'forwarder_2',
+                    'forwarder_2_awb',
+                    'forwarder_3',
+                    'forwarder_3_awb',
+                    'forwarder_4',
+                    'forwarder_4_awb',
+
+                ]
+            );
+        }
+
+        return redirect()->intended('/shipntrack/forwarder/')->with("success", "Tracking Details Uploaded Successfully");
     }
 
     public function Upload()
@@ -237,125 +312,6 @@ class ForwarderPacketMappingController extends Controller
         return redirect()->route('shipntrack.forwarder')->with('success', 'packet forwarders has updated successfully');
     }
 
-    public function store_farwarder(Request $request)
-    {
-        $validated = $request->validate([
-            'mode' => 'required',
-            'refrence' => 'required',
-            'forwarder1' => 'required|not in:0',
-            'forwarder_1_awb' => 'required',
-            'consignor' => 'required',
-            'consignee' => 'required',
-        ]);
-
-
-        $receved_mode =   explode('_', $request->mode);
-        $source = $receved_mode[0];
-        $destination = $receved_mode[1];
-
-
-        // $namespace = 'App\\Models\\ShipNtrack\\ForwarderMaping\\' . $model;
-        // $product_model = new $namespace;
-
-        $tracking_data = [
-            'reference_id' => $request->refrence,
-            'consignor' => $request->consignor,
-            'consignee' => $request->consignee,
-            'forwarder_1' => $request->forwarder1,
-            'forwarder_1_awb' => $request->forwarder_1_awb,
-            'forwarder_1_flag' => 0,
-            'forwarder_2' => $request->forwarder2,
-            'forwarder_2_awb' => $request->forwarder_2_awb,
-            'forwarder_2_flag' => 0,
-            'forwarder_3' => $request->forwarder3,
-            'forwarder_3_awb' => $request->forwarder_3_awb,
-            'forwarder_3_flag' => 0,
-            'forwarder_4' => $request->forwarder4,
-            'forwarder_4_awb' => $request->forwarder_4_awb,
-            'forwarder_4_flag' => 0,
-            'status' => 0
-        ];
-
-        $model = '';
-        if ($request->mode == 'IN_AE' || $request->mode == 'USA_AE') {
-            Trackingae::upsert(
-                $tracking_data,
-                'reference_id_unique',
-                [
-                    'forwarder_1',
-                    'forwarder_1_awb',
-                    'forwarder_2',
-                    'forwarder_2_awb',
-                    'forwarder_3',
-                    'forwarder_3_awb',
-                    'forwarder_4',
-                    'forwarder_4_awb',
-
-                ]
-            );
-        }
-        // else if ($request->mode == 'USA_AE') {
-        //     USAtoAE::upsert(
-        //         $tracking_data,
-        //         'reference_id_unique',
-        //         [
-        //             'forwarder_1',
-        //             'forwarder_1_awb',
-        //             'forwarder_2',
-        //             'forwarder_2_awb',
-        //             'forwarder_3',
-        //             'forwarder_3_awb',
-        //             'forwarder_4',
-        //             'forwarder_4_awb',
-
-        //         ]
-        //     );
-        // } else if ($request->mode == 'USA_KSA') {
-        //     USAtoKSA::upsert(
-        //         $tracking_data,
-        //         'reference_id_unique',
-        //         [
-        //             'forwarder_1',
-        //             'forwarder_1_awb',
-        //             'forwarder_2',
-        //             'forwarder_2_awb',
-        //             'forwarder_3',
-        //             'forwarder_3_awb',
-        //             'forwarder_4',
-        //             'forwarder_4_awb',
-
-        //         ]
-        //     );
-        // } else if ($request->mode == 'IN_KSA') {
-        //     IntoKSA::upsert(
-        //         $tracking_data,
-        //         'reference_id_unique',
-        //         [
-        //             'forwarder_1',
-        //             'forwarder_1_awb',
-        //             'forwarder_2',
-        //             'forwarder_2_awb',
-        //             'forwarder_3',
-        //             'forwarder_3_awb',
-        //             'forwarder_4',
-        //             'forwarder_4_awb',
-
-        //         ]
-        //     );
-        // }
-
-        return redirect()->intended('/shipntrack/forwarder/')->with("success", "Tracking Details Uploaded Successfully");
-    }
-
-    public function courierget(Request $request)
-    {
-        $receved_mode =   explode('_', $request->mode);
-        $source = $receved_mode[0];
-        $destination = $receved_mode[1];
-        $partners_lists = CourierPartner::where(['source' => $source, 'destination' => $destination])->select('id', 'name')->get();
-
-        return response()->json($partners_lists);
-    }
     public function listing(Request $request)
     {
 

@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 class CreateCourierTable extends Migration
 {
@@ -13,6 +14,9 @@ class CreateCourierTable extends Migration
      */
     public function up()
     {
+        DB::connection('shipntracking')->statement('SET FOREIGN_KEY_CHECKS = 0');
+        Schema::connection('shipntracking')->dropIfExists('courier_partners');
+        DB::connection('shipntracking')->statement('SET FOREIGN_KEY_CHECKS = 1');
         Schema::connection('shipntracking')->create('courier', function (Blueprint $table) {
             $table->id();
             $table->string('courier_name')->nullable();
@@ -21,8 +25,6 @@ class CreateCourierTable extends Migration
 
             $table->unique(['courier_name', 'courier_code'], 'courier_name_code_unique');
         });
-        Schema::connection('shipntracking')->dropIfExists('courier_partners');
-
     }
 
     /**
@@ -32,7 +34,6 @@ class CreateCourierTable extends Migration
      */
     public function down()
     {
-        Schema::connection('shipntracking')->dropIfExists('courier');
         Schema::connection('shipntracking')->create('courier_partners', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
@@ -49,5 +50,6 @@ class CreateCourierTable extends Migration
             $table->timestamps();
             $table->unique(['name', 'source', 'destination'], 'name_source_des_unique');
         });
+        Schema::connection('shipntracking')->dropIfExists('courier');
     }
 }
