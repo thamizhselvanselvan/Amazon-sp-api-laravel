@@ -60,7 +60,7 @@ class Search_Product
             }
 
             $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->toArray();
-            $token = $mws_regions[0]['aws_verified'][1]['auth_code'];
+            $token = $mws_regions[0]['aws_verified'][2]['auth_code'];
             foreach ($getProducts->products as $key => $getProduct) {
 
 
@@ -133,38 +133,45 @@ class Search_Product
                         $catalog_images = json_decode($catalog);
                         foreach ($catalog_images[0]->images as $key3 => $images) {
 
+                            
                             if (isset($catalog_images[0]->images)) {
-                                foreach ($catalog_images[0]->images as  $counter => $image_data_new) {
-                                    $counter++;
-
-                                    if (isset($image_data_new->link)) {
-
-                                        $img1["Images${counter}"] = '';
-                                        if ($counter == 1) {
-                                            ($img1["Images${counter}"] = $image_data_new->link);
-                                        } else if ($counter == 4) {
-                                            ($img1["Images${counter}"] = $image_data_new->link);
-                                        } else if ($counter == 7) {
-                                            ($img1["Images${counter}"] = $image_data_new->link);
-                                        } else if ($counter == 10) {
-                                            ($img1["Images${counter}"] = $image_data_new->link);
-                                        } else if ($counter == 13) {
-                                            ($img1["Images${counter}"] = $image_data_new->link);
-                                        } else if ($counter == 16) {
-                                            ($img1["Images${counter}"] = $image_data_new->link);
-                                        } else if ($counter == 19) {
-                                            ($img1["Images${counter}"] = $image_data_new->link);
-                                        }
-                                    }
-                                    $catalog_for_cliqnshop[$key1]['images'][$catalog_data['asin']] = $img1;
+                                if ($key3 <= 9 && $images->height > 500 || $images->width > 500) {
+                                    $catalog_for_cliqnshop[$key1]['images'][$catalog_data['asin']]['image' . $key3 + 1] = $images->link;
+        
                                 }
-                            }
+                            // if (isset($catalog_images[0]->images)) {
+                            //     foreach ($catalog_images[0]->images as  $counter => $image_data_new) {
+                            //         $counter++;
+
+                            //         if (isset($image_data_new->link)) {
+
+                            //             $img1["Images${counter}"] = '';
+                            //             if ($counter == 1) {
+                            //                 ($img1["Images${counter}"] = $image_data_new->link);
+                            //             } else if ($counter == 4) {
+                            //                 ($img1["Images${counter}"] = $image_data_new->link);
+                            //             } else if ($counter == 7) {
+                            //                 ($img1["Images${counter}"] = $image_data_new->link);
+                            //             } else if ($counter == 10) {
+                            //                 ($img1["Images${counter}"] = $image_data_new->link);
+                            //             } else if ($counter == 13) {
+                            //                 ($img1["Images${counter}"] = $image_data_new->link);
+                            //             } else if ($counter == 16) {
+                            //                 ($img1["Images${counter}"] = $image_data_new->link);
+                            //             } else if ($counter == 19) {
+                            //                 ($img1["Images${counter}"] = $image_data_new->link);
+                            //             }
+                            //         }
+                            //         $catalog_for_cliqnshop[$key1]['images'][$catalog_data['asin']] = $img1;
+                            //     }
+                            // }
 
                             // if ($key3 <= 10 && $images->height >= 1000 && $images->height <= 2000) {
                             //     $catalog_for_cliqnshop[$key1]['images'][$catalog_data['asin']]['image' . $key3 + 1] = $images->link;
                             // }
                         }
                     }
+                }
 
                     $catalog_for_cliqnshop[$key1]['asin'] = $catalog_data['asin'];
                     $catalog_for_cliqnshop[$key1]['itemName'] = isset($catalog_data['itemName']) ? $catalog_data['itemName'] : '';
