@@ -41,14 +41,8 @@ class DumpDataIntoZoho extends Command
      */
     public function handle()
     {
-        $zoho = new ZohoApi;
+        $zoho = new ZohoApi(new_zoho: true);
         $zohoOrder = new ZohoOrder;
-
-        //  $zoho_search_order_exists = $zoho->getLead(3556003000002020017);
-
-        //  print_r($zoho_search_order_exists);
-
-        //  exit;   
 
         $Lead_Sources = [
             'CKSHOP-Amazon.in',
@@ -83,7 +77,6 @@ class DumpDataIntoZoho extends Command
         $cnt = 0;
 
         foreach ($mongoDB_data as $record) {
-
 
             $prod_array = [
                 "Alternate_Order_No" => $record["Alternate_Order_No"],
@@ -185,8 +178,6 @@ class DumpDataIntoZoho extends Command
                 "Description" => $record['Description']
             ];
 
-
-
             $zoho_search_order_exists = $zoho->search($record['Alternate_Order_No'], $record['Payment_Reference_Number1'], 1);
 
             if(!$zoho_search_order_exists) {
@@ -202,8 +193,6 @@ class DumpDataIntoZoho extends Command
                     $string = "Inserted ". $prod_array['Alternate_Order_No'] . " $cnt";
     
                     $this->info($string);
-
-                    
     
                 } else {
                     

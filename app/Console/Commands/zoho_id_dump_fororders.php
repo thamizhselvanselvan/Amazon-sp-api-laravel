@@ -56,7 +56,7 @@ class zoho_id_dump_fororders extends Command
                     msg($amazon_order_id);
                     msg($order_item_id);
 
-                    $zohoApi = new ZohoApi;
+                    $zohoApi = new ZohoApi(new_zoho: false);
                     $zoho_search_order_exists = $zohoApi->search($amazon_order_id, $order_item_id);
 
                     if ($zoho_search_order_exists) {
