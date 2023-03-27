@@ -70,6 +70,10 @@ return [
     'zoho_secret' => env('ZOHO_SECRET'),
     'zoho_refresh_token' => env('ZOHO_REFRESH_TOKEN'),
 
+    'new_zoho_client_id' => env('NEW_ZOHO_CLIENT_ID'),
+    'new_zoho_secret' => env('NEW_ZOHO_SECRET'),
+    'new_zoho_refresh_token' => env('NEW_ZOHO_REFRESH_TOKEN'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
