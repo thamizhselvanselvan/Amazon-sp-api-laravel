@@ -57,12 +57,15 @@
                     <x-adminlte-select label="Courier" name="courier_name" id="courier_name" type="text" value="{{ old('courier_name') }}">
                         <option value="">Select Courier</option>
                         @foreach ($couriers as $Courier)
-                        <option value="{{$Courier->id}}">{{$Courier->courier_name}}</option>
+                        @if ($Courier->id == $selected_courier)
+                        <option value="{{ $Courier->id }}" selected> {{ $Courier->courier_name }}</option>
+                        @else
+                        <option value="{{ $Courier->id  }}">{{$Courier->courier_name }}</option>
+                        @endif
+                        <!-- <option value="{{$Courier->id}}">{{$Courier->courier_name}}</option> -->
                         @endforeach
 
                     </x-adminlte-select>
-
-
 
                 </div>
                 <div class="col-6">

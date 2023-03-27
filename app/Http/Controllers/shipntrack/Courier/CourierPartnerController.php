@@ -125,8 +125,9 @@ class CourierPartnerController extends Controller
     public function edit($id)
     {
         $data =  CourierPartner::where('id', $id)->get()->first();
+        $selected_courier = $data->courier_id;
         $couriers = Courier::query()->get();
-        return view('shipntrack.Courier_partner.edit', compact('data', 'couriers'));
+        return view('shipntrack.Courier_partner.edit', compact('data', 'couriers', 'selected_courier'));
     }
 
     public function update(Request $request, $id)

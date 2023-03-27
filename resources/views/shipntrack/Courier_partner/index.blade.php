@@ -27,7 +27,7 @@
             </a>
         </h2>
     </div>
-    <h1 class="m-0 text-dark col">Partner's</h1>
+    <h1 class="m-0 text-dark col">Courier Partner's</h1>
 </div>
 @stop
 
@@ -92,7 +92,7 @@
                 <th>Status</th>
                 <th>Type</th>
                 <th>Time Zone</th>
-                 <th>Action</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -123,11 +123,11 @@
                     orderable: false,
                     searchable: false
                 },
-                 {
+                {
                     data: 'user_name',
                     name: 'user_name',
                 },
-                 {
+                {
                     data: 'courier_name',
                     name: 'courier_name',
                 },
