@@ -166,13 +166,13 @@ class DumpDataIntoZoho extends Command
                 "Product_SKU" => $record["Product_Code"],
                 "Product_Name" => $record["US_Shipper"],
                 "International_Shipping_Weight_LBS" =>  (float)$record['Bombino_Shipping_Weight_LBS'],
-                "International_Shipping_Date" =>  date("Y-m-d", strtotime($record["Bombino_Shipping_Date"])),
+                "International_Shipping_Date" => (isset($record['Bombino_Shipping_Date'])) ? date("Y-m-d", strtotime($record["Bombino_Shipping_Date"])) : '',
                 "Amount_Paid_by_Customer" => $record['Amount_Paid_by_Customer'],
                 "HSN" => $record['H_Code'],
 
                 "Bombino_Local_Tracking" => $record['Bombino_Shipment_ID'],
                 "Local_Tracking_Number" => $record['India_Tracking_Number'],
-                "Local_Shipping_Date" => date("Y-m-d", strtotime($record['India_Shipping_Date'])),
+                "Local_Shipping_Date" => (isset($record['India_Shipping_Date'])) ? date("Y-m-d", strtotime($record['India_Shipping_Date'])) : '',
                 "Local_Courier_Name" => $record['India_Courier_Name'],
                 "Delivered_at_US" => strlen($record['US_EDD1']) > 0 ? date("Y-m-d", strtotime($record['US_EDD1'])) : '',
                 "Description" => $record['Description']
