@@ -1046,26 +1046,33 @@ return [
             'can' => ['Admin'],
             'submenu' => [
                 [
-                    'text' => 'Courier Master',
+                    'text' => 'Master',
                     'icon' => 'far  fa fa-cogs',
                     'can' => ['Admin'],
 
                     'submenu' =>
                     [
                         [
-                            'text' => 'Courier Partner',
+                            'text' => 'Courier',
                             'url' => 'shipntrack/courier',
                             'can' => ['Admin'],
                             'icon' => 'far fa fa-archive',
                         ],
                         [
-                            'text' => 'Booking Master',
+                            'text' => 'Booking',
                             'url' => 'shipntrack/booking',
                             'can' => ['Admin'],
                             'icon' => 'far fa fa-plane',
                         ],
                         [
-                            'text' => 'Courier Status Master',
+                            'text' => 'Partners',
+                            'url' => 'shipntrack/partners',
+                            'can' => ['Admin'],
+                            'icon' => 'fas fa-handshake',
+                        ],
+                        
+                        [
+                            'text' => 'Courier Status',
                             'url' => 'shipntrack/status/manager',
                             'can' => ['Admin'],
                             'icon' => 'far fa fa-cog',

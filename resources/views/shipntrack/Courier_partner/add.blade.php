@@ -53,8 +53,25 @@
             @csrf
 
             <div class="row justify-content-center">
+
                 <div class="col-6">
-                    <x-adminlte-input label="Name" name="name" type="text" placeholder="Name" value="{{ old('name') }}" />
+                    <x-adminlte-input label="User Name" name="user_name" type="text" placeholder="user_name" value="{{ old('user_name') }}" />
+
+                </div>
+                <div class="col-6">
+                    <!-- <x-adminlte-input label="Courier Name" name="name" type="text" placeholder="Name" value="{{ old('name') }}" /> -->
+
+
+                    <x-adminlte-select label="Courier" name="courier_name" id="courier_name" type="text" value="{{ old('courier_name') }}">
+                        <option value="">Select Courier</option>
+                        @foreach ($couriers as $Courier)
+                        <option value="{{$Courier->id}}">{{$Courier->courier_name}}</option>
+                        @endforeach
+
+                    </x-adminlte-select>
+
+
+
                 </div>
 
                 <div class="col-6">
@@ -95,17 +112,12 @@
                         <option value="3">Both</option>
                     </x-adminlte-select>
                 </div>
-                <div class="col-6">
-                    <x-adminlte-input label="Courier code" name="code" type="text" placeholder="code" value="{{ old('code') }}" />
-                </div>
-            </div>
-            <div class="row justify-content-center">
+
                 <div class="col-6">
                     <!-- <x-adminlte-input label="Time Zone" name="time_zone" type="text" placeholder="time zone" value="{{ old('time_zone') }}" /> -->
                     <x-adminlte-select name="time_zone" label="Select Time Zone:" id="time_zone" value="{{ old('time_zone') }}">
                         <option value="">Select Time Zone</option>
                         <option value="Asia/Kolkata"> Asia/Kolkata</option>
-                        <option value="Asia/Dubai">Asia/Dubai</option>
                         <option value="Asia/Dubai">Asia/Dubai</option>
                         <option value="Asia/Kuwait">Asia/Kuwait</option>
                         <option value="Asia/Riyadh">Asia/Riyadh</option>
@@ -115,23 +127,25 @@
                     </x-adminlte-select>
                 </div>
                 <div class="col-6">
-                    <x-adminlte-input label="key1" name="key1" type="text" placeholder="key1" value="{{ old('key1') }}" />
+                    <x-adminlte-input label="User Id" name="user_id" type="text" placeholder="user_id" value="{{ old('user_id') }}" />
+                </div>
+            </div>
+            <div class="row justify-content-center">
+
+                <div class="col-6">
+                    <x-adminlte-input label="Password" name="password" type="text" placeholder="password" value="{{ old('password') }}" />
                 </div>
 
                 <div class="col-6">
-                    <x-adminlte-input label="key2" name="key2" type="text" placeholder="key2" value="{{ old('key2') }}" />
+                    <x-adminlte-input label="Account ID" name="account_id" type="text" placeholder="account_id" value="{{ old('account_id') }}" />
                 </div>
 
                 <div class="col-6">
-                    <x-adminlte-input label="key3" name="key3" type="text" placeholder="key3" value="{{ old('key3') }}" />
+                    <x-adminlte-input label="key-1" name="key1" type="text" placeholder="key1" value="{{ old('key1') }}" />
                 </div>
 
                 <div class="col-6">
-                    <x-adminlte-input label="key4" name="key4" type="text" placeholder="key4" value="{{ old('key4') }}" />
-                </div>
-
-                <div class="col-6">
-                    <x-adminlte-input label="key5" name="key5" type="text" placeholder="key5" value="{{ old('key5') }}" />
+                    <x-adminlte-input label="key-2" name="key2" type="text" placeholder="key2" value="{{ old('key2') }}" />
                 </div>
             </div>
             <div class="row justify-content-center">

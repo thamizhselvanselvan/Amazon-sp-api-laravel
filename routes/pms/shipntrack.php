@@ -13,6 +13,7 @@ Route::get('shipntrack/bombino', 'shipntrack\Bombino\BombinoExpressController@in
 Route::get('shipntrack/bombino/upload', 'shipntrack\Bombino\BombinoExpressController@upload')->name('shipntrack.bombino.upload');
 Route::post('shipntrack/bombino/gettracking', 'shipntrack\Bombino\BombinoExpressController@getTracking')->name('shipntrack.bombino.gettracking');
 
+
 Route::match($method, 'shipntrack/forwarder', 'shipntrack\Forwarder\ForwarderPacketMappingController@index')->name('shipntrack.forwarder');
 Route::get('shipntrack/forwarder/template/download', 'shipntrack\Forwarder\ForwarderPacketMappingController@templateDownload')->name('shipntrack.forwarder.template');
 Route::get('shipntrack/forwarder/upload', 'shipntrack\Forwarder\ForwarderPacketMappingController@Upload')->name('shipntrack.forwarder.upload');
@@ -53,12 +54,33 @@ Route::post('shipntrack/stopTrackingUpadate', 'shipntrack\Tracking\TrackingContr
 // Route::get('shipntrack/trackingList', 'shipntrack\TrackingList\TrackingListController@index');
 // Route::get('shipntrack/trackingList/search', 'shipntrack\TrackingList\TrackingListController@SearchByAwbNo');
 
-Route::match($method, 'shipntrack/courier', 'shipntrack\Courier\CourierPartnerController@index')->name('snt.courier.index');
-Route::match($method, 'shipntrack/courier/create', 'shipntrack\Courier\CourierPartnerController@create')->name('courier.partners.create');
-Route::match($method, 'shipntrack/courier/store', 'shipntrack\Courier\CourierPartnerController@store')->name('courier.partners.store');
-Route::match($method, 'shipntrack/courier/remove/{id}', 'shipntrack\Courier\CourierPartnerController@destroy')->name('courier.partners.delete');
-Route::match($method, 'shipntrack/courier/partner/{id}/edit', 'shipntrack\Courier\CourierPartnerController@edit')->name('courier.partners.edit');
-Route::match($method, 'shipntrack/courier/partner/update/{id}', 'shipntrack\Courier\CourierPartnerController@update')->name('courier.partners.update');
+
+
+
+Route::match($method, 'shipntrack/courier', 'shipntrack\Courier\CourierController@index')->name('shipntrack.courier.index');
+
+Route::post('shipntrack/courier/store', 'shipntrack\Courier\CourierController@couriergsave')->name('snt.courier.store');
+Route::get('shipntrack/courier/{id}/edit', 'shipntrack\Courier\CourierController@courieredit')->name('snt.courier.edit');
+Route::post('shipntrack/courier/save/edit', 'shipntrack\Courier\CourierController@courierupdate')->name('snt.courier.update');
+Route::get('shipntrack/courier/{id}/remove', 'shipntrack\Courier\CourierController@courierremove')->name('snt.courier.remove');
+
+
+
+
+
+
+
+
+
+
+
+
+Route::match($method, 'shipntrack/partners', 'shipntrack\Courier\CourierPartnerController@index')->name('snt.courier.index');
+Route::match($method, 'shipntrack/partners/create', 'shipntrack\Courier\CourierPartnerController@create')->name('courier.partners.create');
+Route::match($method, 'shipntrack/partners/store', 'shipntrack\Courier\CourierPartnerController@store')->name('courier.partners.store');
+Route::match($method, 'shipntrack/partners/remove/{id}', 'shipntrack\Courier\CourierPartnerController@destroy')->name('courier.partners.delete');
+Route::match($method, 'shipntrack/partner/{id}/edit', 'shipntrack\Courier\CourierPartnerController@edit')->name('courier.partners.edit');
+Route::match($method, 'shipntrack/partners/partner/update/{id}', 'shipntrack\Courier\CourierPartnerController@update')->name('courier.partners.update');
 
 
 Route::get('shipntrack/booking', 'shipntrack\BookingMasterController@index')->name('snt.booking.index');

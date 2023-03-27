@@ -114,13 +114,10 @@ Route::post('cliqnshop/brand/ban/edit/{id}', 'Cliqnshop\CliqnshopBrandController
 Route::post('cliqnshop/brand/ban/delete/{id}', 'Cliqnshop\CliqnshopBrandController@delete_Brand')->name('cliqnshop.brand.ban.delete');
 
 
-// Route::get('product/test', function () {
-//   // $data[] = $key;
-//   $searchKey = 'iPhone';
-//   $siteId = '4.';
-//   $source = 'uae';
-//   $ApiCall = new Search_Product();
-//   $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
-//   po($result);
-// });
+Route::get('product/test', function () {
+  // $data[] = $key;
+  $searchKey = 'notebook';
+  $ApiCall = new Search_Product();
+  $result = $ApiCall->SearchProductByKey($searchKey);
+});
 
