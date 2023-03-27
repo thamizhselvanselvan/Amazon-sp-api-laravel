@@ -117,6 +117,10 @@ class Search_Product
                                 $catalog_for_cliqnshop[$key1]['generic_keywords'] = $gener_key;
                             }
                         }
+                        if (array_key_exists('item_package_dimensions', (array) $attributes)) {
+                            $package_dimensions = json_decode($catalog);
+                            $catalog_for_cliqnshop[$key1]['item_package_dimensions'] = isset($package_dimensions->item_package_dimensions) ? $package_dimensions->item_package_dimensions: '';
+                        }
                     }
 
                     if ($key2 == 'browseClassification') {
@@ -179,13 +183,19 @@ class Search_Product
                     }
                 }
             }
+            
             foreach ($catalog_for_cliqnshop as $cliqnshop_catalog) {
+                $obj = $cliqnshop_catalog['item_package_dimensions'] = isset($cliqnshop_catalog['item_package_dimensions']) ? $cliqnshop_catalog['item_package_dimensions'] : '';
+                $length_package_dimension =  isset($obj[0]->length->value) ? $obj[0]->length->value : '';
+                $width_package_dimension =  isset($obj[0]->width->value) ? $obj[0]->width->value : '';
+                $height_package_dimension =  isset($obj[0]->height->value) ? $obj[0]->height->value : '';
+
                  $ignore_cat = DB::connection('cliqnshop')->table('cns_ban_category')->where('site_id',$siteId)->pluck('category_code')->toArray();
 
                  $ignore_brand = DB::connection('cliqnshop')->table('cns_ban_brand')->where('site_id',$siteId)->pluck('brand')->toArray();
                  
                  $ignore_brand_for_cliqnshop = ucwords(str_replace(',', '|', implode(',',$ignore_brand)), '|');
-                if (isset($cliqnshop_catalog['price']) && $cliqnshop_catalog['height'] !== '' && $cliqnshop_catalog['height'] < 9.84252 && $cliqnshop_catalog['width'] !== '' && $cliqnshop_catalog['width'] < 9.84252 && $cliqnshop_catalog['length'] !== '' && $cliqnshop_catalog['length'] < 9.84252 && isset($cliqnshop_catalog['images']) && !in_array($cliqnshop_catalog['category_code'],$ignore_cat,true) && preg_match("(" . strtolower($ignore_brand_for_cliqnshop) . ")", strtolower($cliqnshop_catalog['brand'])) !== 1) {
+                if (isset($cliqnshop_catalog['price']) && $length_package_dimension !== '' && $length_package_dimension < 25 && $width_package_dimension !== '' && $width_package_dimension < 25 && $height_package_dimension !== '' && $height_package_dimension < 25 && isset($cliqnshop_catalog['images']) && !in_array($cliqnshop_catalog['category_code'],$ignore_cat,true) && preg_match("(" . strtolower($ignore_brand_for_cliqnshop) . ")", strtolower($cliqnshop_catalog['brand'])) !== 1) {
                     $category = $cliqnshop_catalog['category_code'] ?? 'demo-new';
                     $asin = $cliqnshop_catalog['asin'];
                     $item_name = $cliqnshop_catalog['itemName'];
