@@ -101,7 +101,7 @@ class AmazonFeedProcessAvailability
                         <SKU>' . $feedlist['product_sku'] . '</SKU>
                         <Available >' . $feedlist['available'] . ' </Available>
                         <Quantity>25</Quantity>
-                        FulfillmentLatency>10</FulfillmentLatency>
+                        <FulfillmentLatency>10</FulfillmentLatency>
                         <SwitchFulfillmentTo>MFN</SwitchFulfillmentTo>
                     </Inventory>
                 </Message>';
@@ -139,6 +139,7 @@ class AmazonFeedProcessAvailability
                     "path" => "/attributes/fulfillment_availability",
                     "value" => [
                         [
+                            "marketplace_id" => "A21TJRUUN4KGV",
                             "fulfillment_channel_code" => "DEFAULT",
                             "quantity" => 1
                         ]
