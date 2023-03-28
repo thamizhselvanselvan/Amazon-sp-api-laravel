@@ -13,7 +13,7 @@ class CliqnshopCataloginsert
     public function insertdata_cliqnshop($site_id, $category, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image, $keyword,  $short_description,  $long_description, $generic_keywords)
     {
         Log::alert($asin . ' - ' . $category);
-        Log::info($image);
+        
         try {
             $display_code = '1';
             if ($Price_US_IN == '0' || $Price_US_IN == '' || $image === [$asin => [
@@ -31,7 +31,7 @@ class CliqnshopCataloginsert
 ) {
                 $display_code = '0';
             }
-            Log::notice($display_code);
+            
             $string_original = str_replace('&', 'and', $item_name);
 
             $item_name_replaced = (preg_replace('/[^A-Za-z0-9\-]/', ' ', $string_original));

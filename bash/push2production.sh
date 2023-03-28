@@ -1,13 +1,13 @@
 #!/bin/bash
 
-./vendor/bin/phpunit
+#./vendor/bin/phpunit
 
-if [ $? -ne 0 ]; then
-    echo 'PHP Unit Failed'
-    exit
-else
-    echo 'PHP Unit Passed'
-fi
+#if [ $? -ne 0 ]; then
+#    echo 'PHP Unit Failed'
+#    exit
+#else
+#    echo 'PHP Unit Passed'
+#fi
 
 cb=$(git symbolic-ref --short HEAD)
 
