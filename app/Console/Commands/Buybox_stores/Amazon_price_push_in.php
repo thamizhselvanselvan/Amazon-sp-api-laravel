@@ -75,6 +75,8 @@ class Amazon_price_push_in extends Command
         $total = 700;
         $tagger = 0;
 
+        $asin_collections = [];
+
         foreach ($products as $product) {
 
             $id_rules_applied = $product->asin . "_" . $product->store_id;
@@ -83,40 +85,46 @@ class Amazon_price_push_in extends Command
 
             $asins[] = $product->asin;
             // if Push is not equal to existing store price then don't push it
-            if (isset($push_price) && $push_price != $product->store_price && $product->bb_price != 0 && $product->current_availability == 1) {
+            if (isset($push_price) && $push_price != $product->store_price && $product->bb_price != 0) {
 
-                echo "selected $product->asin, $push_price \n";
+                if($product->current_availability == 1 && !in_array($product->asin, $asin_collections)) {
 
-                $price_datas[$tagger][] = [
-                    'asin' => $product->asin,
-                    'store_id' =>  $product->store_id,
-                    'product_sku' => $product->product_sku,
-                    'availability' => $product->availability,
-                    'app_360_price' => $product->app_360_price,
-                    'destination_bb_price' => $product->bb_price,
-                    'push_price' => ceil($push_price),
-                    'base_price' => $product->base_price,
-                    'ceil_price' => $product->ceil_price,
-                    'latency' => $product->latency,
-                    'current_store_price' => $product->store_price,
-                    'lowest_seller_id' => $product->lowest_seller_id,
-                    'lowest_seller_price' => $product->lowest_seller_price,
-                    'highest_seller_id' => $product->highest_seller_id,
-                    'highest_seller_price' => $product->highest_seller_price,
-                    'bb_winner_id' => $product->bb_winner_id,
-                    'bb_winner_price' => $product->bb_winner_price,
-                    'is_bb_won' => $product->is_bb_won,
-                    'applied_rules' => json_encode($this->rules_applied[$id_rules_applied]) ?? "No Rules Applied",
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ];
+                    echo "selected $product->asin, $push_price \n";
 
-                if($cnt == $total) {
-                    $tagger++;
-                    $cnt = 0;
-                }                
+                    $asin_collections[] = $product->asin; 
+                    
+                    $price_datas[$tagger][] = [
+                        'asin' => $product->asin,
+                        'store_id' =>  $product->store_id,
+                        'product_sku' => $product->product_sku,
+                        'availability' => $product->availability,
+                        'app_360_price' => $product->app_360_price,
+                        'destination_bb_price' => $product->bb_price,
+                        'push_price' => ceil($push_price),
+                        'base_price' => $product->base_price,
+                        'ceil_price' => $product->ceil_price,
+                        'latency' => $product->latency,
+                        'current_store_price' => $product->store_price,
+                        'lowest_seller_id' => $product->lowest_seller_id,
+                        'lowest_seller_price' => $product->lowest_seller_price,
+                        'highest_seller_id' => $product->highest_seller_id,
+                        'highest_seller_price' => $product->highest_seller_price,
+                        'bb_winner_id' => $product->bb_winner_id,
+                        'bb_winner_price' => $product->bb_winner_price,
+                        'is_bb_won' => $product->is_bb_won,
+                        'applied_rules' => json_encode($this->rules_applied[$id_rules_applied]) ?? "No Rules Applied",
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ];
 
-                $cnt++;
+                    if($cnt == $total) {
+                        $tagger++;
+                        $cnt = 0;
+                    }                
+
+                    $cnt++;
+
+                } // 
             } else {
                 echo $push_price . ' - ' . $product->store_price . " - " . $product->ceil_price . "\n";
                 echo ('push_price is' . ' - ' . $push_price);
