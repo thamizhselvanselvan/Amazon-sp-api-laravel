@@ -12,10 +12,12 @@ class ZohoApi
     public $zoho_lead_base_url = "";
     public $zoho_token_base_url = "";
     public $zoho_token_path = "zoho/access_token.txt";
+    public $new_zoho_token_path = "new_zoho/access_token.txt";
 
-    public function __construct()
+    public function __construct(bool $new_zoho)
     {
-        $this->auth_token = $this->getAccessToken();
+     
+        $this->auth_token = $this->getAccessToken($new_zoho);
 
         if (app()->environment() === 'production') {
             $this->zoho_lead_base_url = "https://www.zohoapis.com/crm/v2/Leads";
@@ -26,24 +28,29 @@ class ZohoApi
         }
     }
 
-    public function getAccessToken()
+    public function getAccessToken($new_zoho)
     {
-        if (!Storage::exists($this->zoho_token_path)) {
+
+        $path = ($new_zoho) ? $this->new_zoho_token_path : $this->zoho_token_path;
+
+        if (!Storage::exists($path)) {
             return false;
         }
 
-        $response = json_decode(Storage::get($this->zoho_token_path), true);
+        $response = json_decode(Storage::get($path), true);
 
         return $response['access_token'] ?? null;
     }
 
     public function generateAccessToken()
     {
+
         $request = Http::asForm()->post($this->zoho_token_base_url, [
             'client_id' => config('app.zoho_client_id'),
             'client_secret' => config('app.zoho_secret'),
             'refresh_token' => config('app.zoho_refresh_token'),
             'grant_type' => 'refresh_token'
+   
         ]);
 
         if ($request->status() == 200) {
@@ -53,6 +60,33 @@ class ZohoApi
             }
 
             Storage::put($this->zoho_token_path, json_encode($request->json()));
+
+            print("Zoho Access Token Generated Successfully");
+            return true;
+        }
+
+        $slackMessage = json_encode($request->json());
+        Log::channel('slack')->info($slackMessage);
+        return false;
+    }
+
+    public function generateNewAccessToken()
+    {
+
+        $request = Http::asForm()->post($this->zoho_token_base_url, [
+            'client_id' => config('app.new_zoho_client_id'),
+            'client_secret' => config('app.new_zoho_secret'),
+            'refresh_token' => config('app.new_zoho_refresh_token'),
+            'grant_type' => 'refresh_token'
+        ]);
+
+        if ($request->status() == 200) {
+
+            if (!Storage::exists($this->new_zoho_token_path)) {
+                Storage::put($this->new_zoho_token_path, '');
+            }
+
+            Storage::put($this->new_zoho_token_path, json_encode($request->json()));
 
             print("Zoho Access Token Generated Successfully");
             return true;
@@ -122,6 +156,21 @@ class ZohoApi
             ])->post($this->zoho_lead_base_url, [
                 "data" => [$parameters]
             ]);
+
+        if ($response->status() == 201) {
+            return $response->json();
+        }
+
+        return $response->body();
+    }
+
+    public function deleteLead(array $parameters)
+    {   
+        //https://www.zohoapis.com/crm/v2/{module_api_name}?ids={record_id1,record_id2,..}
+        $response = Http::withoutVerifying()
+            ->withHeaders([
+                'Authorization' => 'Zoho-oauthtoken ' . $this->auth_token
+            ])->delete($this->zoho_lead_base_url."?ids=".implode(",", $parameters));
 
         if ($response->status() == 201) {
             return $response->json();

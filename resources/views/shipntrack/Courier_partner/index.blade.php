@@ -85,18 +85,13 @@
         <thead class="table-info">
             <tr>
                 <th>ID</th>
+                <th>user Name</th>
                 <th>Courier Name</th>
                 <th>Source</th>
                 <th>Destination</th>
-                <th>Code</th>
                 <th>Status</th>
                 <th>Type</th>
                 <th>Time Zone</th>
-                <th>Key1</th>
-                <th>Key2</th>
-                <th>Key3</th>
-                <th>Key4</th>
-                <th>Key5</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -127,9 +122,14 @@
                     name: 'DT_RowIndex',
                     orderable: false,
                     searchable: false
-                }, {
-                    data: 'name',
-                    name: 'name',
+                },
+                {
+                    data: 'user_name',
+                    name: 'user_name',
+                },
+                {
+                    data: 'courier_name',
+                    name: 'courier_name',
                 },
                 {
                     data: 'source',
@@ -138,10 +138,6 @@
                 {
                     data: 'destination',
                     name: 'destination',
-                },
-                {
-                    data: 'courier_code',
-                    name: 'courier_code',
                 },
                 {
                     data: 'active',
@@ -155,26 +151,6 @@
                 {
                     data: 'time_zone',
                     name: 'time_zone',
-                },
-                {
-                    data: 'key1',
-                    name: 'key1',
-                },
-                {
-                    data: 'key2',
-                    name: 'key2',
-                },
-                {
-                    data: 'key3',
-                    name: 'key3',
-                },
-                {
-                    data: 'key4',
-                    name: 'key4',
-                },
-                {
-                    data: 'key5',
-                    name: 'key5',
                 },
                 {
                     data: 'action',
@@ -198,7 +174,7 @@
 
             $.ajax({
                 method: 'get',
-                url: '/shipntrack/courier/remove/' + id,
+                url: '/shipntrack/partners/remove/' + id,
                 data: {
                     "_token": "{{ csrf_token() }}",
                     "_method": 'DELETE'
