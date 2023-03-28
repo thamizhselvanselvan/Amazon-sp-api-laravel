@@ -13,26 +13,30 @@ class CourierStatusManagementController extends Controller
 {
     public function index(Request $request)
     {
-        $data =  StatusManagement::query()->with(['courierpartner'])->get();
-
-
-
+        $data =  StatusManagement::query()->with(['courierstatus'])->get();
         if ($request->ajax()) {
             $store_order_item[] = 0;
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->editColumn('courier_partner_id', function ($row) {
-                    $name = $row->courierpartner->name;
+                ->editColumn('courier_id', function ($row) {
+                    $name = $row->courierstatus->courier_name;
                     return $name;
                 })
                 ->addColumn('booking_master_id', function ($row) {
                     $datas = Booking::select('id', 'name')->get();
-                    $data_stat =   StatusManagement::select('booking_master_id')->get();
-                    $html = '<select class="w-50" id="select_status" href="javascript:void(0)" name"select">Select Status';
+                    $selected_status =  StatusManagement::where('id', $row->id)->select('booking_master_id')->get();
 
-                    $html .= "<option value=null-$row->id selected>Select Status</option>";
+                    $status = ($selected_status[0]->booking_master_id);
+
+                    $html = '<select class="w-50" id="select_status" href="javascript:void(0)" name"select">Select Status';
+                    $html .= "<option value=null-$row->id>Select Status</option>";
                     foreach ($datas as $data) {
-                        $html .=  "<option value='$data->id-$row->id'>$data->name</option>";
+                        if($status == $data->id )
+                        {
+                            $html .=  "<option value='$data->id-$row->id' selected>$data->name</option>";
+                        } else {
+                            $html .=  "<option value='$data->id-$row->id'>$data->name</option>";
+                        }
                     }
                     return $html;
                 })

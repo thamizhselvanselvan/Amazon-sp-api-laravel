@@ -34,7 +34,8 @@ class CourierController extends Controller
             'c_name' => 'required',
             'code' => 'required',
         ]);
-        Courier::create(['courier_name' => $request->c_name, 'courier_code' => $request->code]);
+          $code = strtolower($request->code);
+        Courier::create(['courier_name' => $request->c_name, 'courier_code' => $code]);
         return redirect('/shipntrack/courier')->with("success", "Record has been inserted successfully!");
     }
 
@@ -50,7 +51,8 @@ class CourierController extends Controller
             'c_name' => 'required',
             'code' => 'required',
         ]);
-        Courier::where('id', $request->update_id)->update(['courier_name' => $request->c_name, 'courier_code' => $request->code]);
+        $code = strtolower($request->code);
+        Courier::where('id', $request->update_id)->update(['courier_name' => $request->c_name, 'courier_code' => $code]);
         return redirect('/shipntrack/courier')->with("success", "Record has been Updated successfully!");
     }
 
