@@ -124,20 +124,40 @@ class catalog_upload_to_cliqnshop extends Command
                     if (array_key_exists("link", $image_data_new)) {
                         $img1["Images${counter}"] = '';
                         if ($counter == 1) {
+                            if ($image_data_new['height'] > 500 || $image_data_new['width'] > 500) {
                             ($img1["Images${counter}"] = $image_data_new['link']);
+                            }
                         } else if ($counter == 4) {
-                            ($img1["Images${counter}"] = $image_data_new['link']);
+                            if ($image_data_new['height'] > 500 || $image_data_new['width'] > 500) {
+                                ($img1["Images${counter}"] = $image_data_new['link']);
+                                }
                         } else if ($counter == 7) {
-                            ($img1["Images${counter}"] = $image_data_new['link']);
+                            if ($image_data_new['height'] > 500 || $image_data_new['width'] > 500) {
+                                ($img1["Images${counter}"] = $image_data_new['link']);
+                                }
                         } else if ($counter == 10) {
-                            ($img1["Images${counter}"] = $image_data_new['link']);
+                            if ($image_data_new['height'] > 500 || $image_data_new['width'] > 500) {
+                                ($img1["Images${counter}"] = $image_data_new['link']);
+                                }
                         } else if ($counter == 13) {
-                            ($img1["Images${counter}"] = $image_data_new['link']);
+                            if ($image_data_new['height'] > 500 || $image_data_new['width'] > 500) {
+                                ($img1["Images${counter}"] = $image_data_new['link']);
+                                }
+                        }
+                        else if ($counter == 16) {
+                            if ($image_data_new['height'] > 500 || $image_data_new['width'] > 500) {
+                                ($img1["Images${counter}"] = $image_data_new['link']);
+                                }
+                        }
+                        else if ($counter == 19) {
+                            if ($image_data_new['height'] > 500 || $image_data_new['width'] > 500) {
+                                ($img1["Images${counter}"] = $image_data_new['link']);
+                                }
                         }
                     }
                 }
             } else {
-                for ($i = 1; $i <= 5; $i++) {
+                for ($i = 1; $i <= 7; $i++) {
                     $img1["Images${i}"] = '';
                 }
             }
