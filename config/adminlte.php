@@ -1059,10 +1059,10 @@ return [
                             'icon' => 'far fa fa-archive',
                         ],
                         [
-                            'text' => 'Booking',
+                            'text' => 'Status',
                             'url' => 'shipntrack/booking',
                             'can' => ['Admin'],
-                            'icon' => 'far fa fa-plane',
+                            'icon' => 'far fa fa-bar-chart',
                         ],
                         [
                             'text' => 'Partners',
