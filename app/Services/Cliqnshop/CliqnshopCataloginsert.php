@@ -16,7 +16,7 @@ class CliqnshopCataloginsert
         Log::info($image);
         try {
             $display_code = '1';
-            if ($Price_US_IN == '0' || $Price_US_IN == '' || $image === [
+            if ($Price_US_IN == '0' || $Price_US_IN == '' || $image === [$asin => [
                 "Images1" => '',
                 "Images2" => '',
                 "Images3" => '',
@@ -27,11 +27,11 @@ class CliqnshopCataloginsert
                 "Images8" => '',
                 "Images9" => '',
                 "Images10" => '',
-            ]
+            ]]
 ) {
                 $display_code = '0';
             }
-
+            Log::notice($display_code);
             $string_original = str_replace('&', 'and', $item_name);
 
             $item_name_replaced = (preg_replace('/[^A-Za-z0-9\-]/', ' ', $string_original));
