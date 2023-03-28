@@ -36,67 +36,66 @@
         </div>
     </div>
     <div class="pl-2">
-        <table class="table table-bordered yajra-datatable table-striped text-center">
-            @if (isset($data1[0]))
-                @foreach ($data1[0] as $key1 => $record)
-                    <th class="bg-info">{{ $key1 }}</th>
-                @endforeach
-            @endif
+        <div class="row">
+            <div class="col-2">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Origin:</th>
+                            <td></td>
+                        <tr>
+                            <th>Destination:</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>Conginor:</th>
+                            <td>{{ $forwarder_details['consignor'] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Conginee:</th>
+                            <td>{{ $forwarder_details['consignee'] }}</td>
+                        </tr>
+                    </thead>
 
-            @if (isset($data2[0]))
-                @foreach ($data2[0] as $key2 => $record)
-                    <th class="bg-info">{{ $key2 }}</th>
-                @endforeach
-            @endif
+                </table>
+            </div>
+            <div class="col-10">
 
-            @if (isset($records3[0]))
-                @foreach ($records3[0] as $key2 => $record)
-                    <th class="bg-info">{{ $key2 }}</th>
-                @endforeach
-            @endif
+                <table class="table table-bordered yajra-datatable table-striped text-center">
 
-            @if (isset($records4[0]))
-                @foreach ($records4[0] as $key2 => $record)
-                    <th class="bg-info">{{ $key2 }}</th>
-                @endforeach
-            @endif
+                    <thead>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Activity</th>
+                        <th>Location</th>
+                    </thead>
 
-            <tbody>
-                @foreach ($data1 as $key3 => $records)
-                    <tr>
-                        @foreach ($records as $key4 => $data)
-                            <td>{{ $records[$key4] ?? 'NA' }}</td>
+
+                    <tbody>
+                        @foreach ($records as $record)
+                            <tr>
+                                @foreach ($record as $key => $result)
+                                    @if ($key == 'date')
+                                        <td>{{ date('Y-m-d', strtotime($record['date'] ?? 'NA')) }}
+                                        </td>
+                                        <td>{{ date('H:i:s', strtotime($record['date'] ?? 'NA')) }}
+                                        </td>
+                                    @elseif ($key == 'update_date_time')
+                                        <td>{{ date('Y-m-d', strtotime($record['update_date_time'] ?? 'NA')) }}
+                                        </td>
+                                        <td>{{ date('H:i:s', strtotime($record['update_date_time'] ?? 'NA')) }}
+                                        </td>
+                                    @else
+                                        <td>{{ $result }}</td>
+                                    @endif
+                                @endforeach
+                            </tr>
                         @endforeach
 
-                        @if (isset($data2[$key3]))
-                            @foreach ($data2[$key3] as $data)
-                                <td>{{ $data ?? 'NA' }}</td>
-                            @endforeach
-                        @else
-                            @if (isset($data2[0]))
-                                @foreach ($data2[0] as $data)
-                                    <td>{{ '' }}</td>
-                                @endforeach
-                            @endif
-                        @endif
-
-                        @if (isset($records3[$key3]))
-                            @foreach ($records3[$key3] as $data)
-                                <td>{{ $data ?? 'NA' }}</td>
-                            @endforeach
-                        @endif
-
-                        @if (isset($records4[$key3]))
-                            @foreach ($records4[$key3] as $data)
-                                <td>{{ $data ?? 'NA' }}</td>
-                            @endforeach
-                        @endif
-
-                    </tr>
-                @endforeach
-
-            </tbody>
-        </table>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 @stop
 
