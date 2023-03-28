@@ -36,6 +36,11 @@
                     class="btn-sm" />
             </a>
         </h2> --}}
+        <a href="{{ route('shipntrack.courier.track') }}">
+
+            <x-adminlte-button label="Get Details" type="submit" name="GetDetails" theme="primary" icon="fa fa-refresh"
+                class="float-right" id="dashboard_refresh" />
+        </a>
     </div>
 @stop
 

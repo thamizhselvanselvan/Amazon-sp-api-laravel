@@ -5,6 +5,7 @@ namespace App\Http\Controllers\shipntrack\Tracking;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Redirect;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
@@ -162,6 +163,13 @@ class CourierTrackingController extends Controller
 
         return view('shipntrack.Smsa.packetDetails', compact('forwarder_details', 'records'));
     }
+
+    public function getDetails()
+    {
+        commandExecFunc('mosh:courier-tracking');
+        return Redirect::back()->with('success', 'Fetching details please wait..');
+    }
+
     public function uploadAwb()
     {
         return view('shipntrack.Smsa.upload');
