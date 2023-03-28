@@ -16,7 +16,19 @@ class CliqnshopCataloginsert
         Log::info($image);
         try {
             $display_code = '1';
-            if ($Price_US_IN == '0' || $Price_US_IN == '' || $image == '') {
+            if ($Price_US_IN == '0' || $Price_US_IN == '' || $image == [
+                "Images1" => '',
+                "Images2" => '',
+                "Images3" => '',
+                "Images4" => '',
+                "Images5" => '',
+                "Images6" => '',
+                "Images7" => '',
+                "Images8" => '',
+                "Images9" => '',
+                "Images10" => '',
+            ]
+) {
                 $display_code = '0';
             }
 
