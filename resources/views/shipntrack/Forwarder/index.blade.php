@@ -36,6 +36,11 @@
                     class="btn-sm" />
             </a>
         </h2> --}}
+        <a href="{{ route('shipntrack.courier.track') }}">
+
+            <x-adminlte-button label="Get Details" type="submit" name="GetDetails" theme="primary" icon="fa fa-refresh"
+                class="float-right" id="dashboard_refresh" />
+        </a>
     </div>
 @stop
 
@@ -170,7 +175,7 @@
                         let forwarder_data = "<option value='' >" + 'Select Forwarder' + "</option>";
                         $.each(result, function(i, result) {
                             forwarder_data += "<option value='" + result.id + "'>" + result
-                                .name +
+                                .user_name + " - " + result.courier_name +
                                 "</option>";
                         });
                         $('#forwarder_info_1').append(forwarder_data);

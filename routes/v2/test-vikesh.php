@@ -26,15 +26,79 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Catalog\PriceConversion;
-use App\Models\ShipNTrack\SMSA\SmsaTrackings;
-use App\Models\ShipNTrack\Aramex\AramexTracking;
-use App\Models\ShipNTrack\Aramex\AramexTrackings;
-use App\Models\ShipNTrack\Bombino\BombinoTracking;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
+use App\Models\ShipNTrack\CourierTracking\SmsaTracking;
+use App\Models\ShipNTrack\CourierTracking\SmsaTrackings;
+use App\Models\ShipNTrack\CourierTracking\AramexTracking;
+use App\Models\ShipNTrack\CourierTracking\AramexTrackings;
+use App\Models\ShipNTrack\CourierTracking\BombinoTracking;
 use JeroenNoten\LaravelAdminLte\View\Components\Tool\Modal;
 
 Route::get('test/mongo', function () {
+    $awb_no = '1000000002';
 
+    $records = Trackingae::with(
+        [
+            'CourierPartner1.courier_names',
+            'CourierPartner2.courier_names',
+            'CourierPartner3.courier_names',
+            'CourierPartner4.courier_names'
+        ]
+    )->where('awb_number', $awb_no)
+        ->get()
+        ->toArray();
+
+
+    $results = [];
+    foreach ($records as $record) {
+        if ($record['forwarder_1_flag'] == 0 && $record['forwarder_1_awb'] != '') {
+            $trackingAPI_name = $record['courier_partner1']['courier_names']['courier_name'];
+
+            $results = [
+                'awb_no' => $record['forwarder_1_awb'],
+                'reference_id' => $record['courier_partner1']['id'],
+                'user_name' => $record['courier_partner1']['user_id'],
+                'pass_key' => $record['courier_partner1']['password'],
+                'account_id' => $record['courier_partner1']['account_id'],
+                'time_zone' => $record['courier_partner1']['time_zone'],
+            ];
+            $class = ServicesClass(services_path: 'ShipNTrack\Tracking', services_class: $trackingAPI_name . "TrackingAPIServices");
+            $class->$trackingAPI_name($results);
+
+            po($results);
+        }
+
+        if ($record['forwarder_2_flag'] == 0 && $record['forwarder_2_awb'] != '') {
+            $trackingAPI_name = $record['courier_partner2']['courier_names']['courier_name'];
+
+            $results = [
+                'awb_no' => $record['forwarder_2_awb'],
+                'reference_id' => $record['courier_partner2']['id'],
+                'user_name' => $record['courier_partner2']['user_id'],
+                'pass_key' => $record['courier_partner2']['password'],
+                'account_id' => $record['courier_partner2']['account_id'],
+                'time_zone' => $record['courier_partner2']['time_zone'],
+            ];
+            // $class = ServicesClass(services_path: 'ShipNTrack\Tracking', services_class: $trackingAPI_name . "TrackingAPIServices");
+            // $class->$trackingAPI_name($results);
+
+            po($results);
+        }
+    }
+
+    exit;
+
+    $records = Trackingae::with(['CourierPartner1', 'CourierPartner1.courier_names', 'CourierPartner2', 'CourierPartner2.courier_names'])
+        ->orWhere('forwarder_1_flag', 0)
+        ->orWhere('forwarder_2_flag', 0)
+        ->orWhere('forwarder_3_flag', 0)
+        ->orWhere('forwarder_4_flag', 0)
+        ->get()
+        ->toArray();
+    po($records);
+
+    exit;
     $data1 = zoho::where('Lead_Status', 'Duplicate Lead')
         // ->limit(1)
         ->get()
@@ -153,7 +217,7 @@ Route::get('test/shipntrack/aramex/{awbno}', function ($awbNo) {
     }
     po($aramex_records);
     exit;
-    AramexTrackings::upsert($aramex_records, ['awbno_update_timestamp_description_unique'], [
+    AramexTracking::upsert($aramex_records, ['awbno_update_timestamp_description_unique'], [
         'account_id',
         'awbno',
         'update_code',
@@ -217,7 +281,7 @@ Route::get('test/shipntrack/smsa/{awbno}', function ($awbNo) {
 
     po($smsa_records);
     exit;
-    SmsaTrackings::upsert($smsa_records, ['awbno_date_activity_unique'], [
+    SmsaTracking::upsert($smsa_records, ['awbno_date_activity_unique'], [
         'account_id',
         'awbno',
         'date',

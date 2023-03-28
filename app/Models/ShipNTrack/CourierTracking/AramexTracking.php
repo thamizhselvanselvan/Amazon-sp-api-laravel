@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models\ShipNTrack\Aramex;
+namespace App\Models\ShipNTrack\CourierTracking;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AramexTrackings extends Model
+class AramexTracking extends Model
 {
     use HasFactory;
     protected $connection = 'shipntracking';
