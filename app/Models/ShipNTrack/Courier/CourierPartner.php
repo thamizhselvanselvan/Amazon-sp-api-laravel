@@ -25,7 +25,7 @@ class CourierPartner extends Model
         'password',
         'account_id'
     ];
-       public function courier_names()
+    public function courier_names()
     {
         return $this->hasOne(Courier::class, 'id', 'courier_id');
     }
