@@ -4,7 +4,7 @@ echo "GIT hook started"
 
 #npm install
 
-composer install --ignore-platform-reqs
+#composer install --ignore-platform-reqs
 
 #php artisan self-diagnosis
 
