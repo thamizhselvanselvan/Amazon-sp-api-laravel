@@ -18,10 +18,12 @@ class ChangeForignKeyIntoTrackingTable extends Migration
 
             Schema::connection('shipntracking')->table($table, function (Blueprint $table) {
 
+                /*
                 $table->dropForeign(['forwarder_1']);
                 $table->dropForeign(['forwarder_2']);
                 $table->dropForeign(['forwarder_3']);
                 $table->dropForeign(['forwarder_4']);
+                */
 
                 $table->foreign('forwarder_1')->references('id')->on('partners');
                 $table->foreign('forwarder_2')->references('id')->on('partners');
