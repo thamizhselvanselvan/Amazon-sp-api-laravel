@@ -25,10 +25,12 @@ class ChangeForignKeyIntoTrackingTable extends Migration
                 $table->dropForeign(['forwarder_4']);
                 */
 
+                /*
                 $table->foreign('forwarder_1')->references('id')->on('partners');
                 $table->foreign('forwarder_2')->references('id')->on('partners');
                 $table->foreign('forwarder_3')->references('id')->on('partners');
                 $table->foreign('forwarder_4')->references('id')->on('partners');
+                */
             });
         }
     }
