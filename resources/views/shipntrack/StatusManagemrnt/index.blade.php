@@ -51,9 +51,9 @@
                 <tr class="table-info">
                     <th>ID</th>
                     <th>Courier Partner</th>
+                    <th>Courier Status</th>
                     <th>Status</th>
-                    <th>Booking Status</th>
-                    <th>Stop</th>
+                    <th>Stop Tracking</th>
                 </tr>
             </thead>
 
