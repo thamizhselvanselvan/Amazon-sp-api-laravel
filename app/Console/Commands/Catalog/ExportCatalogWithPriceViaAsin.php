@@ -147,6 +147,7 @@ class ExportCatalogWithPriceViaAsin extends Command
 
     public function catalogPriceUS($selected_headers, $chunk_data, $exportFilePath, $str)
     {
+
         $header_details = $this->csvHeaderFormating($selected_headers, $str);
         $headers = $header_details['headers'];
         $csv_header = $header_details['csv_header'];
@@ -202,15 +203,33 @@ class ExportCatalogWithPriceViaAsin extends Command
                 if ($key2 == 'dimensions') {
 
                     $dimension = json_decode($value);
-                    $package = isset($dimension[0]->package) ? $dimension[0]->package : 'NA';
+                    $package = isset($dimension[0]->package) ? $dimension[0]->package : 0;
 
-                    $catalogwithprice[$key]['height'] = isset($package->height->value) ? $package->height->value : 'NA';
-                    $catalogwithprice[$key]['length'] = isset($package->length->value) ? $package->length->value : 'NA';
-                    $catalogwithprice[$key]['width'] = isset($package->width->value) ? $package->width->value : 'NA';
-                    $catalogwithprice[$key]['unit'] = isset($package->width->unit) ? $package->width->unit : 'NA';
+                    $height = isset($package->height->value) ? $package->height->value : 0;
+                    $length = isset($package->length->value) ? $package->length->value : 0;
+                    $width = isset($package->width->value) ? $package->width->value : 0;
+
+                    $packet_dimension = $height * $length * $width;
+
+                    if ($this->country_code == 'IN') {
+
+                        $volumetric_weight = VolumetricIntoKG($packet_dimension);
+                    } else if ($this->country_code == 'US') {
+
+                        $volumetric_weight = VolumetricIntoPounds($packet_dimension);
+                    }
+                    $catalogwithprice[$key]['volumetric_weight'] = $volumetric_weight;
+
+                    $weight = $record['weight'];
+                    $catalogwithprice[$key]['actual_weight'] = $weight > $volumetric_weight ? $weight : $volumetric_weight;
                 }
 
-                if ($key2 != 'images' && $key2 != 'product_types' && $key2 != 'updated_at' && $key2 != 'dimensions') {
+                if ($key2 == 'browse_classification') {
+
+                    $browse = (array) json_decode($value, true);
+                    $catalogwithprice[$key]['category']  = $browse['classificationId'] ?? 'NA';
+                }
+                if ($key2 != 'images' && $key2 != 'product_types' && $key2 != 'updated_at' && $key2 != 'dimensions' && $key2 != 'browse_classification') {
 
                     $catalogwithprice[$key][$key2] = $value ?? 'NA';
                 }
@@ -234,15 +253,24 @@ class ExportCatalogWithPriceViaAsin extends Command
         $csv_header = [];
 
         foreach ($selected_headers as $key => $selected_header) {
-            $headers[] = "${selected_header}";
+            $header = str_replace(['actual_weight', 'volumetric_weight'], '', $selected_header);
+            if ($header != '') {
+
+                $headers[] =  "${header}";
+            }
+
             $csv_title = str_replace($str, '', $selected_header);
             if ($csv_title == 'images') {
                 $csv_head[] = ['image1', 'image2'];
             }
-            if ($csv_title == 'dimensions') {
-                $csv_head[] = ['height', 'length', 'width', 'unit'];
+            // if ($csv_title == 'dimensions') {
+            //     $csv_head[] = ['height', 'length', 'width', 'unit'];
+            // }
+            if ($csv_title == 'browse_classification') {
+                $csv_head[] = ['category'];
             }
-            if ($selected_header != 'cat.images' && $selected_header != 'cat.dimensions') {
+
+            if ($selected_header != 'cat.images' && $selected_header != 'cat.dimensions' && $selected_header != 'cat.browse_classification') {
                 $csv_head[$key][] = str_replace('_', ' ', $csv_title);
             }
         }
