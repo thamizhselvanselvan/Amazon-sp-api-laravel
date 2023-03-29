@@ -28,7 +28,7 @@ class CourierStatusManagementController extends Controller
 
                     $status = ($selected_status[0]->booking_master_id);
 
-                    $html = '<select class="w-50" id="select_status" href="javascript:void(0)" name"select">Select Status';
+                    $html = '<select class="w-75" id="select_status" href="javascript:void(0)" name"select">Select Status';
                     $html .= "<option value=null-$row->id>Select Status</option>";
                     foreach ($datas as $data) {
                         if($status == $data->id )

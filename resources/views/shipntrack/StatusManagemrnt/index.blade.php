@@ -51,9 +51,9 @@
                 <tr class="table-info">
                     <th>ID</th>
                     <th>Courier Partner</th>
+                    <th>Courier Status</th>
                     <th>Status</th>
-                    <th>Booking Status</th>
-                    <th>Stop</th>
+                    <th>Stop Tracking</th>
                 </tr>
             </thead>
 
@@ -69,7 +69,9 @@
 @section('js')
 <script type="text/javascript">
     $(function() {
-
+        $.extend($.fn.dataTable.defaults, {
+            pageLength: 100,
+        });
         let yajra_table = $('.yajra-datatable').DataTable({
             processing: true,
             serverSide: true,

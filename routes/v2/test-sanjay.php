@@ -7,6 +7,7 @@ use App\Models\Admin\Backup;
 use App\Services\Zoho\ZohoApi;
 use PhpParser\Node\Stmt\Foreach_;
 use App\Models\Inventory\Shipment;
+use App\Models\ShipNTrack\Booking;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Inventory\Shipment_Inward_Details;
 use App\Http\Controllers\Inventory\StockController;
+use App\Models\ShipNTrack\Courier\Courier;
+use App\Models\ShipNTrack\Courier\StatusManagement;
+use App\Models\ShipNTrack\CourierTracking\SmsaTracking;
 
 Route::get('test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
 
@@ -305,6 +309,26 @@ Route::get('config/test', function () {
         po($value);
     }
 });
-Route::get('event',function(){
+
+Route::get('sanju/event', function () {
     event(new EventManager('hello world'));
+});
+
+Route::get('sanju/test/status', function () {
+    $smsa_data =  SmsaTracking::query()
+        ->select('activity')
+        ->distinct()
+        ->get();
+
+    $courier_code =   Courier::query()->where('courier_name', 'SMSA')->select('id')->get();
+    $code = $courier_code[0]->id;
+
+    foreach ($smsa_data as $datas) {
+        $data= [
+            'courier_id' => $code,
+            'courier_status' => $datas->activity
+        ];
+        StatusManagement::upsert($data, ['cp_status_cp_id_unique'], ['courier_id', 'courier_status']);
+    }
+
 });
