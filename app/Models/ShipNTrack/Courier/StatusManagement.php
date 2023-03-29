@@ -19,6 +19,7 @@ class StatusManagement extends Model
         'courier_status',
         'booking_master_id',
         'stop_tracking',
+        'api_display',
     ];
 
     public function courierpartner()
