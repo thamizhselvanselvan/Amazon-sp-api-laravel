@@ -49,8 +49,9 @@ class CourierStatusfetchandInsert extends Command
             ->get();
 
         $courier_code_sm =   Courier::query()->where('courier_name', 'SMSA')->select('id')->get();
-        $code_sm = $courier_code_sm[0]->id;
-
+        if (isset($courier_code_sm[0]->id)) {
+            $code_sm = $courier_code_sm[0]->id;
+        }
         foreach ($smsa_data as $datas) {
             $data = [
                 'courier_id' => $code_sm,
@@ -68,7 +69,10 @@ class CourierStatusfetchandInsert extends Command
             ->get();
 
         $courier_code_bom =   Courier::query()->where('courier_name', 'Bombino')->select('id')->get();
-        $code_bom = $courier_code_bom[0]->id;
+        if (isset($courier_code_bom[0]->id)) {
+
+            $code_bom = $courier_code_bom[0]->id;
+        }
         foreach ($bombono_data as $data_bom) {
             $data = [
                 'courier_id' => $code_bom,
@@ -86,7 +90,9 @@ class CourierStatusfetchandInsert extends Command
             ->get();
 
         $courier_code_aramax =   Courier::query()->where('courier_name', 'Aramex')->select('id')->get();
-        $code_aramax = $courier_code_aramax[0]->id;
+        if (isset($courier_code_aramax[0]->id)) {
+            $code_aramax = $courier_code_aramax[0]->id;
+        }
         foreach ($aramax_data as $data_bom) {
             $data = [
                 'courier_id' => $code_aramax,
