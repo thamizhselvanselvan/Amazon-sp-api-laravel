@@ -1,39 +1,21 @@
 <?php
 
-use RedBeanPHP\R;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use League\Csv\Reader;
-use League\Csv\Writer;
-use Carbon\CarbonPeriod;
 use App\Models\TestMongo;
 use App\Models\MongoDB\zoho;
 use GuzzleHttp\Psr7\Request;
-use App\Models\FileManagement;
-use App\Models\Catalog\catalogae;
-use App\Models\Catalog\catalogin;
-use App\Models\Catalog\catalogsa;
-use App\Models\Catalog\catalogus;
 use App\Models\Catalog\PricingIn;
-use App\Models\Catalog\PricingUs;
 use App\Models\ProcessManagement;
-use App\Models\Catalog\Catalog_in;
-use App\Models\Catalog\Catalog_us;
 use Illuminate\Support\Facades\DB;
-use App\Models\Catalog\Asin_source;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
-use App\Services\Catalog\PriceConversion;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
 use App\Models\ShipNTrack\CourierTracking\SmsaTracking;
-use App\Models\ShipNTrack\CourierTracking\SmsaTrackings;
 use App\Models\ShipNTrack\CourierTracking\AramexTracking;
-use App\Models\ShipNTrack\CourierTracking\AramexTrackings;
-use App\Models\ShipNTrack\CourierTracking\BombinoTracking;
-use JeroenNoten\LaravelAdminLte\View\Components\Tool\Modal;
 
 Route::get('test/mongo', function () {
     $awb_no = '1000000002';

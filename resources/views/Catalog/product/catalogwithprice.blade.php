@@ -128,11 +128,11 @@
                                         <label class="ml-1" for="ASIN">ASIN</label>
                                     </div>
 
-                                    <div class="col-2 catalog">
+                                    {{-- <div class="col-2 catalog">
                                         <input class="choose_header" type="checkbox" value="cat.dimensions"
                                             name='header[]' id="dimensions">
                                         <label class="ml-1" for="Dimensions">Dimensions</label>
-                                    </div>
+                                    </div> --}}
 
                                     <div class="col-2 catalog">
                                         <input class="choose_header" type="checkbox" value="cat.images" name='header[]'
@@ -152,14 +152,16 @@
                                         <label class="ml-1" for="Item Name">Item Name</label>
                                     </div>
 
-                                </div>
-
-                                <div class="row ">
                                     <div class="col-2 catalog">
                                         <input class="choose_header" type="checkbox" value="cat.brand" name='header[]'
                                             id="brand">
                                         <label class="ml-1" for="Brand">Brand</label>
                                     </div>
+
+                                </div>
+
+                                <div class="row ">
+
                                     <div class="col-2 catalog">
                                         <input class="choose_header" type="checkbox" value="cat.manufacturer"
                                             name='header[]' id="manufacturer">
@@ -195,20 +197,51 @@
                                             name='header[]' id="available">
                                         <label class="ml-1" for="Available">Available</label>
                                     </div>
+
+                                    <div class="col-2 catalog">
+                                        <input class="choose_header" type="checkbox" value="cat.browse_classification"
+                                            name='header[]' id="browse_classification">
+                                        <label class="ml-1" for="Category">Category</label>
+                                    </div>
+
                                 </div>
 
                                 <div class="row ">
 
                                     <div class="col-2 india_price d-none">
-                                        <input class="choose_header" type="checkbox" value="pricing_ins.weight"
-                                            name='header[]' id="weight">
+                                        <input class="choose_header" type="checkbox"
+                                            value="pricing_ins.weight-cat.dimensions" name='header[]' id="weight">
+                                        <label class="ml-1" for="Weight">Weight</label>
+                                    </div>
+
+                                    <div class="col-2 india_price d-none">
+                                        <input class="choose_header" type="checkbox" value="volumetric_weight"
+                                            name='header[]' id="volumetric_weight">
+                                        <label class="ml-1" for="Volumetric Weight">Volumetric Weight</label>
+                                    </div>
+
+                                    <div class="col-2 india_price d-none">
+                                        <input class="choose_header" type="checkbox" value="actual_weight"
+                                            name='header[]' id="actual_weight">
+                                        <label class="ml-1" for="Actual Weight">Actual Weight</label>
+                                    </div>
+
+                                    <div class="col-2 usa_price d-none">
+                                        <input class="choose_header" type="checkbox"
+                                            value="pricing_uss.weight-cat.dimensions" name='header[]' id="weight">
                                         <label class="ml-1" for="Weight">Weight</label>
                                     </div>
 
                                     <div class="col-2 usa_price d-none">
-                                        <input class="choose_header" type="checkbox" value="pricing_uss.weight"
-                                            name='header[]' id="weight">
-                                        <label class="ml-1" for="Weight">Weight</label>
+                                        <input class="choose_header" type="checkbox" value="volumetric_weight"
+                                            name='header[]' id="volumetric_weight">
+                                        <label class="ml-1" for="Volumetric Weight">Volumetric Weight</label>
+                                    </div>
+
+                                    <div class="col-2 usa_price d-none">
+                                        <input class="choose_header" type="checkbox" value="actual_weight"
+                                            name='header[]' id="actual_weight">
+                                        <label class="ml-1" for="Actual Weight">Actual Weight</label>
                                     </div>
 
                                     <div class="col-2 india_price d-none">
@@ -341,11 +374,11 @@
                                         <label class="ml-1" for="ASIN">ASIN</label>
                                     </div>
 
-                                    <div class="col-2 catalog">
+                                    {{-- <div class="col-2 catalog">
                                         <input class="choose_header" type="checkbox" value="cat.dimensions"
                                             name='header[]' id="dimensions">
                                         <label class="ml-1" for="Dimensions">Dimensions</label>
-                                    </div>
+                                    </div> --}}
 
                                     <div class="col-2 catalog">
                                         <input class="choose_header" type="checkbox" value="cat.images" name='header[]'
@@ -365,14 +398,14 @@
                                         <label class="ml-1" for="Item Name">Item Name</label>
                                     </div>
 
-                                </div>
-
-                                <div class="row ">
                                     <div class="col-2 catalog">
                                         <input class="choose_header" type="checkbox" value="cat.brand" name='header[]'
                                             id="brand">
                                         <label class="ml-1" for="Brand">Brand</label>
                                     </div>
+                                </div>
+
+                                <div class="row ">
                                     <div class="col-2 catalog">
                                         <input class="choose_header" type="checkbox" value="cat.manufacturer"
                                             name='header[]' id="manufacturer">
@@ -403,26 +436,57 @@
                                         <label class="ml-1" for="Available">Available</label>
                                     </div>
 
-
-
                                     <div class="col-2 usa_price d-none">
                                         <input class="choose_header" type="checkbox" value="pricing_uss.available"
                                             name='header[]' id="available">
                                         <label class="ml-1" for="Available">Available</label>
                                     </div>
+
+                                    <div class="col-2 catalog">
+                                        <input class="choose_header" type="checkbox" value="cat.browse_classification"
+                                            name='header[]' id="browse_classification">
+                                        <label class="ml-1" for="Category">Category</label>
+                                    </div>
                                 </div>
 
                                 <div class="row ">
+
+
                                     <div class="col-2 india_price d-none">
-                                        <input class="choose_header" type="checkbox" value="pricing_ins.weight"
-                                            name='header[]' id="weight">
+                                        <input class="choose_header" type="checkbox"
+                                            value="pricing_ins.weight-cat.dimensions" name='header[]' id="weight">
+                                        <label class="ml-1" for="Weight">Weight</label>
+                                    </div>
+
+                                    <div class="col-2 india_price d-none">
+                                        <input class="choose_header" type="checkbox" value="volumetric_weight"
+                                            name='header[]' id="volumetric_weight">
+                                        <label class="ml-1" for="Volumetric Weight">Volumetric Weight</label>
+                                    </div>
+
+                                    <div class="col-2 india_price d-none">
+                                        <input class="choose_header" type="checkbox" value="actual_weight"
+                                            name='header[]' id="actual_weight">
+                                        <label class="ml-1" for="Actual Weight">Actual Weight</label>
+                                    </div>
+
+
+                                    <div class="col-2 usa_price d-none">
+                                        <input class="choose_header" type="checkbox"
+                                            value="pricing_uss.weight-cat.dimensions" name='header[]' id="weight">
                                         <label class="ml-1" for="Weight">Weight</label>
                                     </div>
 
                                     <div class="col-2 usa_price d-none">
-                                        <input class="choose_header" type="checkbox" value="pricing_uss.weight"
-                                            name='header[]' id="weight">
-                                        <label class="ml-1" for="Weight">Weight</label>
+                                        <input class="choose_header" type="checkbox" value="volumetric_weight"
+                                            name='header[]' id="volumetric_weight">
+                                        <label class="ml-1" for="Volumetric Weight">Volumetric Weight</label>
+                                    </div>
+
+                                    <div class="col-2 usa_price d-none">
+                                        <input class="choose_header" type="checkbox" value="actual_weight"
+                                            name='header[]' id="actual_weight">
+                                        <label class="ml-1" for="Actual Weight">Actual Weight</label>
                                     </div>
 
                                     <div class="col-2 india_price d-none">
