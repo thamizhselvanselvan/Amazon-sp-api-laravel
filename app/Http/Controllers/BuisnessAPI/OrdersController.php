@@ -125,21 +125,47 @@ class OrdersController extends Controller
     }
     public function orderpending(Request $request)
     {
-        $data = DB::connection('cliqnshop')->table('mshop_order')
-            ->whereIn('mshop_order.statuspayment', [5, 6])
-
-            ->join('mshop_order_base_product as oid', function ($query) {
-                $query->on('oid.baseid', '=', 'mshop_order.baseid')
-                    ->where('oid.status', '0');
-            })
-            ->join('mshop_product as pid', function ($query) {
-                $query->on('pid.id', '=', 'oid.prodid');
-            })
-            ->select('oid.prodcode', 'oid.name', 'oid.quantity', 'oid.price', 'pid.asin')
-            // ->orderBy('oid.mtime','desc')
-            ->get();
+        
 
         if ($request->ajax()) {
+
+            if ($request->has("site_id")) {
+                //  \Illuminate\Support\Facades\Log::alert('validation failed');
+               
+                $data = DB::connection('cliqnshop')->table('mshop_order')
+                ->whereIn('mshop_order.statuspayment', [5, 6])
+    
+                ->join('mshop_order_base_product as oid', function ($query) {
+                    $query->on('oid.baseid', '=', 'mshop_order.baseid')
+                        ->where('oid.status', '0');
+                })
+                ->join('mshop_product as pid', function ($query) {
+                    $query->on('pid.id', '=', 'oid.prodid');
+                })
+                ->where('mshop_order.siteid', $request->site_id)
+                ->select('oid.prodcode', 'oid.name', 'oid.quantity', 'oid.price', 'pid.asin', 'mshop_order.siteid')
+                // ->orderBy('oid.mtime','desc')
+                ->get();
+            }
+            else
+            {
+                $data = DB::connection('cliqnshop')->table('mshop_order')
+                ->whereIn('mshop_order.statuspayment', [5, 6])
+    
+                ->join('mshop_order_base_product as oid', function ($query) {
+                    $query->on('oid.baseid', '=', 'mshop_order.baseid')
+                        ->where('oid.status', '0');
+                })
+                ->join('mshop_product as pid', function ($query) {
+                    $query->on('pid.id', '=', 'oid.prodid');
+                })
+                ->select('oid.prodcode', 'oid.name', 'oid.quantity', 'oid.price', 'pid.asin', 'mshop_order.siteid')
+                // ->orderBy('oid.mtime','desc')
+                ->get();
+            }
+
+            
+
             return DataTables::of($data)
                 ->addIndexColumn()
 
@@ -151,7 +177,8 @@ class OrdersController extends Controller
                 ->make(true);
         }
 
-        return view('buisnessapi.orders.details');
+        $data['sites'] = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
+        return view('buisnessapi.orders.details',$data);
     }
 
     public function getorders(Request $request)
