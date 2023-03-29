@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Booking Master')
+@section('title', 'Status Master')
 
 @section('css')
 <link rel="stylesheet" href="/css/styles.css">
@@ -10,7 +10,7 @@
 @section('content_header')
 <div class="row">
     <div class="col">
-        <h1 class="m-0 text-dark text-center"><strong>Booking Master</strong> </h1>
+        <h1 class="m-0 text-dark text-center"><strong>Status Master</strong> </h1>
     </div>
 </div>
 @stop
