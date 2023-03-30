@@ -147,15 +147,15 @@
                     </x-adminlte-select>
                 </div>
                 <div class="col-6">
-                    <x-adminlte-input label="user_id" name="user_id" type="text" placeholder="user_id" value="{{ $data->user_id }}" />
+                    <x-adminlte-input label="user_id" name="user_id" type="text" i="user_id" placeholder="user_id" value="{{ $data->user_id }}" />
                 </div>
 
                 <div class="col-6">
-                    <x-adminlte-input label="password" name="password" type="text" placeholder="password" value="{{ $data->password }}" />
+                    <x-adminlte-input label="password" name="password" type="text" id="Password" placeholder=" password" value="{{ $data->password }}" />
                 </div>
 
                 <div class="col-6">
-                    <x-adminlte-input label="account_id" name="account_id" type="text" placeholder="account_id" value="{{ $data->account_id }}" />
+                    <x-adminlte-input label="account_id" name="account_id" id="account_id" type="text" placeholder="account_id" value="{{ $data->account_id }}" />
                 </div>
 
                 <div class="col-6">
@@ -175,4 +175,13 @@
 <div class="col"></div>
 </div>
 
+@stop
+
+
+@section('js')
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#Password,#user_id,#account_id').attr('autocomplete', 'off');
+    });
+</script>
 @stop
