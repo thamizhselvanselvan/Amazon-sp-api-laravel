@@ -70,10 +70,11 @@
         @csrf
 
         <div class="col-2">
-            <x-adminlte-select name="destination" label="Select Destination" id="destination">
-                <option value="">Select Destination</option>
+            <x-adminlte-select name="destination" label="Source-Destination" id="destination">
+                <option value="">Source-Destination</option>
                 @foreach ($destinations as $destination)
-                    <option value={{ $destination['destination'] }}>{{ $destination['destination'] }}</option>
+                    <option value={{ $destination['destination'] }}>
+                        {{ $destination['source'] . '-' . $destination['destination'] }}</option>
                 @endforeach
 
             </x-adminlte-select>
@@ -88,11 +89,11 @@
 
             <div>
                 <x-adminlte-input label="Consignor :" name="consignor" type="text" placeholder="Consignor"
-                    value="{{ old('consignor') }}" />
+                    value="{{ old('consignor') }}" autocomplete="off" />
             </div>
             <div>
                 <x-adminlte-input label="Consignee :" name="consignee" type="text" placeholder="Consignee"
-                    value="{{ old('consignee') }}" />
+                    value="{{ old('consignee') }}" autocomplete="off" />
             </div>
 
             <div></div>
@@ -125,19 +126,19 @@
 
             <div>
                 <x-adminlte-input label="Forwarder 1 AWB :" name="forwarder_1_awb" type="text"
-                    placeholder="Forwarder 1 AWB " value="{{ old('forwarder_1_awb') }}" />
+                    placeholder="Forwarder 1 AWB " value="{{ old('forwarder_1_awb') }}" autocomplete="off" />
             </div>
             <div>
                 <x-adminlte-input label="Forwarder 2 AWB :" name="forwarder_2_awb" type="text"
-                    placeholder="Forwarder 2 AWB " value="{{ old('forwarder_2_awb') }}" />
+                    placeholder="Forwarder 2 AWB " value="{{ old('forwarder_2_awb') }}" autocomplete="off" />
             </div>
             <div>
                 <x-adminlte-input label="Forwarder 3 AWB :" name="forwarder_3_awb" type="text"
-                    placeholder="Forwarder 3 AWB " value="{{ old('forwarder_3_awb') }}" />
+                    placeholder="Forwarder 3 AWB " value="{{ old('forwarder_3_awb') }}" autocomplete="off" />
             </div>
             <div>
                 <x-adminlte-input label="Forwarder 4 AWB :" name="forwarder_4_awb" type="text"
-                    placeholder="Forwarder 4 AWB " value="{{ old('forwarder_4_awb') }}" />
+                    placeholder="Forwarder 4 AWB " value="{{ old('forwarder_4_awb') }}" autocomplete="off" />
             </div>
 
             <div>
