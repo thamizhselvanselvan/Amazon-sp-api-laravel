@@ -1,99 +1,30 @@
 <?php
 
-use RedBeanPHP\R;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use League\Csv\Reader;
-use League\Csv\Writer;
-use Carbon\CarbonPeriod;
 use App\Models\TestMongo;
 use App\Models\MongoDB\zoho;
 use GuzzleHttp\Psr7\Request;
-use App\Models\FileManagement;
-use App\Models\Catalog\catalogae;
-use App\Models\Catalog\catalogin;
-use App\Models\Catalog\catalogsa;
-use App\Models\Catalog\catalogus;
 use App\Models\Catalog\PricingIn;
-use App\Models\Catalog\PricingUs;
 use App\Models\ProcessManagement;
-use App\Models\Catalog\Catalog_in;
-use App\Models\Catalog\Catalog_us;
 use Illuminate\Support\Facades\DB;
-use App\Models\Catalog\Asin_source;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
-use App\Services\Catalog\PriceConversion;
-use App\Models\ShipNTrack\SMSA\SmsaTrackings;
-use App\Models\ShipNTrack\Aramex\AramexTracking;
-use App\Models\ShipNTrack\Aramex\AramexTrackings;
-use App\Models\ShipNTrack\Bombino\BombinoTracking;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
-use JeroenNoten\LaravelAdminLte\View\Components\Tool\Modal;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
+use App\Models\ShipNTrack\CourierTracking\SmsaTracking;
+use App\Models\ShipNTrack\CourierTracking\AramexTracking;
 
 Route::get('test/mongo', function () {
-
-    $data1 = zoho::where('Lead_Status', 'Duplicate Lead')
-        // ->limit(1)
-        ->get()
-        ->toArray();
-    $columns = [];
-    $result1 = [];
-    foreach ($data1 as  $data) {
-        foreach ($data as $key => $d) {
-            $columns[] = $key;
-            // po($key);
-        }
-        break;
-    }
-    // exit;
-    foreach ($data1 as $key => $data) {
-
-        foreach ($data as $key1 => $result) {
-            $result1[$key][$key1] = $result;
-            // po($result);
-        }
-    }
-    po($columns);
-    // po($result1);
-    // exit;
-    CSV_Write('Desktop/zoho_duplicate.csv', $columns, $result1);
-    exit;
-    $data = zoho::select('ASIN', 'Alternate_Order_No', DB::raw('count(Alternate_Order_No) as cnt'))
-        ->groupBy('Alternate_Order_No')
-        ->orderBy('cnt', 'ASC')
-        ->limit(1000)
-        ->get()
-        ->toArray();
-    po($data);
+    $user = Auth::user()->name;
+    $email = Auth::user()->email;
+    po($user);
+    po($email);
 });
 
-Route::get('test/shipntrack/data', function () {
-
-
-    $records = IntoAE::with(['CourierPartner1', 'CourierPartner2'])
-        ->orWhere('forwarder_1_flag', 0)
-        ->orWhere('forwarder_2_flag', 0)
-        ->get()
-        ->toArray();
-
-    po($records);
-    exit;
-    $records = IntoAE::with(['CourierPartner1', 'CourierPartner2'])
-        ->where('awb_number', '1000000000')
-        ->get()
-        ->toArray();
-    foreach ($records as $record) {
-        if ($record['forwarder_1_flag'] == 0) {
-            po($record['forwarder_1_awb']);
-            po($record['courier_partner1']['key1']);
-            po($record['courier_partner1']['key2']);
-        }
-        po($record);
-    }
-});
 
 Route::get('test/shipntrack/aramex/{awbno}', function ($awbNo) {
 
@@ -153,7 +84,7 @@ Route::get('test/shipntrack/aramex/{awbno}', function ($awbNo) {
     }
     po($aramex_records);
     exit;
-    AramexTrackings::upsert($aramex_records, ['awbno_update_timestamp_description_unique'], [
+    AramexTracking::upsert($aramex_records, ['awbno_update_timestamp_description_unique'], [
         'account_id',
         'awbno',
         'update_code',
@@ -217,7 +148,7 @@ Route::get('test/shipntrack/smsa/{awbno}', function ($awbNo) {
 
     po($smsa_records);
     exit;
-    SmsaTrackings::upsert($smsa_records, ['awbno_date_activity_unique'], [
+    SmsaTracking::upsert($smsa_records, ['awbno_date_activity_unique'], [
         'account_id',
         'awbno',
         'date',
@@ -331,57 +262,20 @@ Route::get('zoho/dump2', function () {
 
 Route::get('zoho/dump3', function () {
 
-    $processManagementID = ProcessManagement::where('module', 'Zoho Dump')
-        ->where('command_name', 'mosh:submit-request-to-zoho')
-        ->where('command_end_time', '0000-00-00 00:00:00')
-        ->get('id')
-        ->first();
-
-    po($processManagementID['id']);
-    exit;
-
-    $records = zoho::select(['ASIN', 'Alternate_Order_No', 'updated_at', 'Created_Time'])->limit(1000)->orderBy('Created_Time', 'DESC')->get()->toArray();
-
-    if (!empty($records)) {
-
-        po(($records));
-    }
-    exit;
-
-    $data = CSV_Reader('zohocsv/1929333000107582112.csv');
-    $count = 0;
+    $data = CSV_Reader('zohocsv/1929333000110149354.csv');
     $result = [];
     $asin = [];
     $order_no = [];
-
+    $count = 0;
     foreach ($data as  $record) {
+        if ($count == 0) {
 
-        $result[] = $record;
-        $asin[] = $record['ASIN'];
-        $order_no[] = $record['Alternate_Order_No'];
-        $unique[] = [
-            'ASIN' => $record['ASIN'],
-            'Alternate_Order_No' => $record['Alternate_Order_No']
-        ];
-        // TestMongo::where('ASIN', $record['ASIN'])->where('Alternate_Order_No', $record['Alternate_Order_No'])->update($record, ['upsert' => true]);
-        // po($asin);
-        // DB::connection('mongodb')->collection('zoho')->updateMany('ASIN', ['$in' => $record['ASIN']], ['$set', $record], ['upsert' => true]);
-        TestMongo::where('Alternate_Order_No_1_ASIN_1', $unique)->update($record, ['upsert' => true]);
-        po($result);
-        // if ($count == 10) {
-
-        //     // TestMongo::insert($result);
-        //     // TestMongo::where('ASIN', $asin)->where('Alternate_Order_No', $order_no)->update($result, ['upsert' => true]);
-        //     $count = 0;
-        //     $result = [];
-        //     // exit;
-        // }
-        // $count++;
+            po($record);
+            // break;
+        }
+        $count++;
     }
-    // TestMongo::insert($result);
-    // TestMongo::whereIn('ASIN', $asin)->whereIn('Alternate_Order_No', $order_no)->update($result, ['upsert' => true]);
-    // po($asin);
-    po($order_no);
+    po($record);
     exit;
     $zohoResponse =  json_decode(Storage::get('ZohoResponse/zoho-response2.txt', true));
     po($zohoResponse);

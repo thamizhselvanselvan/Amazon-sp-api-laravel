@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models\ShipNTrack\SMSA;
+namespace App\Models\ShipNTrack\CourierTracking;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SmsaTrackings extends Model
+class SmsaTracking extends Model
 {
     use HasFactory;
 

@@ -1059,18 +1059,18 @@ return [
                             'icon' => 'far fa fa-archive',
                         ],
                         [
-                            'text' => 'Booking',
-                            'url' => 'shipntrack/booking',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa fa-plane',
-                        ],
-                        [
                             'text' => 'Partners',
                             'url' => 'shipntrack/partners',
                             'can' => ['Admin'],
                             'icon' => 'fas fa-handshake',
                         ],
-                        
+                        [
+                            'text' => 'Status',
+                            'url' => 'shipntrack/booking',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa fa-bar-chart',
+                        ],
+
                         [
                             'text' => 'Courier Status',
                             'url' => 'shipntrack/status/manager',

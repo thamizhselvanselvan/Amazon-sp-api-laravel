@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use App\Models\User;
+use Faker\Core\Number;
 use League\Csv\Reader;
 use League\Csv\Writer;
 use Carbon\CarbonInterval;
@@ -22,11 +23,12 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Models\SystemSetting\SystemSetting;
-use App\Models\ShipNTrack\SMSA\SmsaTrackings;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
-use App\Models\ShipNTrack\Bombino\BombinoTracking;
+use App\Models\ShipNTrack\CourierTracking\SmsaTracking;
+use App\Models\ShipNTrack\CourierTracking\SmsaTrackings;
 use App\Models\ShipNTrack\Bombino\BombinoTrackingDetails;
-use Faker\Core\Number;
+use App\Models\ShipNTrack\CourierTracking\BombinoTracking;
+use App\Models\ShipNTrack\CourierTracking\BombinoTrackings;
 
 if (!function_exists('ddp')) {
     function ddp($value)
@@ -827,7 +829,7 @@ if (!function_exists('smsa_tracking')) {
     function smsa_tracking($smsa_awb)
     {
         $tracking_detials = [];
-        $smsa_t_details = SmsaTrackings::where('awbno', $smsa_awb)->get();
+        $smsa_t_details = SmsaTracking::where('awbno', $smsa_awb)->get();
         foreach ($smsa_t_details as $details) {
             // dd($details);
             $tracking_detials[] = [
@@ -1299,5 +1301,15 @@ if (!function_exists('DeleteFileFromFolder')) {
                 unlink($file);
             }
         }
+    }
+}
+
+if (!function_exists('ServicesClass')) {
+    function ServicesClass(string $services_path, string $services_class): object
+    {
+        $namespace = 'App\\Services\\' . $services_path . '\\' . $services_class;
+        $services = new $namespace;
+
+        return $services;
     }
 }

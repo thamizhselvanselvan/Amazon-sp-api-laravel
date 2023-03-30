@@ -20,8 +20,24 @@
 
 @section('content_header')
 <div class="row">
-    <div class="col text-left">
-        <h1 class="m-0 text-dark">Courier Status Master</h1>
+
+    <div class="col-1.5">
+        <h1 class="m-0 text-dark">Select Courier :</h1>
+    </div>
+    <div class="col-2">
+        <div style="margin-top: -1.6rem;">
+            <x-adminlte-select name="courier_select" id="courier_select" label="">
+                <option value="0">Select Courier</option>
+                @foreach($courier_partner as $Courier)
+                <option value="{{$Courier->id}}" {{ $request_courier_id == $Courier->id ? "selected" : '' }}>{{$Courier->courier_name}}</option>
+                @endforeach
+            </x-adminlte-select>
+        </div>
+    </div>
+    <div class="col text-right m-3">
+        <div style="margin-top: -0.8rem;">
+            <h1 class="m-0 text-dark">Courier Status Master</h1>
+        </div>
     </div>
     <div class="col text-right m-3 ">
         <div style="margin-top: -0.8rem;">
@@ -43,6 +59,12 @@
                 <strong>{{ $message }}</strong>
             </div>
             @endif
+            @if (request('success'))
+            <div class="alert alert-success alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>{{request('success')}}</strong>
+            </div>
+            @endif
         </div>
         </h2>
 
@@ -51,9 +73,10 @@
                 <tr class="table-info">
                     <th>ID</th>
                     <th>Courier Partner</th>
+                    <th>Courier Status</th>
                     <th>Status</th>
-                    <th>Booking Status</th>
-                    <th>Stop</th>
+                    <th>Stop Tracking</th>
+                    <th>Stop-API-Display</th>
                 </tr>
             </thead>
 
@@ -69,14 +92,36 @@
 @section('js')
 <script type="text/javascript">
     $(function() {
+        $.extend($.fn.dataTable.defaults, {
+            pageLength: 100,
+        });
+
+
+        $('#courier_select').on('change', function() {
+            window.location = "/shipntrack/status/manager/" + $(this).val();
+        });
+
 
         let yajra_table = $('.yajra-datatable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('status.master.index') }}",
+            lengthChange: false,
+            stateSave: true,
+            // searching: false,
+            ajax: {
+                url: "{{ url($url) }}",
+                type: 'get',
+                headers: {
+                    'content-type': 'application/x-www-form-urlencoded',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: function(d) {
+                    courier_id = $('#courier_select').val();
+                },
+            },
             columns: [{
-                    data: 'DT_RowIndex',
-                    name: 'DT_RowIndex',
+                    data: 'id',
+                    name: 'id',
                     orderable: false,
                     searchable: false
                 },
@@ -93,28 +138,51 @@
                     name: 'booking_master_id'
                 },
                 {
-                    data: 'action',
-                    name: 'action'
+                    data: 'tracking_stop',
+                    name: 'tracking_stop'
                 },
-
+                {
+                    data: 'api_stop',
+                    name: 'api_stop'
+                },
             ]
         });
 
+
         $('#update').on('click', function() {
+
+
+
             var checkboxValues = [];
             var book_stats = [];
             let obj = {};
-
-
+            let courier_id = $("#courier_select").val();
+            if (courier_id == 0) {
+                alert('please Select The Courier and Update The Status');
+                return false;
+            }
+            //Stop Tracking
             let stop_enable_count = 0;
             let stop_enable = '';
-            $('input[type=checkbox]:checked').each(function() {
+            $("input[name='stats_store[]']:checked").each(function() {
                 if (stop_enable_count == 0) {
                     stop_enable += $(this).val();
                 } else {
                     stop_enable += '-' + $(this).val();
                 }
                 stop_enable_count++;
+            });
+
+            //stop api Checkbox
+            let stop_api_count = 0;
+            let stop_api_enable = '';
+            $("input[name='api_stop[]']:checked").each(function() {
+                if (stop_api_count == 0) {
+                    stop_api_enable += $(this).val();
+                } else {
+                    stop_api_enable += '-' + $(this).val();
+                }
+                stop_api_count++;
             });
 
 
@@ -156,37 +224,20 @@
                 data: {
                     "status": data,
                     "stop_enable": stop_enable,
+                    "stop_api": stop_api_enable,
+                    "courier_id": courier_id,
                     "_token": "{{ csrf_token() }}",
                 },
                 success: function(response) {
+                    console.log(response);
                     alert('Courier Status Updated Successfully');
                     window.location.reload();
+                    // window.location.href = '/shipntrack/status/manager?success=Status has been Updated successfully'
                 },
                 error: function(result) {
                     alert('error');
                 }
             });
-
-
-
-            // $.ajax({
-            //     method: 'get',
-            //     url: "{{route('shipntrack.courier.status.store')}}",
-            //     data: data,
-            //     processData: false,
-            //     contentType: false,
-            //     response: 'json',
-            //     success: function(response) {
-
-
-            //     },
-            //     error: function(response) {
-
-            //     }
-            // });
-
-
-
 
         });
     });

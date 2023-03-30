@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
 
 class VikeshTestController extends Controller
 {
@@ -135,27 +136,25 @@ class VikeshTestController extends Controller
 
     public function bombinoAPI(Request $request)
     {
+        $OrderByColunm = [
+            'SMSA' => 'date',
+            'Aramex' => 'update_date_time',
+            'Bombino' => 'action_date'
+
+        ];
         $selectColumns = [
-            'smsa' => [
-                'awbno',
+            'SMSA' => [
                 'date',
                 'activity',
-                'details',
                 'location',
             ],
-            'am_ae' => [
-                'awbno',
-                'update_code',
-                'update_description',
+            'Aramex' => [
                 'update_date_time',
+                'update_description',
                 'update_location',
-                'comment',
-                'gross_weight',
-                'chargeable_weight',
-                'weight_unit',
             ],
             'Bombino' => [
-                'awb_no',
+                'awbno',
                 'consignee',
                 'consignor',
                 'destination',
@@ -167,71 +166,112 @@ class VikeshTestController extends Controller
                 'event_code',
                 'location',
             ],
-            'ss_ksa' => [
-                'awbno',
-                'date',
-                'activity',
-                'details',
-                'location',
-            ],
-            'am_ksa' => [
-                'awbno',
-                'update_code',
-                'update_description',
-                'update_date_time',
-                'update_location',
-                'comment',
-                'gross_weight',
-                'chargeable_weight',
-                'weight_unit',
-            ],
+
         ];
-        $modelPath = ['smsa' => 'SMSA', 'Bombino' => 'Bombino'];
-        $modelName = ['smsa' => 'SmsaTrackings', 'Bombino' => 'BombinoTracking'];
-        $tableName = ['smsa' => 'smsa_trackings', 'Bombino' => 'bombino_trackings'];
 
+        $destination = substr($request->awbNo, 0, 2);
+        $awbNo = substr($request->awbNo, 2);
 
-        $data = Trackingae::with(['CourierPartner1', 'CourierPartner2', 'CourierPartner3', 'CourierPartner4'])
-            ->where('awb_number', $request->awbNo)
-            ->get()
-            ->toArray();
+        $data = [];
+        if ($destination == 'AE') {
 
-        $records1 = [];
-        $records2 = [];
+            $data = Trackingae::with([
+                'CourierPartner1.courier_names',
+                'CourierPartner2.courier_names',
+                'CourierPartner3.courier_names',
+                'CourierPartner4.courier_names'
+            ])
+                ->where('awb_number', $awbNo)
+                ->get()
+                ->toArray();
+        } elseif ($destination == 'SA') {
+
+            $data = Trackingksa::with([
+                'CourierPartner1.courier_names',
+                'CourierPartner2.courier_names',
+                'CourierPartner3.courier_names',
+                'CourierPartner4.courier_names'
+            ])
+                ->where('awb_number', $awbNo)
+                ->get()
+                ->toArray();
+        }
+
+        $forwarder1_data = [];
+        $forwarder2_data = [];
+
         foreach ($data as $key => $records) {
-            if ($records['forwarder_1_flag'] == 0 && $records['forwarder_1_awb'] != '') {
 
-                $forwarder1_awb = $records['forwarder_1_awb'];
-                $forwarder_name = $records['courier_partner1']['name'];
-                $table = table_model_change(model_path: $modelPath[$forwarder_name], model_name: $modelName[$forwarder_name], table_name: $tableName[$forwarder_name]);
-                $records1 = $table->select($selectColumns[$forwarder_name])
-                    ->where('awb_no', $forwarder1_awb)
-                    ->orderBy('action_date', 'DESC')
+            if (($records['forwarder_1_awb'] != '')) {
+
+                $awb_no = $records['forwarder_1_awb'];
+                $courier_name = $records['courier_partner1']['courier_names']['courier_name'];
+
+                $table = table_model_change(model_path: 'CourierTracking', model_name: ucwords(strtolower($courier_name)) . 'Tracking', table_name: strtolower($courier_name) . '_trackings');
+
+                $forwarder1_data = $table->select($selectColumns[$courier_name])
+                    ->where('awbno', $awb_no)
+                    ->orderBy($OrderByColunm[$courier_name], 'DESC')
                     ->get()
                     ->toArray();
+
+                if ($courier_name == 'SMSA') {
+
+                    foreach ($forwarder1_data as $key => $records1) {
+                        $forwarder1_data[$key] = [
+                            'event_detail' => $records1['activity'],
+                            'action_date' => date('Y-m-d', strtotime($records1['date'])),
+                            'action_time' => date('H:i:s', strtotime($records1['date'])),
+                            'location' => $records1['location']
+                        ];
+                    }
+                } else if ($courier_name == 'Aramex') {
+
+                    foreach ($forwarder1_data as $key => $records2) {
+                        $forwarder1_data[$key] = [
+                            'event_detail' => $records2['update_description'],
+                            'action_date' => date('Y-m-d', strtotime($records2['update_date_time'])),
+                            'action_time' => date('H:i:s', strtotime($records2['update_date_time'])),
+                            'location' => $records2['update_location']
+                        ];
+                    }
+                }
             }
-            if ($records['forwarder_2_flag'] == 0 && $records['forwarder_2_awb'] != '') {
+            if (($records['forwarder_2_awb'] != '')) {
 
-                $forwarder2_awb = $records['forwarder_2_awb'];
-                $forwarder_name = $records['courier_partner2']['name'];
-                $table = table_model_change(model_path: $modelPath[$forwarder_name], model_name: $modelName[$forwarder_name], table_name: $tableName[$forwarder_name]);
-                $records2 = $table->select($selectColumns[$forwarder_name])
-                    ->where('awbno', $forwarder2_awb)
-                    ->orderBy('date', 'DESC')
+                $awb_no = $records['forwarder_2_awb'];
+                $courier_name = $records['courier_partner2']['courier_names']['courier_name'];
+                $table = table_model_change(model_path: 'CourierTracking', model_name: ucwords(strtolower($courier_name)) . 'Tracking', table_name: strtolower($courier_name) . '_trackings');
+
+                $forwarder2_data = $table->select($selectColumns[$courier_name])
+                    ->where('awbno', $awb_no)
+                    ->orderBy($OrderByColunm[$courier_name], 'DESC')
                     ->get()
                     ->toArray();
+                if ($courier_name == 'SMSA') {
 
-                foreach ($records2 as $key => $records) {
-                    $records2[$key] = [
-                        'event_detail' => $records['activity'],
-                        'action_date' => date('Y-m-d', strtotime($records['date'])),
-                        'action_time' => date('H:i:s', strtotime($records['date'])),
-                        'location' => $records['location']
-                    ];
+                    foreach ($forwarder2_data as $key => $records2) {
+                        $forwarder2_data[$key] = [
+                            'event_detail' => $records2['activity'],
+                            'action_date' => date('Y-m-d', strtotime($records2['date'])),
+                            'action_time' => date('H:i:s', strtotime($records2['date'])),
+                            'location' => $records2['location']
+                        ];
+                    }
+                } else if ($courier_name == 'Aramex') {
+
+                    foreach ($forwarder2_data as $key => $records2) {
+                        $forwarder2_data[$key] = [
+                            'event_detail' => $records2['update_description'],
+                            'action_date' => date('Y-m-d', strtotime($records2['update_date_time'])),
+                            'action_time' => date('H:i:s', strtotime($records2['update_date_time'])),
+                            'location' => $records2['update_location']
+                        ];
+                    }
                 }
             }
         }
-        $result = [...$records1, ...$records2];
+        $result = [...$forwarder1_data, ...$forwarder2_data];
 
         return $result;
     }
