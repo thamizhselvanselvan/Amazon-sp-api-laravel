@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\shipntrack\Courier;
 
 use Illuminate\Http\Request;
+use function Clue\StreamFilter\fun;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Models\ShipNTrack\Courier\Courier;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
-use App\Models\ShipNTrack\Courier\CourierPartner;
 
-use function Clue\StreamFilter\fun;
+use App\Models\ShipNTrack\Courier\Courier;
+use App\Models\ShipNTrack\Courier\CourierPartner;
 
 class CourierPartnerController extends Controller
 {
@@ -51,7 +52,6 @@ class CourierPartnerController extends Controller
     // }
     public function index(Request $request)
     {
-
         $data =  CourierPartner::with(['courier_names'])->get();
 
         if ($request->ajax()) {
@@ -90,6 +90,8 @@ class CourierPartnerController extends Controller
 
     public function store(Request $request)
     {
+        $user_name = Auth::user()->name;
+        $user_email = Auth::user()->email;
 
         $request->validate([
 
@@ -116,6 +118,8 @@ class CourierPartnerController extends Controller
             'account_id' => $request->account_id,
             'key1' => $request->key1,
             'key2' => $request->key2,
+            'login_user' => $user_name,
+            'login_email' => $user_email,
 
         ]);
 
