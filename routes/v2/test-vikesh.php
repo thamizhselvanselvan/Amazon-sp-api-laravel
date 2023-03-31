@@ -131,7 +131,8 @@ Route::get('test/shipntrack/smsa/{awbno}', function ($awbNo) {
     // po($arrayResult);
     // exit;
     $smsa_data = isset($arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram']['NewDataSet']['Tracking']) ? $arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram']['NewDataSet']['Tracking'] : [];
-    if ($smsa_data != '') {
+
+    if (!empty($smsa_data)) {
 
         $smsa_records = [];
         if (isset($smsa_data[0])) {
@@ -156,20 +157,19 @@ Route::get('test/shipntrack/smsa/{awbno}', function ($awbNo) {
                 'location' =>  $smsa_data['Location']
             ];
         }
+        po($smsa_records);
+        exit;
+        SmsaTracking::upsert($smsa_records, ['awbno_date_activity_unique'], [
+            'account_id',
+            'awbno',
+            'date',
+            'activity',
+            'details',
+            'location',
+        ]);
     } else {
         echo 'Invalid AWB No.';
     }
-
-    po($smsa_records);
-    exit;
-    SmsaTracking::upsert($smsa_records, ['awbno_date_activity_unique'], [
-        'account_id',
-        'awbno',
-        'date',
-        'activity',
-        'details',
-        'location',
-    ]);
 });
 
 Route::get('test/shipntrack/bombino/{awbno}', function ($awbNo) {
