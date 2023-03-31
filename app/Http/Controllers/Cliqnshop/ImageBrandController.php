@@ -312,8 +312,8 @@ class ImageBrandController extends Controller
 
         $asins = preg_split('/[\r\n| |:|,]/', $request->top_asin, -1, PREG_SPLIT_NO_EMPTY);
 
-        if (count($asins) > 30) {
-            return redirect()->route('cliqnshop.brand')->with('error', 'Please Enter Less Than 20 ASIN');
+        if (count($asins) > 100) {
+            return redirect()->route('cliqnshop.brand')->with('error', 'Please Enter Less Than 100 ASIN');
         }
 
         $data = (json_encode($asins));

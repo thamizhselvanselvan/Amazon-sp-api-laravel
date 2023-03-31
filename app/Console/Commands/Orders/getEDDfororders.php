@@ -113,7 +113,7 @@ class getEDDfororders extends Command
                         foreach ($item_ids as $data) {
 
                             $item_id =   $data['order_item_identifier'];
-                            $zoho = new ZohoApi;
+                            $zoho = new ZohoApi(new_zoho: false);
                             $zoho_lead_search = $zoho->search($order_id, $item_id);
 
                             if (isset($zoho_lead_search['data'][0]['id'])) {

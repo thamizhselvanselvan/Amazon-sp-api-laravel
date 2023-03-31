@@ -670,13 +670,13 @@ return [
 
                 ],
                 [
-                    'text' => 'Zoho Price Missing',
+                    'text' => 'Orders Price Missing',
                     'can' => ['Admin', 'Catalog'],
                     'icon' => 'fa fa-minus-circle',
                     'submenu' =>
                     [
                         [
-                            'text' => 'Price Missing',
+                            'text' => 'Zoho Price Missing',
                             'url' => "orders/missing/price",
                             'can' => ['Admin', 'Catalog'],
                             'icon' => 'fa fa-minus-circle',
@@ -692,6 +692,12 @@ return [
                             'url' => "orders/missing/force/dump/view",
                             'can' => ['Admin', 'Catalog'],
                             'icon' => 'fa fa-plus-circle',
+                        ],
+                        [
+                            'text' => 'US Price Missing',
+                            'url' => "orders/usprice/missing",
+                            'can' => ['Admin', 'Catalog'],
+                            'icon' => 'fa fa-minus-circle',
                         ],
                     ],
                 ],
@@ -1040,39 +1046,71 @@ return [
             'can' => ['Admin'],
             'submenu' => [
                 [
-                    'text' => 'Courier Partner',
-                    'url' => 'shipntrack/courier',
-                    'icon' => 'far fa fa-archive',
+                    'text' => 'Master',
+                    'icon' => 'far  fa fa-cogs',
                     'can' => ['Admin'],
+
+                    'submenu' =>
+                    [
+                        [
+                            'text' => 'Courier',
+                            'url' => 'shipntrack/courier',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa fa-archive',
+                        ],
+                        [
+                            'text' => 'Partners',
+                            'url' => 'shipntrack/partners',
+                            'can' => ['Admin'],
+                            'icon' => 'fas fa-handshake',
+                        ],
+                        [
+                            'text' => 'Status',
+                            'url' => 'shipntrack/booking',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa fa-bar-chart',
+                        ],
+
+                        [
+                            'text' => 'Courier Status',
+                            'url' => 'shipntrack/status/manager',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa fa-cog',
+                        ],
+                    ],
+                ],
+                [
+                    'text' => 'Create New Shipment',
+                    'url' => 'shipntrack/forwarder',
+                    'icon' => 'far fa fa-map-marker',
+                    'can' => ['Admin'],
+                    // 'submenu' =>
+                    // [
+                    //     [
+                    //         'text' => 'Forwarder Mapping',
+                    //         'url' => 'shipntrack/forwarder',
+                    //         'icon' => 'far fa fa-map-marker',
+                    //         'can' => ['Admin'],
+                    //     ],
+                    //     [
+                    //         'text' => 'Forwarder Details',
+                    //         'url' => 'shipntrack/forwarder/mapped/details',
+                    //         'icon' => 'far fa fa-bar-chart',
+                    //         'can' => ['Admin'],
+                    //     ],
+
+                    // ],
+
                 ],
                 [
                     'text' => 'Tracking',
                     'can' => ['Admin'],
+                    'url' => 'shipntrack/courier/tracking',
                     'icon' => 'far fa fa-bar-chart',
-                    'submenu' =>
-                    [
-                        [
-                            'text' => 'SMSA Tracking',
-                            'url' => 'shipntrack/smsa',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa fa-barcode',
-                        ],
-                        [
-                            'text' => 'Bombino Tracking',
-                            'url' => 'shipntrack/bombino',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa fa-plane',
-                        ],
-                    ],
                 ],
 
-                [
-                    'text' => 'Forwarder Mapping',
-                    'url' => 'shipntrack/forwarder',
-                    'icon' => 'far fa fa-map-marker',
-                    'can' => ['Admin'],
-                ],
 
+                /*
                 [
                     'text' => 'Tracking Event',
                     'can' => ['Admin'],
@@ -1104,6 +1142,7 @@ return [
                         ],
                     ],
                 ],
+                */
             ],
         ],
 
@@ -1112,7 +1151,7 @@ return [
             'can' => ['Admin', 'Cliqnshop'],
             'submenu' => [
                 [
-                    'text' => 'Catalog',                    
+                    'text' => 'Catalog',
                     'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fa fa-yelp',
                     'submenu' => [
@@ -1128,37 +1167,48 @@ return [
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-google-wallet',
                             'submenu' => [
-                                            [
-                                                'text' => 'Search Log',
-                                                'url' => 'cliqnshop/keyword/log',
-                                                'can' => ['Admin', 'Cliqnshop'],
-                                                'icon' => 'fa fa-cloud-download',
-                                            ],
-                                            [
-                                                'text' => 'Banned Keywords',
-                                                'url' => 'cliqnshop/keyword/ban',
-                                                'can' => ['Admin', 'Cliqnshop'],
-                                                'icon' => 'fa fa-ban',
-                                            ],
-                                        ]
+                                [
+                                    'text' => 'Search Log',
+                                    'url' => 'cliqnshop/keyword/log',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-cloud-download',
+                                ],
+                                [
+                                    'text' => 'Banned Keywords',
+                                    'url' => 'cliqnshop/keyword/ban',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-ban',
+                                ],
+                            ]
                         ],
                         [
                             'text' => 'Category',
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-list-ul',
                             'submenu' => [
-                                            [
-                                                'text' => 'Ban/unban',
-                                                'url' => 'cliqnshop/category',
-                                                'can' => ['Admin', 'Cliqnshop'],
-                                                'icon' => 'fa fa-cloud-download',
-                                            ],
-                                        ]
+                                [
+                                    'text' => 'Banned Categories',
+                                    'url' => 'cliqnshop/category',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-ban',
+                                ],
+                            ]
+                        ],
+                        [
+                            'text' => 'brand',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-list-ul',
+                            'submenu' => [
+                                [
+                                    'text' => 'Banned Brands',
+                                    'url' => 'cliqnshop/brand/ban',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-ban',
+                                ],
+
+                            ]
                         ]
 
-
-
-                        
 
                     ]
                 ],
@@ -1167,52 +1217,52 @@ return [
                     'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fa fa-users',
                     'submenu' => [
-                                        [
-                                            'text' => 'Orders Details',
-                                            'can' => ['Admin', 'Cliqnshop'],
-                                            'icon' => 'fa fa-shopping-cart',
-                                            'submenu' => [
-                                                [
-                                                    'text' => 'Orders Pending',
-                                                    'url' => 'business/orders/details',
-                                                    'can' => ['Admin', 'Cliqnshop'],
-                                                    'icon' => 'fa fa-clock-o',
-                                                ],
-                                                [
-                                                    'text' => 'Orders Booked',
-                                                    'url' => 'business/booked/details',
-                                                    'can' => ['Admin', 'Cliqnshop'],
-                                                    'icon' => 'fa fa-check',
-                                                ],
-                                                [
-                                                    'text' => 'Orders Confirmation',
-                                                    'url' => 'business/orders/confirm',
-                                                    'can' => ['Admin', 'Cliqnshop'],
-                                                    'icon' => 'fa fa-check-circle-o',
-                                                ],
-                                                [
-                                                    'text' => 'Shipment Notification',
-                                                    'url' => 'business/ship/confirmation',
-                                                    'can' => ['Admin', 'Cliqnshop'],
-                                                    'icon' => 'fa fa-bell',
-                                                ],
-                                            ],
-                        
-                                        ],
-                                        [
-                                            'text' => 'KYC Details',
-                                            'url' => 'cliqnshop/kyc',
-                                            'can' => ['Admin', 'Cliqnshop'],
-                                            'icon' => 'fa fa-file',
-                                        ],
-                                        [
-                                            'text' => 'Contact List',
-                                            'url' => 'cliqnshop/contact',
-                                            'can' => ['Admin', 'Cliqnshop'],
-                                            'icon' => 'fa fa-link',
-                                        ],
-                    
-                        ]
+                        [
+                            'text' => 'Orders Details',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-shopping-cart',
+                            'submenu' => [
+                                [
+                                    'text' => 'Orders Pending',
+                                    'url' => 'business/orders/details',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-clock-o',
+                                ],
+                                [
+                                    'text' => 'Orders Booked',
+                                    'url' => 'business/booked/details',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-check',
+                                ],
+                                [
+                                    'text' => 'Orders Confirmation',
+                                    'url' => 'business/orders/confirm',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-check-circle-o',
+                                ],
+                                [
+                                    'text' => 'Shipment Notification',
+                                    'url' => 'business/ship/confirmation',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-bell',
+                                ],
+                            ],
+
+                        ],
+                        [
+                            'text' => 'KYC Details',
+                            'url' => 'cliqnshop/kyc',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-file',
+                        ],
+                        [
+                            'text' => 'Contact List',
+                            'url' => 'cliqnshop/contact',
+                            'can' => ['Admin', 'Cliqnshop'],
+                            'icon' => 'fa fa-link',
+                        ],
+
+                    ]
                 ],
                 [
                     'text' => 'Home Section',
@@ -1270,7 +1320,7 @@ return [
                     'can' => ['Admin', 'Cliqnshop'],
                     'icon' => 'fas fa-file-word-o',
                 ],
-                
+
             ],
         ],
 

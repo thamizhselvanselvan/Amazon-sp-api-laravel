@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use App\Models\User;
+use Faker\Core\Number;
 use League\Csv\Reader;
 use League\Csv\Writer;
 use Carbon\CarbonInterval;
@@ -22,11 +23,12 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Models\SystemSetting\SystemSetting;
-use App\Models\ShipNTrack\SMSA\SmsaTrackings;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
-use App\Models\ShipNTrack\Bombino\BombinoTracking;
+use App\Models\ShipNTrack\CourierTracking\SmsaTracking;
+use App\Models\ShipNTrack\CourierTracking\SmsaTrackings;
 use App\Models\ShipNTrack\Bombino\BombinoTrackingDetails;
-use Faker\Core\Number;
+use App\Models\ShipNTrack\CourierTracking\BombinoTracking;
+use App\Models\ShipNTrack\CourierTracking\BombinoTrackings;
 
 if (!function_exists('ddp')) {
     function ddp($value)
@@ -589,9 +591,9 @@ if (!function_exists('table_model_create')) {
 }
 
 if (!function_exists('table_model_change')) {
-    function table_model_change(string $model_path, string $table_name): object
+    function table_model_change(string $model_path, string $model_name, string $table_name): object
     {
-        $namespace = 'App\\Models\\ShipNTrack\\' . $model_path . $table_name;
+        $namespace = 'App\\Models\\ShipNTrack\\' . $model_path . '\\' . $model_name;
         $table_model = new $namespace;
 
         return $table_model->setTable($table_name);
@@ -827,7 +829,7 @@ if (!function_exists('smsa_tracking')) {
     function smsa_tracking($smsa_awb)
     {
         $tracking_detials = [];
-        $smsa_t_details = SmsaTrackings::where('awbno', $smsa_awb)->get();
+        $smsa_t_details = SmsaTracking::where('awbno', $smsa_awb)->get();
         foreach ($smsa_t_details as $details) {
             // dd($details);
             $tracking_detials[] = [
@@ -864,40 +866,40 @@ if (!function_exists('bombino_tracking')) {
     }
 }
 
-if (!function_exists('forwarderTrackingEvent')) {
-    function forwarderTrackingEvent($key)
-    {
-        $array_tables = [
-            [
-                'Table_name' => 'BombinoTrackingDetails',
-                'Table_column' => 'exception',
-                'Model_path' => 'Bombino\\'
-            ],
-            [
-                'Table_name' => 'SmsaTrackings',
-                'Table_column' => 'activity',
-                'Model_path' => 'SMSA\\'
-            ],
-            [],
-            [
-                'Table_name' => 'AramexTracking',
-                'Table_column' => 'update_description',
-                'Model_path' => 'Aramex\\'
-            ],
-        ];
+// if (!function_exists('forwarderTrackingEvent')) {
+//     function forwarderTrackingEvent($key)
+//     {
+//         $array_tables = [
+//             [
+//                 'Table_name' => 'BombinoTrackingDetails',
+//                 'Table_column' => 'exception',
+//                 'Model_path' => 'Bombino\\'
+//             ],
+//             [
+//                 'Table_name' => 'SmsaTrackings',
+//                 'Table_column' => 'activity',
+//                 'Model_path' => 'SMSA\\'
+//             ],
+//             [],
+//             [
+//                 'Table_name' => 'AramexTracking',
+//                 'Table_column' => 'update_description',
+//                 'Model_path' => 'Aramex\\'
+//             ],
+//         ];
 
-        $table_name = $array_tables[$key]['Table_name'];
-        $table_column = $array_tables[$key]['Table_column'];
-        $model_path = $array_tables[$key]['Model_path'];
+//         $table_name = $array_tables[$key]['Table_name'];
+//         $table_column = $array_tables[$key]['Table_column'];
+//         $model_path = $array_tables[$key]['Model_path'];
 
-        $table_model = table_model_change(model_path: $model_path, table_name: $table_name);
+//         $table_model = table_model_change(model_path: $model_path, table_name: $table_name);
 
-        return [
-            $table_model,
-            $table_column
-        ];
-    }
-}
+//         return [
+//             $table_model,
+//             $table_column
+//         ];
+//     }
+// }
 
 if (!function_exists('getTrackingDetails')) {
     function getTrackingDetails($awb_no)
@@ -1116,7 +1118,7 @@ if (!function_exists('fileManagementMonitoringNew')) {
 
             $user_name = User::where('id', $file_check['user_id'])->get('name')->toArray();
 
-            $user_name = $user_name[0]['name'];
+            $user_name = $user_name[0]['name'] ?? '';
             $created_at = date('d-m-Y h:i:s', strtotime($file_check['created_at']));
             $info = $file_check['info'];
 
@@ -1299,5 +1301,15 @@ if (!function_exists('DeleteFileFromFolder')) {
                 unlink($file);
             }
         }
+    }
+}
+
+if (!function_exists('ServicesClass')) {
+    function ServicesClass(string $services_path, string $services_class): object
+    {
+        $namespace = 'App\\Services\\' . $services_path . '\\' . $services_class;
+        $services = new $namespace;
+
+        return $services;
     }
 }

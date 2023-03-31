@@ -26,7 +26,7 @@ class ZohoOrder
     public function __construct()
     {
         $this->zoho_order_format = new ZohoOrderFormat;
-        $this->zohoApi = new ZohoApi;
+        $this->zohoApi = new ZohoApi(new_zoho: false);
     }
 
     public function index($amazon_order_id = null, $force_update = null)

@@ -2,6 +2,22 @@
 
 @section('title', 'Courier Partners')
 
+@section('css')
+
+<link rel="stylesheet" href="/css/styles.css">
+<style>
+    .table td {
+        padding: 0;
+        padding-left: 5px;
+    }
+
+    .table th {
+        padding: 2;
+        padding-left: 5px;
+    }
+</style>
+@stop
+
 @section('content_header')
 <div class="row">
     <div class="col-5">
@@ -69,17 +85,13 @@
         <thead class="table-info">
             <tr>
                 <th>ID</th>
-                <th>courier Name</th>
+                <th>user Name</th>
+                <th>Courier Name</th>
                 <th>Source</th>
                 <th>Destination</th>
-                <th>Code</th>
                 <th>Status</th>
-                <th>type</th>
-                <th>key1</th>
-                <th>key2</th>
-                <th>key3</th>
-                <th>key4</th>
-                <th>key5</th>
+                <th>Type</th>
+                <th>Time Zone</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -110,9 +122,14 @@
                     name: 'DT_RowIndex',
                     orderable: false,
                     searchable: false
-                }, {
-                    data: 'name',
-                    name: 'name',
+                },
+                {
+                    data: 'user_name',
+                    name: 'user_name',
+                },
+                {
+                    data: 'courier_name',
+                    name: 'courier_name',
                 },
                 {
                     data: 'source',
@@ -123,36 +140,17 @@
                     name: 'destination',
                 },
                 {
-                    data: 'courier_code',
-                    name: 'courier_code',
-                },
-                {
                     data: 'active',
                     name: 'active',
                 },
+
                 {
                     data: 'type',
                     name: 'type',
                 },
                 {
-                    data: 'key1',
-                    name: 'key1',
-                },
-                {
-                    data: 'key2',
-                    name: 'key2',
-                },
-                {
-                    data: 'key3',
-                    name: 'key3',
-                },
-                {
-                    data: 'key4',
-                    name: 'key4',
-                },
-                {
-                    data: 'key5',
-                    name: 'key5',
+                    data: 'time_zone',
+                    name: 'time_zone',
                 },
                 {
                     data: 'action',
@@ -176,7 +174,7 @@
 
             $.ajax({
                 method: 'get',
-                url: '/shipntrack/courier/remove/' + id,
+                url: '/shipntrack/partners/remove/' + id,
                 data: {
                     "_token": "{{ csrf_token() }}",
                     "_method": 'DELETE'

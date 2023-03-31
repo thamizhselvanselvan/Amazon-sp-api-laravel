@@ -157,7 +157,7 @@ class BuyBoxImportExportController extends Controller
             FileManagement::create($file_info);
             fileManagement();
         }
-        return redirect('catalog/buybox/export')->with("success", "BuyBox data is exporting..");
+        return redirect('catalog/buybox/export')->with("success", "BuyBox data is exporting.");
     }
 
     public function GetBuyBoxFile(Request $request)
