@@ -18,128 +18,8 @@ use App\Models\ShipNTrack\CourierTracking\SmsaTracking;
 use App\Models\ShipNTrack\CourierTracking\AramexTracking;
 
 Route::get('test/mongo', function () {
-    $awb_no = '1000000002';
-
-    $records = Trackingae::with(
-        [
-            'CourierPartner1.courier_names',
-            'CourierPartner2.courier_names',
-            'CourierPartner3.courier_names',
-            'CourierPartner4.courier_names'
-        ]
-    )->where('awb_number', $awb_no)
-        ->get()
-        ->toArray();
-
-
-    $results = [];
-    foreach ($records as $record) {
-        if ($record['forwarder_1_flag'] == 0 && $record['forwarder_1_awb'] != '') {
-            $trackingAPI_name = $record['courier_partner1']['courier_names']['courier_name'];
-
-            $results = [
-                'awb_no' => $record['forwarder_1_awb'],
-                'reference_id' => $record['courier_partner1']['id'],
-                'user_name' => $record['courier_partner1']['user_id'],
-                'pass_key' => $record['courier_partner1']['password'],
-                'account_id' => $record['courier_partner1']['account_id'],
-                'time_zone' => $record['courier_partner1']['time_zone'],
-            ];
-            $class = ServicesClass(services_path: 'ShipNTrack\Tracking', services_class: $trackingAPI_name . "TrackingAPIServices");
-            $class->$trackingAPI_name($results);
-
-            po($results);
-        }
-
-        if ($record['forwarder_2_flag'] == 0 && $record['forwarder_2_awb'] != '') {
-            $trackingAPI_name = $record['courier_partner2']['courier_names']['courier_name'];
-
-            $results = [
-                'awb_no' => $record['forwarder_2_awb'],
-                'reference_id' => $record['courier_partner2']['id'],
-                'user_name' => $record['courier_partner2']['user_id'],
-                'pass_key' => $record['courier_partner2']['password'],
-                'account_id' => $record['courier_partner2']['account_id'],
-                'time_zone' => $record['courier_partner2']['time_zone'],
-            ];
-            // $class = ServicesClass(services_path: 'ShipNTrack\Tracking', services_class: $trackingAPI_name . "TrackingAPIServices");
-            // $class->$trackingAPI_name($results);
-
-            po($results);
-        }
-    }
-
-    exit;
-
-    $records = Trackingae::with(['CourierPartner1', 'CourierPartner1.courier_names', 'CourierPartner2', 'CourierPartner2.courier_names'])
-        ->orWhere('forwarder_1_flag', 0)
-        ->orWhere('forwarder_2_flag', 0)
-        ->orWhere('forwarder_3_flag', 0)
-        ->orWhere('forwarder_4_flag', 0)
-        ->get()
-        ->toArray();
-    po($records);
-
-    exit;
-    $data1 = zoho::where('Lead_Status', 'Duplicate Lead')
-        // ->limit(1)
-        ->get()
-        ->toArray();
-    $columns = [];
-    $result1 = [];
-    foreach ($data1 as  $data) {
-        foreach ($data as $key => $d) {
-            $columns[] = $key;
-            // po($key);
-        }
-        break;
-    }
-    // exit;
-    foreach ($data1 as $key => $data) {
-
-        foreach ($data as $key1 => $result) {
-            $result1[$key][$key1] = $result;
-            // po($result);
-        }
-    }
-    po($columns);
-    // po($result1);
-    // exit;
-    CSV_Write('Desktop/zoho_duplicate.csv', $columns, $result1);
-    exit;
-    $data = zoho::select('ASIN', 'Alternate_Order_No', DB::raw('count(Alternate_Order_No) as cnt'))
-        ->groupBy('Alternate_Order_No')
-        ->orderBy('cnt', 'ASC')
-        ->limit(1000)
-        ->get()
-        ->toArray();
-    po($data);
 });
 
-Route::get('test/shipntrack/data', function () {
-
-
-    $records = IntoAE::with(['CourierPartner1', 'CourierPartner2'])
-        ->orWhere('forwarder_1_flag', 0)
-        ->orWhere('forwarder_2_flag', 0)
-        ->get()
-        ->toArray();
-
-    po($records);
-    exit;
-    $records = IntoAE::with(['CourierPartner1', 'CourierPartner2'])
-        ->where('awb_number', '1000000000')
-        ->get()
-        ->toArray();
-    foreach ($records as $record) {
-        if ($record['forwarder_1_flag'] == 0) {
-            po($record['forwarder_1_awb']);
-            po($record['courier_partner1']['key1']);
-            po($record['courier_partner1']['key2']);
-        }
-        po($record);
-    }
-});
 
 Route::get('test/shipntrack/aramex/{awbno}', function ($awbNo) {
 
@@ -377,57 +257,20 @@ Route::get('zoho/dump2', function () {
 
 Route::get('zoho/dump3', function () {
 
-    $processManagementID = ProcessManagement::where('module', 'Zoho Dump')
-        ->where('command_name', 'mosh:submit-request-to-zoho')
-        ->where('command_end_time', '0000-00-00 00:00:00')
-        ->get('id')
-        ->first();
-
-    po($processManagementID['id']);
-    exit;
-
-    $records = zoho::select(['ASIN', 'Alternate_Order_No', 'updated_at', 'Created_Time'])->limit(1000)->orderBy('Created_Time', 'DESC')->get()->toArray();
-
-    if (!empty($records)) {
-
-        po(($records));
-    }
-    exit;
-
-    $data = CSV_Reader('zohocsv/1929333000107582112.csv');
-    $count = 0;
+    $data = CSV_Reader('zohocsv/1929333000110149354.csv');
     $result = [];
     $asin = [];
     $order_no = [];
-
+    $count = 0;
     foreach ($data as  $record) {
+        if ($count == 0) {
 
-        $result[] = $record;
-        $asin[] = $record['ASIN'];
-        $order_no[] = $record['Alternate_Order_No'];
-        $unique[] = [
-            'ASIN' => $record['ASIN'],
-            'Alternate_Order_No' => $record['Alternate_Order_No']
-        ];
-        // TestMongo::where('ASIN', $record['ASIN'])->where('Alternate_Order_No', $record['Alternate_Order_No'])->update($record, ['upsert' => true]);
-        // po($asin);
-        // DB::connection('mongodb')->collection('zoho')->updateMany('ASIN', ['$in' => $record['ASIN']], ['$set', $record], ['upsert' => true]);
-        TestMongo::where('Alternate_Order_No_1_ASIN_1', $unique)->update($record, ['upsert' => true]);
-        po($result);
-        // if ($count == 10) {
-
-        //     // TestMongo::insert($result);
-        //     // TestMongo::where('ASIN', $asin)->where('Alternate_Order_No', $order_no)->update($result, ['upsert' => true]);
-        //     $count = 0;
-        //     $result = [];
-        //     // exit;
-        // }
-        // $count++;
+            po($record);
+            // break;
+        }
+        $count++;
     }
-    // TestMongo::insert($result);
-    // TestMongo::whereIn('ASIN', $asin)->whereIn('Alternate_Order_No', $order_no)->update($result, ['upsert' => true]);
-    // po($asin);
-    po($order_no);
+    po($record);
     exit;
     $zohoResponse =  json_decode(Storage::get('ZohoResponse/zoho-response2.txt', true));
     po($zohoResponse);

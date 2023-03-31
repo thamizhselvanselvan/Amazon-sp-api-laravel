@@ -28,7 +28,10 @@ class ForwarderPacketMappingController extends Controller
 
     public function index(Request $request)
     {
-        $destinations = CourierPartner::select('destination')->groupBy('destination')->get()->toArray();
+        $destinations = CourierPartner::select('source', 'destination')
+            ->groupBy('source', 'destination')
+            ->get()
+            ->toArray();
 
         return view('shipntrack.Forwarder.index', compact('destinations'));
     }

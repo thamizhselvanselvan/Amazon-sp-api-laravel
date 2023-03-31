@@ -52,11 +52,6 @@ Route::get('shipntrack/tracking', 'shipntrack\Tracking\TrackingController@Tracki
 Route::match($method, 'shipntrack/stopTracking', 'shipntrack\Tracking\TrackingController@StopTracking')->name('shipntrack.stop');
 Route::post('shipntrack/stopTrackingUpadate', 'shipntrack\Tracking\TrackingController@StopTrackingUpdate')->name('shipntrack.stop.update');
 
-// Route::get('shipntrack/trackingList', 'shipntrack\TrackingList\TrackingListController@index');
-// Route::get('shipntrack/trackingList/search', 'shipntrack\TrackingList\TrackingListController@SearchByAwbNo');
-
-
-
 
 Route::match($method, 'shipntrack/courier', 'shipntrack\Courier\CourierController@index')->name('shipntrack.courier.index');
 
@@ -64,14 +59,6 @@ Route::post('shipntrack/courier/store', 'shipntrack\Courier\CourierController@co
 Route::get('shipntrack/courier/{id}/edit', 'shipntrack\Courier\CourierController@courieredit')->name('snt.courier.edit');
 Route::post('shipntrack/courier/save/edit', 'shipntrack\Courier\CourierController@courierupdate')->name('snt.courier.update');
 Route::get('shipntrack/courier/{id}/remove', 'shipntrack\Courier\CourierController@courierremove')->name('snt.courier.remove');
-
-
-
-
-
-
-
-
 
 
 
