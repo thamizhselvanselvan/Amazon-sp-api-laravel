@@ -3,20 +3,41 @@
 @section('title', 'Cliqnshop Orders')
 
 @section('content_header')
-
-<div class="row">
-    <h3>Cliqnshop Booked Orders</h3>
-
-</div>
 @stop
 
 
 @section('content')
 
+{{-- tabs switcher ~start --}}
+<div class="row  pt-4 justify-content-center">    
+    <a class="btn btn-lg btn-app bg-secondary" style="width:130px" href ="{{url('business/orders/details')}}">        
+        <i class="fa fa-clock-o"></i> Order Pending
+    </a>
+    <a class="btn btn-lg btn-app bg-success" style="width:130px" href ="{{url('business/booked/details')}}">        
+        <i class="fa fa-check"></i> Order booked
+    </a>
+    <a class="btn btn-lg btn-app bg-info" style="width:130px" href ="{{url('business/orders/confirm')}}">        
+        <i class="fa fa-check-circle-o"></i> Order Confirmation
+    </a>
+    <a class="btn btn-lg btn-app bg-warning" style="width:130px" href ="{{url('business/ship/confirmation')}}">        
+        <i class="fa fa-bell "></i> shipment Notification
+    </a>      
+</div>
+{{-- tabs switcher ~end --}}
+
 <div class="loader d-none">
     <div class="sub-loader position-relative ">
         <div class="lds-hourglass"></div>
         <p>Loading...</p>
+    </div>
+</div>
+
+
+<div class="row ">
+    <div class="col ">
+        <div style="margin: 0.1rem 0; text-align: center" >
+            <h3>Cliqnshop Booked Orders</h3>
+        </div>
     </div>
 </div>
 
