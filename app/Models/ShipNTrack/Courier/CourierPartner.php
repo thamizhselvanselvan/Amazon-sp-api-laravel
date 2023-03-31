@@ -19,11 +19,13 @@ class CourierPartner extends Model
         'active',
         'type',
         'time_zone',
-        'key1',
-        'key2',
         'user_id',
         'password',
-        'account_id'
+        'account_id',
+        'key1',
+        'key2',
+        'login_user',
+        'login_email'
     ];
     public function courier_names()
     {

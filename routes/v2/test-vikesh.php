@@ -9,15 +9,25 @@ use App\Models\Catalog\PricingIn;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingin;
 use App\Models\ShipNTrack\CourierTracking\SmsaTracking;
 use App\Models\ShipNTrack\CourierTracking\AramexTracking;
 
 Route::get('test/mongo', function () {
+
+    $test = Trackingin::get();
+    po($test);
+    exit;
+    $user = Auth::user()->name;
+    $email = Auth::user()->email;
+    po($user);
+    po($email);
 });
 
 
@@ -48,34 +58,39 @@ Route::get('test/shipntrack/aramex/{awbno}', function ($awbNo) {
 
     $aramex_records = [];
     $aramex_data = isset(json_decode($response, true)['TrackingResults'][0]['Value']) ? json_decode($response, true)['TrackingResults'][0]['Value'] : [];
-    foreach ($aramex_data as $key1 => $aramex_value) {
-        foreach ($aramex_value as $key2 => $value) {
+    if ($aramex_data != '') {
 
-            $aramex_records[$key1]['account_id'] = '1';
-            $key2 = ($key2 == 'WaybillNumber')     ? 'awbno'              : $key2;
-            $key2 = ($key2 == 'UpdateCode')        ? 'update_code'        : $key2;
-            $key2 = ($key2 == 'UpdateDescription') ? 'update_description' : $key2;
-            $key2 = ($key2 == 'UpdateDateTime')    ? 'update_date_time'   : $key2;
-            $key2 = ($key2 == 'UpdateLocation')    ? 'update_location'    : $key2;
-            $key2 = ($key2 == 'Comments')          ? 'comment'            : $key2;
-            $key2 = ($key2 == 'ProblemCode')       ? 'problem_code'       : $key2;
-            $key2 = ($key2 == 'GrossWeight')       ? 'gross_weight'       : $key2;
-            $key2 = ($key2 == 'ChargeableWeight')  ? 'chargeable_weight'  : $key2;
-            $key2 = ($key2 == 'WeightUnit')        ? 'weight_unit'        : $key2;
+        foreach ($aramex_data as $key1 => $aramex_value) {
+            foreach ($aramex_value as $key2 => $value) {
 
-            if ($key2 == 'update_date_time') {
-                // po($value);
-                preg_match('/(\d{10})(\d{3})([\+\-]\d{4})/', $value, $matches);
-                $dt = DateTime::createFromFormat("U.u.O", vsprintf('%2$s.%3$s.%4$s', $matches));
-                $dt->setTimeZone(new DateTimeZone('Asia/Dubai'));
-                $date = $dt->format('Y-m-d H:i:s');
+                $aramex_records[$key1]['account_id'] = '1';
+                $key2 = ($key2 == 'WaybillNumber')     ? 'awbno'              : $key2;
+                $key2 = ($key2 == 'UpdateCode')        ? 'update_code'        : $key2;
+                $key2 = ($key2 == 'UpdateDescription') ? 'update_description' : $key2;
+                $key2 = ($key2 == 'UpdateDateTime')    ? 'update_date_time'   : $key2;
+                $key2 = ($key2 == 'UpdateLocation')    ? 'update_location'    : $key2;
+                $key2 = ($key2 == 'Comments')          ? 'comment'            : $key2;
+                $key2 = ($key2 == 'ProblemCode')       ? 'problem_code'       : $key2;
+                $key2 = ($key2 == 'GrossWeight')       ? 'gross_weight'       : $key2;
+                $key2 = ($key2 == 'ChargeableWeight')  ? 'chargeable_weight'  : $key2;
+                $key2 = ($key2 == 'WeightUnit')        ? 'weight_unit'        : $key2;
 
-                $aramex_records[$key1][$key2] = $date;
-            } else {
+                if ($key2 == 'update_date_time') {
+                    // po($value);
+                    preg_match('/(\d{10})(\d{3})([\+\-]\d{4})/', $value, $matches);
+                    $dt = DateTime::createFromFormat("U.u.O", vsprintf('%2$s.%3$s.%4$s', $matches));
+                    $dt->setTimeZone(new DateTimeZone('Asia/Dubai'));
+                    $date = $dt->format('Y-m-d H:i:s');
 
-                $aramex_records[$key1][$key2] = $value;
+                    $aramex_records[$key1][$key2] = $date;
+                } else {
+
+                    $aramex_records[$key1][$key2] = $value;
+                }
             }
         }
+    } else {
+        echo 'Invalid AWB No.';
     }
     po($aramex_records);
     exit;
@@ -105,7 +120,7 @@ Route::get('test/shipntrack/smsa/{awbno}', function ($awbNo) {
                 <soap:Body>
                     <getTracking xmlns="http://track.smsaexpress.com/secom/">
                     <awbNo>' . $awbNo . '</awbNo>
-                    <passkey>Mah@8537</passkey>
+                    <passkey>BeL@3845</passkey>
                     </getTracking>
                 </soap:Body>
                 </soap:Envelope>';
@@ -115,42 +130,46 @@ Route::get('test/shipntrack/smsa/{awbno}', function ($awbNo) {
     $arrayResult = json_decode(json_encode(SimpleXML_Load_String($plainXML, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
     // po($arrayResult);
     // exit;
-    $smsa_data = $arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram']['NewDataSet']['Tracking'];
+    $smsa_data = isset($arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram']['NewDataSet']['Tracking']) ? $arrayResult['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram']['NewDataSet']['Tracking'] : [];
 
-    $smsa_records = [];
-    if (isset($smsa_data[0])) {
+    if (!empty($smsa_data)) {
 
-        foreach ($smsa_data as $smsa_value) {
+        $smsa_records = [];
+        if (isset($smsa_data[0])) {
+
+            foreach ($smsa_data as $smsa_value) {
+                $smsa_records[] = [
+                    'account_id' => 'smsaUSA',
+                    'awbno' => $smsa_value['awbNo'] ?? $smsa_data['awbNo'],
+                    'date' => date('Y-m-d H:i:s', strtotime($smsa_value['Date'] ?? $smsa_data['Date'])),
+                    'activity' => $smsa_value['Activity'] ?? $smsa_data['Activity'],
+                    'details' => $smsa_value['Details'] ?? $smsa_data['Details'],
+                    'location' => $smsa_value['Location'] ?? $smsa_data['Location']
+                ];
+            }
+        } else {
             $smsa_records[] = [
                 'account_id' => 'smsaUSA',
-                'awbno' => $smsa_value['awbNo'] ?? $smsa_data['awbNo'],
-                'date' => date('Y-m-d H:i:s', strtotime($smsa_value['Date'] ?? $smsa_data['Date'])),
-                'activity' => $smsa_value['Activity'] ?? $smsa_data['Activity'],
-                'details' => $smsa_value['Details'] ?? $smsa_data['Details'],
-                'location' => $smsa_value['Location'] ?? $smsa_data['Location']
+                'awbno' =>  $smsa_data['awbNo'],
+                'date' => date('Y-m-d H:i:s', strtotime($smsa_data['Date'])),
+                'activity' =>  $smsa_data['Activity'],
+                'details' =>  $smsa_data['Details'],
+                'location' =>  $smsa_data['Location']
             ];
         }
+        po($smsa_records);
+        exit;
+        SmsaTracking::upsert($smsa_records, ['awbno_date_activity_unique'], [
+            'account_id',
+            'awbno',
+            'date',
+            'activity',
+            'details',
+            'location',
+        ]);
     } else {
-        $smsa_records[] = [
-            'account_id' => 'smsaUSA',
-            'awbno' =>  $smsa_data['awbNo'],
-            'date' => date('Y-m-d H:i:s', strtotime($smsa_data['Date'])),
-            'activity' =>  $smsa_data['Activity'],
-            'details' =>  $smsa_data['Details'],
-            'location' =>  $smsa_data['Location']
-        ];
+        echo 'Invalid AWB No.';
     }
-
-    po($smsa_records);
-    exit;
-    SmsaTracking::upsert($smsa_records, ['awbno_date_activity_unique'], [
-        'account_id',
-        'awbno',
-        'date',
-        'activity',
-        'details',
-        'location',
-    ]);
 });
 
 Route::get('test/shipntrack/bombino/{awbno}', function ($awbNo) {
