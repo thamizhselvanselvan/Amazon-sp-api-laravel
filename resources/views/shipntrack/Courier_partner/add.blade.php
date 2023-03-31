@@ -82,7 +82,7 @@
                     <div class="col-6">
 
                         <x-adminlte-select name="source" label="Select Source:" id="source">
-                            <option value="">Select source</option>
+                            <option value="">Select Source</option>
                             <option value="AE">AE</option>
                             <option value="IN">IN</option>
                             <option value="KSA">KSA</option>
@@ -93,7 +93,7 @@
                     <div class="col-6">
 
                         <x-adminlte-select name="destination" label="Select Destination:" id="destination">
-                            <option value="">Select destination</option>
+                            <option value="">Select Destination</option>
                             <option value="AE">AE</option>
                             <option value="IN">IN</option>
                             <option value="KSA">KSA</option>
@@ -103,7 +103,7 @@
 
                     <div class="col-6">
                         <x-adminlte-select name="type" label="Select Type:" id="type">
-                            <option value="">Select type</option>
+                            <option value="">Select Type</option>
                             <option value="3">Both</option>
                             <option value="2">Domestic</option>
                             <option value="1">International</option>
@@ -138,7 +138,7 @@
 
                     <div class="col-6">
                         <x-adminlte-input label="Account ID:" name="account_id" id="account_id" type="text"
-                            placeholder="account_id" value="{{ old('account_id') }}" autocomplete="off" />
+                            placeholder="Account ID" value="{{ old('account_id') }}" autocomplete="off" />
                     </div>
 
                     <div class="col-6">

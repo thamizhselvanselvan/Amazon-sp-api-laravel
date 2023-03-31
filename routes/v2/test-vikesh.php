@@ -9,6 +9,7 @@ use App\Models\Catalog\PricingIn;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -18,6 +19,10 @@ use App\Models\ShipNTrack\CourierTracking\SmsaTracking;
 use App\Models\ShipNTrack\CourierTracking\AramexTracking;
 
 Route::get('test/mongo', function () {
+    $user = Auth::user()->name;
+    $email = Auth::user()->email;
+    po($user);
+    po($email);
 });
 
 

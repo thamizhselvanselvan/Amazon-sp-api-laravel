@@ -227,7 +227,7 @@ class ExportCatalogWithPriceViaAsin extends Command
                 if ($key2 == 'browse_classification') {
 
                     $browse = (array) json_decode($value, true);
-                    $catalogwithprice[$key]['category']  = $browse['classificationId'] ?? 'NA';
+                    $catalogwithprice[$key]['category']  = $browse['displayName'] ?? 'NA';
                 }
                 if ($key2 != 'images' && $key2 != 'product_types' && $key2 != 'updated_at' && $key2 != 'dimensions' && $key2 != 'browse_classification') {
 

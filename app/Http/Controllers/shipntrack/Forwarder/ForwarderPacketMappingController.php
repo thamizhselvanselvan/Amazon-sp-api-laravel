@@ -10,6 +10,7 @@ use PhpParser\Node\Expr\Eval_;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
@@ -28,7 +29,12 @@ class ForwarderPacketMappingController extends Controller
 
     public function index(Request $request)
     {
+        $user_name = Auth::user()->name;
+        $user_email = Auth::user()->email;
+
         $destinations = CourierPartner::select('source', 'destination')
+            ->where('login_user', $user_name)
+            ->where('login_email', $user_email)
             ->groupBy('source', 'destination')
             ->get()
             ->toArray();
@@ -38,13 +44,19 @@ class ForwarderPacketMappingController extends Controller
 
     public function courierget(Request $request)
     {
+        $user_name = Auth::user()->name;
+        $user_email = Auth::user()->email;
+
         $destination =    $request->destination;
+
         $partners_lists = CourierPartner::query()
             ->with(['courier_names'])
+            ->where('login_user', $user_name)
+            ->where('login_email', $user_email)
             ->where(['destination' => $destination])
             ->get()
             ->toArray();
-        // po($partners_lists);
+
         $lists = [];
         foreach ($partners_lists as $partners_list) {
             $lists[] = [
