@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingin;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
 
 class CourierTrackingCommand extends Command
@@ -52,12 +53,21 @@ class CourierTrackingCommand extends Command
 
         $class = "ShipNTrack\Tracking\CouriersTrackingJob";
         $queue_name = "tracking";
-        $destinations = ['ae', 'ksa'];
+        $destinations = ['ae', 'in', 'ksa'];
         foreach ($destinations as $destination) {
             $records = [];
             if ($destination == 'ae') {
 
                 $records = Trackingae::select('awb_number')
+                    ->orWhere('forwarder_1_flag', 0)
+                    ->orWhere('forwarder_2_flag', 0)
+                    ->orWhere('forwarder_3_flag', 0)
+                    ->orWhere('forwarder_4_flag', 0)
+                    ->get()
+                    ->toArray();
+            } else if ($destination == 'in') {
+
+                $records = Trackingin::select('awb_number')
                     ->orWhere('forwarder_1_flag', 0)
                     ->orWhere('forwarder_2_flag', 0)
                     ->orWhere('forwarder_3_flag', 0)

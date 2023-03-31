@@ -12,8 +12,9 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 use App\Models\ShipNTrack\ForwarderMaping\IntoKSA;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
-use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingin;
 use App\Services\ShipNTrack\Tracking\CourierTracking;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
 
 class CouriersTrackingJob implements ShouldQueue
 {
@@ -53,6 +54,17 @@ class CouriersTrackingJob implements ShouldQueue
                     'CourierPartner4.courier_names'
                 ]
             )
+                ->where('awb_number', $awb_no)
+                ->get()
+                ->toArray();
+        } else if ($destination == 'in') {
+
+            $records = Trackingin::with([
+                'CourierPartner1.courier_names',
+                'CourierPartner2.courier_names',
+                'CourierPartner3.courier_names',
+                'CourierPartner4.courier_names'
+            ])
                 ->where('awb_number', $awb_no)
                 ->get()
                 ->toArray();

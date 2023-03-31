@@ -15,10 +15,15 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingin;
 use App\Models\ShipNTrack\CourierTracking\SmsaTracking;
 use App\Models\ShipNTrack\CourierTracking\AramexTracking;
 
 Route::get('test/mongo', function () {
+
+    $test = Trackingin::get();
+    po($test);
+    exit;
     $user = Auth::user()->name;
     $email = Auth::user()->email;
     po($user);
@@ -110,7 +115,7 @@ Route::get('test/shipntrack/smsa/{awbno}', function ($awbNo) {
                 <soap:Body>
                     <getTracking xmlns="http://track.smsaexpress.com/secom/">
                     <awbNo>' . $awbNo . '</awbNo>
-                    <passkey>Mah@8537</passkey>
+                    <passkey>BeL@3845</passkey>
                     </getTracking>
                 </soap:Body>
                 </soap:Envelope>';
