@@ -62,7 +62,7 @@ class ForwarderPacketMappingController extends Controller
             $lists[] = [
                 'id' => $partners_list['id'],
                 'user_name' => $partners_list['user_name'],
-                'courier_name' => $partners_list['courier_names']['courier_name'],
+                // 'courier_name' => $partners_list['courier_names']['courier_name'],
             ];
         }
 
