@@ -80,7 +80,7 @@ class CouriersTrackingJob implements ShouldQueue
                 ->get()
                 ->toArray();
         }
-        Log::notice($records);
+
         foreach ($records as $record) {
 
             if ($record['forwarder_1_flag'] == 0 && $record['forwarder_1_awb'] != '') {

@@ -85,8 +85,6 @@ class CourierTrackingCommand extends Command
                     ->toArray();
             }
 
-            // po($records);
-            Log::notice("courier tracking command");
             if (count($records) > 0) {
 
                 foreach ($records as $record) {
