@@ -64,6 +64,7 @@
                 <table class="table table-bordered yajra-datatable table-striped text-center">
 
                     <thead>
+                        <th>Courier Name</th>
                         <th>Date</th>
                         <th>Time</th>
                         <th>Activity</th>

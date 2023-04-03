@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingin;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
 
 class CourierTrackingController extends Controller
@@ -23,7 +24,14 @@ class CourierTrackingController extends Controller
                     ->orderBy('awb_number', 'DESC')
                     ->get()
                     ->toArray();
+            } elseif ($request->sourceDestination == 'IN') {
+
+                $data = Trackingin::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
+                    ->orderBy('awb_number', 'DESC')
+                    ->get()
+                    ->toArray();
             } elseif ($request->sourceDestination == 'KSA') {
+
                 $data = Trackingksa::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
                     ->orderBy('awb_number', 'DESC')
                     ->get()
@@ -100,6 +108,17 @@ class CourierTrackingController extends Controller
                 ->where('awb_number', $awbNo)
                 ->get()
                 ->toArray();
+        } elseif ($sourceDestination == 'IN') {
+
+            $result = Trackingin::with([
+                'CourierPartner1.courier_names',
+                'CourierPartner2.courier_names',
+                'CourierPartner3.courier_names',
+                'CourierPartner4.courier_names'
+            ])
+                ->where('awb_number', $awbNo)
+                ->get()
+                ->toArray();
         } elseif ($sourceDestination == 'KSA') {
 
             $result = Trackingksa::with([
@@ -118,7 +137,7 @@ class CourierTrackingController extends Controller
             'consignee' => $result[0]['consignee'],
         ];
 
-        $forwarder1_data = [];
+        $forwarder1_record = [];
         if (isset($result[0]['forwarder_1_awb'])) {
 
             $awb_no = $result[0]['forwarder_1_awb'];
@@ -130,9 +149,13 @@ class CourierTrackingController extends Controller
                 ->orderBy($OrderByColunm[$courier_name], 'DESC')
                 ->get()
                 ->toArray();
+            foreach ($forwarder1_data as $data) {
+
+                $forwarder1_record[] = ['courier_name' => $courier_name, ...$data];
+            }
         }
 
-        $forwarder2_data = [];
+        $forwarder2_record = [];
         if (isset($result[0]['forwarder_2_awb'])) {
 
             $awb_no = $result[0]['forwarder_2_awb'];
@@ -144,8 +167,12 @@ class CourierTrackingController extends Controller
                 ->orderBy($OrderByColunm[$courier_name], 'DESC')
                 ->get()
                 ->toArray();
+            foreach ($forwarder2_data as $data) {
+
+                $forwarder2_record[] = ['courier_name' => $courier_name, ...$data];
+            }
         }
-        $forwarder3_data = [];
+        $forwarder3_record = [];
         if (isset($result[0]['forwarder_3_awb'])) {
 
             $awb_no = $result[0]['forwarder_3_awb'];
@@ -157,10 +184,30 @@ class CourierTrackingController extends Controller
                 ->orderBy($OrderByColunm[$courier_name], 'DESC')
                 ->get()
                 ->toArray();
+            foreach ($forwarder3_data as $data) {
+
+                $forwarder3_record[] = ['courier_name' => $courier_name, ...$data];
+            }
         }
 
-        $records = [...$forwarder1_data, ...$forwarder2_data, ...$forwarder3_data];
+        $forwarder4_record = [];
+        if (isset($result[0]['forwarder_4_awb'])) {
 
+            $awb_no = $result[0]['forwarder_4_awb'];
+            $courier_name = $result[0]['courier_partner4']['courier_names']['courier_name'];
+            $table = table_model_change(model_path: 'CourierTracking', model_name: ucwords(strtolower($courier_name)) . 'Tracking', table_name: strtolower($courier_name) . '_trackings');
+
+            $forwarder4_data = $table->select($selectColumns[$courier_name])
+                ->where('awbno', $awb_no)
+                ->orderBy($OrderByColunm[$courier_name], 'DESC')
+                ->get()
+                ->toArray();
+            foreach ($forwarder4_data as $data) {
+
+                $forwarder4_record[] = ['courier_name' => $courier_name, ...$data];
+            }
+        }
+        $records = [...$forwarder1_record, ...$forwarder2_record, ...$forwarder3_record, ...$forwarder4_record];
         return view('shipntrack.Smsa.packetDetails', compact('forwarder_details', 'records'));
     }
 

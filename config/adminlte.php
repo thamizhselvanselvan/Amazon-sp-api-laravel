@@ -1109,6 +1109,13 @@ return [
                     'icon' => 'far fa fa-bar-chart',
                 ],
 
+               [
+                    'text' => 'B2C POD',
+                    'can' => ['Admin'],
+                    'url' => 'shipntrack/b2c/POD',
+                    'icon' => 'far fa fa-file-text-o',
+                ],
+
 
                 /*
                 [

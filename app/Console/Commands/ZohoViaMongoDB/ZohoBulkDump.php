@@ -164,7 +164,7 @@ class ZohoBulkDump extends Command
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
 
-        Log::debug($data);
+        Log::debug('inserted.');
     }
 
     public function ExtractZipFile($path)

@@ -15,6 +15,7 @@
         <x-adminlte-select name="source_destination" id="sourceDestination">
             <option>Select Option</option>
             <option value="AE">AE</option>
+            <option value="IN">IN</option>
             <option value="KSA">KSA</option>
         </x-adminlte-select>
     </div>
