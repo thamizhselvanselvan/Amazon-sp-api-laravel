@@ -114,6 +114,9 @@ Route::post('cliqnshop/brand/ban/edit/{id}', 'Cliqnshop\CliqnshopBrandController
 Route::post('cliqnshop/brand/ban/delete/{id}', 'Cliqnshop\CliqnshopBrandController@delete_Brand')->name('cliqnshop.brand.ban.delete');
 
 
+Route::get('cliqnshop/brand/missing', 'Cliqnshop\MissingCatalogDetailsController@brand_missing_index')->name('cliqnshop.brand.missing');
+Route::get('cliqnshop/brand/missing/{site_id}', 'Cliqnshop\MissingCatalogDetailsController@brand_missing_index')->name('cliqnshop.brand.missing');
+
 Route::get('product/test', function () {
   // $data[] = $key;
   $searchKey = 'notebook';
