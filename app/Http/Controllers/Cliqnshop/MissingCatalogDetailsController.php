@@ -72,7 +72,11 @@ class MissingCatalogDetailsController extends Controller
             
             $product_list = DB::connection('cliqnshop')->table('mshop_product_list')->where('siteid', $site_id)->whereIn('refid',$cat)->where('domain', 'catalog')->pluck('parentid')->ToArray();
     
+            DB::connection('cliqnshop')->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
+
             $data = $data = DB::connection('cliqnshop')->table('mshop_product')->where('siteid', $site_id)->whereIn('id', $product_list)->orderBy('ctime', 'desc')->get();
+
+            DB::connection('cliqnshop')->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     
         } else {
 
@@ -80,8 +84,12 @@ class MissingCatalogDetailsController extends Controller
 
         $product_list = DB::connection('cliqnshop')->table('mshop_product_list')->whereIn('refid',$cat)->where('domain', 'catalog')->pluck('parentid')->ToArray();
 
+        DB::connection('cliqnshop')->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
+
         $data = $data = DB::connection('cliqnshop')->table('mshop_product')->whereIn('id', $product_list)->orderBy('ctime', 'desc')->get();
         
+        DB::connection('cliqnshop')->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+
         }
 
         if ($request->ajax()) {
