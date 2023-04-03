@@ -1192,6 +1192,12 @@ return [
                                     'can' => ['Admin', 'Cliqnshop'],
                                     'icon' => 'fa fa-ban',
                                 ],
+                                [
+                                    'text' => 'Product List Without Category',
+                                    'url' => 'cliqnshop/category/missing',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-list-ol',
+                                ],
                             ]
                         ],
                         [
