@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Cliqnshop;
 
-use PDO;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
+use PDO;
 use Yajra\DataTables\Facades\DataTables;
 
 class MissingCatalogDetailsController extends Controller
@@ -43,6 +43,14 @@ class MissingCatalogDetailsController extends Controller
 
         if ($request->ajax()) {
             return Datatables::of($data)
+                ->addColumn('status', function ($row) {
+                    if ($row->status == 1) {
+                        return "<center><p class='status_checks statusButton btn-success w-50'> Enable </p></center>";
+                    } else {
+                        return "<center><p class='status_checks statusButton btn-danger w-50'> Disable </p></center>";
+                    }
+                })
+                ->rawColumns(['status'])
                 ->make(true);
         }
 

@@ -46,6 +46,7 @@
                 <th>ID</th>
                 <th>Asin</th>
                 <th>Product Name</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -79,6 +80,10 @@
                     {
                         data: 'label',
                         name: 'label'
+                    },
+                    {
+                        data: 'status',
+                        name: 'status'
                     },
                 ]
             });
