@@ -1195,7 +1195,7 @@ return [
                             ]
                         ],
                         [
-                            'text' => 'brand',
+                            'text' => 'Brand',
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-list-ul',
                             'submenu' => [
@@ -1205,7 +1205,12 @@ return [
                                     'can' => ['Admin', 'Cliqnshop'],
                                     'icon' => 'fa fa-ban',
                                 ],
-
+                                [
+                                    'text' => 'Product List Without Brand',
+                                    'url' => 'cliqnshop/brand/missing',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-list-ol',
+                                ],
                             ]
                         ]
 
