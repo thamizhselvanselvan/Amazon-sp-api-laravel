@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Cliqnshop;
 
-use App\Http\Controllers\Controller;
+use PDO;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 
 class MissingCatalogDetailsController extends Controller
@@ -25,11 +26,15 @@ class MissingCatalogDetailsController extends Controller
 
         } else {
 
+            DB::connection('cliqnshop')->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
+
             $product = DB::connection('cliqnshop')->table('mshop_product')->pluck('id')->ToArray();
 
             $brand = DB::connection('cliqnshop')->table('mshop_product_list')->whereIn('parentid', $product)->where('domain', 'supplier')->pluck('parentid')->ToArray();
 
             $data = DB::connection('cliqnshop')->table('mshop_product')->wherenotIn('id', $brand)->orderBy('ctime', 'desc')->get();
+
+            DB::connection('cliqnshop')->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
         }
 
         if ($request->ajax()) {
