@@ -18,11 +18,15 @@ class MissingCatalogDetailsController extends Controller
         if ($site_id != null) {
             $url = "/cliqnshop/brand/missing/" . $site_id;
 
+            DB::connection('cliqnshop')->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
+
             $product = DB::connection('cliqnshop')->table('mshop_product')->where('siteid', $site_id)->pluck('id')->ToArray();
 
             $brand = DB::connection('cliqnshop')->table('mshop_product_list')->where('siteid', $site_id)->whereIn('parentid', $product)->where('domain', 'supplier')->pluck('parentid')->ToArray();
 
             $data = DB::connection('cliqnshop')->table('mshop_product')->where('siteid', $site_id)->wherenotIn('id', $brand)->orderBy('ctime', 'desc')->get();
+
+            DB::connection('cliqnshop')->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
         } else {
 
