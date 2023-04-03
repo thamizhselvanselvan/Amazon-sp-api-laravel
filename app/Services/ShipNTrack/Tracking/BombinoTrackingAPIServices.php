@@ -59,8 +59,6 @@ class BombinoTrackingAPIServices
             ];
             $result[] = [...$Bombino_Data, ...$bombino_record];
         }
-        Log::alert("Bombino");
-        Log::alert($result);
 
         BombinoTracking::upsert($result, ['awbno_actionDate_eventDetail_unique'], [
             'awbno',

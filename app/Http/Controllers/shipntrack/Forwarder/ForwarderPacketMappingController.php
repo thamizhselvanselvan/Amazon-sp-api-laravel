@@ -20,8 +20,8 @@ use App\Models\ShipNTrack\Packet\PacketForwarder;
 use App\Models\ShipNTrack\ForwarderMaping\IntoKSA;
 use App\Models\ShipNTrack\ForwarderMaping\USAtoAE;
 use App\Models\ShipNTrack\ForwarderMaping\USAtoKSA;
-use App\Model\ShipNTrack\ForwarderMaping\Trackingin;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingin;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
 
 class ForwarderPacketMappingController extends Controller
@@ -62,7 +62,7 @@ class ForwarderPacketMappingController extends Controller
             $lists[] = [
                 'id' => $partners_list['id'],
                 'user_name' => $partners_list['user_name'],
-                'courier_name' => $partners_list['courier_names']['courier_name'],
+                // 'courier_name' => $partners_list['courier_names']['courier_name'],
             ];
         }
 
@@ -117,20 +117,20 @@ class ForwarderPacketMappingController extends Controller
                 // ]
             );
         } elseif ($request->destination == 'IN') {
-            Trackingin::upsert(
+            Trackingin::create(
                 $tracking_data,
-                'reference_id_unique',
-                [
-                    'forwarder_1',
-                    'forwarder_1_awb',
-                    'forwarder_2',
-                    'forwarder_2_awb',
-                    'forwarder_3',
-                    'forwarder_3_awb',
-                    'forwarder_4',
-                    'forwarder_4_awb',
+                // 'reference_id_unique',
+                // [
+                //     'forwarder_1',
+                //     'forwarder_1_awb',
+                //     'forwarder_2',
+                //     'forwarder_2_awb',
+                //     'forwarder_3',
+                //     'forwarder_3_awb',
+                //     'forwarder_4',
+                //     'forwarder_4_awb',
 
-                ]
+                // ]
             );
         } elseif ($request->destination == 'KSA') {
             Trackingksa::create(
@@ -361,21 +361,21 @@ class ForwarderPacketMappingController extends Controller
     public function listing(Request $request)
     {
 
-        if ($request->ajax()) {
-            $mode = $request->mode;
+        // if ($request->ajax()) {
+        //     $mode = $request->mode;
 
-            $data = IntoAE::query()->get();
-            if ($mode == 'IN_KSA') {
-                $data = IntoKSA::query()->get();
-            } else  if ($mode == 'USA_AE') {
-                $data = USAtoAE::query()->get();
-            } else  if ($mode == 'USA_KSA') {
-                $data = USAtoKSA::query()->get();
-            }
+        //     $data = IntoAE::query()->get();
+        //     if ($mode == 'IN_KSA') {
+        //         $data = IntoKSA::query()->get();
+        //     } else  if ($mode == 'USA_AE') {
+        //         $data = USAtoAE::query()->get();
+        //     } else  if ($mode == 'USA_KSA') {
+        //         $data = USAtoKSA::query()->get();
+        //     }
 
-            return DataTables::of($data)
-                ->make(true);
-        }
+        //     return DataTables::of($data)
+        //         ->make(true);
+        // }
         return view('shipntrack.Forwarder.listing');
     }
 }

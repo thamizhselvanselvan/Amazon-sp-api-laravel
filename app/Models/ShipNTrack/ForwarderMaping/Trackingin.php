@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\ShipNTrack\ForwarderMaping;
+namespace App\Models\ShipNTrack\ForwarderMaping;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ShipNTrack\Courier\CourierPartner;
@@ -12,6 +12,7 @@ class Trackingin extends Model
     protected $connection = 'shipntracking';
     protected $table = 'tracking_ins';
     protected $fillable = [
+        'awb_number',
         'reference_id',
         'consignor',
         'consignee',
