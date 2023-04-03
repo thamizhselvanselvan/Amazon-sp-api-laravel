@@ -10,4 +10,8 @@ class B2cProofOfDeliveryController extends Controller
    public function index(){
     return view('shipntrack.POD.index');
    }
+
+   public function templete(){
+    return view('shipntrack.POD.temp');
+   }
 }
