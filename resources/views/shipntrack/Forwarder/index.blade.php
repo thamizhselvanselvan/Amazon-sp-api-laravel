@@ -176,7 +176,7 @@
                         let forwarder_data = "<option value='' >" + 'Select Forwarder' + "</option>";
                         $.each(result, function(i, result) {
                             forwarder_data += "<option value='" + result.id + "'>" + result
-                                .user_name + " - " + result.courier_name +
+                                .user_name +
                                 "</option>";
                         });
                         $('#forwarder_info_1').append(forwarder_data);
