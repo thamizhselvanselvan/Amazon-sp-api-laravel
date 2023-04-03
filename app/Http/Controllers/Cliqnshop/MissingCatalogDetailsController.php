@@ -45,9 +45,9 @@ class MissingCatalogDetailsController extends Controller
             return Datatables::of($data)
                 ->addColumn('status', function ($row) {
                     if ($row->status == 1) {
-                        return "<center><p class='status_checks statusButton btn-success w-50'> Enable </p></center>";
+                        return "<center><p class='status_checks statusButton btn-success w-75'> Enable </p></center>";
                     } else {
-                        return "<center><p class='status_checks statusButton btn-danger w-50'> Disable </p></center>";
+                        return "<center><p class='status_checks statusButton btn-danger w-75'> Disable </p></center>";
                     }
                 })
                 ->rawColumns(['status'])
