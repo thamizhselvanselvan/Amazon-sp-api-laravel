@@ -16,7 +16,7 @@ class CourierStatusfetchandInsert extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:shipntrack_status_fetch';
+    protected $signature = 'mosh:shipntrack_courier_status';
 
     /**
      * The console command description.
