@@ -361,21 +361,21 @@ class ForwarderPacketMappingController extends Controller
     public function listing(Request $request)
     {
 
-        if ($request->ajax()) {
-            $mode = $request->mode;
+        // if ($request->ajax()) {
+        //     $mode = $request->mode;
 
-            $data = IntoAE::query()->get();
-            if ($mode == 'IN_KSA') {
-                $data = IntoKSA::query()->get();
-            } else  if ($mode == 'USA_AE') {
-                $data = USAtoAE::query()->get();
-            } else  if ($mode == 'USA_KSA') {
-                $data = USAtoKSA::query()->get();
-            }
+        //     $data = IntoAE::query()->get();
+        //     if ($mode == 'IN_KSA') {
+        //         $data = IntoKSA::query()->get();
+        //     } else  if ($mode == 'USA_AE') {
+        //         $data = USAtoAE::query()->get();
+        //     } else  if ($mode == 'USA_KSA') {
+        //         $data = USAtoKSA::query()->get();
+        //     }
 
-            return DataTables::of($data)
-                ->make(true);
-        }
+        //     return DataTables::of($data)
+        //         ->make(true);
+        // }
         return view('shipntrack.Forwarder.listing');
     }
 }
