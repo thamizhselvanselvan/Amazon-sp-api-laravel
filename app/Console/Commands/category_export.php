@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use League\Csv\Writer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class category_export extends Command
@@ -82,7 +83,7 @@ class category_export extends Command
             foreach ($treename as $key => $results) {
 
                 if (array_key_exists($key, $csv_data)) {
-                    $csv_data[$key]['tree'] = $results;
+                    $csv_data[$key]['tree'] = str_replace(",","  >  ",str_replace(", "," ",$results));
                 }
             }
            
