@@ -54,6 +54,9 @@ class category_export extends Command
             // po($asin);
             // exit;
             // $count = count($asin);
+
+            DB::connection('catalog')->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
+
             $result = DB::connection('catalog')->table('catalognewuss')
                 ->whereIn('asin', $asin)->pluck('browse_classification', 'asin');
 
@@ -79,6 +82,8 @@ class category_export extends Command
 
             $treename = DB::connection('catalog')->table('categoriestree')
                 ->whereIn('browseNodeId', $c_id)->pluck('Tree', 'browseNodeId')->toArray();
+
+                DB::connection('catalog')->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
             foreach ($treename as $key => $results) {
 
