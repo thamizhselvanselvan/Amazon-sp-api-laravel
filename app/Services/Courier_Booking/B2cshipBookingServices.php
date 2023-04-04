@@ -10,6 +10,7 @@ use App\Models\Catalog\PricingUs;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use App\Models\order\OrderItemDetails;
 use App\Models\order\US_Price_Missing;
 use App\Models\order\OrderUpdateDetail;
 
@@ -406,17 +407,31 @@ class B2cshipBookingServices
 
         if (array_key_exists('ErrorDetailCode', $data)) {
 
+
             $error = $data['ErrorDetailCode'];
             $error_desc = $data['ErrorDetailCodeDesc'];
             $order_id = $this->amazon_order_id;
+            $order_item_id = $this->order_item_id;
+            Log::info($error_desc);
+
+            if ($error_desc = 'Please Enter InvoiceValue greater Than Zero.') {
+                $asins =  OrderItemDetails::where(['amazon_order_identifier' => $order_id, 'order_item_identifier' => $order_item_id])->select('asin')->get();
+                if (isset($asins[0]->asin)) {
+                    $asin = $asins[0]->asin;
+                    US_Price_Missing::insert(['asin' => $asin, 'amazon_order_id' => $order_id, 'order_item_id' => $order_item_id, 'status' => 0]);
+                }
+            } else {
+                Log::info('went Wrong');
+            }
+
+
 
             $slackMessage = "Message: $error_desc,
             Type: $error,
             Order_id: $order_id,
             Operation: 'B2Cship Booking Response'";
-            slack_notification('app360', 'B2cship Booking', $slackMessage);
+            // slack_notification('app360', 'B2cship Booking', $slackMessage);
         } else {
-
             $awb_no = $data['AWBNo'];
             OrderUpdateDetail::where([
                 ['amazon_order_id', $this->amazon_order_id],
