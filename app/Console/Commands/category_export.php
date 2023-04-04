@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use PDO;
 use League\Csv\Writer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
