@@ -175,7 +175,6 @@ class B2cshipBookingServices
                         'booking_status' => '5'
                     ]
                 );
-                US_Price_Missing::insert(['asin' => $asin, 'amazon_order_id' => $amazon_order_id, 'order_item_id' => $order_item_id, 'status' => 0]);
                 $this->missingASINDetails($asin);
                 slack_notification('app360', 'B2cship Booking', $slackMessage);
                 return false;
@@ -412,7 +411,6 @@ class B2cshipBookingServices
             $error_desc = $data['ErrorDetailCodeDesc'];
             $order_id = $this->amazon_order_id;
             $order_item_id = $this->order_item_id;
-            Log::info($error_desc);
 
             if ($error_desc = 'Please Enter InvoiceValue greater Than Zero.') {
                 $asins =  OrderItemDetails::where(['amazon_order_identifier' => $order_id, 'order_item_identifier' => $order_item_id])->select('asin')->get();
@@ -421,16 +419,14 @@ class B2cshipBookingServices
                     US_Price_Missing::insert(['asin' => $asin, 'amazon_order_id' => $order_id, 'order_item_id' => $order_item_id, 'status' => 0]);
                 }
             } else {
-                Log::info('went Wrong');
+                Log::info('B2C Booking went Wrong Please Check');
             }
-
-
 
             $slackMessage = "Message: $error_desc,
             Type: $error,
             Order_id: $order_id,
             Operation: 'B2Cship Booking Response'";
-            // slack_notification('app360', 'B2cship Booking', $slackMessage);
+            slack_notification('app360', 'B2cship Booking', $slackMessage);
         } else {
             $awb_no = $data['AWBNo'];
             OrderUpdateDetail::where([
