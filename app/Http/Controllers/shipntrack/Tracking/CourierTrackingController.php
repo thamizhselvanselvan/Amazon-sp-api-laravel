@@ -80,10 +80,17 @@ class CourierTrackingController extends Controller
 
     public function PacketMoreDetails($sourceDestination, $awbNo)
     {
-        $OrderByColunm = [
+        $OrderByColunm1 = [
             'SMSA' => 'date',
             'Aramex' => 'update_date_time',
-            'Bombino' => 'created_at'
+            'Bombino' => 'action_date'
+
+        ];
+
+        $OrderByColunm2 = [
+            'SMSA' => 'date',
+            'Aramex' => 'update_date_time',
+            'Bombino' => 'action_time'
 
         ];
 
@@ -157,7 +164,8 @@ class CourierTrackingController extends Controller
 
             $forwarder1_data = $table->select($selectColumns[$courier_name])
                 ->where('awbno', $awb_no)
-                ->orderBy($OrderByColunm[$courier_name], 'DESC')
+                ->orderBy($OrderByColunm1[$courier_name], 'DESC')
+                ->orderBy($OrderByColunm2[$courier_name], 'DESC')
                 ->get()
                 ->toArray();
 
@@ -193,7 +201,8 @@ class CourierTrackingController extends Controller
 
             $forwarder2_data = $table->select($selectColumns[$courier_name])
                 ->where('awbno', $awb_no)
-                ->orderBy($OrderByColunm[$courier_name], 'DESC')
+                ->orderBy($OrderByColunm1[$courier_name], 'DESC')
+                ->orderBy($OrderByColunm2[$courier_name], 'DESC')
                 ->get()
                 ->toArray();
 
@@ -227,7 +236,8 @@ class CourierTrackingController extends Controller
 
             $forwarder3_data = $table->select($selectColumns[$courier_name])
                 ->where('awbno', $awb_no)
-                ->orderBy($OrderByColunm[$courier_name], 'DESC')
+                ->orderBy($OrderByColunm1[$courier_name], 'DESC')
+                ->orderBy($OrderByColunm2[$courier_name], 'DESC')
                 ->get()
                 ->toArray();
 
@@ -263,7 +273,8 @@ class CourierTrackingController extends Controller
 
             $forwarder4_data = $table->select($selectColumns[$courier_name])
                 ->where('awbno', $awb_no)
-                ->orderBy($OrderByColunm[$courier_name], 'DESC')
+                ->orderBy($OrderByColunm1[$courier_name], 'DESC')
+                ->orderBy($OrderByColunm2[$courier_name], 'DESC')
                 ->get()
                 ->toArray();
 
