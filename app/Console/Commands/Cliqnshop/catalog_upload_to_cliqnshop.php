@@ -42,6 +42,7 @@ class catalog_upload_to_cliqnshop extends Command
     {
         $site_id = $this->argument('site_id');
         $file_path = $this->argument('path');
+        $editor = 'cns_search';
 
 
         $csv_data =  CSV_Reader($file_path);
@@ -258,7 +259,7 @@ class catalog_upload_to_cliqnshop extends Command
             //     $category_code = $category[$asin];
             // }
 
-            $keyword = '';
+            $keyword = 'csv_bulk_upload';
             $insert_service = new CliqnshopCataloginsert();
             $insert_service->insertdata_cliqnshop(
                 $site_id,
@@ -278,7 +279,8 @@ class catalog_upload_to_cliqnshop extends Command
                 $keyword,
                 $short_description,
                 $long_description,
-                $generic_keywords
+                $generic_keywords,
+                $keyword
             );
         }
 

@@ -202,9 +202,10 @@ class Search_Product
                     $short_description = $cliqnshop_catalog['short_description'] ?? '';
                     $long_description = $cliqnshop_catalog['long_description'] ?? '';
                     $generic_keywords = $cliqnshop_catalog['generic_keywords'] ?? '';
+                    $editor = 'cns_search';
 
                     $cliqnshop = new CliqnshopCataloginsert();
-                    $cliqnshop->insertdata_cliqnshop($siteId, $category, $asin, $item_name, $brand, $brand_label, $color_key, $label, $length_unit, $length_value, $width_unit, $width_value, $Price_US_IN, $image_array, $searchKey, $short_description, $long_description, $generic_keywords);
+                    $cliqnshop->insertdata_cliqnshop($siteId, $category, $asin, $item_name, $brand, $brand_label, $color_key, $label, $length_unit, $length_value, $width_unit, $width_value, $Price_US_IN, $image_array, $searchKey, $short_description, $long_description, $generic_keywords,$editor);
                 }
             }
         }

@@ -349,7 +349,7 @@ class CliqnshopCatalogController extends Controller
                 }
             }
 
-            $keyword = '';
+            $keyword = 'app360';
             $insert_service = new CliqnshopCataloginsert();
             $insert_service->insertdata_cliqnshop(
                 $site_id,
@@ -369,7 +369,8 @@ class CliqnshopCatalogController extends Controller
                 $keyword,
                 $short_description,
                 $long_description,
-                $generic_keywords
+                $generic_keywords,
+                $keyword
             );
         }
 

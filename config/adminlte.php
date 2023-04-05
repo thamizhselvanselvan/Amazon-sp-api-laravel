@@ -1143,10 +1143,23 @@ return [
                     'icon' => 'fa fa-yelp',
                     'submenu' => [
                         [
-                            'text' => 'Asin Importer',
-                            'url' => 'catalog/index',
+                            'text' => 'Asin ',
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'far fa-fw fa-file',
+                            'submenu' => [
+                                            [
+                                                'text' => 'Importer',
+                                                'url' => 'catalog/index',
+                                                'can' => ['Admin', 'Cliqnshop'],
+                                                'icon' => 'fa fa-download',
+                                            ],
+                                            [
+                                                'text' => 'Manager',
+                                                'url' => 'cliqnshop/verify/asin',
+                                                'can' => ['Admin', 'Cliqnshop'],
+                                                'icon' => 'fa fa-eraser',
+                                            ]
+                                    ]
 
                         ],
                         [
