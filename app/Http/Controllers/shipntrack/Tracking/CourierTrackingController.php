@@ -83,7 +83,7 @@ class CourierTrackingController extends Controller
         $OrderByColunm = [
             'SMSA' => 'date',
             'Aramex' => 'update_date_time',
-            'Bombino' => 'action_date'
+            'Bombino' => 'created_at'
 
         ];
 
