@@ -206,7 +206,7 @@ class VikeshTestController extends Controller
         }
 
         $forwarder1_result = [];
-        $forwarder2_data = [];
+        $forwarder2_result = [];
 
         foreach ($data as $key => $records) {
 
@@ -297,7 +297,7 @@ class VikeshTestController extends Controller
                 foreach ($forwarder2_data as $key => $data) {
                     if ($courier_name == 'Bombino') {
                         if (in_array($data['event_detail'], $courierStatus)) {
-                            $forwarder1_result[$key] = $data;
+                            $forwarder2_result[$key] = $data;
                         }
                     } elseif ($courier_name == 'SMSA') {
                         if (in_array($data['activity'], $courierStatus)) {
