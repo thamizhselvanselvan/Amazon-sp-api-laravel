@@ -44,4 +44,4 @@ Route::match($method, 'product', 'Catalog\CliqnshopCatalogController@CliqnshopPr
 
 Route::match($method, 'zoho/webhook', 'Zoho\ZohoCRMController@ZohoWebhook');
 
-Route::match($method, 'b2cship/tracking/{awbNo}', 'VikeshTestController@bombinoAPI');
+Route::match($method, 'b2cship/tracking/{awbNo}', 'shipntrack\API\B2CShipTrackingAPI@bombinoAPI');
