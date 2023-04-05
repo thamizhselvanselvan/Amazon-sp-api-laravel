@@ -22,14 +22,12 @@ class CliqnshopVerificationController extends Controller
 
                 $data = DB::connection('cliqnshop')->table('mshop_product')      
                 ->where('siteid', $request->site_id)            
-                ->orderBy('mtime','desc')
-                ->get();
+                ->orderBy('mtime','desc');
             }
             else
             {
                 $data = DB::connection('cliqnshop')->table('mshop_product')                  
-                ->orderBy('mtime','desc')
-                ->get();
+                ->orderBy('mtime','desc');
             }
 
             

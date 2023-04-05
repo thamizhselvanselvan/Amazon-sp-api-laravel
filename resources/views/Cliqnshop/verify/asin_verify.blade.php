@@ -150,7 +150,7 @@
                 },
                 {
                     data: 'siteid',
-                    name: 'site'
+                    name: 'siteid'
                 },
                 {
                     data: 'ctime',
