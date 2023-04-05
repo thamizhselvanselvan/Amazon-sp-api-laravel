@@ -241,7 +241,7 @@ class OrderMissingDetailsController extends Controller
 
 
 
-        $table_name = table_model_create(country_code: 'us', model: 'Pricing', table_name: 'Pricing_');
+        $table_name = table_model_create(country_code: 'us', model: 'Pricing', table_name: 'pricing_');
 
          $table_name->where('asin',$asin)
          ->update(['us_price'=>$price]);

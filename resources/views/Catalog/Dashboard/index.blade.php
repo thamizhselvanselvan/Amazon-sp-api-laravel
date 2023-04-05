@@ -126,6 +126,18 @@
                                         <div class="col-2"> </div>
                                     </div>
                                 </div>
+                                <div class="info-box-text">
+                                    <div class="row">
+                                        <div class="col-2"> </div>
+                                        <div class="col-2 text-left">
+                                            <h5> Creads in use</h5>
+                                        </div>
+                                        <div class="col-6 text-right">
+                                            <h5> {{ $record_array->creds_count->$key2 }}</h5>
+                                        </div>
+                                        <div class="col-2"> </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
