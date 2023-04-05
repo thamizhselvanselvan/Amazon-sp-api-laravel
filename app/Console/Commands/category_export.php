@@ -75,10 +75,10 @@ class category_export extends Command
                         'd_name' => $data['displayName'],
                     ];
                 }
-                else
-                {
-                    $csv_data[$key]['asin']=$key;
-                }
+                // else
+                // {
+                //     $csv_data[$key]['asin']=$key;
+                // }
             }
 
             $treename = DB::connection('catalog')->table('categoriestree')
