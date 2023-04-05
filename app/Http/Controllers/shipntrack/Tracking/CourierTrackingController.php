@@ -4,9 +4,13 @@ namespace App\Http\Controllers\shipntrack\Tracking;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\V2\OMS\StatusMaster;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\ShipNTrack\Courier\CourierPartner;
+use App\Models\ShipNTrack\Courier\StatusManagement;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingin;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
@@ -16,23 +20,29 @@ class CourierTrackingController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-
+            $login_email = Auth::user()->email;
             $data = [];
             if ($request->sourceDestination == 'AE') {
 
-                $data = Trackingae::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
+                $data = Trackingae::select('tracking_aes.awb_number', 'tracking_aes.forwarder_1_awb', 'tracking_aes.forwarder_2_awb', 'tracking_aes.forwarder_3_awb', 'tracking_aes.forwarder_4_awb', 'tracking_aes.created_at')
+                    ->join('partners', 'partners.id', '=', 'tracking_aes.forwarder_1')
+                    ->where('partners.login_email', $login_email)
                     ->orderBy('awb_number', 'DESC')
                     ->get()
                     ->toArray();
             } elseif ($request->sourceDestination == 'IN') {
 
-                $data = Trackingin::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
+                $data = Trackingin::select('tracking_ins.awb_number', 'tracking_ins.forwarder_1_awb', 'tracking_ins.forwarder_2_awb', 'tracking_ins.forwarder_3_awb', 'tracking_ins.forwarder_4_awb', 'tracking_ins.created_at')
+                    ->join('partners', 'partners.id', '=', 'tracking_ins.forwarder_1')
+                    ->where('partners.login_email', $login_email)
                     ->orderBy('awb_number', 'DESC')
                     ->get()
                     ->toArray();
             } elseif ($request->sourceDestination == 'KSA') {
 
-                $data = Trackingksa::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
+                $data = Trackingksa::select('tracking_ksa.awb_number', 'tracking_ksa.forwarder_1_awb', 'tracking_ksa.forwarder_2_awb', 'tracking_ksa.forwarder_3_awb', 'tracking_ksa.forwarder_4_awb', 'tracking_ksa.created_at')
+                    ->join('partners', 'partners.id', '=', 'tracking_ksa.forwarder_1')
+                    ->where('partners.login_email', $login_email)
                     ->orderBy('awb_number', 'DESC')
                     ->get()
                     ->toArray();
@@ -96,6 +106,7 @@ class CourierTrackingController extends Controller
             ],
 
         ];
+
         $result = [];
         if ($sourceDestination == 'AE') {
 
@@ -149,9 +160,27 @@ class CourierTrackingController extends Controller
                 ->orderBy($OrderByColunm[$courier_name], 'DESC')
                 ->get()
                 ->toArray();
-            foreach ($forwarder1_data as $data) {
 
-                $forwarder1_record[] = ['courier_name' => $courier_name, ...$data];
+            $columnName = $result[0]['forwarder_2_awb'] == '' ? 'last_mile_status' : 'first_mile_status';
+            $courierActivities = StatusManagement::select('courier_status')
+                ->join('courier', 'courier.id', '=', 'status_master.courier_id')
+                ->where($columnName, 1)
+                ->where('courier_name', $courier_name)
+                ->get()
+                ->toArray();
+
+            $courierStatus = [];
+            foreach ($courierActivities as $courierActivity) {
+                $courierStatus[] = $courierActivity['courier_status'];
+            }
+
+            foreach ($forwarder1_data as $data) {
+                foreach ($data as $key => $res) {
+                    if (in_array(strtoupper($res), $courierStatus)) {
+
+                        $forwarder1_record[] = ['courier_name' => $courier_name, ...$data];
+                    }
+                }
             }
         }
 
@@ -167,9 +196,26 @@ class CourierTrackingController extends Controller
                 ->orderBy($OrderByColunm[$courier_name], 'DESC')
                 ->get()
                 ->toArray();
-            foreach ($forwarder2_data as $data) {
 
-                $forwarder2_record[] = ['courier_name' => $courier_name, ...$data];
+            $columnName = $result[0]['forwarder_3_awb'] == '' ? 'last_mile_status' : 'first_mile_status';
+            $courierActivities = StatusManagement::select('courier_status')
+                ->join('courier', 'courier.id', '=', 'status_master.courier_id')
+                ->where($columnName, 1)
+                ->where('courier_name', $courier_name)
+                ->get()
+                ->toArray();
+            $courierStatus = [];
+            foreach ($courierActivities as $courierActivity) {
+                $courierStatus[] = $courierActivity['courier_status'];
+            }
+
+            foreach ($forwarder2_data as $data) {
+                foreach ($data as $res) {
+                    if (in_array(strtoupper($res), $courierStatus)) {
+
+                        $forwarder2_record[] = ['courier_name' => $courier_name, ...$data];
+                    }
+                }
             }
         }
         $forwarder3_record = [];
@@ -184,9 +230,27 @@ class CourierTrackingController extends Controller
                 ->orderBy($OrderByColunm[$courier_name], 'DESC')
                 ->get()
                 ->toArray();
-            foreach ($forwarder3_data as $data) {
 
-                $forwarder3_record[] = ['courier_name' => $courier_name, ...$data];
+            $columnName = $result[0]['forwarder_4_awb'] == '' ? 'last_mile_status' : 'first_mile_status';
+            $courierActivities = StatusManagement::select('courier_status')
+                ->join('courier', 'courier.id', '=', 'status_master.courier_id')
+                ->where($columnName, 1)
+                ->where('courier_name', $courier_name)
+                ->get()
+                ->toArray();
+
+            $courierStatus = [];
+            foreach ($courierActivities as $courierActivity) {
+                $courierStatus[] = $courierActivity['courier_status'];
+            }
+
+            foreach ($forwarder3_data as $data) {
+                foreach ($data as $res) {
+                    if (in_array(strtoupper($res), $courierStatus)) {
+
+                        $forwarder3_record[] = ['courier_name' => $courier_name, ...$data];
+                    }
+                }
             }
         }
 
@@ -202,9 +266,26 @@ class CourierTrackingController extends Controller
                 ->orderBy($OrderByColunm[$courier_name], 'DESC')
                 ->get()
                 ->toArray();
-            foreach ($forwarder4_data as $data) {
 
-                $forwarder4_record[] = ['courier_name' => $courier_name, ...$data];
+            $courierActivities = StatusManagement::select('courier_status')
+                ->join('courier', 'courier.id', '=', 'status_master.courier_id')
+                ->where('last_mile_status', 1)
+                ->where('courier_name', $courier_name)
+                ->get()
+                ->toArray();
+
+            $courierStatus = [];
+            foreach ($courierActivities as $courierActivity) {
+                $courierStatus[] = $courierActivity['courier_status'];
+            }
+
+            foreach ($forwarder4_data as $data) {
+                foreach ($data as $res) {
+                    if (in_array(strtoupper($res), $courierStatus)) {
+
+                        $forwarder4_record[] = ['courier_name' => $courier_name, ...$data];
+                    }
+                }
             }
         }
         $records = [...$forwarder1_record, ...$forwarder2_record, ...$forwarder3_record, ...$forwarder4_record];

@@ -25,9 +25,8 @@ class CourierStatusManagementController extends Controller
 
 
         $data =  StatusManagement::query()->with(['courierstatus'])
-            ->when($request->courier_id, function ($query, $role) use ($request) {
+            ->when($request->courier_id, function ($query, $role) {
                 return $query->where('courier_id', $role);
-                Log::alert($role);
             })->get();
 
         if ($request->ajax()) {
@@ -38,7 +37,7 @@ class CourierStatusManagementController extends Controller
                     $name = $row->courierstatus->courier_name;
                     return $name;
                 })
-                ->addColumn('booking_master_id', function ($row) {
+                ->addColumn('status', function ($row) {
                     $datas = Booking::select('id', 'name')->get();
                     $selected_status =  StatusManagement::where('id', $row->id)->select('booking_master_id')->get();
 
@@ -63,17 +62,27 @@ class CourierStatusManagementController extends Controller
                     }
                     return $actionBtn;
                 })
-                ->editColumn('api_stop', function ($row) use ($store_order_item) {
+                ->editColumn('first_mile_status', function ($row) use ($store_order_item) {
 
-                    if ($row['api_display'] == 1) {
+                    if ($row['first_mile_status'] == 1) {
 
-                        $actionBtn = "<input type='checkbox'  href='javascript:void(0)'  id='api_stop' name='api_stop[]' value='$row->id'>";
+                        $actionBtn = "<input type='checkbox' checked href='javascript:void(0)'  id='first_mile_status' name='first_mile_status[]' value='$row->id'>";
                     } else {
-                        $actionBtn = "<input type='checkbox' checked href='javascript:void(0)'  id='api_stop' name='api_stop[]' value='$row->id'>";
+                        $actionBtn = "<input type='checkbox'  href='javascript:void(0)'  id='first_mile_status' name='first_mile_status[]' value='$row->id'>";
                     }
                     return $actionBtn;
                 })
-                ->rawColumns(['api_stop', 'tracking_stop', 'booking_master_id'])
+                ->editColumn('last_mile_status', function ($row) use ($store_order_item) {
+
+                    if ($row['last_mile_status'] == 1) {
+
+                        $actionBtn = "<input type='checkbox' checked href='javascript:void(0)'  id='last_mile_status' name='last_mile_status[]' value='$row->id'>";
+                    } else {
+                        $actionBtn = "<input type='checkbox'  href='javascript:void(0)'  id='last_mile_status' name='last_mile_status[]' value='$row->id'>";
+                    }
+                    return $actionBtn;
+                })
+                ->rawColumns(['status', 'tracking_stop', 'first_mile_status', 'last_mile_status'])
                 ->make(true);
         }
         return view('shipntrack.StatusManagemrnt.index', compact('courier_partner', 'url', 'request_courier_id'));
@@ -81,25 +90,33 @@ class CourierStatusManagementController extends Controller
 
     public function storestatus(Request $request)
     {
-
-     
         //stop Tracking
         $courier_id = $request->courier_id;
-         StatusManagement::query()->where("courier_id", $courier_id)->update(['stop_tracking' => '0']);
+        StatusManagement::query()->where("courier_id", $courier_id)->update(['stop_tracking' => '0']);
         $receved_stop = $request->stop_enable;
         $datas =   explode('-', $receved_stop);
         foreach ($datas as $key => $data) {
 
             StatusManagement::where('id', $data)->update(['stop_tracking' => '1']);
         }
-        //stop displaying In-API
-        StatusManagement::query()->where("courier_id", $courier_id)->update(['api_display' => '1']);
-        $receved_api_stop = $request->stop_api;
-      
-        $api_datas =   explode('-', $receved_api_stop);
+        //stop displaying In-API For Domestic
+        StatusManagement::query()->where("courier_id", $courier_id)->update(['first_mile_status' => '0']);
+        $receved_first_mile_status = $request->first_mile_status;
+
+        $api_datas =   explode('-', $receved_first_mile_status);
         foreach ($api_datas as $key => $id) {
 
-            StatusManagement::where('id', $id)->update(['api_display' => '0']);
+            StatusManagement::where('id', $id)->update(['first_mile_status' => '1']);
+        }
+
+        //last_mile_status -courier Partners Stop Displaying In API
+        StatusManagement::query()->where("courier_id", $courier_id)->update(['last_mile_status' => '0']);
+        $receved_last_mile_status = $request->last_mile_status;
+
+        $api_datas =   explode('-', $receved_last_mile_status);
+        foreach ($api_datas as $key => $id) {
+
+            StatusManagement::where('id', $id)->update(['last_mile_status' => '1']);
         }
 
         //update Status

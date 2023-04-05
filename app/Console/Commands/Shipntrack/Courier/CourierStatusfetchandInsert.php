@@ -56,7 +56,7 @@ class CourierStatusfetchandInsert extends Command
             foreach ($smsa_data as $datas) {
                 $data = [
                     'courier_id' => $code_sm,
-                    'courier_status' => $datas->activity
+                    'courier_status' => strtoupper($datas->activity)
                 ];
                 StatusManagement::upsert($data, ['cp_status_cp_id_unique'], ['courier_id', 'courier_status']);
             }
@@ -65,7 +65,7 @@ class CourierStatusfetchandInsert extends Command
 
         // Bombino Status Fetch and Insert Into Status Master
         $bombono_data = BombinoTracking::query()
-            ->select('event_code')
+            ->select('event_detail')
             ->distinct()
             ->get();
 
@@ -78,7 +78,7 @@ class CourierStatusfetchandInsert extends Command
             foreach ($bombono_data as $data_bom) {
                 $data = [
                     'courier_id' => $code_bom,
-                    'courier_status' => $data_bom->event_code
+                    'courier_status' => strtoupper($data_bom->event_detail)
                 ];
                 StatusManagement::upsert($data, ['cp_status_cp_id_unique'], ['courier_id', 'courier_status']);
             }
@@ -98,7 +98,7 @@ class CourierStatusfetchandInsert extends Command
             foreach ($aramax_data as $data_bom) {
                 $data = [
                     'courier_id' => $code_aramax,
-                    'courier_status' => $data_bom->update_description
+                    'courier_status' => strtoupper($data_bom->update_description)
                 ];
                 StatusManagement::upsert($data, ['cp_status_cp_id_unique'], ['courier_id', 'courier_status']);
             }
