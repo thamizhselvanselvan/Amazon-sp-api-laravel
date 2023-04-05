@@ -114,13 +114,13 @@ class B2CShipTrackingAPI
                 foreach ($forwarder1_data as $key => $data) {
                     if ($courier_name == 'Bombino') {
 
-                        if (in_array($data['event_detail'], $courierStatus)) {
+                        if (in_array(strtoupper($data['event_detail']), $courierStatus)) {
 
                             $forwarder1_result[$key] = $data;
                         }
                     } else if ($courier_name == 'SMSA') {
 
-                        if (in_array($data['activity'], $courierStatus)) {
+                        if (in_array(strtoupper($data['activity']), $courierStatus)) {
                             $forwarder1_result[$key] = [
                                 'event_detail' => $data['activity'],
                                 'action_date' => date('Y-m-d', strtotime($data['date'])),
@@ -130,7 +130,7 @@ class B2CShipTrackingAPI
                         }
                     } else if ($courier_name == 'Aramex') {
 
-                        if (in_array($data['update_description'], $courierStatus)) {
+                        if (in_array(strtoupper($data['update_description']), $courierStatus)) {
                             $forwarder1_result[$key] = [
                                 'event_detail' => $data['update_description'],
                                 'action_date' => date('Y-m-d', strtotime($data['update_date_time'])),
@@ -170,11 +170,11 @@ class B2CShipTrackingAPI
 
                 foreach ($forwarder2_data as $key => $data) {
                     if ($courier_name == 'Bombino') {
-                        if (in_array($data['event_detail'], $courierStatus)) {
+                        if (in_array(strtoupper($data['event_detail']), $courierStatus)) {
                             $forwarder2_result[$key] = $data;
                         }
                     } elseif ($courier_name == 'SMSA') {
-                        if (in_array($data['activity'], $courierStatus)) {
+                        if (in_array(strtoupper($data['activity']), $courierStatus)) {
 
                             $forwarder2_result[$key] = [
                                 'event_detail' => $data['activity'],
@@ -185,7 +185,7 @@ class B2CShipTrackingAPI
                         }
                     } elseif ($courier_name == 'Aramex') {
 
-                        if (in_array($data['update_description'], $courierStatus)) {
+                        if (in_array(strtoupper($data['update_description']), $courierStatus)) {
 
                             $forwarder2_result[$key] = [
                                 'event_detail' => $data['update_description'],
