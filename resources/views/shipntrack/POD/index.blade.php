@@ -38,7 +38,7 @@
                                 <label for="exampleFormControlTextarea1" class="form-label">AWB By Text-area</label>
                                 <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="25 AWB Accepted at a time"></textarea>
                             </div>
-                            <button type="button" class="btn btn-sm btn-success" data-bs-dismiss="modal">Download Templete</button>
+                            <a href="{{route('shipntrack_templete')}}"><button type="button" class="btn btn-sm btn-success" data-bs-dismiss="modal">Download Templete</button></a>
                             <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">Submit</button>
                         </div>
                         <div class="tab-pane fade" id="AWB-import" role="tabpanel" aria-labelledby="nav-profile-tab">
