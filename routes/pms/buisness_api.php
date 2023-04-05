@@ -126,4 +126,16 @@ Route::get('cliqnshop/verify/asin/destroy', 'Cliqnshop\CliqnshopVerificationCont
 //   $result = $ApiCall->SearchProductByKey($searchKey, $siteId, $source);
 //   po($result);
 // });
+Route::get('cliqnshop/brand/missing', 'Cliqnshop\MissingCatalogDetailsController@brand_missing_index')->name('cliqnshop.brand.missing');
+Route::get('cliqnshop/brand/missing/{site_id}', 'Cliqnshop\MissingCatalogDetailsController@brand_missing_index')->name('cliqnshop.brand.missing');
+
+Route::get('cliqnshop/category/missing', 'Cliqnshop\MissingCatalogDetailsController@category_missing_index')->name('cliqnshop.category.missing');
+Route::get('cliqnshop/category/missing/{site_id}', 'Cliqnshop\MissingCatalogDetailsController@category_missing_index')->name('cliqnshop.category.missing');
+
+Route::get('product/test', function () {
+  // $data[] = $key;
+  $searchKey = 'notebook';
+  $ApiCall = new Search_Product();
+  $result = $ApiCall->SearchProductByKey($searchKey);
+});
 

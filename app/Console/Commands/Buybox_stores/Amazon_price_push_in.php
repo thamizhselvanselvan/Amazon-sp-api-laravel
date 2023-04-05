@@ -67,10 +67,17 @@ class Amazon_price_push_in extends Command
             Products_in::query()->update(['cyclic_push' => 0]);
             return false;
         }
-        $data_to_insert = [];
-        $asins = [];
-        foreach ($products as $product) {
 
+        $asins = [];
+        $data_to_insert = [];
+        $price_datas = [];
+        $cnt = 1;
+        $total = 700;
+        $tagger = 0;
+
+        $asin_collections = [];
+
+        foreach ($products as $product) {
 
             $id_rules_applied = $product->asin . "_" . $product->store_id;
 
@@ -78,38 +85,55 @@ class Amazon_price_push_in extends Command
 
             $asins[] = $product->asin;
             // if Push is not equal to existing store price then don't push it
-            if (isset($push_price) && $push_price != $product->store_price) {
+            if (isset($push_price) && $push_price != $product->store_price && $product->bb_price != 0) {
 
-                echo "selected $product->asin, $push_price \n";
+                if($product->current_availability == 1 && !in_array($product->asin, $asin_collections)) {
 
-                Product_Push_in::insert([
-                    'asin' => $product->asin,
-                    'store_id' =>  $product->store_id,
-                    'product_sku' => $product->product_sku,
-                    'availability' => $product->availability,
-                    'app_360_price' => $product->app_360_price,
-                    'destination_bb_price' => $product->bb_price,
-                    'push_price' => ceil($push_price),
-                    'base_price' => $product->base_price,
-                    'ceil_price' => $product->ceil_price,
-                    'latency' => $product->latency,
-                    'current_store_price' => $product->store_price,
-                    'lowest_seller_id' => $product->lowest_seller_id,
-                    'lowest_seller_price' => $product->lowest_seller_price,
-                    'highest_seller_id' => $product->highest_seller_id,
-                    'highest_seller_price' => $product->highest_seller_price,
-                    'bb_winner_id' => $product->bb_winner_id,
-                    'bb_winner_price' => $product->bb_winner_price,
-                    'is_bb_won' => $product->is_bb_won,
-                    'applied_rules' => json_encode($this->rules_applied[$id_rules_applied]) ?? "No Rules Applied",
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
+                    echo "selected $product->asin, $push_price \n";
+
+                    $asin_collections[] = $product->asin; 
+                    
+                    $price_datas[$tagger][] = [
+                        'asin' => $product->asin,
+                        'store_id' =>  $product->store_id,
+                        'product_sku' => $product->product_sku,
+                        'availability' => $product->availability,
+                        'app_360_price' => $product->app_360_price,
+                        'destination_bb_price' => $product->bb_price,
+                        'push_price' => ceil($push_price),
+                        'base_price' => $product->base_price,
+                        'ceil_price' => $product->ceil_price,
+                        'latency' => $product->latency,
+                        'current_store_price' => $product->store_price,
+                        'lowest_seller_id' => $product->lowest_seller_id,
+                        'lowest_seller_price' => $product->lowest_seller_price,
+                        'highest_seller_id' => $product->highest_seller_id,
+                        'highest_seller_price' => $product->highest_seller_price,
+                        'bb_winner_id' => $product->bb_winner_id,
+                        'bb_winner_price' => $product->bb_winner_price,
+                        'is_bb_won' => $product->is_bb_won,
+                        'applied_rules' => json_encode($this->rules_applied[$id_rules_applied]) ?? "No Rules Applied",
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ];
+
+                    if($cnt == $total) {
+                        $tagger++;
+                        $cnt = 0;
+                    }                
+
+                    $cnt++;
+
+                } // 
             } else {
                 echo $push_price . ' - ' . $product->store_price . " - " . $product->ceil_price . "\n";
                 echo ('push_price is' . ' - ' . $push_price);
-                // Log::notice(" ASIN: $product->asin - STORE_ID: $product->store_id - PUSH_PRICE: $push_price - BASE_PRICE: $product->base_price, STORE_PRICE: $product->store_price, BB_PRICE: $product->bb_winner_price");
             }
+        }
+
+        foreach($price_datas as $price_data) {
+
+            Product_Push_in::insert($price_data);
         }
 
         Products_in::whereIn('asin', $asins)->where("store_id", $product->store_id)->update(['cyclic_push' => 1]);

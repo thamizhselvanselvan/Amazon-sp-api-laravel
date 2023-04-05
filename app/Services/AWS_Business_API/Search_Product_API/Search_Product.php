@@ -117,6 +117,10 @@ class Search_Product
                                 $catalog_for_cliqnshop[$key1]['generic_keywords'] = $gener_key;
                             }
                         }
+                        if (array_key_exists('item_package_dimensions', (array) $attributes)) {
+                            $package_dimensions = json_decode($catalog);
+                            $catalog_for_cliqnshop[$key1]['item_package_dimensions'] = isset($package_dimensions->item_package_dimensions) ? $package_dimensions->item_package_dimensions: '';
+                        }
                     }
 
                     if ($key2 == 'browseClassification') {
@@ -129,38 +133,45 @@ class Search_Product
                         $catalog_images = json_decode($catalog);
                         foreach ($catalog_images[0]->images as $key3 => $images) {
 
+                            
                             if (isset($catalog_images[0]->images)) {
-                                foreach ($catalog_images[0]->images as  $counter => $image_data_new) {
-                                    $counter++;
-
-                                    if (isset($image_data_new->link)) {
-
-                                        $img1["Images${counter}"] = '';
-                                        if ($counter == 1) {
-                                            ($img1["Images${counter}"] = $image_data_new->link);
-                                        } else if ($counter == 4) {
-                                            ($img1["Images${counter}"] = $image_data_new->link);
-                                        } else if ($counter == 7) {
-                                            ($img1["Images${counter}"] = $image_data_new->link);
-                                        } else if ($counter == 10) {
-                                            ($img1["Images${counter}"] = $image_data_new->link);
-                                        } else if ($counter == 13) {
-                                            ($img1["Images${counter}"] = $image_data_new->link);
-                                        } else if ($counter == 16) {
-                                            ($img1["Images${counter}"] = $image_data_new->link);
-                                        } else if ($counter == 19) {
-                                            ($img1["Images${counter}"] = $image_data_new->link);
-                                        }
-                                    }
-                                    $catalog_for_cliqnshop[$key1]['images'][$catalog_data['asin']] = $img1;
+                                if ($key3 <= 9 && $images->height > 500 || $images->width > 500) {
+                                    $catalog_for_cliqnshop[$key1]['images'][$catalog_data['asin']]['image' . $key3 + 1] = $images->link;
+        
                                 }
-                            }
+                            // if (isset($catalog_images[0]->images)) {
+                            //     foreach ($catalog_images[0]->images as  $counter => $image_data_new) {
+                            //         $counter++;
+
+                            //         if (isset($image_data_new->link)) {
+
+                            //             $img1["Images${counter}"] = '';
+                            //             if ($counter == 1) {
+                            //                 ($img1["Images${counter}"] = $image_data_new->link);
+                            //             } else if ($counter == 4) {
+                            //                 ($img1["Images${counter}"] = $image_data_new->link);
+                            //             } else if ($counter == 7) {
+                            //                 ($img1["Images${counter}"] = $image_data_new->link);
+                            //             } else if ($counter == 10) {
+                            //                 ($img1["Images${counter}"] = $image_data_new->link);
+                            //             } else if ($counter == 13) {
+                            //                 ($img1["Images${counter}"] = $image_data_new->link);
+                            //             } else if ($counter == 16) {
+                            //                 ($img1["Images${counter}"] = $image_data_new->link);
+                            //             } else if ($counter == 19) {
+                            //                 ($img1["Images${counter}"] = $image_data_new->link);
+                            //             }
+                            //         }
+                            //         $catalog_for_cliqnshop[$key1]['images'][$catalog_data['asin']] = $img1;
+                            //     }
+                            // }
 
                             // if ($key3 <= 10 && $images->height >= 1000 && $images->height <= 2000) {
                             //     $catalog_for_cliqnshop[$key1]['images'][$catalog_data['asin']]['image' . $key3 + 1] = $images->link;
                             // }
                         }
                     }
+                }
 
                     $catalog_for_cliqnshop[$key1]['asin'] = $catalog_data['asin'];
                     $catalog_for_cliqnshop[$key1]['itemName'] = isset($catalog_data['itemName']) ? $catalog_data['itemName'] : '';
@@ -169,6 +180,7 @@ class Search_Product
                     $catalog_for_cliqnshop[$key1]['unit'] = isset($catalog_data['unit']) ? $catalog_data['unit'] : '';
                     $catalog_for_cliqnshop[$key1]['length'] = isset($catalog_data['length']) ? round($catalog_data['length'], 2) : '';
                     $catalog_for_cliqnshop[$key1]['width'] = isset($catalog_data['width']) ? round($catalog_data['width'], 2) : '';
+                    $catalog_for_cliqnshop[$key1]['height'] = isset($catalog_data['height']) ? round($catalog_data['height'], 2) : '';
                     // $catalog_for_cliqnshop[$key1]['weight']     = isset($catalog_data['weight']) ? $catalog_data['weight'] : '';
                     // $catalog_for_cliqnshop[$key1]['price_US']      = isset($productPrice1[$key1]) ? $productPrice1[$key1] : '';
                     if (isset($catalog_data['weight'])) {
@@ -178,14 +190,19 @@ class Search_Product
                     }
                 }
             }
+            
             foreach ($catalog_for_cliqnshop as $cliqnshop_catalog) {
+                $obj = $cliqnshop_catalog['item_package_dimensions'] = isset($cliqnshop_catalog['item_package_dimensions']) ? $cliqnshop_catalog['item_package_dimensions'] : '';
+                $length_package_dimension =  isset($obj[0]->length->value) ? $obj[0]->length->value : '';
+                $width_package_dimension =  isset($obj[0]->width->value) ? $obj[0]->width->value : '';
+                $height_package_dimension =  isset($obj[0]->height->value) ? $obj[0]->height->value : '';
+
                  $ignore_cat = DB::connection('cliqnshop')->table('cns_ban_category')->where('site_id',$siteId)->pluck('category_code')->toArray();
 
                  $ignore_brand = DB::connection('cliqnshop')->table('cns_ban_brand')->where('site_id',$siteId)->pluck('brand')->toArray();
                  
                  $ignore_brand_for_cliqnshop = ucwords(str_replace(',', '|', implode(',',$ignore_brand)), '|');
-                 
-                if (isset($cliqnshop_catalog['price']) && isset($cliqnshop_catalog['images']) && !in_array($cliqnshop_catalog['category_code'],$ignore_cat,true) && preg_match("(" . strtolower($ignore_brand_for_cliqnshop) . ")", strtolower($cliqnshop_catalog['brand'])) !== 1) {
+                if (isset($cliqnshop_catalog['price']) && $length_package_dimension !== '' && $length_package_dimension < 25 && $width_package_dimension !== '' && $width_package_dimension < 25 && $height_package_dimension !== '' && $height_package_dimension < 25 && isset($cliqnshop_catalog['images']) && !in_array($cliqnshop_catalog['category_code'],$ignore_cat,true) && preg_match("(" . strtolower($ignore_brand_for_cliqnshop) . ")", strtolower($cliqnshop_catalog['brand'])) !== 1) {
                     $category = $cliqnshop_catalog['category_code'] ?? 'demo-new';
                     $asin = $cliqnshop_catalog['asin'];
                     $item_name = $cliqnshop_catalog['itemName'];

@@ -7,6 +7,7 @@ use App\Models\Admin\Backup;
 use App\Services\Zoho\ZohoApi;
 use PhpParser\Node\Stmt\Foreach_;
 use App\Models\Inventory\Shipment;
+use App\Models\ShipNTrack\Booking;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
@@ -16,8 +17,12 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Inventory\Shipment_Inward_Details;
 use App\Http\Controllers\Inventory\StockController;
+use App\Models\ShipNTrack\Courier\Courier;
+use App\Models\ShipNTrack\Courier\StatusManagement;
+use App\Models\ShipNTrack\CourierTracking\SmsaTracking;
 
-Route::get('test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
+Route::get('sanju/test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
+Route::get('sanju/test/controller', 'SanjayTestController@index');
 
 Route::get('sanju/test/images', function () {
     $data = ('[{"marketplaceId":"ATVPDKIKX0DER","images":[{"variant":"MAIN","link":"https:\/\/m.media-amazon.com\/images\/I\/71OWSOnk+zL.jpg","height":1000,"width":1000},{"variant":"MAIN","link":"https:\/\/m.media-amazon.com\/images\/I\/61Wpkl8oVDL.jpg","height":500,"width":500},{"variant":"MAIN","link":"https:\/\/m.media-amazon.com\/images\/I\/61Wpkl8oVDL._SL75_.jpg","height":75,"width":75},{"variant":"PT01","link":"https:\/\/m.media-amazon.com\/images\/I\/71--NVjLvhL.jpg","height":1000,"width":1000},{"variant":"PT01","link":"https:\/\/m.media-amazon.com\/images\/I\/61XF+tw0r0L.jpg","height":500,"width":500},{"variant":"PT01","link":"https:\/\/m.media-amazon.com\/images\/I\/61XF+tw0r0L._SL75_.jpg","height":75,"width":75},{"variant":"PT02","link":"https:\/\/m.media-amazon.com\/images\/I\/715M80emuTL.jpg","height":1000,"width":1000},{"variant":"PT02","link":"https:\/\/m.media-amazon.com\/images\/I\/616EHH0o7YL.jpg","height":500,"width":500},{"variant":"PT02","link":"https:\/\/m.media-amazon.com\/images\/I\/616EHH0o7YL._SL75_.jpg","height":75,"width":75}]}]');
@@ -305,6 +310,25 @@ Route::get('config/test', function () {
         po($value);
     }
 });
-Route::get('event',function(){
+
+Route::get('sanju/event', function () {
     event(new EventManager('hello world'));
+});
+
+Route::get('sanju/test/status', function () {
+    $smsa_data =  SmsaTracking::query()
+        ->select('activity')
+        ->distinct()
+        ->get();
+
+    $courier_code =   Courier::query()->where('courier_name', 'SMSA')->select('id')->get();
+    $code = $courier_code[0]->id;
+
+    foreach ($smsa_data as $datas) {
+        $data = [
+            'courier_id' => $code,
+            'courier_status' => $datas->activity
+        ];
+        StatusManagement::upsert($data, ['cp_status_cp_id_unique'], ['courier_id', 'courier_status']);
+    }
 });

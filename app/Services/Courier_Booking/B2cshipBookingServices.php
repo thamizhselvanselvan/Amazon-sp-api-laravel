@@ -2,15 +2,17 @@
 
 namespace App\Services\Courier_Booking;
 
+use Exception;
 use Carbon\Carbon;
 use App\Jobs\B2C\B2CBooking;
-use App\Models\Catalog\PricingUs;
-use App\Models\order\OrderUpdateDetail;
 use App\Services\BB\PushAsin;
-use Exception;
+use App\Models\Catalog\PricingUs;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use App\Models\order\OrderItemDetails;
+use App\Models\order\US_Price_Missing;
+use App\Models\order\OrderUpdateDetail;
 
 
 class B2cshipBookingServices
@@ -173,7 +175,6 @@ class B2cshipBookingServices
                         'booking_status' => '5'
                     ]
                 );
-
                 $this->missingASINDetails($asin);
                 slack_notification('app360', 'B2cship Booking', $slackMessage);
                 return false;
@@ -405,9 +406,21 @@ class B2cshipBookingServices
 
         if (array_key_exists('ErrorDetailCode', $data)) {
 
+
             $error = $data['ErrorDetailCode'];
             $error_desc = $data['ErrorDetailCodeDesc'];
             $order_id = $this->amazon_order_id;
+            $order_item_id = $this->order_item_id;
+
+            if ($error_desc = 'Please Enter InvoiceValue greater Than Zero.') {
+                $asins =  OrderItemDetails::where(['amazon_order_identifier' => $order_id, 'order_item_identifier' => $order_item_id])->select('asin')->get();
+                if (isset($asins[0]->asin)) {
+                    $asin = $asins[0]->asin;
+                    US_Price_Missing::insert(['asin' => $asin, 'amazon_order_id' => $order_id, 'order_item_id' => $order_item_id, 'status' => 0]);
+                }
+            } else {
+                Log::info('B2C Booking went Wrong Please Check');
+            }
 
             $slackMessage = "Message: $error_desc,
             Type: $error,
@@ -415,7 +428,6 @@ class B2cshipBookingServices
             Operation: 'B2Cship Booking Response'";
             slack_notification('app360', 'B2cship Booking', $slackMessage);
         } else {
-
             $awb_no = $data['AWBNo'];
             OrderUpdateDetail::where([
                 ['amazon_order_id', $this->amazon_order_id],

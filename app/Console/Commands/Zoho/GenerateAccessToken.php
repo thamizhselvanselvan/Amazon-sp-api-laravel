@@ -38,8 +38,9 @@ class GenerateAccessToken extends Command
      */
     public function handle()
     {
-        $zohoApi = new ZohoApi;
-        $zohoApi->generateAccessToken();
+        
+        (new ZohoApi(new_zoho: false))->generateAccessToken();
+        (new ZohoApi(new_zoho: true))->generateNewAccessToken();
 
         return true;
     }
