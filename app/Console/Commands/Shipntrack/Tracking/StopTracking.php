@@ -47,7 +47,7 @@ class StopTracking extends Command
     public function handle()
     {
         $status_array = StatusManagement::query()
-            ->select('courier_status', 'courier_id', 'stop_tracking', 'api_display')
+            ->select('courier_status', 'courier_id', 'stop_tracking')
             ->where("stop_tracking", 1)
             ->get()
             ->groupBy("courier_id")
@@ -74,7 +74,7 @@ class StopTracking extends Command
             $this->query($model_table, $query_model, $status_array);
         }
     }
-    
+
     // Select each Forwarder Data And Check For Stop status
     public function query($table, $model, $status_array)
     {
@@ -157,28 +157,35 @@ class StopTracking extends Command
         // Bombino Forwarder Stop 
         $c_nmae = Courier::where('id', $details['courier_id'])->select('courier_name')->get()->first();
         if (($c_nmae->courier_name) == 'Bombino') {
-            $bom_data = BombinoTracking::where('awbno', $details["{$forwarder}_awb"])->select('event_code')->orderBy('updated_at', 'desc')->first();
+            $bom_data = BombinoTracking::where('awbno', $details["{$forwarder}_awb"])->select('event_code')->get()->toArray();
+            foreach ($bom_data as $bombino_record) {
 
-            if (isset($bom_data->event_code) && in_array($bom_data->event_code, $stop_status)) {
-                $this->updateFlag($table, $details['awb'], "{$forwarder}_flag");
+                if (isset($bombino_record['event_code']) && in_array($bombino_record['event_code'], $stop_status)) {
+                    $this->updateFlag($table, $details['awb'], "{$forwarder}_flag");
+                }
             }
         }
 
         // SMSA Forwarder  Stop 
         else if ($c_nmae->courier_name == 'SMSA') {
-            $sms_data = SmsaTracking::where('awbno', $details["{$forwarder}_awb"])->select('activity')->orderBy('updated_at', 'desc')->first();
+            $sms_data = SmsaTracking::where('awbno', $details["{$forwarder}_awb"])->select('activity')->get()->toArray();
+            foreach ($sms_data as $smsa_data) {
 
-            if (isset($sms_data->activity) && in_array($sms_data->activity, $stop_status)) {
-                $this->updateFlag($table, $details['awb'], "{$forwarder}_flag");
+                if (isset($smsa_data['activity']) && in_array($smsa_data['activity'], $stop_status)) {
+                    $this->updateFlag($table, $details['awb'], "{$forwarder}_flag");
+                }
             }
         }
 
         // Aramex Forwarder Stop 
         else if ($c_nmae->courier_name == 'Aramex') {
 
-            $aramax_data = AramexTracking::where('awbno', $details["{$forwarder}_awb"])->select('update_description')->orderBy('updated_at', 'desc')->first();
-            if (isset($aramax_data->update_description) && in_array($aramax_data->update_description, $stop_status)) {
-                $this->updateFlag($table, $details['awb'], "{$forwarder}_flag");
+            $aramax_data = AramexTracking::where('awbno', $details["{$forwarder}_awb"])->select('update_description')->get()->toArray();
+            foreach ($aramax_data as $aramex) {
+
+                if (isset($aramex['update_description']) && in_array($aramex['update_description'], $stop_status)) {
+                    $this->updateFlag($table, $details['awb'], "{$forwarder}_flag");
+                }
             }
         }
     }
