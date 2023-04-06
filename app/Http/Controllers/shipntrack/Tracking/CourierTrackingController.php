@@ -24,25 +24,19 @@ class CourierTrackingController extends Controller
             $data = [];
             if ($request->sourceDestination == 'AE') {
 
-                $data = Trackingae::select('tracking_aes.awb_number', 'tracking_aes.forwarder_1_awb', 'tracking_aes.forwarder_2_awb', 'tracking_aes.forwarder_3_awb', 'tracking_aes.forwarder_4_awb', 'tracking_aes.created_at')
-                    ->join('partners', 'partners.id', '=', 'tracking_aes.forwarder_1')
-                    ->where('partners.login_email', $login_email)
+                $data = Trackingae::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
                     ->orderBy('awb_number', 'DESC')
                     ->get()
                     ->toArray();
             } elseif ($request->sourceDestination == 'IN') {
 
-                $data = Trackingin::select('tracking_ins.awb_number', 'tracking_ins.forwarder_1_awb', 'tracking_ins.forwarder_2_awb', 'tracking_ins.forwarder_3_awb', 'tracking_ins.forwarder_4_awb', 'tracking_ins.created_at')
-                    ->join('partners', 'partners.id', '=', 'tracking_ins.forwarder_1')
-                    ->where('partners.login_email', $login_email)
+                $data = Trackingin::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
                     ->orderBy('awb_number', 'DESC')
                     ->get()
                     ->toArray();
             } elseif ($request->sourceDestination == 'KSA') {
 
-                $data = Trackingksa::select('tracking_ksa.awb_number', 'tracking_ksa.forwarder_1_awb', 'tracking_ksa.forwarder_2_awb', 'tracking_ksa.forwarder_3_awb', 'tracking_ksa.forwarder_4_awb', 'tracking_ksa.created_at')
-                    ->join('partners', 'partners.id', '=', 'tracking_ksa.forwarder_1')
-                    ->where('partners.login_email', $login_email)
+                $data = Trackingksa::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
                     ->orderBy('awb_number', 'DESC')
                     ->get()
                     ->toArray();
