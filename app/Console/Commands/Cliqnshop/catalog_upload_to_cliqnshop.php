@@ -277,7 +277,7 @@ class catalog_upload_to_cliqnshop extends Command
 
             //     $category_code = $category[$asin];
             // }
-
+            $editor = 'csv_bulk';
             $keyword = '';
             $insert_service = new CliqnshopCataloginsert();
             $insert_service->insertdata_cliqnshop(
@@ -298,7 +298,8 @@ class catalog_upload_to_cliqnshop extends Command
                 $keyword,
                 $short_description,
                 $long_description,
-                $generic_keywords
+                $generic_keywords,
+                $editor
             );
         }
 

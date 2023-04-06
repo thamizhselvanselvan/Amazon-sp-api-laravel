@@ -5,6 +5,7 @@ namespace App\Services\SP_API\API;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class CatalogDashboardService
@@ -27,6 +28,7 @@ class CatalogDashboardService
             $cat_price = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
             $asin_bb_unavailable = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
             $na_catalog = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+            $cread_array = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
 
             $delist_asin_count = [];
             $source = strtolower($source);
@@ -130,8 +132,8 @@ class CatalogDashboardService
             // log::alert($asin_bb_unavailable);
 
             $cat_pricings = DB::connection('catalog')
-                ->select("SELECT count(${destination_table}.asin) as price, 
-                ${destination_table}.priority from ${destination_table}
+                ->select("SELECT count({$destination_table}.asin) as price, 
+                {$destination_table}.priority from {$destination_table}
             join ${catalog_price}
             ON ${destination_table}.asin = ${catalog_price}.asin
             where ${catalog_price}.available = 1
@@ -142,6 +144,19 @@ class CatalogDashboardService
                 $cat_price[$pr_priority] = trimTrailingZeroes(formatInIndianStyle($cat_pricing->price));
             }
 
+            start:
+            if (Cache::has('creds_count')) {
+             
+                $creads = Cache::get('creds_count');
+                foreach ($creads[$source] as $key => $cread) {
+                    $cread_array[$key + 1] = $cread;
+                }
+            } else {
+              
+                commandExecFunc('mosh:buybox_priority_count');
+                goto start;
+            }
+
             $record_arrays[]  = [
                 'priority_wise_asin' => $asin_priority,
                 'catalog' => $catalog,
@@ -149,6 +164,7 @@ class CatalogDashboardService
                 'catalog_price' => $cat_price,
                 'asin_unavailable'  =>  $asin_bb_unavailable,
                 'na_catalog'    =>  $na_catalog,
+                'creds_count' => $cread_array
             ];
         }
 
