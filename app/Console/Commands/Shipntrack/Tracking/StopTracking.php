@@ -4,6 +4,7 @@ namespace App\Console\Commands\Shipntrack\Tracking;
 
 use Illuminate\Support\Arr;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use App\Models\ShipNTrack\Courier\Courier;
 use App\Models\ShipNTrack\Courier\StatusManagement;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
