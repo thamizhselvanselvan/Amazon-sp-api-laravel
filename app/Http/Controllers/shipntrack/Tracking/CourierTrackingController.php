@@ -295,7 +295,8 @@ class CourierTrackingController extends Controller
                 }
             }
         }
-        $records = [...$forwarder1_record, ...$forwarder2_record, ...$forwarder3_record, ...$forwarder4_record];
+        // $records = [...$forwarder1_record, ...$forwarder2_record, ...$forwarder3_record, ...$forwarder4_record];
+        $records = [...$forwarder4_record, ...$forwarder3_record, ...$forwarder2_record, ...$forwarder1_record];
         return view('shipntrack.Smsa.packetDetails', compact('forwarder_details', 'records'));
     }
 

@@ -206,7 +206,7 @@ class B2CShipTrackingAPI
                 }
             }
         }
-        $result = [...$packet_details, ...$forwarder1_result, ...$forwarder2_result];
+        $result = [...$packet_details, ...$forwarder2_result, ...$forwarder1_result];
 
         return $result;
     }

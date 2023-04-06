@@ -120,7 +120,7 @@ Route::get('test/shipntrack/smsa/{awbno}', function ($awbNo) {
                 <soap:Body>
                     <getTracking xmlns="http://track.smsaexpress.com/secom/">
                     <awbNo>' . $awbNo . '</awbNo>
-                    <passkey>BeL@3845</passkey>
+                    <passkey>Mah@8537</passkey>
                     </getTracking>
                 </soap:Body>
                 </soap:Envelope>';
