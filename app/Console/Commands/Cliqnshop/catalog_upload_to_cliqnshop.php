@@ -50,6 +50,9 @@ class catalog_upload_to_cliqnshop extends Command
             $asin[] = ($data['ASIN']);
         }
 
+        $start_time = microtime(true);
+        foreach (array_chunk($asin,100) as $a)  
+        {
         $headers = [
             'catalognewuss.asin',
             'catalognewuss.brand',
@@ -68,7 +71,7 @@ class catalog_upload_to_cliqnshop extends Command
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
         $result = $table_name->select($headers)
             ->join('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
-            ->whereIn('catalognewuss.asin', $asin)
+            ->whereIn('catalognewuss.asin', $a)
             ->get()->toArray();
 
         $generic_keywords = [];
@@ -277,7 +280,7 @@ class catalog_upload_to_cliqnshop extends Command
 
             //     $category_code = $category[$asin];
             // }
-
+            $editor = 'csv_bulk';
             $keyword = '';
             $insert_service = new CliqnshopCataloginsert();
             $insert_service->insertdata_cliqnshop(
@@ -298,12 +301,14 @@ class catalog_upload_to_cliqnshop extends Command
                 $keyword,
                 $short_description,
                 $long_description,
-                $generic_keywords
+                $generic_keywords,
+                $editor
             );
         }
-
+    }
         // po($generic_keywords);
-
-
+        $end_time = microtime(true);
+        Log::info(" Execution time of script = ".$execution_time." sec");
+        Log::alert(count($asin));
     }
 }

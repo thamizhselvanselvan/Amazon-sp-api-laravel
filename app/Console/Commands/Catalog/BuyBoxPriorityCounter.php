@@ -46,7 +46,7 @@ class BuyBoxPriorityCounter extends Command
         $counts = [];
         foreach ($codes as $key => $code) {
             $counts[$key] = Aws_credential::query()
-                ->where(['mws_region_id' => $code])
+                ->where(['mws_region_id' => $code, 'verified' => 1])
                 ->selectRaw('count(case when credential_priority = "1" then 1 end) as "1", count(case when credential_priority = "2" then 1 end) as "2",
             count(case when credential_priority = "3" then 1 end) as "3",   count(case when credential_priority = "4" then 1 end) as "4"')
                 ->first()->toArray();
