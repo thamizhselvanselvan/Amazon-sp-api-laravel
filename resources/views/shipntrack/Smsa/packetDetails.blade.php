@@ -42,10 +42,10 @@
                     <thead>
                         <tr>
                             <th>Origin:</th>
-                            <td></td>
+                            <td>{{ $forwarder_details['origin'] }}</td>
                         <tr>
                             <th>Destination:</th>
-                            <td></td>
+                            <td>{{ $forwarder_details['destination'] }}</td>
                         </tr>
                         <tr>
                             <th>Conginor:</th>

@@ -153,6 +153,8 @@ class CourierTrackingController extends Controller
         $forwarder_details = [
             'consignor' => $result[0]['consignor'],
             'consignee' => $result[0]['consignee'],
+            'origin' => $result[0]['courier_partner1']['source'],
+            'destination' => $result[0]['courier_partner1']['destination'],
         ];
 
         $forwarder1_record = [];

@@ -22,68 +22,11 @@ use App\Models\ShipNTrack\CourierTracking\AramexTracking;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
 
 Route::get('test/code', function () {
-    // $coureir_data = ['DATA RECEIVED', 'OUT FOR DELIVERY', 'DELAY'];
-    // $coureir_status = [];
-    // $status = StatusManagement::where('api_display', 0)->get(['courier_status'])->toArray();
-    // foreach ($status as $activity) {
-    //     // $coureir_status[] = $activity['courier_status'];
-    //     if (in_array($activity['courier_status'], $coureir_data)) {
-    //         echo $activity['courier_status'];
-    //     }
-    // }
-
-    $OrderByColunm = [
-        'SMSA' => 'date',
-        'Aramex' => 'update_date_time',
-        'Bombino' => 'action_date'
-
-    ];
-
-    $selectColumns = [
-        'SMSA' => [
-            'date',
-            'activity',
-            'location',
-        ],
-        'Aramex' => [
-            'update_date_time',
-            'update_description',
-            'update_location',
-        ],
-        'Bombino' => [
-            'action_date',
-            'action_time',
-            'event_detail',
-            'location'
-        ],
-
-    ];
-    $email = Auth::user()->email;
-    $result = Trackingksa::with(['CourierAuth'])
-        // ->where('awb_number', '1000000000')
-        // ->where('partners.login_email', $email)
-        ->get()
-        ->toArray();
-
-    po($result);
-    exit;
-
-    $awb_no = $result[0]['forwarder_1_awb'];
-    $courier_name = $result[0]['courier_partner1']['courier_names']['courier_name'];
-    $table = table_model_change(model_path: 'CourierTracking', model_name: ucwords(strtolower($courier_name)) . 'Tracking', table_name: strtolower($courier_name) . '_trackings');
-
-    $forwarder1_record = [];
-    $forwarder1_data = $table->select($selectColumns[$courier_name])
-        ->where('awbno', $awb_no)
-        ->orderBy($OrderByColunm[$courier_name], 'DESC')
-        ->get()
-        ->toArray();
-    po($result);
-    exit;
-    foreach ($forwarder1_data as $data) {
-
-        po($data);
-        $forwarder1_record[] = ['courier_name' => $courier_name, ...$data];
+    $string = 'OUT FOR DELIVERY';
+    $string = preg_replace('/\s+/', '', $string);
+    if (strlen($string) > 10) {
+        $str = substr($string, 0, 9) . '...';
+        po($str);
     }
 });
 
