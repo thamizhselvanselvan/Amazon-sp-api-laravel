@@ -57,9 +57,11 @@ class category_export extends Command
             // $count = count($asin);
 
             DB::connection('catalog')->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
-
+            $count = 1;
+            foreach (array_chunk($asin,1000) as $a)  
+           {
             $result = DB::connection('catalog')->table('catalognewuss')
-                ->whereIn('asin', $asin)->pluck('browse_classification', 'asin');
+                ->whereIn('asin', $a)->pluck('browse_classification', 'asin');
 
             $csv_data = [];
             $c_id = [];
@@ -94,14 +96,15 @@ class category_export extends Command
             }
            
             $headers =['Asin', 'Category Id','Category Name', 'Tree'];
-            $exportFilePath = 'test/Categories.csv';
+            $exportFilePath = 'test/Categories'.$count.'.csv';
             if (!Storage::exists($exportFilePath)) {
                 Storage::put($exportFilePath, '');
             }
             $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
             $writer->insertOne($headers);
             $writer->insertAll($csv_data);
-
+            $count++;
+        }
            // return Storage::download($exportFilePath);
         }
     }
