@@ -418,9 +418,7 @@ class B2cshipBookingServices
                     $asin = $asins[0]->asin;
                     US_Price_Missing::insert(['asin' => $asin, 'amazon_order_id' => $order_id, 'order_item_id' => $order_item_id, 'status' => 0]);
                 }
-            } else {
-                Log::info('B2C Booking went Wrong Please Check');
-            }
+            } 
 
             $slackMessage = "Message: $error_desc,
             Type: $error,

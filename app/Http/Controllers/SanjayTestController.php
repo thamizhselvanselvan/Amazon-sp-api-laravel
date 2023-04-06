@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
-use App\Models\ShipNTrack\Courier\Courier;
-use App\Models\ShipNTrack\Courier\StatusManagement;
-use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
-use App\Models\ShipNTrack\ForwarderMaping\Trackingin;
-use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
-use App\Models\ShipNTrack\CourierTracking\SmsaTracking;
-use App\Models\ShipNTrack\CourierTracking\AramexTracking;
-use App\Models\ShipNTrack\CourierTracking\BombinoTracking;
+use App\Models\Aws_credential;
+use App\Services\SP_API\API\CategoryTreeReport;
 
 class SanjayTestController extends Controller
 {
     public function index()
     {
-        po('here');
+        $seller_id = '22';
+        $aws = Aws_credential::with(['mws_region'])->where('seller_id', $seller_id)->where('api_type', 1)->first();
+        $aws_key = $aws->id;
+        $country_code = $aws->mws_region->region_code;
+        $marketplace_id = $aws->mws_region->marketplace_id;
+
+        $data = new CategoryTreeReport();
+        $data->createReport($aws_key, $country_code, $marketplace_id);
     }
 }
