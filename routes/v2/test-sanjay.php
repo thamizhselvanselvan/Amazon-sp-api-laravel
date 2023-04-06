@@ -337,61 +337,7 @@ Route::get('sanju/test/status', function () {
 });
 
 Route::get('sanju/bbcreds/count', function () {
-    // $sources = ['IN', 'US'];
-
-    // $counts = Aws_credential::with('mws_region')
-    // ->where(['mws_region_id' => 11])
-    //     ->selectRaw('count(*) as total_count, count(case when credential_priority = "1" then 1 end) as in_p1count, count(case when credential_priority = "2" then 1 end) as in_p2count,
-    //     count(case when credential_priority = "3" then 1 end) as in_p3count')
-    //     ->first();
-    // $inp1 = $counts->in_p1count;
-    // $inp2 = $counts->in_p2count;
-    // $inp3 = $counts->in_p3count;
-
-    // $counts = Aws_credential::with('mws_region')
-    // ->where(['mws_region_id' => 4])
-    //     ->selectRaw('count(*) as total_count, count(case when credential_priority = "1" then 1 end) as us_p1count, count(case when credential_priority = "2" then 1 end) as us_p2count,
-    //     count(case when credential_priority = "3" then 1 end) as us_p3count,   count(case when credential_priority = "4" then 1 end) as us_p4count')
-    //     ->first();
-    // $us_p1 = $counts->us_p1count;
-    // $us_p2 = $counts->us_p2count;
-    // $us_p3 = $counts->us_p3count;
-    // $us_p4 = $counts->us_p4count;
-    // // $data = [
-    // //     'US-P1' => $us_p1,
-    // //     'US-P2' => $us_p2,
-    // //     'US-P3' => $us_p3,
-    // //     'US-P4' => $us_p4,
-    // //     'IN-P1' => $inp1,
-    // //     'IN-P2' => $inp2,
-    // //     'IN-P3' => $inp3,
-    // // ];
-    // // Cache::put('creds_count', $data);
-    // foreach ($sources as $source) {
-    //     po($source);
-    //     start:
-    //     $value = '';
-    //     if (Cache::has('creds_count')) {
-    //         $value = Cache::get('creds_count');
-    //         if ($source == 'IN') {
-    //             $data = [
-    //                 $value['IN-P1'],
-    //                 $value['IN-P2'],
-    //                 $value['IN-P3'],
-
-    //             ];
-    //         } elseif ($source == 'US') {
-    //             $data = [
-    //                 $value['US-P1'],
-    //                 $value['US-P2'],
-    //                 $value['US-P3'],
-    //                 $value['US-P4'],
-    //             ];
-    //         }
-    //     } else {
-    //         commandExecFunc('mosh:buybox_priority_count');
-    //         goto start;
-    //     } //     po($data); // }
+   
     $sources = ['in', 'us'];
     foreach ($sources as $source) {
         $value = Cache::get('creds_count');
@@ -430,8 +376,6 @@ route::get('sanju/feed/test', function () {
     if ($url) {
 
         $data = file_get_contents($url);
-
-        dd(($data));
         $data_json = json_decode(json_encode(simplexml_load_string($data)), true);
         po($data_json);
      
