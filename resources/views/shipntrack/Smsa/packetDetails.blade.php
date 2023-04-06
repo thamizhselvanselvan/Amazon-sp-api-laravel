@@ -48,11 +48,11 @@
                             <td>{{ $forwarder_details['destination'] }}</td>
                         </tr>
                         <tr>
-                            <th>Conginor:</th>
+                            <th>Consignor:</th>
                             <td>{{ $forwarder_details['consignor'] }}</td>
                         </tr>
                         <tr>
-                            <th>Conginee:</th>
+                            <th>Consignee:</th>
                             <td>{{ $forwarder_details['consignee'] }}</td>
                         </tr>
                     </thead>
