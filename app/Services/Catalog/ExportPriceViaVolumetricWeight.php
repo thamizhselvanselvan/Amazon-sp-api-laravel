@@ -237,19 +237,7 @@ class ExportPriceViaVolumetricWeight
         foreach ($data as  $desti_asin) {
 
             $unavailable_asin[] = [
-                'ASIN' => $desti_asin,
-                'AVAILABLE' => 'NULL',
-                'LENGHT_CM' => 'NULL',
-                'WIDTH_CM' => 'NULL',
-                'HEIGHT_CM' => 'NULL',
-                'WEIGHT_KG' => 'NULL',
-                'VOL_KG' => 'NULL',
-                'ACTUAL_WEIGHT_KG' => 'NULL',
-                'IN_PRICE' => 'NULL',
-                'INDTOAE' => 'NULL',
-                'INDTOSG' => 'NULL',
-                'INDTOSA' => 'NULL',
-                'UPDATED_AT' => 'NULL',
+                'ASIN' => $desti_asin
             ];
         }
         $data_for_csv = [...$asin_data, ...$unavailable_asin];
