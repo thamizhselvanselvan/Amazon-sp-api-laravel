@@ -82,7 +82,7 @@ class ImportPriceFromBuyBox
                 $asins[] = $BuyBoxRecord->asin;
 
                 if ($count == 1000) {
-                    $catalogRecords[] = $catalogTable->select('asin', 'dimensions')
+                    $catalogRecords[] = $catalogTable->select('asin', 'weight', 'height', 'length', 'width')
                         ->whereIn('asin', $asins)
                         ->get()
                         ->toArray();
@@ -92,7 +92,7 @@ class ImportPriceFromBuyBox
                 }
                 $count++;
             }
-            $catalogRecords[] = $catalogTable->select('asin', 'dimensions')
+            $catalogRecords[] = $catalogTable->select('asin', 'weight', 'height', 'length', 'width')
                 ->whereIn('asin', $asins)
                 ->get()
                 ->toArray();
@@ -101,36 +101,32 @@ class ImportPriceFromBuyBox
             $BBRecords = [];
             $catalogWeight = [];
             $asinDetails = [];
-            $weight = 0;
-            $height = 0;
-            $length = 0;
-            $width = 0;
 
             foreach ($catalogRecords as $catalogRecord) {
                 foreach ($catalogRecord as $catalog) {
                     $weight = '0.5';
+
                     $BBRecords[] = $Records[$catalog['asin']];
+                    // if (isset(json_decode($catalog['dimensions'])[0]->package->weight->value)) {
+                    //     $weight = json_decode($catalog['dimensions'])[0]->package->weight->value;
+                    // }
 
-                    if (isset(json_decode($catalog['dimensions'])[0]->package->weight->value)) {
-                        $weight = json_decode($catalog['dimensions'])[0]->package->weight->value;
-                    }
+                    // if (isset(json_decode($catalog['dimensions'])[0]->package->height->value)) {
+                    //     $height = json_decode($catalog['dimensions'])[0]->package->height->value;
+                    // }
 
-                    if (isset(json_decode($catalog['dimensions'])[0]->package->height->value)) {
-                        $height = json_decode($catalog['dimensions'])[0]->package->height->value;
-                    }
+                    // if (isset(json_decode($catalog['dimensions'])[0]->package->length->value)) {
+                    //     $length = json_decode($catalog['dimensions'])[0]->package->length->value;
+                    // }
 
-                    if (isset(json_decode($catalog['dimensions'])[0]->package->length->value)) {
-                        $length = json_decode($catalog['dimensions'])[0]->package->length->value;
-                    }
+                    // if (isset(json_decode($catalog['dimensions'])[0]->package->width->value)) {
+                    //     $width = json_decode($catalog['dimensions'])[0]->package->width->value;
+                    // }
 
-                    if (isset(json_decode($catalog['dimensions'])[0]->package->width->value)) {
-                        $width = json_decode($catalog['dimensions'])[0]->package->width->value;
-                    }
-
-                    $catalogWeight[$catalog['asin']]['weight'] = $weight;
-                    $catalogWeight[$catalog['asin']]['height'] = $height;
-                    $catalogWeight[$catalog['asin']]['length'] = $length;
-                    $catalogWeight[$catalog['asin']]['width'] = $width;
+                    $catalogWeight[$catalog['asin']]['weight'] = $catalog['weight'] ?? '0.5';
+                    $catalogWeight[$catalog['asin']]['height'] = $catalog['height'] ?? 0;
+                    $catalogWeight[$catalog['asin']]['length'] = $catalog['length'] ?? 0;
+                    $catalogWeight[$catalog['asin']]['width'] = $catalog['width'] ?? 0;
                 }
             }
             // Log::notice($catalogWeight);
