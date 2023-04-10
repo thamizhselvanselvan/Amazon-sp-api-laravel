@@ -36,11 +36,7 @@ class B2CShipTrackingAPI
                 'update_location',
             ],
             'Bombino' => [
-                'awbno',
-                'consignee',
-                'consignor',
                 'destination',
-                'status',
                 'origin',
                 'event_detail',
                 'action_date',
@@ -79,10 +75,18 @@ class B2CShipTrackingAPI
                 ->toArray();
         }
 
+        $packet_details = [];
         $forwarder1_result = [];
         $forwarder2_result = [];
 
         foreach ($data as $key => $records) {
+
+            $packet_details[] = [
+                'consignor' => $records['consignor'],
+                'consignee' => $records['consignee'],
+                'destination' => $records['courier_partner1']['destination'],
+                'origin' => $records['courier_partner1']['source'],
+            ];
 
             if (($records['forwarder_1_awb'] != '')) {
 
@@ -123,6 +127,7 @@ class B2CShipTrackingAPI
                         if (in_array(strtoupper($data['activity']), $courierStatus)) {
                             $forwarder1_result[$key] = [
                                 'event_detail' => $data['activity'],
+                                'event_code' => $data['activity'],
                                 'action_date' => date('Y-m-d', strtotime($data['date'])),
                                 'action_time' => date('H:i:s', strtotime($data['date'])),
                                 'location' => $data['location']
@@ -133,6 +138,7 @@ class B2CShipTrackingAPI
                         if (in_array(strtoupper($data['update_description']), $courierStatus)) {
                             $forwarder1_result[$key] = [
                                 'event_detail' => $data['update_description'],
+                                'event_code' => $data['update_description'],
                                 'action_date' => date('Y-m-d', strtotime($data['update_date_time'])),
                                 'action_time' => date('H:i:s', strtotime($data['update_date_time'])),
                                 'location' => $data['update_location']
@@ -178,6 +184,7 @@ class B2CShipTrackingAPI
 
                             $forwarder2_result[$key] = [
                                 'event_detail' => $data['activity'],
+                                'event_code' => $data['activity'],
                                 'action_date' => date('Y-m-d', strtotime($data['date'])),
                                 'action_time' => date('H:i:s', strtotime($data['date'])),
                                 'location' => $data['location']
@@ -189,6 +196,7 @@ class B2CShipTrackingAPI
 
                             $forwarder2_result[$key] = [
                                 'event_detail' => $data['update_description'],
+                                'event_code' => $data['update_description'],
                                 'action_date' => date('Y-m-d', strtotime($data['update_date_time'])),
                                 'action_time' => date('H:i:s', strtotime($data['update_date_time'])),
                                 'location' => $data['update_location']
@@ -198,7 +206,7 @@ class B2CShipTrackingAPI
                 }
             }
         }
-        $result = [...$forwarder1_result, ...$forwarder2_result];
+        $result = [...$packet_details, ...$forwarder2_result, ...$forwarder1_result];
 
         return $result;
     }

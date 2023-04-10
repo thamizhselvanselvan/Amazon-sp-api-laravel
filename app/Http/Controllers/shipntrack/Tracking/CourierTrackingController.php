@@ -24,30 +24,28 @@ class CourierTrackingController extends Controller
             $data = [];
             if ($request->sourceDestination == 'AE') {
 
-                $data = Trackingae::select('tracking_aes.awb_number', 'tracking_aes.forwarder_1_awb', 'tracking_aes.forwarder_2_awb', 'tracking_aes.forwarder_3_awb', 'tracking_aes.forwarder_4_awb', 'tracking_aes.created_at')
-                    ->join('partners', 'partners.id', '=', 'tracking_aes.forwarder_1')
-                    ->where('partners.login_email', $login_email)
+                $data = Trackingae::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
                     ->orderBy('awb_number', 'DESC')
                     ->get()
                     ->toArray();
             } elseif ($request->sourceDestination == 'IN') {
 
-                $data = Trackingin::select('tracking_ins.awb_number', 'tracking_ins.forwarder_1_awb', 'tracking_ins.forwarder_2_awb', 'tracking_ins.forwarder_3_awb', 'tracking_ins.forwarder_4_awb', 'tracking_ins.created_at')
-                    ->join('partners', 'partners.id', '=', 'tracking_ins.forwarder_1')
-                    ->where('partners.login_email', $login_email)
+                $data = Trackingin::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
                     ->orderBy('awb_number', 'DESC')
                     ->get()
                     ->toArray();
             } elseif ($request->sourceDestination == 'KSA') {
 
-                $data = Trackingksa::select('tracking_ksa.awb_number', 'tracking_ksa.forwarder_1_awb', 'tracking_ksa.forwarder_2_awb', 'tracking_ksa.forwarder_3_awb', 'tracking_ksa.forwarder_4_awb', 'tracking_ksa.created_at')
-                    ->join('partners', 'partners.id', '=', 'tracking_ksa.forwarder_1')
-                    ->where('partners.login_email', $login_email)
+                $data = Trackingksa::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
                     ->orderBy('awb_number', 'DESC')
                     ->get()
                     ->toArray();
             }
             return DataTables::of($data)
+                ->editColumn('awb_number', function ($data) use ($request) {
+                    $awb_number = $request->sourceDestination . $data['awb_number'];
+                    return $awb_number;
+                })
                 ->editColumn('forwarder1_awb', function ($data) {
                     $forwarder1 = $data['forwarder_1_awb'] ?? 'NA';
                     return $forwarder1;
@@ -72,7 +70,7 @@ class CourierTrackingController extends Controller
                     $action = "<a href='/shipntrack/courier/moredetails/" . $request->sourceDestination . "/" . $data['awb_number'] . "' class='' target='_blank'>More Details</a>";
                     return $action;
                 })
-                ->rawColumns(['forwarder1_awb', 'forwarder2_awb', 'forwarder3_awb', 'forwarder4_awb', 'created_date', 'action'])
+                ->rawColumns(['awb_number', 'forwarder1_awb', 'forwarder2_awb', 'forwarder3_awb', 'forwarder4_awb', 'created_date', 'action'])
                 ->make(true);
         }
         return view('shipntrack.Smsa.index');
@@ -153,6 +151,8 @@ class CourierTrackingController extends Controller
         $forwarder_details = [
             'consignor' => $result[0]['consignor'],
             'consignee' => $result[0]['consignee'],
+            'origin' => $result[0]['courier_partner1']['source'],
+            'destination' => $result[0]['courier_partner1']['destination'],
         ];
 
         $forwarder1_record = [];
@@ -299,7 +299,8 @@ class CourierTrackingController extends Controller
                 }
             }
         }
-        $records = [...$forwarder1_record, ...$forwarder2_record, ...$forwarder3_record, ...$forwarder4_record];
+        // $records = [...$forwarder1_record, ...$forwarder2_record, ...$forwarder3_record, ...$forwarder4_record];
+        $records = [...$forwarder4_record, ...$forwarder3_record, ...$forwarder2_record, ...$forwarder1_record];
         return view('shipntrack.Smsa.packetDetails', compact('forwarder_details', 'records'));
     }
 
