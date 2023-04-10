@@ -2,83 +2,213 @@
 
 namespace App\Http\Controllers\shipntrack\API;
 
-use Exception;
 use Illuminate\Http\Request;
-use function Clue\StreamFilter\fun;
-
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\ShipNTrack\Courier\StatusManagement;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
 
 class B2CShipTrackingAPIController extends Controller
 {
-    public function B2CshipTrackingResponse(Request $request)
+    public function B2CShipTrackingAPI(Request $request)
     {
-        $requestContent = $request->getContent();
-        try {
+        $OrderByColunm1 = [
+            'SMSA' => 'date',
+            'Aramex' => 'update_date_time',
+            'Bombino' => 'action_date'
 
-            $xmlObject = simplexml_load_string($requestContent);
-            $json = json_encode($xmlObject);
-            $phpArray = json_decode($json, true);
+        ];
 
-            $user_id = $phpArray['Validation']['UserID'];
-            $password = $phpArray['Validation']['Password'];
+        $OrderByColunm2 = [
+            'SMSA' => 'date',
+            'Aramex' => 'update_date_time',
+            'Bombino' => 'action_time'
 
-            if ($user_id != 'Amazon' || $password != 'AcZmraDzLoxA4NxLUcyrWnSiEaXxRQkfJ9B5hCbiK5M=') {
+        ];
+        $selectColumns = [
+            'SMSA' => [
+                'date',
+                'activity',
+                'location',
+            ],
+            'Aramex' => [
+                'update_date_time',
+                'update_description',
+                'update_location',
+            ],
+            'Bombino' => [
+                'destination',
+                'origin',
+                'event_detail',
+                'action_date',
+                'action_time',
+                'event_code',
+                'location',
+            ],
 
-                echo '<?xml version="1.0" encoding="UTF-8"?>
-                <AmazonTrackingRequest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
-                <ValidationError>
-                    <UserIDError>Invalid</UserIDError>
-                    <PasswordError>Invalid</PasswordError>
-                </ValidationError>
-                </AmazonTrackingRequest>';
+        ];
 
-                return false;
+        $destination = substr($request->awbNo, 0, 2);
+        $awbNo = substr($request->awbNo, 2);
+
+        $data = [];
+        if ($destination == 'AE') {
+
+            $data = Trackingae::with([
+                'CourierPartner1.courier_names',
+                'CourierPartner2.courier_names',
+                'CourierPartner3.courier_names',
+                'CourierPartner4.courier_names'
+            ])
+                ->where('awb_number', $awbNo)
+                ->get()
+                ->toArray();
+        } elseif ($destination == 'KSA') {
+
+            $data = Trackingksa::with([
+                'CourierPartner1.courier_names',
+                'CourierPartner2.courier_names',
+                'CourierPartner3.courier_names',
+                'CourierPartner4.courier_names'
+            ])
+                ->where('awb_number', $awbNo)
+                ->get()
+                ->toArray();
+        }
+
+        $packet_details = [];
+        $forwarder1_result = [];
+        $forwarder2_result = [];
+
+        foreach ($data as $key => $records) {
+
+            $packet_details[] = [
+                'consignor' => $records['consignor'],
+                'consignee' => $records['consignee'],
+                'destination' => $records['courier_partner1']['destination'],
+                'origin' => $records['courier_partner1']['source'],
+            ];
+
+            if (($records['forwarder_1_awb'] != '')) {
+
+                $awb_no = $records['forwarder_1_awb'];
+                $courier_name = $records['courier_partner1']['courier_names']['courier_name'];
+
+                $table = table_model_change(model_path: 'CourierTracking', model_name: ucwords(strtolower($courier_name)) . 'Tracking', table_name: strtolower($courier_name) . '_trackings');
+
+                $forwarder1_data = $table->select($selectColumns[$courier_name])
+                    ->where('awbno', $awb_no)
+                    ->orderBy($OrderByColunm1[$courier_name], 'DESC')
+                    ->orderBy($OrderByColunm2[$courier_name], 'DESC')
+                    ->get()
+                    ->toArray();
+
+                $columnName = $records['forwarder_2_awb'] == '' ? 'last_mile_status' : 'first_mile_status';
+                $courierActivities = StatusManagement::select('courier_status')
+                    ->join('courier', 'courier.id', '=', 'status_master.courier_id')
+                    ->where($columnName, 1)
+                    ->where('courier_name', $courier_name)
+                    ->get()
+                    ->toArray();
+
+                $courierStatus = [];
+                foreach ($courierActivities as $courierActivity) {
+                    $courierStatus[] = $courierActivity['courier_status'];
+                }
+
+                foreach ($forwarder1_data as $key => $data) {
+                    if ($courier_name == 'Bombino') {
+
+                        if (in_array(strtoupper($data['event_detail']), $courierStatus)) {
+
+                            $forwarder1_result[$key] = $data;
+                        }
+                    } else if ($courier_name == 'SMSA') {
+
+                        if (in_array(strtoupper($data['activity']), $courierStatus)) {
+                            $forwarder1_result[$key] = [
+                                'event_detail' => $data['activity'],
+                                'event_code' => $data['activity'],
+                                'action_date' => date('Y-m-d', strtotime($data['date'])),
+                                'action_time' => date('H:i:s', strtotime($data['date'])),
+                                'location' => $data['location']
+                            ];
+                        }
+                    } else if ($courier_name == 'Aramex') {
+
+                        if (in_array(strtoupper($data['update_description']), $courierStatus)) {
+                            $forwarder1_result[$key] = [
+                                'event_detail' => $data['update_description'],
+                                'event_code' => $data['update_description'],
+                                'action_date' => date('Y-m-d', strtotime($data['update_date_time'])),
+                                'action_time' => date('H:i:s', strtotime($data['update_date_time'])),
+                                'location' => $data['update_location']
+                            ];
+                        }
+                    };
+                }
             }
-            $final_data = getTrackingDetails($phpArray['TrackingNumber']);
-            if ($final_data != 'Invalid AWB') {
 
-                $final_array = [];
-                $tracking_address  = [];
+            if (($records['forwarder_2_awb'] != '')) {
 
-                if (isset($final_data['tracking_details'])) {
-                    foreach ($final_data['tracking_details'] as $value) {
-                        $tracking_array[] = [
-                            'Data_Time' => $value['Date_Time'],
-                            'Location' => $value['Location'],
-                            'Activity' => $value['Activity'],
-                        ];
+                $awb_no = $records['forwarder_2_awb'];
+                $courier_name = $records['courier_partner2']['courier_names']['courier_name'];
+                $table = table_model_change(model_path: 'CourierTracking', model_name: ucwords(strtolower($courier_name)) . 'Tracking', table_name: strtolower($courier_name) . '_trackings');
+
+                $forwarder2_data = $table->select($selectColumns[$courier_name])
+                    ->where('awbno', $awb_no)
+                    ->orderBy($OrderByColunm1[$courier_name], 'DESC')
+                    ->orderBy($OrderByColunm2[$courier_name], 'DESC')
+                    ->get()
+                    ->toArray();
+
+                $columnName = $records['forwarder_3_awb'] == '' ? 'last_mile_status' : 'first_mile_status';
+                $courierActivities = StatusManagement::select('courier_status')
+                    ->join('courier', 'courier.id', '=', 'status_master.courier_id')
+                    ->where($columnName, 1)
+                    ->where('courier_name', $courier_name)
+                    ->get()
+                    ->toArray();
+
+                $courierStatus = [];
+                foreach ($courierActivities as $courierActivity) {
+                    $courierStatus[] = $courierActivity['courier_status'];
+                }
+
+                foreach ($forwarder2_data as $key => $data) {
+                    if ($courier_name == 'Bombino') {
+                        if (in_array(strtoupper($data['event_detail']), $courierStatus)) {
+                            $forwarder2_result[$key] = $data;
+                        }
+                    } elseif ($courier_name == 'SMSA') {
+                        if (in_array(strtoupper($data['activity']), $courierStatus)) {
+
+                            $forwarder2_result[$key] = [
+                                'event_detail' => $data['activity'],
+                                'event_code' => $data['activity'],
+                                'action_date' => date('Y-m-d', strtotime($data['date'])),
+                                'action_time' => date('H:i:s', strtotime($data['date'])),
+                                'location' => $data['location']
+                            ];
+                        }
+                    } elseif ($courier_name == 'Aramex') {
+
+                        if (in_array(strtoupper($data['update_description']), $courierStatus)) {
+
+                            $forwarder2_result[$key] = [
+                                'event_detail' => $data['update_description'],
+                                'event_code' => $data['update_description'],
+                                'action_date' => date('Y-m-d', strtotime($data['update_date_time'])),
+                                'action_time' => date('H:i:s', strtotime($data['update_date_time'])),
+                                'location' => $data['update_location']
+                            ];
+                        }
                     }
                 }
-                if (isset($final_data['shipping_address'])) {
-
-                    $tracking_address[] =  $final_data['shipping_address'];
-                }
-
-                $final_array = [
-                    'Tracking_Details' => $tracking_array,
-                    'Shipping_Address' => $tracking_address
-                ];
-
-                return json_encode($final_array);
-            } else {
-
-                echo '<?xml version="1.0" encoding="UTF-8"?>
-                <AmazonTrackingRequest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
-                <APIVersion>1.0</APIVersion>
-                <TrackingNumberError>Invalid AWB: ' . $phpArray['TrackingNumber'] . '</TrackingNumberError>
-                </AmazonTrackingRequest>';
-                return false;
             }
-        } catch (Exception $e) {
-            echo '<?xml version="1.0" encoding="UTF-8"?>
-            <AmazonTrackingRequestError xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
-            Invalid Request
-            </AmazonTrackingRequestError>';
-            return false;
         }
+        $result = [...$packet_details, ...$forwarder2_result, ...$forwarder1_result];
+
+        return $result;
     }
 }
