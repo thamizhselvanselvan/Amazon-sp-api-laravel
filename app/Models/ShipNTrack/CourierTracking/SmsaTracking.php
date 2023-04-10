@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Models\ShipNTrack\SMSA;
+namespace App\Models\ShipNTrack\CourierTracking;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class KsaSmsaTracking extends Model
+class SmsaTracking extends Model
 {
     use HasFactory;
+
     protected $connection = 'shipntracking';
-    protected $table = 'ksa_smsa_trackings';
     protected $fillable = [
         'account_id',
         'awbno',

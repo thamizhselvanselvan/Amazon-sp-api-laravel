@@ -25,7 +25,7 @@ class CourierController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('shipntrack.courier.index');
+        return view('shipntrack.Courier.index');
     }
 
     public function couriergsave(Request $request)

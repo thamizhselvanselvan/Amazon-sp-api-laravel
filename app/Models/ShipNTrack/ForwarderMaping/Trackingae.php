@@ -3,6 +3,7 @@
 namespace App\Models\ShipNTrack\ForwarderMaping;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ShipNTrack\Courier\Courier;
 use App\Models\ShipNTrack\Courier\CourierPartner;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 

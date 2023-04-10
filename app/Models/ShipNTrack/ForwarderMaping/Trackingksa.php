@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\ShipNTrack\Courier\CourierPartner;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class IntoAE extends Model
+class Trackingksa extends Model
 {
     use HasFactory;
     protected $connection = 'shipntracking';
-    protected $table = 'process_india_to_uae';
+    protected $table = 'tracking_ksa';
     protected $fillable = [
         'awb_number',
         'reference_id',

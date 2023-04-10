@@ -1,10 +1,10 @@
 @extends('adminlte::page')
 
-@section('title', 'SMSA Tracking')
+@section('title', 'Courier Tracking')
 
 @section('content_header')
     <div class="row">
-        <h1 class="m-0 text-dark col">SMSA Tracking</h1>
+        <h1 class="m-0 text-dark col">Courier Tracking</h1>
         <h2 class="mb-4 text-right col">
             <a href="{{ Route('shipntrack.smsa.upload') }}">
                 <x-adminlte-button label="Add New SMSA AWB No." theme="primary" icon="fas fa-file-upload" class="btn-sm" />
@@ -14,8 +14,9 @@
     <div class="row">
         <x-adminlte-select name="source_destination" id="sourceDestination">
             <option>Select Option</option>
-            <option value="ind_to_uae">IND-TO-UAE</option>
-            <option value="ind_to_ksa">IND-TO-KSA</option>
+            <option value="AE">AE</option>
+            <option value="IN">IN</option>
+            <option value="KSA">KSA</option>
         </x-adminlte-select>
     </div>
 @stop

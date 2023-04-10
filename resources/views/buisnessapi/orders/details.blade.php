@@ -8,7 +8,31 @@
 
 
 @section('content')
+    {{-- tabs switcher ~start --}}
+        <div class="row  pt-4 justify-content-center">    
+            <a class="btn btn-lg btn-app bg-secondary" style="width:130px" href ="{{url('business/orders/details')}}">        
+                <i class="fa fa-clock-o"></i> Order Pending
+            </a>
+            <a class="btn btn-lg btn-app bg-success" style="width:130px" href ="{{url('business/booked/details')}}">        
+                <i class="fa fa-check"></i> Order booked
+            </a>
+            <a class="btn btn-lg btn-app bg-info" style="width:130px" href ="{{url('business/orders/confirm')}}">        
+                <i class="fa fa-check-circle-o"></i> Order Confirmation
+            </a>
+            <a class="btn btn-lg btn-app bg-warning" style="width:130px" href ="{{url('business/ship/confirmation')}}">        
+                <i class="fa fa-bell "></i> shipment Notification
+            </a>      
+        </div>
+    {{-- tabs switcher ~end --}}
 
+    <div class="row ">
+        <div class="col ">
+            <div style="margin: 0.1rem 0; text-align: center" >
+                <h3>Pending Order Details</h3>
+            </div>
+        </div>
+    </div>
+        
 <div class="loader d-none">
     <div class="sub-loader position-relative ">
         <div class="lds-hourglass"></div>
@@ -31,13 +55,7 @@
         @endif
     </div>
 </div>
-<div class="row">
-    <div class="col">
-        <div style="margin-top: 1.0rem;">
-            <h3>Pending Order Details</h3>
-        </div>
-    </div>
-</div>
+
 <div class="modal " id="selectoffer">
     <div class="modal-dialog modal-lg">
         <div class="modal-content modal-lg">
@@ -59,12 +77,50 @@
         </div>
     </div>
 </div>
+
+{{-- collapse filter card start --}}
+<div class="card card-info " id="filter-card">
+    <div class="card-body" >
+        <div class="row">
+            <div class="col-12">
+                <div>
+                    <form class="form-inline" id="form-log-delete" method="get"
+                        action="{{ route('business.orders.pending.list') }}">
+                        
+                        <div class="form-group">
+
+                            <x-adminlte-select name="site_id" id="filterSites"  class="form-control form-control-sm">
+                                <option value='' selected>Select the Site to Apply filter</option>
+                                @foreach ($sites as $site)
+                                    @if ($site->code == 'in')
+                                        {{ $site->code = 'India' }}
+                                    @elseif ($site->code == 'uae')
+                                        {{ $site->code = 'UAE' }}
+                                    @endif
+                                    <option value="{{ $site->siteid }}">{{ $site->code }}</option>
+                                @endforeach
+                            </x-adminlte-select>                                
+
+
+                        </div>
+                       
+                        <button type="submit" id="clear_log" class="btn btn-warning mx-2 btn-sm">Apply</button>
+                        <a class="btn btn-default  btn-sm" href="{{route('cliqnshop.category')}}">Reset</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{-- collapse filter card -end --}}
+
 <table class="table table-bordered yajra-datatable table-striped" id='orderspending'>
     <thead>
         <tr class='text-bold bg-info'>
             <th> ID </th>
             <th>ASIN</th>
             <th>Item Name</th>
+            <th>site</th>
             <th>Quantity</th>
             <th>price</th>
             <th>Action</th>
@@ -77,6 +133,26 @@
 @stop
 @section('js')
 <script type="text/javascript">
+
+    const filter = {
+            site_id : new URLSearchParams(window.location.search).get('site_id'),
+        }
+
+        let url = `{{ route('business.orders.pending.list') }}?`;  
+        if(!!filter.site_id)
+        {            
+            url += `site_id=${filter.site_id}`  ;
+
+            var filterSites = document.getElementById('filterSites'), filterSite, i;
+            for (i = 0; i < filterSites.length; i++) {
+                filterSite = filterSites[i];
+                if (filterSite.value == filter.site_id)
+                {
+                    filterSite.setAttribute('selected', true);
+                }
+            }
+        }
+    
     $(function() {
 
         $.extend($.fn.dataTable.defaults, {
@@ -87,7 +163,7 @@
         let yajra_table = $('.yajra-datatable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('business.orders.pending.list') }}",
+            ajax: url,
             columns: [{
                     data: 'DT_RowIndex',
                     name: 'DT_RowIndex',
@@ -102,6 +178,11 @@
                     data: 'name',
                     name: 'name'
                 },
+                {
+                    data: 'siteid',
+                    name: 'site'
+                },
+
                 {
                     data: 'quantity',
                     name: 'quantity'

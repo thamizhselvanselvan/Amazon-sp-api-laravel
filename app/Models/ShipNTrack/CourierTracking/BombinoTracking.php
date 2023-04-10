@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\ShipNTrack\Bombino;
+namespace App\Models\ShipNTrack\CourierTracking;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

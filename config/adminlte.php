@@ -1059,18 +1059,18 @@ return [
                             'icon' => 'far fa fa-archive',
                         ],
                         [
-                            'text' => 'Booking',
-                            'url' => 'shipntrack/booking',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa fa-plane',
-                        ],
-                        [
                             'text' => 'Partners',
                             'url' => 'shipntrack/partners',
                             'can' => ['Admin'],
                             'icon' => 'fas fa-handshake',
                         ],
-                        
+                        [
+                            'text' => 'Status',
+                            'url' => 'shipntrack/booking',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa fa-bar-chart',
+                        ],
+
                         [
                             'text' => 'Courier Status',
                             'url' => 'shipntrack/status/manager',
@@ -1080,25 +1080,26 @@ return [
                     ],
                 ],
                 [
-                    'text' => 'Forwarder Master',
+                    'text' => 'Create New Shipment',
+                    'url' => 'shipntrack/forwarder',
                     'icon' => 'far fa fa-map-marker',
                     'can' => ['Admin'],
-                    'submenu' =>
-                    [
-                        [
-                            'text' => 'Forwarder Mapping',
-                            'url' => 'shipntrack/forwarder',
-                            'icon' => 'far fa fa-map-marker',
-                            'can' => ['Admin'],
-                        ],
-                        [
-                            'text' => 'Forwarder Details',
-                            'url' => 'shipntrack/forwarder/mapped/details',
-                            'icon' => 'far fa fa-bar-chart',
-                            'can' => ['Admin'],
-                        ],
+                    // 'submenu' =>
+                    // [
+                    //     [
+                    //         'text' => 'Forwarder Mapping',
+                    //         'url' => 'shipntrack/forwarder',
+                    //         'icon' => 'far fa fa-map-marker',
+                    //         'can' => ['Admin'],
+                    //     ],
+                    //     [
+                    //         'text' => 'Forwarder Details',
+                    //         'url' => 'shipntrack/forwarder/mapped/details',
+                    //         'icon' => 'far fa fa-bar-chart',
+                    //         'can' => ['Admin'],
+                    //     ],
 
-                    ],
+                    // ],
 
                 ],
                 [
@@ -1106,6 +1107,13 @@ return [
                     'can' => ['Admin'],
                     'url' => 'shipntrack/courier/tracking',
                     'icon' => 'far fa fa-bar-chart',
+                ],
+
+               [
+                    'text' => 'B2C POD',
+                    'can' => ['Admin'],
+                    'url' => 'shipntrack/b2c/POD',
+                    'icon' => 'far fa fa-file-text-o',
                 ],
 
 
@@ -1155,10 +1163,23 @@ return [
                     'icon' => 'fa fa-yelp',
                     'submenu' => [
                         [
-                            'text' => 'Asin Importer',
-                            'url' => 'catalog/index',
+                            'text' => 'Asin ',
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'far fa-fw fa-file',
+                            'submenu' => [
+                                            [
+                                                'text' => 'Importer',
+                                                'url' => 'catalog/index',
+                                                'can' => ['Admin', 'Cliqnshop'],
+                                                'icon' => 'fa fa-download',
+                                            ],
+                                            [
+                                                'text' => 'Manager',
+                                                'url' => 'cliqnshop/verify/asin',
+                                                'can' => ['Admin', 'Cliqnshop'],
+                                                'icon' => 'fa fa-eraser',
+                                            ]
+                                    ]
 
                         ],
                         [
@@ -1191,10 +1212,16 @@ return [
                                     'can' => ['Admin', 'Cliqnshop'],
                                     'icon' => 'fa fa-ban',
                                 ],
+                                [
+                                    'text' => 'Product List Without Category',
+                                    'url' => 'cliqnshop/category/missing',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-list-ol',
+                                ],
                             ]
                         ],
                         [
-                            'text' => 'brand',
+                            'text' => 'Brand',
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'fa fa-list-ul',
                             'submenu' => [
@@ -1204,7 +1231,12 @@ return [
                                     'can' => ['Admin', 'Cliqnshop'],
                                     'icon' => 'fa fa-ban',
                                 ],
-
+                                [
+                                    'text' => 'Product List Without Brand',
+                                    'url' => 'cliqnshop/brand/missing',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-list-ol',
+                                ],
                             ]
                         ]
 
