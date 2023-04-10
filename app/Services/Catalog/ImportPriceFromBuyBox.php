@@ -49,8 +49,22 @@ class ImportPriceFromBuyBox
             //                 ");
 
             $BuyBoxRecords = DB::connection('buybox')
-                ->select("SELECT asin, 
-                            available, 
+                ->select("SELECT asin, available, 
+                            is_sold_by_amazon,
+                            lowestprice_condition,
+                            buybox_condition,
+                            is_any_our_seller_own_bb, 
+                            next_highest_seller_price,
+                            next_highest_seller_id,
+                            next_lowest_seller_price,
+                            next_lowest_seller_id,
+                            bb_winner_price,
+                            bb_winner_id,
+                            updated_at ,
+                            buybox_listingprice_amount,
+                            buybox_landedprice_amount,
+                            lowestprice_landedprice_amount,
+                            lowestprice_listingprice_amount,
                             available_price
                             FROM $product_lp  
                             WHERE updated_at BETWEEN $start AND $end
@@ -117,26 +131,25 @@ class ImportPriceFromBuyBox
 
 
                 $available = $BBRecord->available;
-                $available_price = $BBRecord->available_price;
-
-                // $is_sold_by_amazon = $BBRecord->is_sold_by_amazon;
-                // $is_our_seller_bb_winner = $BBRecord->is_any_our_seller_own_bb;
-                // $next_highest_seller_price = $BBRecord->next_highest_seller_price;
-                // $next_highest_seller_id = $BBRecord->next_highest_seller_id;
-                // $next_lowest_seller_price = $BBRecord->next_lowest_seller_price;
-                // $next_lowest_seller_id = $BBRecord->next_lowest_seller_id;
-                // $bb_winner_price = $BBRecord->bb_winner_price;
-                // $bb_winner_id = $BBRecord->bb_winner_id;
-                // $updated_at = $BBRecord->updated_at;
+                $is_sold_by_amazon = $BBRecord->is_sold_by_amazon;
+                $is_our_seller_bb_winner = $BBRecord->is_any_our_seller_own_bb;
+                $next_highest_seller_price = $BBRecord->next_highest_seller_price;
+                $next_highest_seller_id = $BBRecord->next_highest_seller_id;
+                $next_lowest_seller_price = $BBRecord->next_lowest_seller_price;
+                $next_lowest_seller_id = $BBRecord->next_lowest_seller_id;
+                $bb_winner_price = $BBRecord->bb_winner_price;
+                $bb_winner_id = $BBRecord->bb_winner_id;
+                $updated_at = $BBRecord->updated_at;
 
                 // $isBuyBoxWinner = explode(',', $BBRecord->is_buybox_winner);
                 // $listingAmount = explode(',', $BBRecord->listingprice_amount);
-                // $lowestprice_condition = $BBRecord->lowestprice_condition;
-                // $buybox_condition = $BBRecord->buybox_condition;
-                // $buybox_listingprice_amount = $BBRecord->buybox_listingprice_amount;
-                // $buybox_landedprice_amount = $BBRecord->buybox_landedprice_amount;
-                // $lowestprice_landedprice_amount = $BBRecord->lowestprice_landedprice_amount;
-                // $lowestprice_listingprice_amount = $BBRecord->lowestprice_listingprice_amount;
+                $lowestprice_condition = $BBRecord->lowestprice_condition;
+                $buybox_condition = $BBRecord->buybox_condition;
+                $buybox_listingprice_amount = $BBRecord->buybox_listingprice_amount;
+                $buybox_landedprice_amount = $BBRecord->buybox_landedprice_amount;
+                $lowestprice_landedprice_amount = $BBRecord->lowestprice_landedprice_amount;
+                $lowestprice_listingprice_amount = $BBRecord->lowestprice_listingprice_amount;
+                $available_price = $BBRecord->available_price;
 
                 $volumetricPounds = VolumetricIntoPounds($dimension);
                 $volumetricKg = VolumetricIntoKG($dimension);
@@ -181,15 +194,15 @@ class ImportPriceFromBuyBox
                     'asin'                      => $asin,
                     'available'                 => $available_price != 0 ? $available : 0,
                     $price                      => $available_price,
-                    // 'is_sold_by_amazon'         => $is_sold_by_amazon,
-                    // 'next_highest_seller_price' => $next_highest_seller_price,
-                    // 'next_highest_seller_id'    => $next_highest_seller_id,
-                    // 'next_lowest_seller_price'  => $next_lowest_seller_price,
-                    // 'next_lowest_seller_id'     => $next_lowest_seller_id,
-                    // 'bb_winner_price'           => $bb_winner_price,
-                    // 'bb_winner_id'              => $bb_winner_id,
-                    // 'is_any_our_seller_won_bb'  => $is_our_seller_bb_winner,
-                    // 'price_updated_at'          => $updated_at,
+                    'is_sold_by_amazon'         => $is_sold_by_amazon,
+                    'next_highest_seller_price' => $next_highest_seller_price,
+                    'next_highest_seller_id'    => $next_highest_seller_id,
+                    'next_lowest_seller_price'  => $next_lowest_seller_price,
+                    'next_lowest_seller_id'     => $next_lowest_seller_id,
+                    'bb_winner_price'           => $bb_winner_price,
+                    'bb_winner_id'              => $bb_winner_id,
+                    'is_any_our_seller_won_bb'  => $is_our_seller_bb_winner,
+                    'price_updated_at'          => $updated_at,
                 ];
 
                 // break 1;
@@ -331,45 +344,23 @@ class ImportPriceFromBuyBox
                 PricingUs::upsert($pricing_us, 'unique_asin',  [
                     'asin',
                     'available',
-                    'is_sold_by_amazon',
                     'weight',
-                    'volumetric_weight_pounds',
-                    'volumetric_weight_kg',
                     'us_price',
                     'usa_to_in_b2b',
                     'usa_to_in_b2c',
                     'usa_to_uae',
                     'usa_to_sg',
-                    'next_highest_seller_price',
-                    'next_highest_seller_id',
-                    'next_lowest_seller_price',
-                    'next_lowest_seller_id',
-                    'bb_winner_price',
-                    'bb_winner_id',
-                    'is_any_our_seller_won_bb',
-                    'price_updated_at'
                 ]);
             } elseif ($country_code_lr == 'in') {
 
                 PricingIn::upsert($pricing_in, 'asin_unique', [
                     'asin',
                     'available',
-                    'is_sold_by_amazon',
                     'in_price',
                     'weight',
-                    'volumetric_weight_pounds',
-                    'volumetric_weight_kg',
                     'ind_to_uae',
                     'ind_to_sg',
                     'ind_to_sa',
-                    'next_highest_seller_price',
-                    'next_highest_seller_id',
-                    'next_lowest_seller_price',
-                    'next_lowest_seller_id',
-                    'bb_winner_price',
-                    'bb_winner_id',
-                    'is_any_our_seller_won_bb',
-                    'price_updated_at'
                 ]);
             } else if ($country_code_lr == 'ae') {
 
