@@ -113,7 +113,7 @@ class ExportPriceViaVolumetricWeight
                 // Log::debug("query" . endTime($start_time));
 
                 // $start_time = startTime();
-                $this->dataFormatting($pricing_details, $this->countryCode, $headers_us);
+                $this->dataFormatting($pricing_details, $this->countryCode, $headers_us, $where_asin);
                 // Log::debug('data-formatting' . endTime($start_time));
             } elseif ($this->countryCode == 'IN') {
 
@@ -123,7 +123,7 @@ class ExportPriceViaVolumetricWeight
                     ->get()
                     ->toArray();
 
-                $this->dataFormatting($pricing_details, $this->countryCode, $headers_in);
+                $this->dataFormatting($pricing_details, $this->countryCode, $headers_in, $where_asin);
             }
 
             $us_destination->when($this->priority != 'All', function ($query) {
@@ -140,7 +140,7 @@ class ExportPriceViaVolumetricWeight
             ->update(["export" => 0]);
     }
 
-    public function dataFormatting($catalog_details, $countryCode, $headers)
+    public function dataFormatting($catalog_details, $countryCode, $headers, $destination_asin)
     {
         $asin_data = [];
 
@@ -225,8 +225,37 @@ class ExportPriceViaVolumetricWeight
             } catch (Exception $e) {
             }
         }
+        $asin = [];
+        $unavailable_asin = [];
+
+        foreach ($asin_data as $catalog_data) {
+            $asin[] = $catalog_data['ASIN'];
+        }
+
+        $data = array_diff($destination_asin, $asin);
+
+        foreach ($data as  $desti_asin) {
+
+            $unavailable_asin[] = [
+                'ASIN' => $desti_asin,
+                'AVAILABLE' => 'NULL',
+                'LENGHT_CM' => 'NULL',
+                'WIDTH_CM' => 'NULL',
+                'HEIGHT_CM' => 'NULL',
+                'WEIGHT_KG' => 'NULL',
+                'VOL_KG' => 'NULL',
+                'ACTUAL_WEIGHT_KG' => 'NULL',
+                'IN_PRICE' => 'NULL',
+                'INDTOAE' => 'NULL',
+                'INDTOSG' => 'NULL',
+                'INDTOSA' => 'NULL',
+                'UPDATED_AT' => 'NULL',
+            ];
+        }
+        $data_for_csv = [...$asin_data, ...$unavailable_asin];
+        Log::debug($data_for_csv);
         // $start_time = startTime();
-        $this->createCsv($headers, $asin_data);
+        $this->createCsv($headers, $data_for_csv);
         // Log::debug('csv-import' . endTime($start_time));
         $asin_data = [];
         return true;
@@ -281,7 +310,6 @@ class ExportPriceViaVolumetricWeight
 
     public function createCsv($csv_header, $records)
     {
-
         if ($this->count == 1) {
             if (!Storage::exists($this->export_file_path . $this->fileNameOffset . '.csv')) {
                 Storage::put($this->export_file_path . $this->fileNameOffset . '.csv', '');
