@@ -33,6 +33,12 @@
         </x-adminlte-alert>
         @endif
 
+        @if(session()->has('warning'))
+        <x-adminlte-alert theme="warning" title="warning" dismissable>
+            {{ session()->get('warning') }}
+        </x-adminlte-alert>
+        @endif
+
         @if(session()->has('error'))
         <x-adminlte-alert theme="danger" title="Error" dismissable>
             {{ session()->get('error') }}
