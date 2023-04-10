@@ -241,7 +241,7 @@ class ExportPriceViaVolumetricWeight
             ];
         }
         $data_for_csv = [...$asin_data, ...$unavailable_asin];
-        Log::debug($data_for_csv);
+
         // $start_time = startTime();
         $this->createCsv($headers, $data_for_csv);
         // Log::debug('csv-import' . endTime($start_time));
