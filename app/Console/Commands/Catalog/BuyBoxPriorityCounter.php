@@ -51,6 +51,9 @@ class BuyBoxPriorityCounter extends Command
             count(case when credential_priority = "3" then 1 end) as "3",   count(case when credential_priority = "4" then 1 end) as "4"')
                 ->first()->toArray();
         }
-        Cache::put('creds_count', $counts);
+        // Cache::put('creds_count', $counts);
+        cache()->rememberForever('creds_count', function () use ($counts) {
+            return $counts;
+        });
     }
 }
