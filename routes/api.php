@@ -36,7 +36,7 @@ Route::group(['namespace' => 'Api\App\v1', 'as' => 'v1.', 'prefix' => 'v1'], fun
 
 $method = ['get', 'post'];
 Route::match($method, 'trackingAmazon', 'shipntrack\API\AmazonTrackingAPIController@AmazonTrackingMaster');
-Route::match($method, 'trackingb2cship', 'shipntrack\API\B2CShipTrackingAPIController@B2CshipTrackingResponse');
+// Route::match($method, 'trackingb2cship', 'shipntrack\API\B2CShipTrackingAPIController@B2CshipTrackingResponse');
 
 Route::match($method, 'test/zoho/webhook', 'TestController@zohoWebhookResponse');
 
