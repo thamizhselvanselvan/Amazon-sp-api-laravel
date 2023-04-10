@@ -365,8 +365,8 @@ Route::get('sanju/bbcreds/count', function () {
     }
 });
 route::get('sanju/feed/test', function () {
-    $feedback_id = 135234019453;
-    $store_id = 6;
+    $feedback_id = 489950019457;
+    $store_id = 10;
 
     $country_code = 'IN';
 
@@ -376,6 +376,7 @@ route::get('sanju/feed/test', function () {
     if ($url) {
 
         $data = file_get_contents($url);
+       
         $data_json = json_decode(json_encode(simplexml_load_string($data)), true);
         po($data_json);
      
