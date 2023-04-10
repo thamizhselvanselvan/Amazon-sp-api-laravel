@@ -136,7 +136,7 @@ class CatalogDashboardService
                 {$destination_table}.priority from {$destination_table}
             join ${catalog_price}
             ON ${destination_table}.asin = ${catalog_price}.asin
-            where ${catalog_price}.available = 1
+            where ${catalog_price}.available != 'NULL'
             group by ${destination_table}.priority
             ");
             foreach ($cat_pricings as $cat_pricing) {
@@ -146,13 +146,13 @@ class CatalogDashboardService
 
             start:
             if (Cache::has('creds_count')) {
-             
+
                 $creads = Cache::get('creds_count');
                 foreach ($creads[$source] as $key => $cread) {
                     $cread_array[$key + 1] = $cread;
                 }
             } else {
-              
+
                 commandExecFunc('mosh:buybox_priority_count');
                 goto start;
             }
