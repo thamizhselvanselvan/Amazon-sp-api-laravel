@@ -75,7 +75,7 @@ class ImportPriceFromBuyBox
             $catalogRecords = [];
 
             // Log::notice($country_code_lr . '=>' . count($BuyBoxRecords));
-            $catalogTable = table_model_create(country_code: $country_code_lr, model: 'Catalog', table_name: 'catalognew');
+            $catalogTable = table_model_create(country_code: $country_code_lr, model: 'Catalog', table_name: 'catalog');
             foreach ($BuyBoxRecords as $BuyBoxRecord) {
 
                 $Records[$BuyBoxRecord->asin] = $BuyBoxRecord;
