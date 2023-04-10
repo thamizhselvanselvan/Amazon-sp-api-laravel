@@ -135,7 +135,9 @@ class CatalogDashboardService
                 ->select("SELECT count({$destination_table}.asin) as price, 
                 {$destination_table}.priority from {$destination_table}
             join ${catalog_price}
-            ON ${destination_table}.asin = ${catalog_price}.asin
+            join ${catalog_table}
+            ON ${destination_table}.asin = ${catalog_table}.asin
+            and ${catalog_table}.asin=${catalog_price}.asin
             where ${catalog_price}.available != 'NULL'
             group by ${destination_table}.priority
             ");
