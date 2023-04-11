@@ -10,7 +10,7 @@ use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
 
 class B2CShipTrackingAPIController extends Controller
 {
-    public function B2CShipTrackingAPI(Request $request)
+    public function B2CShipTrackingAPIResponse(Request $request)
     {
         $OrderByColunm1 = [
             'SMSA' => 'date',
