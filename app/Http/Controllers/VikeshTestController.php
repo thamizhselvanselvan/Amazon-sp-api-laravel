@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
+use App\Models\ShipNTrack\Courier\StatusManagement;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
 
@@ -136,10 +137,17 @@ class VikeshTestController extends Controller
 
     public function bombinoAPI(Request $request)
     {
-        $OrderByColunm = [
+        $OrderByColunm1 = [
             'SMSA' => 'date',
             'Aramex' => 'update_date_time',
             'Bombino' => 'action_date'
+
+        ];
+
+        $OrderByColunm2 = [
+            'SMSA' => 'date',
+            'Aramex' => 'update_date_time',
+            'Bombino' => 'action_time'
 
         ];
         $selectColumns = [
@@ -184,7 +192,7 @@ class VikeshTestController extends Controller
                 ->where('awb_number', $awbNo)
                 ->get()
                 ->toArray();
-        } elseif ($destination == 'SA') {
+        } elseif ($destination == 'KSA') {
 
             $data = Trackingksa::with([
                 'CourierPartner1.courier_names',
@@ -197,8 +205,8 @@ class VikeshTestController extends Controller
                 ->toArray();
         }
 
-        $forwarder1_data = [];
-        $forwarder2_data = [];
+        $forwarder1_result = [];
+        $forwarder2_result = [];
 
         foreach ($data as $key => $records) {
 
@@ -211,32 +219,55 @@ class VikeshTestController extends Controller
 
                 $forwarder1_data = $table->select($selectColumns[$courier_name])
                     ->where('awbno', $awb_no)
-                    ->orderBy($OrderByColunm[$courier_name], 'DESC')
+                    ->orderBy($OrderByColunm1[$courier_name], 'DESC')
+                    ->orderBy($OrderByColunm2[$courier_name], 'DESC')
                     ->get()
                     ->toArray();
 
-                if ($courier_name == 'SMSA') {
+                $columnName = $records['forwarder_2_awb'] == '' ? 'last_mile_status' : 'first_mile_status';
+                $courierActivities = StatusManagement::select('courier_status')
+                    ->join('courier', 'courier.id', '=', 'status_master.courier_id')
+                    ->where($columnName, 1)
+                    ->where('courier_name', $courier_name)
+                    ->get()
+                    ->toArray();
 
-                    foreach ($forwarder1_data as $key => $records1) {
-                        $forwarder1_data[$key] = [
-                            'event_detail' => $records1['activity'],
-                            'action_date' => date('Y-m-d', strtotime($records1['date'])),
-                            'action_time' => date('H:i:s', strtotime($records1['date'])),
-                            'location' => $records1['location']
-                        ];
-                    }
-                } else if ($courier_name == 'Aramex') {
+                $courierStatus = [];
+                foreach ($courierActivities as $courierActivity) {
+                    $courierStatus[] = $courierActivity['courier_status'];
+                }
 
-                    foreach ($forwarder1_data as $key => $records2) {
-                        $forwarder1_data[$key] = [
-                            'event_detail' => $records2['update_description'],
-                            'action_date' => date('Y-m-d', strtotime($records2['update_date_time'])),
-                            'action_time' => date('H:i:s', strtotime($records2['update_date_time'])),
-                            'location' => $records2['update_location']
-                        ];
-                    }
+                foreach ($forwarder1_data as $key => $data) {
+                    if ($courier_name == 'Bombino') {
+
+                        if (in_array($data['event_detail'], $courierStatus)) {
+
+                            $forwarder1_result[$key] = $data;
+                        }
+                    } else if ($courier_name == 'SMSA') {
+
+                        if (in_array($data['activity'], $courierStatus)) {
+                            $forwarder1_result[$key] = [
+                                'event_detail' => $data['activity'],
+                                'action_date' => date('Y-m-d', strtotime($data['date'])),
+                                'action_time' => date('H:i:s', strtotime($data['date'])),
+                                'location' => $data['location']
+                            ];
+                        }
+                    } else if ($courier_name == 'Aramex') {
+
+                        if (in_array($data['update_description'], $courierStatus)) {
+                            $forwarder1_result[$key] = [
+                                'event_detail' => $data['update_description'],
+                                'action_date' => date('Y-m-d', strtotime($data['update_date_time'])),
+                                'action_time' => date('H:i:s', strtotime($data['update_date_time'])),
+                                'location' => $data['update_location']
+                            ];
+                        }
+                    };
                 }
             }
+
             if (($records['forwarder_2_awb'] != '')) {
 
                 $awb_no = $records['forwarder_2_awb'];
@@ -245,33 +276,55 @@ class VikeshTestController extends Controller
 
                 $forwarder2_data = $table->select($selectColumns[$courier_name])
                     ->where('awbno', $awb_no)
-                    ->orderBy($OrderByColunm[$courier_name], 'DESC')
+                    ->orderBy($OrderByColunm1[$courier_name], 'DESC')
+                    ->orderBy($OrderByColunm2[$courier_name], 'DESC')
                     ->get()
                     ->toArray();
-                if ($courier_name == 'SMSA') {
 
-                    foreach ($forwarder2_data as $key => $records2) {
-                        $forwarder2_data[$key] = [
-                            'event_detail' => $records2['activity'],
-                            'action_date' => date('Y-m-d', strtotime($records2['date'])),
-                            'action_time' => date('H:i:s', strtotime($records2['date'])),
-                            'location' => $records2['location']
-                        ];
-                    }
-                } else if ($courier_name == 'Aramex') {
+                $columnName = $records['forwarder_3_awb'] == '' ? 'last_mile_status' : 'first_mile_status';
+                $courierActivities = StatusManagement::select('courier_status')
+                    ->join('courier', 'courier.id', '=', 'status_master.courier_id')
+                    ->where($columnName, 1)
+                    ->where('courier_name', $courier_name)
+                    ->get()
+                    ->toArray();
 
-                    foreach ($forwarder2_data as $key => $records2) {
-                        $forwarder2_data[$key] = [
-                            'event_detail' => $records2['update_description'],
-                            'action_date' => date('Y-m-d', strtotime($records2['update_date_time'])),
-                            'action_time' => date('H:i:s', strtotime($records2['update_date_time'])),
-                            'location' => $records2['update_location']
-                        ];
+                $courierStatus = [];
+                foreach ($courierActivities as $courierActivity) {
+                    $courierStatus[] = $courierActivity['courier_status'];
+                }
+
+                foreach ($forwarder2_data as $key => $data) {
+                    if ($courier_name == 'Bombino') {
+                        if (in_array($data['event_detail'], $courierStatus)) {
+                            $forwarder2_result[$key] = $data;
+                        }
+                    } elseif ($courier_name == 'SMSA') {
+                        if (in_array($data['activity'], $courierStatus)) {
+
+                            $forwarder2_result[$key] = [
+                                'event_detail' => $data['activity'],
+                                'action_date' => date('Y-m-d', strtotime($data['date'])),
+                                'action_time' => date('H:i:s', strtotime($data['date'])),
+                                'location' => $data['location']
+                            ];
+                        }
+                    } elseif ($courier_name == 'Aramex') {
+
+                        if (in_array($data['update_description'], $courierStatus)) {
+
+                            $forwarder2_result[$key] = [
+                                'event_detail' => $data['update_description'],
+                                'action_date' => date('Y-m-d', strtotime($data['update_date_time'])),
+                                'action_time' => date('H:i:s', strtotime($data['update_date_time'])),
+                                'location' => $data['update_location']
+                            ];
+                        }
                     }
                 }
             }
         }
-        $result = [...$forwarder1_data, ...$forwarder2_data];
+        $result = [...$forwarder1_result, ...$forwarder2_result];
 
         return $result;
     }

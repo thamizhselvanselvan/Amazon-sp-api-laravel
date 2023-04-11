@@ -4,9 +4,13 @@ namespace App\Http\Controllers\shipntrack\Tracking;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\V2\OMS\StatusMaster;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\ShipNTrack\Courier\CourierPartner;
+use App\Models\ShipNTrack\Courier\StatusManagement;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingin;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
@@ -16,7 +20,7 @@ class CourierTrackingController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-
+            $login_email = Auth::user()->email;
             $data = [];
             if ($request->sourceDestination == 'AE') {
 
@@ -38,6 +42,10 @@ class CourierTrackingController extends Controller
                     ->toArray();
             }
             return DataTables::of($data)
+                ->editColumn('awb_number', function ($data) use ($request) {
+                    $awb_number = $request->sourceDestination . $data['awb_number'];
+                    return $awb_number;
+                })
                 ->editColumn('forwarder1_awb', function ($data) {
                     $forwarder1 = $data['forwarder_1_awb'] ?? 'NA';
                     return $forwarder1;
@@ -62,7 +70,7 @@ class CourierTrackingController extends Controller
                     $action = "<a href='/shipntrack/courier/moredetails/" . $request->sourceDestination . "/" . $data['awb_number'] . "' class='' target='_blank'>More Details</a>";
                     return $action;
                 })
-                ->rawColumns(['forwarder1_awb', 'forwarder2_awb', 'forwarder3_awb', 'forwarder4_awb', 'created_date', 'action'])
+                ->rawColumns(['awb_number', 'forwarder1_awb', 'forwarder2_awb', 'forwarder3_awb', 'forwarder4_awb', 'created_date', 'action'])
                 ->make(true);
         }
         return view('shipntrack.Smsa.index');
@@ -70,10 +78,17 @@ class CourierTrackingController extends Controller
 
     public function PacketMoreDetails($sourceDestination, $awbNo)
     {
-        $OrderByColunm = [
+        $OrderByColunm1 = [
             'SMSA' => 'date',
             'Aramex' => 'update_date_time',
             'Bombino' => 'action_date'
+
+        ];
+
+        $OrderByColunm2 = [
+            'SMSA' => 'date',
+            'Aramex' => 'update_date_time',
+            'Bombino' => 'action_time'
 
         ];
 
@@ -96,6 +111,7 @@ class CourierTrackingController extends Controller
             ],
 
         ];
+
         $result = [];
         if ($sourceDestination == 'AE') {
 
@@ -135,6 +151,8 @@ class CourierTrackingController extends Controller
         $forwarder_details = [
             'consignor' => $result[0]['consignor'],
             'consignee' => $result[0]['consignee'],
+            'origin' => $result[0]['courier_partner1']['source'],
+            'destination' => $result[0]['courier_partner1']['destination'],
         ];
 
         $forwarder1_record = [];
@@ -146,12 +164,31 @@ class CourierTrackingController extends Controller
 
             $forwarder1_data = $table->select($selectColumns[$courier_name])
                 ->where('awbno', $awb_no)
-                ->orderBy($OrderByColunm[$courier_name], 'DESC')
+                ->orderBy($OrderByColunm1[$courier_name], 'DESC')
+                ->orderBy($OrderByColunm2[$courier_name], 'DESC')
                 ->get()
                 ->toArray();
-            foreach ($forwarder1_data as $data) {
 
-                $forwarder1_record[] = ['courier_name' => $courier_name, ...$data];
+            $columnName = $result[0]['forwarder_2_awb'] == '' ? 'last_mile_status' : 'first_mile_status';
+            $courierActivities = StatusManagement::select('courier_status')
+                ->join('courier', 'courier.id', '=', 'status_master.courier_id')
+                ->where($columnName, 1)
+                ->where('courier_name', $courier_name)
+                ->get()
+                ->toArray();
+
+            $courierStatus = [];
+            foreach ($courierActivities as $courierActivity) {
+                $courierStatus[] = $courierActivity['courier_status'];
+            }
+
+            foreach ($forwarder1_data as $data) {
+                foreach ($data as $key => $res) {
+                    if (in_array(strtoupper($res), $courierStatus)) {
+
+                        $forwarder1_record[] = ['courier_name' => $courier_name, ...$data];
+                    }
+                }
             }
         }
 
@@ -164,12 +201,30 @@ class CourierTrackingController extends Controller
 
             $forwarder2_data = $table->select($selectColumns[$courier_name])
                 ->where('awbno', $awb_no)
-                ->orderBy($OrderByColunm[$courier_name], 'DESC')
+                ->orderBy($OrderByColunm1[$courier_name], 'DESC')
+                ->orderBy($OrderByColunm2[$courier_name], 'DESC')
                 ->get()
                 ->toArray();
-            foreach ($forwarder2_data as $data) {
 
-                $forwarder2_record[] = ['courier_name' => $courier_name, ...$data];
+            $columnName = $result[0]['forwarder_3_awb'] == '' ? 'last_mile_status' : 'first_mile_status';
+            $courierActivities = StatusManagement::select('courier_status')
+                ->join('courier', 'courier.id', '=', 'status_master.courier_id')
+                ->where($columnName, 1)
+                ->where('courier_name', $courier_name)
+                ->get()
+                ->toArray();
+            $courierStatus = [];
+            foreach ($courierActivities as $courierActivity) {
+                $courierStatus[] = $courierActivity['courier_status'];
+            }
+
+            foreach ($forwarder2_data as $data) {
+                foreach ($data as $res) {
+                    if (in_array(strtoupper($res), $courierStatus)) {
+
+                        $forwarder2_record[] = ['courier_name' => $courier_name, ...$data];
+                    }
+                }
             }
         }
         $forwarder3_record = [];
@@ -181,12 +236,31 @@ class CourierTrackingController extends Controller
 
             $forwarder3_data = $table->select($selectColumns[$courier_name])
                 ->where('awbno', $awb_no)
-                ->orderBy($OrderByColunm[$courier_name], 'DESC')
+                ->orderBy($OrderByColunm1[$courier_name], 'DESC')
+                ->orderBy($OrderByColunm2[$courier_name], 'DESC')
                 ->get()
                 ->toArray();
-            foreach ($forwarder3_data as $data) {
 
-                $forwarder3_record[] = ['courier_name' => $courier_name, ...$data];
+            $columnName = $result[0]['forwarder_4_awb'] == '' ? 'last_mile_status' : 'first_mile_status';
+            $courierActivities = StatusManagement::select('courier_status')
+                ->join('courier', 'courier.id', '=', 'status_master.courier_id')
+                ->where($columnName, 1)
+                ->where('courier_name', $courier_name)
+                ->get()
+                ->toArray();
+
+            $courierStatus = [];
+            foreach ($courierActivities as $courierActivity) {
+                $courierStatus[] = $courierActivity['courier_status'];
+            }
+
+            foreach ($forwarder3_data as $data) {
+                foreach ($data as $res) {
+                    if (in_array(strtoupper($res), $courierStatus)) {
+
+                        $forwarder3_record[] = ['courier_name' => $courier_name, ...$data];
+                    }
+                }
             }
         }
 
@@ -199,15 +273,34 @@ class CourierTrackingController extends Controller
 
             $forwarder4_data = $table->select($selectColumns[$courier_name])
                 ->where('awbno', $awb_no)
-                ->orderBy($OrderByColunm[$courier_name], 'DESC')
+                ->orderBy($OrderByColunm1[$courier_name], 'DESC')
+                ->orderBy($OrderByColunm2[$courier_name], 'DESC')
                 ->get()
                 ->toArray();
-            foreach ($forwarder4_data as $data) {
 
-                $forwarder4_record[] = ['courier_name' => $courier_name, ...$data];
+            $courierActivities = StatusManagement::select('courier_status')
+                ->join('courier', 'courier.id', '=', 'status_master.courier_id')
+                ->where('last_mile_status', 1)
+                ->where('courier_name', $courier_name)
+                ->get()
+                ->toArray();
+
+            $courierStatus = [];
+            foreach ($courierActivities as $courierActivity) {
+                $courierStatus[] = $courierActivity['courier_status'];
+            }
+
+            foreach ($forwarder4_data as $data) {
+                foreach ($data as $res) {
+                    if (in_array(strtoupper($res), $courierStatus)) {
+
+                        $forwarder4_record[] = ['courier_name' => $courier_name, ...$data];
+                    }
+                }
             }
         }
-        $records = [...$forwarder1_record, ...$forwarder2_record, ...$forwarder3_record, ...$forwarder4_record];
+        // $records = [...$forwarder1_record, ...$forwarder2_record, ...$forwarder3_record, ...$forwarder4_record];
+        $records = [...$forwarder4_record, ...$forwarder3_record, ...$forwarder2_record, ...$forwarder1_record];
         return view('shipntrack.Smsa.packetDetails', compact('forwarder_details', 'records'));
     }
 

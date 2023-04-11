@@ -388,109 +388,109 @@ return [
             ],
         ],
 
-        [
-            'text' => 'MV2',
-            'can' => ['Admin'],
-            'submenu' => [
-                [
-                    'text' => 'Master',
-                    'can' => ['Admin'],
-                    'icon' => 'far far fa fa-cog',
-                    'submenu' => [
+        // [
+        //     'text' => 'MV2',
+        //     'can' => ['Admin'],
+        //     'submenu' => [
+        //         [
+        //             'text' => 'Master',
+        //             'can' => ['Admin'],
+        //             'icon' => 'far far fa fa-cog',
+        //             'submenu' => [
 
-                        [
-                            'text' => 'Roles',
-                            'url' => 'v2/master/roles',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa fa-file-text-o',
+        //                 [
+        //                     'text' => 'Roles',
+        //                     'url' => 'v2/master/roles',
+        //                     'can' => ['Admin'],
+        //                     'icon' => 'far fa fa-file-text-o',
 
-                        ],
+        //                 ],
 
-                        [
-                            'text' => 'Departments',
-                            'url' => 'v2/master/departments',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa fa-sitemap',
+        //                 [
+        //                     'text' => 'Departments',
+        //                     'url' => 'v2/master/departments',
+        //                     'can' => ['Admin'],
+        //                     'icon' => 'far fa fa-sitemap',
 
-                        ],
+        //                 ],
 
-                        [
-                            'text' => 'Company',
-                            'url' => 'v2/master/company',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa fa-building-o',
+        //                 [
+        //                     'text' => 'Company',
+        //                     'url' => 'v2/master/company',
+        //                     'can' => ['Admin'],
+        //                     'icon' => 'far fa fa-building-o',
 
-                        ],
+        //                 ],
 
-                        [
-                            'text' => 'Users',
-                            'url' => 'v2/master/users',
-                            'can' => ['Admin'],
-                            'icon' => 'far fa-fw fa-user',
+        //                 [
+        //                     'text' => 'Users',
+        //                     'url' => 'v2/master/users',
+        //                     'can' => ['Admin'],
+        //                     'icon' => 'far fa-fw fa-user',
 
-                        ],
+        //                 ],
 
-                        [
-                            'text' => 'Store',
-                            'url' => 'store',
-                            'can' => ['Admin'],
-                            'icon' => 'fas fa-store',
-                            'submenu' => [
-                                [
-                                    'text' => 'Currency',
-                                    'url' => 'v2/master/store/currency',
-                                    'icon' => 'far fa fa-money',
-                                    'can' => ['Admin'],
-                                ],
-                                [
-                                    'text' => 'Regions',
-                                    'url' => 'v2/master/store/regions',
-                                    'icon' => 'far fa fa-map-marker',
-                                    'can' => ['Admin'],
-                                ],
-                                [
-                                    'text' => 'Credentials',
-                                    'url' => 'v2/master/store/credentials',
-                                    'icon' => 'far fa-id-card',
-                                    'can' => ['Admin'],
-                                ],
+        //                 [
+        //                     'text' => 'Store',
+        //                     'url' => 'store',
+        //                     'can' => ['Admin'],
+        //                     'icon' => 'fas fa-store',
+        //                     'submenu' => [
+        //                         [
+        //                             'text' => 'Currency',
+        //                             'url' => 'v2/master/store/currency',
+        //                             'icon' => 'far fa fa-money',
+        //                             'can' => ['Admin'],
+        //                         ],
+        //                         [
+        //                             'text' => 'Regions',
+        //                             'url' => 'v2/master/store/regions',
+        //                             'icon' => 'far fa fa-map-marker',
+        //                             'can' => ['Admin'],
+        //                         ],
+        //                         [
+        //                             'text' => 'Credentials',
+        //                             'url' => 'v2/master/store/credentials',
+        //                             'icon' => 'far fa-id-card',
+        //                             'can' => ['Admin'],
+        //                         ],
 
-                            ],
+        //                     ],
 
-                        ],
+        //                 ],
 
-                        [
-                            'text' => 'Geo',
-                            'url' => 'geo',
-                            'can' => ['Admin'],
-                            'icon' => 'fas fa-globe-asia',
-                            'submenu' => [
-                                [
-                                    'text' => 'Country',
-                                    'url' => 'v2/master/geo/country',
-                                    'icon' => 'far fa fa-globe',
-                                    'can' => ['Admin'],
-                                ],
-                                [
-                                    'text' => 'State',
-                                    'url' => 'v2/master/geo/state',
-                                    'icon' => 'far fa fa-flag',
-                                    'can' => ['Admin'],
-                                ],
-                                [
-                                    'text' => 'City',
-                                    'url' => 'v2/master/geo/city',
-                                    'icon' => 'far fa fa-building-o',
-                                    'can' => ['Admin'],
-                                ],
-                            ],
+        //                 [
+        //                     'text' => 'Geo',
+        //                     'url' => 'geo',
+        //                     'can' => ['Admin'],
+        //                     'icon' => 'fas fa-globe-asia',
+        //                     'submenu' => [
+        //                         [
+        //                             'text' => 'Country',
+        //                             'url' => 'v2/master/geo/country',
+        //                             'icon' => 'far fa fa-globe',
+        //                             'can' => ['Admin'],
+        //                         ],
+        //                         [
+        //                             'text' => 'State',
+        //                             'url' => 'v2/master/geo/state',
+        //                             'icon' => 'far fa fa-flag',
+        //                             'can' => ['Admin'],
+        //                         ],
+        //                         [
+        //                             'text' => 'City',
+        //                             'url' => 'v2/master/geo/city',
+        //                             'icon' => 'far fa fa-building-o',
+        //                             'can' => ['Admin'],
+        //                         ],
+        //                     ],
 
-                        ],
-                    ],
+        //                 ],
+        //             ],
 
-                ],
-            ],
-        ],
+        //         ],
+        //     ],
+        // ],
 
         [
             'text' => 'Catalog',
@@ -1080,7 +1080,7 @@ return [
                     ],
                 ],
                 [
-                    'text' => 'Create New Shipment',
+                    'text' => 'New Shipment',
                     'url' => 'shipntrack/forwarder',
                     'icon' => 'far fa fa-map-marker',
                     'can' => ['Admin'],
@@ -1109,7 +1109,7 @@ return [
                     'icon' => 'far fa fa-bar-chart',
                 ],
 
-               [
+                [
                     'text' => 'B2C POD',
                     'can' => ['Admin'],
                     'url' => 'shipntrack/b2c/POD',
@@ -1163,10 +1163,23 @@ return [
                     'icon' => 'fa fa-yelp',
                     'submenu' => [
                         [
-                            'text' => 'Asin Importer',
-                            'url' => 'catalog/index',
+                            'text' => 'Asin ',
                             'can' => ['Admin', 'Cliqnshop'],
                             'icon' => 'far fa-fw fa-file',
+                            'submenu' => [
+                                [
+                                    'text' => 'Importer',
+                                    'url' => 'catalog/index',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-download',
+                                ],
+                                [
+                                    'text' => 'Manager',
+                                    'url' => 'cliqnshop/verify/asin',
+                                    'can' => ['Admin', 'Cliqnshop'],
+                                    'icon' => 'fa fa-eraser',
+                                ]
+                            ]
 
                         ],
                         [

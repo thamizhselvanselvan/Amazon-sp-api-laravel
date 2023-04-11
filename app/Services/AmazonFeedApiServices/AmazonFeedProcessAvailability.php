@@ -41,12 +41,12 @@ class AmazonFeedProcessAvailability
         $product_query_model = '';
         $available_query_model = '';
 
-        if(strtolower($regionCode) == "in") {
-            $product_query_model = Product_Push_in::query(); 
-            $available_query_model = Product_availability_in::query(); 
-        } else if(strtolower($regionCode) == "ae") {
-            $product_query_model = Product_Push_ae::query(); 
-            $available_query_model = Product_availability_ae::query(); 
+        if (strtolower($regionCode) == "in") {
+            $product_query_model = Product_Push_in::query();
+            $available_query_model = Product_availability_in::query();
+        } else if (strtolower($regionCode) == "ae") {
+            $product_query_model = Product_Push_ae::query();
+            $available_query_model = Product_availability_ae::query();
         }
 
         $product_query_model->where("store_id", $seller_id)->where("asin", $asin)->update(['availability' => $availability]);
@@ -100,9 +100,8 @@ class AmazonFeedProcessAvailability
                     <Inventory>
                         <SKU>' . $feedlist['product_sku'] . '</SKU>
                         <Available >' . $feedlist['available'] . ' </Available>
-                        <Quantity>25</Quantity>
-                        <FulfillmentLatency>10</FulfillmentLatency>
-                        <SwitchFulfillmentTo>MFN</SwitchFulfillmentTo>
+                        <FulfillmentLatency >' . 15 . '</FulfillmentLatency>
+                        <SwitchFulfillmentTo>' . 'MFN' . '</SwitchFulfillmentTo>
                     </Inventory>
                 </Message>';
 
@@ -122,9 +121,10 @@ class AmazonFeedProcessAvailability
         return $feed;
     }
 
-    public function listing($aws_key, $country_code) {
+    public function listing($aws_key, $country_code)
+    {
 
-        
+
         $apiInstance = new ListingsV20210801Api($this->config($aws_key, $country_code));
         //$seller_id = $merchant_id; // string | A selling partner identifier, such as a merchant account or vendor code.
         $sku = 'NS_B0011457OS'; // string | A selling partner provided identifier for an Amazon listing.
@@ -146,7 +146,7 @@ class AmazonFeedProcessAvailability
                     ]
                 ]
             ]
-                        ]); // \SellingPartnerApi\Model\ListingsV20210801\ListingsItemPatchRequest | The request body schema for the patchListingsItem operation.
+        ]); // \SellingPartnerApi\Model\ListingsV20210801\ListingsItemPatchRequest | The request body schema for the patchListingsItem operation.
         //$issue_locale = 'en_US'; // string | A locale for localization of issues. When not provided, the default language code of the first marketplace is used. Examples: \"en_US\", \"fr_CA\", \"fr_FR\". Localized messages default to \"en_US\" when a localization is not available in the specified locale.
         //, $issue_locale
 
@@ -162,13 +162,13 @@ class AmazonFeedProcessAvailability
         } catch (Exception $e) {
             echo 'Exception when calling ListingsV20210801Api->patchListingsItem: ', $e->getMessage(), PHP_EOL;
         }
-
     }
 
-    public function getListing($aws_key, $country_code) {
+    public function getListing($aws_key, $country_code)
+    {
 
-        
-       // $apiInstance = new ListingsV20210801Api($this->config($aws_key, $country_code));
+
+        // $apiInstance = new ListingsV20210801Api($this->config($aws_key, $country_code));
         // $seller_id = $merchant_id; // string | A selling partner identifier, such as a merchant account or vendor code.
         // $sku = 'NS_B0011457OS'; // string | A selling partner provided identifier for an Amazon listing.
         // $marketplace_ids = ['A21TJRUUN4KGV']; // string[] | A comma-delimited list of Amazon marketplace identifiers for the request.
@@ -216,6 +216,5 @@ class AmazonFeedProcessAvailability
         } catch (Exception $e) {
             echo 'Exception when calling ListingsV20210801Api->getListingsItem: ', $e->getMessage(), PHP_EOL;
         }
-
     }
 }

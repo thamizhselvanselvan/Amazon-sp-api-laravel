@@ -7,6 +7,7 @@ use App\Models\MongoDB\zoho;
 use GuzzleHttp\Psr7\Request;
 use App\Models\Catalog\PricingIn;
 use App\Models\ProcessManagement;
+use App\Models\ShipNTrack\Courier\StatusManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -18,16 +19,15 @@ use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingin;
 use App\Models\ShipNTrack\CourierTracking\SmsaTracking;
 use App\Models\ShipNTrack\CourierTracking\AramexTracking;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
 
-Route::get('test/mongo', function () {
-
-    $test = Trackingin::get();
-    po($test);
-    exit;
-    $user = Auth::user()->name;
-    $email = Auth::user()->email;
-    po($user);
-    po($email);
+Route::get('test/code', function () {
+    $string = 'OUT FOR DELIVERY';
+    $string = preg_replace('/\s+/', '', $string);
+    if (strlen($string) > 10) {
+        $str = substr($string, 0, 9) . '...';
+        po($str);
+    }
 });
 
 
@@ -120,7 +120,7 @@ Route::get('test/shipntrack/smsa/{awbno}', function ($awbNo) {
                 <soap:Body>
                     <getTracking xmlns="http://track.smsaexpress.com/secom/">
                     <awbNo>' . $awbNo . '</awbNo>
-                    <passkey>BeL@3845</passkey>
+                    <passkey>Mah@8537</passkey>
                     </getTracking>
                 </soap:Body>
                 </soap:Envelope>';

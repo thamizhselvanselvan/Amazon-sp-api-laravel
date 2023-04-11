@@ -2,9 +2,11 @@
 
 namespace App\Console\Commands;
 
+use PDO;
 use League\Csv\Writer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class category_export extends Command
@@ -53,8 +55,13 @@ class category_export extends Command
             // po($asin);
             // exit;
             // $count = count($asin);
+
+            DB::connection('catalog')->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
+            $count = 1;
+            foreach (array_chunk($asin,1000) as $a)  
+           {
             $result = DB::connection('catalog')->table('catalognewuss')
-                ->whereIn('asin', $asin)->pluck('browse_classification', 'asin');
+                ->whereIn('asin', $a)->pluck('browse_classification', 'asin');
 
             $csv_data = [];
             $c_id = [];
@@ -70,31 +77,34 @@ class category_export extends Command
                         'd_name' => $data['displayName'],
                     ];
                 }
-                else
-                {
-                    $csv_data[$key]['asin']=$key;
-                }
+                // else
+                // {
+                //     $csv_data[$key]['asin']=$key;
+                // }
             }
 
             $treename = DB::connection('catalog')->table('categoriestree')
                 ->whereIn('browseNodeId', $c_id)->pluck('Tree', 'browseNodeId')->toArray();
 
+                DB::connection('catalog')->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+
             foreach ($treename as $key => $results) {
 
                 if (array_key_exists($key, $csv_data)) {
-                    $csv_data[$key]['tree'] = $results;
+                    $csv_data[$key]['tree'] = str_replace(",","  >  ",str_replace(", "," ",$results));
                 }
             }
            
             $headers =['Asin', 'Category Id','Category Name', 'Tree'];
-            $exportFilePath = 'test/Categories.csv';
+            $exportFilePath = 'test/Categories'.$count.'.csv';
             if (!Storage::exists($exportFilePath)) {
                 Storage::put($exportFilePath, '');
             }
             $writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
             $writer->insertOne($headers);
             $writer->insertAll($csv_data);
-
+            $count++;
+        }
            // return Storage::download($exportFilePath);
         }
     }

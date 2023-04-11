@@ -4,22 +4,25 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use App\Events\EventManager;
 use App\Models\Admin\Backup;
+use App\Models\Aws_credential;
 use App\Services\Zoho\ZohoApi;
 use PhpParser\Node\Stmt\Foreach_;
 use App\Models\Inventory\Shipment;
 use App\Models\ShipNTrack\Booking;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use App\Models\order\OrderItemDetails;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ShipNTrack\Courier\Courier;
 use App\Models\Inventory\Shipment_Inward_Details;
 use App\Http\Controllers\Inventory\StockController;
-use App\Models\ShipNTrack\Courier\Courier;
 use App\Models\ShipNTrack\Courier\StatusManagement;
 use App\Models\ShipNTrack\CourierTracking\SmsaTracking;
+use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 
 Route::get('sanju/test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
 Route::get('sanju/test/controller', 'SanjayTestController@index');
@@ -330,5 +333,52 @@ Route::get('sanju/test/status', function () {
             'courier_status' => $datas->activity
         ];
         StatusManagement::upsert($data, ['cp_status_cp_id_unique'], ['courier_id', 'courier_status']);
+    }
+});
+
+Route::get('sanju/bbcreds/count', function () {
+   
+    $sources = ['in', 'us'];
+    foreach ($sources as $source) {
+        $value = Cache::get('creds_count');
+        po($value[$source]);
+        // foreach()
+
+    }
+    exit;
+    $codes = ['in' => '11', 'us' => '4'];
+
+    $counts = [];
+    foreach ($codes as $key => $code) {
+        $counts[$key] = Aws_credential::query()
+            ->where(['mws_region_id' => $code])
+            ->selectRaw('count(case when credential_priority = "1" then 1 end) as "1", count(case when credential_priority = "2" then 1 end) as "2",
+            count(case when credential_priority = "3" then 1 end) as "3",   count(case when credential_priority = "4" then 1 end) as "4"')
+            ->first()->toArray();
+    }
+
+
+    po($counts);
+    foreach ($counts['in'] as $key1 => $count) {
+        po($key1 + 1);
+        po($count);
+    }
+});
+route::get('sanju/feed/test', function () {
+    $feedback_id = 489950019457;
+    $store_id = 10;
+
+    $country_code = 'IN';
+
+
+    $url  = (new FeedOrderDetailsApp360())->getFeedStatus($feedback_id, $store_id, $country_code);
+
+    if ($url) {
+
+        $data = file_get_contents($url);
+       
+        $data_json = json_decode(json_encode(simplexml_load_string($data)), true);
+        po($data_json);
+     
     }
 });
