@@ -1108,13 +1108,33 @@ return [
                     'url' => 'shipntrack/courier/tracking',
                     'icon' => 'far fa fa-bar-chart',
                 ],
-
                 [
-                    'text' => 'B2C POD',
+                    'text' => 'Operations',
                     'can' => ['Admin'],
-                    'url' => 'shipntrack/b2c/POD',
-                    'icon' => 'far fa fa-file-text-o',
+                    'icon' => 'fas fa-shipping-fast',
+                    'submenu' =>
+                    [
+                        [
+                            'text' => 'Label',
+                            'url' => 'shipntrack/label',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-tag',
+                        ],
+                        [
+                            'text' => 'Invoice',
+                            'url' => 'shipntrack/invoice',
+                            'can' => ['Admin'],
+                            'icon' => 'fas fa-file-invoice',
+                        ],
+                    ],
                 ],
+
+                // [
+                //     'text' => 'B2C POD',
+                //     'can' => ['Admin'],
+                //     'url' => 'shipntrack/b2c/POD',
+                //     'icon' => 'far fa fa-file-text-o',
+                // ],
 
 
                 /*
