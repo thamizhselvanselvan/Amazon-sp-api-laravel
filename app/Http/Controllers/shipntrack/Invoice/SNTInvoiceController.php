@@ -164,7 +164,7 @@ class SNTInvoiceController extends Controller
         $bar_code = $generator->getBarcode($awb_no, $generator::TYPE_CODE_128);
 
         if ($invoice_mode != '') {
-            return view('shipntrack.invoice.' . $invoice_mode, compact(['value'], 'invoice_no', 'invoice_bar_code', 'bar_code'));
+            return view('shipntrack.Invoice.' . $invoice_mode, compact(['value'], 'invoice_no', 'invoice_bar_code', 'bar_code'));
         }
     }
     //Foematting Incoice Data
@@ -297,7 +297,7 @@ class SNTInvoiceController extends Controller
         }
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf);
 
@@ -319,7 +319,7 @@ class SNTInvoiceController extends Controller
 
         $exportToPdf = $path . '.pdf';
         Browsershot::url($url)
-            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf);
 
