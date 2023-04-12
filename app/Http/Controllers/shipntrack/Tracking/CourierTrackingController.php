@@ -42,6 +42,10 @@ class CourierTrackingController extends Controller
                     ->toArray();
             }
             return DataTables::of($data)
+                ->editColumn('awb_number', function ($data) use ($request) {
+                    $awb_number = $request->sourceDestination . $data['awb_number'];
+                    return $awb_number;
+                })
                 ->editColumn('forwarder1_awb', function ($data) {
                     $forwarder1 = $data['forwarder_1_awb'] ?? 'NA';
                     return $forwarder1;
@@ -66,7 +70,7 @@ class CourierTrackingController extends Controller
                     $action = "<a href='/shipntrack/courier/moredetails/" . $request->sourceDestination . "/" . $data['awb_number'] . "' class='' target='_blank'>More Details</a>";
                     return $action;
                 })
-                ->rawColumns(['forwarder1_awb', 'forwarder2_awb', 'forwarder3_awb', 'forwarder4_awb', 'created_date', 'action'])
+                ->rawColumns(['awb_number', 'forwarder1_awb', 'forwarder2_awb', 'forwarder3_awb', 'forwarder4_awb', 'created_date', 'action'])
                 ->make(true);
         }
         return view('shipntrack.Smsa.index');

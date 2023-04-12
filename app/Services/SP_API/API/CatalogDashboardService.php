@@ -146,13 +146,13 @@ class CatalogDashboardService
 
             start:
             if (Cache::has('creds_count')) {
-             
+
                 $creads = Cache::get('creds_count');
                 foreach ($creads[$source] as $key => $cread) {
                     $cread_array[$key + 1] = $cread;
                 }
             } else {
-              
+
                 commandExecFunc('mosh:buybox_priority_count');
                 goto start;
             }
