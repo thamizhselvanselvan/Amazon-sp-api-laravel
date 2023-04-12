@@ -91,3 +91,8 @@ Route::get('shipntrack/status/store', 'shipntrack\Courier\CourierStatusManagemen
 // POD
 Route::get('shipntrack/b2c/POD', 'shipntrack\POD\B2cProofOfDeliveryController@index')->name('shipntrack_POD');
 Route::get('shipntrack/b2c/templete', 'shipntrack\POD\B2cProofOfDeliveryController@templete')->name('shipntrack_templete');
+
+
+Route::get('shipntrack/label', 'ShipnTrackLabelManagementController@index')->name('shipntrack.label.index');
+Route::post('shipntrack/submit', 'ShipnTrackLabelManagementController@FormSubmit')->name('shipntrack.label.submit');
+Route::get('shipntrack/label/template/{id}', 'ShipnTrackLabelManagementController@LabelTemplate')->name('shipntrack.label.template');
