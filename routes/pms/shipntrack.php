@@ -90,6 +90,7 @@ Route::get('shipntrack/status/store', 'shipntrack\Courier\CourierStatusManagemen
 
 // POD
 Route::get('shipntrack/b2c/POD', 'shipntrack\POD\B2cProofOfDeliveryController@index')->name('shipntrack_POD');
+Route::get('shipntrack/b2c/templete', 'shipntrack\POD\B2cProofOfDeliveryController@templete')->name('shipntrack_templete');
 
 // SNT Invoice
 Route::get('shipntrack/invoice', 'shipntrack\Invoice\SNTInvoiceController@index')->name('shipntrack.invoice');
@@ -100,3 +101,8 @@ Route::get('shipntrack/invoice/view/{invoice_no}', 'shipntrack\Invoice\SNTInvoic
 Route::POST('shipntrack/invoice/export/pdf', 'shipntrack\Invoice\SNTInvoiceController@pdfexport')->name('export.shipntrack.invoice.pdf');
 Route::get('shipntrack/invoice/dowload/pdf/{invoice_no}', 'shipntrack\Invoice\SNTInvoiceController@sntDownloadPdf')->name('export.shipntrack.invoice.download.pdf');
 Route::get('shipntrack/invoice/download-direct/{invoice_no}', 'shipntrack\Invoice\SNTInvoiceController@directpdfdownload')->name('shipntrack.invoice.direct.download');
+
+
+Route::get('shipntrack/label', 'ShipnTrackLabelManagementController@index')->name('shipntrack.label.index');
+Route::post('shipntrack/submit', 'ShipnTrackLabelManagementController@FormSubmit')->name('shipntrack.label.submit');
+Route::get('shipntrack/label/template/{id}', 'ShipnTrackLabelManagementController@LabelTemplate')->name('shipntrack.label.template');
