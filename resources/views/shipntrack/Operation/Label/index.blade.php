@@ -173,7 +173,6 @@
 
         <thead class="table-info">
             {{-- <th>Select All <input type='checkbox' id='select_all'></th> --}}
-            {{-- <th>ID</th> --}}
             <th>Order No.</th>
             <th>Awb No.</th>
             <th>Courier Name</th>
@@ -196,14 +195,7 @@
             pageLength: 40,
             searching: false,
             bLengthChange: false,
-            columns: [
-                // {
-                //     data: 'id',
-                //     name: 'id',
-                //     orderable: false,
-                //     searchable: false
-                // },
-                {
+            columns: [{
                     data: 'order_no',
                     name: 'order_no',
                     orderable: false,

@@ -207,21 +207,20 @@
                             <th class="text-center">Product Name</th>
                             <th class="text-center">SKU</th>
                             <th class="text-center">QTY</th>
-                            <!-- <th class="text-center">Price</th> -->
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($records as $key => $value)
+                        @foreach ($records[0]['product_name'] as $key => $value)
                             <tr>
                                 <td class="text-center p-1">{{ $key + 1 }}</td>
                                 <td class="p-1">
                                     @php
-                                        $new_word = wordwrap($value['product_name'], 20, "\n", true);
+                                        $new_word = wordwrap($value, 20, "\n", true);
                                         echo "$new_word\n";
                                     @endphp
                                 </td>
-                                <td class="text-center p-1">{{ $value['sku'] }}</td>
-                                <td class="text-center p-1">{{ $value['quantity'] }}</td>
+                                <td class="text-center p-1">{{ $records[0]['sku'][$key] ?? '' }}</td>
+                                <td class="text-center p-1">{{ $records[0]['quantity'][$key] ?? '' }}</td>
 
                                 </td>
                             </tr>

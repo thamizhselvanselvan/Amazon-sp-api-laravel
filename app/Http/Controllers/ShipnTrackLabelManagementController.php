@@ -119,7 +119,7 @@ class ShipnTrackLabelManagementController extends Controller
             'sku',
             'quantity'
         ];
-        $records = DB::connection('shipntracking')
+        $label_records = DB::connection('shipntracking')
             ->select("SELECT 
         GROUP_CONCAT(DISTINCT order_no)as order_no,
         GROUP_CONCAT(DISTINCT order_item_id)as order_item_id,
@@ -132,18 +132,42 @@ class ShipnTrackLabelManagementController extends Controller
         GROUP_CONCAT(DISTINCT phone)as phone,
         GROUP_CONCAT(DISTINCT awb_no) as awb_no,
         GROUP_CONCAT(DISTINCT forwarder) as forwarder,
-        GROUP_CONCAT(product_name SEPARATOR '-label-qty-') as product_name,
-        GROUP_CONCAT(sku SEPARATOR '-label-qty-') as sku,
+        GROUP_CONCAT(product_name SEPARATOR '-label-item-') as product_name,
+        GROUP_CONCAT(sku SEPARATOR '-label-sku-') as sku,
         GROUP_CONCAT(quantity SEPARATOR '-label-qty-') as quantity
         from labels
         WHERE id IN($request->id)
         GROUP BY order_no
         ");
-        po($records);
-        // exit;
+
+        $records = [];
+        foreach ($label_records as $key1 => $record) {
+
+            foreach ($record as $key2 => $value) {
+
+                if ($key2 == 'product_name') {
+
+                    $item_name = explode('-label-item-', $value);
+                    $records[$key1][$key2] = $item_name;
+                } elseif ($key2 == 'sku') {
+
+                    $sku = array_unique(explode('-label-sku-', $value));
+                    $records[$key1][$key2] = $sku;
+                } elseif ($key2 == 'quantity') {
+
+                    $quantity = explode('-label-qty-', $value);
+                    $records[$key1][$key2] = $quantity;
+                }
+
+                if ($key2 != 'product_name' && $key2 != 'sku' && $key2 != 'quantity') {
+
+                    $records[$key1][$key2] = $value;
+                }
+            }
+        }
 
         $generator = new BarcodeGeneratorPNG();
-        $bar_code = base64_encode($generator->getBarcode($records[0]->awb_no, $generator::TYPE_CODE_39));
+        $bar_code = base64_encode($generator->getBarcode($records[0]['awb_no'], $generator::TYPE_CODE_39));
 
         return view('shipntrack.Operation.Label.LabelPdfTemplate', compact('records', 'bar_code'));
     }
@@ -163,7 +187,7 @@ class ShipnTrackLabelManagementController extends Controller
         $pdfPath = Storage::path($filePath);
 
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
