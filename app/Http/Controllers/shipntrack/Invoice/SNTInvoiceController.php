@@ -289,7 +289,6 @@ class SNTInvoiceController extends Controller
     public function pdfexport(Request $request)
     {
         $this->deleteAllPdf();
-
         $id = $request->invoice_no;
         $url = $request->url;
         $file_path =  'shipntrack/invoice/sntinvoice' . $id . '.pdf';
@@ -298,7 +297,7 @@ class SNTInvoiceController extends Controller
         }
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf);
 
@@ -313,14 +312,11 @@ class SNTInvoiceController extends Controller
         $invoice_no = $data[0]->invoice_no;
 
         $currenturl =  URL::current();
-
         $url = str_replace('download-direct', 'view', $currenturl);
 
-        $path = storage::path("shipntrack/invoice/sntinvoice" . $invoice_no);
-
-        $exportToPdf = $path . '.pdf';
+        $exportToPdf = storage::path("shipntrack/invoice/sntinvoice" . $invoice_no. '.pdf');
         Browsershot::url($url)
-            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf);
 
