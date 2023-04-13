@@ -140,7 +140,7 @@ class CliqnshopCatalogController extends Controller
         $searchKey = $search_data['search'];
         $searchKey = str_replace(' ', '%20', $searchKey);
         // $siteId = $search_data['siteId'];
-        // $source = $search_data['source'];
+        $site = $search_data['source'];
 
         //Process Management start
         // $process_manage = [
@@ -160,7 +160,7 @@ class CliqnshopCatalogController extends Controller
         // $command_end_time = now();
         // ProcessManagementUpdate($pm_id, $command_end_time);
 
-        commandExecFunc("mosh:cliqnshop-product-search ${searchKey}");
+        commandExecFunc("mosh:cliqnshop-product-search ${searchKey} ${site}");
         return response()->json('successfully');
     }
 
@@ -177,6 +177,9 @@ class CliqnshopCatalogController extends Controller
             return back()->with('error', "Please Enter Less Than 10 asin At a time");
         }
 
+        $country = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid', $site_id)->select('code')->get();
+        if (isset($country['0']->code)) {
+            if (($country['0']->code) == 'in') {
         $headers = [
             'catalognewuss.asin',
             'catalognewuss.brand',
@@ -197,6 +200,33 @@ class CliqnshopCatalogController extends Controller
             ->join('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
             ->whereIn('catalognewuss.asin', $asin)
             ->get()->toArray();
+    }
+}
+        if (($country['0']->code) == 'uae') {
+            if (isset($country['0']->code)) {
+        $headers = [
+        'catalognewins.asin',
+        'catalognewins.brand',
+        'catalognewins.images',
+        'catalognewins.item_name',
+        'catalognewuss.browse_classification',
+        'catalognewins.dimensions',
+        'catalognewins.attributes',
+        'catalognewins.color',
+        // 'pricing_ins.usa_to_in_b2c',
+        // 'pricing_ins.us_price',
+        'pricing_ins.ind_to_uae',
+        
+        ];
+        
+        $table_name = table_model_create(country_code: 'in', model: 'Catalog', table_name: 'catalognew');
+        $result = $table_name->select($headers)
+        ->join('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
+        ->join('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
+        ->whereIn('catalognewins.asin', $asin)
+        ->get()->toArray();
+        }
+        }
 
         foreach ($result as $data) {
 
@@ -284,14 +314,14 @@ class CliqnshopCatalogController extends Controller
             $item_url = str_replace(' ', '-', $data['item_name']);
             $url = (strtolower($item_url));
 
-            $country = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid', $site_id)->select('code')->get();
 
-            $Price_US_IN = $data['usa_to_in_b2c'];
+            //$Price_US_IN = $data['usa_to_in_b2c'];
+            $Price_US_IN = [];
             if (isset($country['0']->code)) {
                 if (($country['0']->code) == 'in') {
                     $Price_US_IN = $data['usa_to_in_b2c'];
                 } else if ($country['0']->code == 'uae') {
-                    $Price_US_IN  = $data['usa_to_uae'];
+                    $Price_US_IN  = $data['ind_to_uae'];
                 }
             }
 
@@ -371,6 +401,7 @@ class CliqnshopCatalogController extends Controller
 
             $keyword = '';
             $editor = 'app360';
+            $display_code = 1;
             $insert_service = new CliqnshopCataloginsert();
             $insert_service->insertdata_cliqnshop(
                 $site_id,
@@ -391,7 +422,8 @@ class CliqnshopCatalogController extends Controller
                 $short_description,
                 $long_description,
                 $generic_keywords,
-                $editor
+                $editor,
+                $display_code
             );
         }
 

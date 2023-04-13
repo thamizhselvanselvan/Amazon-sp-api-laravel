@@ -53,6 +53,9 @@ class catalog_upload_to_cliqnshop extends Command
         $start_time = microtime(true);
         foreach (array_chunk($asin,100) as $a)  
         {
+            $country = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid', $site_id)->select('code')->get();
+            if (isset($country['0']->code)) {
+                if (($country['0']->code) == 'in') {
         $headers = [
             'catalognewuss.asin',
             'catalognewuss.brand',
@@ -73,12 +76,60 @@ class catalog_upload_to_cliqnshop extends Command
             ->join('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
             ->whereIn('catalognewuss.asin', $a)
             ->get()->toArray();
+    }
+}
+
+            if (($country['0']->code) == 'uae') {
+                    if (isset($country['0']->code)) {
+            $headers = [
+            'catalognewins.asin',
+            'catalognewins.brand',
+            'catalognewins.images',
+            'catalognewins.item_name',
+            'catalognewuss.browse_classification',
+            'catalognewins.dimensions',
+            'catalognewins.attributes',
+            'catalognewins.color',
+            // 'pricing_ins.usa_to_in_b2c',
+            // 'pricing_ins.us_price',
+            'pricing_ins.ind_to_uae',
+            
+            ];
+            
+            $table_name = table_model_create(country_code: 'in', model: 'Catalog', table_name: 'catalognew');
+            $result = $table_name->select($headers)
+            ->join('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
+            ->join('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
+            ->whereIn('catalognewins.asin', $a)
+            ->get()->toArray();
+            }
+            }
 
         $generic_keywords = [];
 
 
         foreach ($result as $data) {
 
+            // $Price_US_IN = $data['usa_to_in_b2c'];
+            $Price_US_IN = [];
+            if (isset($country['0']->code)) {
+                if (($country['0']->code) == 'in') {
+                    $Price_US_IN = $data['usa_to_in_b2c'];
+                } else if ($country['0']->code == 'uae') {
+                    $Price_US_IN  = $data['ind_to_uae'];
+                }
+            }
+
+           
+            $catalog_code = json_decode($data['browse_classification'], true);
+            $category_code = 'demo-new';
+
+            if ($catalog_code == null) {
+                $category_code = 'demo-new';
+            } else if (isset($catalog_code['classificationId'])) {
+                $category_code = $catalog_code['classificationId'];
+            }
+       
             $img1 = [
                 "Images1" => '',
                 "Images2" => '',
@@ -189,27 +240,9 @@ class catalog_upload_to_cliqnshop extends Command
             $item_url = str_replace(' ', '-', $data['item_name']);
             $url = (strtolower($item_url));
 
-            $country = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid', $site_id)->select('code')->get();
+           
 
-            $Price_US_IN = $data['usa_to_in_b2c'];
-            if (isset($country['0']->code)) {
-                if (($country['0']->code) == 'in') {
-                    $Price_US_IN = $data['usa_to_in_b2c'];
-                } else if ($country['0']->code == 'uae') {
-                    $Price_US_IN  = $data['usa_to_uae'];
-                }
-            }
-
-
-            $catalog_code = json_decode($data['browse_classification'], true);
-            $category_code = 'demo-new';
-
-            if ($catalog_code == null) {
-                $category_code = 'demo-new';
-            } else if (isset($catalog_code['classificationId'])) {
-                $category_code = $catalog_code['classificationId'];
-            }
-
+            
             $brand_label = ' ';
             if ($data['brand']) {
 
@@ -282,6 +315,7 @@ class catalog_upload_to_cliqnshop extends Command
             // }
             $editor = 'csv_bulk';
             $keyword = '';
+            $display_code  = 1;
             $insert_service = new CliqnshopCataloginsert();
             $insert_service->insertdata_cliqnshop(
                 $site_id,
@@ -302,13 +336,14 @@ class catalog_upload_to_cliqnshop extends Command
                 $short_description,
                 $long_description,
                 $generic_keywords,
-                $editor
+                $editor,
+                $display_code
             );
         }
     }
         // po($generic_keywords);
         $end_time = microtime(true);
-        Log::info(" Execution time of script = ".$execution_time." sec");
-        Log::alert(count($asin));
+        $execution_time = ($end_time - $start_time);
+        Log::info(" Execution time of cns product import from csv = ".$execution_time." sec");
     }
 }
