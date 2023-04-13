@@ -161,7 +161,7 @@ class StopTracking extends Command
             $bom_data = BombinoTracking::where('awbno', $details["{$forwarder}_awb"])->select('event_code')->get()->toArray();
             foreach ($bom_data as $bombino_record) {
 
-                if (isset($bombino_record['event_code']) && in_array($bombino_record['event_code'], $stop_status)) {
+                if (isset($bombino_record['event_code']) && in_array(strtoupper($bombino_record['event_code']), $stop_status)) {
                     $this->updateFlag($table, $details['awb'], "{$forwarder}_flag");
                 }
             }
@@ -172,7 +172,7 @@ class StopTracking extends Command
             $sms_data = SmsaTracking::where('awbno', $details["{$forwarder}_awb"])->select('activity')->get()->toArray();
             foreach ($sms_data as $smsa_data) {
 
-                if (isset($smsa_data['activity']) && in_array($smsa_data['activity'], $stop_status)) {
+                if (isset($smsa_data['activity']) && in_array(strtoupper($smsa_data['activity']), $stop_status)) {
                     $this->updateFlag($table, $details['awb'], "{$forwarder}_flag");
                 }
             }
@@ -184,7 +184,7 @@ class StopTracking extends Command
             $aramax_data = AramexTracking::where('awbno', $details["{$forwarder}_awb"])->select('update_description')->get()->toArray();
             foreach ($aramax_data as $aramex) {
 
-                if (isset($aramex['update_description']) && in_array($aramex['update_description'], $stop_status)) {
+                if (isset($aramex['update_description']) && in_array(strtoupper($aramex['update_description']), $stop_status)) {
                     $this->updateFlag($table, $details['awb'], "{$forwarder}_flag");
                 }
             }

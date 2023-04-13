@@ -15,14 +15,14 @@
     <div class="wrapper">
 
         {{-- Top Navbar --}}
-        @if($layoutHelper->isLayoutTopnavEnabled())
+        @if ($layoutHelper->isLayoutTopnavEnabled())
             @include('adminlte::partials.navbar.navbar-layout-topnav')
         @else
             @include('adminlte::partials.navbar.navbar')
         @endif
 
         {{-- Left Main Sidebar --}}
-        @if(!$layoutHelper->isLayoutTopnavEnabled())
+        @if (!$layoutHelper->isLayoutTopnavEnabled())
             @include('adminlte::partials.sidebar.left-sidebar')
         @endif
 
@@ -34,14 +34,20 @@
         @endempty
 
         {{-- Footer --}}
-        @if('footer')
-             @if (!(str_contains(URL::current(), '/invoice/convert-pdf') || str_contains(URL::current(), '/invoice/selected-print') || str_contains(URL::current(), '/label/pdf-template') || str_contains(URL::current(), '/label/print-selected')))
+        @if ('footer')
+            @if (
+                !(str_contains(URL::current(), '/invoice/convert-pdf') ||
+                    str_contains(URL::current(), '/invoice/selected-print') ||
+                    str_contains(URL::current(), '/label/pdf-template') ||
+                    str_contains(URL::current(), '/label/print-selected') ||
+                    str_contains(URL::current(), '/shipntrack/label/template')
+                ))
                 @include('adminlte::partials.footer.footer')
             @endif
         @endif
 
         {{-- Right Control Sidebar --}}
-        @if(config('adminlte.right_sidebar'))
+        @if (config('adminlte.right_sidebar'))
             @include('adminlte::partials.sidebar.right-sidebar')
         @endif
 
@@ -52,4 +58,3 @@
     @stack('js')
     @yield('js')
 @stop
-
