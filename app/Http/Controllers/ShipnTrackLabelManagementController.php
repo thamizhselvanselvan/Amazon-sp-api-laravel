@@ -6,7 +6,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Picqer\Barcode\BarcodeGeneratorPNG;
-use App\Models\shipntrack\Operation\Label;
+use App\Models\ShipNTrack\Operation\Label;
 
 class ShipnTrackLabelManagementController extends Controller
 {
