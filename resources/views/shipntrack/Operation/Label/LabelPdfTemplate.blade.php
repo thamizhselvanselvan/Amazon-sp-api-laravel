@@ -108,7 +108,7 @@
     <div class="col-md-12" id="label-container">
         <div class="label p-1">
             <div class="label-content">
-                <!-- <div class="table-responsive"> -->
+
                 <table class="table table-label table-bordered table-bordered-dark<td pt-1 pb-0 mb-1 table_border">
                     <tbody>
                         <tr>
@@ -239,11 +239,6 @@
                 </div>
             </div>
 
-
         </div>
-
-    @stop
-
-    @section('js')
 
     @stop

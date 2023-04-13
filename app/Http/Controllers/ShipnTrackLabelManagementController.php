@@ -5,17 +5,25 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\URL;
+use Spatie\Browsershot\Browsershot;
+use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
-use App\Models\ShipNTrack\Operation\Label;
+use App\Models\ShipNTrack\Operation\ShipNTrackLabel;
 
 class ShipnTrackLabelManagementController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->except('LabelPdfTemplate');
+    }
+
     public function index(Request $request)
     {
 
         if ($request->ajax()) {
 
-            $records = Label::query()->orderBy('id', 'DESC')->get();
+            $records = ShipNTrackLabel::query()->orderBy('id', 'DESC')->get();
 
             return DataTables::of($records)
                 ->addColumn('action', function ($records) {
@@ -23,8 +31,8 @@ class ShipnTrackLabelManagementController extends Controller
                                     <a href='/shipntrack/label/template/$records->id 'class='edit btn btn-success btn-sm ml-2 mr-2' target='_blank'>
                                         <i class='fas fa-eye'></i> View 
                                     </a>
-                                    <a href='/shipntrack/label/template/download/$records->id 'class='edit btn btn-info btn-sm mr-2'>
-                                    <i class='fas fa-download'></i> Download </a>
+                                    <a href='/shipntrack/label/pdf/download/$records->id 'class='edit btn btn-info btn-sm mr-2'>
+                                    <i class='fas fa-download'></i> Download PDF </a>
                                 </div>";
                     return $action;
                 })
@@ -54,7 +62,7 @@ class ShipnTrackLabelManagementController extends Controller
             'quantity' => 'required',
         ]);
 
-        Label::upsert($info, ['order_item_bag_unique'], [
+        ShipNTrackLabel::upsert($info, ['order_item_bag_unique'], [
             'order_no',
             'order_item_id',
             'bag_no',
@@ -75,7 +83,7 @@ class ShipnTrackLabelManagementController extends Controller
         return redirect('shipntrack/label')->with('success', 'Record has been insert successfully!');
     }
 
-    public function LabelTemplate(Request $request)
+    public function LabelPdfTemplate(Request $request)
     {
         $selectColumn = [
             'order_no',
@@ -94,7 +102,7 @@ class ShipnTrackLabelManagementController extends Controller
             'sku',
             'quantity'
         ];
-        $records = Label::query()
+        $records = ShipNTrackLabel::query()
             ->select($selectColumn)
             ->where('id', $request->id)
             ->get()
@@ -103,6 +111,31 @@ class ShipnTrackLabelManagementController extends Controller
         $generator = new BarcodeGeneratorPNG();
         $bar_code = base64_encode($generator->getBarcode($records[0]['awb_no'], $generator::TYPE_CODE_39));
 
-        return view('shipntrack.Operation.Label.labelTemplate', compact('records', 'bar_code'));
+        return view('shipntrack.Operation.Label.LabelPdfTemplate', compact('records', 'bar_code'));
+    }
+
+    public function LabelPdfDownload($id)
+    {
+        $current_url = URL::current();
+        $url = str_replace('pdf/download', 'template', $current_url);
+
+        $label_record = ShipNTrackLabel::where('id', $id)->get('awb_no')->toArray();
+        $awbNo = $label_record[0]['awb_no'];
+
+        $filePath = "shipntrack/label/$awbNo.pdf";
+        if (!Storage::exists($filePath)) {
+            Storage::put($filePath, '');
+        }
+        $pdfPath = Storage::path($filePath);
+
+        Browsershot::url($url)
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            ->paperSize(576, 384, 'px')
+            ->pages('1')
+            ->scale(1)
+            ->margins(0, 0, 0, 0)
+            ->savePdf($pdfPath);
+
+        return Storage::download($filePath);
     }
 }
