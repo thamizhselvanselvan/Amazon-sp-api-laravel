@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 
 class Search_Product
 {
-    public function SearchProductByKey($searchKey)
+    public function SearchProductByKey($searchKey,$site)
     {
         $productSearchApi = new Search_Product_Request();
         $getProducts = $productSearchApi->getASIN($searchKey, 'key');
@@ -22,7 +22,13 @@ class Search_Product
         $siteIds = DB::connection('cliqnshop')->table('mshop_locale_site')->pluck('siteid');
         foreach ($siteIds as $siteId) {
             $source = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid', $siteId)->pluck('code')->toArray();
-
+        if ($source[0] == $site)
+        {
+            $display_code = 1;    
+        }
+        else {
+            $display_code = 0;
+        }
             $count = 0;
             $count2 = 0;
             $catalogs = [];
@@ -219,10 +225,10 @@ class Search_Product
                     $short_description = $cliqnshop_catalog['short_description'] ?? '';
                     $long_description = $cliqnshop_catalog['long_description'] ?? '';
                     $generic_keywords = $cliqnshop_catalog['generic_keywords'] ?? '';
-                    $editor = 'cns_search';
+                    $editor = 'cns_search_from_'.$site;
 
                     $cliqnshop = new CliqnshopCataloginsert();
-                    $cliqnshop->insertdata_cliqnshop($siteId, $category, $asin, $item_name, $brand, $brand_label, $color_key, $label, $length_unit, $length_value, $width_unit, $width_value, $Price_US_IN, $image_array, $searchKey, $short_description, $long_description, $generic_keywords,$editor);
+                    $cliqnshop->insertdata_cliqnshop($siteId, $category, $asin, $item_name, $brand, $brand_label, $color_key, $label, $length_unit, $length_value, $width_unit, $width_value, $Price_US_IN, $image_array, $searchKey, $short_description, $long_description, $generic_keywords,$editor, $display_code);
                 }
             }
         }

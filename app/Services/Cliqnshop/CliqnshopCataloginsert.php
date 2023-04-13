@@ -10,13 +10,28 @@ use Exception;
 
 class CliqnshopCataloginsert
 {
-    public function insertdata_cliqnshop($site_id, $category, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image, $keyword,  $short_description,  $long_description, $generic_keywords, $editor)
+    public function insertdata_cliqnshop($site_id, $category, $asin,  $item_name,  $brand,  $brand_label,  $color_key,  $label,  $length_unit,  $length_value,  $width_unit,  $width_value,  $Price_US_IN,  $image, $keyword,  $short_description,  $long_description, $generic_keywords, $editor, $display_code)
     {
         // Log::alert($asin . ' - ' . $category);
         try {
-            $display_code = '1';
+            // $display_code = '1';
+
+        $check = DB::connection('cliqnshop')->table('mshop_product')->where('siteid', $site_id)->where('asin', $asin)->pluck('id')->ToArray();
+        if (isset($check[0]))
+        {
+        $check_status = DB::connection('cliqnshop')->table('mshop_product_list')->where('siteid', $site_id)->where('parentid', $check[0])->pluck('status')->ToArray();
+        }
+        if (isset($check_status[0]))
+        {
+        if ($check_status[0] == 1) {
+            $display_code = 1;
+        }
+         else {
+            $display_code = 0;
+         }
+        }
             if ($Price_US_IN == '0' || $Price_US_IN == '') {
-                $display_code = '0';
+                $display_code = 0;
             }
             $required = ['Images1','Images2','Images3','Images4','Images5','Images6','Images7','Images8','Images9','Images10'];
             if (count(array_intersect_key(array_flip($required), $image[$asin])) === count($required)) {
@@ -43,7 +58,7 @@ class CliqnshopCataloginsert
 
             //delete price id old
             $product_id_asin  = '';
-            $get_product_asin = DB::connection('cliqnshop')->table('mshop_product')->where('siteid', $site_id)->where('code', $asin)
+            $get_product_asin = DB::connection('cliqnshop')->table('mshop_product')->where('siteid', $site_id)->where('asin', $asin)
                 ->pluck('id')->ToArray();
             if (isset($get_product_asin[0])) {
                 $product_id_asin = $get_product_asin[0];
