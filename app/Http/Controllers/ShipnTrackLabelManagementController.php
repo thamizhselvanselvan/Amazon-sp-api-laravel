@@ -187,7 +187,7 @@ class ShipnTrackLabelManagementController extends Controller
         $pdfPath = Storage::path($filePath);
 
         Browsershot::url($url)
-            ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1')
             ->scale(1)
